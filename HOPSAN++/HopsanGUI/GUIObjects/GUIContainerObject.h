@@ -157,6 +157,7 @@ protected:
     virtual void createPorts();
     virtual void createExternalPort(QString portName);
     virtual void removeExternalPort(QString portName);
+    virtual void renameExternalPort(QString oldName, QString newName);
     virtual void openPropertiesDialog();
     void clearContents();
         //Protected overloaded Qt methods

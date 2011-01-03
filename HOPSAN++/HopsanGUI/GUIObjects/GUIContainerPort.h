@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef GUISYSTEMPORT_H
-#define GUISYSTEMPORT_H
+#ifndef GUICONTAINERPORT_H
+#define GUICONTAINERPORT_H
 
 #include "GUIModelObject.h"
 
@@ -20,8 +20,7 @@ public:
     GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
     ~GUIContainerPort();
     QString getTypeName();
-    //void setName(QString newName, renameRestrictions renameSettings);
-
+    void setDisplayName(QString name);
 
     enum { Type = GUICONTAINERPORT };
     int type() const;
@@ -36,4 +35,4 @@ private:
     GUIPort *mpGuiPort;
 };
 
-#endif // GUISYSTEMPORT_H
+#endif

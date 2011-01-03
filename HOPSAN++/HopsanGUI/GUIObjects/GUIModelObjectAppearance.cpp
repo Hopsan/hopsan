@@ -125,6 +125,36 @@ PortAppearanceMapT &GUIModelObjectAppearance::getPortAppearanceMap()
     return mPortAppearanceMap;
 }
 
+//! @brief Removes a port appearance post for a specified portname
+//! @param[in] portName The port name for the port Appearance to be erased
+void GUIModelObjectAppearance::erasePortAppearance(const QString portName)
+{
+    PortAppearanceMapT::iterator pait = mPortAppearanceMap.find(portName);
+    if (pait != mPortAppearanceMap.end())
+    {
+        mPortAppearanceMap.erase(pait);
+    }
+    else
+    {
+        qDebug() << "GUIModelObjectAppearance, ERROR: specified portappearance could not be found in the map: " << portName;
+    }
+}
+
+//! @brief Adds or updates a port appearance post for a specified portname
+//! @param[in] portName The port name for the port Appearance to be added
+//! @param[in] pPortAppearance A pointer to the port Appearance to add, if 0 then a new undefined appearance will be created
+void GUIModelObjectAppearance::addPortAppearance(const QString portName, GUIPortAppearance *pPortAppearance)
+{
+    if (pPortAppearance == 0)
+    {
+        mPortAppearanceMap.insert(portName, GUIPortAppearance());
+    }
+    else
+    {
+        mPortAppearanceMap.insert(portName, *pPortAppearance);
+    }
+}
+
 //! @brief Get the base path that all icon paths are relative
 QString GUIModelObjectAppearance::getBaseIconPath()
 {

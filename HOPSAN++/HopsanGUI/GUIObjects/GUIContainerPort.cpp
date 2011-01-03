@@ -16,7 +16,6 @@
 GUIContainerPort::GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    //qDebug() << "GUISystemPort: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
     mIsSystemPort = (pParentContainer->type() == GUISYSTEM); //determine if I am a system port
     this->mHmfTagName = HMF_SYSTEMPORTTAG;
     //Sets the ports
@@ -97,39 +96,14 @@ QString GUIContainerPort::getTypeName()
     return HOPSANGUICONTAINERPORTTYPENAME;
 }
 
-////! Set the name of a system port
-//void GUIContainerPort::setName(QString newName, renameRestrictions renameSettings)
-//{
-////    QString oldName = getName();
-////    //If name same as before do nothing
-////    if (newName != oldName)
-////    {
-////        //Check if we want to avoid trying to rename in the graphics view map
-////        if (renameSettings == CORERENAMEONLY)
-////        {
-////            if (mIsSystemPort)
-////            {
-////                //Set name in core component, Also set the current name to the resulting one (might have been changed)
-////                mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName));
-////            }
-////            else
-////            {
-////                //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
-////                mGUIModelObjectAppearance.setName(newName);
-////            }
-
-////            refreshDisplayName();
-////            mpGuiPort->setDisplayName(mGUIModelObjectAppearance.getName()); //change the actual gui port name
-////        }
-////        else
-////        {
-////            //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
-////            //Rename
-////            mpParentContainerObject->renameGUIModelObject(oldName, newName);
-////        }
-////    }
-//assert(false);
-//}
+//! @brief Sets the name of the modelobject ContainerPort and the contained GUIPort
+//! Note, this function will NOT change the core name of the component
+void GUIContainerPort::setDisplayName(QString name)
+{
+    mGUIModelObjectAppearance.setName(name);
+    mPortListPtrs[0]->setDisplayName(name);
+    refreshDisplayName();
+}
 
 //! @brief ContainerPorts shal only save their port name if they are systemports, if they are group ports no core data should be saved
 void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
@@ -140,6 +114,7 @@ void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
     }
 }
 
+//! @brief Opens the properties dialog
 void GUIContainerPort::openPropertiesDialog()
 {
     ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this);

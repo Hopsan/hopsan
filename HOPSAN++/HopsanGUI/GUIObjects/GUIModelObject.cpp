@@ -238,6 +238,7 @@ QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 
 
 //! @brief Sets the name of the object (may be modified by HopsanCore if name already exists)
+//! Note, this function will NOT change the core name of the component
 void GUIModelObject::setDisplayName(QString name)
 {
     mGUIModelObjectAppearance.setName(name);
@@ -323,7 +324,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
 GUIPort *GUIModelObject::getPort(QString name)
 {
     //qDebug() << "Trying to find GUIPort with name: " << name;
-    //! @todo use the a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
+    //! @todo use a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
         if (mPortListPtrs[i]->getName() == name)

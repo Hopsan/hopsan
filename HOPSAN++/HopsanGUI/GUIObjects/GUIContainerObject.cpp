@@ -199,6 +199,9 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
             CONTAINEREDGE edge = findPortEdge(center, moit.value()->getCenterPos());
             //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
+            //MAke sure we dont screw up in the code and forget to rename or create external ports on internal rename or create
+            assert(this->getPort(moit.value()->getName()) != 0);
+
             switch (edge) {
             case RIGHTEDGE:
                 rightEdge.append(this->getPort(moit.value()->getName()));
@@ -325,6 +328,12 @@ void GUIContainerObject::createPorts()
 //! @todo maybe defualt create that info if it is missing
 void GUIContainerObject::createExternalPort(QString portName)
 {
+    //If port appearance is not already existing then we create it
+    if ( mGUIModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
+    {
+        mGUIModelObjectAppearance.addPortAppearance(portName);
+    }
+
     //Fetch appearance data
     PortAppearanceMapT::iterator it = mGUIModelObjectAppearance.getPortAppearanceMap().find(portName);
     if (it != mGUIModelObjectAppearance.getPortAppearanceMap().end())
@@ -366,6 +375,7 @@ void GUIContainerObject::createExternalPort(QString portName)
     }
     else
     {
+        //This should never happen
         qDebug() << "Could not find portappearance info for port: " << portName << " in: " << this->getName();
         assert(false);
     }
@@ -382,12 +392,37 @@ void GUIContainerObject::removeExternalPort(QString portName)
     {
         if ((*plit)->getName() == portName )
         {
+            //Delete the GUIPort its post in teh portlist and its appearance data
+            mGUIModelObjectAppearance.erasePortAppearance(portName);
             delete *plit;
             mPortListPtrs.erase(plit);
             break;
         }
     }
     //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
+}
+
+//! @brief Reanmes an external GUIPort
+//! @param[in] oldName The name to be replaced
+//! @param[in] newName The new name
+//! This function assumes that oldName exist and that newName is correct, no error checking is done
+void GUIContainerObject::renameExternalPort(const QString oldName, const QString newName)
+{
+    QList<GUIPort*>::iterator plit;
+    for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
+    {
+        if ((*plit)->getName() == oldName )
+        {
+            //Rename the port appearance data by remove and re-add
+            GUIPortAppearance tmp = mGUIModelObjectAppearance.getPortAppearanceMap().value(oldName);
+            mGUIModelObjectAppearance.erasePortAppearance(oldName);
+            mGUIModelObjectAppearance.addPortAppearance(newName, &tmp);
+
+            //Rename port
+            (*plit)->setDisplayName(newName);
+            break;
+        }
+    }
 }
 
 //! @brief Creates and adds a GuiModel Object to the current container
@@ -416,8 +451,8 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
         mpTempGUIModelObject = new GUIContainerPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
-        //Add appearance data for the external version of this systemport to the continer object so that the external port can be created with the creatPorts method
-        mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance()); //! @todo maybe this should be handeled automatically inside create external port if missing
+//        //Add appearance data for the external version of this systemport to the continer object so that the external port can be created with the creatPorts method
+//        mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance()); //! @todo maybe this should be handeled automatically inside create external port if missing
         this->createExternalPort(mpTempGUIModelObject->getName());
         this->refreshExternalPortsAppearanceAndPosition();
     }
@@ -620,6 +655,7 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
             case GUICONTAINERPORT : //!< @todo What will happen when we try to rename a groupport
                 //qDebug() << "GUISYSTEMPORT";
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
+                renameExternalPort(oldName, modNewName);
                 break;
             //default :
                 //qDebug() << "default";

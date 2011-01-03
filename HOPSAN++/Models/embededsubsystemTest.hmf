@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
-    <system typename="Subsystem" cqs_type="S" name="embededsubsystemTest">
+    <system cqs_type="S" name="embededsubsystemTest">
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2502" y="2501.5" zoom="1"/>
+            <viewport x="2502.5" y="2467" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="embededsubsystemTest">
                     <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
@@ -37,11 +37,11 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
-            <system typename="Subsystem" cqs_type="S" name="apa">
+            <system cqs_type="S" name="apa">
                 <hopsangui>
                     <pose x="2457" y="2480" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2502" y="2501.5" zoom="1"/>
+                    <viewport x="2502.5" y="2467" zoom="1"/>
                     <hopsanobjectappearance>
                         <modelobject typename="Subsystem" displayname="apa">
                             <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
@@ -53,11 +53,11 @@
                 <simulationtime stop="10" timestep="0.001" start="0"/>
                 <parameters/>
                 <objects>
-                    <system typename="Subsystem" cqs_type="S" name="ComponentSystem">
+                    <system cqs_type="S" name="ComponentSystem">
                         <hopsangui>
                             <pose x="2352" y="2548" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2502" y="2501.5" zoom="1"/>
+                            <viewport x="2502.5" y="2467" zoom="1"/>
                             <hopsanobjectappearance>
                                 <modelobject typename="Subsystem" displayname="ComponentSystem">
                                     <icon isopath="" iconrotation="" userpath="MechanicPort.svg"/>
@@ -69,13 +69,13 @@
                         <simulationtime stop="10" timestep="0.001" start="0"/>
                         <parameters/>
                         <objects>
-                            <systemport typename="SystemPort" name="sysp">
+                            <systemport name="sysp">
                                 <hopsangui>
                                     <pose x="2350" y="2482" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
-                            <systemport typename="SystemPort" name="sysp_1">
+                            <systemport name="sysp_1">
                                 <hopsangui>
                                     <pose x="2534" y="2482" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
@@ -127,29 +127,29 @@
                             </connect>
                         </connections>
                     </system>
-                    <system typename="Subsystem" cqs_type="S" name="ComponentSystem_1">
+                    <system cqs_type="S" name="ComponentSystem_1">
                         <hopsangui>
                             <pose x="2486" y="2433" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2502" y="2501.5" zoom="1"/>
+                            <viewport x="2502.5" y="2467" zoom="1"/>
                             <hopsanobjectappearance>
                                 <modelobject typename="Subsystem" displayname="ComponentSystem_1">
                                     <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
                                     <portpose x="0" y="0" a="0" name="sysp"/>
-                                    <portpose x="0" y="0" a="0" name="sysp_1"/>
+                                    <portpose x="0" y="0" a="0" name="sysp_1a"/>
                                 </modelobject>
                             </hopsanobjectappearance>
                         </hopsangui>
                         <simulationtime stop="10" timestep="0.001" start="0"/>
                         <parameters/>
                         <objects>
-                            <systemport typename="SystemPort" name="sysp">
+                            <systemport name="sysp">
                                 <hopsangui>
                                     <pose x="2271" y="2507" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
-                            <systemport typename="SystemPort" name="sysp_1">
+                            <systemport name="sysp_1a">
                                 <hopsangui>
                                     <pose x="2530" y="2507" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
@@ -184,7 +184,7 @@
                                     </geometries>
                                 </hopsangui>
                             </connect>
-                            <connect endport="sysp_1" endcomponent="sysp_1" startport="out" startcomponent="Gain">
+                            <connect endport="sysp_1a" endcomponent="sysp_1a" startport="out" startcomponent="Gain">
                                 <hopsangui>
                                     <coordinates>
                                         <coordinate x="2442.5" y="2507"/>
@@ -201,13 +201,13 @@
                             </connect>
                         </connections>
                     </system>
-                    <systemport typename="SystemPort" name="sysp">
+                    <systemport name="sysp">
                         <hopsangui>
                             <pose x="2239" y="2476" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
-                    <systemport typename="SystemPort" name="sysp_1">
+                    <systemport name="sysp_1">
                         <hopsangui>
                             <pose x="2659" y="2483" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -245,7 +245,7 @@
                             </geometries>
                         </hopsangui>
                     </connect>
-                    <connect endport="sysp_1" endcomponent="sysp_1" startport="sysp_1" startcomponent="ComponentSystem_1">
+                    <connect endport="sysp_1" endcomponent="sysp_1" startport="sysp_1a" startcomponent="ComponentSystem_1">
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2532" y="2433"/>

@@ -64,7 +64,6 @@ public:
     bool isConnected();
 
         //Public member variables
-    //GUIContainerObject *mpParentContainerObject;
     GUIModelObject *mpParentGuiModelObject;
     QPointF rectPos;
 

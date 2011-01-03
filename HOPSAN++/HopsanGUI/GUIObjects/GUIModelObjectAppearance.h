@@ -40,6 +40,8 @@ public:
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     PortAppearanceMapT &getPortAppearanceMap();
+    void erasePortAppearance(const QString portName);
+    void addPortAppearance(const QString portName, GUIPortAppearance *pPortAppearance=0);
 
     bool haveIsoIcon();
     bool haveUserIcon();
