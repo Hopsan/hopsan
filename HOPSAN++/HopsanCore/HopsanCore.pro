@@ -168,7 +168,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic33Valve.hpp \
     Components/Signal/SignalHP1Filter.hpp \
     Components/Signal/SignalHP2Filter.hpp \
-    Components/Signal/SignalDelay.hpp \
     Components/Hydraulic/Hydraulic43LoadSensingValve.hpp \
     Components/Signal/SignalShuttleValve.hpp \
     Components/Hydraulic/Hydraulic22Valve.hpp \
