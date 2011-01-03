@@ -45,11 +45,13 @@ namespace hopsan {
         {
             input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
             if(mpOut->isConnected())
+            {
                 output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
             else
-                output = new double(0);
-
-            *output = 0.0;
+            {
+                output = new double();
+            }
         }
 
 

@@ -23,7 +23,7 @@ namespace hopsan {
     {
 
     private:
-        double mStartY, mTimeDelay;
+        double mTimeDelay;
         Delay mDelay;
         double *input, *output;
         Port *mpIn, *mpOut;
@@ -37,7 +37,6 @@ namespace hopsan {
         SignalTimeDelay(const std::string name) : ComponentSignal(name)
         {
             mTypeName = "SignalTimeDelay";
-            mStartY = 0.0;
             mTimeDelay = 1.0;
 
             registerParameter("TD", "Time delay", "s", mTimeDelay);
@@ -60,8 +59,8 @@ namespace hopsan {
                 output = new double();
             }
 
-            mDelay.initialize(mTimeDelay, mTimestep, mStartY);
-            (*output) = mStartY;
+            mDelay.initialize(mTimeDelay, mTimestep, (*input));
+            (*output) = (*input);
         }
 
 

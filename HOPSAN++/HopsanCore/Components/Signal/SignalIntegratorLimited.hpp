@@ -68,7 +68,9 @@ namespace hopsan {
 
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
             mPrevU = startY;
-            mPrevY = std::max(std::min(startY, mMax), mMin);
+            limit(startY, mMin, mMax);
+
+            limit((*input), mMin, mMax);
         }
 
 

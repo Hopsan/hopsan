@@ -64,8 +64,6 @@ namespace hopsan {
             {
                 output = new double();
             }
-
-            (*output) = 0.0;
         }
 
 

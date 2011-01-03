@@ -61,6 +61,8 @@ namespace hopsan {
             }
 
             mDelayedInput.initialize(1, 0.0);
+
+            (*output) = (*input);
         }
 
 

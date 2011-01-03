@@ -25,7 +25,6 @@ namespace hopsan {
     private:
         FirstOrderFilter mFilter;
         double mWnum, mWden, mK;
-        double mStartY;
         double mMin, mMax;
         double *input, *output;
         Port *mpIn, *mpOut;
@@ -39,7 +38,6 @@ namespace hopsan {
         SignalFirstOrderFilter(const std::string name) : ComponentSignal(name)
         {
             mTypeName = "SignalFirstOrderFilter";
-            mStartY = 0.0;
 
             mMin = -1.5E+300;
             mMax = 1.5E+300;
@@ -84,9 +82,9 @@ namespace hopsan {
             den[0] = 1.0/mWden;
             den[1] = 1.0;
 
-            mFilter.initialize(mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+            mFilter.initialize(mTimestep, num, den, (*input), (*input), mMin, mMax);
 
-            (*output) = mStartY;
+            (*output) = (*input);
         }
 
 

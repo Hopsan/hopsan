@@ -25,7 +25,6 @@ namespace hopsan {
     private:
         SecondOrderFilter mFilter;
         double mWnum, mDnum, mWden, mDden, mK;
-        double mStartY;
         double mMin, mMax;
         double *input, *output;
         Port *mpIn, *mpOut;
@@ -39,7 +38,6 @@ namespace hopsan {
         SignalSecondOrderFilter(const std::string name) : ComponentSignal(name)
         {
             mTypeName = "SignalSecondOrderFilter";
-            mStartY = 0.0;
 
             mMin = -1.5E+300;
             mMax = 1.5E+300;
@@ -93,10 +91,10 @@ namespace hopsan {
             den[1] = 2.0*mDden/mWden;
             den[2] = 1.0;
 
-            mFilter.initialize(mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+            mFilter.initialize(mTimestep, num, den, (*input), (*input), mMin, mMax);
 
             //Writes out the value for time "zero"
-            (*output) = mStartY;
+            (*output) = (*input);
         }
 
 

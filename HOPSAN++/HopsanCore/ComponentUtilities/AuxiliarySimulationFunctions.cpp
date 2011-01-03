@@ -5,7 +5,7 @@
 //! Multiplies the value by two.
 //! @param[in] input is the value to multiply.
 //! @return the input value times two.
-double multByTwo(double input)
+double hopsan::multByTwo(double input)
 {
     return 2.0*input;
 }
@@ -15,7 +15,7 @@ double multByTwo(double input)
 //! @param &value Reference pointer to the value
 //! @param min Lower limit of the value
 //! @param max Upper limit of the value
-void limit(double &value, double min, double max)
+void hopsan::limit(double &value, double min, double max)
 {
     if(min>max)
     {

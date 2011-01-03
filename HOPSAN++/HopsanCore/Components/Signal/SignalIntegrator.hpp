@@ -66,6 +66,8 @@ namespace hopsan {
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
             mPrevU = startY;
             mPrevY = startY;
+
+            (*output) = (*input);
         }
 
 

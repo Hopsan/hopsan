@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="SignalDelay" displayname="Delay">
+    <modelobject typename="SignalTimeDelay" displayname="Time Delay">
         <icon isopath="" iconrotation="ON" userpath="delay.svg"/>
         <portpose x="0" y="0.5" a="0" name="in"/>
         <portpose x="1" y="0.5" a="0" name="out"/>

@@ -64,6 +64,8 @@ namespace hopsan {
 
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
             mIntegrator.initialize(mTimestep, startY, startY);
+
+            (*output) = (*input);
         }
 
 

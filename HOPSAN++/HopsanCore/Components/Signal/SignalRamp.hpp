@@ -76,6 +76,8 @@ namespace hopsan {
             {
                 output = new double();
             }
+
+            (*output) = mBaseValue;
         }
 
 

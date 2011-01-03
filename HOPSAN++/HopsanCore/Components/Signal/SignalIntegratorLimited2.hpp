@@ -69,7 +69,9 @@ namespace hopsan {
             }
 
             mIntegrator.initialize(mTimestep, (*input), mStartY, mMin, mMax);
-            mpOut->writeNode(NodeSignal::VALUE, mStartY);
+
+            (*output) = (*input);
+            limit((*output), mMin, mMax);
         }
 
 
