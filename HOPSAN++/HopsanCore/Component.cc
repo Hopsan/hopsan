@@ -2722,6 +2722,8 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     adjustTimestep(mTimestep, mComponentCptrs);
     adjustTimestep(mTimestep, mComponentQptrs);
 
+    this->sortSignalComponentVector();
+
     loadStartValues();
 
     //Init
@@ -3243,13 +3245,13 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     tbb::tick_count measurement_start = tbb::tick_count::now();
 
         //Simulate S, C and Q components one time step on single core and meassure the required time
-    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-    {
-        tbb::tick_count comp_start = tbb::tick_count::now();
-        mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
-        tbb::tick_count comp_end = tbb::tick_count::now();
-        mComponentSignalptrs[s]->setMeasuredTime(double((comp_end-comp_start).seconds()));
-    }
+//    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+//    {
+//        tbb::tick_count comp_start = tbb::tick_count::now();
+//        mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
+//        tbb::tick_count comp_end = tbb::tick_count::now();
+//        mComponentSignalptrs[s]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+//    }
     for(size_t c=0; c<mComponentCptrs.size(); ++c)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
@@ -3270,22 +3272,22 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         //Sort the components from longest to shortest time requirement (this is a bubblesort, we should probably use something faster...)
     size_t i, j;
     bool flag = true;
-    Component *tempS;
-    for(i = 1; (i < mComponentSignalptrs.size()) && flag; ++i)
-    {
-        flag = false;
-        for (j=0; j < (mComponentSignalptrs.size()-1); ++j)
-        {
-            if (mComponentSignalptrs[j+1]->getMeasuredTime() > mComponentSignalptrs[j]->getMeasuredTime())
-            {
-                tempS = mComponentSignalptrs[j];             //Swap elements
-                mComponentSignalptrs[j] = mComponentSignalptrs[j+1];
-                mComponentSignalptrs[j+1] = tempS;
-                flag = true;               //Indicates that a swap occurred
-            }
-        }
-    }
-    flag = true;
+//    Component *tempS;
+//    for(i = 1; (i < mComponentSignalptrs.size()) && flag; ++i)
+//    {
+//        flag = false;
+//        for (j=0; j < (mComponentSignalptrs.size()-1); ++j)
+//        {
+//            if (mComponentSignalptrs[j+1]->getMeasuredTime() > mComponentSignalptrs[j]->getMeasuredTime())
+//            {
+//                tempS = mComponentSignalptrs[j];             //Swap elements
+//                mComponentSignalptrs[j] = mComponentSignalptrs[j+1];
+//                mComponentSignalptrs[j+1] = tempS;
+//                flag = true;               //Indicates that a swap occurred
+//            }
+//        }
+//    }
+//    flag = true;
     Component *tempC;
     for(i = 1; (i < mComponentCptrs.size()) && flag; ++i)
     {
@@ -3342,31 +3344,31 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         timeVector[i] = 0;                                                                                  //DEBUG
     }                                                                                                       //DEBUG
 
-        //Attempt to distribute S component equally over vectors (one for each core)
-    vector< vector<Component*> > splitSVector;
-    splitSVector.resize(nCores);
-    size_t sCompNum=0;
-    while(true)
-    {
-        for(size_t coreNumber=0; coreNumber<nCores; ++coreNumber)
-        {
-            if(sCompNum == mComponentSignalptrs.size())
-                break;
-            splitSVector[coreNumber].push_back(mComponentSignalptrs[sCompNum]);
-            timeVector[coreNumber] += mComponentSignalptrs[sCompNum]->getMeasuredTime();                    //DEBUG
-            ++sCompNum;
-        }
-        if(sCompNum == mComponentSignalptrs.size())
-            break;
-    }
+//        //Attempt to distribute S component equally over vectors (one for each core)
+//    vector< vector<Component*> > splitSVector;
+//    splitSVector.resize(nCores);
+//    size_t sCompNum=0;
+//    while(true)
+//    {
+//        for(size_t coreNumber=0; coreNumber<nCores; ++coreNumber)
+//        {
+//            if(sCompNum == mComponentSignalptrs.size())
+//                break;
+//            splitSVector[coreNumber].push_back(mComponentSignalptrs[sCompNum]);
+//            timeVector[coreNumber] += mComponentSignalptrs[sCompNum]->getMeasuredTime();                    //DEBUG
+//            ++sCompNum;
+//        }
+//        if(sCompNum == mComponentSignalptrs.size())
+//            break;
+//    }
 
-    for(size_t i=0; i<nCores; ++i)                                                                                              //DEBUG
-    {                                                                                                                           //DEBUG
-        stringstream ss;                                                                                                        //DEBUG
-        ss << timeVector[i]*1000;                                                                                               //DEBUG
-        gCoreMessageHandler.addDebugMessage("Creating signal thread vector, measured time = " + ss.str() + " ms", "svector");   //DEBUG
-        timeVector[i] = 0;                                                                                                      //DEBUG
-    }                                                                                                                           //DEBUG
+//    for(size_t i=0; i<nCores; ++i)                                                                                              //DEBUG
+//    {                                                                                                                           //DEBUG
+//        stringstream ss;                                                                                                        //DEBUG
+//        ss << timeVector[i]*1000;                                                                                               //DEBUG
+//        gCoreMessageHandler.addDebugMessage("Creating signal thread vector, measured time = " + ss.str() + " ms", "svector");   //DEBUG
+//        timeVector[i] = 0;                                                                                                      //DEBUG
+//    }                                                                                                                           //DEBUG
 
 
         //Attempt to distribute C component equally over vectors (one for each core)
@@ -3469,11 +3471,15 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     lock_q = true;
     lock_n = true;
 
+        //! @todo Make a better solution to this; we must decide if it shall be possible or not to simulate without sorting the signal components
+    std::vector<Component*> dummySignalVector;  //This is used because signal components shall be simulated single-threaded (to make sure they are simulated in correct order).
+
         //Execute simulation
-    coreTasks->run(taskSimMaster(splitSVector[0], splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nCores, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
+    //coreTasks->run(taskSimMaster(splitSVector[0], splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nCores, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
+    coreTasks->run(taskSimMaster(mComponentSignalptrs, splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nCores, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
     for(size_t coreNumber=1; coreNumber < nCores; ++coreNumber)
     {
-        coreTasks->run(taskSimSlave(splitSVector[coreNumber], splitCVector[coreNumber], splitQVector[coreNumber], splitNodeVector[coreNumber], mTime, mTimestep, stopTsafe, nCores, coreNumber, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
+        coreTasks->run(taskSimSlave(dummySignalVector, splitCVector[coreNumber], splitQVector[coreNumber], splitNodeVector[coreNumber], mTime, mTimestep, stopTsafe, nCores, coreNumber, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
     }
     coreTasks->wait();
 
@@ -3491,9 +3497,6 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
-    this->sortSignalComponentVector();
-
-
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     mTime = startT;
@@ -3503,8 +3506,6 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
     while ((mTime < stopTsafe) && (!mStop))
     {
-        logAllNodes(mTime);
-
         //! @todo maybe use iterators instead
         //Signal components
         for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
@@ -3523,6 +3524,8 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         {
             mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
         }
+
+        logAllNodes(mTime);
 
         mTime += mTimestep;
     }
