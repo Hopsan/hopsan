@@ -3472,7 +3472,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     lock_n = true;
 
         //! @todo Make a better solution to this; we must decide if it shall be possible or not to simulate without sorting the signal components
-    std::vector<Component*> dummySignalVector;  //This is used because signal components shall be simulated single-threaded (to make sure they are simulated in correct order).
+    std::vector<Component*> dummySignalVector;   //This is used because signal components shall be simulated single-threaded (to make sure they are simulated in correct order).
 
         //Execute simulation
     //coreTasks->run(taskSimMaster(splitSVector[0], splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nCores, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
