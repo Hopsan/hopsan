@@ -1,5 +1,5 @@
 //!
-//! @file   GUISystemPort.cpp
+//! @file   GUIContainerPort.cpp
 //! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-01-01
 //!
@@ -7,9 +7,10 @@
 //!
 //$Id$
 
-#include "GUISystemPort.h"
+#include "GUIContainerPort.h"
 #include "GUIContainerObject.h"
 #include "../GUIPort.h"
+#include "../Dialogs/ContainerPortPropertiesDialog.h"
 
 //! @todo rename GUISystemPort to ContainerPort, rename files also
 GUIContainerPort::GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
@@ -96,38 +97,39 @@ QString GUIContainerPort::getTypeName()
     return HOPSANGUICONTAINERPORTTYPENAME;
 }
 
-//! Set the name of a system port
-void GUIContainerPort::setName(QString newName, renameRestrictions renameSettings)
-{
-    QString oldName = getName();
-    //If name same as before do nothing
-    if (newName != oldName)
-    {
-        //Check if we want to avoid trying to rename in the graphics view map
-        if (renameSettings == CORERENAMEONLY)
-        {
-            if (mIsSystemPort)
-            {
-                //Set name in core component, Also set the current name to the resulting one (might have been changed)
-                mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName));
-            }
-            else
-            {
-                //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
-                mGUIModelObjectAppearance.setName(newName);
-            }
+////! Set the name of a system port
+//void GUIContainerPort::setName(QString newName, renameRestrictions renameSettings)
+//{
+////    QString oldName = getName();
+////    //If name same as before do nothing
+////    if (newName != oldName)
+////    {
+////        //Check if we want to avoid trying to rename in the graphics view map
+////        if (renameSettings == CORERENAMEONLY)
+////        {
+////            if (mIsSystemPort)
+////            {
+////                //Set name in core component, Also set the current name to the resulting one (might have been changed)
+////                mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName));
+////            }
+////            else
+////            {
+////                //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
+////                mGUIModelObjectAppearance.setName(newName);
+////            }
 
-            refreshDisplayName();
-            mpGuiPort->setDisplayName(mGUIModelObjectAppearance.getName()); //change the actual gui port name
-        }
-        else
-        {
-            //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
-            //Rename
-            mpParentContainerObject->renameGUIModelObject(oldName, newName);
-        }
-    }
-}
+////            refreshDisplayName();
+////            mpGuiPort->setDisplayName(mGUIModelObjectAppearance.getName()); //change the actual gui port name
+////        }
+////        else
+////        {
+////            //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
+////            //Rename
+////            mpParentContainerObject->renameGUIModelObject(oldName, newName);
+////        }
+////    }
+//assert(false);
+//}
 
 //! @brief ContainerPorts shal only save their port name if they are systemports, if they are group ports no core data should be saved
 void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
@@ -136,6 +138,13 @@ void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
     {
         rDomElement.setAttribute(HMF_NAMETAG, getName());
     }
+}
+
+void GUIContainerPort::openPropertiesDialog()
+{
+    ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this);
+    pDialog->exec();
+    delete pDialog;
 }
 
 

@@ -1,5 +1,5 @@
 //!
-//! @file   GUISystemPort.h
+//! @file   GUIContainerPort.h
 //! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-01-01
 //!
@@ -20,7 +20,7 @@ public:
     GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
     ~GUIContainerPort();
     QString getTypeName();
-    void setName(QString newName, renameRestrictions renameSettings);
+    //void setName(QString newName, renameRestrictions renameSettings);
 
 
     enum { Type = GUICONTAINERPORT };
@@ -28,8 +28,8 @@ public:
 
 protected:
     void createPorts();
-    //void saveToDomElement(QDomElement &rDomElement);
     void saveCoreDataToDomElement(QDomElement &rDomElement);
+    void openPropertiesDialog();
 
 private:
     bool mIsSystemPort;

@@ -93,7 +93,7 @@ public slots:
 signals:
 
 protected:
-    //Protexted methods
+    //Protected methods
     virtual void openPropertiesDialog(){}
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QGraphicsSceneContextMenuEvent* pEvent);
 

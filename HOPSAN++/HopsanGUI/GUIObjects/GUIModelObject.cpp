@@ -236,39 +236,6 @@ QList<GUIPort*> &GUIModelObject::getPortListPtrs()
     return mPortListPtrs;
 }
 
-//void GUIModelObject::setName(QString newName, renameRestrictions renameSettings)
-//{
-//    QString oldName = getName();
-//    //If name same as before do nothing
-//    if (newName != oldName)
-//    {
-//        if (mpParentSystem != 0)
-//        {
-//            mpParentSystem->renameGUIObject(oldName, newName);
-//        }
-//        else
-//        {
-//            assert(false);
-//        }
-//    }
-////    //Check if we want to avoid trying to rename in the graphics view map
-////    if ( (renameSettings == CORERENAMEONLY) or (mpParentSystem == 0) )
-////    {
-////        mGUIModelObjectAppearance.setName(mpParentSystem->getCoreSystemAccessPtr()->renameSubComponent(this->getName(), newName));
-////        refreshDisplayName();
-////    }
-////    else
-////    {
-////        //Rename
-////        mpParentSystem->renameGUIObject(oldName, newName);
-////    }
-
-////    mpParentSystem->mGUIObjectMap.erase(mpParentSystem->mGUIObjectMap.find(this->getName()));
-////    mGUIModelObjectAppearance.setName(newName);
-////    refreshDisplayName();
-////    mpParentSystem->mGUIObjectMap.insert(this->getName(), this);
-//}
-
 
 //! @brief Sets the name of the object (may be modified by HopsanCore if name already exists)
 void GUIModelObject::setDisplayName(QString name)
@@ -591,7 +558,6 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
     }
     else if (selectedAction == groupAction)
     {
-        //! @todo fix this if possible
         this->mpParentContainerObject->groupSelected(pEvent->scenePos());
     }
     else

@@ -26,7 +26,6 @@ SOURCES += main.cpp \
     PyWrapperClasses.cpp \
     Widgets/PyDockWidget.cpp \
     GUIObjects/GUIWidgets.cpp \
-    GUIObjects/GUISystemPort.cpp \
     GUIObjects/GUISystem.cpp \
     GUIObjects/GUIObject.cpp \
     GUIObjects/GUIModelObjectAppearance.cpp \
@@ -43,7 +42,9 @@ SOURCES += main.cpp \
     Dialogs/AboutDialog.cpp \
     CoreAccess.cpp \
     Widgets/UndoWidget.cpp \
-    Widgets/QuickNavigationWidget.cpp
+    Widgets/QuickNavigationWidget.cpp \
+    GUIObjects/GUIContainerPort.cpp \
+    Dialogs/ContainerPortPropertiesDialog.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -71,7 +72,6 @@ HEADERS += MainWindow.h \
     PyWrapperClasses.h \
     Widgets/PyDockWidget.h \
     GUIObjects/GUIWidgets.h \
-    GUIObjects/GUISystemPort.h \
     GUIObjects/GUISystem.h \
     GUIObjects/GUIObject.h \
     GUIObjects/GUIModelObjectAppearance.h \
@@ -87,7 +87,9 @@ HEADERS += MainWindow.h \
     Dialogs/ContainerPropertiesDialog.h \
     Dialogs/AboutDialog.h \
     Widgets/UndoWidget.h \
-    Widgets/QuickNavigationWidget.h
+    Widgets/QuickNavigationWidget.h \
+    GUIObjects/GUIContainerPort.h \
+    Dialogs/ContainerPortPropertiesDialog.h
 
 OTHER_FILES += 
 
