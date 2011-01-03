@@ -23,16 +23,14 @@
 
 namespace hopsan {
 
-    std::string readName(std::stringstream &rTextStream);
-    std::string readName(std::string namestring);
-    std::string addQuotes(std::string str);
+//    std::string readName(std::stringstream &rTextStream);
+//    std::string readName(std::string namestring);
+//    std::string addQuotes(std::string str);
 
     class DLLIMPORTEXPORT FileAccess
     {
     public:
         FileAccess();
-        //FileAccess(std::string filename);
-        //void setFilename(std::string filename);
 
         void loadModel(std::string filename, ComponentSystem* pModelSystem, double *startTime, double *stopTime);
         void loadSystemContents(std::stringstream &rLoaddatastream, ComponentSystem* pSubsystem);
@@ -41,8 +39,6 @@ namespace hopsan {
 
 
     private:
-        //std::string mFilename;
-        //ComponentSystem mModel;
         void saveComponentSystem(std::ofstream& modelFile, ComponentSystem* pMotherModel, std::string motherSystemName);
 
     };
