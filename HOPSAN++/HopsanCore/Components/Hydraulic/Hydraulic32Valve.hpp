@@ -23,15 +23,20 @@ namespace hopsan {
     class Hydraulic32Valve : public ComponentQ
     {
     private:
-        double mCq;
-        double md;
-        double mf;
-        double mxvmax;
-        double moverlap_pa;
-        double moverlap_at;
-        double moverlap_bt;
-        double momegah;
-        double mdeltah;
+        double Cq;
+        double d;
+        double f;
+        double xvmax;
+        double overlap_pa;
+        double overlap_at;
+        double overlap_bt;
+        double omegah;
+        double deltah;
+        double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
+
+        double *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *xvin_ptr;
+        double pa, qa, ca, Zca, pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin;
+
         SecondOrderFilter myFilter;
         TurbulentFlowFunction mQturbpa;
         TurbulentFlowFunction mQturbat;
@@ -46,69 +51,83 @@ namespace hopsan {
         Hydraulic32Valve(const std::string name) : ComponentQ(name)
         {
             mTypeName = "Hydraulic32Valve";
-            mCq = 0.67;
-            md = 0.01;
-            mf = 1.0;
-            mxvmax = 0.01;
-            moverlap_pa = 0.0;
-            moverlap_at = 0.0;
-            momegah = 100.0;
-            mdeltah = 0.0;
+            Cq = 0.67;
+            d = 0.01;
+            f = 1.0;
+            xvmax = 0.01;
+            overlap_pa = 0.0;
+            overlap_at = 0.0;
+            omegah = 100.0;
+            deltah = 0.0;
 
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
 
-            registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
-            registerParameter("d", "Diameter", "[m]", md);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", mf);
-            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", mxvmax);
-            registerParameter("overlap_pa", "Spool Overlap From Port P To A", "[m]", moverlap_pa);
-            registerParameter("overlap_at", "Spool Overlap From Port A To T", "[m]", moverlap_at);
-            registerParameter("omegah", "Resonance Frequency", "[rad/s]", momegah);
-            registerParameter("deltah", "Damping Factor", "[-]", mdeltah);
+            registerParameter("Cq", "Flow Coefficient", "[-]", Cq);
+            registerParameter("d", "Diameter", "[m]", d);
+            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
+            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("overlap_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
+            registerParameter("overlap_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
+            registerParameter("omegah", "Resonance Frequency", "[rad/s]", omegah);
+            registerParameter("deltah", "Damping Factor", "[-]", deltah);
         }
 
 
         void initialize()
         {
+            pp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
+            cp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zcp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            pt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::FLOW);
+            ct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            pa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
+            ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+
             double num[3] = {0.0, 0.0, 1.0};
-            double den[3] = {1.0/(momegah*momegah), 2.0*mdeltah/momegah, 1.0};
-            myFilter.initialize(mTimestep, num, den, 0, 0, -mxvmax, mxvmax);
+            double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
+            myFilter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double cp  = mpPP->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zcp = mpPP->readNode(NodeHydraulic::CHARIMP);
-            double ct  = mpPT->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zct = mpPT->readNode(NodeHydraulic::CHARIMP);
-            double ca  = mpPA->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zca = mpPA->readNode(NodeHydraulic::CHARIMP);
-            double xvin  = mpIn->readNode(NodeSignal::VALUE);
+            cp = (*cp_ptr);
+            Zcp = (*Zcp_ptr);
+            ct = (*ct_ptr);
+            Zct = (*Zct_ptr);
+            ca = (*ca_ptr);
+            Zca = (*Zca_ptr);
+            xvin = (*xvin_ptr);
 
             myFilter.update(xvin);
-            double xv = myFilter.value();
+            xv = myFilter.value();
 
+            xpanom = std::max((xvmax+xv)/2-overlap_pa,0.0);
+            xatnom = std::max((xvmax-xv)/2-overlap_at,0.0);
 
-
-            double xpanom = std::max((mxvmax+xv)/2-moverlap_pa,0.0);
-            double xatnom = std::max((mxvmax-xv)/2-moverlap_at,0.0);
-
-            double Kcpa = mCq*mf*pi*md*xpanom*sqrt(2.0/890.0);
-            double Kcat = mCq*mf*pi*md*xatnom*sqrt(2.0/890.0);
+            Kcpa = Cq*f*pi*d*xpanom*sqrt(2.0/890.0);
+            Kcat = Cq*f*pi*d*xatnom*sqrt(2.0/890.0);
 
             //With TurbulentFlowFunction:
             mQturbpa.setFlowCoefficient(Kcpa);
             mQturbat.setFlowCoefficient(Kcat);
 
-            double qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
-            double qat = mQturbat.getFlow(ca, ct, Zca, Zct);
+            qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
+            qat = mQturbat.getFlow(ca, ct, Zca, Zct);
 
-            double qp, qa, qt;
             if (xv >= 0.0)
             {
                 qp = -qpa;
@@ -122,18 +141,14 @@ namespace hopsan {
                 qt = qat;
             }
 
-            double pp = cp + qp*Zcp;
-            double pa = ca + qa*Zca;
-            double pt = ct + qt*Zct;
-
             //Write new values to nodes
 
-            mpPP->writeNode(NodeHydraulic::PRESSURE, pp);
-            mpPP->writeNode(NodeHydraulic::FLOW, qp);
-            mpPT->writeNode(NodeHydraulic::PRESSURE, pt);
-            mpPT->writeNode(NodeHydraulic::FLOW, qt);
-            mpPA->writeNode(NodeHydraulic::PRESSURE, pa);
-            mpPA->writeNode(NodeHydraulic::FLOW, qa);
+            (*pp_ptr) = cp + qp*Zcp;
+            (*qp_ptr) = qp;
+            (*pa_ptr) = ca + qa*Zca;
+            (*qa_ptr) = qa;
+            (*pt_ptr) = ct + qt*Zct;
+            (*qt_ptr) = qt;
         }
     };
 }

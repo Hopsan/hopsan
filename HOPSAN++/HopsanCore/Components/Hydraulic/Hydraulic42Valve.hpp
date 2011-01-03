@@ -23,16 +23,21 @@ namespace hopsan {
     class Hydraulic42Valve : public ComponentQ
     {
     private:
-        double mCq;
-        double md;
-        double mf;
-        double mxvmax;
-        double mOverlap_pa;
-        double mOverlap_pb;
-        double mOverlap_at;
-        double mOverlap_bt;
-        double momegah;
-        double mdeltah;
+        double Cq;
+        double d;
+        double f;
+        double xvmax;
+        double overlap_pa;
+        double overlap_pb;
+        double overlap_at;
+        double overlap_bt;
+        double omegah;
+        double deltah;
+        double xv, Kc, qpa, qbt;
+
+        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *xvin_ptr;
+        double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb;
+
         SecondOrderFilter myFilter;
         TurbulentFlowFunction mQturb_pa;
         TurbulentFlowFunction mQturb_bt;
@@ -47,16 +52,16 @@ namespace hopsan {
         Hydraulic42Valve(const std::string name) : ComponentQ(name)
         {
             mTypeName = "Hydraulic42Valve";
-            mCq = 0.67;
-            md = 0.01;
-            mf = 1.0;
-            mxvmax = 0.01;
-            mOverlap_pa = 0.0;
-            mOverlap_pb = 0.0;
-            mOverlap_at = 0.0;
-            mOverlap_bt = 0.0;
-            momegah = 100.0;
-            mdeltah = 0.0;
+            Cq = 0.67;
+            d = 0.01;
+            f = 1.0;
+            xvmax = 0.01;
+            overlap_pa = 0.0;
+            overlap_pb = 0.0;
+            overlap_at = 0.0;
+            overlap_bt = 0.0;
+            omegah = 100.0;
+            deltah = 0.0;
 
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
@@ -64,54 +69,76 @@ namespace hopsan {
             mpPB = addPowerPort("PB", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
 
-            registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
-            registerParameter("d", "Diameter", "[m]", md);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", mf);
-            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", mxvmax);
-            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_pa);
-            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_pb);
-            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_at);
-            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_bt);
-            registerParameter("omegah", "Resonance Frequency", "[rad/s]", momegah);
-            registerParameter("deltah", "Damping Factor", "[-]", mdeltah);
+            registerParameter("Cq", "Flow Coefficient", "[-]", Cq);
+            registerParameter("d", "Diameter", "[m]", d);
+            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
+            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", overlap_pa);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", overlap_pb);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", overlap_at);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", overlap_bt);
+            registerParameter("omegah", "Resonance Frequency", "[rad/s]", omegah);
+            registerParameter("deltah", "Damping Factor", "[-]", deltah);
         }
 
 
         void initialize()
         {
+            pp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
+            cp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zcp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            pt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::FLOW);
+            ct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            pa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
+            ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            pb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::FLOW);
+            cb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zcb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
-            double den[3] = {1.0/(momegah*momegah), 2.0*mdeltah/momegah, 1.0};
-            myFilter.initialize(mTimestep, num, den, 0, 0, 0, mxvmax);
+            double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
+            myFilter.initialize(mTimestep, num, den, 0, 0, 0, xvmax);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double cp  = mpPP->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zcp = mpPP->readNode(NodeHydraulic::CHARIMP);
-            double ct  = mpPT->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zct = mpPT->readNode(NodeHydraulic::CHARIMP);
-            double ca  = mpPA->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zca = mpPA->readNode(NodeHydraulic::CHARIMP);
-            double cb  = mpPB->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zcb = mpPB->readNode(NodeHydraulic::CHARIMP);
-            double xvin  = mpIn->readNode(NodeSignal::VALUE);
+            cp = (*cp_ptr);
+            Zcp = (*Zcp_ptr);
+            ct = (*ct_ptr);
+            Zct = (*Zct_ptr);
+            ca = (*ca_ptr);
+            Zca = (*Zca_ptr);
+            cb = (*cb_ptr);
+            Zcb = (*Zcb_ptr);
+            xvin = (*xvin_ptr);
 
             //Dynamics of spool position (second order low pass filter)
             myFilter.update(xvin);
-            double xv = myFilter.value();
+            xv = myFilter.value();
 
             //Determine flow coefficient
-            double Kc = mCq*mf*pi*md*xv*sqrt(2.0/890.0);
+            Kc = Cq*f*pi*d*xv*sqrt(2.0/890.0);
 
             //Calculate flow
             mQturb_pa.setFlowCoefficient(Kc);
             mQturb_bt.setFlowCoefficient(Kc);
-            double qpa = mQturb_pa.getFlow(cp, ca, Zcp, Zca);
-            double qbt = mQturb_bt.getFlow(cb, ct, Zcb, Zct);
-            double qp, qa, qb, qt;
+            qpa = mQturb_pa.getFlow(cp, ca, Zcp, Zca);
+            qbt = mQturb_bt.getFlow(cb, ct, Zcb, Zct);
+
             if (xv >= 0.0)
             {
                 qp = -qpa;
@@ -127,21 +154,16 @@ namespace hopsan {
                 qt = 0;
             }
 
-            //Calculate pressures from flow and impedance
-            double pp = cp + qp*Zcp;
-            double pa = ca + qa*Zca;
-            double pb = cb + qb*Zcb;
-            double pt = ct + qt*Zct;
-
             //Write new values to nodes
-            mpPP->writeNode(NodeHydraulic::PRESSURE, pp);
-            mpPP->writeNode(NodeHydraulic::FLOW, qp);
-            mpPT->writeNode(NodeHydraulic::PRESSURE, pt);
-            mpPT->writeNode(NodeHydraulic::FLOW, qt);
-            mpPA->writeNode(NodeHydraulic::PRESSURE, pa);
-            mpPA->writeNode(NodeHydraulic::FLOW, qa);
-            mpPB->writeNode(NodeHydraulic::PRESSURE, pb);
-            mpPB->writeNode(NodeHydraulic::FLOW, qb);
+
+            (*pp_ptr) = cp + qp*Zcp;
+            (*qp_ptr) = qp;
+            (*pt_ptr) = ct + qt*Zct;
+            (*qt_ptr) = qt;
+            (*pa_ptr) = ca + qa*Zca;
+            (*qa_ptr) = qa;
+            (*pb_ptr) = cb + qb*Zcb;
+            (*qb_ptr) = qb;
         }
     };
 }

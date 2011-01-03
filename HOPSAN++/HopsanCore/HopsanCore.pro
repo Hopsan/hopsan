@@ -172,4 +172,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic43LoadSensingValve.hpp \
     Components/Signal/SignalShuttleValve.hpp \
     Components/Hydraulic/Hydraulic22Valve.hpp \
-    Components/Hydraulic/Hydraulic42Valve.hpp
+    Components/Hydraulic/Hydraulic42Valve.hpp \
+    Components/Hydraulic/HydraulicOpenCenterValve.hpp

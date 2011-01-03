@@ -150,7 +150,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/Dummy","Hydraulic");
 
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "_Optimized");
+    //mpLibrary->addLibrary(QString(COMPONENTPATH) + "_Optimized");
 
     //Create one new project tab, IMPORTANT: must be after Subsystem library has been loaded as we need Subsystem Appearance
     mpProjectTabs->addNewProjectTab();

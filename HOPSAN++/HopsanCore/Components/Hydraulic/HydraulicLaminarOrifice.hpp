@@ -13,7 +13,11 @@ namespace hopsan {
     class HydraulicLaminarOrifice : public ComponentQ
     {
     private:
-        double mKc;
+        double Kc;
+
+        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr;
+        double q, c1, Zc1, c2, Zc2;
+
         Port *mpP1, *mpP2;
 
     public:
@@ -25,40 +29,45 @@ namespace hopsan {
         HydraulicLaminarOrifice(const std::string name) : ComponentQ(name)
         {
             mTypeName = "HydraulicLaminarOrifice";
-            mKc = 1.0e-11;
+            Kc = 1.0e-11;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
+            registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", Kc);
         }
 
 
         void initialize()
         {
-            //Nothing to initialize
+            p1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            p2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            q2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
+            c2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zc2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-            double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+            c1 = (*c1_ptr);
+            Zc1 = (*Zc1_ptr);
+            c2 = (*c2_ptr);
+            Zc2 = (*Zc2_ptr);
 
             //Orifice equations
-            double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
-            double q1 = -q2;
-            double p1 = c1 + q1*Zc1;
-            double p2 = c2 + q2*Zc2;
+            q = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
 
-            //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::FLOW, q1);
-            mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::FLOW, q2);
+            //Write new variables to nodes
+            (*p1_ptr) = c1 + q*Zc1;
+            (*q1_ptr) = q;
+            (*p2_ptr) = c2 - q*Zc2;
+            (*q2_ptr) = -q;
         }
     };
 }

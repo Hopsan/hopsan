@@ -76,8 +76,6 @@ namespace hopsan {
             {
                 output = new double();
             }
-
-            simulateOneTimestep();
         }
 
 

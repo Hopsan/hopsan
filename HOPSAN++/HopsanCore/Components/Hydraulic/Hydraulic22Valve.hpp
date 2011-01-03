@@ -33,7 +33,10 @@ namespace hopsan {
         SecondOrderFilter myFilter;
         TurbulentFlowFunction mQturbpa;
         double xv, xpanom, Kcpa, qpa;
-        double *cp, *Zcp, *ca, *Zca, *xvin, *pp, *qp, *pa, *qa;
+
+        double *cp_ptr, *Zcp_ptr, *ca_ptr, *Zca_ptr, *xvin_ptr, *pp_ptr, *qp_ptr, *pa_ptr, *qa_ptr;
+        double cp, Zcp, ca, Zca, xvin, pp, qp, pa, qa;
+
         Port *mpPP, *mpPA, *mpIn;
 
     public:
@@ -69,17 +72,17 @@ namespace hopsan {
 
         void initialize()
         {
-            pp = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qp = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
-            cp = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zcp = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            pp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
+            cp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zcp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            pa = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qa = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
-            ca = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zca = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            pa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
+            ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            xvin = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
@@ -90,8 +93,14 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            cp = (*cp_ptr);
+            Zcp = (*Zcp_ptr);
+            ca = (*ca_ptr);
+            Zca = (*Zca_ptr);
+            xvin = (*xvin_ptr);
+
             //Dynamics of spool position (second order low pass filter)
-            myFilter.update(*xvin);
+            myFilter.update(xvin);
             xv = myFilter.value();
 
             //Determine flow coefficient
@@ -100,21 +109,23 @@ namespace hopsan {
 
             //Calculate flow
             mQturbpa.setFlowCoefficient(Kcpa);
-            qpa = mQturbpa.getFlow(*cp, *ca, *Zcp, *Zca);
+            qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
             if (xv >= 0.0)
             {
-                (*qp) = -qpa;
-                (*qa) = qpa;
+                qp = -qpa;
+                qa = qpa;
             }
             else
             {
-                (*qp) = 0;
-                (*qa) = 0;
+                qp = 0;
+                qa = 0;
             }
 
             //Calculate pressures from flow and impedance
-            (*pp) = (*cp) + (*qp) * (*Zcp);
-            (*pa) = (*ca) + (*qa) * (*Zca);
+            (*pp_ptr) = cp + qp * Zcp;
+            (*qp_ptr) = qp;
+            (*pa_ptr) = ca + qa * Zca;
+            (*qa_ptr) = qa;
         }
     };
 }

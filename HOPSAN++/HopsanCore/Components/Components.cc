@@ -41,6 +41,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
     cfact_ptr->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
     cfact_ptr->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
+    cfact_ptr->registerCreatorFunction("HydraulicOpenCenterValve", HydraulicOpenCenterValve::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicAckumulator", HydraulicAckumulator::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicPressureControlledValve", HydraulicPressureControlledValve::Creator);
@@ -57,12 +58,6 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("HydraulicFixedDisplacementMotorQ", HydraulicFixedDisplacementMotorQ::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
-
-    cfact_ptr->registerCreatorFunction("HydraulicOptimizedCylinderQ", HydraulicOptimizedCylinderQ::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicOptimized43Valve", HydraulicOptimized43Valve::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicOptimizedVolume", HydraulicOptimizedVolume::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicOptimizedTurbulentOrifice", HydraulicOptimizedTurbulentOrifice::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicOptimizedPressureSource", HydraulicOptimizedPressureSource::Creator);
 
     cfact_ptr->registerCreatorFunction("HydraulicDummyC", HydraulicDummyC::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicDummyQ", HydraulicDummyQ::Creator);
