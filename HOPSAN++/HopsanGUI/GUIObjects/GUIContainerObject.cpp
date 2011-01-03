@@ -748,6 +748,12 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
                 if (!transitConnectors.contains(connectorPtrs[i]))
                 {
                     transitConnectors.append(connectorPtrs[i]);
+
+                    //! @todo for now we dissconnect the transit connection as we are noy yet capable of recreating the external connection
+                    this->getCoreSystemAccessPtr()->disconnect(connectorPtrs[i]->getStartComponentName(),
+                                                               connectorPtrs[i]->getStartPortName(),
+                                                               connectorPtrs[i]->getEndComponentName(),
+                                                               connectorPtrs[i]->getEndPortName());
                 }
             }
         }
@@ -1263,18 +1269,18 @@ QPointF GUIContainerObject::getCenterPointFromSelection()
 //! Groups the selected objects together
 void GUIContainerObject::groupSelected(QPointF pt)
 {
+    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
     qDebug() << "pos where we want to create group: " << pt;
     qDebug() << "In group selected";
 
     //Copy the selected objects, the lists will be cleared by addGuiobject and we need to keep this information
     QList<GUIModelObject*> modelObjects = mSelectedGUIModelObjectsList;
     QList<GUIWidget*> widgets = mSelectedGUIWidgetsList;
-    //QList<GUIConnector*> connectors = mSelectedSubConnectorsList;
 
     //"Detach" the selected objects from this container, basically by removing pointers from the subobject storage maps, make this container forget aboout these objects
     for (int i=0; i<modelObjects.size(); ++i)
     {
-        //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly
+        //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly, for now we just ignore them (maybe we should allways ignore them when grouping)
         if (modelObjects[i]->type() != GUICONTAINERPORT)
         {
             mGUIModelObjectMap.remove(modelObjects[i]->getName());
@@ -1284,6 +1290,18 @@ void GUIContainerObject::groupSelected(QPointF pt)
     for (int i=0; i<widgets.size(); ++i)
     {
         mWidgetMap.remove(widgets[i]->mWidgetIndex);
+
+        //temporary hack, to remove from widget lists
+        GUITextWidget *pTextWidget = qobject_cast<GUITextWidget*>(widgets[i]);
+        if (pTextWidget != 0)
+        {
+            mTextWidgetList.removeAll(pTextWidget);
+        }
+        GUIBoxWidget *pBoxWidget = qobject_cast<GUIBoxWidget*>(widgets[i]);
+        if (pBoxWidget != 0)
+        {
+            mBoxWidgetList.removeAll(pBoxWidget);
+        }
     }
 
     //Create a new group at the location of the specified
