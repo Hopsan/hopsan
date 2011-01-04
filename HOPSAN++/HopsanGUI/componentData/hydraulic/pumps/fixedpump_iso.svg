@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +13,7 @@
    height="100.00006"
    id="svg4568"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.0 r9654"
    version="1.0"
    sodipodi:docname="fixedpump_iso.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -57,9 +58,9 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="-21.502241"
-     inkscape:cy="87.446485"
+     inkscape:zoom="1.979899"
+     inkscape:cx="161.92864"
+     inkscape:cy="-4.7559188"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -119,8 +120,8 @@
        inkscape:flatsided="false"
        inkscape:rounded="0"
        inkscape:randomized="0"
-       d="m 10.414557,1.5025225 -16.6017411,0 -16.6017419,-1e-7 8.300871,-14.3775294 8.3008708,-14.377531 8.3008706,14.37753 8.3008706,14.3775305 z"
-       transform="matrix(0.60234644,0,0,0.60234644,462.29829,286.92098)" />
+       d="m 10.414557,1.5025225 -16.6017411,0 -16.6017419,-1e-7 8.300871,-14.3775294 8.3008708,-14.377531 8.3008706,14.37753 z"
+       transform="matrix(0.60234644,0,0,0.60234644,462.29829,286.69778)" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.99994427;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.75;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        d="m 458.57143,349.00504 0,-19.00012"

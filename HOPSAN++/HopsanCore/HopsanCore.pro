@@ -174,4 +174,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic42Valve.hpp \
     Components/Hydraulic/HydraulicOpenCenterValve.hpp \
     Components/Hydraulic/HydraulicLosslessConnector.hpp \
-    Components/Hydraulic/HydraulicLosslessTConnector.hpp
+    Components/Hydraulic/HydraulicLosslessTConnector.hpp \
+    Components/Hydraulic/HydraulicMachineC.hpp \
+    Components/Hydraulic/HydraulicVolume4.hpp

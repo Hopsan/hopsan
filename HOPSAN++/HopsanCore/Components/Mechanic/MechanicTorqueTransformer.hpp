@@ -48,19 +48,12 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("phi0", "Initial Angle", "[rad]", mStartAngle);
-            registerParameter("omega0", "Initial Angular Velocity", "[rad/s]", mStartAngularVelocity);
             registerParameter("T", "Generated Torque", "[Nm]", mSignal);
         }
 
 
         void initialize()
         {
-            mpP1->writeNode(NodeMechanicRotational::ANGLE, mStartAngle);
-            mpP1->writeNode(NodeMechanicRotational::ANGULARVELOCITY, mStartAngularVelocity);
-            mpP1->writeNode(NodeMechanicRotational::TORQUE, mStartTorque);
-            mpP1->writeNode(NodeMechanicRotational::CHARIMP, 0.0);
-            mpP1->writeNode(NodeMechanicRotational::WAVEVARIABLE, 0.0);
         }
 
 

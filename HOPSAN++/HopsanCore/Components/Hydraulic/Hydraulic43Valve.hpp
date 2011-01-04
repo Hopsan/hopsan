@@ -152,7 +152,6 @@ namespace hopsan {
             qat = mQturbat.getFlow(ca, ct, Zca, Zct);
             qbt = mQturbbt.getFlow(cb, ct, Zcb, Zct);
 
-            qp, qa, qb, qt;
             if (xv >= 0.0)
             {
                 qp = -qpa;

@@ -213,6 +213,8 @@ PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString p
     QVector<double> yVector;
     gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
 
+    qDebug() << yVector;
+
     if((xVector.isEmpty()) || (yVector.isEmpty()))
         return 0;
 

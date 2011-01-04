@@ -43,10 +43,12 @@
 #include "Hydraulic/HydraulicFixedDisplacementMotorQ.hpp"
 #include "Hydraulic/HydraulicVariableDisplacementMotorQ.hpp"
 #include "Hydraulic/HydraulicVolume3.hpp"
+#include "Hydraulic/HydraulicVolume4.hpp"
 #include "Hydraulic/HydraulicLossLessConnector.hpp"
 #include "Hydraulic/HydraulicLossLessTConnector.hpp"
 #include "Hydraulic/HydraulicDummyC.hpp"
 #include "Hydraulic/HydraulicDummyQ.hpp"
+#include "Hydraulic/HydraulicMachineC.hpp"
 
 
 /* Signal Components */

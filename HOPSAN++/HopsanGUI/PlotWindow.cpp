@@ -63,6 +63,9 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mCurrentUnitsLeft.insert("Position", gConfig.getDefaultUnit("Position"));
     mCurrentUnitsLeft.insert("Velocity", gConfig.getDefaultUnit("Velocity"));
     mCurrentUnitsLeft.insert("Force", gConfig.getDefaultUnit("Force"));
+    mCurrentUnitsLeft.insert("Torque", gConfig.getDefaultUnit("Torque"));
+    mCurrentUnitsLeft.insert("Angle", gConfig.getDefaultUnit("Angle"));
+    mCurrentUnitsLeft.insert("Angular Velocity", gConfig.getDefaultUnit("Angular Velocity"));
 
         //Initiate default values for right y-axis
     mCurrentUnitsRight.insert("Value", gConfig.getDefaultUnit("Value"));
@@ -71,6 +74,9 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mCurrentUnitsRight.insert("Position", gConfig.getDefaultUnit("Position"));
     mCurrentUnitsRight.insert("Velocity", gConfig.getDefaultUnit("Velocity"));
     mCurrentUnitsRight.insert("Force", gConfig.getDefaultUnit("Force"));
+    mCurrentUnitsRight.insert("Torque", gConfig.getDefaultUnit("Torque"));
+    mCurrentUnitsRight.insert("Angle", gConfig.getDefaultUnit("Angle"));
+    mCurrentUnitsRight.insert("Angular Velocity", gConfig.getDefaultUnit("Angular Velocity"));
 
         //Create the actual plot widget
     mpVariablePlot = new QwtPlot();
@@ -1071,6 +1077,8 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     tempCurve->setYAxis(axisY);
     mpCurves.append(tempCurve);
 
+    qDebug() << "dataName = " << dataName;
+
         //Change to default unit
     QString newUnit;
     if(axisY == QwtPlot::yLeft)
@@ -1085,7 +1093,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     }
     double scale = 1.0;
     scale = gConfig.getCustomUnits(dataName).find(newUnit).value();
-
+    qDebug() << "scale = " << scale;
     QVector<double> tempVectorY;
     for(int j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)
     {
@@ -1093,6 +1101,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     }
     tempCurve->setData(mVectorX[mCurrentGeneration].last(), tempVectorY);
 
+    qDebug() << tempVectorY;
 
     QString yLabel = QString(dataName + " [" + newUnit + "]");
 
