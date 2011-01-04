@@ -14,11 +14,12 @@ namespace hopsan {
     {
     private:
         double Kc;
+        bool cav;
 
-        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr;
-        double q, c1, Zc1, c2, Zc2;
+        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr, *Kc_ptr;
+        double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
 
-        Port *mpP1, *mpP2;
+        Port *mpP1, *mpP2, *mpIn;
 
     public:
         static Component *Creator()
@@ -33,6 +34,7 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
+            mpIn = addReadPort("Kc", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", Kc);
         }
@@ -49,6 +51,15 @@ namespace hopsan {
             q2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
             c2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zc2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            if(mpIn->isConnected())
+            {
+                Kc_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                Kc_ptr = new double(Kc);
+            }
         }
 
 
@@ -59,15 +70,43 @@ namespace hopsan {
             Zc1 = (*Zc1_ptr);
             c2 = (*c2_ptr);
             Zc2 = (*Zc2_ptr);
+            Kc = (*Kc_ptr);
 
             //Orifice equations
-            q = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
+            q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
+            q1 = -q2;
+            p1 = c1 + q1*Zc1;
+            p2 = c2 + q2*Zc2;
+
+            //Cavitation check
+            cav = false;
+            if(p1 < 0.0)
+            {
+                c1 = 0.0;
+                Zc1 = 0.0;
+                cav = true;
+            }
+            if(p2 < 0.0)
+            {
+                c2 = 0.0;
+                Zc2 = 0.0;
+                cav = true;
+            }
+            if(cav)
+            {
+                q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
+                q1 = -q2;
+                p1 = c1 + q1*Zc1;
+                p2 = c2 + q2*Zc2;
+                if(p1 < 0.0) { p1 = 0.0; }
+                if(p2 < 0.0) { p2 = 0.0; }
+            }
 
             //Write new variables to nodes
-            (*p1_ptr) = c1 + q*Zc1;
-            (*q1_ptr) = q;
-            (*p2_ptr) = c2 - q*Zc2;
-            (*q2_ptr) = -q;
+            (*p1_ptr) = p1;
+            (*q1_ptr) = q1;
+            (*p2_ptr) = p2;
+            (*q2_ptr) = q2;
         }
     };
 }

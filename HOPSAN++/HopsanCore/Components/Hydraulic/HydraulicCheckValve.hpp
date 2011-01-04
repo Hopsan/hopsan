@@ -69,13 +69,13 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-              //Get variable values from nodes
+            //Get variable values from nodes
             c1 = (*c1_ptr);
             Zc1 = (*Zc1_ptr);
             c2 = (*c2_ptr);
             Zc2 = (*Zc2_ptr);
 
-                //Checkvalve equations
+            //Checkvalve equations
             if (c1 > c2) { q2 = mQturb.getFlow(c1, c2, Zc1, Zc2); }
             else { q2 = 0.0; }
 
@@ -83,9 +83,8 @@ namespace hopsan {
             p1 = c1 + Zc1 * q1;
             p2 = c2 + Zc2 * q2;
 
-                //Cavitation check
+            //Cavitation check
             cav = false;
-
             if (p1 < 0.0)
             {
                 c1 = 0.0;
@@ -109,7 +108,7 @@ namespace hopsan {
             if (p1 < 0.0) { p1 = 0.0; }
             if (p2 < 0.0) { p2 = 0.0; }
 
-                //Write new values to nodes
+            //Write new values to nodes
             (*p1_ptr) = p1;
             (*q1_ptr) = q1;
             (*p2_ptr) = p2;

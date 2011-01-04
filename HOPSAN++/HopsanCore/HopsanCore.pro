@@ -172,4 +172,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalShuttleValve.hpp \
     Components/Hydraulic/Hydraulic22Valve.hpp \
     Components/Hydraulic/Hydraulic42Valve.hpp \
-    Components/Hydraulic/HydraulicOpenCenterValve.hpp
+    Components/Hydraulic/HydraulicOpenCenterValve.hpp \
+    Components/Hydraulic/HydraulicLosslessConnector.hpp \
+    Components/Hydraulic/HydraulicLosslessTConnector.hpp

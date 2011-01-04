@@ -1,18 +1,29 @@
 /*!
 \page hopsan-user Hopsan User Guides
 
--# \subpage quick-usage \n
--# \subpage advanced-usage \n
--# \subpage writing-customcomponent \n
+-# \subpage getting-started \n
+-# \subpage shortkeys \n
+-# \subpage transmission-line-element-method \n
+-# \subpage custom-components \n
+-# \subpage python-scripting \n
 
-\page quick-usage Quick User Guide
+
+\page transmission-line-element-method Introduction to Transmission Line Modeling (TLM)
 \todo write this
 
-\page advanced-usage User Guide
+\page custom-components Using Custom Libraries
 \todo write this
 
-\page writing-customcomponent Guide to Writing Custom
+-# \subpage creating-component-libraries \n
+-# \subpage importing-component-libraries \n
+
+\page creating-component-libraries Creating Component Libraries
+\todo write this
+
+\page importing-component-libraries Importing Component Libraries
 \todo write this
 
 
+\page python-scripting Python Scripting
+\todo write this
 */

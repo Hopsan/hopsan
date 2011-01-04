@@ -324,9 +324,9 @@ void MainWindow::createActions()
     disableUndoAction->setCheckable(true);
     disableUndoAction->setChecked(false);
 
-    openSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&Global Parameters"), this);
-    openSystemParametersAction->setText("Global Parameters");
-    openSystemParametersAction->setShortcut(tr("Ctrl+alt+g"));
+    openSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&System Parameters"), this);
+    openSystemParametersAction->setText("System Parameters");
+    openSystemParametersAction->setShortcut(tr("Ctrl+alt+y"));
     connect(openSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);

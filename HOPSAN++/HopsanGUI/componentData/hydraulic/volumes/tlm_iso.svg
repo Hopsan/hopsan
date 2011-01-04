@@ -11,10 +11,10 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="113"
-   height="10.480025"
+   height="16"
    id="svg2942"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="tlm_iso.svg">
   <defs
      id="defs2944">
@@ -122,16 +122,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="10.27495"
-     inkscape:cx="31.292754"
-     inkscape:cy="2.2421216"
+     inkscape:zoom="15.713449"
+     inkscape:cx="27.710747"
+     inkscape:cy="-4.4043155"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="885"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-width="1680"
+     inkscape:window-height="982"
+     inkscape:window-x="-8"
+     inkscape:window-y="38"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata2947">
@@ -141,7 +141,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -149,10 +149,11 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(563.51948,-349.32871)">
+     transform="translate(563.51948,-343.80874)">
     <path
        style="fill:none;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -563.51948,354.60874 112.98723,0"
-       id="path2834" />
+       d="m -563.51948,351.80874 112.98723,0"
+       id="path2834"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

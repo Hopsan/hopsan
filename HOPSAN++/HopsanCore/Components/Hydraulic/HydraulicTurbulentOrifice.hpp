@@ -25,12 +25,13 @@ namespace hopsan {
         double Cq;
         double A;
         double Kc;
+        bool cav;
         TurbulentFlowFunction qTurb;
 
-        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr;
-        double q, c1, Zc1, c2, Zc2;
+        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr, *A_ptr;
+        double p1,q1, p2, q2, c1, Zc1, c2, Zc2;
 
-        Port *mpP1, *mpP2;
+        Port *mpP1, *mpP2, *mpIn;
 
     public:
         static Component *Creator()
@@ -47,6 +48,7 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
+            mpIn = addReadPort("A", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("Cq", "Flow coefficient", "[-]", Cq);
             registerParameter("A", "Area", "m^3", A);
@@ -65,8 +67,14 @@ namespace hopsan {
             c2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zc2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            Kc = Cq*A*sqrt(2.0/890.0);
-            qTurb.setFlowCoefficient(Kc);
+            if(mpIn->isConnected())
+            {
+                A_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                A_ptr = new double(A);
+            }
         }
 
 
@@ -77,81 +85,52 @@ namespace hopsan {
             Zc1 = (*Zc1_ptr);
             c2 = (*c2_ptr);
             Zc2 = (*Zc2_ptr);
+            A = (*A_ptr);
 
             //Orifice equations
-            q = qTurb.getFlow(c1,c2,Zc1,Zc2);
+            Kc = Cq*A*sqrt(2.0/890.0);
+            qTurb.setFlowCoefficient(Kc);
+            q2 = qTurb.getFlow(c1,c2,Zc1,Zc2);
+            q1 = -q2;
+            p1 = c1 + q1*Zc1;
+            p2 = c2 + q2*Zc2;
+
+            //Cavitation check
+            cav = false;
+            if(p1 < 0.0)
+            {
+                c1 = 0.0;
+                Zc1 = 0.0;
+                cav = true;
+            }
+            if(p2 < 0.0)
+            {
+                c2 = 0.0;
+                Zc2 = 0.0;
+                cav = true;
+            }
+            if(p1 < 0.0 && p2 < 0.0)
+            {
+                p1 = 0.0;
+                q1 = 0.0;
+                p2 = 0.0;
+                q2 = 0.0;
+            }
+            if(cav)
+            {
+                q2 = qTurb.getFlow(c1,c2,Zc1,Zc2);
+                q1 = -q2;
+                p1 = c1 + q1*Zc1;
+                p2 = c2 + q2*Zc2;
+                if(p1 < 0.0) { p1 = 0.0; }
+                if(p2 < 0.0) { p2 = 0.0; }
+            }
 
             //Write new variables to nodes
-            (*p1_ptr) = c1 + q*Zc1;
-            (*q1_ptr) = q;
-            (*p2_ptr) = c2 - q*Zc2;
-            (*q2_ptr) = -q;
-        }
-    };
-
-
-
-
-
-    //!
-    //! @brief Hydraulic orifice with turbulent flow of Q-Type. Uses TurbulentFlowFunction to calculate the flow.
-    //! @ingroup HydraulicComponents
-    //!
-    class HydraulicOptimizedTurbulentOrifice : public ComponentQ
-    {
-    private:
-        double mCq;
-        double mA;
-        double mKc;
-        TurbulentFlowFunction qTurb;
-        Port *mpP1, *mpP2;
-
-    public:
-        static Component *Creator()
-        {
-            return new HydraulicOptimizedTurbulentOrifice("TurbulentOrifice");
-        }
-
-        HydraulicOptimizedTurbulentOrifice(const std::string name) : ComponentQ(name)
-        {
-            mTypeName = "HydraulicOptimizedTurbulentOrifice";
-            mCq = 0.67;
-            mA = 0.00001;
-            mKc = mCq*mA*sqrt(2.0/890.0);
-
-            mpP1 = addPowerPort("P1", "NodeHydraulic");
-            mpP2 = addPowerPort("P2", "NodeHydraulic");
-
-            registerParameter("Cq", "Flow coefficient", "[-]", mCq);
-            registerParameter("A", "Area", "m^3", mA);
-        }
-
-
-        void initialize()
-        {
-            qTurb.setFlowCoefficient(mKc);
-        }
-
-
-        void simulateOneTimestep()
-        {
-            //Get variable values from nodes
-            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-            double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
-
-            //Orifice equations
-            double q2 = qTurb.getFlow(c1,c2,Zc1,Zc2);
-            double q1 = -q2;
-            double p1 = c1 + q1*Zc1;
-            double p2 = c2 + q2*Zc2;
-
-            //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::FLOW, q1);
-            mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::FLOW, q2);
+            (*p1_ptr) = p1;
+            (*q1_ptr) = q1;
+            (*p2_ptr) = p2;
+            (*q2_ptr) = q2;
         }
     };
 }
