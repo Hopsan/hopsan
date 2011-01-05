@@ -176,4 +176,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicLosslessConnector.hpp \
     Components/Hydraulic/HydraulicLosslessTConnector.hpp \
     Components/Hydraulic/HydraulicMachineC.hpp \
-    Components/Hydraulic/HydraulicVolume4.hpp
+    Components/Hydraulic/HydraulicVolume4.hpp \
+    Components/Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp
