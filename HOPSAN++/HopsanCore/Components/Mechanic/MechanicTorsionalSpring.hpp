@@ -22,7 +22,9 @@ namespace hopsan {
     {
 
     private:
-        double mk;
+        double k;
+        double w1, c1, lastc1, w2, c2, lastc2, Zx;
+        double *w1_ptr, *c1_ptr, *Zx1_ptr, *w2_ptr, *c2_ptr, *Zx2_ptr;
         Port *mpP1, *mpP2;
 
     public:
@@ -35,50 +37,46 @@ namespace hopsan {
         {
             //Set member attributes
             mTypeName = "MechanicTorsionalSpring";
-            mk   = 100.0;
+            k   = 100.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("k", "Spring Coefficient", "[N/rad]",  mk);
+            registerParameter("k", "Spring Coefficient", "[N/rad]",  k);
         }
 
 
         void initialize()
         {
-            mpP1->writeNode(NodeMechanicRotational::ANGLE, 0.0);
-            mpP1->writeNode(NodeMechanicRotational::ANGULARVELOCITY, 0.0);
-            mpP1->writeNode(NodeMechanicRotational::TORQUE, 0.0);
-            mpP1->writeNode(NodeMechanicRotational::CHARIMP, mk * mTimestep);
-            mpP1->writeNode(NodeMechanicRotational::WAVEVARIABLE, 0.0);
-            mpP2->writeNode(NodeMechanicRotational::ANGLE, 0.0);
-            mpP2->writeNode(NodeMechanicRotational::ANGULARVELOCITY, 0.0);
-            mpP2->writeNode(NodeMechanicRotational::TORQUE, 0.0);
-            mpP2->writeNode(NodeMechanicRotational::CHARIMP, mk * mTimestep);
-            mpP2->writeNode(NodeMechanicRotational::WAVEVARIABLE, 0.0);
+            w1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
+            c1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
+            Zx1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
+            w2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
+            c2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
+            Zx2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double omega1  = mpP1->readNode(NodeMechanicRotational::ANGULARVELOCITY);
-            double omega2  = mpP2->readNode(NodeMechanicRotational::ANGULARVELOCITY);
-            double lastc1  = mpP1->readNode(NodeMechanicRotational::WAVEVARIABLE);
-            double lastc2  = mpP2->readNode(NodeMechanicRotational::WAVEVARIABLE);
+            w1 = (*w1_ptr);
+            lastc1 = (*c1_ptr);
+            w2 = (*w2_ptr);
+            lastc2 = (*c2_ptr);
 
             //Spring equations
-            double Zc = mk * mTimestep;
-            double c1 = lastc2 + 2.0*Zc*omega2;
-            double c2 = lastc1 + 2.0*Zc*omega1;
+            Zx = k*mTimestep;
+            c1 = lastc2 + 2.0*Zx*w2;
+            c2 = lastc1 + 2.0*Zx*w1;
 
             //Write new values to nodes
-            mpP1->writeNode(NodeMechanicRotational::WAVEVARIABLE, c1);
-            mpP2->writeNode(NodeMechanicRotational::WAVEVARIABLE, c2);
-            mpP1->writeNode(NodeMechanicRotational::CHARIMP, Zc);
-            mpP2->writeNode(NodeMechanicRotational::CHARIMP, Zc);
+            (*c1_ptr) = c1;
+            (*Zx1_ptr) = Zx;
+            (*c2_ptr) = c2;
+            (*Zx2_ptr) = Zx;
         }
     };
 }

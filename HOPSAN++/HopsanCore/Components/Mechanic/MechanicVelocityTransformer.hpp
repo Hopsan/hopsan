@@ -16,7 +16,9 @@ namespace hopsan {
     {
 
     private:
-        double mSignal;
+        double v;
+        double signal, f, x, c, Zx;
+        double *signal_ptr, *f_ptr, *x_ptr, *v_ptr, *c_ptr, *Zx_ptr;
         Integrator mInt;
         Port *mpIn, *mpOut;
 
@@ -28,51 +30,49 @@ namespace hopsan {
 
         MechanicVelocityTransformer(const std::string name) : ComponentQ(name)
         {
-            mSignal = 0.0;
-
             //Set member attributes
             mTypeName = "MechanicVelocityTransformer";
+            v = 0.0;
 
             //Add ports to the component
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addPowerPort("out", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("Speed", "Generated speed", "[m/s]", mSignal);
+            registerParameter("v", "Generated velocity", "[m/s]", v);
         }
 
 
         void initialize()
         {
-            double signal;
-            if(mpIn->isConnected())
-                signal  = mpIn->readNode(NodeSignal::VALUE);
-            else
-                signal = mSignal;
-            mInt.initialize(mTimestep, signal, 0.0);
+            if(mpIn->isConnected()) { signal_ptr  = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
+            else { signal_ptr = new double(v); }
+
+            f_ptr = mpOut->getNodeDataPtr(NodeMechanic::FORCE);
+            x_ptr = mpOut->getNodeDataPtr(NodeMechanic::POSITION);
+            v_ptr = mpOut->getNodeDataPtr(NodeMechanic::VELOCITY);
+            c_ptr = mpOut->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx_ptr = mpOut->getNodeDataPtr(NodeMechanic::CHARIMP);
+
+            mInt.initialize(mTimestep, (*signal_ptr), 0.0);
         }
 
 
         void simulateOneTimestep()
         {
-            double signal;
             //Get variable values from nodes
-            if(mpIn->isConnected())
-                signal  = mpIn->readNode(NodeSignal::VALUE);
-            else
-                signal = mSignal;
-            double c =mpOut->readNode(NodeMechanic::WAVEVARIABLE);
-            double Zc =mpOut->readNode(NodeMechanic::CHARIMP);
+            signal = (*signal_ptr);
+            c = (*c_ptr);
+            Zx = (*Zx_ptr);
 
             //Spring equations
-            double v = signal;
-            double x = mInt.update(v);
-            double F = c + Zc*v;
+            x = mInt.update(signal);
+            f = c + Zx*signal;
 
-            //Write new values to nodes
-            mpOut->writeNode(NodeMechanic::POSITION, x);
-            mpOut->writeNode(NodeMechanic::VELOCITY, v);
-            mpOut->writeNode(NodeMechanic::FORCE, F);
+            //Write values to nodes
+            (*f_ptr) = f;
+            (*x_ptr) = x;
+            (*v_ptr) = signal;
         }
     };
 }

@@ -22,10 +22,8 @@ namespace hopsan {
     {
 
     private:
-        double mStartAngle;
-        double mStartAngularVelocity;
-        double mStartTorque;
-        double mSignal;
+        double t;
+        double *signal_ptr, *c_ptr, *Zx_ptr;
         Port *mpIn, *mpP1;
 
     public:
@@ -38,41 +36,31 @@ namespace hopsan {
         {
             //Set member attributes
             mTypeName = "MechanicForceTransformer";
-            mStartAngle = 0.0;
-            mStartAngularVelocity = 0.0;
-            mStartTorque = 0.0;
-            mSignal = 0.0;
+            t = 0.0;
 
             //Add ports to the component
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("T", "Generated Torque", "[Nm]", mSignal);
+            registerParameter("t", "Generated Torque", "[Nm]", t);
         }
 
 
         void initialize()
         {
+            if(mpIn->isConnected()) { signal_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
+            else { signal_ptr = new double(t); }
+
+            c_ptr = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
-            double signal;
-            //Get variable values from nodes
-            if(mpIn->isConnected())
-                signal  = mpIn->readNode(NodeSignal::VALUE);
-            else
-                signal = mSignal;
-
-            //Transformer equations
-            double c = signal;
-            double Zc = 0.0;
-
-            //Write new values to nodes
-            mpP1->writeNode(NodeMechanicRotational::WAVEVARIABLE, c);
-            mpP1->writeNode(NodeMechanicRotational::CHARIMP, Zc);
+            (*c_ptr) = (*signal_ptr);
+            (*Zx_ptr) = 0.0;
         }
     };
 }

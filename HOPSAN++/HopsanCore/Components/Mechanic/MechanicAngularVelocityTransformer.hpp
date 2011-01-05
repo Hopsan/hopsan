@@ -24,8 +24,8 @@ namespace hopsan {
 
     private:
         double w;
-        double signal, t, a, c, Zc;
-        double *signal_ptr, *t_ptr, *a_ptr, *w_ptr, *c_ptr, *Zc_ptr;
+        double signal, t, a, c, Zx;
+        double *signal_ptr, *t_ptr, *a_ptr, *w_ptr, *c_ptr, *Zx_ptr;
         Integrator mInt;
         Port *mpIn, *mpOut;
 
@@ -52,16 +52,14 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected())
-                signal_ptr  = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            else
-                signal_ptr = new double(w);
+            if(mpIn->isConnected()) { signal_ptr  = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
+            else { signal_ptr = new double(w); }
 
             t_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::TORQUE);
             a_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::ANGLE);
             w_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
             c_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
-            Zc_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
+            Zx_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
 
             mInt.initialize(mTimestep, (*signal_ptr), 0.0);
         }
@@ -72,11 +70,11 @@ namespace hopsan {
             //Get variable values from nodes
             signal = (*signal_ptr);
             c = (*c_ptr);
-            Zc = (*Zc_ptr);
+            Zx = (*Zx_ptr);
 
             //Spring equations
             a = mInt.update(signal);
-            t = c + Zc*signal;
+            t = c + Zx*signal;
 
             //Write values to nodes
             (*t_ptr) = t;

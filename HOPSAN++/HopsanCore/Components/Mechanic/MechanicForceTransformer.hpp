@@ -16,7 +16,7 @@ namespace hopsan {
 
     private:
         double f;
-        double *signal_ptr, *c_ptr, *Zc_ptr;
+        double *signal_ptr, *c_ptr, *Zx_ptr;
         Port *mpIn, *mpP1;
 
     public:
@@ -42,23 +42,18 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected())
-            {
-                signal_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                signal_ptr = new double(f);
-            }
+            if(mpIn->isConnected()) { signal_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
+            else { signal_ptr = new double(f); }
+
             c_ptr = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zc_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            Zx_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
             (*c_ptr) = (*signal_ptr);
-            (*Zc_ptr) = 0.0;
+            (*Zx_ptr) = 0.0;
         }
     };
 }

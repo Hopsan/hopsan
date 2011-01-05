@@ -22,6 +22,7 @@ namespace hopsan {
     class MechanicPositionSensor : public ComponentSignal
     {
     private:
+        double *x_ptr, *out_ptr;
         Port *mpP1, *mpOut;
 
 
@@ -35,64 +36,24 @@ namespace hopsan {
         {
             mTypeName = "MechanicPositionSensor";
 
-            mpP1 = addReadPort("P1", "NodeMechanic");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpP1 = addReadPort("P1", "NodeMechanic", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
-            //Nothing to initilize
+            if(mpP1->isConnected()) { x_ptr = mpP1->getNodeDataPtr(NodeMechanic::POSITION); }
+            else { x_ptr = new double(0); }
+
+            if(mpOut->isConnected()) { out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
+            else { out_ptr = new double(); }
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double x = mpP1->readNode(NodeMechanic::POSITION);
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, x);
-        }
-    };
-
-
-
-    //!
-    //! @brief
-    //! @ingroup MechanicalComponents
-    //!
-    class MechanicOptimizedPositionSensor : public ComponentSignal
-    {
-    private:
-        Port *mpP1, *mpOut;
-        double *x1, *output;
-
-    public:
-        static Component *Creator()
-        {
-            return new MechanicOptimizedPositionSensor("PositionSensor");
-        }
-
-        MechanicOptimizedPositionSensor(const std::string name) : ComponentSignal(name)
-        {
-            mTypeName = "MechanicOptimizedPositionSensor";
-
-            mpP1 = addReadPort("P1", "NodeMechanic");
-            mpOut = addWritePort("out", "NodeSignal");
-        }
-
-
-        void initialize()
-        {
-            x1 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
-            output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-        }
-
-
-        void simulateOneTimestep()
-        {
-            *output = *x1;
+            (*out_ptr) = (*x_ptr);
         }
     };
 }

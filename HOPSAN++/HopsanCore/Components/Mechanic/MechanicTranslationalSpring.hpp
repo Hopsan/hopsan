@@ -15,7 +15,9 @@ namespace hopsan {
     {
 
     private:
-        double mk;
+        double k;
+        double v1, c1, lastc1, v2, c2, lastc2, Zc;
+        double *v1_ptr, *c1_ptr, *Zc1_ptr, *v2_ptr, *c2_ptr, *Zc2_ptr;
         Port *mpP1, *mpP2;
 
     public:
@@ -28,44 +30,46 @@ namespace hopsan {
         {
             //Set member attributes
             mTypeName = "MechanicTranslationalSpring";
-            mk   = 100.0;
+            k = 100.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("k", "Spring Coefficient", "[N/m]",  mk);
+            registerParameter("k", "Spring Coefficient", "[N/m]",  k);
         }
 
 
         void initialize()
         {
-            mpP1->writeNode(NodeMechanic::CHARIMP, mk * mTimestep);
-            mpP1->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
-            mpP2->writeNode(NodeMechanic::CHARIMP, mk * mTimestep);
-            mpP2->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
+            v1_ptr = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            c1_ptr = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zc1_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            v2_ptr = mpP2->getNodeDataPtr(NodeMechanic::VELOCITY);
+            c2_ptr = mpP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zc2_ptr = mpP2->getNodeDataPtr(NodeMechanic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double v1  = mpP1->readNode(NodeMechanic::VELOCITY);
-            double v2  = mpP2->readNode(NodeMechanic::VELOCITY);
-            double lastc1  = mpP1->readNode(NodeMechanic::WAVEVARIABLE);
-            double lastc2  = mpP2->readNode(NodeMechanic::WAVEVARIABLE);
+            v1 = (*v1_ptr);
+            lastc1 = (*c1_ptr);
+            v2 = (*v2_ptr);
+            lastc2 = (*c2_ptr);
 
             //Spring equations
-            double Zc = mk * mTimestep;
-            double c1 = lastc2 + 2.0*Zc*v2;
-            double c2 = lastc1 + 2.0*Zc*v1;
+            Zc = k*mTimestep;
+            c1 = lastc2 + 2.0*Zc*v2;
+            c2 = lastc1 + 2.0*Zc*v1;
 
             //Write new values to nodes
-            mpP1->writeNode(NodeMechanic::WAVEVARIABLE, c1);
-            mpP2->writeNode(NodeMechanic::WAVEVARIABLE, c2);
-            mpP1->writeNode(NodeMechanic::CHARIMP, Zc);
-            mpP2->writeNode(NodeMechanic::CHARIMP, Zc);
+            (*c1_ptr) = c1;
+            (*Zc1_ptr) = Zc;
+            (*c2_ptr) = c2;
+            (*Zc2_ptr) = Zc;
         }
     };
 }

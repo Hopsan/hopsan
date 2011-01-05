@@ -42,22 +42,11 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpP1->isConnected())
-            {
-                f_ptr = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
-            }
-            else
-            {
-                f_ptr = new double(0);
-            }
-            if(mpOut->isConnected())
-            {
-                out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                out_ptr = new double();
-            }
+            if(mpP1->isConnected()) { f_ptr = mpP1->getNodeDataPtr(NodeMechanic::FORCE); }
+            else { f_ptr = new double(0); }
+
+            if(mpOut->isConnected()) { out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
+            else { out_ptr = new double(); }
         }
 
 
