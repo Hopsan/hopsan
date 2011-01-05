@@ -23,7 +23,9 @@ namespace hopsan {
     {
 
     private:
-        double mSignal;
+        double w;
+        double signal, t, a, c, Zc;
+        double *signal_ptr, *t_ptr, *a_ptr, *w_ptr, *c_ptr, *Zc_ptr;
         Integrator mInt;
         Port *mpIn, *mpOut;
 
@@ -35,51 +37,51 @@ namespace hopsan {
 
         MechanicAngularVelocityTransformer(const std::string name) : ComponentQ(name)
         {
-            mSignal = 0.0;
-
             //Set member attributes
             mTypeName = "MechanicAngularVelocityTransformer";
+            w = 0.0;
 
             //Add ports to the component
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addPowerPort("out", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("omega", "Generated angular velocity", "[rad/s]", mSignal);
+            registerParameter("w", "Generated angular velocity", "[rad/s]", w);
         }
 
 
         void initialize()
         {
-            double signal;
             if(mpIn->isConnected())
-                signal  = mpIn->readNode(NodeSignal::VALUE);
+                signal_ptr  = mpIn->getNodeDataPtr(NodeSignal::VALUE);
             else
-                signal = mSignal;
-            mInt.initialize(mTimestep, signal, 0.0);
+                signal_ptr = new double(w);
+
+            t_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::TORQUE);
+            a_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::ANGLE);
+            w_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
+            c_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
+            Zc_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
+
+            mInt.initialize(mTimestep, (*signal_ptr), 0.0);
         }
 
 
         void simulateOneTimestep()
         {
-            double signal;
             //Get variable values from nodes
-            if(mpIn->isConnected())
-                signal  = mpIn->readNode(NodeSignal::VALUE);
-            else
-                signal = mSignal;
-            double c =mpOut->readNode(NodeMechanicRotational::WAVEVARIABLE);
-            double Zc =mpOut->readNode(NodeMechanicRotational::CHARIMP);
+            signal = (*signal_ptr);
+            c = (*c_ptr);
+            Zc = (*Zc_ptr);
 
             //Spring equations
-            double omega = signal;
-            double phi = mInt.update(omega);
-            double T = c + Zc*omega;
+            a = mInt.update(signal);
+            t = c + Zc*signal;
 
-            //Write new values to nodes
-            mpOut->writeNode(NodeMechanicRotational::ANGLE, phi);
-            mpOut->writeNode(NodeMechanicRotational::ANGULARVELOCITY, omega);
-            mpOut->writeNode(NodeMechanicRotational::TORQUE, T);
+            //Write values to nodes
+            (*t_ptr) = t;
+            (*a_ptr) = a;
+            (*w_ptr) = signal;
         }
     };
 }
