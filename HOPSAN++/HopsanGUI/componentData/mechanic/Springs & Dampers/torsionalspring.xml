@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
     <modelobject typename="MechanicTorsionalSpring" displayname="Torsional Spring">
-        <icon isopath="torsionalspring_iso.svg" iconrotation="ON" userpath="torsionalspring_user.svg"/>
+        <help picture="torsionalspringhelp.svg"/>
+		<icon isopath="torsionalspring_iso.svg" iconrotation="ON" userpath="torsionalspring_user.svg"/>
         <portpose x="0" y="1" a="0" name="P1"/>
         <portpose x="1" y="1" a="0" name="P2"/>
     </modelobject>
