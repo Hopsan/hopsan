@@ -29,7 +29,6 @@ namespace hopsan {
         double xvmax;
         double overlap_pa;
         double overlap_at;
-        double overlap_bt;
         double omegah;
         double deltah;
         double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
@@ -50,7 +49,7 @@ namespace hopsan {
 
         Hydraulic33Valve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "Hydraulic32Valve";
+            mTypeName = "Hydraulic32DirectionalValve";
             Cq = 0.67;
             d = 0.01;
             f = 1.0;

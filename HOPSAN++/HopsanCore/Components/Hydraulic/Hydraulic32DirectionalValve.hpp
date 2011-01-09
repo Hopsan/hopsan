@@ -1,12 +1,12 @@
 //!
-//! @file   Hydraulic32Valve.hpp
+//! @file   Hydraulic32DirectionalValve.hpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-12-06
 //!
-//! @brief Contains a hydraulic 3/2-valve of Q-type
+//! @brief Contains a hydraulic directional3/2-valve of Q-type
 
-#ifndef HYDRAULIC32VALVE_HPP_INCLUDED
-#define HYDRAULIC32VALVE_HPP_INCLUDED
+#ifndef HYDRAULIC32DIRECTIONALVALVE_HPP_INCLUDED
+#define HYDRAULIC32DIRECTIONALVALVE_HPP_INCLUDED
 
 #define pi 3.14159
 
@@ -17,19 +17,16 @@
 namespace hopsan {
 
     //!
-    //! @brief Hydraulic 3/2-valve (closed centre) of Q-type.
+    //! @brief Hydraulic directional 3/2-valve of Q-type.
     //! @ingroup HydraulicComponents
     //!
-    class Hydraulic32Valve : public ComponentQ
+    class Hydraulic32DirectionalValve : public ComponentQ
     {
     private:
         double Cq;
         double d;
         double f;
         double xvmax;
-        double overlap_pa;
-        double overlap_at;
-        double overlap_bt;
         double omegah;
         double deltah;
         double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
@@ -45,18 +42,16 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new Hydraulic32Valve("Hydraulic 3/2 Valve");
+            return new Hydraulic32DirectionalValve("Hydraulic directional 3/2 Valve");
         }
 
-        Hydraulic32Valve(const std::string name) : ComponentQ(name)
+        Hydraulic32DirectionalValve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "Hydraulic32Valve";
+            mTypeName = "Hydraulic32DirectionalValve";
             Cq = 0.67;
             d = 0.01;
             f = 1.0;
             xvmax = 0.01;
-            overlap_pa = 0.0;
-            overlap_at = 0.0;
             omegah = 100.0;
             deltah = 0.0;
 
@@ -69,8 +64,6 @@ namespace hopsan {
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
             registerParameter("xvmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("overlap_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
-            registerParameter("overlap_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
             registerParameter("omegah", "Resonance Frequency", "[rad/s]", omegah);
             registerParameter("deltah", "Damping Factor", "[-]", deltah);
         }
@@ -112,11 +105,19 @@ namespace hopsan {
             Zca = (*Zca_ptr);
             xvin = (*xvin_ptr);
 
-            myFilter.update(xvin);
+            if(doubleToBool(xvin))
+            {
+                myFilter.update(xvmax);
+            }
+            else
+            {
+                myFilter.update(-xvmax);
+            }
+
             xv = myFilter.value();
 
-            xpanom = std::max((xvmax+xv)/2-overlap_pa,0.0);
-            xatnom = std::max((xvmax-xv)/2-overlap_at,0.0);
+            xpanom = std::max(xv,0.0);
+            xatnom = std::max(-xv,0.0);
 
             Kcpa = Cq*f*pi*d*xpanom*sqrt(2.0/890.0);
             Kcat = Cq*f*pi*d*xatnom*sqrt(2.0/890.0);
@@ -153,5 +154,5 @@ namespace hopsan {
     };
 }
 
-#endif // HYDRAULIC32VALVE_HPP_INCLUDED
+#endif // HYDRAULIC32DIRECTIONALVALVE_HPP_INCLUDED
 

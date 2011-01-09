@@ -19,7 +19,7 @@
 #include "Hydraulic/HydraulicFixedDisplacementPump.hpp"
 #include "Hydraulic/HydraulicCheckValve.hpp"
 #include "Hydraulic/Hydraulic22Valve.hpp"
-#include "Hydraulic/Hydraulic32Valve.hpp"
+#include "Hydraulic/Hydraulic32DirectionalValve.hpp"
 #include "Hydraulic/Hydraulic33Valve.hpp"
 #include "Hydraulic/Hydraulic42Valve.hpp"
 #include "Hydraulic/Hydraulic43Valve.hpp"

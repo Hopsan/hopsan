@@ -164,7 +164,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalDummy.hpp \
     Components/Hydraulic/HydraulicDummyC.hpp \
     Components/Hydraulic/HydraulicDummyQ.hpp \
-    Components/Hydraulic/Hydraulic32Valve.hpp \
     Components/Hydraulic/Hydraulic33Valve.hpp \
     Components/Signal/SignalHP1Filter.hpp \
     Components/Signal/SignalHP2Filter.hpp \
@@ -177,4 +176,7 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicLosslessTConnector.hpp \
     Components/Hydraulic/HydraulicMachineC.hpp \
     Components/Hydraulic/HydraulicVolume4.hpp \
-    Components/Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp
+    Components/Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp \
+    Components/Hydraulic/Hydraulic33Valve.hpp \
+    Components/Hydraulic/Hydraulic33Valve.hpp \
+    Components/Hydraulic/Hydraulic32DirectionalValve.hpp

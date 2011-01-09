@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
     <modelobject typename="HydraulicOpenCenterValve" displayname="6/3 Open Center Servo Valve">
-        <help text="Hydraulic servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction."/>
+        <help text="Hydraulic proportional open-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction."/>
 		<icon isopath="ocvalve_iso.svg" iconrotation="ON" userpath="ocvalve_user.svg"/>
         <portpose x="0.4977" y="1" a="90" name="PP"/>
         <portpose x="0.4977" y="0" a="270" name="PA"/>
