@@ -179,4 +179,6 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp \
     Components/Hydraulic/Hydraulic33Valve.hpp \
     Components/Hydraulic/Hydraulic33Valve.hpp \
-    Components/Hydraulic/Hydraulic32DirectionalValve.hpp
+    Components/Hydraulic/Hydraulic32DirectionalValve.hpp \
+    Components/HydraulicComponentTemplate.hpp \
+    Components/HydraulicComponentTemplateOptimized.hpp

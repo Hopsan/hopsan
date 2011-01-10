@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
-    <system typename="Subsystem" cqs_type="S" name="bar_test_21">
-        <simulationtime stop="0.2" timestep="5e-08" start="0"/>
+    <system cqs_type="S" name="bar_test_21">
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2502" y="2501.5" zoom="1"/>
+            <viewport x="2827" y="2606" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="bar_test_21">
                     <icon isopath="" iconrotation="" userpath=""/>
                 </modelobject>
             </hopsanobjectappearance>
         </hopsangui>
+        <simulationtime stop="0.2" timestep="5e-008" start="0"/>
+        <parameters/>
         <objects>
             <component typename="fsrc" name="fsrc_2">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -27,8 +26,6 @@
             </component>
             <component typename="fsrc" name="fsrc_3">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -38,14 +35,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_10">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2461" y="2258" flipped="0" a="0"/>
@@ -53,14 +43,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_1">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2480" y="2666" flipped="0" a="0"/>
@@ -69,8 +52,6 @@
             </component>
             <component typename="fsrc" name="fsrc_4">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -80,14 +61,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_11">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2459" y="2208" flipped="0" a="0"/>
@@ -95,14 +69,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_2">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2482" y="2619" flipped="0" a="0"/>
@@ -114,11 +81,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -135,8 +99,6 @@
             </component>
             <component typename="fsrc" name="fsrc_10">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -147,8 +109,6 @@
             </component>
             <component typename="fsrc" name="fsrc_5">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -158,14 +118,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_12">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2451" y="2154" flipped="0" a="0"/>
@@ -173,14 +126,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_3">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2474" y="2571" flipped="0" a="0"/>
@@ -189,8 +135,6 @@
             </component>
             <component typename="fsrc" name="fsrc_11">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -201,8 +145,6 @@
             </component>
             <component typename="fsrc" name="fsrc_6">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -212,14 +154,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_13">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2449" y="2097" flipped="0" a="0"/>
@@ -227,14 +162,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_4">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2474" y="2530" flipped="0" a="0"/>
@@ -243,8 +171,6 @@
             </component>
             <component typename="fsrc" name="fsrc_12">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -255,8 +181,6 @@
             </component>
             <component typename="fsrc" name="fsrc_7">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -266,14 +190,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_14">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2455" y="2048" flipped="0" a="0"/>
@@ -285,11 +202,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -305,14 +219,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_5">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2470" y="2491" flipped="0" a="0"/>
@@ -321,8 +228,6 @@
             </component>
             <component typename="fsrc" name="fsrc_13">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -333,8 +238,6 @@
             </component>
             <component typename="fsrc" name="fsrc_8">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -344,14 +247,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_15">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2451" y="1989" flipped="0" a="0"/>
@@ -363,11 +259,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -383,14 +276,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_6">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2457" y="2452" flipped="0" a="0"/>
@@ -399,8 +285,6 @@
             </component>
             <component typename="fsrc" name="fsrc_14">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -411,8 +295,6 @@
             </component>
             <component typename="fsrc" name="fsrc_9">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -422,14 +304,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_16">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2456" y="1932" flipped="0" a="0"/>
@@ -441,11 +316,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -461,14 +333,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_7">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2450" y="2403" flipped="0" a="0"/>
@@ -477,8 +342,6 @@
             </component>
             <component typename="fsrc" name="fsrc_15">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -488,14 +351,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_17">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2455" y="1879" flipped="0" a="0"/>
@@ -507,11 +363,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -527,14 +380,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_8">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2452" y="2359" flipped="0" a="0"/>
@@ -543,8 +389,6 @@
             </component>
             <component typename="fsrc" name="fsrc_16">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -554,14 +398,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_18">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2456" y="1829" flipped="0" a="0"/>
@@ -573,11 +410,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -593,14 +427,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_9">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2451" y="2305" flipped="0" a="0"/>
@@ -609,8 +436,6 @@
             </component>
             <component typename="fsrc" name="fsrc_17">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -620,14 +445,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_19">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2467" y="1779" flipped="0" a="0"/>
@@ -639,11 +457,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -660,8 +475,6 @@
             </component>
             <component typename="fsrc" name="fsrc_18">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -675,11 +488,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -696,8 +506,6 @@
             </component>
             <component typename="fsrc" name="fsrc_19">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -711,11 +519,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -735,11 +540,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -759,11 +561,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -779,14 +578,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2_20">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2458" y="1726" flipped="0" a="0"/>
@@ -795,8 +587,6 @@
             </component>
             <component typename="fsrc" name="fsrc_20">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -806,14 +596,7 @@
                 </hopsangui>
             </component>
             <component typename="sep2" name="sep2">
-                <parameters>
-                    <parameter value="0" name="Node 1 position"/>
-                    <parameter value="0.001" name="Node 2 position"/>
-                    <parameter value="0" name="Node 1 velocity"/>
-                    <parameter value="0" name="Node 2 velocity"/>
-                    <parameter value="0" name="Node 1 force"/>
-                    <parameter value="0" name="Node 2 force"/>
-                </parameters>
+                <parameters/>
                 <startvalues/>
                 <hopsangui>
                     <pose x="2482" y="2726" flipped="0" a="0"/>
@@ -825,11 +608,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -849,11 +629,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -870,9 +647,7 @@
             </component>
             <component typename="vsrc" name="vsrc_10">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -882,9 +657,7 @@
             </component>
             <component typename="vsrc" name="vsrc_11">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -894,9 +667,7 @@
             </component>
             <component typename="vsrc" name="vsrc_12">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -906,9 +677,7 @@
             </component>
             <component typename="vsrc" name="vsrc_13">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -918,9 +687,7 @@
             </component>
             <component typename="vsrc" name="vsrc_14">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -930,9 +697,7 @@
             </component>
             <component typename="vsrc" name="vsrc_15">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -942,9 +707,7 @@
             </component>
             <component typename="vsrc" name="vsrc_16">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -954,9 +717,7 @@
             </component>
             <component typename="vsrc" name="vsrc_17">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -966,9 +727,7 @@
             </component>
             <component typename="vsrc" name="vsrc_18">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -978,9 +737,7 @@
             </component>
             <component typename="vsrc" name="vsrc_19">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -990,9 +747,7 @@
             </component>
             <component typename="vsrc" name="vsrc_1">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1002,9 +757,7 @@
             </component>
             <component typename="vsrc" name="vsrc_2">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1014,9 +767,7 @@
             </component>
             <component typename="vsrc" name="vsrc_3">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1026,9 +777,7 @@
             </component>
             <component typename="vsrc" name="vsrc_4">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1038,9 +787,7 @@
             </component>
             <component typename="vsrc" name="vsrc_5">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1050,9 +797,7 @@
             </component>
             <component typename="vsrc" name="vsrc_6">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1062,9 +807,7 @@
             </component>
             <component typename="vsrc" name="vsrc_7">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1074,9 +817,7 @@
             </component>
             <component typename="vsrc" name="vsrc_20">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1086,9 +827,7 @@
             </component>
             <component typename="vsrc" name="vsrc_8">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1098,9 +837,7 @@
             </component>
             <component typename="vsrc" name="vsrc_9">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1110,8 +847,6 @@
             </component>
             <component typename="fsrc" name="fsrc">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -1125,11 +860,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1149,11 +881,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1173,11 +902,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1197,11 +923,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1221,11 +944,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1245,11 +965,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1269,11 +986,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1293,11 +1007,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1317,11 +1028,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1341,11 +1049,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1365,11 +1070,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1389,11 +1091,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1413,11 +1112,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1437,11 +1133,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1461,11 +1154,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1485,11 +1175,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1509,11 +1196,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1533,11 +1217,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1557,11 +1238,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1581,11 +1259,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1605,11 +1280,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1626,9 +1298,7 @@
             </component>
             <component typename="vsrc" name="vsrc">
                 <parameters>
-                    <parameter value="0" name="Position"/>
                     <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -1641,11 +1311,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1665,11 +1332,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1689,11 +1353,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1713,11 +1374,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1737,11 +1395,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1761,11 +1416,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1785,11 +1437,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="0.5" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="10" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
@@ -1806,8 +1455,6 @@
             </component>
             <component typename="fsrc" name="fsrc_1">
                 <parameters>
-                    <parameter value="0" name="Position"/>
-                    <parameter value="0" name="Velocity"/>
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues/>
@@ -1821,11 +1468,8 @@
                     <parameter value="0.05" name="D"/>
                     <parameter value="3" name="L"/>
                     <parameter value="7800" name="RHOB"/>
-                    <parameter value="210000000000" name="EB"/>
+                    <parameter value="2.1e+011" name="EB"/>
                     <parameter value="-1" name="DMP"/>
-                    <parameter value="0" name="v21"/>
-                    <parameter value="0" name="f1"/>
-                    <parameter value="0" name="f2"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>

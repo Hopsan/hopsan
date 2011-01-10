@@ -26,8 +26,10 @@ namespace hopsan {
     {
 
     private:
-        double X1S, F1S, V1S;
+        double F1S;
         Integrator XINT;
+        double F1, X1, V1, Cx1, Zx1, in;
+        double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *in_ptr;
         Port *pP1, *pIN;
 
     public:
@@ -42,8 +44,6 @@ namespace hopsan {
             mTypeName = "fsrc";
 
             //Startvalues
-            X1S = 0;
-            V1S = 0;
             F1S = 0;
 
             //Add ports to the component
@@ -51,54 +51,53 @@ namespace hopsan {
             pIN = addReadPort("IN", "NodeSignal", Port::NOTREQUIRED);
 
             //Register parameters to be seen in simulation environment.
-            registerParameter("Position", "startvalue", "[m]",   X1S);
-            registerParameter("Velocity", "startvalue", "[m/s]",   V1S);
             registerParameter("Force", "startvalue", "[N]",   F1S);
         }
 
 
         void initialize()
         {
-            double F1;
+            //Assign node data pointers
+            F1_ptr = pP1->getNodeDataPtr(NodeMechanic::FORCE);
+            X1_ptr = pP1->getNodeDataPtr(NodeMechanic::POSITION);
+            V1_ptr = pP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            Cx1_ptr = pP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx1_ptr = pP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            if(pIN->isConnected()) { in_ptr = pIN->getNodeDataPtr(NodeSignal::VALUE); }
+            else { in_ptr = new double(F1S); }
 
-            if(pIN->isConnected())
-                F1  = pIN->readNode(NodeSignal::VALUE);
-            else
-                F1=F1S;
+            //Read values from nodes
+            in = (*in_ptr);
+            X1 = (*X1_ptr);
+            V1 = (*V1_ptr);
 
             //Initiate the integrator
-            XINT.initialize(mTimestep, V1S, X1S);
+            XINT.initialize(mTimestep, V1, X1);
 
-            //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
-            pP1->writeNode(NodeMechanic::POSITION, X1S);
-            pP1->writeNode(NodeMechanic::VELOCITY, V1S);
-            pP1->writeNode(NodeMechanic::FORCE, F1);
+            //Write values to nodes
+            (*F1_ptr) = in;
         }
 
         void simulateOneTimestep()
         {
-            double F1;
-
             //Get variable values from nodes
-            double Zx1  = pP1->readNode(NodeMechanic::CHARIMP);
-            double Cx1  = pP1->readNode(NodeMechanic::WAVEVARIABLE);
+            Cx1 = (*Cx1_ptr);
+            Zx1 = (*Zx1_ptr);
+            in = (*in_ptr);
 
             //If signal port is connected, read the value from the port.
             //else use the start value (F1S never changed).
-            if(pIN->isConnected())
-                F1  = pIN->readNode(NodeSignal::VALUE);
-            else
-                F1=F1S;
+            F1 = in;
 
             //Calculate velocity of source.
-            double V1 = (F1-Cx1)/Zx1;
+            V1 = (F1-Cx1)/Zx1;
             //Calculate position by integrating velocity.
-            double X1 = XINT.update(V1);
+            X1 = XINT.update(V1);
 
             //Write new values to nodes
-            pP1->writeNode(NodeMechanic::FORCE, F1);
-            pP1->writeNode(NodeMechanic::VELOCITY, V1);
-            pP1->writeNode(NodeMechanic::POSITION, X1);
+            (*F1_ptr) = F1;
+            (*X1_ptr) = X1;
+            (*V1_ptr) = V1;
 
         }
     };

@@ -27,17 +27,13 @@ namespace hopsan {
         double EB;
         double Zx;
         double Alpha;
-        double Cx1;
-        double Cx2;
         double Cx1old;
         double Cx2old;
         double Cx1new;
         double Cx2new;
-        double F1;
-        double F2;
-        double V1;
-        double V2;
         Port *pP1, *pP2;
+        double F1, X1, V1, Cx1, Zx1, F2, X2, V2, Cx2, Zx2;
+        double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *F2_ptr, *X2_ptr, *V2_ptr, *Cx2_ptr, *Zx2_ptr;
 
     public:
         static Component *Creator()
@@ -67,46 +63,56 @@ namespace hopsan {
 
         void initialize()
         {
+            //Assign node data pointeres
+            F1_ptr = pP1->getNodeDataPtr(NodeMechanic::FORCE);
+            X1_ptr = pP1->getNodeDataPtr(NodeMechanic::POSITION);
+            V1_ptr = pP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            Cx1_ptr = pP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx1_ptr = pP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            F2_ptr = pP2->getNodeDataPtr(NodeMechanic::FORCE);
+            X2_ptr = pP2->getNodeDataPtr(NodeMechanic::POSITION);
+            V2_ptr = pP2->getNodeDataPtr(NodeMechanic::VELOCITY);
+            Cx2_ptr = pP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx2_ptr = pP2->getNodeDataPtr(NodeMechanic::CHARIMP);
+
             //Startvalues, read force and velocity from connected Q-types
-            F1 = pP1->readNode(NodeMechanic::FORCE);
-            V1 = pP1->readNode(NodeMechanic::VELOCITY);
-            F2 = pP2->readNode(NodeMechanic::FORCE);
-            V2 = pP2->readNode(NodeMechanic::VELOCITY);
+            F1 = (*F1_ptr);
+            V1 = (*V1_ptr);
+            F2 = (*F2_ptr);
+            V2 = (*V2_ptr);
+
             Zx=RHOB*sqrt(EB/RHOB)*3.141593*D*D/4.0;
             Cx1=F1-Zx*V1;
             Cx2=F2-Zx*V2;
 
             //Write characteristics to nodes
-            pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx1);
-            pP1->writeNode(NodeMechanic::CHARIMP,      Zx);
-            pP2->writeNode(NodeMechanic::WAVEVARIABLE, Cx2);
-            pP2->writeNode(NodeMechanic::CHARIMP,      Zx);
+            (*Cx1_ptr) = Cx1;
+            (*Zx1_ptr) = Zx;
+            (*Cx2_ptr) = Cx2;
+            (*Zx2_ptr) = Zx;
+
             Cx1old=Cx1;
             Cx2old=Cx2;
-
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double V1 = pP1->readNode(NodeMechanic::VELOCITY);
-            //double F1 = pP1->readNode(NodeMechanic::FORCE);
-            double V2 = pP2->readNode(NodeMechanic::VELOCITY);
-            //double F2 = pP2->readNode(NodeMechanic::FORCE);
+            //Read values from nodes
+            V1 = (*V1_ptr);
+            V2 = (*V2_ptr);
 
             //Delay Line equations
-            double Cx1new = Cx2old + 2.*Zx*V2;
-            double Cx2new = Cx1old + 2.*Zx*V1;
-            double Cx1=Alpha*Cx1old + (1.0-Alpha)*Cx1new; // Filtering if Alpha>0
-            double Cx2=Alpha*Cx2old + (1.0-Alpha)*Cx2new; // Filtering if Alpha>0
-
+            Cx1new = Cx2old + 2.*Zx*V2;
+            Cx2new = Cx1old + 2.*Zx*V1;
+            Cx1=Alpha*Cx1old + (1.0-Alpha)*Cx1new; // Filtering if Alpha>0
+            Cx2=Alpha*Cx2old + (1.0-Alpha)*Cx2new; // Filtering if Alpha>0
 
             //Write new values to nodes
-            pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx1);
-            pP1->writeNode(NodeMechanic::CHARIMP,      Zx);
-            pP2->writeNode(NodeMechanic::WAVEVARIABLE, Cx2);
-            pP2->writeNode(NodeMechanic::CHARIMP,      Zx);
+            (*Cx1_ptr) = Cx1;
+            (*Zx1_ptr) = Zx;
+            (*Cx2_ptr) = Cx2;
+            (*Zx2_ptr) = Zx;
 
             //Update the delayed variabels
             Cx1old=Cx1;

@@ -33,6 +33,8 @@ namespace hopsan {
     private:
         Integrator Int;
         Port *pP1;
+        double F1, X1, V1, Cx1, Zx1;
+        double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr;
 
     public:
         static Component *Creator()
@@ -53,28 +55,35 @@ namespace hopsan {
 
         void initialize()
         {
-            double X1  = pP1->readNode(NodeMechanic::POSITION);
-            double V1  = pP1->readNode(NodeMechanic::VELOCITY);
+            //Assign node data pointers
+            F1_ptr = pP1->getNodeDataPtr(NodeMechanic::FORCE);
+            X1_ptr = pP1->getNodeDataPtr(NodeMechanic::POSITION);
+            V1_ptr = pP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            Cx1_ptr = pP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx1_ptr = pP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+
+            //Read values from nodes
+            X1 = (*X1_ptr);
+            V1 = (*V1_ptr);
+
             Int.initialize(mTimestep, V1, X1);
         }
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double Zx1  = pP1->readNode(NodeMechanic::CHARIMP);
-            double c1  = pP1->readNode(NodeMechanic::WAVEVARIABLE);
+            Cx1 = (*Cx1_ptr);
+            Zx1 = (*Zx1_ptr);
 
             //Caracteristic matching equations
-            double V1 = -c1/(2.0*Zx1);
-            double X1 = Int.update(V1);
-            double F1 = c1/2;
-
+            V1 = -Cx1/(2.0*Zx1);
+            X1 = Int.update(V1);
+            F1 = Cx1/2;
 
             //Write new values to nodes
-            pP1->writeNode(NodeMechanic::FORCE, F1);
-            pP1->writeNode(NodeMechanic::VELOCITY, V1);
-            pP1->writeNode(NodeMechanic::POSITION, X1);
-
+            (*F1_ptr) = F1;
+            (*X1_ptr) = X1;
+            (*V1_ptr) = V1;
         }
     };
 }

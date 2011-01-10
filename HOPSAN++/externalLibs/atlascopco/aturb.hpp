@@ -29,9 +29,9 @@ namespace hopsan {
     class aturb : public ComponentQ
     {
     private:
-
+        double P1, Q1, Cx1, Zx1, P2, Q2, Cx2, Zx2;
+        double *P1_ptr, *Q1_ptr, *Cx1_ptr, *Zx1_ptr, *P2_ptr, *Q2_ptr, *Cx2_ptr, *Zx2_ptr;
         Port *pP1, *pP2;
-        double Q10,Q20,P10,P20;
         double Cq,A,rho,K;
         bool cav;
         TurbulentFlowFunction qTurb;
@@ -52,14 +52,6 @@ namespace hopsan {
 
 		//Start values
                 cav = false;
-                P10 = 0;
-                P20 = 0;
-                Q10 = 0;
-                Q20 = 0;
-            registerParameter("P1", "Pressure", "[Pa]", P10);
-            registerParameter("P2", "Pressure", "[Pa]", P20);
-            registerParameter("Q1", "Flow", "[m^3/s]", Q10);
-            registerParameter("Q2", "Flow", "[m^3/s]", Q20);
 
                 //Parameters
                 A   = 1e-5;
@@ -73,34 +65,46 @@ namespace hopsan {
 
         void initialize() 
         {
-		//Initialize start values
-            pP1->writeNode(NodeHydraulic::PRESSURE, P10);
-            pP2->writeNode(NodeHydraulic::PRESSURE, P20);
-            pP1->writeNode(NodeHydraulic::FLOW, Q10);
-            pP2->writeNode(NodeHydraulic::FLOW, Q20);
-            double Zx1 = pP1->readNode(NodeHydraulic::CHARIMP);
-            double Zx2 = pP2->readNode(NodeHydraulic::CHARIMP);
-            double P1  = pP1->readNode(NodeHydraulic::PRESSURE);
-            double P2  = pP2->readNode(NodeHydraulic::PRESSURE);
-            if (Zx1 == 0) pP1 ->writeNode(NodeHydraulic::WAVEVARIABLE, P1);
-            if (Zx2 == 0) pP2 ->writeNode(NodeHydraulic::WAVEVARIABLE, P2);
+            //Assign port pointers
+            P1_ptr = pP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            Q1_ptr = pP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            Cx1_ptr = pP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zx1_ptr = pP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            P2_ptr = pP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            Q2_ptr = pP2->getNodeDataPtr(NodeHydraulic::FLOW);
+            Cx2_ptr = pP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zx2_ptr = pP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            //Read data from nodes
+            P1 = (*P1_ptr);
+            Zx1 = (*Zx1_ptr);
+            P2 = (*P2_ptr);
+            Zx2 = (*Zx2_ptr);
+
+            if (Zx1 == 0) Cx1 = P1;
+            if (Zx2 == 0) Cx2 = P2;
             K = Cq*A*sqrt(2/rho);
             if(K < 0) K = 0;    //!!!!! Notify user !!!!!
             qTurb.setFlowCoefficient(K);
+
+            //Write data to nodes
+            (*Cx1_ptr) = Cx1;
+            (*Cx2_ptr) = Cx2;
         }
 
         void simulateOneTimestep() // Here is the actual simulation call.
         {
-            double Cx1 = pP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zx1 = pP1->readNode(NodeHydraulic::CHARIMP);
-            double Cx2 = pP2->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zx2 = pP2->readNode(NodeHydraulic::CHARIMP);
+            //Read data from nodes
+            Cx1 = (*Cx1_ptr);
+            Zx1 = (*Zx1_ptr);
+            Cx2 = (*Cx2_ptr);
+            Zx2 = (*Zx2_ptr);
 
             //Equations
-            double Q2 = qTurb.getFlow(Cx1,Cx2,Zx1,Zx2);
-            double Q1 = -Q2;
-            double P1 = Cx1 + Q1*Zx1;
-            double P2 = Cx2 + Q2*Zx2;
+            Q2 = qTurb.getFlow(Cx1,Cx2,Zx1,Zx2);
+            Q1 = -Q2;
+            P1 = Cx1 + Q1*Zx1;
+            P2 = Cx2 + Q2*Zx2;
 
             // Cavitation handling
             if( P1 <= 0) {
@@ -123,10 +127,10 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            pP1->writeNode(NodeHydraulic::PRESSURE, P1);
-            pP2->writeNode(NodeHydraulic::PRESSURE, P2);
-            pP1->writeNode(NodeHydraulic::FLOW, Q1);
-            pP2->writeNode(NodeHydraulic::FLOW, Q2);
+            (*P1_ptr) = P1;
+            (*Q1_ptr) = Q1;
+            (*P2_ptr) = P2;
+            (*Q2_ptr) = Q2;
         }
 
 

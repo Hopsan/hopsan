@@ -47,16 +47,17 @@ namespace hopsan {
         double Area;
         int NofEl;
         int indexToBeDelayed, indexDelayed;
-        double Cx1;
-        double Cx2;
         double Cx1old;
         double Cx2old;
-        double V0, F1S, F2S;
+        double Cx1new, Cx2new;
 //        deque<double> Cx1NofEl;
 //        deque<double> Cx2NofEl;
         Delay Cx1NofEl;
         Delay Cx2NofEl;
         FirstOrderFilter mFilterLPCx1, mFilterLPCx2;
+
+        double F1, V1, Cx1, F2, V2, Cx2, Zx2;
+        double *F1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *F2_ptr, *V2_ptr, *Cx2_ptr, *Zx2_ptr;
         Port *pP1, *pP2;
 
     public:
@@ -83,27 +84,27 @@ namespace hopsan {
             RHOB=7800.0;
             EB=2.1e11;
             DMP=1.0;
-            V0=0.0;
-            F1S=0.0;
-            F2S=0.0;
+
             registerParameter("D", "Diameter", "m",  D);
             registerParameter("L", "Length", "m",  L);
             registerParameter("RHOB", "Density", "kg/m3", RHOB);
             registerParameter("EB", "Young's modulus", "Pa", EB);
             registerParameter("DMP", ">0 gives damping", "-", DMP);
-            registerParameter("v21", "start value velocity 2->1", "m/s", V0);
-            registerParameter("f1", "start value force 1", "-", F1S);
-            registerParameter("f2", "start value force 2", "-", F2S);
         }
 
 
         void initialize()
         {
-            //Startvalues, read force and velocity from connected Q-types  DOES NOT WORK!!!!
-            //F1S = pP1->readNode(NodeMechanic::FORCE);
-            //V1S = pP1->readNode(NodeMechanic::VELOCITY);
-            //F2S = pP2->readNode(NodeMechanic::FORCE);
-            //V2S = pP2->readNode(NodeMechanic::VELOCITY);
+            F1_ptr = pP1->getNodeDataPtr(NodeMechanic::FORCE);
+            V1_ptr = pP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            Cx1_ptr = pP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx1_ptr = pP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            F2_ptr = pP2->getNodeDataPtr(NodeMechanic::FORCE);
+            V2_ptr = pP2->getNodeDataPtr(NodeMechanic::VELOCITY);
+            Cx2_ptr = pP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx2_ptr = pP2->getNodeDataPtr(NodeMechanic::CHARIMP);
+
+
 
             //Wave speed
             if (DMP>0.0)Wavespeed=sqrt(EB/RHOB)*Cs;
@@ -119,14 +120,14 @@ namespace hopsan {
             Zx = RHOB*Wavespeed*AreaCorr;
 
             //Start values for wave variables
-            Cx1=F1S+Zx*(-V0);
-            Cx2=F2S+Zx*( V0);
+            Cx1=F1+Zx*(V1);
+            Cx2=F2+Zx*(V2);
 //            Cx1NofEl.assign( int(NofEl-1) , Cx1);
 //            Cx2NofEl.assign( int(NofEl-1) , Cx2);
             Cx1NofEl.initialize(NofEl, Cx1);
             Cx2NofEl.initialize(NofEl, Cx2);
-            Cx1old=F2S-Zx*(-V0);
-            Cx2old=F1S-Zx*( V0);
+            Cx1old=F2-Zx*(V1);
+            Cx2old=F1-Zx*(V2);
 
             //Filter frequency and initialization
             if (DMP>0.0)Wf=1./(Kappa*NofEl*mTimestep);
@@ -137,23 +138,18 @@ namespace hopsan {
             mFilterLPCx2.initialize(mTimestep, num, den,Cx2,Cx2, -1.5E+300, 1.5E+300);
 
             //Write characteristics to nodes
-            pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx2old);  //Cx(N1) = Cx2old
-            pP1->writeNode(NodeMechanic::CHARIMP,      Zx);
-            pP2->writeNode(NodeMechanic::WAVEVARIABLE, Cx1old);  //Cx(N2) = Cx1old
-            pP2->writeNode(NodeMechanic::CHARIMP,      Zx);
-            //Start values...
-            pP1->writeNode(NodeMechanic::VELOCITY,    -V0);
-            pP2->writeNode(NodeMechanic::VELOCITY,     V0);  //Cx(N2) = Cx1old
-
-
+            (*Cx1_ptr) = Cx2old;
+            (*Zx1_ptr) = Zx;
+            (*Cx2_ptr) = Cx1old;
+            (*Zx2_ptr) = Zx;
         }
 
         void simulateOneTimestep()
         {
 
              //Get variable values from nodes
-            double V1 = pP1->readNode(NodeMechanic::VELOCITY);
-            double V2 = pP2->readNode(NodeMechanic::VELOCITY);
+            V1 = (*V1_ptr);
+            V2 = (*V2_ptr);
 
 //            Cx1NofEl.push_back(Cx2old + 2.*Zx*V1);  //Add new value at the end
 //            Cx2NofEl.push_back(Cx1old + 2.*Zx*V2);
@@ -161,18 +157,18 @@ namespace hopsan {
 //            double Cx1new=Cx1NofEl.front(); Cx1NofEl.pop_front();  //Read and remove first value
 //            double Cx2new=Cx2NofEl.front(); Cx2NofEl.pop_front();
 
-            double Cx1new = Cx1NofEl.update(Cx2old + 2.*Zx*V1);  //Add new value, pop old
-            double Cx2new = Cx2NofEl.update(Cx1old + 2.*Zx*V2);
+            Cx1new = Cx1NofEl.update(Cx2old + 2.*Zx*V1);  //Add new value, pop old
+            Cx2new = Cx2NofEl.update(Cx1old + 2.*Zx*V2);
 
              //First order filter
             Cx1=mFilterLPCx1.update(Cx1new);
             Cx2=mFilterLPCx2.update(Cx2new);
 
             //Write new values to nodes
-            pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx2);
-            pP1->writeNode(NodeMechanic::CHARIMP,      Zx);
-            pP2->writeNode(NodeMechanic::WAVEVARIABLE, Cx1);
-            pP2->writeNode(NodeMechanic::CHARIMP,      Zx);
+            (*Cx1_ptr) = Cx2;
+            (*Zx1_ptr) = Zx;
+            (*Cx2_ptr) = Cx1;
+            (*Zx2_ptr) = Zx;
 
             //Update the delayed variabels
             Cx1old=Cx1;
