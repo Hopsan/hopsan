@@ -1,6 +1,7 @@
 /*!
 \page hopsan-developer Hopsan Developer Guides
 
+-# \subpage devHowtoBuildDocumentation \n
 -# \subpage requirements-qt \n
 -# \subpage hopsancore-dependence \n
 -# \subpage hopsangui-dependence \n
