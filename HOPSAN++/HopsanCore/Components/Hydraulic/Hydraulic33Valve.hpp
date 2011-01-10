@@ -49,7 +49,7 @@ namespace hopsan {
 
         Hydraulic33Valve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "Hydraulic32DirectionalValve";
+            mTypeName = "Hydraulic33Valve";
             Cq = 0.67;
             d = 0.01;
             f = 1.0;
@@ -127,7 +127,6 @@ namespace hopsan {
             qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
             qat = mQturbat.getFlow(ca, ct, Zca, Zct);
 
-            qp, qa, qt;
             if (xv >= 0.0)
             {
                 qp = -qpa;

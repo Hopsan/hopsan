@@ -24,8 +24,13 @@ namespace hopsan {
     class HydraulicAckumulator : public ComponentQ
     {
     private:
-        double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressure, mStartFlow;
+        double Pmin, Vtot, Voil, Vgas, Betae, Kappa, Kce;
         double mPrevP2, mPrevC1, mPrevZc1, mPrevQ2;
+        double p2, q2, e0, ct;
+
+        double p1, q1, c1, Zc1, out;
+        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *out_ptr;
+
         Port *mpP1, *mpOut;
 
     public:
@@ -37,114 +42,95 @@ namespace hopsan {
         HydraulicAckumulator(const std::string name) : ComponentQ(name)
         {
             mTypeName = "HydraulicAckumulator";
-            mPmin                   = 1000000.0;
-            mVtot                   = 0.005;
-            mVoil                   = 0.0;
-            mVgas                   = mVtot-mVoil;
-            mBetae                  = 1000000000.0;
-            mKappa                  = 1.4;
-            mKce                    = 0.0000000001;
-            mStartPressure          = 1000000.0;             //Start pressure, must beequal to or higher than pmin
-            mStartFlow              = 0.0;                   //Initial flow into the accumulator
+            Pmin                   = 1000000.0;
+            Vtot                   = 0.005;
+            Voil                   = 0.0;
+            Vgas                   = Vtot-Voil;
+            Betae                  = 1000000000.0;
+            Kappa                  = 1.4;
+            Kce                    = 0.0000000001;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");     //External port
             mpOut = addWritePort("out", "NodeSignal");     //Internal pressure output
 
-            registerParameter("Pmin", "Minimum Internal Pressure", "Pa", mPmin);
-            registerParameter("Vtot", "Total Volume", "m^3", mVtot);
-            registerParameter("Betae", "Effective Bulk Modulus", "Pa", mBetae);
-            registerParameter("Kappa", "Polytropic Exponent", "-", mKappa);
-            registerParameter("Kce", "Flow-Pressure Coefficient", "(m^3/s)/Pa", mKce);
-            registerParameter("StartPressure", "Initial Internal Pressure", "Pa", mStartPressure);
-            registerParameter("StartFlow", "Initial Flow Into Ackumulator", "m^3/s", mStartFlow);
+            registerParameter("Pmin", "Minimum Internal Pressure", "Pa", Pmin);
+            registerParameter("Vtot", "Total Volume", "m^3", Vtot);
+            registerParameter("Betae", "Effective Bulk Modulus", "Pa", Betae);
+            registerParameter("Kappa", "Polytropic Exponent", "-", Kappa);
+            registerParameter("Kce", "Flow-Pressure Coefficient", "(m^3/s)/Pa", Kce);
         }
 
 
         void initialize()
         {
-            double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+            p1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            if(mpOut->isConnected()) {out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
+            else { out_ptr = new double(); }
 
-            mpP1->writeNode(NodeHydraulic::PRESSURE, c1);
-            mpP1->writeNode(NodeHydraulic::FLOW, 0.0);
+            p1 = (*p1_ptr);
+            q1 = (*q1_ptr);
+            c1 = (*c1_ptr);
+            Zc1 = (*Zc1_ptr);
 
-            if (mStartPressure < mPmin)         //User has selected an initial pressure lower than the minimum pressure, so use minimum pressure instead
+            if (p1 < Pmin)         //User has selected an initial pressure lower than the minimum pressure, so use minimum pressure instead
             {
-                mStartPressure = mPmin;
-                if (mStartPressure < 0)         //User has selected a minimum pressure lower than zero, put it to zero
-                {
-                    mStartPressure = 0;
-                }
-                mVgas = mVtot;                  //Pressure is minimum, so ackumulator is empty
-                mVoil = 0;
-                mPrevQ2 = mStartFlow;           //"Previous" value for q2 first step
+                p1 = std::max(Pmin, 0.0);
+                Vgas = Vtot;                  //Pressure is minimum, so ackumulator is empty
+                Voil = 0;
             }
             else
             {
-                mPrevQ2 = mKce*(p1-mStartPressure);              //"Previous" value for q2 first step, calculated with orifice equation
-                mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressure, 1/mKappa);     //Initial gas volume, calculated from initial pressure
-                mVoil = mVtot - mVgas;
+                Vgas = pow(Pmin*pow(Vtot, Kappa)/p1, 1/Kappa);     //Initial gas volume, calculated from initial pressure
+                Voil = Vtot - Vgas;
             }
-            mPrevP2 = mStartPressure;
+            mPrevQ2 = -q1;           //"Previous" value for q2 first step
+            mPrevP2 = p1;
             mPrevC1 = c1;
             mPrevZc1 = Zc1;
-
-            std::cout << "Start Pressure: " << mStartPressure << std::endl;;
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+            //Read variables from nodes
+            c1 = (*c1_ptr);
+            Zc1 = (*Zc1_ptr);
 
             //Ackumulator equations
-            double e0, ct;
-            double p1,q1,q2;
-            double p2 = mPrevP2;
 
-            e0 = mPmin * pow(mVtot, mKappa);
-            ct = mVgas / (p2*mKappa) + (mVtot-mVgas) / mBetae;
-            q2 = (mPrevQ2 * (2.0*ct*(mKce*mPrevZc1+1.0) - mKce*mTimestep) +
-                  2.0*ct*mKce*(c1-mPrevC1)) / (2.0*ct*(mKce*Zc1+1.0) + mKce*mTimestep);
+            p2 = mPrevP2;
+
+            e0 = Pmin * pow(Vtot, Kappa);
+            ct = Vgas / (p2*Kappa) + (Vtot-Vgas) / Betae;
+            q2 = (mPrevQ2 * (2.0*ct*(Kce*mPrevZc1+1.0) - Kce*mTimestep) +
+                  2.0*ct*Kce*(c1-mPrevC1)) / (2.0*ct*(Kce*Zc1+1.0) + Kce*mTimestep);
             p1 = c1 - Zc1*q2;
-            p2 = p1 - q2/mKce;
-
-            if (mTime < 0.05)
-            {
-                std::cout << "p1 = " << p1 << ", p2 = " << p2 << ", q = " << q2 << ", ct = " << ct << std::endl;
-            }
-
+            p2 = p1 - q2/Kce;
 
             if (p1 < 0.0)       //Cavitation!
             {
                 c1 = 0.0;
                 Zc1 = 0.0;
-                q2 = (mPrevQ2 * (2.0*ct*(mKce*mPrevZc1+1.0) - mKce*mTimestep) +
-                      2*ct*mKce*(c1-mPrevC1)) / (2*ct*(mKce*Zc1+1) + mKce*mTimestep);
+                q2 = (mPrevQ2 * (2.0*ct*(Kce*mPrevZc1+1.0) - Kce*mTimestep) +
+                      2*ct*Kce*(c1-mPrevC1)) / (2*ct*(Kce*Zc1+1) + Kce*mTimestep);
                 p1 = 0.0;
-                p2 = -q2/mKce;
+                p2 = -q2/Kce;
             }
 
-            if (p2 < mPmin)     //Too low pressure (ack cannot be less than empty)
+            if (p2 < Pmin)     //Too low pressure (ack cannot be less than empty)
             {
-                std::cout << "Empty!" << std::endl;
-                mVgas = mVtot;
+                Vgas = Vtot;
                 q2 = 0.0;
                 p1 = c1;
-                p2 = mPmin;
+                p2 = Pmin;
             }
 
-            mVgas = pow(e0/p2, 1/mKappa);
-            mVoil = mVtot - mVgas;
+            Vgas = pow(e0/p2, 1/Kappa);
+            Voil = Vtot - Vgas;
             q1 = -q2;
-
-            if (mTime < 0.05)
-            {
-                std::cout << "Voil = " << mVoil << std::endl;
-            }
 
             mPrevP2 = p2;
             mPrevQ2 = q2;
@@ -152,12 +138,9 @@ namespace hopsan {
             mPrevZc1 = Zc1;
 
             //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::FLOW, q1);
-            if (mpOut->isConnected())
-            {
-                mpOut->writeNode(NodeSignal::VALUE, mVoil);
-            }
+            (*p1_ptr) = p1;
+            (*q1_ptr) = q1;
+            (*out_ptr) = Voil;
         }
     };
 }
