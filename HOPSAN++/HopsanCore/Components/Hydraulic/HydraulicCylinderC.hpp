@@ -7,8 +7,6 @@
 //!
 //$Id$
 
-//Translated from old Hopsan, originally created by someone else
-
 #ifndef HYDRAULICCYLINDERC_HPP_INCLUDED
 #define HYDRAULICCYLINDERC_HPP_INCLUDED
 
@@ -19,60 +17,30 @@
 
 namespace hopsan {
 
-    //!
-    //! @brief
-    //! @ingroup HydraulicComponents
-    //!
-    class HydraulicCylinderC : public ComponentC
-    {
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
+class HydraulicCylinderC : public ComponentC
+{
 
     private:
-            //Changeable parameters
-        double mArea1;
-        double mArea2;
-        double mVolume1;
-        double mVolume2;
-        double mDeadVolume1;
-        double mDeadVolume2;
-        double mStroke;
-        double mEquivalentMass;
-        double mBp;
-        double mBetae;
-        double mZx;
-        double mAlphaSpring;
-        double mLeakageCoefficient;
+        //Local Constants
+        int n;
+        double alfa, wfak;
 
-            //Local variables
-        double mAlphaZc1, mAlphaZc2;
-        double mC1Effective, mC2Effective;
-        double mC1Internal, mC2Internal;
-        double mC1InternalEffective, mC2InternalEffective;
-        double mC1Internal0, mC2Internal0;
-        double mC1Internal0Effective, mC2Internal0Effective;
-        double mClp, mCt1, mCt2, mCt1Effective, mCt2Effective;
-        double mP1Effective, mP2Effective;
-        double mPm1, mPm2, mPm1Effective, mPm2Effective;
-        double mP1Internal, mP2Internal;
-        double mP1InternalEffective, mP2InternalEffective;
-        double mQ1Internal, mQ2Internal;
-        double mQ1InternalEffective, mQ2InternalEffective;
-        double mMinVolume1, mMinVolume2;
-        double mZc10, mZc20;
-        double mXInternal;
-        double mVInternal;
-        double mWfak;
-        double mAlpha;
-        double mZSpring, mZSpring0, mCSpring, mCSpring0, mKSpring;
+        // Local variables
+        double clim, zlim, zlim0, V1, V2, V1min, V2min, pi1, qi1, ci1, pi2, qi2, ci2, Zc1, Zc2, c1_0, ci1_0, c2_0, ci2_0, xi3, vi3, cp1_0, cp2_0, cp1, cp2;
 
-        double mPrevC1, mPrevC2;
-        double mPrevZc1, mPrevZc2;
-        double mPrevC1Internal, mPrevC2Internal;
-        double mPrevC1InternalEffective, mPrevC2InternalEffective;
-        double mPrevCSpring;
+        //Parameters
+        double betae, me, V01, V02, A1, A2, sl, cLeak, bp;
 
-        size_t mDebugCount;
+        //Special variables for Fortran translation
+        int ifl;
+        int n1total;
+        int n2total;
 
-        Port *mpP1, *mpP2, *mpP3;//, *mpDebug1, *mpDebug2;
+        Port *mpP1, *mpP2, *mpP3;
 
     public:
         static Component *Creator()
@@ -82,151 +50,85 @@ namespace hopsan {
 
         HydraulicCylinderC(const std::string name) : ComponentC(name)
         {
-            mAlphaZc1 = 0;
-            mAlphaZc2 = 0;
-            mC1Effective = 0;
-            mC2Effective =0;
-            mC1Internal = 0;
-            mC2Internal = 0;
-            mC1InternalEffective = 0;
-            mC2InternalEffective = 0;
-            mC1Internal0 = 0;
-            mC2Internal0 = 0;
-            mC1Internal0Effective = 0;
-            mC2Internal0Effective = 0;
-            mClp = 0;
-            mCt1 = 0;
-            mCt2 = 0;
-            mCt1Effective = 0;
-            mCt2Effective = 0;
-            mP1Effective = 0;
-            mP2Effective = 0;
-            mPm1 = 0;
-            mPm2 = 0;
-            mPm1Effective = 0;
-            mPm2Effective = 0;
-            mP1Internal = 0;
-            mP2Internal = 0;
-            mP1InternalEffective = 0;
-            mP2InternalEffective = 0;
-            mQ1Internal = 0;
-            mQ2Internal = 0;
-            mQ1InternalEffective = 0;
-            mQ2InternalEffective = 0;
-            mMinVolume1 = 0;
-            mMinVolume2 = 0;
-            mZc10 = 0;
-            mZc20 = 0;
-            mXInternal = 0;;
-            mVInternal = 0;;
-            mWfak = 0;;
-            mAlpha = 0;;
-            mZSpring = 0;
-            mZSpring0 = 0;
-            mCSpring = 0;
-            mCSpring0 = 0;
-            mKSpring = 0;
-
-            mDebugCount = 0;
-
             //Set member attributes
             mTypeName = "HydraulicCylinderC";
-            mArea1 = 1.0e-3;
-            mArea2 = 1.0e-3;
-            mStroke = 1.0;
-            mEquivalentMass = 1000.0;
-            mDeadVolume1 = 3.0e-4;
-            mDeadVolume2 = 3.0e-4;
-            mBp = 10;
-            mBetae = 1.0e9;
-            mAlphaSpring = 0.5;
-            mWfak = 0.1;
-            mAlpha = 0.01;
+
+            n = 0;
+            alfa = .01;
+            wfak = .1;
+
+            ifl = 1;
+            n1total = 1;
+            n2total = 1;
+
+            betae = 1000000000.0;
+            me = 1000.0;
+            V01 = 0.0003;
+            V01 = 0.0003;
+            A1 = 0.001;
+            A2 = 0.001;
+            sl = 1.0;
+            cLeak = 0.0;
+            bp = 0.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
-            //mpDebug1 = addWritePort("Debug1", "NodeSignal");
-            //mpDebug2 = addWritePort("Debug2", "NodeSignal");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("Area1", "Piston Area 1", "[m^2]", mArea1);
-            registerParameter("Area2", "Piston Area 2", "[m^2]", mArea2);
-            registerParameter("Stroke", "Stroke", "[m]", mStroke);
-            registerParameter("EquivalentMass", "Equivalent Load Mass", "[kg]", mEquivalentMass);
-            registerParameter("DeadVolume1", "Dead Volume in Chamber 1", "[m^3]", mDeadVolume1);
-            registerParameter("DeadVolume2", "Dead Volume in Chamber 2", "[m^3]", mDeadVolume2);
-            registerParameter("Bp", "Damping Coefficient", "[Ns/m]", mBp);
-            registerParameter("Betae", "Bulk Modulus", "[Pa]", mBetae);
-            registerParameter("Cip", "Leakage Coefficient", "?", mLeakageCoefficient);
+            registerParameter("A1", "Piston Area 1", "[m^2]", A1);
+            registerParameter("A2", "Piston Area 2", "[m^2]", A2);
+            registerParameter("sl", "Stroke", "[m]", sl);
+            registerParameter("me", "Equivalent Load Mass", "[kg]", me);
+            registerParameter("V01", "Dead Volume in Chamber 1", "[m^3]", V01);
+            registerParameter("V02", "Dead Volume in Chamber 2", "[m^3]", V02);
+            registerParameter("bp", "Damping Coefficient", "[Ns/m]", bp);
+            registerParameter("betae", "Bulk Modulus", "[Pa]", betae);
+            registerParameter("cLeak", "Leakage Coefficient", "-", cLeak);
         }
 
 
         void initialize()
         {
+            double p1   = mpP1->readNode(NodeHydraulic::PRESSURE);
+            double q1   = mpP1->readNode(NodeHydraulic::FLOW);
+            double p2   = mpP2->readNode(NodeHydraulic::PRESSURE);
+            double q2   = mpP2->readNode(NodeHydraulic::FLOW);
+            double f3   = mpP3->readNode(NodeMechanic::FORCE);
+            double x3   = mpP3->readNode(NodeMechanic::POSITION);
+            double v3   = mpP3->readNode(NodeMechanic::VELOCITY);
 
-            double x   = mpP3->readNode(NodeMechanic::POSITION);
-            double v   = mpP3->readNode(NodeMechanic::VELOCITY);
-            mXInternal = -x;
-            mVInternal = -v;
+            zlim0 = wfak * me / mTimestep;
+            V1min = betae * mTimestep*mTimestep * A1*A1 / (wfak * me);
+            V2min = betae * mTimestep*mTimestep * A2*A2 / (wfak * me);
+            xi3 = -x3;
+            vi3 = -v3;
+            V1 = V01 + A1 * xi3;
+            V2 = V01 + A2 * (sl - xi3);
+            if (V1 < V1min) { V1 = V1min; }
+            if (V2 < V2min) { V2 = V2min; }
+            Zc1 = betae * mTimestep / V1;
+            Zc2 = betae * mTimestep / V2;
 
-            mZSpring0 = mWfak * mEquivalentMass / mTimestep;
+            double c1 = p1 - Zc1 * q1;
+            double c2 = p2 - Zc2 * q2;
 
-            mMinVolume1 = mBetae * mTimestep*mTimestep  * mArea1*mArea1 / (mWfak * mEquivalentMass);
-            mMinVolume2 = mBetae * mTimestep*mTimestep  * mArea2*mArea2 / (mWfak * mEquivalentMass);
-
-            mVolume1 = mDeadVolume1 + mXInternal*mArea1;
-            mVolume2 = mDeadVolume2 + (mStroke-mXInternal)*mArea2;
-            if (mVolume1 < mMinVolume1) { mVolume1 = mMinVolume1; }
-            if (mVolume2 < mMinVolume2) { mVolume2 = mMinVolume2; }
-
-            mZc10 = mBetae*mTimestep/mVolume1;
-            mZc20 = mBetae*mTimestep/mVolume2;
-
-            mPrevZc1 = mZc10;
-            mPrevZc2 = mZc20;
-
-            mQ1Internal = -mArea1 * mVInternal;
-            mQ2Internal = mArea2 * mVInternal;
-
-            double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
-
-            double c1 = p1 - mZc10 * mQ1Internal;
-            double c2 = p2 - mZc20 * mQ2Internal;
-
-            mPrevC1 = c1;
-            mPrevC2 = c2;
-
-            mC1Internal = p1 - mZc10 * (mQ1Internal - mLeakageCoefficient * (p1 - p2));
-            mC2Internal = p2 - mZc20 * (mQ2Internal - mLeakageCoefficient * (p2 - p1));
-
-            mPrevC1Internal = mC1Internal;
-            mPrevC2Internal = mC2Internal;
-            mPrevC1InternalEffective = mC1Internal;
-            mPrevC2InternalEffective = mC2Internal;
-
-            double c3 = mC1Internal*mArea1 - mC2Internal*mArea2;
-            double Zc3 = mZc10*mArea1*mArea1 + mZc20*mArea2*mArea2 + mBp;
-
-            mPrevCSpring = 0.0;
+            qi1 = -A1 * vi3;
+            qi2 = A2 * vi3;
+            ci1 = p1 - Zc1 * (qi1 - cLeak * (p1 - p2));
+            ci2 = p2 - Zc2 * (qi2 - cLeak * (p2 - p1));
+            double c3 = f3;
+            double Zx3 = A1 * A1 * Zc1 + A2 * A2 * Zc2 + bp;
 
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::FLOW,     mQ1Internal);
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
-            mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc10);
-            mpP2->writeNode(NodeHydraulic::FLOW,     mQ2Internal);
+            mpP1->writeNode(NodeMechanic::CHARIMP,       Zc1);
             mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
-            mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc20);
-            mpP3->writeNode(NodeMechanic::POSITION,      -mXInternal);
-            mpP3->writeNode(NodeMechanic::VELOCITY,      -mVInternal);
-            mpP3->writeNode(NodeMechanic::FORCE,        c3);
-            mpP3->writeNode(NodeMechanic::WAVEVARIABLE, c3);
-            mpP3->writeNode(NodeMechanic::CHARIMP,      Zc3);
+            mpP2->writeNode(NodeMechanic::CHARIMP,       Zc2);
+            mpP3->writeNode(NodeMechanic::WAVEVARIABLE,  c3);
+            mpP3->writeNode(NodeMechanic::CHARIMP,       Zx3);
         }
-
-        //DEBUG: Initialization is verified against old Hopsan
 
         void simulateOneTimestep()
         {
@@ -241,165 +143,59 @@ namespace hopsan {
             double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
             double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 
-            double x   = mpP3->readNode(NodeMechanic::POSITION);
-            double v   = mpP3->readNode(NodeMechanic::VELOCITY);
+            double x3   = mpP3->readNode(NodeMechanic::POSITION);
+            double v3   = mpP3->readNode(NodeMechanic::VELOCITY);
             double c3  = mpP3->readNode(NodeMechanic::WAVEVARIABLE);
-            double Zc3 = mpP3->readNode(NodeMechanic::CHARIMP);
+            double Zx3 = mpP3->readNode(NodeMechanic::CHARIMP);
 
-            mXInternal = -x;
-            mVInternal = -v;
+            //Internal mechanical port
+            xi3 = -x3;
+            vi3 = -v3;
 
-                // Volumetric impedances
-            mVolume1 = mDeadVolume1 + mArea1 * mXInternal;
-            mVolume2 = mDeadVolume2 + mArea2 * (mStroke - mXInternal);
-            if (mVolume1 < mMinVolume1) { mVolume1 = mMinVolume1; }
-            if (mVolume2 < mMinVolume2) { mVolume2 = mMinVolume2; }
-            //Checked
-            mZc10 = mBetae * mTimestep / mVolume1;
-            mZc20 = mBetae * mTimestep / mVolume2;
-            mAlphaZc1 = mZc10 / mPrevZc1;
-            mAlphaZc2 = mZc20 / mPrevZc2;
-            //Checked
-            mQ1Internal = -mArea1 * mVInternal;
-            mQ2Internal = mArea2 * mVInternal;
-            //Checked
-            mP1Internal = (mC1Internal + mQ1Internal * mZc10 + mLeakageCoefficient * (mC2Internal*mZc10 + mC1Internal*mZc20 + mQ1Internal*mZc10*mZc20 + mQ2Internal*mZc10*mZc20)) / (mLeakageCoefficient*(mZc10 + mZc20) + 1);
-            mP2Internal = (mC2Internal + mQ2Internal * mZc20 + mLeakageCoefficient * (mC2Internal*mZc10 + mC1Internal*mZc20 + mQ1Internal*mZc10*mZc20 + mQ2Internal*mZc10*mZc20)) / (mLeakageCoefficient*(mZc10 + mZc20) + 1);
-            //Checked
-            mP1InternalEffective = mP1Internal;
-            mP2InternalEffective = mP2Internal;
-            if (mP1InternalEffective < 0.0) { mP1InternalEffective = 0.0; }
-            if (mP2InternalEffective < 0.0) { mP2InternalEffective = 0.0; }
-            //Checked
-            mQ1InternalEffective = mQ1Internal - mLeakageCoefficient*(mP1InternalEffective - mP2InternalEffective);
-            mQ2InternalEffective = mQ2Internal - mLeakageCoefficient*(mP2InternalEffective - mP1InternalEffective);
-            //Checked
+            //Calculate volumes
+            V1 = V01 + A1 * xi3;
+            V2 = V01 + A2 * (sl - xi3);
+            if (V1 < V1min) { V1 = V1min; }
+            if (V2 < V2min) { V2 = V2min; }
 
-                // Characteristics
-            mCt1 = c1 + mZc10 * 2 * q1;
-            mCt1 = mCt1 + mP1Internal + mZc10 * mQ1InternalEffective;
-            mPm1 = mCt1 / 2;
+            //Volume impedances
+            Zc1 = betae * mTimestep / V1;
+            Zc2 = betae * mTimestep / V2;
 
-            mCt2 = c2 + mZc20 * 2 * q2;
-            mCt2 = mCt2 + mP2Internal + mZc20 * mQ2InternalEffective;
-            mPm2 = mCt2 / 2;
-            //Checked
-            mC1Internal0 = mPm1 * (mAlphaZc1 + 1) - mAlphaZc1 * mP1Internal - mAlphaZc1 * mZc10 * mQ1InternalEffective;
-            mC1Internal = (1 - mAlpha) * mC1Internal0 + mAlpha * (mPrevC1Internal + (mPrevZc1 - mZc10) * mQ1InternalEffective);
-            mPrevC1Internal = mC1Internal;
-            //Checked
-            mC1Effective = mPm1 * (mAlphaZc1 + 1) - mAlphaZc1 * c1 - mAlphaZc1 * 2 * mPrevZc1 * q1;
-            c1 = (1 - mAlpha) * mC1Effective + mAlpha * (mPrevC1 + (mPrevZc1 - mZc10) * q1);
-            mPrevC1 = c1;
-            Zc1 = mZc10;
-            //Checked
-            mC2Internal0 = mPm2 * (mAlphaZc2 + 1) - mAlphaZc2 * mP2Internal - mAlphaZc2 * mZc20 * mQ2InternalEffective;
-            mC2Internal = (1 - mAlpha) * mC2Internal0 + mAlpha * (mPrevC2Internal + (mPrevZc2 - mZc20) * mQ2InternalEffective);
-            mPrevC2Internal = mC2Internal;
-            //Checked
-            mC2Effective = mPm2 * (mAlphaZc2 + 1) - mAlphaZc2 * c2 - mAlphaZc2 * 2 * mPrevZc2 * q2;
-            c2 = (1 - mAlpha) * mC2Effective + mAlpha * (mPrevC2 + (mPrevZc2 - mZc20) * q2);
-            mPrevC2 = c2;
-            Zc2 = mZc20;
-            //Checked
+            //Calculate internal flow and pressure
+            qi1 = -A1 * vi3;
+            qi2 = A2 * vi3;
+            pi1 = (ci1 + qi1 * Zc1 + cLeak * (ci2 * Zc1 + ci1 * Zc2)) / (cLeak * (Zc1 + Zc2) + 1);
+            pi2 = (ci2 + qi2 * Zc2 + cLeak * (ci2 * Zc1 + ci1 * Zc2)) / (cLeak * (Zc1 + Zc2) + 1);
+            if (pi1 < 0.0) { pi1 = 0.0; }
+            if (pi2 < 0.0) { pi2 = 0.0; }
+            qi1 = qi1 - cLeak * (pi1 - pi2);
+            qi2 = qi2 - cLeak * (pi2 - pi1);
 
-                // Effective characteristics
-            mP1Effective = p1;
-            if (mP1Effective < 0.0) { mP1Effective = 0.0; }
-            mCt1Effective = 0.0;
-            mCt1Effective = mCt1Effective + mP1Effective + mZc10 * q1;
-            mCt1Effective = mCt1Effective + mP1InternalEffective + mZc10 * mQ1InternalEffective;
-            mPm1Effective = mCt1Effective / 2;
+            //Calucluate wave variables in chamber 1
+            c1_0 = pi1 + 2*Zc1*qi1;
+            ci1_0 = p1 + 2*Zc1*q1;
+            c1 = alfa*c1 + (1 - alfa)*c1_0;
+            ci1 = alfa*c1 + (1 - alfa)*ci1_0;
 
-            mP2Effective = p2;
-            if (mP2Effective < 0.0) { mP2Effective = 0.0; }
-            mCt2Effective = 0.0;
-            mCt2Effective = mCt2Effective + mP2Effective + mZc20 * q2;
-            mCt2Effective = mCt2Effective + mP2InternalEffective + mZc20 * mQ2InternalEffective;
-            mPm2Effective = mCt2Effective / 2;
-            //Checked
+            //Calucluate wave variables in chamber 2
+            c2_0 = pi2 + 2*Zc2*qi2;
+            ci2_0 = p2 + 2*Zc2*q2;
+            c2 = alfa*c2 + (1 - alfa)*c2_0;
+            ci2 = alfa*c2 + (1 - alfa)*ci2_0;
 
-                // Effective characteristics at the piston taking account for cavitation
-            mC1Internal0Effective = mPm1Effective * (mAlphaZc1 + 1) - mAlphaZc1 * mP1InternalEffective - mAlphaZc1 * mZc10 * mQ1InternalEffective;
-            mC2Internal0Effective = mPm2Effective * (mAlphaZc2 + 1) - mAlphaZc2 * mP2InternalEffective - mAlphaZc2 * mZc20 * mQ2InternalEffective;
-            mC1InternalEffective = (1 - mAlpha) * mC1Internal0Effective + mAlpha * (mPrevC1InternalEffective + (mPrevZc1 - mZc10) * mQ1InternalEffective);
-            mC2InternalEffective = (1 - mAlpha) * mC2Internal0Effective + mAlpha * (mPrevC2InternalEffective + (mPrevZc2 - mZc20) * mQ2InternalEffective);
-            mPrevC1InternalEffective = mC1InternalEffective;
-            mPrevC2InternalEffective = mC2InternalEffective;
-            mPrevZc1 = mZc10;
-            mPrevZc2 = mZc20;
-            //Checked
-                // Force characteristics
+            //Calculate mean pressure in chambers
+            if (p1 < 0.0) { p1 = 0.0; }
+            cp1_0 = (p1 + Zc1*q1 + pi1 + Zc1*qi1) / 2;
+            if (p2 < 0.0) { p2 = 0.0; }
+            cp2_0 = (p2 + Zc2*q2 + pi2 + Zc2*qi2) / 2;
+            cp1 = (1 - alfa) * cp1_0 + alfa * cp1;
+            cp2 = (1 - alfa) * cp2_0 + alfa * cp2;
 
-            mAlphaSpring = 0.5;
-            if (mXInternal > mStroke)
-            {
-                mZSpring = mZSpring0 / (1.0 - mAlphaSpring);
-                mCSpring0 = -mZSpring0 / mTimestep * (mXInternal - mStroke) - mZSpring0 * mVInternal;
-
-                if(mDebugCount == 100)
-                {
-                    mDebugCount = 0;
-                    std::stringstream ss;
-                    ss << "mCSpring0 = -";
-                    ss << mZSpring0;
-                    ss << " / ";
-                    ss << mTimestep;
-                    ss << " * (";
-                    ss << mXInternal;
-                    ss << " - ";
-                    ss << mStroke;
-                    ss << ") - ";
-                    ss << mZSpring0;
-                    ss << " * ";
-                    ss << mVInternal;
-                    ss << " = ";
-                    ss << mCSpring0;
-                    addDebugMessage(ss.str());
-                }
-                ++mDebugCount;
-            }
-            else if (mXInternal < 0.0)
-            {
-                mZSpring = mZSpring0 / (1.0 - mAlphaSpring);
-                mCSpring0 = -mZSpring0 / mTimestep * mXInternal - mZSpring0 * mVInternal;
-
-                if(mDebugCount == 100)
-                {
-                    mDebugCount = 0;
-                    std::stringstream ss;
-                    ss << "mCSpring0 = -";
-                    ss << mZSpring0;
-                    ss << " / ";
-                    ss << mTimestep;
-                    ss << " * (";
-                    ss << mXInternal;
-                    ss << " - ";
-                    ss << mStroke;
-                    ss << ") - ";
-                    ss << mZSpring0;
-                    ss << " * ";
-                    ss << mVInternal;
-                    ss << " = ";
-                    ss << mCSpring0;
-                    addDebugMessage(ss.str());
-                }
-                ++mDebugCount;
-            }
-            else
-            {
-                mZSpring = 0.0;
-                mCSpring0 = 0.0;
-                mPrevCSpring = 0.0;
-            }
-
-                /* Filtering of the characteristics */
-
-            mCSpring = mAlphaSpring * mPrevCSpring + (1.0 - mAlphaSpring) * mCSpring0;
-            mPrevCSpring = mCSpring;
-
-            c3 = mC1InternalEffective*mArea1 - mC2InternalEffective*mArea2 + mCSpring;
-            Zc3 = mArea1*mArea1 * mZc10 + mArea2*mArea2 * mZc20 + mBp + mZSpring;
+            //Calculate force (with limitation function)
+            this->limitStroke(&clim, &zlim, &xi3, &vi3, &zlim0, &sl, mTime, mTimestep);
+            c3 = cp1*A1 - cp2*A2 + clim;
+            Zx3 = A1*A1 * Zc1 + A2*A2 * Zc2 + bp + zlim;
 
             //Write new values to nodes
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
@@ -407,9 +203,62 @@ namespace hopsan {
             mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
             mpP2->writeNode(NodeHydraulic::CHARIMP,      Zc2);
             mpP3->writeNode(NodeMechanic::WAVEVARIABLE, c3);
-            mpP3->writeNode(NodeMechanic::CHARIMP,      Zc3);
+            mpP3->writeNode(NodeMechanic::CHARIMP,      Zx3);
+        }
+
+
+        //This function was translated from old HOPSAN using F2C. A few manual adjustments were necessary.
+
+        /* ---------------------------------------------------------------- */
+        /*     Function that simulate the end of the stroke. If X is */
+        /*     smaller than 0 or greater than SL a large spring force will */
+        /*     act to force X into the interval again. The spring constant */
+        /*     is as high possible without numerical instability. */
+        /* ---------------------------------------------------------------- */
+
+        void limitStroke(double *clp, double *zlim, double *xp, double *sxp, double *zlim0, double *sl, double time, double timestep)
+        {
+            static double alfa = .5f;
+
+            /* Local variables */
+            static double climp, flimp, climp0, ka, cp, kz;
+
+            //  Initialization
+            if (time == 0) {
+                kz = *zlim0 / timestep;
+                if (*xp > *sl) { flimp = -kz * (*xp - *sl); }
+                else if (*xp < 0.0) { flimp = -kz * *xp; }
+                else { flimp = 0.0; }
+                cp = 0.0;
+            }
+
+            //Equations
+            ka = 1 / (1 - alfa);
+            kz = *zlim0 / timestep;
+            if (*xp > *sl)
+            {
+                *zlim = ka * *zlim0;
+                flimp = -kz * (*xp - *sl);
+                climp0 = flimp - *zlim * *sxp;
+            }
+            else if (*xp < 0.0)
+            {
+                *zlim = ka * *zlim0;
+                flimp = -kz * *xp;
+                climp0 = flimp - *zlim * *sxp;
+            }
+            else
+            {
+                *zlim = 0.0;
+                climp0 = 0.0;
+            }
+
+            // Filtering of the characteristics
+            climp = alfa * cp + (1 - alfa) * climp0;
+            cp = climp;
+            *clp = climp;
         }
     };
 }
 
-#endif // HYDRAULICCYLINDERC_HPP_INCLUDED
+#endif

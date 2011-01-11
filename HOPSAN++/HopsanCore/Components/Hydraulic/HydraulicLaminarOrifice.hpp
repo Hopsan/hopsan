@@ -52,14 +52,8 @@ namespace hopsan {
             c2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zc2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            if(mpIn->isConnected())
-            {
-                Kc_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                Kc_ptr = new double(Kc);
-            }
+            if(mpIn->isConnected()) { Kc_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
+            else { Kc_ptr = new double(Kc); }
         }
 
 

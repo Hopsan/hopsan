@@ -56,7 +56,7 @@ double hopsan::boolToDouble(bool value)
 
 //! @brief Returns the sign of a double (-1.0 or +1.0)
 //! @param x Value to determine sign on
-double sign(double x)
+double hopsan::sign(double x)
 {
     if (x>=0.0)
     {

@@ -63,7 +63,8 @@ namespace hopsan {
 
         void initialize()
         {
-            output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            if(mpOut->isConnected()) { output = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
+            else { output = new double(); }
             (*output) = mBaseValue;
         }
 

@@ -43,34 +43,15 @@ namespace hopsan {
 
         void initialize()
         {
-                //Make in1 or in2 be zero if they are not connected
-            if(mpIn1->isConnected())
-            {
-                in1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                in1 = new double(0);
-            }
 
-            if(mpIn2->isConnected())
-            {
-                in2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                in2 = new double(0);
-            }
+            if(mpIn1->isConnected()) { in1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE); }
+            else { in1 = new double(0); }
 
-                //output must be connected
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double(0);
-            }
+            if(mpIn2->isConnected()) { in2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE); }
+            else { in2 = new double(0); }
+
+            if(mpOut->isConnected()) { output = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
+            else { output = new double(); }
         }
 
 

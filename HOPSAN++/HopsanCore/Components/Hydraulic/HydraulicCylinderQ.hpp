@@ -50,6 +50,9 @@ namespace hopsan {
         double mTao;
         SecondOrderFilter mPositionFilter;
         SecondOrderFilter mVelocityFilter;
+        double posnum[3], posden[3], velnum[3], velden[3];
+        double p1, q1, c1, Zc1, p2, q2, c2, Zc2, v1, cx1, Zx1, f2, x2, v2, cx2, Zx2;
+        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr, *f2_ptr, *x2_ptr, *v2_ptr, *cx2_ptr, *Zx2_ptr;
         Port *mpP1, *mpP2, *mpP3;
 
     public:
@@ -86,77 +89,92 @@ namespace hopsan {
 
         void initialize()
         {
+            //Assign node data pointers
+            p1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            p2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            q2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            c2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zc2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            f2_ptr = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
+            x2_ptr = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
+            v2_ptr = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            cx2_ptr = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            Zx2_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+
+            //Read data from nodes
+            x2 = (*x2_ptr);
+            v2 = (*v2_ptr);
+            Zc1 = (*Zc1_ptr);
+            Zc2 = (*Zc2_ptr);
+            cx2 = (*cx2_ptr);
+            Zx2 = (*Zx2_ptr);
+
+            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
+
             //Initialization of filters
+            posnum[0] = 0.0;
+            posnum[1] = 0.0;
+            posnum[2] = 1.0;
+            posden[0] = mMass;
+            posden[1] = mBl+Zx1+Zx2;
+            posden[2] = mKl;
+            velnum[0] = 0.0;
+            velnum[1] = 1.0;
+            velnum[2] = 0.0;
+            velden[0] = 0.0;
+            velden[1] = mTao;
+            velden[2] = 1.0;
 
-            double x2 = mpP3->readNode(NodeMechanic::POSITION);
-            double v2 = mpP3->readNode(NodeMechanic::VELOCITY);
-            //double c1 = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeMechanic::CHARIMP);
-            //double c2 = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
-            double Zc2 = mpP2->readNode(NodeMechanic::CHARIMP);
-            //double cx1 = mArea1*c1 - mArea2*c2;
-            double Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
-            double cx2 = mpP3->readNode(NodeMechanic::WAVEVARIABLE);
-            double Zx2 = mpP3->readNode(NodeMechanic::CHARIMP);
-
-            double posnum [3] = {0.0, 0.0, 1.0};
-            double posden [3] = {mMass, mBl+Zx1+Zx2, mKl};
-            double velnum [3] = {0.0, 1.0, 0.0};
-            double velden [3] = {0.0, mTao, 1.0};
             mPositionFilter.initialize(mTimestep, posnum, posden, cx2, x2, 0.0, mStroke);
             mVelocityFilter.initialize(mTimestep, velnum, velden, x2, v2);
-
-            //mPositionFilter.update(cx1-cx2);
-            //mVelocityFilter.update(cx1-cx2);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-            double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
-            double cx2 = mpP3->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zx2 = mpP3->readNode(NodeHydraulic::CHARIMP);
+            c1 = (*c1_ptr);
+            Zc1 = (*Zc1_ptr);
+            c2 = (*c2_ptr);
+            Zc2 = (*Zc2_ptr);
+            cx2 = (*cx2_ptr);
+            Zx2 = (*Zx2_ptr);
 
             //CylinderCtest Equations
 
             //Internal mechanical port
-            double cx1 = mArea1*c1 - mArea2*c2;
-            double Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
+            cx1 = mArea1*c1 - mArea2*c2;
+            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
 
             //Piston
-            double posnum [3] = {0.0, 0.0, 1.0};
-            double posden [3] = {mMass, mBl+Zx1+Zx2, mKl};
+            posden [1] = mBl+Zx1+Zx2;
             mPositionFilter.setNumDen(posnum, posden);
             mPositionFilter.update(cx1-cx2);
-            double x2 = mPositionFilter.value();
+            x2 = mPositionFilter.value();
 
-            double velnum [3] = {0.0, 1.0, 0.0};
-            double velden [3] = {0.0, mTao, 1.0};
-            mVelocityFilter.setNumDen(velnum, velden);
             mVelocityFilter.update(x2);
-            double v2 = mVelocityFilter.value();
+            v2 = mVelocityFilter.value();
 
-            double v1 = -v2;
-            double F2 = cx2 + Zc2*v2;
+            v1 = -v2;
+            f2 = cx2 + Zc2*v2;
 
             //Volumes
-            double q1 = mArea1*v1;
-            double q2 = mArea2*v2;
-            double p1 = c1 + Zc1*q1;
-            double p2 = c2 + Zc2*q2;
+            q1 = mArea1*v1;
+            q2 = mArea2*v2;
+            p1 = c1 + Zc1*q1;
+            p2 = c2 + Zc2*q2;
 
             //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::FLOW, q1);
-            mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::FLOW, q2);
-            mpP3->writeNode(NodeMechanic::POSITION, x2);
-            mpP3->writeNode(NodeMechanic::VELOCITY, v2);
-            mpP3->writeNode(NodeMechanic::FORCE, F2);
+            (*p1_ptr) = p1;
+            (*q1_ptr) = q1;
+            (*p2_ptr) = p2;
+            (*q2_ptr) = q2;
+            (*f2_ptr) = f2;
+            (*x2_ptr) = x2;
+            (*v2_ptr) = v2;
         }
     };
 }
