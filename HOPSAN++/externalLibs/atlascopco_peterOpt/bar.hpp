@@ -47,8 +47,8 @@ namespace hopsan {
         double Area;
         int NofEl;
         int indexToBeDelayed, indexDelayed;
-        double Cx1;
-        double Cx2;
+//        double Cx1;
+//        double Cx2;
         double Cx1old;
         double Cx2old;
         double V0;//, F1S, F2S;
@@ -136,8 +136,8 @@ namespace hopsan {
             Zx = RHOB*Wavespeed*AreaCorr;
 
             //Start values for wave variables
-            Cx1=F1+Zx*(-V0);
-            Cx2=F2+Zx*( V0);
+            double Cx1=F1+Zx*(-V0);
+            double Cx2=F2+Zx*( V0);
 //            Cx1NofEl.assign( int(NofEl-1) , Cx1);
 //            Cx2NofEl.assign( int(NofEl-1) , Cx2);
             Cx1NofEl.initialize(NofEl, Cx1);
@@ -186,8 +186,8 @@ namespace hopsan {
             double Cx2new = Cx2NofEl.update(Cx1old + 2.*Zx*V2);
 
              //First order filter
-            Cx1=mFilterLPCx1.update(Cx1new);
-            Cx2=mFilterLPCx2.update(Cx2new);
+            double Cx1=mFilterLPCx1.update(Cx1new);
+            double Cx2=mFilterLPCx2.update(Cx2new);
 
             //Write new values to nodes
 //            pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx2);

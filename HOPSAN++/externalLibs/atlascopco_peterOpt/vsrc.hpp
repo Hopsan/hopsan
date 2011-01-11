@@ -25,8 +25,8 @@ namespace hopsan {
     {
 
     private:
-        double V1S;
         double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *in_ptr;
+        double V1S;
         Integrator XINT;
         Port *pP1, *pIN;
 
@@ -91,8 +91,8 @@ namespace hopsan {
 //            pP1->writeNode(NodeMechanic::POSITION, X1S);
 //            pP1->writeNode(NodeMechanic::VELOCITY, V1);
 //            pP1->writeNode(NodeMechanic::FORCE, F1S);
-            *X1_ptr = X1;
-            *V1_ptr = V1;
+            //*X1_ptr = X1;
+            //*V1_ptr = V1;
             //*F1_ptr = F1S;
         }
 
