@@ -28,7 +28,7 @@ namespace hopsan {
 
     private:
         double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *F2_ptr, *X2_ptr, *V2_ptr, *Cx2_ptr, *Zx2_ptr;
-        double X1S, X2S, V1S, V2S, F1S, F2S;
+//        double X1S, X2S, V1S, V2S, F1S, F2S;
         bool CONTACT;
         Integrator XINT1, XINT2;
         Port *pP1, *pP2;
@@ -45,12 +45,12 @@ namespace hopsan {
             mTypeName = "sep2";
 
             //Startvalues
-            X2S = 0;
-            X1S = 0;
-            V1S = 0;
-            V2S = 0;
-            F1S = 0;
-            F2S = 0;
+//            X2S = 0;
+//            X1S = 0;
+//            V1S = 0;
+//            V2S = 0;
+//            F1S = 0;
+//            F2S = 0;
 
 
             //Add ports to the component
@@ -58,12 +58,12 @@ namespace hopsan {
             pP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register parameters to be seen in simulation environment.
-            registerParameter("Node 1 position", "Position", "[m]",   X1S);
-            registerParameter("Node 2 position", "Position", "[m]",   X2S);
-            registerParameter("Node 1 velocity", "Velocity", "[m/s]",   V1S);
-            registerParameter("Node 2 velocity", "Velocity", "[m/s]",   V2S);
-            registerParameter("Node 1 force", "Force", "[N]",   F1S);
-            registerParameter("Node 2 force", "Force", "[N]",   F2S);
+//            registerParameter("Node 1 position", "Position", "[m]",   X1S);
+//            registerParameter("Node 2 position", "Position", "[m]",   X2S);
+//            registerParameter("Node 1 velocity", "Velocity", "[m/s]",   V1S);
+//            registerParameter("Node 2 velocity", "Velocity", "[m/s]",   V2S);
+//            registerParameter("Node 1 force", "Force", "[N]",   F1S);
+//            registerParameter("Node 2 force", "Force", "[N]",   F2S);
 
         }
 
@@ -82,8 +82,13 @@ namespace hopsan {
             Cx2_ptr = pP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
             Zx2_ptr = pP2->getNodeDataPtr(NodeMechanic::CHARIMP);
 
-            //Read all values from ports.
-            //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
+            //Read node startvalues values from ports.
+            double F1 = *F1_ptr;
+            double V1 = *V1_ptr;
+            double X1 = *X1_ptr;
+            double F2 = *F2_ptr;
+            double V2 = *V2_ptr;
+            double X2 = *X2_ptr;
 
 //            double Zx1  = pP1->readNode(NodeMechanic::CHARIMP);
 //            double Cx1  = pP1->readNode(NodeMechanic::WAVEVARIABLE);
@@ -95,15 +100,15 @@ namespace hopsan {
             double Cx2 = *Cx2_ptr;
 
             //If impedance = 0, let Characteristic = Force on node.
-            if(Zx1==0) Cx1 = F1S;
-            if(Zx2==0) Cx2 = F2S;
+            if(Zx1==0) Cx1 = F1;
+            if(Zx2==0) Cx2 = F2;
 
 
             //Determine if contact or not.
-            CONTACT = ((X1S+X2S <= 0 ? true : false));
+            CONTACT = ((X1+X2 <= 0 ? true : false));
 
-            XINT1.initialize(mTimestep, V1S, X1S);
-            XINT2.initialize(mTimestep, V2S, X2S);
+            XINT1.initialize(mTimestep, V1, X1);
+            XINT2.initialize(mTimestep, V2, X2);
 
             //Write new values to nodes               
 //            pP1->writeNode(NodeMechanic::POSITION, X1S);
@@ -114,12 +119,12 @@ namespace hopsan {
 //            pP2->writeNode(NodeMechanic::FORCE, F2S);
 //            pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx1);
 //            pP2->writeNode(NodeMechanic::WAVEVARIABLE, Cx2);
-            *X1_ptr = X1S;
-            *X2_ptr = X2S;
-            *V1_ptr = V1S;
-            *V2_ptr = V2S;
-            *F1_ptr = F1S;
-            *F2_ptr = F2S;
+            //*X1_ptr = X1S;
+            //*X2_ptr = X2S;
+            //*V1_ptr = V1S;
+            //*V2_ptr = V2S;
+            //*F1_ptr = F1S;
+            //*F2_ptr = F2S;
             *Cx1_ptr = Cx1;
             *Cx2_ptr = Cx2;
         }

@@ -25,7 +25,7 @@ namespace hopsan {
     {
 
     private:
-        double X1S, F1S, V1S;
+        //double X1S, F1S, V1S;
         double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *in_ptr;
         Integrator XINT;
         Port *pP1, *pIN;
@@ -41,19 +41,19 @@ namespace hopsan {
             //Set member attributes
             mTypeName = "vsrc";
 
-            //Startvalues
-            X1S = 0;
-            V1S = 0;
-            F1S = 0;
+//            //Startvalues
+//            X1S = 0;
+//            V1S = 0;
+//            F1S = 0;
 
             //Add ports to the component
             pP1 = addPowerPort("P1", "NodeMechanic");
             pIN = addReadPort("IN", "NodeSignal", Port::NOTREQUIRED);
 
             //Register parameters to be seen in simulation environment.
-            registerParameter("Position", "startvalue", "[m]",   X1S);
-            registerParameter("Velocity", "startvalue", "[m/s]",   V1S);
-            registerParameter("Force", "startvalue", "[N]",   F1S);
+//            registerParameter("Position", "startvalue", "[m]",   X1S);
+//            registerParameter("Velocity", "startvalue", "[m/s]",   V1S);
+//            registerParameter("Force", "startvalue", "[N]",   F1S);
         }
 
 
@@ -77,21 +77,23 @@ namespace hopsan {
             }
             else
             {
-                in_ptr = new double(V1S);
+                in_ptr = new double(0.0);
             }
 
+            //read start node values
             double V1 = *in_ptr;
+            double X1 = *X1_ptr;
 
             //Initiate the integrator
-            XINT.initialize(mTimestep, V1, X1S);
+            XINT.initialize(mTimestep, V1, X1);
 
             //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
 //            pP1->writeNode(NodeMechanic::POSITION, X1S);
 //            pP1->writeNode(NodeMechanic::VELOCITY, V1);
 //            pP1->writeNode(NodeMechanic::FORCE, F1S);
-            *X1_ptr = X1S;
+            *X1_ptr = X1;
             *V1_ptr = V1;
-            *F1_ptr = F1S;
+            //*F1_ptr = F1S;
         }
 
         void simulateOneTimestep()

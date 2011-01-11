@@ -27,7 +27,7 @@ namespace hopsan {
 
     private:
         double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *in_ptr;
-        double X1S, F1S, V1S;
+        //double X1S, F1S, V1S;
         Integrator XINT;
         Port *pP1, *pIN;
 
@@ -43,18 +43,18 @@ namespace hopsan {
             mTypeName = "fsrc";
 
             //Startvalues
-            X1S = 0;
-            V1S = 0;
-            F1S = 0;
+//            X1S = 0;
+//            V1S = 0;
+//            F1S = 0;
 
             //Add ports to the component
             pP1 = addPowerPort("P1", "NodeMechanic");
             pIN = addReadPort("IN", "NodeSignal", Port::NOTREQUIRED);
 
             //Register parameters to be seen in simulation environment.
-            registerParameter("Position", "startvalue", "[m]",   X1S);
-            registerParameter("Velocity", "startvalue", "[m/s]",   V1S);
-            registerParameter("Force", "startvalue", "[N]",   F1S);
+//            registerParameter("Position", "startvalue", "[m]",   X1S);
+//            registerParameter("Velocity", "startvalue", "[m/s]",   V1S);
+//            registerParameter("Force", "startvalue", "[N]",   F1S);
         }
 
 
@@ -72,18 +72,23 @@ namespace hopsan {
             }
             else
             {
-                in_ptr = new double(F1S);
+                in_ptr = new double(0.0);
             }
 
+            //Read start node values
+            double V1 = *V1_ptr;
+            double X1 = *X1_ptr;
+
+
             //Initiate the integrator
-            XINT.initialize(mTimestep, V1S, X1S);
+            XINT.initialize(mTimestep, V1, X1);
 
             //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
 //            pP1->writeNode(NodeMechanic::POSITION, X1S);
 //            pP1->writeNode(NodeMechanic::VELOCITY, V1S);
 //            pP1->writeNode(NodeMechanic::FORCE, F1);
-            *X1_ptr = X1S;
-            *V1_ptr = V1S;
+            //*X1_ptr = X1S;
+            //*V1_ptr = V1S;
             *F1_ptr = *in_ptr;
         }
 

@@ -51,7 +51,7 @@ namespace hopsan {
         double Cx2;
         double Cx1old;
         double Cx2old;
-        double V0, F1S, F2S;
+        double V0;//, F1S, F2S;
 //        deque<double> Cx1NofEl;
 //        deque<double> Cx2NofEl;
         Delay Cx1NofEl;
@@ -87,21 +87,22 @@ namespace hopsan {
             EB=2.1e11;
             DMP=1.0;
             V0=0.0;
-            F1S=0.0;
-            F2S=0.0;
+//            F1S=0.0;
+//            F2S=0.0;
             registerParameter("D", "Diameter", "m",  D);
             registerParameter("L", "Length", "m",  L);
             registerParameter("RHOB", "Density", "kg/m3", RHOB);
             registerParameter("EB", "Young's modulus", "Pa", EB);
             registerParameter("DMP", ">0 gives damping", "-", DMP);
             registerParameter("v21", "start value velocity 2->1", "m/s", V0);
-            registerParameter("f1", "start value force 1", "-", F1S);
-            registerParameter("f2", "start value force 2", "-", F2S);
+//            registerParameter("f1", "start value force 1", "-", F1S);
+//            registerParameter("f2", "start value force 2", "-", F2S);
         }
 
 
         void initialize()
         {
+            //Assign node data pointeres
             F1_ptr = pP1->getNodeDataPtr(NodeMechanic::FORCE);
             V1_ptr = pP1->getNodeDataPtr(NodeMechanic::VELOCITY);
             Cx1_ptr = pP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
@@ -112,10 +113,14 @@ namespace hopsan {
             Zx2_ptr = pP2->getNodeDataPtr(NodeMechanic::CHARIMP);
 
             //Startvalues, read force and velocity from connected Q-types  DOES NOT WORK!!!!
-            //F1S = pP1->readNode(NodeMechanic::FORCE);
-            //V1S = pP1->readNode(NodeMechanic::VELOCITY);
-            //F2S = pP2->readNode(NodeMechanic::FORCE);
-            //V2S = pP2->readNode(NodeMechanic::VELOCITY);
+//            F1S = pP1->readNode(NodeMechanic::FORCE);
+//            V1S = pP1->readNode(NodeMechanic::VELOCITY);
+//            F2S = pP2->readNode(NodeMechanic::FORCE);
+//            V2S = pP2->readNode(NodeMechanic::VELOCITY);
+            double F1 = *F1_ptr;
+            //double V1 = *V1_ptr; //we set both VV1 and V2 with the startvalueparameter V0
+            double F2 = *F2_ptr;
+            //double V2 = *V2_ptr; //we set both VV1 and V2 with the startvalueparameter V0
 
             //Wave speed
             if (DMP>0.0)Wavespeed=sqrt(EB/RHOB)*Cs;
@@ -131,14 +136,14 @@ namespace hopsan {
             Zx = RHOB*Wavespeed*AreaCorr;
 
             //Start values for wave variables
-            Cx1=F1S+Zx*(-V0);
-            Cx2=F2S+Zx*( V0);
+            Cx1=F1+Zx*(-V0);
+            Cx2=F2+Zx*( V0);
 //            Cx1NofEl.assign( int(NofEl-1) , Cx1);
 //            Cx2NofEl.assign( int(NofEl-1) , Cx2);
             Cx1NofEl.initialize(NofEl, Cx1);
             Cx2NofEl.initialize(NofEl, Cx2);
-            Cx1old=F2S-Zx*(-V0);
-            Cx2old=F1S-Zx*( V0);
+            Cx1old=F2-Zx*(-V0);
+            Cx2old=F1-Zx*( V0);
 
             //Filter frequency and initialization
             if (DMP>0.0)Wf=1./(Kappa*NofEl*mTimestep);
