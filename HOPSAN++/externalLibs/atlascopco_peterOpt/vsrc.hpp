@@ -25,7 +25,7 @@ namespace hopsan {
     {
 
     private:
-        //double X1S, F1S, V1S;
+        double V1S;
         double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *in_ptr;
         Integrator XINT;
         Port *pP1, *pIN;
@@ -43,7 +43,7 @@ namespace hopsan {
 
 //            //Startvalues
 //            X1S = 0;
-//            V1S = 0;
+            V1S = 0;
 //            F1S = 0;
 
             //Add ports to the component
@@ -52,7 +52,7 @@ namespace hopsan {
 
             //Register parameters to be seen in simulation environment.
 //            registerParameter("Position", "startvalue", "[m]",   X1S);
-//            registerParameter("Velocity", "startvalue", "[m/s]",   V1S);
+            registerParameter("Velocity", "If NC", "[m/s]",   V1S);
 //            registerParameter("Force", "startvalue", "[N]",   F1S);
         }
 
@@ -77,7 +77,7 @@ namespace hopsan {
             }
             else
             {
-                in_ptr = new double(0.0);
+                in_ptr = new double(V1S);
             }
 
             //read start node values
