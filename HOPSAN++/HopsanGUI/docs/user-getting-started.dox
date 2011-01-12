@@ -27,7 +27,7 @@
 		
 	\section library Library
 		\htmlonly
-			<a href="library.png"><img src="../graphics/library.png" height=400 border=0></a><br>
+			<a href="../graphics/library.png"><img src="../graphics/library.png" height=400 border=0></a><br>
 		\endhtmlonly
 		Components are added to the workspace by dragging them from the library widget to the left. Standard libraries exist with hydraulic, mechanic and signal components. Each of these categories have a number of subcategories, which makes it easier to find a certain component. External libraries can be loaded either from the File menu, or by right clicking in the library and selecting "Add External Library". 
 		
