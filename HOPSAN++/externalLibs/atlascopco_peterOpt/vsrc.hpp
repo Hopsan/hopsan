@@ -61,25 +61,17 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointeres
-            mpND_F1 = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
-            mpND_X1 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
-            mpND_V1 = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            mpND_Cx1 = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            mpND_Zx1 = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
-
+            mpND_F1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_X1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
+            mpND_V1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_Cx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 //            double V1;
 //            if(pIN->isConnected())
 //                V1  = pIN->readNode(NodeSignal::VALUE);
 //            else
 //                V1=V1S;
-            if(mpIN->isConnected())
-            {
-                mpND_in = mpIN->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                mpND_in = new double(mV1S);
-            }
+            mpND_in = getSafeNodeDataPtr(mpIN, NodeSignal::VALUE, mV1S);
 
             //read start node values
             double V1 = *mpND_in;
@@ -88,13 +80,10 @@ namespace hopsan {
             //Initiate the integrator
             mXINT.initialize(mTimestep, V1, X1);
 
-            //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
+//            //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
 //            pP1->writeNode(NodeMechanic::POSITION, X1S);
 //            pP1->writeNode(NodeMechanic::VELOCITY, V1);
 //            pP1->writeNode(NodeMechanic::FORCE, F1S);
-            //*X1_ptr = X1;
-            //*V1_ptr = V1;
-            //*F1_ptr = F1S;
         }
 
         void simulateOneTimestep()

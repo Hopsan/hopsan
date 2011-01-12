@@ -86,12 +86,12 @@ namespace hopsan {
 //            pP2->writeNode(NodeHydraulic::FLOW, Q20);
 
             //Assign node data pointers
-            mpND_Cx1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zx1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            mpND_P1  = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_Cx2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zx2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            mpND_P2  = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_Cx1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_P1  = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_Cx2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            mpND_P2  = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
 
             //Read values from node data pointers
 //            double Zx1 = pP1->readNode(NodeHydraulic::CHARIMP);

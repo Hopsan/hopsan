@@ -517,6 +517,18 @@ void Component::finalize()
     //assert(false);
 }
 
+//! @brief A finilize method that contains stuff that the user should not need to care about
+//! @todo OK I admit, the name is kind of bad
+void Component::secretFinalize()
+{
+    //delete any created dummy node data variables created and then clear the pointer storage vector
+    for (size_t i=0; i<mDummyNDptrs.size(); ++i)
+    {
+        delete mDummyNDptrs[i];
+    }
+    mDummyNDptrs.clear();
+}
+
 
 //! @brief Set the desired component name
 //! @param [in] name The desired component name
@@ -991,6 +1003,29 @@ void Component::deletePort(const string name)
     {
         gCoreMessageHandler.addWarningMessage("Trying to delete port {" + name + "}, but not found");
     }
+}
+
+//! @brief This is a help function that returns a pointer to desired NodeData
+//! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
+//! @param[in] dataId The enum id for the node value to fetch pointer to
+//! @param[in] defaultvalue Optional default value if port should not be connected (optional), if ommitet it will be 0
+//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
+//! It is only ment to be used insed individual component code and automatically handles creation of dummy veriables
+//! in case optional ports are not connected
+//! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
+double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
+{
+    double *pND;
+    if(pPort->isConnected())
+    {
+        pND = pPort->getNodeDataPtr(dataId);
+    }
+    else
+    {
+        pND = new double(defaultValue);
+        mDummyNDptrs.push_back(pND); //Store the pointer to dummy for automatic finilize removal
+    }
+    return pND;
 }
 
 
@@ -3549,6 +3584,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
         {
             mComponentSignalptrs[s]->finalize();
         }
+        mComponentSignalptrs[s]->secretFinalize();
     }
 
     //C components
@@ -3562,6 +3598,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
         {
             mComponentCptrs[c]->finalize();
         }
+        mComponentCptrs[c]->secretFinalize();
     }
 
     //Q components
@@ -3575,7 +3612,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
         {
             mComponentQptrs[q]->finalize();
         }
-
+        mComponentQptrs[q]->secretFinalize();
     }
 
     //loadStartValuesFromSimulation();

@@ -175,6 +175,7 @@ namespace hopsan {
         //Virtual functions
         virtual void simulateOneTimestep();
         virtual void finalize();
+        virtual void secretFinalize();
         virtual void setTimestep(const double timestep);
 
         //Stop a running simulation
@@ -191,6 +192,9 @@ namespace hopsan {
         bool getPort(const std::string portname, Port* &rpPort);
         std::string renamePort(const std::string oldname, const std::string newname);
         void deletePort(const std::string name);
+
+        //NodeData ptr function
+        double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0);
 
         //Unique name functions
         virtual std::string determineUniquePortName(std::string portname);
@@ -215,6 +219,7 @@ namespace hopsan {
         //Private member variables
         std::string mName;
         std::vector<CompParameter> mParameters;
+        std::vector<double*> mDummyNDptrs; //This vector is used by components to store dummy NodeData pointers that are created for non connected optional ports
         ComponentSystem* mpSystemParent;
         typedef std::map<std::string, Port*> PortPtrMapT;
         typedef std::pair<std::string, Port*> PortPtrPairT;

@@ -80,16 +80,16 @@ namespace hopsan {
             double Zx1, Zx2, F1, F2, V1, X1;
 
             //Assign node data pointers
-            mpND_Zx1 = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
-            mpND_Zx2 = mpP2->getNodeDataPtr(NodeMechanic::CHARIMP);
-            mpND_Cx1 = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            mpND_Cx2 = mpP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            mpND_X1 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
-            mpND_X2 = mpP2->getNodeDataPtr(NodeMechanic::POSITION);
-            mpND_V1 = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            mpND_V2 = mpP2->getNodeDataPtr(NodeMechanic::VELOCITY);
-            mpND_F1  = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
-            mpND_F2  = mpP2->getNodeDataPtr(NodeMechanic::FORCE);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+            mpND_Cx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_Cx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
+            mpND_X1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
+            mpND_X2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
+            mpND_V1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_V2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
+            mpND_F1  = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_F2  = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
 
             //Read values from node data pointers
 //            double Zx1 = mpP1->readNode(NodeMechanic::CHARIMP);
