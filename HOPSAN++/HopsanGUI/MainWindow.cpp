@@ -221,6 +221,8 @@ void MainWindow::show()
 
 void MainWindow::makeSurePlotWidgetIsCreated()
 {
+    qDebug() << "Making sure plot widget is created!";
+
     if(mpPlotWidget == 0)
     {
         mpPlotWidget = new PlotWidget(this);

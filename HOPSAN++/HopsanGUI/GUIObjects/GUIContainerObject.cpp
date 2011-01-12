@@ -531,21 +531,20 @@ void GUIContainerObject::setFavoriteParameter(QString componentName, QString por
 void GUIContainerObject::removeFavoriteParameterByComponentName(QString componentName)
 {
     QList<QStringList>::iterator it;
-    for(it=
-    mFavoriteParameters.begin(); it!=
-    mFavoriteParameters.end(); ++it)
+    for(it=mFavoriteParameters.begin(); it!=mFavoriteParameters.end(); ++it)
     {
         if((*it).at(0) == componentName)
         {
             mFavoriteParameters.removeAll((*it));
+            //! @todo why do we need to care about plotwidget stuff after removing favoriteparameters ?
+            //! Because favorite parameters are shown in the plot widget!
+            gpMainWindow->makeSurePlotWidgetIsCreated();
+            gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
             return;
         }
     }
-    //! @todo why do we need to care about plotwidget stuff after removing favoriteparameters ?
-    gpMainWindow->makeSurePlotWidgetIsCreated();
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
 
-    mpParentProjectTab->hasChanged();
+    mpParentProjectTab->hasChanged();   //! @todo Is this necessary here?
 }
 
 
@@ -601,6 +600,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
         //Register removal of model object in undo stack
         this->mUndoStack->registerDeletedObject(it.value());
         emit componentChanged(); //!< @todo Why do we need to emit this signal after regestering in undostack
+        qDebug() << "Emitting!";
     }
 
 

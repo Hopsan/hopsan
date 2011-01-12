@@ -78,6 +78,8 @@ QString PlotParameterItem::getDataUnit()
 PlotParameterTree::PlotParameterTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
+    qDebug() << "Creating PlotParameterTree!";
+
     mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
     gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.clear();
 
@@ -111,6 +113,8 @@ void PlotParameterTree::updateList()
     QTreeWidgetItem *tempComponentItem;     //Tree item for components
     PlotParameterItem *tempPlotParameterItem;       //Tree item for parameters - reimplemented so they can store information about the parameter
 
+    QVector<double> time;
+    bool timeVectorRetained = false;
     GUIContainerObject::GUIModelObjectMapT::iterator it;
     for(it = mpCurrentContainer->mGUIModelObjectMap.begin(); it!=mpCurrentContainer->mGUIModelObjectMap.end(); ++it)
     {
@@ -129,9 +133,11 @@ void PlotParameterTree::updateList()
             QVector<QString> parameterNames;
             QVector<QString> parameterUnits;
             gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), parameterNames, parameterUnits);
-
-            QVector<double> time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
-
+            if(!timeVectorRetained)
+            {
+                time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
+                timeVectorRetained = true;
+            }
             if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
             {
                 for(int i = 0; i!=parameterNames.size(); ++i)
@@ -327,6 +333,8 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 PlotWidget::PlotWidget(MainWindow *parent)
         : QWidget(parent)
 {
+    qDebug() << "Creating PlotWidget!";
+
     //mpParentMainWindow = parent;
 
     mpPlotParameterTree = new PlotParameterTree(gpMainWindow);
