@@ -132,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Filters","Signal");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Logic","Signal");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Dummy","Signal");
+    //mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Dummy","Signal");
 
     mpLibrary->addEmptyLibrary("Mechanic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Transformers","Mechanic");
@@ -148,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/actuators","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/Dummy","Hydraulic");
+    //mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/Dummy","Hydraulic");
 
     //mpLibrary->addLibrary(QString(COMPONENTPATH) + "_Optimized");
 

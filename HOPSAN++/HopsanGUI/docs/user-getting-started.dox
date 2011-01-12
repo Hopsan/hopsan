@@ -8,24 +8,73 @@
 -# \subpage plotting \n
 
 \page overview Overview
-\todo write this
-
+	\todo finish this
+	
+	The first thing you will see when you open HOPSAN NG is the main window. It will look like this (with some cosmetic differences depending on your operating system):
+	\htmlonly
+		<br><a href="../graphics/mainwindow.png"><img src="../graphics/mainwindow.png" width=700 border=0></a><br>
+	\endhtmlonly
+	It consists of a toolbar at the top, a workspace area in the middle, a component library to the left and a message widget at the bottom. More windows and widgets can be opened later.
+ 
+	\section toolbar Toolbar
+		\htmlonly
+			<img src="../graphics/toolbar.png" width=800 border=0><br>
+		\endhtmlonly
+		The toolbar consists of three parts. The first part of the toolbar consists of file operations such as creating, loading and saving models. The second part has buttons for editing tools, such as copy, paste and undo. The last part holds all simulation controls, such as setting up simulation parameters, running a simulation and opening the plot widget.
+		
+	\section workspace Workspace
+		Models are displayed in the workspace area. More than one model can be opened at the same time. In this case, each model appears in its own tab.
+		
+	\section library Library
+		\htmlonly
+			<a href="library.png"><img src="../graphics/library.png" height=400 border=0></a><br>
+		\endhtmlonly
+		Components are added to the workspace by dragging them from the library widget to the left. Standard libraries exist with hydraulic, mechanic and signal components. Each of these categories have a number of subcategories, which makes it easier to find a certain component. External libraries can be loaded either from the File menu, or by right clicking in the library and selecting "Add External Library". 
+		
+	\section message-widget Message Widget
+		The message widget at the bottom is the program's way of communicating with the user. Messages are displayed in different colors depending on their purpose; black for default messages, orange for warnings, red for errors and blue for debug messages. It is possible to filter which type of message to show by clicking on the colored buttons, and do clear the entire message history. Note that this action cannot be undone! Messages of similar type can also be grouped together, to make the contents more readable.
+		
+	\section python-widget Python Widget
+		It is possible to control HOPSAN NG with the Python scripting language. This can be used to facilitate complicated and time consuming operations, or to automate the execution in different ways.
+		
+		
 \page building-a-model Building a model
-\todo write this
+	Models must be built according to the transmission line element method. You are adviced to read the section on this before you begin.
+	\htmlonly
+		<br><img src="../graphics/portsandnodes.png" width=400 border=0><br>
+	\endhtmlonly
+	Blabla...
+
+
 \section component-library Component Library
 Blabla...
+
+
 \section connecting-components Connecting Components
 Blabla...
+
+
 \section changing-component-parameters Changing Component Parameters
 Blabla...
+
+
 \section using-global-parameters Using Global Parameters
 Blabla...
+
+
 \section groups Groups
 Blabla...
+
+
 \section subsystems Subsystems
 Blabla...
+
+
 \section widgets Widgets
 Blabla...
+
+
+
 
 \page running-a-simulation Running a simulation
 \todo write this
