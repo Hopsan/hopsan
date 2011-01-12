@@ -32,7 +32,10 @@ namespace hopsan {
 
     private:
         Integrator Int;
-        Port *pP1;
+        Port *mpP1;
+
+        //Declaration of node data pointers, ND is short for NodeData
+        double *mpND_Zx1, *mpND_Cx1, *mpND_X1, *mpND_V1, *mpND_F1;
 
     public:
         static Component *Creator()
@@ -46,35 +49,47 @@ namespace hopsan {
 
 
             //Add ports to the component
-            pP1 = addPowerPort("P1", "NodeMechanic");
+            mpP1 = addPowerPort("P1", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
         }
 
         void initialize()
         {
-            double X1  = pP1->readNode(NodeMechanic::POSITION);
-            double V1  = pP1->readNode(NodeMechanic::VELOCITY);
-            Int.initialize(mTimestep, V1, X1);
+            //Assign node data pointers
+            mpND_Zx1 = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_Cx1 = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            mpND_X1 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
+            mpND_V1 = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            mpND_F1 = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
+
+            //Read values from nodes
+//            double X1  = mpP1->readNode(NodeMechanic::POSITION);
+//            double V1  = mpP1->readNode(NodeMechanic::VELOCITY);
+//!         @note In this case we read directly from the nodedata pointers withouth creating a pointless local variable in between
+            Int.initialize(mTimestep, *mpND_V1, *mpND_X1);
         }
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double Zx1  = pP1->readNode(NodeMechanic::CHARIMP);
-            double c1  = pP1->readNode(NodeMechanic::WAVEVARIABLE);
+//            double Zx1  = mpP1->readNode(NodeMechanic::CHARIMP);
+//            double c1  = mpP1->readNode(NodeMechanic::WAVEVARIABLE);
+            double Zx1 = *mpND_Zx1;
+            double c1 = *mpND_Cx1;
 
             //Caracteristic matching equations
             double V1 = -c1/(2.0*Zx1);
             double X1 = Int.update(V1);
             double F1 = c1/2;
 
-
             //Write new values to nodes
-            pP1->writeNode(NodeMechanic::FORCE, F1);
-            pP1->writeNode(NodeMechanic::VELOCITY, V1);
-            pP1->writeNode(NodeMechanic::POSITION, X1);
-
+//            mpP1->writeNode(NodeMechanic::FORCE, F1);
+//            mpP1->writeNode(NodeMechanic::VELOCITY, V1);
+//            mpP1->writeNode(NodeMechanic::POSITION, X1);
+            *mpND_F1 = F1;
+            *mpND_V1 = V1;
+            *mpND_X1 = X1;
         }
     };
 }

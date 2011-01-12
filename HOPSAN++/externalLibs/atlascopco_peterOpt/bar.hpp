@@ -15,8 +15,8 @@ I         I
 #define bar_HPP_INCLUDED
 
 #include <math.h>
-#include <iostream>
-#include <vector>
+//#include <iostream>
+//#include <vector>
 using namespace std;
 //#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentEssentials.h"
 //#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentUtilities.h"
@@ -36,31 +36,31 @@ namespace hopsan {
         double RHOB;
         double EB;
         double DMP;
-        double Zx;
-        double Alpha;
-        double Kappa;
-        double Cs;
-        double Wavespeed;
-        double Wf;
-        double LCorr;
-        double AreaCorr;
-        double Area;
-        int NofEl;
-        int indexToBeDelayed, indexDelayed;
+        double mZx;
+//        double Alpha;
+//        double Kappa;
+//        double Cs;
+//        double Wavespeed;
+//        double Wf;
+//        double LCorr;
+//        double AreaCorr;
+//        double Area;
+//        int NofEl;
+//        int indexToBeDelayed, indexDelayed;
 //        double Cx1;
 //        double Cx2;
-        double Cx1old;
-        double Cx2old;
-        double V0;//, F1S, F2S;
+        double mCx1old;
+        double mCx2old;
+        double mV0;//, F1S, F2S;
 //        deque<double> Cx1NofEl;
 //        deque<double> Cx2NofEl;
-        Delay Cx1NofEl;
-        Delay Cx2NofEl;
+        Delay mCx1NofEl;
+        Delay mCx2NofEl;
         FirstOrderFilter mFilterLPCx1, mFilterLPCx2;
-        Port *pP1, *pP2;
+        Port *mpP1, *mpP2;
 
-        //Pointers to node data
-        double *F1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *F2_ptr, *V2_ptr, *Cx2_ptr, *Zx2_ptr;
+        //Declaration of node data pointers, ND is short for NodeData
+        double *mpND_F1, *mpND_V1, *mpND_Cx1, *mpND_Zx1, *mpND_F2, *mpND_V2, *mpND_Cx2, *mpND_Zx2;
 
     public:
         static Component *Creator()
@@ -72,21 +72,21 @@ namespace hopsan {
         {
             //Set member attributes
             mTypeName = "bar";
-            Alpha=0.0;//Filtering of characteristics if >0
-            Kappa=0.035;  //Parameter required for  damping (verified for steel)
-            Cs=1.01;      //Parameter required for  damping (verified for steel)
+//            Alpha=0.0;      //Filtering of characteristics if >0
+//            Kappa=0.035;    //Parameter required for  damping (verified for steel)
+//            Cs=1.01;        //Parameter required for  damping (verified for steel)
 
             //Add ports to the component
-            pP1 = addPowerPort("P1", "NodeMechanic");
-            pP2 = addPowerPort("P2", "NodeMechanic");
+            mpP1 = addPowerPort("P1", "NodeMechanic");
+            mpP2 = addPowerPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
+            //Register changable parameters to the HOPSAN++ core, and set default values
             D=0.05;
             L=0.5;
             RHOB=7800.0;
             EB=2.1e11;
             DMP=1.0;
-            V0=0.0;
+            mV0=0.0;
 //            F1S=0.0;
 //            F2S=0.0;
             registerParameter("D", "Diameter", "m",  D);
@@ -94,7 +94,7 @@ namespace hopsan {
             registerParameter("RHOB", "Density", "kg/m3", RHOB);
             registerParameter("EB", "Young's modulus", "Pa", EB);
             registerParameter("DMP", ">0 gives damping", "-", DMP);
-            registerParameter("v21", "start value velocity 2->1", "m/s", V0);
+            registerParameter("v21", "start value velocity 2->1", "m/s", mV0);
 //            registerParameter("f1", "start value force 1", "-", F1S);
 //            registerParameter("f2", "start value force 2", "-", F2S);
         }
@@ -103,24 +103,32 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointeres
-            F1_ptr = pP1->getNodeDataPtr(NodeMechanic::FORCE);
-            V1_ptr = pP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            Cx1_ptr = pP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zx1_ptr = pP1->getNodeDataPtr(NodeMechanic::CHARIMP);
-            F2_ptr = pP2->getNodeDataPtr(NodeMechanic::FORCE);
-            V2_ptr = pP2->getNodeDataPtr(NodeMechanic::VELOCITY);
-            Cx2_ptr = pP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zx2_ptr = pP2->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_F1 = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
+            mpND_V1 = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            mpND_Cx1 = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            mpND_Zx1 = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_F2 = mpP2->getNodeDataPtr(NodeMechanic::FORCE);
+            mpND_V2 = mpP2->getNodeDataPtr(NodeMechanic::VELOCITY);
+            mpND_Cx2 = mpP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            mpND_Zx2 = mpP2->getNodeDataPtr(NodeMechanic::CHARIMP);
 
             //Startvalues, read force and velocity from connected Q-types  DOES NOT WORK!!!!
 //            F1S = pP1->readNode(NodeMechanic::FORCE);
 //            V1S = pP1->readNode(NodeMechanic::VELOCITY);
 //            F2S = pP2->readNode(NodeMechanic::FORCE);
 //            V2S = pP2->readNode(NodeMechanic::VELOCITY);
-            double F1 = *F1_ptr;
-            //double V1 = *V1_ptr; //we set both VV1 and V2 with the startvalueparameter V0
-            double F2 = *F2_ptr;
-            //double V2 = *V2_ptr; //we set both VV1 and V2 with the startvalueparameter V0
+            double F1 = *mpND_F1;
+            //double V1 = *V1_ptr;
+            double F2 = *mpND_F2;
+            //double V2 = *V2_ptr;
+            //! @note we use a parameter to determine startvalue any startvalues given to the nodes are overwritten by this paramter (V0)
+
+            //Constants that are local whithin initialize
+            //const double Alpha=0.0;      //Filtering of characteristics if >0
+            const double Kappa=0.035;    //Parameter required for  damping (verified for steel)
+            const double Cs=1.01;        //Parameter required for  damping (verified for steel)
+
+            double Wavespeed, Wf;
 
             //Wave speed
             if (DMP>0.0)Wavespeed=sqrt(EB/RHOB)*Cs;
@@ -128,22 +136,22 @@ namespace hopsan {
 
             //Modification of length & area according to actual timestep
             int NofEl = max( 1.0 , (L/Wavespeed/mTimestep + 0.5)); // Nearest integer >=1
-            LCorr = Wavespeed*NofEl*mTimestep;
-            Area = 3.141593/4.0*D*D;
-            AreaCorr=Area*L/LCorr;  //Mass will be OK
+            double LCorr = Wavespeed*NofEl*mTimestep;
+            double Area = 3.141593/4.0*D*D;
+            double AreaCorr=Area*L/LCorr;  //Mass will be OK
 
             //Characteristic impedance
-            Zx = RHOB*Wavespeed*AreaCorr;
+            mZx = RHOB*Wavespeed*AreaCorr;
 
             //Start values for wave variables
-            double Cx1=F1+Zx*(-V0);
-            double Cx2=F2+Zx*( V0);
+            double Cx1=F1+mZx*(-mV0);
+            double Cx2=F2+mZx*( mV0);
 //            Cx1NofEl.assign( int(NofEl-1) , Cx1);
 //            Cx2NofEl.assign( int(NofEl-1) , Cx2);
-            Cx1NofEl.initialize(NofEl, Cx1);
-            Cx2NofEl.initialize(NofEl, Cx2);
-            Cx1old=F2-Zx*(-V0);
-            Cx2old=F1-Zx*( V0);
+            mCx1NofEl.initialize(NofEl, Cx1);
+            mCx2NofEl.initialize(NofEl, Cx2);
+            mCx1old=F2-mZx*(-mV0);
+            mCx2old=F1-mZx*( mV0);
 
             //Filter frequency and initialization
             if (DMP>0.0)Wf=1./(Kappa*NofEl*mTimestep);
@@ -158,15 +166,16 @@ namespace hopsan {
 //            pP1->writeNode(NodeMechanic::CHARIMP,      Zx);
 //            pP2->writeNode(NodeMechanic::WAVEVARIABLE, Cx1old);  //Cx(N2) = Cx1old
 //            pP2->writeNode(NodeMechanic::CHARIMP,      Zx);
-            *Cx1_ptr = Cx2old;
-            *Zx1_ptr = Zx;
-            *Cx2_ptr = Cx1old;
-            *Zx2_ptr = Zx;
+            *mpND_Cx1 = mCx2old;
+            *mpND_Zx1 = mZx;
+            *mpND_Cx2 = mCx1old;
+            *mpND_Zx2 = mZx;
             //Start values...
 //            pP1->writeNode(NodeMechanic::VELOCITY,    -V0);
 //            pP2->writeNode(NodeMechanic::VELOCITY,     V0);  //Cx(N2) = Cx1old
-            *V1_ptr = -V0;
-            *V2_ptr = V0;
+            *mpND_V1 = -mV0;
+            *mpND_V2 = mV0;
+            //! @note we use a parameter to determine startvalue any startvalues given to the nodes are overwritten by this paramter (V0)
         }
 
         void simulateOneTimestep()
@@ -175,15 +184,15 @@ namespace hopsan {
              //Get variable values from nodes
 //            double V1 = pP1->readNode(NodeMechanic::VELOCITY);
 //            double V2 = pP2->readNode(NodeMechanic::VELOCITY);
-            double V1 = *V1_ptr;
-            double V2 = *V2_ptr;
+            double V1 = *mpND_V1;
+            double V2 = *mpND_V2;
 
 //            Cx1NofEl.push_back(Cx2old + 2.*Zx*V1);  //Add new value at the end
 //            Cx2NofEl.push_back(Cx1old + 2.*Zx*V2);
 //            double Cx1new=Cx1NofEl.front(); Cx1NofEl.pop_front();  //Read and remove first value
 //            double Cx2new=Cx2NofEl.front(); Cx2NofEl.pop_front();
-            double Cx1new = Cx1NofEl.update(Cx2old + 2.*Zx*V1);  //Add new value, pop old
-            double Cx2new = Cx2NofEl.update(Cx1old + 2.*Zx*V2);
+            double Cx1new = mCx1NofEl.update(mCx2old + 2.*mZx*V1);  //Add new value, pop old
+            double Cx2new = mCx2NofEl.update(mCx1old + 2.*mZx*V2);
 
              //First order filter
             double Cx1=mFilterLPCx1.update(Cx1new);
@@ -194,14 +203,14 @@ namespace hopsan {
 //            pP1->writeNode(NodeMechanic::CHARIMP,      Zx);
 //            pP2->writeNode(NodeMechanic::WAVEVARIABLE, Cx1);
 //            pP2->writeNode(NodeMechanic::CHARIMP,      Zx);
-            *Cx1_ptr = Cx2;
-            *Zx1_ptr = Zx;
-            *Cx2_ptr = Cx1;
-            *Zx2_ptr = Zx;
+            *mpND_Cx1 = Cx2;
+            *mpND_Zx1 = mZx;
+            *mpND_Cx2 = Cx1;
+            *mpND_Zx2 = mZx;
 
             //Update the delayed variabels
-            Cx1old=Cx1;
-            Cx2old=Cx2;
+            mCx1old=Cx1;
+            mCx2old=Cx2;
         }
     };
 }

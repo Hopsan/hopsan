@@ -25,10 +25,11 @@ namespace hopsan {
     {
 
     private:
-        double *F1_ptr, *X1_ptr, *V1_ptr, *Cx1_ptr, *Zx1_ptr, *in_ptr;
-        double V1S;
-        Integrator XINT;
-        Port *pP1, *pIN;
+        //Declaration of node data pointers, ND is short for NodeData
+        double *mpND_F1, *mpND_X1, *mpND_V1, *mpND_Cx1, *mpND_Zx1, *mpND_in;
+        double mV1S;
+        Integrator mXINT;
+        Port *mpP1, *mpIN;
 
     public:
         static Component *Creator()
@@ -43,16 +44,16 @@ namespace hopsan {
 
 //            //Startvalues
 //            X1S = 0;
-            V1S = 0;
+            mV1S = 0;
 //            F1S = 0;
 
             //Add ports to the component
-            pP1 = addPowerPort("P1", "NodeMechanic");
-            pIN = addReadPort("IN", "NodeSignal", Port::NOTREQUIRED);
+            mpP1 = addPowerPort("P1", "NodeMechanic");
+            mpIN = addReadPort("IN", "NodeSignal", Port::NOTREQUIRED);
 
             //Register parameters to be seen in simulation environment.
 //            registerParameter("Position", "startvalue", "[m]",   X1S);
-            registerParameter("Velocity", "If NC", "[m/s]",   V1S);
+            registerParameter("Velocity", "If NC", "[m/s]",   mV1S);
 //            registerParameter("Force", "startvalue", "[N]",   F1S);
         }
 
@@ -60,32 +61,32 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointeres
-            F1_ptr = pP1->getNodeDataPtr(NodeMechanic::FORCE);
-            X1_ptr = pP1->getNodeDataPtr(NodeMechanic::POSITION);
-            V1_ptr = pP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            Cx1_ptr = pP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zx1_ptr = pP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_F1 = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
+            mpND_X1 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
+            mpND_V1 = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            mpND_Cx1 = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            mpND_Zx1 = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
 
 //            double V1;
 //            if(pIN->isConnected())
 //                V1  = pIN->readNode(NodeSignal::VALUE);
 //            else
 //                V1=V1S;
-            if(pIN->isConnected())
+            if(mpIN->isConnected())
             {
-                in_ptr = pIN->getNodeDataPtr(NodeSignal::VALUE);
+                mpND_in = mpIN->getNodeDataPtr(NodeSignal::VALUE);
             }
             else
             {
-                in_ptr = new double(V1S);
+                mpND_in = new double(mV1S);
             }
 
             //read start node values
-            double V1 = *in_ptr;
-            double X1 = *X1_ptr;
+            double V1 = *mpND_in;
+            double X1 = *mpND_X1;
 
             //Initiate the integrator
-            XINT.initialize(mTimestep, V1, X1);
+            mXINT.initialize(mTimestep, V1, X1);
 
             //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
 //            pP1->writeNode(NodeMechanic::POSITION, X1S);
@@ -103,8 +104,8 @@ namespace hopsan {
             //Get variable values from nodes
 //            double Zx1  = pP1->readNode(NodeMechanic::CHARIMP);
 //            double Cx1  = pP1->readNode(NodeMechanic::WAVEVARIABLE);
-            double Zx1 = *Zx1_ptr;
-            double Cx1 = *Cx1_ptr;
+            double Zx1 = *mpND_Zx1;
+            double Cx1 = *mpND_Cx1;
 
 //            //If signal port is connected, read the value from the port.
 //            //else use the start value (V1S never changed).
@@ -113,10 +114,10 @@ namespace hopsan {
 //                V1 = *in_ptr;
 //            else
 //                V1=V1S;
-            double V1 = *in_ptr;
+            double V1 = *mpND_in;
 
             //Calculate position by integrating velocity.
-            double X1 = XINT.update(V1);
+            double X1 = mXINT.update(V1);
 
             //Calculate force of source.
             double F1 = Cx1 + Zx1 * V1;
@@ -125,9 +126,9 @@ namespace hopsan {
 //            pP1->writeNode(NodeMechanic::FORCE, F1);
 //            pP1->writeNode(NodeMechanic::VELOCITY, V1);
 //            pP1->writeNode(NodeMechanic::POSITION, X1);
-            *F1_ptr = F1;
-            *V1_ptr = V1;
-            *X1_ptr = X1;
+            *mpND_F1 = F1;
+            *mpND_V1 = V1;
+            *mpND_X1 = X1;
         }
     };
 }
