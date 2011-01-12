@@ -531,9 +531,12 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
 {
     rMenu.addSeparator();
-    QAction *groupAction;
-    if (!this->scene()->selectedItems().empty())
-        groupAction = rMenu.addAction(tr("Group components"));
+    //QAction *groupAction;
+
+    //! @todo Grouping is deactivated because it does not currently work!
+    //if (!this->scene()->selectedItems().empty())
+    //    groupAction = rMenu.addAction(tr("Group components"));
+
     QAction *showNameAction = rMenu.addAction(tr("Show name"));
     showNameAction->setCheckable(true);
     showNameAction->setChecked(mpNameText->isVisible());
@@ -557,10 +560,10 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
             this->showName();
         }
     }
-    else if (selectedAction == groupAction)
-    {
-        this->mpParentContainerObject->groupSelected(pEvent->scenePos());
-    }
+//    else if (selectedAction == groupAction)
+//    {
+//        this->mpParentContainerObject->groupSelected(pEvent->scenePos());
+//    }
     else
     {
         return selectedAction;
