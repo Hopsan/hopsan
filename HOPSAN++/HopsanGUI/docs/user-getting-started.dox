@@ -1,0 +1,41 @@
+/*!
+\page getting-started Getting Started
+\todo write this
+
+-# \subpage overview \n
+-# \subpage building-a-model \n
+-# \subpage running-a-simulation \n
+-# \subpage plotting \n
+
+\page overview Overview
+\todo write this
+
+\page building-a-model Building a model
+\todo write this
+\section component-library Component Library
+Blabla...
+\section connecting-components Connecting Components
+Blabla...
+\section changing-component-parameters Changing Component Parameters
+Blabla...
+\section using-global-parameters Using Global Parameters
+Blabla...
+\section groups Groups
+Blabla...
+\section subsystems Subsystems
+Blabla...
+\section widgets Widgets
+Blabla...
+
+\page running-a-simulation Running a simulation
+\todo write this
+\section how-simulations-work How simulations work
+Blabla...
+\section setting-up-simulation-parameters Setting up simulation parameters
+Blabla...
+\section multi-threaded-simulations Multi-threaded simulations
+Blabla...
+
+\page plotting Plotting
+\todo write this
+*/
