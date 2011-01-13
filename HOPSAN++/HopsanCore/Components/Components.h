@@ -104,6 +104,7 @@
 #include "Mechanic/MechanicForceSensor.hpp"
 #include "Mechanic/MechanicPositionSensor.hpp"
 #include "Mechanic/MechanicAngleSensor.hpp"
+#include "Mechanic/MechanicTranslationalLosslessConnector.hpp"
 
 #include "../Component.h"
 

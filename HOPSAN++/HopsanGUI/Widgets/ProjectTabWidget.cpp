@@ -22,6 +22,7 @@
 #include "../Configuration.h"
 #include "../Utilities/XMLUtilities.h"
 #include "../GUIObjects/GUISystem.h"
+#include "../Widgets/LibraryWidget.h"
 #include "../version.h"
 
 //! @class ProjectTab
@@ -583,5 +584,10 @@ void ProjectTabWidget::tabChanged()
 
         getCurrentContainer()->updateUndoStatus();
         getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
+
+        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->mpSystem->mGfxType)
+        {
+            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->mpSystem->mGfxType);
+        }
     }
 }

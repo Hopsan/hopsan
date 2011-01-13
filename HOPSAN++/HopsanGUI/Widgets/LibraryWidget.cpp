@@ -222,6 +222,8 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     setLayout(mpGrid);
     this->setMouseTracking(true);
 
+    this->setGfxType(USERGRAPHICS);
+
     connect(mpTree, SIGNAL(itemClicked (QTreeWidgetItem*, int)), SLOT(showLib(QTreeWidgetItem*, int)));
 }
 
@@ -537,6 +539,7 @@ void LibraryWidget::setGfxType(graphicsType gfxType)
     {
         (*it)->selectIcon(gfxType);
     }
+    mGfxType = gfxType;
 }
 
 

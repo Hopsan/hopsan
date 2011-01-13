@@ -87,6 +87,8 @@ public:
     GUIModelObjectAppearance *getAppearanceData(QString componentType);
     GUIModelObjectAppearance *getAppearanceDataByDisplayName(QString displayName);
 
+    graphicsType mGfxType;
+
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
 
