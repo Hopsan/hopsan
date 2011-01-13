@@ -15,6 +15,7 @@
 #include "../GUIConnector.h"
 #include "../UndoStack.h"
 #include "../Widgets/LibraryWidget.h"
+#include "../Widgets/MessageWidget.h"
 #include "../Widgets/ProjectTabWidget.h"
 #include "../Dialogs/ContainerPropertiesDialog.h"
 #include "../Utilities/GUIUtilities.h"
@@ -341,7 +342,11 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
-
+            if(pObj == NULL)
+            {
+                gpMainWindow->mpMessageWidget->printGUIErrorMessage("Model contains components from a library that has not been included.");
+                break;
+            }
             //Load parameter values
             QDomElement xmlParameters = xmlSubObject.firstChildElement(HMF_PARAMETERS);
             QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);

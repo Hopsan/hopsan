@@ -14,22 +14,22 @@
 #define SNAPDISTANCE 10
 
 //Development defines, swich commen block with release++ bellow on real release
-#define MAINPATH "../../"
-#define OBJECTICONPATH "../../HopsanGUI/graphics/objecticons/"
-#define ICONPATH "../../HopsanGUI/graphics/uiicons/"
-#define PORTICONPATH "../../HopsanGUI/graphics/porticons/"
-#define GRAPHICSPATH "../../HopsanGUI/graphics/"
-#define COMPONENTPATH "../../HopsanGUI/componentData/"
-#define MODELPATH "/../../Models/"
+//#define MAINPATH "../../"
+//#define OBJECTICONPATH "../../HopsanGUI/graphics/objecticons/"
+//#define ICONPATH "../../HopsanGUI/graphics/uiicons/"
+//#define PORTICONPATH "../../HopsanGUI/graphics/porticons/"
+//#define GRAPHICSPATH "../../HopsanGUI/graphics/"
+//#define COMPONENTPATH "../../HopsanGUI/componentData/"
+//#define MODELPATH "/../../Models/"
 
 //Relese++ defines
-//#define MAINPATH "./"
-//#define OBJECTICONPATH "graphics/objecticons/"
-//#define ICONPATH "graphics/uiicons/"
-//#define PORTICONPATH "graphics/porticons/"
-//#define GRAPHICSPATH "graphics/"
-//#define COMPONENTPATH "componentData/"
-//#define MODELPATH "Models/"
+#define MAINPATH "./"
+#define OBJECTICONPATH ":graphics/objecticons/"
+#define ICONPATH ":graphics/uiicons/"
+#define PORTICONPATH ":graphics/porticons/"
+#define GRAPHICSPATH ":graphics/"
+#define COMPONENTPATH "componentData/"
+#define MODELPATH "Models/"
 
 //! @todo all of these dont have to be common
 //Enums

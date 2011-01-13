@@ -408,6 +408,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
 
     //! @todo what does this stuff do, it forces us to manually manipulate ports in a way that is not clear, the purpose is also unclear
+    //! Answer: This is the code that removes one connector line if right clicking while creating a connector
     if (event->button() == Qt::RightButton && mpContainerObject->getIsCreatingConnector())
     {
         if((mpContainerObject->mpTempConnector->getNumberOfLines() == 1 && mpContainerObject->mpTempConnector->isMakingDiagonal()) ||  (mpContainerObject->mpTempConnector->getNumberOfLines() == 2 && !mpContainerObject->mpTempConnector->isMakingDiagonal()))
@@ -417,10 +418,12 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
             mpContainerObject->setIsCreatingConnector(false);
             mpContainerObject->mJustStoppedCreatingConnector = true;
+            delete(mpContainerObject->mpTempConnector);
         }
-        mpContainerObject->mpTempConnector->removePoint(true);
+
         if(mpContainerObject->getIsCreatingConnector())
         {
+            mpContainerObject->mpTempConnector->removePoint(true);
             mpContainerObject->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
             mpContainerObject->mpTempConnector->drawConnector();
             this->updateViewPort();

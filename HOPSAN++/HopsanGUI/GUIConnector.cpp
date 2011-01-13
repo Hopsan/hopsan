@@ -50,7 +50,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
 
     this->setStartPort(startPort);
     startPort->getGuiModelObject()->rememberConnector(this);
-    QPointF startPos = startPort->getGuiModelObject()->getCenterPos();
+    QPointF startPos = mapToScene(mapFromItem(startPort, startPort->boundingRect().center()));
     this->setPos(startPos);
     this->updateStartPoint(startPos);
 

@@ -1826,14 +1826,14 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     if (pComp1 == 0)
     {
         ss << "Component1: "<< compname1 << " can not be found when atempting connect";
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        gCoreMessageHandler.addErrorMessage(ss.str(), "connectwithoutcomponent");
         return false;
     }
 
     if (pComp2 == 0)
     {
         ss << "Component2: "<< compname2 << " can not be found when atempting connect";
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        gCoreMessageHandler.addErrorMessage(ss.str(), "connectwithoutcomponent");
         return false;
     }
 

@@ -196,6 +196,15 @@ MainWindow::MainWindow(QWidget *parent)
             mpProjectTabs->closeProjectTab(0);
         }
     }
+
+//    for(size_t i=0; i<qApp->arguments().size(); ++i)
+//    {
+//        if(qApp->arguments().at(i).endsWith(".hmf"))
+//        {
+//            mpProjectTabs->closeAllProjectTabs();
+//            mpProjectTabs->loadModel(qApp->arguments().at(i));
+//        }
+//    }
 }
 
 

@@ -241,7 +241,7 @@ void Configuration::loadFromXml()
     QFile file(QString(MAINPATH) + "hopsanconfig.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to read settings file. Using default settings.");
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
         return;
     }
     QDomDocument domDocument;

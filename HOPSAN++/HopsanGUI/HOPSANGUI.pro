@@ -150,4 +150,8 @@ win32 {
     INCLUDEPATH += $(PYTHON_PATH)/include
     LIBS += -L$(PYTHON_PATH)/libs
 }
-RESOURCES +=  
+RESOURCES += \  
+    Resources.qrc
+
+# Release compile only, will add the application icon
+RC_FILE = HOPSANGUI.rc
