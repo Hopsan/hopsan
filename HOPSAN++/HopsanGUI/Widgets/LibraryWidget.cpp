@@ -504,7 +504,6 @@ GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType
     //qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
     if (mLibraryContentItemPtrsMap.count(componentType) == 0)
     {
-        qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data";
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data");
         return 0;
     }

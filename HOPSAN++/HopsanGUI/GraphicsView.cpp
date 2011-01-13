@@ -16,6 +16,7 @@
 #include "UndoStack.h"
 
 #include "Widgets/ProjectTabWidget.h"
+#include "Widgets/PlotWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 
@@ -142,9 +143,16 @@ void GraphicsView::dropEvent(QDropEvent *event)
         mpContainerObject->mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
 
+        QString text = event->mimeData()->text();
 
-        QString typestring = event->mimeData()->text();
-        GUIModelObjectAppearance* pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typestring);
+        //Check if dropped item is a plot data string, and attempt to open a plot window if so
+        if(event->mimeData()->text().startsWith("HOPSANPLOTDATA"))
+        {
+            gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(text.section("\"", 1, 1), text.section("\"", 3, 3), text.section("\"", 5, 5),text.section("\"", 7, 7));
+        }
+
+        //Dropped item is not a plot data string, so assume it is a component
+        GUIModelObjectAppearance* pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(text);
         //! @todo Send in typename into add bellow instead of appearance data
 
         //Check if appearnaceData OK otherwihse do not add (usefull if you drag some crap text into the window)
