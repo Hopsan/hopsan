@@ -125,6 +125,10 @@ void UndoWidget::refreshList()
                     {
                         item->setBackgroundColor(oddColor);
                     }
+                    if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
+                    {
+                        item->setForeground(QColor("gray"));
+                    }
                     mUndoTable->insertRow(0);
                     mUndoTable->setItem(0,0,item);
                 }
@@ -147,6 +151,10 @@ void UndoWidget::refreshList()
                         else
                         {
                             item->setBackgroundColor(oddColor);
+                        }
+                        if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
+                        {
+                            item->setForeground(QColor("gray"));
                         }
                         mUndoTable->insertRow(0);
                         mUndoTable->setItem(0,0,item);
