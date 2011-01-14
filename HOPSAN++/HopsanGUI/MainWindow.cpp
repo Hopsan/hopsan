@@ -589,6 +589,10 @@ void MainWindow::openSystemParametersWidget()
         mpSystemParametersDock->show();
         mpSystemParametersDock->raise();
     }
+    else
+    {
+        mpSystemParametersDock->hide();
+    }
 }
 
 
