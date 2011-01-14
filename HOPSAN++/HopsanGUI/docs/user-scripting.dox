@@ -1,4 +1,41 @@
 /*!
 \page python-scripting Python Scripting
-\todo write this
+\todo write 
+	The Python Console in HOPSAN NG can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. The commands avalible are described below.
+
+	\section loadmodel loadModel(modelFileName)
+	Load the model "modelFileName". Example: hopsan.loadModel("c:\mymodel.hmf")
+
+	\section printmessage printMessage(message)
+	Prints a message in the Messages Console. Example: hopsan.printMessage("Goddag yxskaft.")
+
+	\section printinfo printInfo(message)
+
+	\section printwarning printWarning(message)
+
+	\section printerror printError(message)
+
+	\section component component(compName)
+
+	\section setstarttime setStartTime(start)
+
+	\section settimestep setTimeStep(timestep)
+
+	\section setfinishtime setFinishTime(stop)
+
+	\section getstarttime getStartTime
+
+	\section gettimestep getTimeStep
+
+	\section getfinishtime getFinishTime
+
+	\section simulate simulate
+
+	\section getparameter getParameter(compName, parName)
+
+	\section setparameter setParameter(compName, parName, value)
+
+	\section plot plot(compName, portName, dataName)
+
 */
+
