@@ -1,6 +1,5 @@
 /*!
 \page python-scripting Python Scripting
-\todo write 
 	The Python Console in HOPSAN NG can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. All Python interaction with HOPSAN NG is done trough an object called "hopsan". The commands as well as command examples are avalible and described below. 
 
 	\section loadmodel loadModel(modelFileName)
