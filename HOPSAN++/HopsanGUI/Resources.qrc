@@ -3,10 +3,6 @@
         <file>graphics/about.png</file>
         <file>graphics/flumeslith.png</file>
         <file>graphics/splash.png</file>
-        <file>graphics/objecticons/group.svg</file>
-        <file>graphics/objecticons/missingcomponenticon.svg</file>
-        <file>graphics/objecticons/subsystemtmp.svg</file>
-        <file>graphics/objecticons/systemporttmp.svg</file>
         <file>graphics/porticons/HydraulicPort.svg</file>
         <file>graphics/porticons/HydraulicPortC.svg</file>
         <file>graphics/porticons/HydraulicPortQ.svg</file>
