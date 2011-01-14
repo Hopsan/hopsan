@@ -1,7 +1,7 @@
 /*!
 \page python-scripting Python Scripting
 \todo write 
-	The Python Console in HOPSAN NG can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. The commands avalible are described below.
+	The Python Console in HOPSAN NG can be used for scripting simulations of your models. It include features for modify parameters, set simulation times and so on. All Python interaction with HOPSAN NG is done trough an object called "hopsan". The commands as well as command examples are avalible and described below. 
 
 	\section loadmodel loadModel(modelFileName)
 	Load the model "modelFileName". Example: hopsan.loadModel("c:\mymodel.hmf")
@@ -10,32 +10,45 @@
 	Prints a message in the Messages Console. Example: hopsan.printMessage("Goddag yxskaft.")
 
 	\section printinfo printInfo(message)
+	Prints a info message in the Messages Console. Example: hopsan.printInfo("Goddag yxskaft.")
 
 	\section printwarning printWarning(message)
+	Prints a warning message in the Messages Console. Example: hopsan.printWarning("Goddag yxskaft.")
 
 	\section printerror printError(message)
+	Prints a error message in the Messages Console. Example: hopsan.printError("Goddag yxskaft.")
 
 	\section component component(compName)
+	Returns a handle to a component. Example: A handle to a component called "myComponent" can be reaced and stored in "myHandle" with the command line: myHandle = hopsan.component("myComponent")
 
 	\section setstarttime setStartTime(start)
+	Sets the start time of a simulation. Example: hopsan.setStartTime(1.62)
 
 	\section settimestep setTimeStep(timestep)
+	Sets the time step of a simulation. Example: hopsan.setTimeStep(0.002)
 
 	\section setfinishtime setFinishTime(stop)
+	Sets the finish time of a simulation. Example: hopsan.setFinishTime(16.2)
 
 	\section getstarttime getStartTime
+	Returns the start time of a simulation. Example: startTime = hopsan.getStartTime()
 
 	\section gettimestep getTimeStep
+	Returns the time step time of a simulation. Example: timeStep = hopsan.getTimeStep()
 
 	\section getfinishtime getFinishTime
+	Returns the finish time of a simulation. Example: finishTime = hopsan.getFinishTime()
 
 	\section simulate simulate
+	Simulates the current model. Example hopsan.simulate()
 
 	\section getparameter getParameter(compName, parName)
+	Returns the value for the parameter "parName" in the component "compName", Example: value = hopsan.getParameter("myOrifice", "Kc")
 
 	\section setparameter setParameter(compName, parName, value)
+	Sets the value for the parameter "parName" in the component "compName" to "value", Example: value = hopsan.setParameter("myOrifice", "Kc", 1e-11)
 
 	\section plot plot(compName, portName, dataName)
-
+	Plots the variable "dataName" in the port "portName" of the component "compName". Example: hopsan.plot("sink", "in", "Value")
 */
 
