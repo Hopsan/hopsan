@@ -22,7 +22,7 @@ namespace hopsan {
     class MechanicForceSensor : public ComponentSignal
     {
     private:
-        double *f_ptr, *out_ptr;
+        double *mpND_f, *mpND_out;
         Port *mpP1, *mpOut;
 
     public:
@@ -42,17 +42,14 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpP1->isConnected()) { f_ptr = mpP1->getNodeDataPtr(NodeMechanic::FORCE); }
-            else { f_ptr = new double(0); }
-
-            if(mpOut->isConnected()) { out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
-            else { out_ptr = new double(); }
+            mpND_f = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            (*out_ptr) = (*f_ptr);
+            (*mpND_out) = (*mpND_f);
         }
     };
 }
