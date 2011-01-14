@@ -499,7 +499,11 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
         mUndoStack->registerAddedObject(mpTempGUIModelObject);
     }
 
+
+    mpTempGUIModelObject->setSelected(false);
+    mpTempGUIModelObject->setSelected(true);
     //this->setFocus();
+
 
     return mpTempGUIModelObject;
 }

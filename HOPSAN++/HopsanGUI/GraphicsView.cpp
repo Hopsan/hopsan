@@ -161,6 +161,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
             event->accept();
             QPoint position = event->pos();
             mpContainerObject->addGUIModelObject(pAppearanceData, this->mapToScene(position).toPoint());
+            this->setFocus();
         }
     }
 }
