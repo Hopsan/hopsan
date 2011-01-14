@@ -25,7 +25,7 @@ namespace hopsan {
     private:
         double w;
         double signal, t, a, c, Zx;
-        double *signal_ptr, *t_ptr, *a_ptr, *w_ptr, *c_ptr, *Zx_ptr;
+        double *mpND_signal, *mpND_t, *mpND_a, *mpND_w, *mpND_c, *mpND_Zx;
         Integrator mInt;
         Port *mpIn, *mpOut;
 
@@ -52,34 +52,32 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected()) { signal_ptr  = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
-            else { signal_ptr = new double(w); }
+            mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_t = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::TORQUE);
+            mpND_a = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::ANGLE);
+            mpND_w = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::CHARIMP);
 
-            t_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::TORQUE);
-            a_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::ANGLE);
-            w_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
-            c_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
-            Zx_ptr = mpOut->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
-
-            mInt.initialize(mTimestep, (*signal_ptr), 0.0);
+            mInt.initialize(mTimestep, (*mpND_signal), 0.0);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            signal = (*signal_ptr);
-            c = (*c_ptr);
-            Zx = (*Zx_ptr);
+            signal = (*mpND_signal);
+            c = (*mpND_c);
+            Zx = (*mpND_Zx);
 
             //Spring equations
             a = mInt.update(signal);
             t = c + Zx*signal;
 
             //Write values to nodes
-            (*t_ptr) = t;
-            (*a_ptr) = a;
-            (*w_ptr) = signal;
+            (*mpND_t) = t;
+            (*mpND_a) = a;
+            (*mpND_w) = signal;
         }
     };
 }

@@ -149,6 +149,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         if(event->mimeData()->text().startsWith("HOPSANPLOTDATA"))
         {
             gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(text.section("\"", 1, 1), text.section("\"", 3, 3), text.section("\"", 5, 5),text.section("\"", 7, 7));
+            return;
         }
 
         //Dropped item is not a plot data string, so assume it is a component

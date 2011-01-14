@@ -22,7 +22,7 @@ namespace hopsan {
     class MechanicAngleSensor : public ComponentSignal
     {
     private:
-        double *phi_ptr, *out_ptr;
+        double *mpND_phi, *mpND_out;
         Port *mpP1, *mpOut;
 
 
@@ -43,14 +43,14 @@ namespace hopsan {
 
         void initialize()
         {
-            phi_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::ANGLE);
-            out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            mpND_phi = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGLE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            (*out_ptr) = (*phi_ptr);
+            (*mpND_out) = (*mpND_phi);
         }
     };
 }

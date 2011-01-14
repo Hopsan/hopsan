@@ -182,4 +182,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic32DirectionalValve.hpp \
     Components/HydraulicComponentTemplate.hpp \
     Components/HydraulicComponentTemplateOptimized.hpp \
-    Components/Mechanic/MechanicTranslationalLosslessConnector.hpp
+    Components/Mechanic/MechanicTranslationalLosslessConnector.hpp \
+    Components/Hydraulic/HydraulicPressureControlledValve.hpp
