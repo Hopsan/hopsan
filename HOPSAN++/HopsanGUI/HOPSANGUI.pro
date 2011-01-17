@@ -44,7 +44,8 @@ SOURCES += main.cpp \
     Widgets/UndoWidget.cpp \
     Widgets/QuickNavigationWidget.cpp \
     GUIObjects/GUIContainerPort.cpp \
-    Dialogs/ContainerPortPropertiesDialog.cpp
+    Dialogs/ContainerPortPropertiesDialog.cpp \
+    Dialogs/WelcomeDialog.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -89,7 +90,8 @@ HEADERS += MainWindow.h \
     Widgets/UndoWidget.h \
     Widgets/QuickNavigationWidget.h \
     GUIObjects/GUIContainerPort.h \
-    Dialogs/ContainerPortPropertiesDialog.h
+    Dialogs/ContainerPortPropertiesDialog.h \
+    Dialogs/WelcomeDialog.h
 
 OTHER_FILES += 
 

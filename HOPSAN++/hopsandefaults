@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsandefaults>
     <settings>
+        <showwelcomedialog>true</showwelcomedialog>
         <backgroundcolor>#ffffff</backgroundcolor>
         <antialiasing>true</antialiasing>
         <invertwheel>false</invertwheel>

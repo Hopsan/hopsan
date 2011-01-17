@@ -70,9 +70,9 @@ void GUIContainerObject::connectMainWindowActions()
 {
     connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
     connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(clicked()), this, SLOT(undo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()), Qt::UniqueConnection);
 
     connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()), Qt::UniqueConnection);
     connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()), Qt::UniqueConnection);
@@ -98,9 +98,9 @@ void GUIContainerObject::disconnectMainWindowActions()
 {
     disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    disconnect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
-    disconnect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
-    disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
+    disconnect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(clicked()), this, SLOT(undo()));
+    disconnect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()));
+    disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()));
 
     disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        this,    SLOT(hideNames()));
     disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        this,    SLOT(showNames()));

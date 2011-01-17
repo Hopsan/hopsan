@@ -22,6 +22,7 @@
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
+#include "Dialogs/WelcomeDialog.h"
 
 #include "UndoStack.h"
 #include "Configuration.h"
@@ -75,7 +76,6 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 
     gConfig.loadFromXml();
-    //this->loadSettings();
 
     //Create a dock for the componentslibrary
     mpLibDock = new QDockWidget(tr("Component Library"), this);
@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
 
     //Create one new project tab, IMPORTANT: must be after Subsystem library has been loaded as we need Subsystem Appearance
-    mpProjectTabs->addNewProjectTab();
+    //mpProjectTabs->addNewProjectTab();
 
         //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
@@ -184,27 +184,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
 
-    if(!gConfig.getLastSessionModels().empty())
-    {
-        for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
-        {
-            //mpProjectTabs->loadModel(mLastSessionModels.at(i));
-            mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
-        }
-        if(mpProjectTabs->count() > 1)      //Close the empty project if at least one last session model is loaded
-        {
-            mpProjectTabs->closeProjectTab(0);
-        }
-    }
-
-//    for(size_t i=0; i<qApp->arguments().size(); ++i)
-//    {
-//        if(qApp->arguments().at(i).endsWith(".hmf"))
-//        {
-//            mpProjectTabs->closeAllProjectTabs();
-//            mpProjectTabs->loadModel(qApp->arguments().at(i));
-//        }
-//    }
+    qDebug() << "lastsessionmodels = " << gConfig.getLastSessionModels();
 }
 
 
@@ -217,12 +197,49 @@ MainWindow::~MainWindow()
 }
 
 
+void MainWindow::initializeWorkspace()
+{
+    //! @todo This has to do with file associations, but is not finished...
+    //    for(size_t i=0; i<qApp->arguments().size(); ++i)
+    //    {
+    //        if(qApp->arguments().at(i).endsWith(".hmf"))
+    //        {
+    //            mpProjectTabs->closeAllProjectTabs();
+    //            mpProjectTabs->loadModel(qApp->arguments().at(i));
+    //        }
+    //    }
+
+    if(gConfig.getShowWelcomeDialog())
+    {
+        mpWelcomeDialog = new WelcomeDialog(this);
+        mpWelcomeDialog->show();
+    }
+    else
+    {
+        if(!gConfig.getLastSessionModels().empty())
+        {
+            for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
+            {
+                //mpProjectTabs->loadModel(mLastSessionModels.at(i));
+                mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
+            }
+            if(mpProjectTabs->count() > 1)      //Close the empty project if at least one last session model is loaded
+            {
+                mpProjectTabs->closeProjectTab(0);
+            }
+        }
+    }
+
+    //while(mpWelcomeDialog->isVisible()) {}
+    //mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+}
+
+
 //! @brief Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
 void MainWindow::show()
 {
     QMainWindow::show();
     //! @todo this should not be done here should happen when a new tab is created, OK! MainWindow must be shown before center works, maybe we can go through projecttabwidget instead, leaveing it for now
-    mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
 }
 
 

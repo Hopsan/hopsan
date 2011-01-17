@@ -55,8 +55,8 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(GUIContainerPort *p
     pMainLayout->addWidget(pButtonBox, 0, Qt::AlignHCenter);
 
     //Create connections
-    connect(pCancelButton,         SIGNAL(pressed()), this, SLOT(close()));
-    connect(pDoneButton,           SIGNAL(pressed()), this, SLOT(setValues()));
+    connect(pCancelButton,         SIGNAL(clicked()), this, SLOT(close()));
+    connect(pDoneButton,           SIGNAL(clicked()), this, SLOT(setValues()));
 
     setLayout(pMainLayout); //Is this really necessary as pMainLayout has this as parent
 }

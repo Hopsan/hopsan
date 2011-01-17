@@ -28,6 +28,7 @@ public:
     void loadFromXml();
     void loadDefaultsFromXml();
 
+    bool getShowWelcomeDialog();
     bool getInvertWheel();
     bool getUseMulticore();
     size_t getNumberOfThreads();
@@ -43,7 +44,7 @@ public:
     QMap<QString, double> getCustomUnits(QString key);
     QPen getPen(QString type, graphicsType gfxType, QString situation);
 
-
+    void setShowWelcomeDialog(bool value);
     void setInvertWheel(bool value);
     void setUseMultiCore(bool value);
     void setNumberOfThreads(size_t value);
@@ -62,6 +63,7 @@ public:
     void addCustomUnit(QString dataname, QString unitname, double scale);
 
 private:
+    bool mShowWelcomeDialog;
     bool mInvertWheel;
     bool mUseMulticore;
     size_t mNumberOfThreads;

@@ -120,8 +120,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     pMainLayout->addWidget(pButtonBox, 0, Qt::AlignHCenter);
 
     //Create connections
-    connect(pCancelButton,         SIGNAL(pressed()), this, SLOT(close()));
-    connect(pDoneButton,           SIGNAL(pressed()), this, SLOT(setValues()));
+    connect(pCancelButton,         SIGNAL(clicked()), this, SLOT(close()));
+    connect(pDoneButton,           SIGNAL(clicked()), this, SLOT(setValues()));
     connect(pIsoIconBrowseButton,  SIGNAL(clicked()), this, SLOT(browseIso()));
     connect(pUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
 

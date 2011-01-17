@@ -79,7 +79,7 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mpLayout->addWidget(mpGroupByTagCheckBox, 1,5,1,1);
 
     this->setLayout(mpLayout);
-    connect(mpClearMessageWidgetButton, SIGNAL(pressed()),this, SLOT(clear()));
+    connect(mpClearMessageWidgetButton, SIGNAL(clicked()),this, SLOT(clear()));
     connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showErrorMessages(bool)));
     connect(mpShowWarningMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showWarningMessages(bool)));
     connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showInfoMessages(bool)));

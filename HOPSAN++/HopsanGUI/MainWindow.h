@@ -27,6 +27,7 @@ class SystemParametersWidget;
 class Configuration;
 class CopyStack;
 class AboutDialog;
+class WelcomeDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -46,6 +47,7 @@ public:
     LibraryWidget *mpLibrary;
     OptionsDialog *mpOptionsDialog;
     MessageWidget *mpMessageWidget;
+    WelcomeDialog *mpWelcomeDialog;
 
     AboutDialog *mpAboutDialog;
 
@@ -121,6 +123,7 @@ public:
 
 public slots:
     void show();
+    void initializeWorkspace();
     void updateToolBarsToNewTab();
     void refreshUndoWidgetList();
     void fixSimulationParameterValues();

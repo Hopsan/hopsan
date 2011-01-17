@@ -36,6 +36,7 @@ void Configuration::saveToXml()
     domDocument.appendChild(configRoot);
 
     QDomElement settings = appendDomElement(configRoot,"settings");
+    appendDomBooleanNode(settings, "showwelcomedialog", mShowWelcomeDialog);
     appendDomTextNode(settings, "backgroundcolor", mBackgroundColor.name());
     appendDomBooleanNode(settings, "antialiasing", mAntiAliasing);
     appendDomBooleanNode(settings, "invertwheel", mInvertWheel);
@@ -268,6 +269,8 @@ void Configuration::loadFromXml()
         {
             QDomElement settingsElement = configRoot.firstChildElement("settings");
 
+            if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
+                mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
             if(!settingsElement.firstChildElement("backgroundcolor").isNull())
                 mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
             if(!settingsElement.firstChildElement("antialiasing").isNull())
@@ -403,6 +406,8 @@ void Configuration::loadDefaultsFromXml()
         {
             QDomElement settingsElement = configRoot.firstChildElement("settings");
 
+            if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
+                mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
             if(!settingsElement.firstChildElement("backgroundcolor").isNull())
                 mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
             if(!settingsElement.firstChildElement("antialiasing").isNull())
@@ -481,6 +486,13 @@ void Configuration::loadDefaultsFromXml()
     return;
 }
 
+
+
+//! @brief Returns whether or not the welcome dialog shall be shown
+bool Configuration::getShowWelcomeDialog()
+{
+    return this->mShowWelcomeDialog;
+}
 
 
 //! @brief Returns whether or not invert wheel shall be used
@@ -599,6 +611,13 @@ QPen Configuration::getPen(QString type, graphicsType gfxType, QString situation
     return QPen(QColor("black"), 1, Qt::SolidLine, Qt::SquareCap);
 }
 
+
+//! @brief Set function for invert wheel option
+//! @param value Desired setting
+void Configuration::setShowWelcomeDialog(bool value)
+{
+    this->mShowWelcomeDialog = value;
+}
 
 //! @brief Set function for invert wheel option
 //! @param value Desired setting

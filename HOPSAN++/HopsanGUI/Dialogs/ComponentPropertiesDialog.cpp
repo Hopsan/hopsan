@@ -186,8 +186,8 @@ void ComponentPropertiesDialog::createEditStuff()
     buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
 
-    connect(okButton, SIGNAL(pressed()), SLOT(okPressed()));
-    connect(cancelButton, SIGNAL(pressed()), SLOT(close()));
+    connect(okButton, SIGNAL(clicked()), SLOT(okPressed()));
+    connect(cancelButton, SIGNAL(clicked()), SLOT(close()));
 
     QGroupBox *pHelpGroupBox = new QGroupBox();
     QVBoxLayout *pHelpLayout = new QVBoxLayout();
@@ -390,7 +390,7 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     addWidget(&mSystemParameterToolButton, 0, 3);
     addWidget(&mUnitNameLabel, 0, 4);
 
-    connect(&mSystemParameterToolButton, SIGNAL(pressed()), this, SLOT(showListOfSystemParameters()));
+    connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
 }
 
 

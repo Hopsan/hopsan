@@ -178,16 +178,16 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     connect(gpMainWindow->optionsAction,SIGNAL(triggered()),this,SLOT(show()));
     connect(mpEnableProgressBarCheckBox,SIGNAL(toggled(bool)), mpProgressBarLabel, SLOT(setEnabled(bool)));
     connect(mpEnableProgressBarCheckBox,SIGNAL(toggled(bool)), mpProgressBarSpinBox, SLOT(setEnabled(bool)));
-    connect(mpBackgroundColorButton, SIGNAL(pressed()), this, SLOT(colorDialog()));
-    connect(mpCancelButton, SIGNAL(pressed()), this, SLOT(reject()));
-    connect(mpOkButton, SIGNAL(pressed()), this, SLOT(updateValues()));
+    connect(mpBackgroundColorButton, SIGNAL(clicked()), this, SLOT(colorDialog()));
+    connect(mpCancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(mpOkButton, SIGNAL(clicked()), this, SLOT(updateValues()));
 
-    connect(mpAddValueUnitButton, SIGNAL(pressed()), this, SLOT(addValueUnit()));
-    connect(mpAddPressureUnitButton, SIGNAL(pressed()), this, SLOT(addPressureUnit()));
-    connect(mpAddFlowUnitButton, SIGNAL(pressed()), this, SLOT(addFlowUnit()));
-    connect(mpAddForceUnitButton, SIGNAL(pressed()), this, SLOT(addForceUnit()));
-    connect(mpAddPositionUnitButton, SIGNAL(pressed()), this, SLOT(addPositionUnit()));
-    connect(mpAddVelocityUnitButton, SIGNAL(pressed()), this, SLOT(addVelocityUnit()));
+    connect(mpAddValueUnitButton, SIGNAL(clicked()), this, SLOT(addValueUnit()));
+    connect(mpAddPressureUnitButton, SIGNAL(clicked()), this, SLOT(addPressureUnit()));
+    connect(mpAddFlowUnitButton, SIGNAL(clicked()), this, SLOT(addFlowUnit()));
+    connect(mpAddForceUnitButton, SIGNAL(clicked()), this, SLOT(addForceUnit()));
+    connect(mpAddPositionUnitButton, SIGNAL(clicked()), this, SLOT(addPositionUnit()));
+    connect(mpAddVelocityUnitButton, SIGNAL(clicked()), this, SLOT(addVelocityUnit()));
 
     connect(mpUseMulticoreCheckBox, SIGNAL(toggled(bool)), mpThreadsLabel, SLOT(setEnabled(bool)));
     connect(mpUseMulticoreCheckBox, SIGNAL(toggled(bool)), mpThreadsSpinBox, SLOT(setEnabled(bool)));

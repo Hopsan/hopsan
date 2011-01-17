@@ -13,6 +13,7 @@
 
 #include "common.h"
 #include "MainWindow.h"
+#include "Dialogs/WelcomeDialog.h"
 
 //Global stuff
 MainWindow* gpMainWindow = 0;
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
 
     QTimer::singleShot(750, &splash, SLOT(close()));
     QTimer::singleShot(400, &mainwindow, SLOT(show()));
+    QTimer::singleShot(751, &mainwindow, SLOT(initializeWorkspace()));
 
     //splash.finish(&mainwindow);
 
