@@ -21,7 +21,7 @@ namespace hopsan {
         double m, B, k;
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
-        double *f1_ptr, *x1_ptr, *v1_ptr, *c1_ptr, *Zx1_ptr, *f2_ptr, *x2_ptr, *v2_ptr, *c2_ptr, *Zx2_ptr;  //Node data pointers
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
         double mNum[3];
         double mDen[3];
@@ -57,23 +57,23 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            f1_ptr = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
-            x1_ptr = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
-            v1_ptr = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            c1_ptr = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zx1_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
+            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
-            f2_ptr = mpP2->getNodeDataPtr(NodeMechanic::FORCE);
-            x2_ptr = mpP2->getNodeDataPtr(NodeMechanic::POSITION);
-            v2_ptr = mpP2->getNodeDataPtr(NodeMechanic::VELOCITY);
-            c2_ptr = mpP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zx2_ptr = mpP2->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
+            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
+            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
 
             //Initialization
-            f1 = (*f1_ptr);
-            x1 = (*x1_ptr);
-            v1 = (*v1_ptr);
-            x2 = (*x2_ptr);
+            f1 = (*mpND_f1);
+            x1 = (*mpND_x1);
+            v1 = (*mpND_v1);
+            x2 = (*mpND_x2);
 
             mLength = x1+x2;
 
@@ -100,10 +100,10 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            c1 = (*c1_ptr);
-            Zx1 = (*Zx1_ptr);
-            c2 = (*c2_ptr);
-            Zx2 = (*Zx2_ptr);
+            c1 = (*mpND_c1);
+            Zx1 = (*mpND_Zx1);
+            c2 = (*mpND_c2);
+            Zx2 = (*mpND_Zx2);
 
             //Mass equations
             mDen[1] = B+Zx1+Zx2;
@@ -117,12 +117,12 @@ namespace hopsan {
             f2 = c2 + Zx2*v2;
 
             //Write new values to nodes
-            (*f1_ptr) = f1;
-            (*x1_ptr) = x1;
-            (*v1_ptr) = v1;
-            (*f2_ptr) = f2;
-            (*x2_ptr) = x2;
-            (*v2_ptr) = v2;
+            (*mpND_f1) = f1;
+            (*mpND_x1) = x1;
+            (*mpND_v1) = v1;
+            (*mpND_f2) = f2;
+            (*mpND_x2) = x2;
+            (*mpND_v2) = v2;
         }
     };
 }

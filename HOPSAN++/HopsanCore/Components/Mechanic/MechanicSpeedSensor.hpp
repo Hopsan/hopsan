@@ -22,7 +22,7 @@ namespace hopsan {
     class MechanicSpeedSensor : public ComponentSignal
     {
     private:
-        double *v_ptr, *out_ptr;
+        double *mpND_v, *mpND_out;
         Port *mpP1, *mpOut;
 
     public:
@@ -42,17 +42,14 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpP1->isConnected()) { v_ptr = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY); }
-            else { v_ptr = new double(0); }
-
-            if(mpOut->isConnected()) { out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
-            else { out_ptr = new double(); }
+            mpND_v = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            (*out_ptr) = (*v_ptr);
+            (*mpND_out) = (*mpND_v);
         }
     };
 }

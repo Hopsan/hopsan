@@ -36,7 +36,7 @@ namespace hopsan {
         double cp, Zcp, ct, Zct, ca, Zca, cb, Zcb, xvin, xv, xpanom, xpbnom, xatnom, xbtnom, Kcpa, Kcpb, Kcat, Kcbt, qpa, qpb, qat, qbt, qp, qa, qb, qt, pa, pb, pt, pp;
 
         double *pp_ptr, *qp_ptr, *pt_ptr, *qt_ptr, *pa_ptr, *qa_ptr, *pb_ptr, *qb_ptr;
-        double *cp_ptr, *Zcp_ptr, *ct_ptr, *Zct_ptr, *ca_ptr, *Zca_ptr, *cb_ptr, *Zcb_ptr, *xvin_ptr;
+        double *cp_ptr, *Zcp_ptr, *ct_ptr, *Zct_ptr, *ca_ptr, *Zca_ptr, *cb_ptr, *Zcb_ptr, *xvmpND_in;
 
         SecondOrderFilter myFilter;
         TurbulentFlowFunction mQturbpa;
@@ -106,7 +106,7 @@ namespace hopsan {
             cb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zcb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
@@ -125,7 +125,7 @@ namespace hopsan {
             Zca = (*Zca_ptr);
             cb  = (*cb_ptr);
             Zcb = (*Zcb_ptr);
-            xvin  = (*xvin_ptr);
+            xvin  = (*xvmpND_in);
 
             myFilter.update(xvin);
             xv = myFilter.value();

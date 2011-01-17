@@ -34,7 +34,7 @@ namespace hopsan {
         double deltah;
         double xv, xpanom, xpbnom, xatnom, xbtnom, Kcpa, Kcpb, Kcat, Kcbt, qpa, qpb, qat, qbt;
 
-        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *pload_ptr, *xvin_ptr;
+        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *pload_ptr, *xvmpND_in;
         double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pload;
 
         SecondOrderFilter myFilter;
@@ -108,7 +108,7 @@ namespace hopsan {
 
             pload_ptr = mpPL->getNodeDataPtr(NodeSignal::VALUE);
 
-            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
@@ -127,7 +127,7 @@ namespace hopsan {
             Zca = (*Zca_ptr);
             cb = (*cb_ptr);
             Zcb = (*Zcb_ptr);
-            xvin = (*xvin_ptr);
+            xvin = (*xvmpND_in);
 
             myFilter.update(xvin);
             xv = myFilter.value();

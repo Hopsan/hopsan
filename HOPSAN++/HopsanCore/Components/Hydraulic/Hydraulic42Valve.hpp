@@ -35,7 +35,7 @@ namespace hopsan {
         double deltah;
         double xv, Kc, qpa, qbt;
 
-        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *xvin_ptr;
+        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *xvmpND_in;
         double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb;
 
         SecondOrderFilter myFilter;
@@ -104,7 +104,7 @@ namespace hopsan {
             cb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zcb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
@@ -124,7 +124,7 @@ namespace hopsan {
             Zca = (*Zca_ptr);
             cb = (*cb_ptr);
             Zcb = (*Zcb_ptr);
-            xvin = (*xvin_ptr);
+            xvin = (*xvmpND_in);
 
             //Dynamics of spool position (second order low pass filter)
             myFilter.update(xvin);

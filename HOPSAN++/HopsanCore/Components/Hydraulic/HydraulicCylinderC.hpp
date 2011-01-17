@@ -36,7 +36,7 @@ class HydraulicCylinderC : public ComponentC
         double betae, me, V01, V02, A1, A2, sl, cLeak, bp;
 
         //Node data pointers
-        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr, *f3_ptr, *x3_ptr, *v3_ptr, *c3_ptr, *Zx3_ptr;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *f3_ptr, *x3_ptr, *v3_ptr, *c3_ptr, *Zx3_ptr;
 
         //Ports
         Port *mpP1, *mpP2, *mpP3;
@@ -85,14 +85,14 @@ class HydraulicCylinderC : public ComponentC
         void initialize()
         {
             //Assign node data pointers
-            p1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            p2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            c2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
             f3_ptr = mpP3->getNodeDataPtr(NodeMechanic::FORCE);
             x3_ptr = mpP3->getNodeDataPtr(NodeMechanic::POSITION);
             v3_ptr = mpP3->getNodeDataPtr(NodeMechanic::VELOCITY);
@@ -100,10 +100,10 @@ class HydraulicCylinderC : public ComponentC
             Zx3_ptr = mpP3->getNodeDataPtr(NodeMechanic::CHARIMP);
 
             //Read variables from nodes
-            double p1 = (*p1_ptr);
-            double q1 = (*q1_ptr);
-            double p2 = (*p2_ptr);
-            double q2 = (*q2_ptr);
+            double p1 = (*mpND_p1);
+            double q1 = (*mpND_q1);
+            double p2 = (*mpND_p2);
+            double q2 = (*mpND_q2);
             double f3 = (*f3_ptr);
             double x3 = (*x3_ptr);
             double v3 = (*v3_ptr);
@@ -131,10 +131,10 @@ class HydraulicCylinderC : public ComponentC
             double Zx3 = A1 * A1 * Zc1 + A2 * A2 * Zc2 + bp;
 
              //Write to nodes
-            (*c1_ptr) = c1;
-            (*Zc1_ptr) = Zc1;
-            (*c2_ptr) = c2;
-            (*Zc2_ptr) = Zc2;
+            (*mpND_c1) = c1;
+            (*mpND_Zc1) = Zc1;
+            (*mpND_c2) = c2;
+            (*mpND_Zc2) = Zc2;
             (*c3_ptr) = c3;
             (*Zx3_ptr) = Zx3;
         }
@@ -142,10 +142,10 @@ class HydraulicCylinderC : public ComponentC
         void simulateOneTimestep()
         {
             //Read variables from nodes
-            double p1 = (*p1_ptr);
-            double q1 = (*q1_ptr);
-            double p2 = (*p2_ptr);
-            double q2 = (*q2_ptr);
+            double p1 = (*mpND_p1);
+            double q1 = (*mpND_q1);
+            double p2 = (*mpND_p2);
+            double q2 = (*mpND_q2);
             double x3 = (*x3_ptr);
             double v3 = (*v3_ptr);
 
@@ -201,10 +201,10 @@ class HydraulicCylinderC : public ComponentC
             Zx3 = A1*A1 * Zc1 + A2*A2 * Zc2 + bp + zlim;
 
             //Write to nodes
-           (*c1_ptr) = c1;
-           (*Zc1_ptr) = Zc1;
-           (*c2_ptr) = c2;
-           (*Zc2_ptr) = Zc2;
+           (*mpND_c1) = c1;
+           (*mpND_Zc1) = Zc1;
+           (*mpND_c2) = c2;
+           (*mpND_Zc2) = Zc2;
            (*c3_ptr) = c3;
            (*Zx3_ptr) = Zx3;
         }

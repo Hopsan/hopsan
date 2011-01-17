@@ -23,7 +23,7 @@ namespace hopsan {
     private:
         double Kc;
 
-        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
         double q, p1, p2, c1, Zc1, c2, Zc2;
 
         Port *mpP1, *mpP2;
@@ -46,25 +46,25 @@ namespace hopsan {
 
         void initialize()
         {
-            p1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            p2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            c2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            c1 = (*c1_ptr);
-            Zc1 = (*Zc1_ptr);
-            c2 = (*c2_ptr);
-            Zc2 = (*Zc2_ptr);
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc1);
+            c2 = (*mpND_c2);
+            Zc2 = (*mpND_Zc2);
 
             //Connector equations
             q = (c1-c2)/(Zc1+Zc2);
@@ -82,10 +82,10 @@ namespace hopsan {
             }
 
             //Write new variables to nodes
-            (*p1_ptr) = p1;
-            (*q1_ptr) = -q;
-            (*p2_ptr) = p2;
-            (*q2_ptr) = q;
+            (*mpND_p1) = p1;
+            (*mpND_q1) = -q;
+            (*mpND_p2) = p2;
+            (*mpND_q2) = q;
         }
     };
 }

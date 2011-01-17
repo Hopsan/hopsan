@@ -34,7 +34,7 @@ namespace hopsan {
         TurbulentFlowFunction mQturbpa;
         double xv, xpanom, Kcpa, qpa;
 
-        double *cp_ptr, *Zcp_ptr, *ca_ptr, *Zca_ptr, *xvin_ptr, *pp_ptr, *qp_ptr, *pa_ptr, *qa_ptr;
+        double *cp_ptr, *Zcp_ptr, *ca_ptr, *Zca_ptr, *xvmpND_in, *pp_ptr, *qp_ptr, *pa_ptr, *qa_ptr;
         double cp, Zcp, ca, Zca, xvin, pp, qp, pa, qa;
 
         Port *mpPP, *mpPA, *mpIn;
@@ -82,7 +82,7 @@ namespace hopsan {
             ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
@@ -97,7 +97,7 @@ namespace hopsan {
             Zcp = (*Zcp_ptr);
             ca = (*ca_ptr);
             Zca = (*Zca_ptr);
-            xvin = (*xvin_ptr);
+            xvin = (*xvmpND_in);
 
             //Dynamics of spool position (second order low pass filter)
             myFilter.update(xvin);

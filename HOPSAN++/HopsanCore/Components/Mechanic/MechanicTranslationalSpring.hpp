@@ -17,7 +17,7 @@ namespace hopsan {
     private:
         double k;
         double v1, c1, lastc1, v2, c2, lastc2, Zc;
-        double *v1_ptr, *c1_ptr, *Zc1_ptr, *v2_ptr, *c2_ptr, *Zc2_ptr;
+        double *mpND_v1, *mpND_c1, *mpND_Zc1, *mpND_v2, *mpND_c2, *mpND_Zc2;
         Port *mpP1, *mpP2;
 
     public:
@@ -43,22 +43,22 @@ namespace hopsan {
 
         void initialize()
         {
-            v1_ptr = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            c1_ptr = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zc1_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
-            v2_ptr = mpP2->getNodeDataPtr(NodeMechanic::VELOCITY);
-            c2_ptr = mpP2->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zc2_ptr = mpP2->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            v1 = (*v1_ptr);
-            lastc1 = (*c1_ptr);
-            v2 = (*v2_ptr);
-            lastc2 = (*c2_ptr);
+            v1 = (*mpND_v1);
+            lastc1 = (*mpND_c1);
+            v2 = (*mpND_v2);
+            lastc2 = (*mpND_c2);
 
             //Spring equations
             Zc = k*mTimestep;
@@ -66,10 +66,10 @@ namespace hopsan {
             c2 = lastc1 + 2.0*Zc*v1;
 
             //Write new values to nodes
-            (*c1_ptr) = c1;
-            (*Zc1_ptr) = Zc;
-            (*c2_ptr) = c2;
-            (*Zc2_ptr) = Zc;
+            (*mpND_c1) = c1;
+            (*mpND_Zc1) = Zc;
+            (*mpND_c2) = c2;
+            (*mpND_Zc2) = Zc;
         }
     };
 }

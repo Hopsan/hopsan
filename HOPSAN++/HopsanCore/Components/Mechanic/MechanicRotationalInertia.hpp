@@ -28,7 +28,7 @@ namespace hopsan {
         double den[3];
         SecondOrderFilter mFilter;
         Integrator mInt;
-        double *t1_ptr, *a1_ptr, *w1_ptr, *c1_ptr, *Zx1_ptr, *t2_ptr, *a2_ptr, *w2_ptr, *c2_ptr, *Zx2_ptr;
+        double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
         double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2;
         Port *mpP1, *mpP2;
 
@@ -59,21 +59,21 @@ namespace hopsan {
 
         void initialize()
         {
-            t1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::TORQUE);
-            a1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::ANGLE);
-            w1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
-            c1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
-            Zx1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
+            mpND_t1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
+            mpND_a1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGLE);
+            mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
 
-            t2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::TORQUE);
-            a2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::ANGLE);
-            w2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
-            c2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
-            Zx2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
+            mpND_t2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::TORQUE);
+            mpND_a2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::ANGLE);
+            mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CHARIMP);
 
-            t1 = (*t1_ptr);
-            a1 = (*a1_ptr);
-            w1 = (*w1_ptr);
+            t1 = (*mpND_t1);
+            a1 = (*mpND_a1);
+            w1 = (*mpND_w1);
 
             num[0] = 0.0;
             num[1] = 1.0;
@@ -89,10 +89,10 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            c1 = (*c1_ptr);
-            Zx1 = (*Zx1_ptr);
-            c2 = (*c2_ptr);
-            Zx2 = (*Zx2_ptr);
+            c1 = (*mpND_c1);
+            Zx1 = (*mpND_Zx1);
+            c2 = (*mpND_c2);
+            Zx2 = (*mpND_Zx2);
 
             //Mass equations
             den[1] = B+Zx1+Zx2;
@@ -106,12 +106,12 @@ namespace hopsan {
             t2 = c2 + Zx2*w2;
 
             //Write new values to nodes
-            (*t1_ptr) = t1;
-            (*a1_ptr) = a1;
-            (*w1_ptr) = w1;
-            (*t2_ptr) = t2;
-            (*a2_ptr) = a2;
-            (*w2_ptr) = w2;
+            (*mpND_t1) = t1;
+            (*mpND_a1) = a1;
+            (*mpND_w1) = w1;
+            (*mpND_t2) = t2;
+            (*mpND_a2) = a2;
+            (*mpND_w2) = w2;
         }
     };
 }

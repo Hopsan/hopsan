@@ -35,7 +35,7 @@ namespace hopsan {
         double deltah;
         double xv, xpanom, xpbnom, xatnom, xbtnom, xccnom, Kcpa, Kcpb, Kcat, Kcbt, Kccc, qpa, qpb, qat, qbt, qcc;
 
-        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *pc1_ptr, *qc1_ptr, *cc1_ptr, *Zcc1_ptr, *pc2_ptr, *qc2_ptr, *cc2_ptr, *Zcc2_ptr, *xvin_ptr;
+        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *pmpND_c1, *qmpND_c1, *cmpND_c1, *ZcmpND_c1, *pmpND_c2, *qmpND_c2, *cmpND_c2, *ZcmpND_c2, *xvmpND_in;
         double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pc1, qc1, cc1, Zcc1, pc2, qc2, cc2, Zcc2;
 
         SecondOrderFilter myFilter;
@@ -111,17 +111,17 @@ namespace hopsan {
             cb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zcb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            pc1_ptr = mpPC1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qc1_ptr = mpPC1->getNodeDataPtr(NodeHydraulic::FLOW);
-            cc1_ptr = mpPC1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zcc1_ptr = mpPC1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            pmpND_c1 = mpPC1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qmpND_c1 = mpPC1->getNodeDataPtr(NodeHydraulic::FLOW);
+            cmpND_c1 = mpPC1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            ZcmpND_c1 = mpPC1->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            pc2_ptr = mpPC2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qc2_ptr = mpPC2->getNodeDataPtr(NodeHydraulic::FLOW);
-            cc2_ptr = mpPC2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zcc2_ptr = mpPC2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            pmpND_c2 = mpPC2->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qmpND_c2 = mpPC2->getNodeDataPtr(NodeHydraulic::FLOW);
+            cmpND_c2 = mpPC2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            ZcmpND_c2 = mpPC2->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             double xvin  = mpIn->readNode(NodeSignal::VALUE);
             double num[3] = {0.0, 0.0, 1.0};
@@ -141,11 +141,11 @@ namespace hopsan {
             Zca = (*Zca_ptr);
             cb  = (*cb_ptr);
             Zcb = (*Zcb_ptr);
-            cc1  = (*cc1_ptr);
-            Zcc1 = (*Zcc1_ptr);
-            cc2  = (*cc2_ptr);
-            Zcc2 = (*Zcc2_ptr);
-            xvin  = (*xvin_ptr);
+            cc1  = (*cmpND_c1);
+            Zcc1 = (*ZcmpND_c1);
+            cc2  = (*cmpND_c2);
+            Zcc2 = (*ZcmpND_c2);
+            xvin  = (*xvmpND_in);
 
             myFilter.update(xvin);
             xv = myFilter.value();
@@ -203,10 +203,10 @@ namespace hopsan {
             (*qa_ptr) = qa;
             (*pb_ptr) = cb + qb*Zcb;
             (*qb_ptr) = qb;
-            (*pc1_ptr) = cc1 + qc1*Zcc1;
-            (*qc1_ptr) = qc1;
-            (*pc2_ptr) = cc2 + qc2*Zcc2;
-            (*qc2_ptr) = qc2;
+            (*pmpND_c1) = cc1 + qc1*Zcc1;
+            (*qmpND_c1) = qc1;
+            (*pmpND_c2) = cc2 + qc2*Zcc2;
+            (*qmpND_c2) = qc2;
         }
     };
 }

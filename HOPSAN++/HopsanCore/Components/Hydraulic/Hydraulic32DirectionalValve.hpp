@@ -31,7 +31,7 @@ namespace hopsan {
         double deltah;
         double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
 
-        double *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *xvin_ptr;
+        double *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *xvmpND_in;
         double pa, qa, ca, Zca, pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin;
 
         SecondOrderFilter myFilter;
@@ -86,7 +86,7 @@ namespace hopsan {
             ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
 
-            xvin_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
@@ -103,7 +103,7 @@ namespace hopsan {
             Zct = (*Zct_ptr);
             ca = (*ca_ptr);
             Zca = (*Zca_ptr);
-            xvin = (*xvin_ptr);
+            xvin = (*xvmpND_in);
 
             if(doubleToBool(xvin))
             {

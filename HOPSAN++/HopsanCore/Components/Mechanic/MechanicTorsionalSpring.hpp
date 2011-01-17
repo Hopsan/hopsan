@@ -24,7 +24,7 @@ namespace hopsan {
     private:
         double k;
         double w1, c1, lastc1, w2, c2, lastc2, Zx;
-        double *w1_ptr, *c1_ptr, *Zx1_ptr, *w2_ptr, *c2_ptr, *Zx2_ptr;
+        double *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_w2, *mpND_c2, *mpND_Zx2;
         Port *mpP1, *mpP2;
 
     public:
@@ -50,22 +50,22 @@ namespace hopsan {
 
         void initialize()
         {
-            w1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
-            c1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
-            Zx1_ptr = mpP1->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
-            w2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
-            c2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
-            Zx2_ptr = mpP2->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
+            mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
+            mpND_w2 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c2 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            w1 = (*w1_ptr);
-            lastc1 = (*c1_ptr);
-            w2 = (*w2_ptr);
-            lastc2 = (*c2_ptr);
+            w1 = (*mpND_w1);
+            lastc1 = (*mpND_c1);
+            w2 = (*mpND_w2);
+            lastc2 = (*mpND_c2);
 
             //Spring equations
             Zx = k*mTimestep;
@@ -73,10 +73,10 @@ namespace hopsan {
             c2 = lastc1 + 2.0*Zx*w1;
 
             //Write new values to nodes
-            (*c1_ptr) = c1;
-            (*Zx1_ptr) = Zx;
-            (*c2_ptr) = c2;
-            (*Zx2_ptr) = Zx;
+            (*mpND_c1) = c1;
+            (*mpND_Zx1) = Zx;
+            (*mpND_c2) = c2;
+            (*mpND_Zx2) = Zx;
         }
     };
 }

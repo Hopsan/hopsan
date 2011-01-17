@@ -1305,21 +1305,21 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
     //cout << "Trying to rename: " << old_name << " to " << new_name << endl;
     //First find the post in the map where the old name resides, copy the data stored there
     SubComponentMapT::iterator it = mSubComponentMap.find(oldname);
-    Component* temp_c_ptr;
+    Component* temp_mpND_c;
     if (it != mSubComponentMap.end())
     {
         //If found erase old record
-        temp_c_ptr = it->second;
+        temp_mpND_c = it->second;
         mSubComponentMap.erase(it);
 
         //insert new (with new name)
         string mod_new_name = this->determineUniqueComponentName(newname);
 
         //cout << "new name is: " << mod_name << endl;
-        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
+        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_mpND_c));
 
         //Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
-        temp_c_ptr->setName(mod_new_name, true);
+        temp_mpND_c->setName(mod_new_name, true);
     }
     else
     {
@@ -1334,23 +1334,23 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(string name, bool doDelete)
 {
-    Component* c_ptr = getSubComponent(name);
-    removeSubComponent(c_ptr, doDelete);
+    Component* mpND_c = getSubComponent(name);
+    removeSubComponent(mpND_c, doDelete);
 }
 
 
 //! Remove a sub component from a system, can also be used to actually delete the component
-//! @param[in] c_ptr A pointer to the component to remove
+//! @param[in] mpND_c A pointer to the component to remove
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
-void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
+void ComponentSystem::removeSubComponent(Component* mpND_c, bool doDelete)
 {
     std::string compName;
-    compName = c_ptr->getName();
+    compName = mpND_c->getName();
 
     //Disconnect all ports before erase from system
     PortPtrMapT::iterator ports_it;
     vector<Port*>::iterator conn_ports_it;
-    for (ports_it = c_ptr->mPortPtrMap.begin(); ports_it != c_ptr->mPortPtrMap.end(); ++ports_it)
+    for (ports_it = mpND_c->mPortPtrMap.begin(); ports_it != mpND_c->mPortPtrMap.end(); ++ports_it)
     {
         vector<Port*> connected_ports = ports_it->second->getConnectedPorts(); //Get a copy of the connected ports ptr vector
         //We can not use an iterator directly connected to the vector inside the port as this will be changed by the disconnect calls
@@ -1361,12 +1361,12 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
     }
 
     //Remove from storage
-    removeSubComponentPtrFromStorage(c_ptr);
+    removeSubComponentPtrFromStorage(mpND_c);
 
     //Shall we also delete the component completely
     if (doDelete)
     {
-        delete c_ptr; //! @todo can I really delete here or do I need to use the factory for external components
+        delete mpND_c; //! @todo can I really delete here or do I need to use the factory for external components
     }
 
     gCoreMessageHandler.addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");
@@ -1411,9 +1411,9 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
     mSubComponentMap.insert(pair<string, Component*>(pComponent->getName(), pComponent));
 }
 
-void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
+void ComponentSystem::removeSubComponentPtrFromStorage(Component* mpND_c)
 {
-    SubComponentMapT::iterator it = mSubComponentMap.find(c_ptr->getName());
+    SubComponentMapT::iterator it = mSubComponentMap.find(mpND_c->getName());
     if (it != mSubComponentMap.end())
     {
         vector<Component*>::iterator cit; //Component iterator
@@ -1422,7 +1422,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
         case Component::C :
             for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
             {
-                if ( *cit == c_ptr )
+                if ( *cit == mpND_c )
                 {
                     mComponentCptrs.erase(cit);
                     break;
@@ -1432,7 +1432,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
         case Component::Q :
             for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
             {
-                if ( *cit == c_ptr )
+                if ( *cit == mpND_c )
                 {
                     mComponentQptrs.erase(cit);
                     break;
@@ -1442,7 +1442,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
         case Component::S :
             for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
             {
-                if ( *cit == c_ptr )
+                if ( *cit == mpND_c )
                 {
                     mComponentSignalptrs.erase(cit);
                     break;
@@ -1452,7 +1452,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
         case Component::NOCQSTYPE :
             for (cit = mComponentUndefinedptrs.begin(); cit != mComponentUndefinedptrs.end(); ++cit)
             {
-                if ( *cit == c_ptr )
+                if ( *cit == mpND_c )
                 {
                     mComponentUndefinedptrs.erase(cit);
                     break;
@@ -1468,7 +1468,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
     }
     else
     {
-        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + c_ptr->getName() + " does not exist (Does Nothing)");
+        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + mpND_c->getName() + " does not exist (Does Nothing)");
     }
 }
 

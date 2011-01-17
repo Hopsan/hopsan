@@ -52,7 +52,7 @@ namespace hopsan {
         SecondOrderFilter mVelocityFilter;
         double posnum[3], posden[3], velnum[3], velden[3];
         double p1, q1, c1, Zc1, p2, q2, c2, Zc2, v1, cx1, Zx1, f2, x2, v2, cx2, Zx2;
-        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *p2_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr, *f2_ptr, *x2_ptr, *v2_ptr, *cx2_ptr, *Zx2_ptr;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f2, *mpND_x2, *mpND_v2, *cmpND_x2, *mpND_Zx2;
         Port *mpP1, *mpP2, *mpP3;
 
     public:
@@ -90,27 +90,27 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            p1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            p2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            c2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc2_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            f2_ptr = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
-            x2_ptr = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
-            v2_ptr = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            cx2_ptr = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zx2_ptr = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p2 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_q2 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c2 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_f2 = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
+            mpND_x2 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
+            mpND_v2 = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
+            cmpND_x2 = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
+            mpND_Zx2 = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
 
             //Read data from nodes
-            x2 = (*x2_ptr);
-            v2 = (*v2_ptr);
-            Zc1 = (*Zc1_ptr);
-            Zc2 = (*Zc2_ptr);
-            cx2 = (*cx2_ptr);
-            Zx2 = (*Zx2_ptr);
+            x2 = (*mpND_x2);
+            v2 = (*mpND_v2);
+            Zc1 = (*mpND_Zc1);
+            Zc2 = (*mpND_Zc2);
+            cx2 = (*cmpND_x2);
+            Zx2 = (*mpND_Zx2);
 
             Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
 
@@ -136,12 +136,12 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            c1 = (*c1_ptr);
-            Zc1 = (*Zc1_ptr);
-            c2 = (*c2_ptr);
-            Zc2 = (*Zc2_ptr);
-            cx2 = (*cx2_ptr);
-            Zx2 = (*Zx2_ptr);
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc1);
+            c2 = (*mpND_c2);
+            Zc2 = (*mpND_Zc2);
+            cx2 = (*cmpND_x2);
+            Zx2 = (*mpND_Zx2);
 
             //CylinderCtest Equations
 
@@ -168,13 +168,13 @@ namespace hopsan {
             p2 = c2 + Zc2*q2;
 
             //Write new values to nodes
-            (*p1_ptr) = p1;
-            (*q1_ptr) = q1;
-            (*p2_ptr) = p2;
-            (*q2_ptr) = q2;
-            (*f2_ptr) = f2;
-            (*x2_ptr) = x2;
-            (*v2_ptr) = v2;
+            (*mpND_p1) = p1;
+            (*mpND_q1) = q1;
+            (*mpND_p2) = p2;
+            (*mpND_q2) = q2;
+            (*mpND_f2) = f2;
+            (*mpND_x2) = x2;
+            (*mpND_v2) = v2;
         }
     };
 }

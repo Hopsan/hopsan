@@ -29,7 +29,7 @@ namespace hopsan {
         double p2, q2, e0, ct;
 
         double p1, q1, c1, Zc1, out;
-        double *p1_ptr, *q1_ptr, *c1_ptr, *Zc1_ptr, *out_ptr;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_out;
 
         Port *mpP1, *mpOut;
 
@@ -63,17 +63,17 @@ namespace hopsan {
 
         void initialize()
         {
-            p1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            if(mpOut->isConnected()) {out_ptr = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
-            else { out_ptr = new double(); }
+            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            if(mpOut->isConnected()) {mpND_out = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
+            else { mpND_out = new double(); }
 
-            p1 = (*p1_ptr);
-            q1 = (*q1_ptr);
-            c1 = (*c1_ptr);
-            Zc1 = (*Zc1_ptr);
+            p1 = (*mpND_p1);
+            q1 = (*mpND_q1);
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc1);
 
             if (p1 < Pmin)         //User has selected an initial pressure lower than the minimum pressure, so use minimum pressure instead
             {
@@ -96,8 +96,8 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Read variables from nodes
-            c1 = (*c1_ptr);
-            Zc1 = (*Zc1_ptr);
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc1);
 
             //Ackumulator equations
 
@@ -138,9 +138,9 @@ namespace hopsan {
             mPrevZc1 = Zc1;
 
             //Write new values to nodes
-            (*p1_ptr) = p1;
-            (*q1_ptr) = q1;
-            (*out_ptr) = Voil;
+            (*mpND_p1) = p1;
+            (*mpND_q1) = q1;
+            (*mpND_out) = Voil;
         }
     };
 }

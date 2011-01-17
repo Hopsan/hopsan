@@ -308,7 +308,7 @@ namespace hopsan {
 
         //Add and Remove subcomponent ptrs from storage vectors
         void addSubComponentPtrToStorage(Component* pComponent);
-        void removeSubComponentPtrFromStorage(Component* c_ptr);
+        void removeSubComponentPtrFromStorage(Component* mpND_c);
 
         void sortSignalComponentVector();
         bool componentVectorContains(std::vector<Component*> vector, Component *pComp);

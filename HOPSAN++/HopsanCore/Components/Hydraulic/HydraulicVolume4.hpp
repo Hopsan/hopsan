@@ -29,7 +29,7 @@ namespace hopsan {
         double pMean, c10, c20, c30, c40;
 
         double q1, c1, Zc1, q2, c2, Zc2, q3, c3, Zc3, q4, c4, Zc4;
-        double *q1_ptr, *c1_ptr, *Zc1_ptr, *q2_ptr, *c2_ptr, *Zc2_ptr, *q3_ptr, *c3_ptr, *Zc3_ptr, *q4_ptr, *c4_ptr, *Zc4_ptr;
+        double *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_q2, *mpND_c2, *mpND_Zc2, *q3_ptr, *c3_ptr, *Zc3_ptr, *q4_ptr, *c4_ptr, *Zc4_ptr;
 
         Port *mpP1, *mpP2, *mpP3, *mpP4;
 
@@ -69,12 +69,12 @@ namespace hopsan {
 
         void initialize()
         {
-            q1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            c1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc1_ptr = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            q2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            c2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc2_ptr = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
+            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
             q3_ptr = mpP3->getNodeDataPtr(NodeHydraulic::FLOW);
             c3_ptr = mpP3->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zc3_ptr = mpP3->getNodeDataPtr(NodeHydraulic::CHARIMP);
@@ -108,12 +108,12 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Read values from nodes
-            q1 = (*q1_ptr);
-            c1 = (*c1_ptr);
-            Zc1 = (*Zc1_ptr);
-            q2 = (*q2_ptr);
-            c2 = (*c2_ptr);
-            Zc2 = (*Zc2_ptr);
+            q1 = (*mpND_q1);
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc1);
+            q2 = (*mpND_q2);
+            c2 = (*mpND_c2);
+            Zc2 = (*mpND_Zc2);
             q3 = (*q3_ptr);
             c3 = (*c3_ptr);
             Zc3 = (*Zc3_ptr);
@@ -137,12 +137,12 @@ namespace hopsan {
             c4 = mAlpha*c4 + (1.0 - mAlpha)*c40 + (Zc4 - mZc)*q4;
 
             //Write new values to nodes
-            (*c1_ptr) = c1;
-            (*c2_ptr) = c2;
+            (*mpND_c1) = c1;
+            (*mpND_c2) = c2;
             (*c3_ptr) = c3;
             (*c4_ptr) = c4;
-            (*Zc1_ptr) = Zc1;
-            (*Zc2_ptr) = Zc2;
+            (*mpND_Zc1) = Zc1;
+            (*mpND_Zc2) = Zc2;
             (*Zc3_ptr) = Zc3;
             (*Zc4_ptr) = Zc4;
         }

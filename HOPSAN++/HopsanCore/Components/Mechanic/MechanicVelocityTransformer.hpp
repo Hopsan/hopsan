@@ -18,7 +18,7 @@ namespace hopsan {
     private:
         double v;
         double signal, f, x, c, Zx;
-        double *signal_ptr, *f_ptr, *x_ptr, *v_ptr, *c_ptr, *Zx_ptr;
+        double *mpND_signal, *f_ptr, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx;
         Integrator mInt;
         Port *mpIn, *mpOut;
 
@@ -45,25 +45,24 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected()) { signal_ptr  = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
-            else { signal_ptr = new double(v); }
+            mpND_signal  = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, v);
 
-            f_ptr = mpOut->getNodeDataPtr(NodeMechanic::FORCE);
-            x_ptr = mpOut->getNodeDataPtr(NodeMechanic::POSITION);
-            v_ptr = mpOut->getNodeDataPtr(NodeMechanic::VELOCITY);
-            c_ptr = mpOut->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            Zx_ptr = mpOut->getNodeDataPtr(NodeMechanic::CHARIMP);
+            f_ptr = getSafeNodeDataPtr(mpOut, NodeMechanic::FORCE);
+            mpND_x = getSafeNodeDataPtr(mpOut, NodeMechanic::POSITION);
+            mpND_v = getSafeNodeDataPtr(mpOut, NodeMechanic::VELOCITY);
+            mpND_c = getSafeNodeDataPtr(mpOut, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx = getSafeNodeDataPtr(mpOut, NodeMechanic::CHARIMP);
 
-            mInt.initialize(mTimestep, (*signal_ptr), 0.0);
+            mInt.initialize(mTimestep, (*mpND_signal), 0.0);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            signal = (*signal_ptr);
-            c = (*c_ptr);
-            Zx = (*Zx_ptr);
+            signal = (*mpND_signal);
+            c = (*mpND_c);
+            Zx = (*mpND_Zx);
 
             //Spring equations
             x = mInt.update(signal);
@@ -71,8 +70,8 @@ namespace hopsan {
 
             //Write values to nodes
             (*f_ptr) = f;
-            (*x_ptr) = x;
-            (*v_ptr) = signal;
+            (*mpND_x) = x;
+            (*mpND_v) = signal;
         }
     };
 }
