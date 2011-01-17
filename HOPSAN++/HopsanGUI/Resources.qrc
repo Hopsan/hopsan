@@ -57,5 +57,9 @@
         <file>graphics/uiicons/Hopsan-Zoom100.png</file>
         <file>graphics/uiicons/Hopsan-ZoomIn.png</file>
         <file>graphics/uiicons/Hopsan-ZoomOut.png</file>
+        <file>graphics/lastsession.png</file>
+        <file>graphics/new.png</file>
+        <file>graphics/open.png</file>
+        <file>graphics/welcome.png</file>
     </qresource>
 </RCC>

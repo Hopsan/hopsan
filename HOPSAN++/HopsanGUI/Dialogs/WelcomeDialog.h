@@ -12,6 +12,7 @@
 
 #include <QDialog>
 #include <QLabel>
+#include <QCheckBox>
 
 class MainWindow;
 
@@ -37,6 +38,8 @@ private:
     QPushButton *mpNew;
     QPushButton *mpOpen;
     QPushButton *mpLastSession;
+
+    QCheckBox *mpDontShowMe;
 };
 
 #endif // WELCOMEDIALOG_H

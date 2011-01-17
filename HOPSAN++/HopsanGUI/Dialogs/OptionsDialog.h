@@ -50,6 +50,7 @@ private slots:
 private:
     QColor mPickedBackgroundColor;
 
+    QCheckBox *mpShowWelcomeDialogCheckBox;
     QCheckBox *mpInvertWheelCheckBox;
     QCheckBox *mpAntiAliasingCheckBox;
     QCheckBox *mpSnappingCheckBox;

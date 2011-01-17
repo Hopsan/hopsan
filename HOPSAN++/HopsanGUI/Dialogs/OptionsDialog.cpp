@@ -50,6 +50,10 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpBackgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     mpBackgroundColorButton->setAutoRaise(true);
 
+    mpShowWelcomeDialogCheckBox = new QCheckBox(tr("Show Welcome Dialog"));
+    mpShowWelcomeDialogCheckBox->setCheckable(true);
+    mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
+
     mpAntiAliasingCheckBox = new QCheckBox(tr("Use Anti-Aliasing"));
     mpAntiAliasingCheckBox->setCheckable(true);
     mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
@@ -64,11 +68,12 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     mpInterfaceGroupBox = new QGroupBox(tr("Interface"));
     mpInterfaceLayout = new QGridLayout;
-    mpInterfaceLayout->addWidget(mpInvertWheelCheckBox, 0, 0);
-    mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox, 1, 0);
-    mpInterfaceLayout->addWidget(mpSnappingCheckBox, 2, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorLabel, 3, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorButton, 3, 1);
+    mpInterfaceLayout->addWidget(mpShowWelcomeDialogCheckBox, 0, 0);
+    mpInterfaceLayout->addWidget(mpInvertWheelCheckBox, 1, 0);
+    mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox, 2, 0);
+    mpInterfaceLayout->addWidget(mpSnappingCheckBox, 3, 0);
+    mpInterfaceLayout->addWidget(mpBackgroundColorLabel, 4, 0);
+    mpInterfaceLayout->addWidget(mpBackgroundColorButton, 4, 1);
     mpInterfaceGroupBox->setLayout(mpInterfaceLayout);
 
         //Simulation Options
@@ -104,7 +109,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     palette.setColor(mpThreadsWarningLabel->backgroundRole(), Qt::darkRed);
     palette.setColor(mpThreadsWarningLabel->foregroundRole(), Qt::darkRed);
     mpThreadsWarningLabel->setPalette(palette);
-
 
     mpSimulationGroupBox = new QGroupBox(tr("Simulation"));
     mpSimulationLayout = new QGridLayout;
@@ -205,6 +209,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 //! Slot that updates and saves the settings based on the choices made in the dialog box
 void OptionsDialog::updateValues()
 {
+    gConfig.setShowWelcomeDialog(mpShowWelcomeDialogCheckBox->isChecked());
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());

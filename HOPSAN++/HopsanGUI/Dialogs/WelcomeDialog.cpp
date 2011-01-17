@@ -87,11 +87,15 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpActionText->setFont(tempFont);
     mpActionText->setAlignment(Qt::AlignCenter);
 
+    mpDontShowMe = new QCheckBox("Always load last session");
+    mpDontShowMe->setChecked(!gConfig.getShowWelcomeDialog());
+
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
     pLayout->addWidget(mpHeading, 0, 0);
     pLayout->addLayout(pButtonLayout, 1, 0);
     pLayout->addWidget(mpActionText, 2, 0);
+    pLayout->addWidget(mpDontShowMe, 3, 0);
     setLayout(pLayout);
 
     connect(mpNew, SIGNAL(clicked()), this, SLOT(createNewModel()));
@@ -124,6 +128,7 @@ void WelcomeDialog::createNewModel()
 {
     gpMainWindow->mpProjectTabs->addNewProjectTab();
     gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     this->close();
 }
 
@@ -132,6 +137,7 @@ void WelcomeDialog::loadExistingModel()
 {
     gpMainWindow->mpProjectTabs->loadModel();
     gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     this->close();
 }
 
@@ -143,5 +149,6 @@ void WelcomeDialog::loadLastSession()
         gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
     }
     gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     this->close();
 }
