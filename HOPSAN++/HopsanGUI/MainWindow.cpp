@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     gConfig = Configuration();
     gCopyStack = CopyStack();
+    mpConfig = &gConfig;
 
     //Set the name and size of the main window
     this->setObjectName("MainWindow");

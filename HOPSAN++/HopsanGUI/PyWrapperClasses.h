@@ -17,6 +17,7 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
+#include "Configuration.h"
 
 
 //Just for test purposes
@@ -221,6 +222,32 @@ public slots:
     {
         return o->mpProjectTabs->getCurrentTab()->mLastSimulationTime;
     }
+
+    void activateMultiCore(MainWindow* o)
+    {
+        o->mpConfig->setUseMultiCore(true);
+    }
+
+    void deactivateMultiCore(MainWindow* o)
+    {
+        o->mpConfig->setUseMultiCore(false);
+    }
+
+    void setNumberOfThreads(MainWindow* o, const int& value)
+    {
+        o->mpConfig->setNumberOfThreads(value);
+    }
+
+    void turnOnProgressBar(MainWindow* o)
+    {
+        o->mpConfig->setEnableProgressBar(true);
+    }
+
+    void turnOffProgressBar(MainWindow* o)
+    {
+        o->mpConfig->setEnableProgressBar(false);
+    }
+
 
 };
 

@@ -272,6 +272,17 @@ void OptionsDialog::show()
     mpBackgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     mPickedBackgroundColor = gConfig.getBackgroundColor();
 
+    mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
+    mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
+    mpInvertWheelCheckBox->setChecked(gConfig.getInvertWheel());
+    mpSnappingCheckBox->setChecked(gConfig.getSnapping());
+    mpEnableProgressBarCheckBox->setChecked(gConfig.getEnableProgressBar());
+    mpProgressBarSpinBox->setValue(gConfig.getProgressBarStep());
+    mpProgressBarSpinBox->setEnabled(gConfig.getEnableProgressBar());
+    mpUseMulticoreCheckBox->setChecked(gConfig.getUseMulticore());
+    mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
+    mpThreadsSpinBox->setEnabled(gConfig.getUseMulticore());
+
     QDialog::show();
 }
 

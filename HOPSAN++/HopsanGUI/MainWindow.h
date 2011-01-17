@@ -48,6 +48,7 @@ public:
     OptionsDialog *mpOptionsDialog;
     MessageWidget *mpMessageWidget;
     WelcomeDialog *mpWelcomeDialog;
+    Configuration *mpConfig;
 
     AboutDialog *mpAboutDialog;
 
