@@ -50,7 +50,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     newIcon.addPixmap(QPixmap(QString(GRAPHICSPATH) + "new.png"));
     mpNew->setIcon(newIcon);
     mpNew->setIconSize(QSize(120, 120));
-    mpNew->setStyleSheet("QPushButton:hover: { color: yellow; }");
+    mpNew->setStyleSheet("QPushButton: { background-color: blue; } QPushButton:hover { background-color: yellow; }");
     mpNew->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpNew->setMouseTracking(true);
 
@@ -59,7 +59,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     openIcon.addPixmap(QPixmap(QString(GRAPHICSPATH) + "open.png"));
     mpOpen->setIcon(openIcon);
     mpOpen->setIconSize(QSize(120, 120));
-    mpOpen->setStyleSheet("QPushButton:hover: { color: yellow; }");
+    mpOpen->setStyleSheet("QPushButton: { background-color: blue; } QPushButton:hover { background-color: yellow; }");
     mpOpen->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpOpen->setMouseTracking(true);
 

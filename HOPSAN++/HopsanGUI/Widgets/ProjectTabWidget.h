@@ -72,6 +72,8 @@ public:
     GraphicsView *mpGraphicsView;
     QuickNavigationWidget *mpQuickNavigationWidget;
 
+    int mLastSimulationTime;
+
 public slots:
     bool simulate();
     void save();

@@ -217,6 +217,11 @@ public slots:
         o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName);
     }
 
+    int getLastSimulationTime(MainWindow* o)
+    {
+        return o->mpProjectTabs->getCurrentTab()->mLastSimulationTime;
+    }
+
 };
 
 #endif // PYWRAPPERCLASSES_H

@@ -61,6 +61,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     //this->setLayout(tabLayout);
 
     mpGraphicsView->centerView();
+
+    mLastSimulationTime = 0;
 }
 
 ProjectTab::~ProjectTab()
@@ -211,6 +213,7 @@ bool ProjectTab::simulate()
 
     QString timeString;
     timeString.setNum(simTimer.elapsed());
+    mLastSimulationTime = simTimer.elapsed();
     if (progressBar.wasCanceled())
     {
         pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' was terminated!"))));
