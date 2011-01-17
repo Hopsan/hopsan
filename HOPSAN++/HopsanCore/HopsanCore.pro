@@ -62,6 +62,8 @@ SOURCES += Port.cc \
     ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     ComponentUtilities/DoubleIntegratorWithDamping.cpp \
     ComponentUtilities/SecondOrderTransferFunction.cc \
+    ComponentUtilities/matrix.cc \
+    ComponentUtilities/ludcmp.cc
 
 HEADERS += win32dll.h \
     Port.h \
@@ -183,4 +185,6 @@ HEADERS += win32dll.h \
     Components/HydraulicComponentTemplate.hpp \
     Components/HydraulicComponentTemplateOptimized.hpp \
     Components/Mechanic/MechanicTranslationalLosslessConnector.hpp \
-    Components/Hydraulic/HydraulicPressureControlledValve.hpp
+    Components/Hydraulic/HydraulicPressureControlledValve.hpp \
+    ComponentUtilities/matrix.h \
+    ComponentUtilities/ludcmp.h
