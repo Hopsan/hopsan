@@ -25,6 +25,7 @@ public:
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
+    virtual bool focusNextPrevChild(bool next);
 
 private slots:
     void createNewModel();
@@ -32,12 +33,22 @@ private slots:
     void loadLastSession();
 
 private:
+    void updateGraphics();
+
     QLabel *mpHeading;
     QLabel *mpActionText;
 
     QPushButton *mpNew;
     QPushButton *mpOpen;
     QPushButton *mpLastSession;
+
+    QIcon *mpNewIcon;
+    QIcon *mpOpenIcon;
+    QIcon *mpLastSessionIcon;
+
+    QIcon *mpNewActiveIcon;
+    QIcon *mpOpenActiveIcon;
+    QIcon *mpLastSessionActiveIcon;
 
     QCheckBox *mpDontShowMe;
 };

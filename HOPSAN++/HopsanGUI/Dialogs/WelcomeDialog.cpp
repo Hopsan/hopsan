@@ -30,13 +30,13 @@
 WelcomeDialog::WelcomeDialog(MainWindow *parent)
     : QDialog(parent)
 {
-
         //Set the name and size of the main window
     this->setObjectName("WelcomeDialog");
     this->resize(480,640);
     this->setWindowTitle("Welcome to HOPSAN");
     this->setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
     this->setMouseTracking(true);
+    this->setAttribute(Qt::WA_NoMousePropagation, false);
 
     mpHeading = new QLabel();
     QPixmap image;
@@ -44,41 +44,41 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpHeading->setPixmap(image);
     mpHeading->setAlignment(Qt::AlignCenter);
 
-
     mpNew = new QPushButton(this);
-    QIcon newIcon;
-    newIcon.addPixmap(QPixmap(QString(GRAPHICSPATH) + "new.png"));
-    mpNew->setIcon(newIcon);
+    mpNew->setFlat(true);
+    mpNewIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "new.png"));
+    mpNewActiveIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "newactive.png"));
+    mpNew->setIcon(*mpNewActiveIcon);
     mpNew->setIconSize(QSize(120, 120));
-    mpNew->setStyleSheet("QPushButton: { background-color: blue; } QPushButton:hover { background-color: yellow; }");
     mpNew->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpNew->setMouseTracking(true);
+    mpNew->setStyleSheet(" QPushButton:flat { border: none; } ");
 
     mpOpen = new QPushButton(this);
-    QIcon openIcon;
-    openIcon.addPixmap(QPixmap(QString(GRAPHICSPATH) + "open.png"));
-    mpOpen->setIcon(openIcon);
+    mpOpenIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "open.png"));
+    mpOpenActiveIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "openactive.png"));
+    mpOpen->setIcon(*mpOpenIcon);
     mpOpen->setIconSize(QSize(120, 120));
-    mpOpen->setStyleSheet("QPushButton: { background-color: blue; } QPushButton:hover { background-color: yellow; }");
     mpOpen->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpOpen->setMouseTracking(true);
+    mpOpen->setFlat(true);
 
     mpLastSession = new QPushButton(this);
-    QIcon lastSessionIcon;
-    lastSessionIcon.addPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
-    mpLastSession->setIcon(lastSessionIcon);
+    mpLastSessionIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
+    mpLastSessionActiveIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "lastsessionactive.png"));
+    mpLastSession->setIcon(*mpLastSessionIcon);
     mpLastSession->setIconSize(QSize(120, 120));
-    mpLastSession->setStyleSheet("QPushButton: { background-color: blue; } QPushButton:hover { background-color: yellow; }");
     mpLastSession->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpLastSession->setMouseTracking(true);
     mpLastSession->setEnabled(!gConfig.getLastSessionModels().empty());
-
-    qDebug() << "lastsessionmodels = " << gConfig.getLastSessionModels();
+    mpLastSession->setFlat(true);
 
     QHBoxLayout *pButtonLayout = new QHBoxLayout();
     pButtonLayout->addWidget(mpNew);
     pButtonLayout->addWidget(mpOpen);
     pButtonLayout->addWidget(mpLastSession);
+    pButtonLayout->setSpacing(0);
+    pButtonLayout->setContentsMargins(0, 0, 0, 0);
 
     mpActionText = new QLabel();
     mpActionText->setText("Create New Model");
@@ -108,20 +108,63 @@ void WelcomeDialog::mouseMoveEvent(QMouseEvent *event)
 {
     if(mpNew->underMouse())
     {
-        mpActionText->setText("Create New Model");
+        mpNew->setFocus();
     }
     else if(mpOpen->underMouse())
     {
-        mpActionText->setText("Open Existing Model");
+        mpOpen->setFocus();
     }
-    else if(mpLastSession->underMouse())
+    else if(mpLastSession->underMouse() && mpLastSession->isEnabled())
     {
-        mpActionText->setText("Open Last Session");
+        mpLastSession->setFocus();
     }
+
+    this->updateGraphics();
 
     QDialog::mouseMoveEvent(event);
 }
 
+
+bool WelcomeDialog::focusNextPrevChild(bool next)
+{
+    QDialog::focusNextPrevChild(next);
+
+    qDebug() << "Key pressed!";
+    this->updateGraphics();
+}
+
+
+
+void WelcomeDialog::updateGraphics()
+{
+    if(mpNew->hasFocus())
+    {
+        mpActionText->setText("Create New Model");
+        mpNew->setIcon(*mpNewActiveIcon);
+        mpOpen->setIcon(*mpOpenIcon);
+        mpLastSession->setIcon(*mpLastSessionIcon);
+    }
+    else if(mpOpen->hasFocus())
+    {
+        mpActionText->setText("Open Existing Model");
+        mpNew->setIcon(*mpNewIcon);
+        mpOpen->setIcon(*mpOpenActiveIcon);
+        mpLastSession->setIcon(*mpLastSessionIcon);
+    }
+    else if(mpLastSession->hasFocus())
+    {
+        mpActionText->setText("Open Last Session");
+        mpNew->setIcon(*mpNewIcon);
+        mpOpen->setIcon(*mpOpenIcon);
+        mpLastSession->setIcon(*mpLastSessionActiveIcon);
+    }
+    else
+    {
+        mpNew->setIcon(*mpNewIcon);
+        mpOpen->setIcon(*mpOpenIcon);
+        mpLastSession->setIcon(*mpLastSessionIcon);
+    }
+}
 
 
 void WelcomeDialog::createNewModel()
