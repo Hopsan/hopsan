@@ -49,5 +49,35 @@
 
 	\section plot plot(compName, portName, dataName)
 	Plots the variable "dataName" in the port "portName" of the component "compName". Example: hopsan.plot("sink", "in", "Value")
+	
+	\section plottowindow plotToWindow(compName, portName, dataName, windowNumber)
+	Plots the variable "dataName" in the port "portName" of the component "compName" in specified plot window. Plot window numbers begin at 0 for first window. Example: hopsan.plot("sink", "in", "Value", 0)
+	
+	\section discardplotgeneration discardPlotGeneration(windowNumber)
+	Removes the current plot generation from specified window. Example: hopsan.discardPlotGeneration(0)
+	
+	\section discardoldestplotgeneration discardOldestPlotGeneration(windowNumber)
+	Removes the oldest plot generation from specified window. Example: hopsan.discardOldestPlotGeneration(0)
+	
+	\section plot plot(compName, portName, dataName)
+	Plots the variable "dataName" in the port "portName" of the component "compName". Example: hopsan.plot("sink", "in", "Value")
+	
+	\section getsimulationtime getSimulationTime()
+	Returns the actual simlation time from last simulation. Example: hopsan.getSimlationTime()
+	
+	\section usemulticore useMultiCore()
+	Activates multi-threaded simulations. Example: hopsan.useMultiCore()
+	
+	\section usesinglecore useSingleCore()
+	Deactivates multi-threaded simulations. Example: hopsan.useSingleCore()
+	
+	\section setnumberofthreads setNumberOfThreads(value)
+	Specifies how many simlation threads that will be used in multi-threaded simulations. Example: hopsan.setNumberOfThreads(2)
+	
+	\section turnonprogressbar turnOnProgressBar()
+	Enables the simulation progress bar. Example: hopsan.turnOnProgressBar()
+	
+	\section turnoffprogressbar turnOffProgressBar()
+	Disables the simulation progress bar. Example: hopsan.turnOffProgressBar()
 */
 
