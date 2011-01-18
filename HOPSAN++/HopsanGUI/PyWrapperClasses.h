@@ -14,10 +14,12 @@
 #include "MainWindow.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/ProjectTabWidget.h"
+#include "Widgets/PlotWidget.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "Configuration.h"
+#include "PlotWindow.h"
 
 
 //Just for test purposes
@@ -218,17 +220,32 @@ public slots:
         o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName);
     }
 
-    int getLastSimulationTime(MainWindow* o)
+    void plotToWindow(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
+    {
+        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->addPlotCurve(compName, portName, dataName);
+    }
+
+    void discardPlotGeneration(MainWindow* o, const int& windowNumber)
+    {
+        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->discardGeneration();
+    }
+
+    void discardOldestPlotGeneration(MainWindow* o, const int& windowNumber)
+    {
+        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->discardOldestGeneration();
+    }
+
+    int getSimulationTime(MainWindow* o)
     {
         return o->mpProjectTabs->getCurrentTab()->mLastSimulationTime;
     }
 
-    void activateMultiCore(MainWindow* o)
+    void useMultiCore(MainWindow* o)
     {
         o->mpConfig->setUseMultiCore(true);
     }
 
-    void deactivateMultiCore(MainWindow* o)
+    void useSingleCore(MainWindow* o)
     {
         o->mpConfig->setUseMultiCore(false);
     }

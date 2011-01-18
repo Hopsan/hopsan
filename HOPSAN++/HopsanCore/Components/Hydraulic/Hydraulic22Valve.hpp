@@ -72,17 +72,17 @@ namespace hopsan {
 
         void initialize()
         {
-            pp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
-            cp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zcp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            pp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::PRESSURE);
+            qp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::FLOW);
+            cp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::WAVEVARIABLE);
+            Zcp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::CHARIMP);
 
-            pa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
-            ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            pa_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
+            qa_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
+            ca_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
+            Zca_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
 
-            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};

@@ -77,6 +77,8 @@ public:
     PlotParameterTree(MainWindow *parent = 0);
     PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
+    PlotWindow *getPlotWindow(int number);
+    void reportClosedPlotWindow(PlotWindow *window);
 
     //MainWindow *mpParentMainWindow;
     GUIContainerObject *mpCurrentContainer;
@@ -94,6 +96,7 @@ public slots:
 
 private:
     QList<QStringList> mAvailableParameters;
+    QList<PlotWindow *> mOpenPlotWindows;
 };
 
 

@@ -208,6 +208,18 @@ PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 }
 
 
+PlotWindow *PlotParameterTree::getPlotWindow(int number)
+{
+    return mOpenPlotWindows.at(number);
+}
+
+
+void PlotParameterTree::reportClosedPlotWindow(PlotWindow *window)
+{
+    mOpenPlotWindows.removeAll(window);
+}
+
+
 //! @brief Creates a new plot window from specified component and parameter.
 //! @param componentName Name of the component where the port with the parameter is located
 //! @param portName Name of the port where the parameter is located
@@ -227,6 +239,8 @@ PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString p
     PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
     plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
+
+    mOpenPlotWindows.append(plotWindow);
 
     return plotWindow;
 }

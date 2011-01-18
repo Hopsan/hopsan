@@ -34,6 +34,7 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY);
+    void addPlotCurve(QString componentName, QString portName, QString dataName);
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void setGeneration(int gen);
 
@@ -51,6 +52,7 @@ protected:
 
 public slots:
     void discardGeneration();
+    void discardOldestGeneration();
     void setUnit(int yAxis, QString physicalQuantity, QString selectedUnit);
     void enableZoom(bool);
     void enablePan(bool);
@@ -67,6 +69,7 @@ public slots:
     void stepForward();
     void saveToXml();
     bool saveToHmpf(QString fileName);
+    void close();
 
 private:
 

@@ -388,6 +388,24 @@ void PlotWindow::discardGeneration()
 {
     mVectorX.removeAt(mCurrentGeneration);
     mVectorY.removeAt(mCurrentGeneration);
+
+    --mCurrentGeneration;
+    if(mCurrentGeneration < 0)
+    {
+        mCurrentGeneration = 0;
+    }
+    setGeneration(mCurrentGeneration);
+
+    mpDiscardGenerationButton->setEnabled(mVectorX.size() > 1);
+}
+
+
+//! @brief Slot that removes the current generation from the plot window.
+//! @todo There is no check that the number of generations is greater than one. The button shall always be disabled then anyway, but if this is called from outside it will cause problems.
+void PlotWindow::discardOldestGeneration()
+{
+    mVectorX.removeAt(0);
+    mVectorY.removeAt(0);
     --mCurrentGeneration;
     if(mCurrentGeneration < 0)
     {
@@ -767,6 +785,16 @@ void PlotWindow::dropEvent(QDropEvent *event)
 }
 
 
+void PlotWindow::addPlotCurve(QString componentName, QString portName, QString dataName)
+{
+    QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getParameterUnit(componentName, dataName);
+    QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
+    QVector<double> yVector;
+    gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
+    this->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
+}
+
+
 //! @brief Handles the right-click menu in the plot window
 void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 {
@@ -1101,7 +1129,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     }
     tempCurve->setData(mVectorX[mCurrentGeneration].last(), tempVectorY);
 
-    qDebug() << tempVectorY;
+    //qDebug() << tempVectorY;
 
     QString yLabel = QString(dataName + " [" + newUnit + "]");
 
@@ -1329,4 +1357,12 @@ bool PlotWindow::saveToHmpf(QString fileName)
     file.close();
 
     return true;
+}
+
+
+void PlotWindow::close()
+{
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->reportClosedPlotWindow(this);
+
+    QMainWindow::close();
 }
