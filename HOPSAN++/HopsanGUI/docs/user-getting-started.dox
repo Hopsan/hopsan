@@ -42,29 +42,23 @@
 		
 \page building-a-model Building a model
 	Models must be built according to the transmission line element method. You are adviced to read the section on this before you begin.
-	\htmlonly
-		<br><img src="../graphics/portsandnodes.png" width=400 border=0><br>
-	\endhtmlonly
-	Blabla...
-
-
-\section component-library Component Library
-Blabla...
-
+	
+	The first thing you need to do is create a new model, if you have not already done so. Click on File->New->Project, or press the New button in the toolbar.
+	
+\section component-library Adding Components
+	To add a component, you first need to find it in the component library. Standard components are divided into three libraries; hydraulic, mechanic and signal. These can in turn be filtered by different usages. When you have located the component you want, it can be added to your model by dragging it from the library to the workspace. The new component appear where you drop it, and can then be moved to a suitable location.
 
 \section connecting-components Connecting Components
-Blabla...
-
+	Components in HOPSAN are connected by creating a \a node between two or more \a ports. In the graphical interface, a node is represented by a \a connector, represented by a line in the workspace. This is performed by clicking on one of the ports, creating the connector the way you want it and finally clikcing on the end port. Most ports, but not all, must be connected before simulating the model. Note that the TLM method results in that C-type components, such as volumes, can only be connected to Q-type components, such as valves or orifices. This can feel a little tricky, but is on the other hand always physically motivated. Signal components are simulated sequencially and do not obey these rules.
+	\htmlonly
+		<br><img src="../graphics/ports.png" width=300 border=0><img src="../graphics/node.png" width=300 border=0><br>
+	\endhtmlonly
 
 \section changing-component-parameters Changing Component Parameters
-Blabla...
+To change parameteres of a component, you can double-click on it to open its parameter dialog box. Here it is possible to change the name of the component, parameters and start values in the nodes.
 
 
 \section using-global-parameters Using Global Parameters
-Blabla...
-
-
-\section groups Groups
 Blabla...
 
 
