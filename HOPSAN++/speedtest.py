@@ -1,18 +1,46 @@
 hopsan.turnOffProgressBar()
 
-iterations = 40
-pressure = 1e7
+iterations = 20
 
-hopsan.deactivateMultiCore()
+hopsan.useSingleCore()
 totaltime = 0
 hopsan.simulate()
-hopsan.plot("Translational Mass", "P2", "Position")
 for i in range(0, iterations):
-  pressure += 5e5
-  hopsan.setParameter("Prescribed Pressure C", "P", pressure)
   hopsan.simulate()
-#  if i>10:
-#    hopsan.discardOldestPlotGeneration(0)
-  totaltime += hopsan.getLastSimulationTime()
-singleavgtime = totaltime / iterations
-hopsan.printInfo("Ran " + str(iterations) + " single-threaded iterations, average time: " + str(singleavgtime))
+  totaltime += hopsan.getSimulationTime()
+avgtime = totaltime / iterations
+hopsan.printInfo("Single-threaded simulation, " + str(iterations) + " iterations. Average time: " + str(avgtime))
+print("Single-threaded simulation, " + str(iterations) + " iterations. Average time: " + str(avgtime))
+
+hopsan.useMultiCore()
+hopsan.setNumberOfThreads(2)
+totaltime = 0
+hopsan.simulate()
+for i in range(0, iterations):
+  hopsan.simulate()
+  totaltime += hopsan.getSimulationTime()
+avgtime = totaltime / iterations
+hopsan.printInfo("Multi-threaded simulation with 2 threads, " + str(iterations) + " iterations. Average time: " + str(avgtime))
+print("Multi-threaded simulation with 2 threads, " + str(iterations) + " iterations. Average time: " + str(avgtime))
+
+#hopsan.useMultiCore()
+#hopsan.setNumberOfThreads(4)
+#totaltime = 0
+#hopsan.simulate()
+#for i in range(0, iterations):
+  #hopsan.simulate()
+  #totaltime += hopsan.getSimulationTime()
+#avgtime = totaltime / iterations
+#hopsan.printInfo("Multi-threaded simulation with 4 threads, " + str(iterations) + " iterations. Average time: " + str(avgtime))
+#print("Multi-threaded simulation with 4 threads, " + str(iterations) + " iterations. Average time: " + str(avgtime))
+
+#hopsan.useMultiCore()
+#hopsan.setNumberOfThreads(8)
+#totaltime = 0
+#hopsan.simulate()
+#for i in range(0, iterations):
+  #hopsan.simulate()
+  #totaltime += hopsan.getSimulationTime()
+#avgtime = totaltime / iterations
+#hopsan.printInfo("Multi-threaded simulation with 8 threads, " + str(iterations) + " iterations. Average time: " + str(avgtime))
+#print("Multi-threaded simulation with 8 threads, " + str(iterations) + " iterations. Average time: " + str(avgtime))

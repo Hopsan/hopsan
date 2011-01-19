@@ -1,48 +1,48 @@
 //!
-//! @file   HydraulicLosslessTConnector.hpp
+//! @file   HydraulicShuttleValve.hpp
 //! @author Robert Braun <robert.braun@liu.se>
-//! @date   2011-01-04
+//! @date   2010-12-17
 //!
-//! @brief Contains a Hydraulic Lossless Connector with 3 ports
+//! @brief Contains a Shuttle Valve component
 //!
+//$Id$
 
-#ifndef HYDRAULICLOSSLESSTCONNECTOR_HPP_INCLUDED
-#define HYDRAULICLOSSLESSTCONNECTOR_HPP_INCLUDED
+#ifndef HYDRAULICSHUTTLEVALVE_HPP_INCLUDED
+#define HYDRAULICSHUTTLEVALVE_HPP_INCLUDED
 
-#include <iostream>
 #include "../../ComponentEssentials.h"
 
 namespace hopsan {
 
     //!
-    //! @brief A hydraulic lossless T-connector component
+    //! @brief
     //! @ingroup HydraulicComponents
     //!
-    class HydraulicLosslessTConnector : public ComponentQ
+    class HydraulicShuttleValve : public ComponentQ
     {
+
     private:
         double Kc;
         double p;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_Zc3;
-        double q1, q2, q3, c1, Zc1, c2, Zc2, c3, Zc3;
 
         Port *mpP1, *mpP2, *mpP3;
 
     public:
         static Component *Creator()
         {
-            return new HydraulicLosslessTConnector("LosslessTConnector");
+            return new HydraulicShuttleValve("ShuttleValve");
         }
 
-        HydraulicLosslessTConnector(const std::string name) : ComponentQ(name)
+        HydraulicShuttleValve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicLosslessTConnector";
+            mTypeName = "HydraulicShuttleValve";
             Kc = 1.0e-11;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpP3 = addPowerPort("P3", "NodeHydraulic");
+            mpP3 = addPowerPort("P3", "NodeHydraulic", Port::NOTREQUIRED);
         }
 
 
@@ -51,52 +51,47 @@ namespace hopsan {
             mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
             mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
             mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
             mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 
             mpND_p3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::PRESSURE);
             mpND_q3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::FLOW);
-            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
+            double p1, p2, p3, q1, q2, q3, c1, c2;
+
             //Get variable values from nodes
             c1 = (*mpND_c1);
-            Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
-            Zc2 = (*mpND_Zc2);
-            c3 = (*mpND_c3);
-            Zc3 = (*mpND_Zc3);
 
-            //T-Connector equations
-            p = (c1/Zc1 + c2/Zc2 + c3/Zc3) / ( 1/Zc1 + 1/Zc2 + 1/Zc3);
-            q1 = (p-c1)/Zc1;
-            q2 = (p-c2)/Zc2;
-            q3 = (p-c3)/Zc3;
+            //Shuttle valve equations
+            p1 = c1;
+            p2 = c2;
 
-            //Cavitation check
-            if(p < 0.0)
-            {
-                p = 0.0;
-            }
+            if(p1 < 0.0) { p1 = 0.0; }
+            if(p2 < 0.0) { p2 = 0.0; }
+
+            q1 = 0;
+            q2 = 0;
+            q3 = 0;
+
+            if(p1>p2) { p3 = p1; }
+            else { p3 = p2; }
 
             //Write new variables to nodes
-            (*mpND_p1) = p;
+            (*mpND_p1) = p1;
             (*mpND_q1) = q1;
-            (*mpND_p2) = p;
+            (*mpND_p2) = p2;
             (*mpND_q2) = q2;
-            (*mpND_p3) = p;
+            (*mpND_p3) = p3;
             (*mpND_q3) = q3;
         }
     };
 }
 
-#endif // HYDRAULICLOSSLESSTCONNECTOR_HPP_INCLUDED
-
+#endif // HydraulicGREATERTHAN_HPP_INCLUDED

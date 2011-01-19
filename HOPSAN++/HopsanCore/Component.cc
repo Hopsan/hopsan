@@ -942,9 +942,9 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
 //! @brief Convenience method to add a PowerPort
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addPowerPort(const string portname, const string nodetype)
+Port* Component::addPowerPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
 {
-    return addPort(portname, Port::POWERPORT, nodetype, Port::REQUIRED);
+    return addPort(portname, Port::POWERPORT, nodetype, connection_requirement);
 }
 
 

@@ -186,7 +186,7 @@ namespace hopsan {
 
         //Port functions
         Port* addPort(const std::string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
-        Port* addPowerPort(const std::string portname, const std::string nodetype);
+        Port* addPowerPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addReadPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addWritePort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         bool getPort(const std::string portname, Port* &rpPort);

@@ -170,7 +170,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalHP1Filter.hpp \
     Components/Signal/SignalHP2Filter.hpp \
     Components/Hydraulic/Hydraulic43LoadSensingValve.hpp \
-    Components/Signal/SignalShuttleValve.hpp \
     Components/Hydraulic/Hydraulic22Valve.hpp \
     Components/Hydraulic/Hydraulic42Valve.hpp \
     Components/Hydraulic/HydraulicOpenCenterValve.hpp \
@@ -187,4 +186,5 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicTranslationalLosslessConnector.hpp \
     Components/Hydraulic/HydraulicPressureControlledValve.hpp \
     ComponentUtilities/matrix.h \
-    ComponentUtilities/ludcmp.h
+    ComponentUtilities/ludcmp.h \
+    Components/Hydraulic/HydraulicShuttleValve.hpp

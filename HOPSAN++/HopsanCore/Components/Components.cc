@@ -62,6 +62,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("HydraulicLosslessConnector", HydraulicLosslessConnector::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicLosslessTConnector", HydraulicLosslessTConnector::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicMachineC", HydraulicMachineC::Creator);
+    cfact_ptr->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
 
     cfact_ptr->registerCreatorFunction("HydraulicDummyC", HydraulicDummyC::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicDummyQ", HydraulicDummyQ::Creator);
@@ -103,7 +104,6 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("SignalAnd", SignalAnd::Creator);
     cfact_ptr->registerCreatorFunction("SignalOr", SignalOr::Creator);
     cfact_ptr->registerCreatorFunction("SignalXor", SignalXor::Creator);
-    cfact_ptr->registerCreatorFunction("SignalShuttleValve", SignalShuttleValve::Creator);
 
     cfact_ptr->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
 

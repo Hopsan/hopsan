@@ -61,5 +61,8 @@
         <file>graphics/new.png</file>
         <file>graphics/open.png</file>
         <file>graphics/welcome.png</file>
+        <file>graphics/lastsessionactive.png</file>
+        <file>graphics/newactive.png</file>
+        <file>graphics/openactive.png</file>
     </qresource>
 </RCC>

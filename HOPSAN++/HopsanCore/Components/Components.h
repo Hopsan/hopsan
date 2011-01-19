@@ -49,7 +49,7 @@
 #include "Hydraulic/HydraulicDummyC.hpp"
 #include "Hydraulic/HydraulicDummyQ.hpp"
 #include "Hydraulic/HydraulicMachineC.hpp"
-
+#include "Hydraulic/HydraulicShuttleValve.hpp"
 
 /* Signal Components */
 #include "Signal/SignalSource.hpp"
@@ -88,7 +88,6 @@
 #include "Signal/SignalOr.hpp"
 #include "Signal/SignalXor.hpp"
 #include "Signal/SignalDummy.hpp"
-#include "Signal/SignalShuttleValve.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
