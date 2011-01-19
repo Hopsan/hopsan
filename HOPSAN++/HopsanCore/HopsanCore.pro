@@ -187,4 +187,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicPressureControlledValve.hpp \
     ComponentUtilities/matrix.h \
     ComponentUtilities/ludcmp.h \
-    Components/Hydraulic/HydraulicShuttleValve.hpp
+    Components/Hydraulic/HydraulicShuttleValve.hpp \
+    Components/Hydraulic/HydraulicPressureControlledPump.hpp

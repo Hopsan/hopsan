@@ -50,6 +50,8 @@
 #include "Hydraulic/HydraulicDummyQ.hpp"
 #include "Hydraulic/HydraulicMachineC.hpp"
 #include "Hydraulic/HydraulicShuttleValve.hpp"
+#include "Hydraulic/HydraulicPressureControlledPump.hpp"
+
 
 /* Signal Components */
 #include "Signal/SignalSource.hpp"
