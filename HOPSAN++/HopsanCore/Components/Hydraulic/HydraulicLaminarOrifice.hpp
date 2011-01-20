@@ -16,7 +16,7 @@ namespace hopsan {
         double Kc;
         bool cav;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *KmpND_c;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_Kc;
         double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
 
         Port *mpP1, *mpP2, *mpIn;
@@ -42,18 +42,17 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
-            mpND_p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 
-            if(mpIn->isConnected()) { KmpND_c = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
-            else { KmpND_c = new double(Kc); }
+            mpND_Kc = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, Kc);
         }
 
 
@@ -64,7 +63,7 @@ namespace hopsan {
             Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            Kc = (*KmpND_c);
+            Kc = (*mpND_Kc);
 
             //Orifice equations
             q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));

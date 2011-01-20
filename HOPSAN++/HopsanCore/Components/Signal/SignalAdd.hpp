@@ -22,7 +22,7 @@ namespace hopsan {
     {
 
     private:
-        double *in1, *in2, *output;
+        double *mpND_in1, *mpND_in2, *mpND_out;
         Port *mpIn1, *mpIn2, *mpOut;
 
     public:
@@ -44,20 +44,15 @@ namespace hopsan {
         void initialize()
         {
 
-            if(mpIn1->isConnected()) { in1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE); }
-            else { in1 = new double(0); }
-
-            if(mpIn2->isConnected()) { in2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE); }
-            else { in2 = new double(0); }
-
-            if(mpOut->isConnected()) { output = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
-            else { output = new double(); }
+            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::VALUE, 0);
+            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            (*output) = (*in1) + (*in2);
+            (*mpND_out) = (*mpND_in1) + (*mpND_in2);
         }
     };
 }

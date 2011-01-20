@@ -25,7 +25,7 @@ namespace hopsan {
         double mGain;
         Port *mpIn, *mpOut;
 
-        double *input, *output;
+        double *mpND_in, *mpND_out;
 
     public:
         static Component *Creator()
@@ -47,29 +47,14 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected())
-            {
-                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                input = new double(0);
-            }
-
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            (*output) = mGain * (*input);
+            (*mpND_out) = mGain * (*mpND_in);
         }
     };
 }

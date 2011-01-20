@@ -26,6 +26,8 @@ namespace hopsan {
         double mPressure;
         Port *mpIn, *mpP1;
 
+        double *mpND_in, *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
+
     public:
         static Component *Creator()
         {
@@ -50,27 +52,19 @@ namespace hopsan {
 
         void initialize()
         {
-            mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure); //Override the startvalue for the pressure
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, mPressure);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+
+            (*mpND_p) = mPressure; //Override the startvalue for the pressure
             setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure); //This is here to show the user that the start value is hard coded!
         }
 
 
         void simulateOneTimestep()
         {
-            //Pressure source equation
-            double c;
-            if (mpIn->isConnected())
-            {
-                c = mpIn->readNode(NodeSignal::VALUE);         //We have a signal!
-            }
-            else
-            {
-                c = mPressure;                                  //No signal, use internal parameter
-            }
-
-            //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c);
-            mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
+            (*mpND_c) = (*mpND_in);
+            (*mpND_Zc) = mZc;
         }
     };
 }

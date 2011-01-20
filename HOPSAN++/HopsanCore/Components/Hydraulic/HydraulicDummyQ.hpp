@@ -10,7 +10,7 @@ namespace hopsan {
     {
     private:
         Port *mpP1, *mpP2;
-        double *input, *p1, *q1, *c1, *Zc1;
+        double *mpND_in, *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1;
 
     public:
         static Component *Creator()
@@ -29,22 +29,22 @@ namespace hopsan {
 
         void initialize()
         {
-            input = mpP1->getNodeDataPtr(NodeSignal::VALUE);
-            p1 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q1 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            c1 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc1 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_in = getSafeNodeDataPtr(mpP1, NodeSignal::VALUE);
+            mpND_p1 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
-            (*p1) = (*c1)+(*Zc1);
-            for(size_t i=0; i<(*input); ++i)
+            (*mpND_p1) = (*mpND_c1)+(*mpND_Zc1);
+            for(size_t i=0; i<(*mpND_in); ++i)
             {
-                (*p1) = (*p1) * i;
+                (*mpND_p1) = (*mpND_p1) * i;
             }
-            *q1 = *input;
+            *mpND_q1 = *mpND_in;
         }
     };
 }

@@ -33,14 +33,12 @@ namespace hopsan {
         double overlap_bt;
         double omegah;
         double deltah;
-        double xv, Kc, qpa, qbt;
 
-        double *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pb_ptr, *qb_ptr, *cb_ptr, *Zcb_ptr, *xvmpND_in;
-        double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb;
+        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *xvmpND_in;
 
-        SecondOrderFilter myFilter;
-        TurbulentFlowFunction mQturb_pa;
-        TurbulentFlowFunction mQturb_bt;
+        SecondOrderFilter filter;
+        TurbulentFlowFunction qTurb__pa;
+        TurbulentFlowFunction qTurb__bt;
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
 
     public:
@@ -84,60 +82,64 @@ namespace hopsan {
 
         void initialize()
         {
-            pp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
-            cp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zcp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::PRESSURE);
+            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::FLOW);
+            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CHARIMP);
 
-            pt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::FLOW);
-            ct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::PRESSURE);
+            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::FLOW);
+            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CHARIMP);
 
-            pa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
-            ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
+            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
+            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
 
-            pb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::FLOW);
-            cb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zcb_ptr = mpPB->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::PRESSURE);
+            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::FLOW);
+            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CHARIMP);
 
-            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
-            myFilter.initialize(mTimestep, num, den, 0, 0, 0, xvmax);
+            filter.initialize(mTimestep, num, den, 0, 0, 0, xvmax);
         }
 
 
         void simulateOneTimestep()
         {
+            //Declare local variables
+            double xv, Kc, qpa, qbt;
+            double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb;
+
             //Get variable values from nodes
-            cp = (*cp_ptr);
-            Zcp = (*Zcp_ptr);
-            ct = (*ct_ptr);
-            Zct = (*Zct_ptr);
-            ca = (*ca_ptr);
-            Zca = (*Zca_ptr);
-            cb = (*cb_ptr);
-            Zcb = (*Zcb_ptr);
+            cp = (*mpND_cp);
+            Zcp = (*mpND_Zcp);
+            ct = (*mpND_ct);
+            Zct = (*mpND_Zct);
+            ca = (*mpND_ca);
+            Zca = (*mpND_Zca);
+            cb = (*mpND_cb);
+            Zcb = (*mpND_Zcb);
             xvin = (*xvmpND_in);
 
             //Dynamics of spool position (second order low pass filter)
-            myFilter.update(xvin);
-            xv = myFilter.value();
+            filter.update(xvin);
+            xv = filter.value();
 
             //Determine flow coefficient
             Kc = Cq*f*pi*d*xv*sqrt(2.0/890.0);
 
             //Calculate flow
-            mQturb_pa.setFlowCoefficient(Kc);
-            mQturb_bt.setFlowCoefficient(Kc);
-            qpa = mQturb_pa.getFlow(cp, ca, Zcp, Zca);
-            qbt = mQturb_bt.getFlow(cb, ct, Zcb, Zct);
+            qTurb__pa.setFlowCoefficient(Kc);
+            qTurb__bt.setFlowCoefficient(Kc);
+            qpa = qTurb__pa.getFlow(cp, ca, Zcp, Zca);
+            qbt = qTurb__bt.getFlow(cb, ct, Zcb, Zct);
 
             if (xv >= 0.0)
             {
@@ -156,14 +158,14 @@ namespace hopsan {
 
             //Write new values to nodes
 
-            (*pp_ptr) = cp + qp*Zcp;
-            (*qp_ptr) = qp;
-            (*pt_ptr) = ct + qt*Zct;
-            (*qt_ptr) = qt;
-            (*pa_ptr) = ca + qa*Zca;
-            (*qa_ptr) = qa;
-            (*pb_ptr) = cb + qb*Zcb;
-            (*qb_ptr) = qb;
+            (*mpND_pp) = cp + qp*Zcp;
+            (*mpND_qp) = qp;
+            (*mpND_pt) = ct + qt*Zct;
+            (*mpND_qt) = qt;
+            (*mpND_pa) = ca + qa*Zca;
+            (*mpND_qa) = qa;
+            (*mpND_pb) = cb + qb*Zcb;
+            (*mpND_qb) = qb;
         }
     };
 }

@@ -22,7 +22,7 @@ namespace hopsan {
     {
 
     private:
-        double *input1, *input2, *output;
+        double *mpND_in1, *mpND_in2, *mpND_out;
         Port *mpIn1, *mpIn2, *mpOut;
 
     public:
@@ -43,38 +43,17 @@ namespace hopsan {
 
         void initialize()
         {
-
             //If only one input port is conncted, the other shall be 1 (= multiply by 1).
-            //If no input ports are connected, output shall be 0, so both inputs are set to 0.
-            if(mpIn1->isConnected() && mpIn2->isConnected())
+            //If no input ports are connected, mpND_output shall be 0, so one of the inputs are set to 0.
+            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::VALUE, 1);
+            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::VALUE, 1);
+
+            if(!mpIn1->isConnected() && !mpIn2->isConnected())
             {
-                input1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
-                input2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else if(mpIn1->isConnected() && !mpIn2->isConnected())
-            {
-                input1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
-                input2 = new double(1);
-            }
-            else if(!mpIn1->isConnected() && mpIn2->isConnected())
-            {
-                input1 = new double(1);
-                input2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                input1 = new double(0);
-                input2 = new double(0);
+                (*mpND_in1 = 0);
             }
 
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             simulateOneTimestep();
         }
@@ -83,7 +62,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
                 //Multiplication equation
-            (*output) = (*input1) * (*input2);
+            (*mpND_out) = (*mpND_in1) * (*mpND_in2);
         }
     };
 }

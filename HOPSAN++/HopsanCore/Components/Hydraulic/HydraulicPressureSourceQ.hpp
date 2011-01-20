@@ -22,9 +22,10 @@ namespace hopsan {
     class HydraulicPressureSourceQ : public ComponentQ
     {
     private:
-        double mStartPressure;
-        double mStartFlow;
-        double mPressure;
+        double p;
+
+        double *mpND_in, *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
+
         Port *mpIn, *mpP1;
 
     public:
@@ -36,45 +37,41 @@ namespace hopsan {
         HydraulicPressureSourceQ(const std::string name) : ComponentQ(name)
         {
             mTypeName = "HydraulicPressureSourceQ";
-            mStartFlow     = 0.0;
-            mPressure      = 1.0e5;
 
             mpIn = addReadPort("in", "NodeSignal",  Port::NOTREQUIRED);
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
-            registerParameter("P", "Default pressure", "Pa", mPressure);
+            registerParameter("p", "Default pressure", "Pa", p);
         }
 
 
         void initialize()
         {
-            //Nothing to initilize
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, p);
+            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
+            //Declare local variables
+            double in, q, p, c, Zc;
+
             //Get variable values from nodes
-            double c  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc = mpP1->readNode(NodeHydraulic::CHARIMP);
+            in = (*mpND_in);
+            c = (*mpND_c);
+            Zc = (*mpND_Zc);
 
-            //Flow source equations
-            double q,p;
+            //Equations
+            q = (in - c)/Zc;
+            p = in;
 
-            if (mpIn->isConnected())
-            {
-                q = (mpIn->readNode(NodeSignal::VALUE) - c)/Zc;
-                p = mpIn->readNode(NodeSignal::VALUE);         //We have a signal!
-            }
-            else
-            {
-                q = (mPressure - c)/Zc;
-                p = mPressure;                                  //No signal, use internal parameter
-            }
-
-            //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::FLOW, q);
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p);
+            //Write variables to nodes
+            (*mpND_p) = p;
+            (*mpND_q) = q;
         }
     };
 }

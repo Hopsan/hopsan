@@ -25,7 +25,7 @@ namespace hopsan {
     private:
         double mTimeDelay;
         Delay mDelay;
-        double *input, *output;
+        double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
     public:
@@ -48,25 +48,17 @@ namespace hopsan {
 
         void initialize()
         {
-            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
-
-            mDelay.initialize(mTimeDelay, mTimestep, (*input));
-            (*output) = (*input);
+            mDelay.initialize(mTimeDelay, mTimestep, (*mpND_in));
+            (*mpND_out) = (*mpND_in);
         }
 
 
         void simulateOneTimestep()
         {
-            (*output) =  mDelay.update(*input);
+            (*mpND_out) =  mDelay.update(*mpND_in);
         }
     };
 }

@@ -31,14 +31,12 @@ namespace hopsan {
         double overlap_at;
         double omegah;
         double deltah;
-        double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
 
-        double *pa_ptr, *qa_ptr, *ca_ptr, *Zca_ptr, *pp_ptr, *qp_ptr, *cp_ptr, *Zcp_ptr, *pt_ptr, *qt_ptr, *ct_ptr, *Zct_ptr, *xvmpND_in;
-        double pa, qa, ca, Zca, pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin;
+        double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *xvmpND_in;
 
-        SecondOrderFilter myFilter;
-        TurbulentFlowFunction mQturbpa;
-        TurbulentFlowFunction mQturbat;
+        SecondOrderFilter filter;
+        TurbulentFlowFunction qTurb_pa;
+        TurbulentFlowFunction qTurb_at;
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
 
     public:
@@ -77,42 +75,46 @@ namespace hopsan {
 
         void initialize()
         {
-            pp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
-            cp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zcp_ptr = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::PRESSURE);
+            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::FLOW);
+            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CHARIMP);
 
-            pt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qt_ptr = mpPT->getNodeDataPtr(NodeHydraulic::FLOW);
-            ct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zct_ptr = mpPT->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::PRESSURE);
+            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::FLOW);
+            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CHARIMP);
 
-            pa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qa_ptr = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
-            ca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zca_ptr = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
+            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
+            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
 
-            xvmpND_in = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
-            myFilter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
+            filter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
         }
 
 
         void simulateOneTimestep()
         {
+            //Declare local variables
+            double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
+            double pa, qa, ca, Zca, qp, cp, Zcp, qt, ct, Zct, xvin;
+
             //Get variable values from nodes
-            cp = (*cp_ptr);
-            Zcp = (*Zcp_ptr);
-            ct = (*ct_ptr);
-            Zct = (*Zct_ptr);
-            ca = (*ca_ptr);
-            Zca = (*Zca_ptr);
+            cp = (*mpND_cp);
+            Zcp = (*mpND_Zcp);
+            ct = (*mpND_ct);
+            Zct = (*mpND_Zct);
+            ca = (*mpND_ca);
+            Zca = (*mpND_Zca);
             xvin = (*xvmpND_in);
 
-            myFilter.update(xvin);
-            xv = myFilter.value();
+            filter.update(xvin);
+            xv = filter.value();
 
             xpanom = std::max(xv-overlap_pa,0.0);
             xatnom = std::max(-xv-overlap_at,0.0);
@@ -121,11 +123,11 @@ namespace hopsan {
             Kcat = Cq*f*pi*d*xatnom*sqrt(2.0/890.0);
 
             //With TurbulentFlowFunction:
-            mQturbpa.setFlowCoefficient(Kcpa);
-            mQturbat.setFlowCoefficient(Kcat);
+            qTurb_pa.setFlowCoefficient(Kcpa);
+            qTurb_at.setFlowCoefficient(Kcat);
 
-            qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
-            qat = mQturbat.getFlow(ca, ct, Zca, Zct);
+            qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+            qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
 
             if (xv >= 0.0)
             {
@@ -142,12 +144,12 @@ namespace hopsan {
 
             //Write new values to nodes
 
-            (*pp_ptr) = cp + qp*Zcp;
-            (*qp_ptr) = qp;
-            (*pa_ptr) = ca + qa*Zca;
-            (*qa_ptr) = qa;
-            (*pt_ptr) = ct + qt*Zct;
-            (*qt_ptr) = qt;
+            (*mpND_pp) = cp + qp*Zcp;
+            (*mpND_qp) = qp;
+            (*mpND_pa) = ca + qa*Zca;
+            (*mpND_qa) = qa;
+            (*mpND_pt) = ct + qt*Zct;
+            (*mpND_qt) = qt;
         }
     };
 }

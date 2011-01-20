@@ -20,7 +20,7 @@ namespace hopsan {
 
     // \typedef
     //! pointer to a function which returns a double and takes as argument a double
-    typedef double (*V_FCT_PTR)(double);
+    typedef double (*V_FmpND_ct)(double);
 
     //! defines a vector of doubles
     class Vec {
@@ -45,7 +45,7 @@ namespace hopsan {
 	const double &operator[](int n) const { return body[n]; }
 	Vec &operator=(const Vec &src) { return (this==&src? *this: copy(src)); } //!< dst = src
 	//! applys function fct element-by-element
-	Vec &apply(V_FCT_PTR fct);
+	Vec &apply(V_FmpND_ct fct);
 	double max(); //!< returns maximum Vec element
 	double min(); //!< returns minimum Vec element
 	double norm(); //< returns 2-norm (magnitude) of Vec

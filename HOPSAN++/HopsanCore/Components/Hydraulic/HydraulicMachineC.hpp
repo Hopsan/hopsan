@@ -40,7 +40,7 @@ namespace hopsan {
         int i;
 
         //Node data pointers
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *t3_ptr, *a3_ptr, *w3_ptr,*c3_ptr, *Zx3_ptr, *eps_ptr;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3,*mpND_c3, *mpND_Zx3, *mpND_eps;
 
         //Node data variables
         double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
@@ -91,33 +91,33 @@ namespace hopsan {
         void initialize()
         {
             //Assign node pointers
-            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
-            mpND_p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 
-            t3_ptr = mpP3->getNodeDataPtr(NodeMechanicRotational::TORQUE);
-            a3_ptr = mpP3->getNodeDataPtr(NodeMechanicRotational::ANGLE);
-            w3_ptr = mpP3->getNodeDataPtr(NodeMechanicRotational::ANGULARVELOCITY);
-            c3_ptr = mpP3->getNodeDataPtr(NodeMechanicRotational::WAVEVARIABLE);
-            Zx3_ptr = mpP3->getNodeDataPtr(NodeMechanicRotational::CHARIMP);
+            mpND_t3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::TORQUE);
+            mpND_a3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::ANGLE);
+            mpND_w3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CHARIMP);
 
-            eps_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             //Read input variables from nodes
             p1 = (*mpND_p1);
             q1 = (*mpND_q1);
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
-            t3 = (*t3_ptr);
-            a3 = (*a3_ptr);
-            w3 = (*w3_ptr);
-            eps = (*eps_ptr);
+            t3 = (*mpND_t3);
+            a3 = (*mpND_a3);
+            w3 = (*mpND_w3);
+            eps = (*mpND_eps);
 
             //Initialization
             dpr = dp / (pi * 2);
@@ -157,11 +157,11 @@ namespace hopsan {
             (*mpND_q2) = q2;
             (*mpND_c2) = c2;
             (*mpND_Zc2) = Zc2;
-            (*t3_ptr) = t3;
-            (*a3_ptr) = a3;
-            (*w3_ptr) = w3;
-            (*c3_ptr) = c3;
-            (*Zx3_ptr) = Zx3;
+            (*mpND_t3) = t3;
+            (*mpND_a3) = a3;
+            (*mpND_w3) = w3;
+            (*mpND_c3) = c3;
+            (*mpND_Zx3) = Zx3;
         }
 
         void simulateOneTimestep()
@@ -171,10 +171,10 @@ namespace hopsan {
             q1 = (*mpND_q1);
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
-            t3 = (*t3_ptr);
-            a3 = (*a3_ptr);
-            w3 = (*w3_ptr);
-            eps = (*eps_ptr);
+            t3 = (*mpND_t3);
+            a3 = (*mpND_a3);
+            w3 = (*mpND_w3);
+            eps = (*mpND_eps);
 
             //Machine equations
             v1e = std::max(v1,v1min);
@@ -249,9 +249,9 @@ namespace hopsan {
             (*mpND_Zc1) = Zc1;
             (*mpND_c2) = c2;
             (*mpND_Zc2) = Zc2;
-            (*t3_ptr) = t3;
-            (*c3_ptr) = c3;
-            (*Zx3_ptr) = Zx3;
+            (*mpND_t3) = t3;
+            (*mpND_c3) = c3;
+            (*mpND_Zx3) = Zx3;
         }
     };
 }

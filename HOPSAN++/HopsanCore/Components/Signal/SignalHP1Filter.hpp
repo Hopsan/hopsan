@@ -25,7 +25,7 @@ namespace hopsan {
     private:
         FirstOrderFilter mFilter;
         double mW, mMin, mMax;
-        double *input, *output;
+        double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
     public:
@@ -52,25 +52,8 @@ namespace hopsan {
 
         void initialize()
         {
-                //Make in1 or in2 be zero if they are not connected
-            if(mpIn->isConnected())
-            {
-                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                input = new double(0);
-            }
-
-                //output must be connected
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             double num[2];
             double den[2];
@@ -80,15 +63,15 @@ namespace hopsan {
             den[0] = 1.0/mW;
             den[1] = 1.0;
 
-            mFilter.initialize(mTimestep, num, den, (*input), (*input), mMin, mMax);
+            mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
 
-            (*output) = (*input);
+            (*mpND_out) = (*mpND_in);
         }
 
 
         void simulateOneTimestep()
         {
-            (*output) = mFilter.update((*input));
+            (*mpND_out) = mFilter.update((*mpND_in));
         }
     };
 }

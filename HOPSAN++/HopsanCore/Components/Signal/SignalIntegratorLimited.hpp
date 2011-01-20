@@ -25,7 +25,7 @@ namespace hopsan {
     private:
         double mMin, mMax;
         double mPrevU, mPrevY;
-        double *input, *output;
+        double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
     public:
@@ -48,29 +48,14 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected())
-            {
-                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                input = new double(0);
-            }
-
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
             mPrevU = startY;
             limit(startY, mMin, mMax);
 
-            limit((*input), mMin, mMax);
+            limit((*mpND_in), mMin, mMax);
         }
 
 
@@ -78,20 +63,20 @@ namespace hopsan {
         {
             //Filter equations
             //Bilinear transform is used
-            (*output) = mPrevY + mTimestep/2.0*((*input) + mPrevU);
+            (*mpND_out) = mPrevY + mTimestep/2.0*((*mpND_in) + mPrevU);
 
-            if ((*output) >= mMax)
+            if ((*mpND_out) >= mMax)
             {
-                (*output) = mMax;
+                (*mpND_out) = mMax;
             }
-            else if ((*output) <= mMin)
+            else if ((*mpND_out) <= mMin)
             {
-                (*output) = mMin;
+                (*mpND_out) = mMin;
             }
 
             //Update filter:
-            mPrevU = (*input);
-            mPrevY = (*output);
+            mPrevU = (*mpND_in);
+            mPrevY = (*mpND_out);
         }
     };
 }

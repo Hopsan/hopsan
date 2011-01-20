@@ -42,11 +42,10 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected()) { mpND_signal = mpIn->getNodeDataPtr(NodeSignal::VALUE); }
-            else { mpND_signal = new double(f); }
+            mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, f);
 
-            mpND_c = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            mpND_Zx = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
         }
 
 

@@ -276,7 +276,7 @@ void Vec::normalize()
 }
 	
 
-Vec& Vec::apply(V_FCT_PTR fct)
+Vec& Vec::apply(V_FmpND_ct fct)
 {
 	for (int i=0; i<n; i++) body[i] = (*fct)(body[i]);
 	return *this;

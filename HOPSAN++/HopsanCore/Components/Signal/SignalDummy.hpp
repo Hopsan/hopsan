@@ -24,7 +24,7 @@ namespace hopsan {
     private:
         Port *mpIn, *mpOut;
 
-        double *input, *output;
+        double *mpND_in, *mpND_out;
 
     public:
         static Component *Creator()
@@ -43,24 +43,17 @@ namespace hopsan {
 
         void initialize()
         {
-            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            (*output) = 1;
-            for(size_t i=0; i<(*input); ++i)
+            (*mpND_out) = 1;
+            for(size_t i=0; i<(*mpND_in); ++i)
             {
-                (*output) = (*output) * i;
+                (*mpND_out) = (*mpND_out) * i;
             }
         }
     };

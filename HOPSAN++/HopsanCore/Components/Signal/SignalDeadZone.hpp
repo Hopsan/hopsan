@@ -16,7 +16,7 @@ namespace hopsan {
     private:
         double mStartDead;
         double mEndDead;
-        double *input, *output;
+        double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
     public:
@@ -40,31 +40,24 @@ namespace hopsan {
 
         void initialize()
         {
-            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
         void simulateOneTimestep()
         {
             //Deadzone equations
-            if ( (*input) < mStartDead)
+            if ( (*mpND_in) < mStartDead)
             {
-                (*output) = (*input) - mStartDead;
+                (*mpND_out) = (*mpND_in) - mStartDead;
             }
-            else if ( (*input) > mStartDead && (*input) < mEndDead)
+            else if ( (*mpND_in) > mStartDead && (*mpND_in) < mEndDead)
             {
-                (*output) = 0;
+                (*mpND_out) = 0;
             }
             else
             {
-                (*output) = (*input) - mEndDead;
+                (*mpND_out) = (*mpND_in) - mEndDead;
             }
         }
     };

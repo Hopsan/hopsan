@@ -23,6 +23,8 @@ namespace hopsan {
     {
     private:
         double mFlow;
+        double *mpND_in, *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
+
         Port *mpIn, *mpP1;
 
     public:
@@ -45,31 +47,30 @@ namespace hopsan {
 
         void initialize()
         {
-            //Nothing to initilize
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, mFlow);
+            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double c  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc = mpP1->readNode(NodeHydraulic::CHARIMP);
+            //Declare local variables
+            double in, p, q, c, Zc;
+
+            //Read variables from nodes
+            in = (*mpND_in);
+            c = (*mpND_c);
+            Zc = (*mpND_Zc);
 
             //Flow source equations
-            double q;
-            if (mpIn->isConnected())
-            {
-                q = mpIn->readNode(NodeSignal::VALUE);         //Control signal exist!
-            }
-            else
-            {
-                q = mFlow;              //No control signal, use parameter...
-            }
-            double p = c + q*Zc;
+            q = in;
+            p = c + q*Zc;
 
-            //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::FLOW, q);
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p);
+            (*mpND_p) = p;
+            (*mpND_q) = q;
         }
 
         void finalize()

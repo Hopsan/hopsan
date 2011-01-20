@@ -90,19 +90,19 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            mpND_p2 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q2 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c2 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            mpND_f2 = mpP1->getNodeDataPtr(NodeMechanic::FORCE);
-            mpND_x2 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
-            mpND_v2 = mpP1->getNodeDataPtr(NodeMechanic::VELOCITY);
-            cmpND_x2 = mpP1->getNodeDataPtr(NodeMechanic::WAVEVARIABLE);
-            mpND_Zx2 = mpP1->getNodeDataPtr(NodeMechanic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_f2 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_x2 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
+            mpND_v2 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            cmpND_x2 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
             //Read data from nodes
             x2 = (*mpND_x2);

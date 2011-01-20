@@ -25,7 +25,7 @@ namespace hopsan {
     private:
         SecondOrderFilter mFilter;
         double mW, mD, mMin, mMax;
-        double *input, *output;
+        double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
     public:
@@ -54,23 +54,8 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected())
-            {
-                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                input = new double(0);
-            }
-
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             double num[3];
             double den[3];
@@ -82,17 +67,17 @@ namespace hopsan {
             den[1] = 2.0*mD/mW;
             den[2] = 1.0;
 
-            mFilter.initialize(mTimestep, num, den, (*input), (*input), mMin, mMax);
+            mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
 
             //Writes out the value for time "zero"
-            (*output) = (*input);
+            (*mpND_out) = (*mpND_in);
         }
 
 
         void simulateOneTimestep()
         {
             //Write new values to nodes
-            (*output) = mFilter.update((*input));
+            (*mpND_out) = mFilter.update((*mpND_in));
         }
     };
 }

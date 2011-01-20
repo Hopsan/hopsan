@@ -13,7 +13,7 @@
 
 namespace hopsan {
 
-    DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
+    DLLIMPORTEXPORT void register_nodes(NodeFactory* nfampND_ct);
 
     //!
     //! @class NodeSignal

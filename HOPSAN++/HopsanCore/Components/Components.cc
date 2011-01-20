@@ -19,109 +19,109 @@
 
 //!
 //! @brief Registers the creator function of all built in components
-//! @param [in,out] cfact_ptr A pointer the the component factory in wich to register the components
+//! @param [in,out] cfampND_ct A pointer the the component factory in wich to register the components
 //!
 
 using namespace hopsan;
 
-DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
+DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
 {
     //Hydraulic components
-    cfact_ptr->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicTurbulentOrifice", HydraulicTurbulentOrifice::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicVolume", HydraulicVolume::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicPressureSource", HydraulicPressureSource::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicFlowSourceQ", HydraulicFlowSourceQ::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicPressureSourceQ", HydraulicPressureSourceQ::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicFixedDisplacementPump", HydraulicFixedDisplacementPump::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
-    cfact_ptr->registerCreatorFunction("Hydraulic22Valve", Hydraulic22Valve::Creator);
-    cfact_ptr->registerCreatorFunction("Hydraulic32DirectionalValve", Hydraulic32DirectionalValve::Creator);
-    cfact_ptr->registerCreatorFunction("Hydraulic33Valve", Hydraulic33Valve::Creator);
-    cfact_ptr->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
-    cfact_ptr->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
-    cfact_ptr->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicOpenCenterValve", HydraulicOpenCenterValve::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicAckumulator", HydraulicAckumulator::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicPressureControlledValve", HydraulicPressureControlledValve::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicPressureSensor", HydraulicPressureSensor::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicFlowSensor", HydraulicFlowSensor::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicCylinderC", HydraulicCylinderC::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicCylinderQ", HydraulicCylinderQ::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicTLMlossless", HydraulicTLMlossless::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicPressureReliefValve", HydraulicPressureReliefValve::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicSubSysExample", HydraulicSubSysExample::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicTankC", HydraulicTankC::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicAlternativePRV", HydraulicAlternativePRV::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicFixedDisplacementMotorQ", HydraulicFixedDisplacementMotorQ::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicVolume4", HydraulicVolume4::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicLosslessConnector", HydraulicLosslessConnector::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicLosslessTConnector", HydraulicLosslessTConnector::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicMachineC", HydraulicMachineC::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicPressureControlledPump", HydraulicPressureControlledPump::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicTurbulentOrifice", HydraulicTurbulentOrifice::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicVolume", HydraulicVolume::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicPressureSource", HydraulicPressureSource::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicFlowSourceQ", HydraulicFlowSourceQ::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicPressureSourceQ", HydraulicPressureSourceQ::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicFixedDisplacementPump", HydraulicFixedDisplacementPump::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
+    cfampND_ct->registerCreatorFunction("Hydraulic22Valve", Hydraulic22Valve::Creator);
+    cfampND_ct->registerCreatorFunction("Hydraulic32DirectionalValve", Hydraulic32DirectionalValve::Creator);
+    cfampND_ct->registerCreatorFunction("Hydraulic33Valve", Hydraulic33Valve::Creator);
+    cfampND_ct->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
+    cfampND_ct->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
+    cfampND_ct->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicOpenCenterValve", HydraulicOpenCenterValve::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicAckumulator", HydraulicAckumulator::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicPressureControlledValve", HydraulicPressureControlledValve::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicPressureSensor", HydraulicPressureSensor::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicFlowSensor", HydraulicFlowSensor::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicCylinderC", HydraulicCylinderC::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicCylinderQ", HydraulicCylinderQ::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicTLMlossless", HydraulicTLMlossless::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicPressureReliefValve", HydraulicPressureReliefValve::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicSubSysExample", HydraulicSubSysExample::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicTankC", HydraulicTankC::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicAlternativePRV", HydraulicAlternativePRV::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicFixedDisplacementMotorQ", HydraulicFixedDisplacementMotorQ::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicVolume4", HydraulicVolume4::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicLosslessConnector", HydraulicLosslessConnector::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicLosslessTConnector", HydraulicLosslessTConnector::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicMachineC", HydraulicMachineC::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicPressureControlledPump", HydraulicPressureControlledPump::Creator);
 
-    cfact_ptr->registerCreatorFunction("HydraulicDummyC", HydraulicDummyC::Creator);
-    cfact_ptr->registerCreatorFunction("HydraulicDummyQ", HydraulicDummyQ::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicDummyC", HydraulicDummyC::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicDummyQ", HydraulicDummyQ::Creator);
 
 
     //Signal components
-    cfact_ptr->registerCreatorFunction("SignalSource", SignalSource::Creator);
-    cfact_ptr->registerCreatorFunction("SignalGain", SignalGain::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSink", SignalSink::Creator);
-    cfact_ptr->registerCreatorFunction("SignalStep", SignalStep::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSineWave", SignalSineWave::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSquareWave", SignalSquareWave::Creator);
-    cfact_ptr->registerCreatorFunction("SignalRamp", SignalRamp::Creator);
-    cfact_ptr->registerCreatorFunction("SignalAdd", SignalAdd::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSubtract", SignalSubtract::Creator);
-    cfact_ptr->registerCreatorFunction("SignalMultiply", SignalMultiply::Creator);
-    cfact_ptr->registerCreatorFunction("SignalDivide", SignalDivide::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSaturation", SignalSaturation::Creator);
-    cfact_ptr->registerCreatorFunction("SignalDeadZone", SignalDeadZone::Creator);
-    cfact_ptr->registerCreatorFunction("SignalLP1Filter", SignalLP1Filter::Creator);
-    cfact_ptr->registerCreatorFunction("SignalLP2Filter", SignalLP2Filter::Creator);
-    cfact_ptr->registerCreatorFunction("SignalHP1Filter", SignalHP1Filter::Creator);
-    cfact_ptr->registerCreatorFunction("SignalHP2Filter", SignalHP2Filter::Creator);
-    cfact_ptr->registerCreatorFunction("SignalPulse", SignalPulse::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
-    cfact_ptr->registerCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
-    cfact_ptr->registerCreatorFunction("SignalIntegrator2", SignalIntegrator2::Creator);
-    cfact_ptr->registerCreatorFunction("SignalIntegratorLimited", SignalIntegratorLimited::Creator);
-    cfact_ptr->registerCreatorFunction("SignalIntegratorLimited2", SignalIntegratorLimited2::Creator);
-    cfact_ptr->registerCreatorFunction("SignalTimeDelay", SignalTimeDelay::Creator);
-    cfact_ptr->registerCreatorFunction("SignalFirstOrderFilter", SignalFirstOrderFilter::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSecondOrderFilter", SignalSecondOrderFilter::Creator);
-    cfact_ptr->registerCreatorFunction("SignalHysteresis", SignalHysteresis::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSquare", SignalSquare::Creator);
-    cfact_ptr->registerCreatorFunction("SignalTime", SignalTime::Creator);
-    cfact_ptr->registerCreatorFunction("SignalStopSimulation", SignalStopSimulation::Creator);
-    cfact_ptr->registerCreatorFunction("SignalGreaterThan", SignalGreaterThan::Creator);
-    cfact_ptr->registerCreatorFunction("SignalSmallerThan", SignalSmallerThan::Creator);
-    cfact_ptr->registerCreatorFunction("SignalAnd", SignalAnd::Creator);
-    cfact_ptr->registerCreatorFunction("SignalOr", SignalOr::Creator);
-    cfact_ptr->registerCreatorFunction("SignalXor", SignalXor::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSource", SignalSource::Creator);
+    cfampND_ct->registerCreatorFunction("SignalGain", SignalGain::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSink", SignalSink::Creator);
+    cfampND_ct->registerCreatorFunction("SignalStep", SignalStep::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSineWave", SignalSineWave::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSquareWave", SignalSquareWave::Creator);
+    cfampND_ct->registerCreatorFunction("SignalRamp", SignalRamp::Creator);
+    cfampND_ct->registerCreatorFunction("SignalAdd", SignalAdd::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSubtract", SignalSubtract::Creator);
+    cfampND_ct->registerCreatorFunction("SignalMultiply", SignalMultiply::Creator);
+    cfampND_ct->registerCreatorFunction("SignalDivide", SignalDivide::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSaturation", SignalSaturation::Creator);
+    cfampND_ct->registerCreatorFunction("SignalDeadZone", SignalDeadZone::Creator);
+    cfampND_ct->registerCreatorFunction("SignalLP1Filter", SignalLP1Filter::Creator);
+    cfampND_ct->registerCreatorFunction("SignalLP2Filter", SignalLP2Filter::Creator);
+    cfampND_ct->registerCreatorFunction("SignalHP1Filter", SignalHP1Filter::Creator);
+    cfampND_ct->registerCreatorFunction("SignalHP2Filter", SignalHP2Filter::Creator);
+    cfampND_ct->registerCreatorFunction("SignalPulse", SignalPulse::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
+    cfampND_ct->registerCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
+    cfampND_ct->registerCreatorFunction("SignalIntegrator2", SignalIntegrator2::Creator);
+    cfampND_ct->registerCreatorFunction("SignalIntegratorLimited", SignalIntegratorLimited::Creator);
+    cfampND_ct->registerCreatorFunction("SignalIntegratorLimited2", SignalIntegratorLimited2::Creator);
+    cfampND_ct->registerCreatorFunction("SignalTimeDelay", SignalTimeDelay::Creator);
+    cfampND_ct->registerCreatorFunction("SignalFirstOrderFilter", SignalFirstOrderFilter::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSecondOrderFilter", SignalSecondOrderFilter::Creator);
+    cfampND_ct->registerCreatorFunction("SignalHysteresis", SignalHysteresis::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSquare", SignalSquare::Creator);
+    cfampND_ct->registerCreatorFunction("SignalTime", SignalTime::Creator);
+    cfampND_ct->registerCreatorFunction("SignalStopSimulation", SignalStopSimulation::Creator);
+    cfampND_ct->registerCreatorFunction("SignalGreaterThan", SignalGreaterThan::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSmallerThan", SignalSmallerThan::Creator);
+    cfampND_ct->registerCreatorFunction("SignalAnd", SignalAnd::Creator);
+    cfampND_ct->registerCreatorFunction("SignalOr", SignalOr::Creator);
+    cfampND_ct->registerCreatorFunction("SignalXor", SignalXor::Creator);
 
-    cfact_ptr->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
+    cfampND_ct->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
 
 
     //Mechanical components
-    cfact_ptr->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicVelocityTransformer", MechanicVelocityTransformer::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicTorqueTransformer", MechanicTorqueTransformer::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicAngularVelocityTransformer", MechanicAngularVelocityTransformer::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicTranslationalMass", MechanicTranslationalMass::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicTranslationalMassWithCoulumbFriction", MechanicTranslationalMassWithCoulumbFriction::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicSpeedSensor", MechanicSpeedSensor::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicForceSensor", MechanicForceSensor::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicPositionSensor", MechanicPositionSensor::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicAngleSensor", MechanicAngleSensor::Creator);
-    cfact_ptr->registerCreatorFunction("MechanicTranslationalLosslessConnector", MechanicTranslationalLosslessConnector::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicVelocityTransformer", MechanicVelocityTransformer::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicTorqueTransformer", MechanicTorqueTransformer::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicAngularVelocityTransformer", MechanicAngularVelocityTransformer::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicTranslationalMass", MechanicTranslationalMass::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicTranslationalMassWithCoulumbFriction", MechanicTranslationalMassWithCoulumbFriction::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicSpeedSensor", MechanicSpeedSensor::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicForceSensor", MechanicForceSensor::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicPositionSensor", MechanicPositionSensor::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicAngleSensor", MechanicAngleSensor::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicTranslationalLosslessConnector", MechanicTranslationalLosslessConnector::Creator);
 }

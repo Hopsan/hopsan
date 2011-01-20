@@ -111,7 +111,7 @@
 
 namespace hopsan {
 
-    DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
+    DLLIMPORTEXPORT void register_components(ComponentFactory* cfampND_ct);
 }
 
 #endif // COMPONENTS_H_INCLUDED

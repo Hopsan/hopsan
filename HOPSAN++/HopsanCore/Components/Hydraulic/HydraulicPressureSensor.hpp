@@ -24,6 +24,8 @@ namespace hopsan {
     private:
         Port *mpP1, * mpOut;
 
+        double *mpND_p, *mpND_out;
+
     public:
         static Component *Creator()
         {
@@ -41,20 +43,14 @@ namespace hopsan {
 
         void initialize()
         {
-            //Nothing to initilize
+            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double p = mpP1->readNode(NodeHydraulic::PRESSURE);
-
-            //Write new values to nodes
-            if(mpOut->isConnected())
-            {
-                mpOut->writeNode(NodeSignal::VALUE, p);
-            }
+            (*mpND_out) = (*mpND_p);
         }
     };
 }

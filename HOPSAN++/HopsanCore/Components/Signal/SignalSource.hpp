@@ -23,7 +23,7 @@ namespace hopsan {
 
     private:
         double mValue;
-        double *output;
+        double *mpND_out;
         Port *mpOut;
 
     public:
@@ -45,17 +45,10 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             //Initialize value to the node
-           (*output) = mValue;
+           (*mpND_out) = mValue;
         }
 
 

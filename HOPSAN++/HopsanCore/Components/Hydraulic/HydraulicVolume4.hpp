@@ -29,7 +29,7 @@ namespace hopsan {
         double pMean, c10, c20, c30, c40;
 
         double q1, c1, Zc1, q2, c2, Zc2, q3, c3, Zc3, q4, c4, Zc4;
-        double *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_q2, *mpND_c2, *mpND_Zc2, *q3_ptr, *c3_ptr, *Zc3_ptr, *q4_ptr, *c4_ptr, *Zc4_ptr;
+        double *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_q3, *mpND_c3, *mpND_Zc3, *mpND_q4, *mpND_c4, *mpND_Zc4;
 
         Port *mpP1, *mpP2, *mpP3, *mpP4;
 
@@ -69,19 +69,18 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            q3_ptr = mpP3->getNodeDataPtr(NodeHydraulic::FLOW);
-            c3_ptr = mpP3->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc3_ptr = mpP3->getNodeDataPtr(NodeHydraulic::CHARIMP);
-            q4_ptr = mpP4->getNodeDataPtr(NodeHydraulic::FLOW);
-            c4_ptr = mpP4->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            Zc4_ptr = mpP4->getNodeDataPtr(NodeHydraulic::CHARIMP);
-
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            mpND_q3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::FLOW);
+            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::CHARIMP);
+            mpND_q4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::FLOW);
+            mpND_c4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::CHARIMP);
 
             mZc = 3 / 2 * mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
@@ -114,12 +113,12 @@ namespace hopsan {
             q2 = (*mpND_q2);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            q3 = (*q3_ptr);
-            c3 = (*c3_ptr);
-            Zc3 = (*Zc3_ptr);
-            q4 = (*q4_ptr);
-            c4 = (*c4_ptr);
-            Zc4 = (*Zc4_ptr);
+            q3 = (*mpND_q3);
+            c3 = (*mpND_c3);
+            Zc3 = (*mpND_Zc3);
+            q4 = (*mpND_q4);
+            c4 = (*mpND_c4);
+            Zc4 = (*mpND_Zc4);
 
             //Volume equations
             pMean = ((c1 + Zc1*2*q1) + (c2 + Zc2*2*q2) + (c3 + Zc3*2*q3) + (c4 + Zc4*2*q4)) / 4;
@@ -139,12 +138,12 @@ namespace hopsan {
             //Write new values to nodes
             (*mpND_c1) = c1;
             (*mpND_c2) = c2;
-            (*c3_ptr) = c3;
-            (*c4_ptr) = c4;
+            (*mpND_c3) = c3;
+            (*mpND_c4) = c4;
             (*mpND_Zc1) = Zc1;
             (*mpND_Zc2) = Zc2;
-            (*Zc3_ptr) = Zc3;
-            (*Zc4_ptr) = Zc4;
+            (*mpND_Zc3) = Zc3;
+            (*mpND_Zc4) = Zc4;
         }
 
         void finalize()

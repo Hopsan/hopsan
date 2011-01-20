@@ -28,7 +28,7 @@ namespace hopsan {
         bool cav;
         TurbulentFlowFunction qTurb;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *A_ptr;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_A;
         double p1,q1, p2, q2, c1, Zc1, c2, Zc2;
 
         Port *mpP1, *mpP2, *mpIn;
@@ -57,24 +57,17 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
-            mpND_p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 
-            if(mpIn->isConnected())
-            {
-                A_ptr = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                A_ptr = new double(A);
-            }
+            mpND_A = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, A);
         }
 
 
@@ -85,7 +78,7 @@ namespace hopsan {
             Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            A = (*A_ptr);
+            A = (*mpND_A);
 
             //Orifice equations
             Kc = Cq*A*sqrt(2.0/890.0);

@@ -41,7 +41,7 @@ namespace hopsan {
         double mFrequency;
         double mAmplitude;
         double mOffset;
-        double *output;
+        double *mpND_out;
         Port *mpOut;
 
     public:
@@ -69,14 +69,7 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             simulateOneTimestep();
         }
@@ -87,11 +80,11 @@ namespace hopsan {
             //Sinewave Equations
             if (mTime < mStartTime)
             {
-                (*output) = 0.0;     //Before start
+                (*mpND_out) = 0.0;     //Before start
             }
             else
             {
-                (*output) = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
+                (*mpND_out) = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
             }
         }
     };

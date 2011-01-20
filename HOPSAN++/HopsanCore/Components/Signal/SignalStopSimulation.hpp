@@ -23,7 +23,7 @@ namespace hopsan {
     {
 
     private:
-        double *input;
+        double *mpND_in;
         Port *mpIn;
 
     public:
@@ -42,20 +42,13 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected())
-            {
-                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                input = new double(boolToDouble(false));
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, boolToDouble(false));
         }
 
 
         void simulateOneTimestep()
         {
-            if(doubleToBool(*input))
+            if(doubleToBool(*mpND_in))
             {
                 this->stopSimulation();
             }

@@ -26,7 +26,7 @@ namespace hopsan {
         IntegratorLimited mIntegrator;
         double mStartY;
         double mMin, mMax;
-        double *input, *output;
+        double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
     public:
@@ -50,28 +50,13 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpIn->isConnected())
-            {
-                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                input = new double(0);
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mIntegrator.initialize(mTimestep, (*mpND_in), mStartY, mMin, mMax);
 
-            mIntegrator.initialize(mTimestep, (*input), mStartY, mMin, mMax);
-
-            (*output) = (*input);
-            limit((*output), mMin, mMax);
+            (*mpND_out) = (*mpND_in);
+            limit((*mpND_out), mMin, mMax);
         }
 
 
@@ -79,7 +64,7 @@ namespace hopsan {
         {
 
             //Filter equation
-            (*output) = mIntegrator.update((*input));
+            (*mpND_out) = mIntegrator.update((*mpND_in));
         }
     };
 }

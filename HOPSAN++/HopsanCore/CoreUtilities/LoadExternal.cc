@@ -31,7 +31,7 @@ LoadExternal::LoadExternal()
 bool LoadExternal::load(string libpath)
 {
     //typedef void (*register_contents_t)(ComponentFactory::FactoryPairVectorT *factory_vector_ptr);
-    typedef void (*register_contents_t)(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr);
+    typedef void (*register_contents_t)(ComponentFactory* cfampND_ct, NodeFactory* nfampND_ct);
 
 #ifdef WIN32
     HINSTANCE lib_ptr;

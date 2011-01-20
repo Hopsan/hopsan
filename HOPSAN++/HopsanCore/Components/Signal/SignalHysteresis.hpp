@@ -26,7 +26,7 @@ namespace hopsan {
         double mHysteresisWidth;
         Delay mDelayedInput;
         ValveHysteresis mHyst;
-        double *input, *output;
+        double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
     public:
@@ -49,28 +49,20 @@ namespace hopsan {
 
         void initialize()
         {
-            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
-
-            if(mpOut->isConnected())
-            {
-                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            }
-            else
-            {
-                output = new double();
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             mDelayedInput.initialize(1, 0.0);
 
-            (*output) = (*input);
+            (*mpND_out) = (*mpND_in);
         }
 
 
         void simulateOneTimestep()
         {
             //Hysteresis equations
-            (*output) = mHyst.getValue((*input), mHysteresisWidth, mDelayedInput.getOldest());
-            mDelayedInput.update((*output));
+            (*mpND_out) = mHyst.getValue((*mpND_in), mHysteresisWidth, mDelayedInput.getOldest());
+            mDelayedInput.update((*mpND_out));
         }
     };
 }

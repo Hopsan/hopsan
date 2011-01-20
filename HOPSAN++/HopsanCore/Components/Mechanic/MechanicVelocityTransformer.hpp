@@ -18,7 +18,7 @@ namespace hopsan {
     private:
         double v;
         double signal, f, x, c, Zx;
-        double *mpND_signal, *f_ptr, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx;
+        double *mpND_signal, *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx;
         Integrator mInt;
         Port *mpIn, *mpOut;
 
@@ -47,7 +47,7 @@ namespace hopsan {
         {
             mpND_signal  = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, v);
 
-            f_ptr = getSafeNodeDataPtr(mpOut, NodeMechanic::FORCE);
+            mpND_f = getSafeNodeDataPtr(mpOut, NodeMechanic::FORCE);
             mpND_x = getSafeNodeDataPtr(mpOut, NodeMechanic::POSITION);
             mpND_v = getSafeNodeDataPtr(mpOut, NodeMechanic::VELOCITY);
             mpND_c = getSafeNodeDataPtr(mpOut, NodeMechanic::WAVEVARIABLE);
@@ -69,7 +69,7 @@ namespace hopsan {
             f = c + Zx*signal;
 
             //Write values to nodes
-            (*f_ptr) = f;
+            (*mpND_f) = f;
             (*mpND_x) = x;
             (*mpND_v) = signal;
         }

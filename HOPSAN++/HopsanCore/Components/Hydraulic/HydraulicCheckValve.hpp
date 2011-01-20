@@ -26,7 +26,7 @@ namespace hopsan {
     private:
         double mKs;
         bool cav;
-        TurbulentFlowFunction mQturb;
+        TurbulentFlowFunction qTurb_;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
         double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
@@ -53,17 +53,17 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
-            mpND_p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            mpND_q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
-            mpND_c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 
-            mQturb.setFlowCoefficient(mKs);
+            qTurb_.setFlowCoefficient(mKs);
         }
 
 
@@ -76,7 +76,7 @@ namespace hopsan {
             Zc2 = (*mpND_Zc2);
 
             //Checkvalve equations
-            if (c1 > c2) { q2 = mQturb.getFlow(c1, c2, Zc1, Zc2); }
+            if (c1 > c2) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
             else { q2 = 0.0; }
 
             q1 = -q2;
@@ -99,7 +99,7 @@ namespace hopsan {
             }
             if (cav)
             {
-                if (c1 > c2) { q2 = mQturb.getFlow(c1, c2, Zc1, Zc2); }
+                if (c1 > c2) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
                 else { q2 = 0.0; }
             }
             q1 = -q2;

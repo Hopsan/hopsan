@@ -23,19 +23,18 @@ namespace hopsan {
     class Hydraulic22Valve : public ComponentQ
     {
     private:
-        double mCq;
-        double md;
-        double mf;
-        double mxvmax;
-        double mOverlap;
-        double momegah;
-        double mdeltah;
-        SecondOrderFilter myFilter;
-        TurbulentFlowFunction mQturbpa;
+        double Cq;
+        double d;
+        double f;
+        double xvmax;
+        double overlap;
+        double omegah;
+        double deltah;
+        SecondOrderFilter filter;
+        TurbulentFlowFunction qTurb_pa;
         double xv, xpanom, Kcpa, qpa;
 
-        double *cp_ptr, *Zcp_ptr, *ca_ptr, *Zca_ptr, *xvmpND_in, *pp_ptr, *qp_ptr, *pa_ptr, *qa_ptr;
-        double cp, Zcp, ca, Zca, xvin, pp, qp, pa, qa;
+        double *mpND_cp, *mpND_Zcp, *mpND_ca, *mpND_Zca, *xvmpND_in, *mpND_pp, *mpND_qp, *mpND_pa, *mpND_qa;
 
         Port *mpPP, *mpPA, *mpIn;
 
@@ -48,68 +47,72 @@ namespace hopsan {
         Hydraulic22Valve(const std::string name) : ComponentQ(name)
         {
             mTypeName = "Hydraulic22Valve";
-            mCq = 0.67;
-            md = 0.01;
-            mf = 1.0;
-            mxvmax = 0.01;
-            mOverlap = 0.0;
-            momegah = 100.0;
-            mdeltah = 0.0;
+            Cq = 0.67;
+            d = 0.01;
+            f = 1.0;
+            xvmax = 0.01;
+            overlap = 0.0;
+            omegah = 100.0;
+            deltah = 0.0;
 
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
 
-            registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
-            registerParameter("d", "Diameter", "[m]", md);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", mf);
-            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", mxvmax);
-            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap);
-            registerParameter("omegah", "Resonance Frequency", "[rad/s]", momegah);
-            registerParameter("deltah", "Damping Factor", "[-]", mdeltah);
+            registerParameter("Cq", "Flow Coefficient", "[-]", Cq);
+            registerParameter("d", "Diameter", "[m]", d);
+            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
+            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", overlap);
+            registerParameter("omegah", "Resonance Frequency", "[rad/s]", omegah);
+            registerParameter("deltah", "Damping Factor", "[-]", deltah);
         }
 
 
         void initialize()
         {
-            pp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::PRESSURE);
-            qp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::FLOW);
-            cp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::WAVEVARIABLE);
-            Zcp_ptr = getSafeNodeDataPtr(mpPP, NodeHydraulic::CHARIMP);
+            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::PRESSURE);
+            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::FLOW);
+            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CHARIMP);
 
-            pa_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
-            qa_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
-            ca_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
-            Zca_ptr = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
+            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
+            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
+            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
 
             xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
-            double den[3] = {1.0/(momegah*momegah), 2.0*mdeltah/momegah, 1.0};
-            myFilter.initialize(mTimestep, num, den, 0, 0, 0, mxvmax);
+            double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
+            filter.initialize(mTimestep, num, den, 0, 0, 0, xvmax);
         }
 
 
         void simulateOneTimestep()
         {
-            cp = (*cp_ptr);
-            Zcp = (*Zcp_ptr);
-            ca = (*ca_ptr);
-            Zca = (*Zca_ptr);
+            //Declare local variables
+            double cp, Zcp, ca, Zca, xvin, pp, qp, pa, qa;
+
+            //Read variables from nodes
+            cp = (*mpND_cp);
+            Zcp = (*mpND_Zcp);
+            ca = (*mpND_ca);
+            Zca = (*mpND_Zca);
             xvin = (*xvmpND_in);
 
             //Dynamics of spool position (second order low pass filter)
-            myFilter.update(xvin);
-            xv = myFilter.value();
+            filter.update(xvin);
+            xv = filter.value();
 
             //Determine flow coefficient
             xpanom = xv;
-            Kcpa = mCq*mf*pi*md*xpanom*sqrt(2.0/890.0);
+            Kcpa = Cq*f*pi*d*xpanom*sqrt(2.0/890.0);
 
             //Calculate flow
-            mQturbpa.setFlowCoefficient(Kcpa);
-            qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
+            qTurb_pa.setFlowCoefficient(Kcpa);
+            qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
             if (xv >= 0.0)
             {
                 qp = -qpa;
@@ -122,10 +125,10 @@ namespace hopsan {
             }
 
             //Calculate pressures from flow and impedance
-            (*pp_ptr) = cp + qp * Zcp;
-            (*qp_ptr) = qp;
-            (*pa_ptr) = ca + qa * Zca;
-            (*qa_ptr) = qa;
+            (*mpND_pp) = cp + qp * Zcp;
+            (*mpND_qp) = qp;
+            (*mpND_pa) = ca + qa * Zca;
+            (*mpND_qa) = qa;
         }
     };
 }

@@ -35,7 +35,7 @@ namespace hopsan {
         double mStartTime;
         double mStopTime;
         double mAmplitude;
-        double *output;
+        double *mpND_out;
         Port *mpOut;
 
     public:
@@ -63,9 +63,9 @@ namespace hopsan {
 
         void initialize()
         {
-            if(mpOut->isConnected()) { output = mpOut->getNodeDataPtr(NodeSignal::VALUE); }
-            else { output = new double(); }
-            (*output) = mBaseValue;
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+
+            (*mpND_out) = mBaseValue;
         }
 
 
@@ -74,11 +74,11 @@ namespace hopsan {
                 //Step Equations
             if (mTime > mStartTime && mTime < mStopTime)
             {
-                (*output) = mBaseValue + mAmplitude;     //During pulse
+                (*mpND_out) = mBaseValue + mAmplitude;     //During pulse
             }
             else
             {
-                (*output) = mBaseValue;                   //Not during pulse
+                (*mpND_out) = mBaseValue;                   //Not during pulse
             }
         }
     };
