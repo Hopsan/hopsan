@@ -146,10 +146,12 @@ class HydraulicCylinderC : public ComponentC
             double q1 = (*mpND_q1);
             double p2 = (*mpND_p2);
             double q2 = (*mpND_q2);
+            double c1 = (*mpND_c1);
+            double c2 = (*mpND_c2);
             double x3 = (*x3_ptr);
             double v3 = (*v3_ptr);
 
-            double c1, c2, c3, Zc1, Zc2, Zx3;
+            double c3, Zc1, Zc2, Zx3;
 
             //Internal mechanical port
             xi3 = -x3;
