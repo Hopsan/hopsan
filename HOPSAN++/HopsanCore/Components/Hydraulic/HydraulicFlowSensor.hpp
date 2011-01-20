@@ -22,6 +22,8 @@ namespace hopsan {
     class HydraulicFlowSensor : public ComponentSignal
     {
     private:
+        double *mpND_q, *mpND_out;
+
         Port *mpP1, *mpOut;
 
     public:
@@ -41,17 +43,14 @@ namespace hopsan {
 
         void initialize()
         {
-            //Nothing to initilize
+            mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double q = mpP1->readNode(NodeHydraulic::FLOW);
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, q);
+            (*mpND_out) = (*mpND_q);
         }
     };
 }

@@ -17,7 +17,6 @@ namespace hopsan {
         bool cav;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_Kc;
-        double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
 
         Port *mpP1, *mpP2, *mpIn;
 
@@ -58,6 +57,8 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+
             //Get variable values from nodes
             c1 = (*mpND_c1);
             Zc1 = (*mpND_Zc1);

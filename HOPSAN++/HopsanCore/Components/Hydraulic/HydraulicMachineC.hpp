@@ -27,28 +27,11 @@ namespace hopsan {
     {
 
     private:
-        //Changeable parameters
-        double betae, je, v1, v2, dp, cim, bm;
+        double alfa, wfak, betae, je, v1, v2, dp, cim, bm;
 
-        //Local constants
-        double alfa, wfak;
-
-        //Local variables
-        double r1, r2, cp10e, cp20e, v1min, v2min, ka, ap, c1e, c2e, cp1, cp2, p1e, ct1, ct2, p2e,
-               v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, zc01, zc02, dpr, wp, cp1e, cp2e, ct1e,
-               ct2e, pm1e, pm2e, pp1e, qp1e, qp2e, pp2e;
-        int i;
-
-        //Node data pointers
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3,*mpND_c3, *mpND_Zx3, *mpND_eps;
 
-        //Node data variables
-        double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
-
-        //Utilities
         Delay mDelayedC1, mDelayedC2, mDelayedCp1, mDelayedCp2, mDelayedCp1e, mDelayedCp2e;
-
-        //Ports
         Port *mpP1, *mpP2, *mpP3, *mpIn;
 
     public:
@@ -109,6 +92,9 @@ namespace hopsan {
 
             mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
+            double dpr, dpe, ka, v1min, v2min, v1e, v2e, ap, wp, zc01, zc02, qp1, qp2, cp1, cp2;
+
             //Read input variables from nodes
             p1 = (*mpND_p1);
             q1 = (*mpND_q1);
@@ -166,6 +152,12 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            //Declare Local variables
+            double r1, r2, cp10e, cp20e, v1min, v2min, ka, ap, c1e, c2e, cp1, cp2, p1e, ct1, ct2, p2e,
+                   v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, zc01, zc02, dpr, wp, cp1e, cp2e, ct1e,
+                   ct2e, pm1e, pm2e, pp1e, qp1e, qp2e, pp2e;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
+
             //Read input variables from nodes
             p1 = (*mpND_p1);
             q1 = (*mpND_q1);

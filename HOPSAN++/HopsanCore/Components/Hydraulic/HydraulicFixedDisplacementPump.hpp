@@ -22,9 +22,11 @@ namespace hopsan {
     class HydraulicFixedDisplacementPump : public ComponentQ
     {
     private:
-        double mSpeed;             // rad/s
-        double mDp;
-        double mKcp;
+        double n;             // rad/s
+        double dp;
+        double Kcp;
+
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
         Port *mpP1, *mpP2;
 
@@ -37,46 +39,53 @@ namespace hopsan {
         HydraulicFixedDisplacementPump(const std::string name) : ComponentQ(name)
         {
             mTypeName = "HydraulicFixedDisplacementPump";
-            mSpeed = 125.0;
-            mDp = 0.00005;
-            mKcp = 0.001;
+            n = 125.0;
+            dp = 0.00005;
+            Kcp = 0.001;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            registerParameter("Speed", "Angular Velocity", "rad/s", mSpeed);
-            registerParameter("Dp", "Displacement", "m^3/rev", mDp);
-            registerParameter("Kcp", "Leakage Coefficient", "(m^3/s)/Pa", mKcp);
+            registerParameter("n", "Angular Velocity", "rad/s", n);
+            registerParameter("dp", "Displacement", "m^3/rev", dp);
+            registerParameter("Kcp", "Leakage Coefficient", "(m^3/s)/Pa", Kcp);
         }
 
 
         void initialize()
         {
-            //Nothing to initilize
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-            double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
-
-            //Fixed Displacement Pump equations
-
+            //Declare local variables
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
             double pi = 3.1415926536;
-
-            double q2 = ( mDp*mSpeed/(2.0*pi) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
-            double q1 = -q2;
-            double p2 = c2 + Zc2*q2;
-            double p1 = c1 + Zc1*q1;
-
-            /* Cavitation Check */
-
             bool cav = false;
 
+            //Get variable values from nodes
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc1);
+            c2 = (*mpND_c2);
+            Zc2 = (*mpND_Zc2);
+
+            //Fixed Displacement Pump equations
+            q2 = ( dp*n/(2.0*pi) + Kcp*(c1-c2) ) / ( (Zc1+Zc2)*Kcp+1 );
+            q1 = -q2;
+            p2 = c2 + Zc2*q2;
+            p1 = c1 + Zc1*q1;
+
+            /* Cavitation Check */
             if (p1 < 0.0)
             {
                 c1 = 0.0;
@@ -91,7 +100,7 @@ namespace hopsan {
             }
             if (cav)
             {
-                q2 = ( mDp*mSpeed/(2.0*pi) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
+                q2 = ( dp*n/(2.0*pi) + Kcp*(c1-c2) ) / ( (Zc1+Zc2)*Kcp+1 );
                 q1 = -q2;
                 p1 = c1 + Zc1 * q1;
                 p2 = c2 + Zc2 * q2;
@@ -100,10 +109,10 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::FLOW, q1);
-            mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::FLOW, q2);
+            (*mpND_p1) = p1;
+            (*mpND_q1) = q1;
+            (*mpND_p2) = p2;
+            (*mpND_q2) = q2;
         }
     };
 }

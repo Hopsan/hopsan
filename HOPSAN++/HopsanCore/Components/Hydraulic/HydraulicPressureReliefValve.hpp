@@ -23,9 +23,11 @@ namespace hopsan {
     class HydraulicPressureReliefValve : public ComponentQ
     {
     private:
-        double mX0, mPref, mTao, mKcs, mKcf, mCs, mCf, mQnom, mPnom, mPh, mX0max;
-        //Delay mDelayedX0;
+        double x0, pref, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, ph, x0max;
         double mPrevX0;
+
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderFilter mFilterLP;
@@ -40,72 +42,84 @@ namespace hopsan {
         HydraulicPressureReliefValve(const std::string name) : ComponentQ(name)
         {
             mTypeName = "HydraulicPressureReliefValve";
-            mPref = 2000000;
-            mTao = 0.01;
-            mKcs = 0.00000001;
-            mKcf = 0.00000001;
-            mQnom = 0.001;
-            mPh = 500000;
-            mPnom = 7e6f;
-            mX0max = mQnom / sqrt(mPnom);
-            mCs = sqrt(mPnom) / mKcs;
-            mCf = 1.0 / (mKcf*sqrt(mPnom));
+            pref = 2000000;
+            tao = 0.01;
+            Kcs = 0.00000001;
+            Kcf = 0.00000001;
+            qnom = 0.001;
+            ph = 500000;
+            pnom = 7e6f;
+            x0max = qnom / sqrt(pnom);
+            Cs = sqrt(pnom) / Kcs;
+            Cf = 1.0 / (Kcf*sqrt(pnom));
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            registerParameter("pref", "Reference Opening Pressure", "[Pa]", mPref);
-            registerParameter("tao", "Time Constant of Spool", "[s]", mTao);
-            registerParameter("kcs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", mKcs);
-            registerParameter("kcf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", mKcf);
-            registerParameter("qnom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", mQnom);
-            registerParameter("ph", "Hysteresis Width", "[Pa]", mPh);
+            registerParameter("pref", "Reference Opening Pressure", "[Pa]", pref);
+            registerParameter("tao", "Time Constant of Spool", "[s]", tao);
+            registerParameter("kcs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", Kcs);
+            registerParameter("kcf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", Kcf);
+            registerParameter("qnom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", qnom);
+            registerParameter("ph", "Hysteresis Width", "[Pa]", ph);
         }
 
 
         void initialize()
         {
-            mX0 = 0.00001;
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
-            //mDelayedX0.setStepDelay(1);
-            //mDelayedX0.initialize(1, 0.0);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+
+            x0 = 0.00001;
+
             mPrevX0 = 0;
 
-            double wCutoff = 1 / mTao;
+            double wCutoff = 1 / tao;
             double num [2] = {0.0, 1.0};
             double den [2] = {1.0/wCutoff, 1.0};
-            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, mX0max);
+            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, x0max);
         }
 
 
         void simulateOneTimestep()
         {
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+            double b1, gamma, b2, xs, xh, xsh, wCutoff;
+            bool cav = false;
+
             //Get variable values from nodes
-            double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q1 = mpP1->readNode(NodeHydraulic::FLOW);
-            double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-            double p2 = mpP2->readNode(NodeHydraulic::PRESSURE);
-            double q2 = mpP2->readNode(NodeHydraulic::FLOW);
-            double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+            p1 = (*mpND_p1);
+            q1 = (*mpND_q1);
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc1);
+            p2 = (*mpND_p2);
+            q2 = (*mpND_q2);
+            c2 = (*mpND_c2);
+            Zc2 = (*mpND_Zc2);
 
             //PRV Equations
 
             //Help variable b1
-            double b1 = mCs + (p1-p2)*mCf;
-            if ( (p1-p2)*mCf < 0.0 )
+            b1 = Cs + (p1-p2)*Cf;
+            if ( (p1-p2)*Cf < 0.0 )
             {
-                b1 = mCs;
+                b1 = Cs;
             }
 
             //Help variable gamma
-            double gamma;
+            gamma;
             if (p1>p2)
             {
-                if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mX0) != 0.0 )
+                if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*x0) != 0.0 )
                 {
-                    gamma = sqrt(p1-p2)*2.0 / (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mX0);
+                    gamma = sqrt(p1-p2)*2.0 / (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*x0);
                 }
                 else
                 {
@@ -114,9 +128,9 @@ namespace hopsan {
             }
             else
             {
-                if ( (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mX0) != 0.0 )
+                if ( (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*x0) != 0.0 )
                 {
-                    gamma = sqrt(p2-p1)*2.0 / (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mX0);
+                    gamma = sqrt(p2-p1)*2.0 / (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*x0);
                 }
                 else
                 {
@@ -125,7 +139,7 @@ namespace hopsan {
             }
 
             //Help variable b2
-            double b2;
+            b2;
             if (p1 > p2)
             {
                 b2 = gamma*(Zc1+Zc2)*sqrt(p1-p2);
@@ -140,29 +154,28 @@ namespace hopsan {
             }
 
             // Calculation of spool position
-            double xs = (gamma*(c1-c2) + b2*mX0/2.0 - mPref) / (b1+b2);
+            xs = (gamma*(c1-c2) + b2*x0/2.0 - pref) / (b1+b2);
 
             //Hysteresis
-            double xh = mPh / (b1+b2);                                  //Hysteresis width [m]
-            double xsh = mHyst.getValue(xs, xh, mPrevX0);
+            xh = ph / (b1+b2);                                  //Hysteresis width [m]
+            xsh = mHyst.getValue(xs, xh, mPrevX0);
 
             //Filter
-            double wCutoff = (1.0 + b2/b1) * 1.0/mTao;                //Cutoff frequency
+            wCutoff = (1.0 + b2/b1) * 1.0/tao;                //Cutoff frequency
             double num [2] = {0.0, 1.0};
             double den [2] = {1.0/wCutoff, 1.0};
             mFilterLP.setNumDen(num,den);
             mFilterLP.update(xsh);
-            mX0 = mFilterLP.value();
+            x0 = mFilterLP.value();
 
             //Turbulent flow equation
-            mTurb.setFlowCoefficient(mX0);
+            mTurb.setFlowCoefficient(x0);
             q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);
             q1 = -q2;
             p2 = c2+Zc2*q2;
             p1 = c1+Zc1*q1;
 
             // Cavitation
-            bool cav = false;
             if (p1 < 0.0)
             {
                 c1 = 0.0;
@@ -177,11 +190,11 @@ namespace hopsan {
             }
             if (cav)
             {
-                xs = (c1-c2 + b2*mX0/2.0 - mPref) / (b1+b2);
+                xs = (c1-c2 + b2*x0/2.0 - pref) / (b1+b2);
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
-                mX0 = mFilterLP.value();        //! @todo How is this supposed to work? It is not possible to use the same filter twice in the same timesteps with different input values...
+                x0 = mFilterLP.value();        //! @todo How is this supposed to work? It is not possible to use the same filter twice in the same timesteps with different input values...
 
-                mTurb.setFlowCoefficient(mX0);
+                mTurb.setFlowCoefficient(x0);
                 q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);
                 q1 = -q2;
                 p2 = c2+Zc2*q2;
@@ -191,14 +204,13 @@ namespace hopsan {
                 if (p2 < 0.0) { p2 = 0.0; }
             }
 
-            //Write new values to nodes
+            mPrevX0 = x0;
 
-            mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::FLOW, q1);
-            mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::FLOW, q2);
-
-            mPrevX0 = mX0;
+            //Write new variables to nodes
+            (*mpND_p1) = p1;
+            (*mpND_q1) = q1;
+            (*mpND_p2) = p2;
+            (*mpND_q2) = q2;
         }
     };
 }
