@@ -27,6 +27,9 @@ namespace hopsan {
         double mTimeDelay;
         double mAlpha;
         double mZc;
+
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+
         Delay mDelayedC1;
         Delay mDelayedC2;
         Port *mpP1, *mpP2;
@@ -63,15 +66,25 @@ namespace hopsan {
 
         void initialize()
         {
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP1,NodeHydraulic::FLOW));
-            mpP1->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP1,NodeHydraulic::PRESSURE));
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW));
-            mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP2,NodeHydraulic::FLOW));
-            mpP2->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP2,NodeHydraulic::PRESSURE));
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW));
-            mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
+            (*mpND_q1) = getStartValue(mpP1,NodeHydraulic::FLOW);
+            (*mpND_p1) = getStartValue(mpP1,NodeHydraulic::PRESSURE);
+            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW);
+            (*mpND_Zc1) = mZc;
+            (*mpND_q2) = getStartValue(mpP2,NodeHydraulic::FLOW);
+            (*mpND_p2) = getStartValue(mpP2,NodeHydraulic::PRESSURE);
+            (*mpND_c1) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW);
+            (*mpND_Zc2) = mZc;
 
             //Init delay
             mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW)); //-mTimestep due to calc time
@@ -81,26 +94,29 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double q1 = mpP1->readNode(NodeHydraulic::FLOW);
-            double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q2 = mpP2->readNode(NodeHydraulic::FLOW);
-            double p2 = mpP2->readNode(NodeHydraulic::PRESSURE);
-            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+            //Declare local variables
+            double p1, q1, c1, p2, q2, c2, c10, c20;
+
+            //Read variables from nodes
+            p1 = (*mpND_p1);
+            q1 = (*mpND_q1);
+            p2 = (*mpND_p2);
+            q2 = (*mpND_q2);
+            c1 = (*mpND_c1);
+            c2 = (*mpND_c2);
 
             //Delay Line equations
-            double c10 = p2 + mZc * q2;
-            double c20 = p1 + mZc * q1;
+            c10 = p2 + mZc * q2;
+            c20 = p1 + mZc * q1;
             c1  = mAlpha*c1 + (1.0-mAlpha)*c10;
             c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
 
             //Write new values to nodes
             //! @todo now when we update, in the next step we will read a value that is delayed two times, or??
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.update(c1));
-            mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.update(c2));
-            mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
+            (*mpND_c1) = mDelayedC1.update(c1);
+            (*mpND_Zc1) = mZc;
+            (*mpND_c2) = mDelayedC1.update(c2);
+            (*mpND_Zc2) = mZc;
 
         }
     };

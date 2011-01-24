@@ -26,9 +26,10 @@ namespace hopsan {
         double mAlpha;
         double mVolume;
         double mBulkmodulus;
-        Port *mpP1, *mpP2;
 
-        double debug,tid1,tid2;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+
+        Port *mpP1, *mpP2;
 
     public:
         static Component *Creator()
@@ -57,60 +58,54 @@ namespace hopsan {
             setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
             setStartValue(mpP2, NodeHydraulic::FLOW, 0.0);
             setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
-
-//            tid1 = 0.0;
-//            tid2 = 0.01;
-//            debug = 0;
-//            registerParameter("debug", "debug", "[-]", debug);
-//            registerParameter("t1", "debug", "[-]", tid1);
-//            registerParameter("t2", "debug", "[-]", tid2);
         }
 
 
         void initialize()
         {
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+
             mZc = mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW));
-            mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW));
-            mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
+            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW);
+            (*mpND_Zc1) = mZc;
+            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW);
+            (*mpND_Zc2) = mZc;
         }
 
 
         void simulateOneTimestep()
         {
+            //Declare local variables
+            double p1, q1, c1, p2, q2, c2, c10, c20;
+
             //Get variable values from nodes
-            //double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q1  = mpP1->readNode(NodeHydraulic::FLOW);
-            double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            //double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
-            double q2  = mpP2->readNode(NodeHydraulic::FLOW);
-            double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+            p2 = (*mpND_p2);
+            q2 = (*mpND_q2);
+            c1 = (*mpND_c1);
+            c2 = (*mpND_c2);
 
             //Volume equations
-
-            //double c10 = p2 + mZc * q2;       //Why did we write these equations?
-            //double c20 = p1 + mZc * q1;
-
-            //The result will be the same. p = c - mZc * q, and we need to compensate for the minus term by multiplying with 2
-            //The two equations bellow are apperantly more convenient however
-
-            double c10 = c2 + 2.0*mZc * q2;     //These two equations are from old Hopsan
-            double c20 = c1 + 2.0*mZc * q1;
+            c10 = c2 + 2.0*mZc * q2;     //These two equations are from old Hopsan
+            c20 = c1 + 2.0*mZc * q1;
 
             c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
             c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
 
-//            if ((mTime>tid1) && (mTime<tid2) && (debug > 0.5))
-//                std::cout << this->getName() << ": " << "mTime: " << mTime << "   p1: " << p1 << "   c1: " << c1 << "   q1: " << q1 << "   mZc: " << mZc << "   p2: " << p2 << "   c2: " << c2 << "   q2: " << q2 << std::endl;
-
             //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
-            mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
+            (*mpND_c1) = c1;
+            (*mpND_Zc1) = mZc;
+            (*mpND_c2) = c2;
+            (*mpND_Zc2) = mZc;
         }
 
         void finalize()

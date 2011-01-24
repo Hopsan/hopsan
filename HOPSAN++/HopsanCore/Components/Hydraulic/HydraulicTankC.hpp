@@ -24,6 +24,9 @@ namespace hopsan {
     private:
         double mZc;
         double mPressure;
+
+        double *mpND_p, *mpND_c, *mpND_Zc;
+
         Port *mpP1;
 
     public:
@@ -49,18 +52,21 @@ namespace hopsan {
 
         void initialize()
         {
+            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+
             //Override the start value
-            mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
+            (*mpND_p) = mPressure;
+            (*mpND_c) = mPressure;
+            (*mpND_Zc) = mZc;
             setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure); //Change the startvalue to notify the user
         }
 
 
         void simulateOneTimestep()
         {
-
-            //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mPressure);
-            mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
+            //Nothing will change
         }
 
         void finalize()

@@ -26,6 +26,9 @@ namespace hopsan {
         double mAlpha;
         double mVolume;
         double mBulkmodulus;
+
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_Zc3;
+
         Port *mpP1, *mpP2, *mpP3;
 
     public:
@@ -63,62 +66,75 @@ namespace hopsan {
 
         void initialize()
         {
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+
+            mpND_p3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::PRESSURE);
+            mpND_q3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::FLOW);
+            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::CHARIMP);
 
             mZc = 3 / 2 * mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP1,NodeHydraulic::FLOW));
-            mpP1->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP1,NodeHydraulic::PRESSURE));
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW));
-            mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP2,NodeHydraulic::FLOW));
-            mpP2->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP2,NodeHydraulic::PRESSURE));
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW));
-            mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP3->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP3,NodeHydraulic::FLOW));
-            mpP3->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP3,NodeHydraulic::PRESSURE));
-            mpP3->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP3,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP3,NodeHydraulic::FLOW));
-            mpP3->writeNode(NodeHydraulic::CHARIMP,      mZc);
+            (*mpND_q1) = getStartValue(mpP1,NodeHydraulic::FLOW);
+            (*mpND_p1) = getStartValue(mpP1,NodeHydraulic::PRESSURE);
+            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW);
+            (*mpND_Zc1) = mZc;
+            (*mpND_q2) = getStartValue(mpP2,NodeHydraulic::FLOW);
+            (*mpND_p2) = getStartValue(mpP2,NodeHydraulic::PRESSURE);
+            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW);
+            (*mpND_Zc2) = mZc;
+            (*mpND_q3) = getStartValue(mpP3,NodeHydraulic::FLOW);
+            (*mpND_p3) = getStartValue(mpP3,NodeHydraulic::PRESSURE);
+            (*mpND_c3) = getStartValue(mpP3,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP3,NodeHydraulic::FLOW);
+            (*mpND_Zc3) = mZc;
         }
 
 
         void simulateOneTimestep()
         {
+            //Declare local variables
+            double q1, c1, Zc1, q2, c2, Zc2,q3, c3, Zc3, pMean, c10, c20, c30;
 
-            //Get variable values from nodes
-            //double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q1  = mpP1->readNode(NodeHydraulic::FLOW);
-            double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-            //double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
-            double q2  = mpP2->readNode(NodeHydraulic::FLOW);
-            double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
-            //double p3  = mpP3->readNode(NodeHydraulic::PRESSURE);
-            double q3  = mpP3->readNode(NodeHydraulic::FLOW);
-            double c3  = mpP3->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zc3 = mpP3->readNode(NodeHydraulic::CHARIMP);
+            //Read variables from nodes
+            q1 = (*mpND_q1);
+            c1 = (*mpND_c1);
+            Zc1 = (*mpND_Zc2);
+            q2 = (*mpND_q2);
+            c2 = (*mpND_c2);
+            Zc2 = (*mpND_Zc2);
+            q3 = (*mpND_q3);
+            c3 = (*mpND_c3);
+            Zc3 = (*mpND_Zc3);
 
             //Volume equations
 
-            double pMean = ((c1 + Zc1 * 2 * q1) + (c2 + Zc2 * 2 * q2) + (c3 + Zc3 * 2 * q3)) / 3;
+            pMean = ((c1 + Zc1 * 2 * q1) + (c2 + Zc2 * 2 * q2) + (c3 + Zc3 * 2 * q3)) / 3;
 
-            double c10 = pMean * 2 - c1 - 2 * Zc1 * q1;
+            c10 = pMean * 2 - c1 - 2 * Zc1 * q1;
             c1 = mAlpha * c1 + (1.0 - mAlpha)*c10 + (Zc1 - mZc)*q1;
 
-            double c20 = pMean * 2 - c2 - 2 * Zc2 * q2;
+            c20 = pMean * 2 - c2 - 2 * Zc2 * q2;
             c2 = mAlpha * c2 + (1.0 - mAlpha)*c20 + (Zc2 - mZc)*q2;
 
-            double c30 = pMean * 2 - c3 - 2 * Zc3 * q3;
+            c30 = pMean * 2 - c3 - 2 * Zc3 * q3;
             c3 = mAlpha * c3 + (1.0 - mAlpha)*c30 + (Zc3 - mZc)*q3;
 
             //Write new values to nodes
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
-            mpP3->writeNode(NodeHydraulic::WAVEVARIABLE, c3);
-            mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP3->writeNode(NodeHydraulic::CHARIMP,      mZc);
+            (*mpND_c1) = c1;
+            (*mpND_c2) = c2;
+            (*mpND_c3) = c3;
+            (*mpND_Zc1) = mZc;
+            (*mpND_Zc2) = mZc;
+            (*mpND_Zc3) = mZc;
         }
 
         void finalize()

@@ -27,6 +27,7 @@ namespace hopsan {
     {
 
     private:
+        double cp1, cp2, cp1e, cp2e;
         double alfa, wfak, betae, je, v1, v2, dp, cim, bm;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3,*mpND_c3, *mpND_Zx3, *mpND_eps;
@@ -138,11 +139,9 @@ namespace hopsan {
             (*mpND_p1) = p1;
             (*mpND_q1) = q1;
             (*mpND_c1) = c1;
-            (*mpND_Zc1) = Zc1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
             (*mpND_c2) = c2;
-            (*mpND_Zc2) = Zc2;
             (*mpND_t3) = t3;
             (*mpND_a3) = a3;
             (*mpND_w3) = w3;
@@ -153,16 +152,18 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare Local variables
-            double r1, r2, cp10e, cp20e, v1min, v2min, ka, ap, c1e, c2e, cp1, cp2, p1e, ct1, ct2, p2e,
-                   v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, zc01, zc02, dpr, wp, cp1e, cp2e, ct1e,
+            double cp10e, cp20e, v1min, v2min, ka, ap, c1e, c2e, p1e, ct1, ct2, p2e,
+                   v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, zc01, zc02, dpr, wp, ct1e,
                    ct2e, pm1e, pm2e, pp1e, qp1e, qp2e, pp2e;
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
 
             //Read input variables from nodes
             p1 = (*mpND_p1);
             q1 = (*mpND_q1);
+            c1 = (*mpND_c1);
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
+            c2 = (*mpND_c2);
             t3 = (*mpND_t3);
             a3 = (*mpND_a3);
             w3 = (*mpND_w3);
@@ -172,7 +173,9 @@ namespace hopsan {
             v1e = std::max(v1,v1min);
             v2e = std::max(v2,v2min);
 
+            dpr = dp / (pi * 2);
             dpe = dpr * eps;    //Effective displacement
+            ka = 1 / (1 - alfa);
             ap = -a3;
             wp = -w3;
             zc01 = 2*ka*betae*mTimestep / (2*v1e);

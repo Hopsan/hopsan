@@ -1,3 +1,13 @@
+//!
+//! @file   Hydraulic22Valve.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-12-20
+//!
+//! @brief Contains a pressure controlled pump with second order dynamics
+//! Written by Petter Krus 9005617
+//! Translated to HOPSAN NG by Robert Braun 101220
+//!
+
 #ifndef HYDRAULICPRESSURECONTROLLEDPUMP_HPP_INCLUDED
 #define HYDRAULICPRESSURECONTROLLEDPUMP_HPP_INCLUDED
 

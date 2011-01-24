@@ -4,6 +4,8 @@
 //! @date   2010-01-12
 //!
 //! @brief Contains a Hydraulic Ackumulator component with constant bulk modulus
+//! Written by Magnus Sethson 910905
+//! Translated to HOPSAN NG by Robert Braun 100112
 //!
 //$Id$
 

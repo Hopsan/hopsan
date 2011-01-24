@@ -4,6 +4,7 @@
 //! @date   2010-01-22
 //!
 //! @brief Alternative version of pressure relief valve with first order dynamics
+//! Only for temporary use in comparision between HOPSAN NG and Modelica. Not to be used in release versions of HOPSAN NG!
 //!
 //$Id$
 
