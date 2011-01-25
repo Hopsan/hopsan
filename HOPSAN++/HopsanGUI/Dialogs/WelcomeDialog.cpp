@@ -179,7 +179,10 @@ void WelcomeDialog::createNewModel()
 void WelcomeDialog::loadExistingModel()
 {
     gpMainWindow->mpProjectTabs->loadModel();
-    gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    if(gpMainWindow->mpProjectTabs->count() > 0)
+    {
+        gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    }
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     this->close();
 }
