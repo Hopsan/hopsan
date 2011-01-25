@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2828" y="2607" zoom="1"/>
+            <viewport x="2500" y="2500" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="ls_example">
                     <icon isopath="subsystemtmp.svg" iconrotation="" userpath=""/>

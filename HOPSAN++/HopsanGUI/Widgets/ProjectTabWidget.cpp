@@ -259,13 +259,17 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                              fileDialogSaveDir.currentPath() + QString(MODELPATH),
                                                              tr("Hopsan Model Files (*.hmf)"));
+
+        if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
+        {
+            return;
+        }
         mpSystem->mModelFileInfo.setFile(modelFilePath);
     }
 
     QFile file(mpSystem->mModelFileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " + mpSystem->mModelFileInfo.filePath();
         return;
     }
 
@@ -285,7 +289,6 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     QFile xmlhmf(mpSystem->mModelFileInfo.filePath());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " << mpSystem->mModelFileInfo.filePath() << "x";
         return;
     }
     QTextStream out(&xmlhmf);
