@@ -52,7 +52,9 @@ namespace hopsan {
 
         void initialize()
         {
+
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, mPressure);
+            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
             mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 

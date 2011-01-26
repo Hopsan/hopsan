@@ -33,6 +33,15 @@
 #include <float.h>
 #include <QDomElement>
 
+
+//! @brief Construtor for container objects.
+//! @param position Initial position where container object is to be placed in its parent container
+//! @param rotation Initial rotation of the object
+//! @param pAppearanceData Pointer to the appearance data object
+//! @param startSelected Tells whether or not the object is initially selected
+//! @param gfxType Tells whether the initial graphics shall be user or ISO
+//! @param pParentContainer Pointer to the parent container object (leave empty if not a sub container)
+//! @param pParent Pointer to parent object
 GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
@@ -59,6 +68,8 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)), Qt::UniqueConnection);
 }
 
+
+//! @brief Destructor for container object
 GUIContainerObject::~GUIContainerObject()
 {
     qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
@@ -305,6 +316,7 @@ void GUIContainerObject::calcSubsystemPortPosition(const double w, const double 
     }
 }
 
+
 //! @brief Returns a pointer to the CoreSystemAccess that this container represents
 //! @returns Pointer the the CoreSystemAccess that this container represents
 CoreSystemAccess *GUIContainerObject::getCoreSystemAccessPtr()
@@ -312,6 +324,7 @@ CoreSystemAccess *GUIContainerObject::getCoreSystemAccessPtr()
     //Should be overloaded
     return 0;
 }
+
 
 //! @brief Retunrs a pointer to the contained scene
 QGraphicsScene *GUIContainerObject::getContainedScenePtr()
@@ -326,6 +339,7 @@ void GUIContainerObject::createPorts()
     //This one should not be used in this class only for component and containerport
     assert(false);
 }
+
 
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
@@ -385,6 +399,7 @@ void GUIContainerObject::createExternalPort(QString portName)
     }
 }
 
+
 //! @breif Removes an external Port from a container object
 //! @param[in] portName The name of the port to be removed
 //! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
@@ -405,6 +420,7 @@ void GUIContainerObject::removeExternalPort(QString portName)
     }
     //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
 }
+
 
 //! @brief Reanmes an external GUIPort
 //! @param[in] oldName The name to be replaced
@@ -428,6 +444,7 @@ void GUIContainerObject::renameExternalPort(const QString oldName, const QString
         }
     }
 }
+
 
 //! @brief Creates and adds a GuiModel Object to the current container
 //! @param componentType is a string defining the type of component.
@@ -513,12 +530,18 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
 }
 
 
+//! @brief Returns a list with the favorite plot parameters.
 QList<QStringList> GUIContainerObject::getFavoriteParameters()
 {
     return mFavoriteParameters;
 }
 
 
+//! @brief Defines a new favorite plot parameter
+//! @param componentName Name of the component where the parameter is located
+//! @param portName Name of the port where the parameter is located
+//! @param dataName Name of the parameter
+//! @param dataUnit Unit of the parameter
 void GUIContainerObject::setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     QStringList tempParameter;
@@ -536,6 +559,8 @@ void GUIContainerObject::setFavoriteParameter(QString componentName, QString por
 }
 
 
+//! @brief Removes all favorite parameters which belongs to the specified component.
+//! @param componentName Name of the component
 void GUIContainerObject::removeFavoriteParameterByComponentName(QString componentName)
 {
     QList<QStringList>::iterator it;
@@ -556,6 +581,9 @@ void GUIContainerObject::removeFavoriteParameterByComponentName(QString componen
 }
 
 
+//! @brief Inserts a new text widget to the container
+//! @param position Initial position of the widget
+//! @param undoSettings Tells whether or not this shall be registered in the undo stack
 void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
 {
     GUITextWidget *tempTextWidget;
@@ -571,6 +599,9 @@ void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
 }
 
 
+//! @brief Inserts a new box widget to the container
+//! @param position Initial position of the widget
+//! @param undoSettings Tells whether or not this shall be registered in the undo stack
 void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 {
     GUIBoxWidget *tempBoxWidget;
@@ -586,7 +617,7 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 }
 
 
-//! Delete GUIObject with specified name
+//! @brief Delete GUIObject with specified name
 //! @param objectName is the name of the componenet to delete
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
@@ -635,7 +666,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
 }
 
 
-//! This function is used to rename a SubGUIObject
+//! @brief This function is used to rename a SubGUIObject
 void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings)
 {
     //Avoid work if no change is requested
@@ -691,7 +722,7 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
 }
 
 
-//! Tells whether or not a component with specified name exist in the GraphicsView
+//! @brief Tells whether or not a component with specified name exist in the GraphicsView
 bool GUIContainerObject::hasGUIModelObject(QString name)
 {
     return (mGUIModelObjectMap.count(name) > 0);
@@ -835,7 +866,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
 }
 
 
-//! Returns a pointer to the component with specified name.
+//! @brief Returns a pointer to the component with specified name.
 GUIModelObject *GUIContainerObject::getGUIModelObject(QString name)
 {
     if(!mGUIModelObjectMap.contains(name))
@@ -901,7 +932,7 @@ bool GUIContainerObject::hasConnector(QString startComp, QString startPort, QStr
 }
 
 
-//! Removes the connector from the model.
+//! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
 void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus undoSettings)
@@ -977,7 +1008,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
 
 
 
-//! Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
+//! @brief Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings)
@@ -1051,7 +1082,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
      }
 }
 
-//! Copies the selected components, and then deletes them.
+//! @brief Copies the selected components, and then deletes them.
 //! @see copySelected()
 //! @see paste()
 void GUIContainerObject::cutSelected(CopyStack *xmlStack)
@@ -1063,7 +1094,7 @@ void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 }
 
 
-//! Puts the selected components in the copy stack, and their positions in the copy position stack.
+//! @brief Puts the selected components in the copy stack, and their positions in the copy position stack.
 //! @see cutSelected()
 //! @see paste()
 void GUIContainerObject::copySelected(CopyStack *xmlStack)
@@ -1121,7 +1152,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 }
 
 
-//! Creates each item in the copy stack, and places it on its respective position in the position copy stack.
+//! @brief Creates each item in the copy stack, and places it on its respective position in the position copy stack.
 //! @see cutSelected()
 //! @see copySelected()
 void GUIContainerObject::paste(CopyStack *xmlStack)
@@ -1252,6 +1283,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 }
 
 
+//! @brief Aligns all selected objects vertically to the last selected object.
 void GUIContainerObject::alignX()
 {
     if(mSelectedGUIModelObjectsList.size() > 1)
@@ -1269,6 +1301,7 @@ void GUIContainerObject::alignX()
 }
 
 
+//! @brief Aligns all selected objects horizontally to the last selected object.
 void GUIContainerObject::alignY()
 {
     if(mSelectedGUIModelObjectsList.size() > 1)
@@ -1285,6 +1318,8 @@ void GUIContainerObject::alignY()
     }
 }
 
+
+//! @brief Calculates the geometrical center position of the selected objects.
 QPointF GUIContainerObject::getCenterPointFromSelection()
 {
     double sumX = 0;
@@ -1307,7 +1342,7 @@ QPointF GUIContainerObject::getCenterPointFromSelection()
 }
 
 
-//! Groups the selected objects together
+//! @brief Groups the selected objects together.
 void GUIContainerObject::groupSelected(QPointF pt)
 {
     gpMainWindow->mpMessageWidget->printGUIWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
@@ -1362,7 +1397,7 @@ void GUIContainerObject::groupSelected(QPointF pt)
 }
 
 
-//! Selects all objects and connectors.
+//! @brief Selects all objects and connectors.
 void GUIContainerObject::selectAll()
 {
     emit selectAllGUIObjects();
@@ -1370,7 +1405,7 @@ void GUIContainerObject::selectAll()
 }
 
 
-//! Deselects all objects and connectors.
+//! @brief Deselects all objects and connectors.
 void GUIContainerObject::deselectAll()
 {
     emit deselectAllGUIObjects();
@@ -1378,7 +1413,7 @@ void GUIContainerObject::deselectAll()
 }
 
 
-//! Hides all component names.
+//! @brief Hides all component names.
 //! @see showNames()
 void GUIContainerObject::hideNames()
 {
@@ -1389,7 +1424,7 @@ void GUIContainerObject::hideNames()
 }
 
 
-//! Shows all component names.
+//! @brief Shows all component names.
 //! @see hideNames()
 void GUIContainerObject::showNames()
 {
@@ -1398,14 +1433,14 @@ void GUIContainerObject::showNames()
 }
 
 
-//! Slot that sets hide ports flag to true or false
+//! @brief Slot that sets hide ports flag to true or false
 void GUIContainerObject::hidePorts(bool doIt)
 {
     mPortsHidden = doIt;
 }
 
 
-//! Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
+//! @brief Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
 //! @see redo()
 //! @see clearUndo()
 void GUIContainerObject::undo()
@@ -1414,7 +1449,7 @@ void GUIContainerObject::undo()
 }
 
 
-//! Slot that tells the mUndoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! @brief Slot that tells the mUndoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see clearUndo()
 void GUIContainerObject::redo()
@@ -1422,7 +1457,7 @@ void GUIContainerObject::redo()
     mUndoStack->redoOneStep();
 }
 
-//! Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! @brief Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see redo()
 void GUIContainerObject::clearUndo()
@@ -1431,30 +1466,36 @@ void GUIContainerObject::clearUndo()
 }
 
 
-//! Returns true if at least one GUIObject is selected
+//! @brief Returns true if at least one GUIObject is selected
 bool GUIContainerObject::isObjectSelected()
 {
     return (mSelectedGUIModelObjectsList.size() > 0);
 }
 
 
-//! Returns true if at least one GUIConnector is selected
+//! @brief Returns true if at least one GUIConnector is selected
 bool GUIContainerObject::isConnectorSelected()
 {
     return (mSelectedSubConnectorsList.size() > 0);
 }
 
+
+//! @brief Returns the path to the icon with user graphics.
 QString GUIContainerObject::getUserIconPath()
 {
     return this->mGUIModelObjectAppearance.getIconPathUser();
 }
 
+
+//! @brief Returns the path to the icon with iso graphics.
 //! @todo do we return full path or relative
 QString GUIContainerObject::getIsoIconPath()
 {
     return this->mGUIModelObjectAppearance.getIconPathISO();
 }
 
+
+//! @brief Sets the path to the icon with user graphics.
 //! @todo do we safe full path or relative
 void GUIContainerObject::setUserIconPath(QString path)
 {
@@ -1464,6 +1505,8 @@ void GUIContainerObject::setUserIconPath(QString path)
     this->mGUIModelObjectAppearance.setBaseIconPath(fi.absolutePath()+"/");
 }
 
+
+//! @brief Sets the path to the icon with iso graphics.
 void GUIContainerObject::setIsoIconPath(QString path)
 {
     QFileInfo fi;
@@ -1472,7 +1515,8 @@ void GUIContainerObject::setIsoIconPath(QString path)
     this->mGUIModelObjectAppearance.setBaseIconPath(fi.absolutePath()+"/");
 }
 
-//! Access function for mIsCreatingConnector
+
+//! @brief Access function for mIsCreatingConnector
 //! @param isConnected is the new value
 void GUIContainerObject::setIsCreatingConnector(bool isCreatingConnector)
 {
@@ -1480,7 +1524,7 @@ void GUIContainerObject::setIsCreatingConnector(bool isCreatingConnector)
 }
 
 
-//! Access function for mIsCreatingConnector
+//! @brief Access function for mIsCreatingConnector
 bool GUIContainerObject::getIsCreatingConnector()
 {
     return mIsCreatingConnector;
@@ -1496,7 +1540,7 @@ void GUIContainerObject::forgetContainedConnector(GUIConnector *pConnector)
 }
 
 
-//! Disables the undo function for the current model
+//! @brief Disables the undo function for the current model
 void GUIContainerObject::disableUndo()
 {
     if(!mUndoDisabled)
@@ -1527,7 +1571,7 @@ void GUIContainerObject::disableUndo()
 }
 
 
-//! Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
+//! @brief Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
 void GUIContainerObject::updateUndoStatus()
 {
     if(mUndoDisabled)
@@ -1542,7 +1586,7 @@ void GUIContainerObject::updateUndoStatus()
     }
 }
 
-//! Sets the iso graphics option for the model
+//! @brief Sets the iso graphics option for the model
 void GUIContainerObject::setGfxType(graphicsType gfxType)
 {
     this->mGfxType = gfxType;
@@ -1557,12 +1601,14 @@ void GUIContainerObject::openPropertiesDialogSlot()
 }
 
 
-//! Slot that tells all selected name texts to deselect themselves
+//! @brief Slot that tells all selected name texts to deselect themselves
 void GUIContainerObject::deselectSelectedNameText()
 {
     emit deselectAllNameText();
 }
 
+
+//! @brief Defines the right click menu for container objects.
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
 void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
@@ -1601,19 +1647,23 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     ////QGraphicsItem::contextMenuEvent(event);
 }
 
+
+//! @brief Defines the double click event for container objects (used to enter containers).
 void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIModelObject::mouseDoubleClickEvent(event);
     this->enterContainer();
 }
 
-//! @brief Opens the properites dialog for container objects
+
+//! @brief Opens the properites dialog for container objects.
 void GUIContainerObject::openPropertiesDialog()
 {
     //Do Nothing
 }
 
-//! @brief Clears all of the contained objects (and delets them)
+
+//! @brief Clears all of the contained objects (and delets them).
 //! This code cant be run in the desturctor as this wold cause wired behaviour in the derived susyem class.
 //! The core system would be deleted before container clear code is run, that is why we have it as a convenient protected function
 void GUIContainerObject::clearContents()
@@ -1640,7 +1690,8 @@ void GUIContainerObject::clearContents()
     }
 }
 
-//! @brief Enters a container object and maks the view represent it contents
+
+//! @brief Enters a container object and maks the view represent it contents.
 void GUIContainerObject::enterContainer()
 {
     //First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
@@ -1685,7 +1736,7 @@ void GUIContainerObject::enterContainer()
     gpMainWindow->redoAction->setDisabled(this->mUndoDisabled);
 }
 
-//! @brief Exit a container object and maks its the view represent its parents contents
+//! @brief Exit a container object and maks its the view represent its parents contents.
 void GUIContainerObject::exitContainer()
 {
     this->deselectAll();

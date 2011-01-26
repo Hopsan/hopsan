@@ -54,10 +54,10 @@ namespace hopsan {
             Cf = 1/(Kcf * sqrt(pnom));
             x0max = qnom/sqrt(pnom);
 
-            addPowerPort("P1", "NodeHydraulic");
-            addPowerPort("P2", "NodeHydraulic");
-            addPowerPort("P_OPEN", "NodeHydraulic");
-            addPowerPort("P_CLOSE", "NodeHydraulic");
+            mpP1 = addPowerPort("P1", "NodeHydraulic");
+            mpP2 = addPowerPort("P2", "NodeHydraulic");
+            mpP_OPEN = addPowerPort("P_OPEN", "NodeHydraulic");
+            mpP_CLOSE = addPowerPort("P_CLOSE", "NodeHydraulic");
 
             registerParameter("pref", "Reference Opening Pressure", "[Pa]", pref);
             registerParameter("tao", "Time Constant of Spool", "[s]", tao);
