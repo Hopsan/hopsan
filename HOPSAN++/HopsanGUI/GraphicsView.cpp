@@ -502,9 +502,9 @@ void GraphicsView::exportToPDF()
         //Some bug or "feature" makes small objects be converted to bitmaps (ugly)
         //! @todo Try to find out why this happens (se comment above)
         QPrinter *printer = new QPrinter(QPrinter::HighResolution);
-        printer->setPaperSize(QPrinter::A0);
+        printer->setPaperSize(QPrinter::A4);
         printer->setOrientation(QPrinter::Landscape);
-        printer->setFullPage(true);
+        printer->setFullPage(false);
         printer->setOutputFormat(QPrinter::PdfFormat);
         printer->setOutputFileName(fileName);
         QPainter *painter = new QPainter(printer);

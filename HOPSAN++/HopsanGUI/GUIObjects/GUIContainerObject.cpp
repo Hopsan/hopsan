@@ -80,6 +80,8 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
     connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
     connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
+    connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()), Qt::UniqueConnection);
+    connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()), Qt::UniqueConnection);
     connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
     connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
@@ -108,6 +110,8 @@ void GUIContainerObject::disconnectMainWindowActions()
     disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
     disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
+    disconnect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()));
+    disconnect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()));
     disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
 
     disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
@@ -1248,6 +1252,39 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 }
 
 
+void GUIContainerObject::alignX()
+{
+    if(mSelectedGUIModelObjectsList.size() > 1)
+    {
+        mUndoStack->newPost("alignx");
+        for(size_t i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
+        {
+            QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
+            mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.last()->getCenterPos().x(), mSelectedGUIModelObjectsList.at(i)->getCenterPos().y()));
+            QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
+            mUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
+        }
+        mpParentProjectTab->hasChanged();
+    }
+}
+
+
+void GUIContainerObject::alignY()
+{
+    if(mSelectedGUIModelObjectsList.size() > 1)
+    {
+        mUndoStack->newPost("aligny");
+        for(size_t i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
+        {
+            QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
+            mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.at(i)->getCenterPos().x(), mSelectedGUIModelObjectsList.last()->getCenterPos().y()));
+            QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
+            mUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
+        }
+        mpParentProjectTab->hasChanged();
+    }
+}
+
 QPointF GUIContainerObject::getCenterPointFromSelection()
 {
     double sumX = 0;
@@ -1672,6 +1709,8 @@ void GUIContainerObject::exitContainer()
     connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
     connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
     connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
+    connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignX()));
+    connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignY()));
     connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
     connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
     connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));

@@ -109,6 +109,8 @@ public:
     QAction *hidePortsAction;
     QAction *showPortsAction;
     QAction *exportPDFAction;
+    QAction *alignXAction;
+    QAction *alignYAction;
     QAction *aboutAction;
 
     //Set and get methods for simulation parameters in toolbar

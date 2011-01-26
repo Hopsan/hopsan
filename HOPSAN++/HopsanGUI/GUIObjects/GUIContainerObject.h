@@ -122,6 +122,9 @@ public slots:
     void cutSelected(CopyStack *xmlStack = 0);
     void copySelected(CopyStack *xmlStack = 0);
     void paste(CopyStack *xmlStack = 0);
+        //Align
+    void alignX();
+    void alignY();
         //UndoRedo
     void undo();
     void redo();

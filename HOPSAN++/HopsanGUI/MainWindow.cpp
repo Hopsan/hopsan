@@ -414,6 +414,12 @@ void MainWindow::createActions()
     exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
     exportPDFAction->setText("Export Model to PDF");
 
+    alignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
+    alignXAction->setText("Align Vertical");
+
+    alignYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignY.png"), tr("&Align Horizontal (by last selected)"), this);
+    alignYAction->setText("Align Horizontal");
+
     aboutAction = new QAction(this);
     aboutAction->setText("About");
     connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
@@ -565,6 +571,8 @@ void MainWindow::createToolbars()
     mpViewToolBar->addAction(showNamesAction);
     mpViewToolBar->addAction(hidePortsAction);
     mpViewToolBar->addAction(exportPDFAction);
+    mpViewToolBar->addAction(alignXAction);
+    mpViewToolBar->addAction(alignYAction);
 
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
     mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -649,6 +657,8 @@ void MainWindow::updateToolBarsToNewTab()
     showNamesAction->setEnabled(!noTabs);
     hidePortsAction->setEnabled(!noTabs);
     exportPDFAction->setEnabled(!noTabs);
+    alignXAction->setEnabled(!noTabs);
+    alignYAction->setEnabled(!noTabs);
     mpStartTimeLineEdit->setEnabled(!noTabs);
     mpTimeStepLineEdit->setEnabled(!noTabs);
     mpFinishTimeLineEdit->setEnabled(!noTabs);
