@@ -89,7 +89,7 @@ namespace hopsan {
             double p1, q1, c1, p2, q2, c2, c10, c20;
 
             //Get variable values from nodes
-            p2 = (*mpND_p2);
+            q1 = (*mpND_q1);
             q2 = (*mpND_q2);
             c1 = (*mpND_c1);
             c2 = (*mpND_c2);

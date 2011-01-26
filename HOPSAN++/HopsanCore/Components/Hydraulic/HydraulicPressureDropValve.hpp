@@ -1,17 +1,14 @@
 //!
-//! @file   HydraulicPressureReliefValve.hpp
+//! @file   HydraulicPressureDropValve.hpp
 //! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-01-22
+//! @date   2011-01-26
 //!
-//! @brief Contains a hydraulic pressure relief valve with first order dynamics
-//! Written by Petter Krus 901015
-//! Revised by Petter Krus 920324
-//! Translated to HOPSAN NG by Robert Braun 100122
+//! @brief Contains a hydraulic pressure drop valve with first order dynamics
 
-//$Id$
+//$Id: HydraulicPressureDropValve.hpp 2503 2011-01-24 07:48:09Z robbr48 $
 
-#ifndef HYDRAULICPRESSURERELIEFVALVE_HPP_INCLUDED
-#define HYDRAULICPRESSURERELIEFVALVE_HPP_INCLUDED
+#ifndef HYDRAULICPRESSUREDROPVALVE_HPP_INCLUDED
+#define HYDRAULICPRESSUREDROPVALVE_HPP_INCLUDED
 
 #include <iostream>
 #include "../../ComponentEssentials.h"
@@ -23,7 +20,7 @@ namespace hopsan {
     //! @brief A Hydraulic Pressure Releife Valve
     //! @ingroup HydraulicComponents
     //!
-    class HydraulicPressureReliefValve : public ComponentQ
+    class HydraulicPressureDropValve : public ComponentQ
     {
     private:
         double x0, pref, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, ph, x0max;
@@ -39,12 +36,12 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPressureReliefValve("PressureReliefValve");
+            return new HydraulicPressureDropValve("PressureDropValve");
         }
 
-        HydraulicPressureReliefValve(const std::string name) : ComponentQ(name)
+        HydraulicPressureDropValve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicPressureReliefValve";
+            mTypeName = "HydraulicPressureDropValve";
             pref = 2000000;
             tao = 0.01;
             Kcs = 0.00000001;
@@ -157,7 +154,7 @@ namespace hopsan {
             }
 
             // Calculation of spool position
-            xs = (gamma*(c1) + b2*x0/2.0 - pref) / (b1+b2);
+            xs = (gamma*(c1-c2) + b2*x0/2.0 - pref) / (b1+b2);
 
             //Hysteresis
             xh = ph / (b1+b2);                                  //Hysteresis width [m]
@@ -193,7 +190,7 @@ namespace hopsan {
             }
             if (cav)
             {
-                xs = (c1 + b2*x0/2.0 - pref) / (b1+b2);
+                xs = (c1-c2 + b2*x0/2.0 - pref) / (b1+b2);
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
                 x0 = mFilterLP.value();        //! @todo How is this supposed to work? It is not possible to use the same filter twice in the same timesteps with different input values...
 
@@ -218,4 +215,4 @@ namespace hopsan {
     };
 }
 
-#endif // HYDRAULICPRESSURERELIEFVALVE_HPP_INCLUDED
+#endif // HYDRAULICPRESSUREDROPVALVE_HPP_INCLUDED

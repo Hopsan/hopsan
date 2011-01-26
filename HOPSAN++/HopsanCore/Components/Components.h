@@ -37,6 +37,8 @@
 #include "Hydraulic/HydraulicCylinderC.hpp"
 #include "Hydraulic/HydraulicCylinderQ.hpp"
 #include "Hydraulic/HydraulicPressureReliefValve.hpp"
+#include "Hydraulic/HydraulicPressureReducingValve.hpp"
+#include "Hydraulic/HydraulicPressureDropValve.hpp"
 #include "Hydraulic/HydraulicSubSysExample.hpp"
 #include "Hydraulic/HydraulicTankC.hpp"
 #include "Hydraulic/HydraulicFixedDisplacementMotorQ.hpp"
