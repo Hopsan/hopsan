@@ -37,6 +37,7 @@ namespace hopsan {
         HydraulicPressureSourceQ(const std::string name) : ComponentQ(name)
         {
             mTypeName = "HydraulicPressureSourceQ";
+            p = 1e5;
 
             mpIn = addReadPort("in", "NodeSignal",  Port::NOTREQUIRED);
             mpP1 = addPowerPort("P1", "NodeHydraulic");

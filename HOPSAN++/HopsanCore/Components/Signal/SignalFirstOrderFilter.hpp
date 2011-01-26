@@ -24,8 +24,8 @@ namespace hopsan {
 
     private:
         FirstOrderFilter mFilter;
-        double mWnum, mWden, mK;
-        double mMin, mMax;
+        double wnum, wden, k;
+        double min, max;
         double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
 
@@ -38,20 +38,20 @@ namespace hopsan {
         SignalFirstOrderFilter(const std::string name) : ComponentSignal(name)
         {
             mTypeName = "SignalFirstOrderFilter";
-
-            mMin = -1.5E+300;
-            mMax = 1.5E+300;
-            mWnum = 1E+10;
-            mWden = 1000.0;
+            k = 1;
+            min = -1.5E+300;
+            max = 1.5E+300;
+            wnum = 1E+10;
+            wden = 1000.0;
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("k", "Gain", "-", mK);
-            registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
-            registerParameter("wden", "Denominator break frequency", "rad/s", mWden);
-            registerParameter("min", "Output Lower limit", "-", mMin);
-            registerParameter("max", "Output Upper limit", "-", mMax);
+            registerParameter("k", "Gain", "-", k);
+            registerParameter("wnum", "Numerator break frequency", "rad/s", wnum);
+            registerParameter("wden", "Denominator break frequency", "rad/s", wden);
+            registerParameter("min", "Output Lower limit", "-", min);
+            registerParameter("max", "Output Upper limit", "-", max);
         }
 
 
@@ -63,12 +63,12 @@ namespace hopsan {
             double num[2];
             double den[2];
 
-            num[0] = mK/mWnum;
-            num[1] = mK;
-            den[0] = 1.0/mWden;
+            num[0] = k/wnum;
+            num[1] = k;
+            den[0] = 1.0/wden;
             den[1] = 1.0;
 
-            mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
+            mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), min, max);
 
             (*mpND_out) = (*mpND_in);
         }

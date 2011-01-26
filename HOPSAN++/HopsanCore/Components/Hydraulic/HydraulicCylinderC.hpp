@@ -82,6 +82,9 @@ class HydraulicCylinderC : public ComponentC
             registerParameter("bp", "Damping Coefficient", "[Ns/m]", bp);
             registerParameter("betae", "Bulk Modulus", "[Pa]", betae);
             registerParameter("cLeak", "Leakage Coefficient", "-", cLeak);
+
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
+            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
         }
 
 

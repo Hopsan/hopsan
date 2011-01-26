@@ -69,6 +69,9 @@ namespace hopsan {
             registerParameter("dp", "Displacement", "[m^3/rev]", dp);
             registerParameter("cim", "Leakage coefficient", "[-]", cim);
             registerParameter("bm", "Viscous friction coefficient", "[Pa]", bm);
+
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
+            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
         }
 
 
