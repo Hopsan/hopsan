@@ -798,7 +798,7 @@ void GUIConnector::makeDiagonal(bool enable)
                 }
 
             }
-            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
         }
         else    //Only one (diagonal) line exist, so special solution is required
         {
