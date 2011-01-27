@@ -1494,6 +1494,7 @@ void ComponentSystem::sortSignalComponentVector()
                 for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
                 {
                     if(((*itp)->getPortType() == Port::READPORT) &&
+                       ((*itp)->isConnected()) &&
                        (!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr())) &&
                        ((*itp)->getNodePtr()->getWritePortComponentPtr() != 0) &&
                        ((*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent == this))

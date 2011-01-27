@@ -73,6 +73,9 @@ public slots:
 
 private:
 
+    bool mHasLeftCurve;
+    bool mHasRightCurve;
+
     QVector<QwtPlotCurve *> mpCurves;
     QList<QStringList> mCurveParameters;
     QStringList mSpecialXParameter;
@@ -89,6 +92,7 @@ private:
     QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
     QwtPlotCurve *tempCurve;
     QwtPlotZoomer *mpZoomer;
+    QwtPlotZoomer *mpZoomerRight;
     QwtPlotMagnifier *mpMagnifier;
     QwtPlotPanner *mpPanner;
     int mCurrentGeneration;

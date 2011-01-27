@@ -46,6 +46,9 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     this->setAcceptDrops(true);
     resize(700,600);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
 
+    mHasLeftCurve = false;
+    mHasRightCurve = false;
+
     //mpParentMainWindow = parent;
     mpCurrentGUISystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     mpPlotParameterTree = plotParameterTree;
@@ -228,7 +231,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpPanner->setMouseButton(Qt::MidButton);
 
         //Rubber Band Zoom
-    mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
+    mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());      //Zoomer for left y axis
     mpZoomer->setMaxStackDepth(10000);
     mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
     mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
@@ -238,8 +241,19 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
 
+    mpZoomerRight = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpVariablePlot->canvas());   //Zoomer for right y axis
+    mpZoomerRight->setMaxStackDepth(10000);
+    mpZoomerRight->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
+    mpZoomerRight->setRubberBandPen(QColor(Qt::green));
+    mpZoomerRight->setTrackerMode(QwtPicker::ActiveOnly);
+    mpZoomerRight->setTrackerPen(QColor(Qt::white));
+    mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+
         //Wheel Zoom
     mpMagnifier = new QwtPlotMagnifier(mpVariablePlot->canvas());
+    mpMagnifier->setAxisEnabled(QwtPlot::yLeft, true);
+    mpMagnifier->setAxisEnabled(QwtPlot::yRight, true);
     mpMagnifier->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
     mpMagnifier->setWheelFactor(1.1);
 
@@ -422,6 +436,7 @@ void PlotWindow::discardOldestGeneration()
 void PlotWindow::enableZoom(bool on)
 {
     mpZoomer->setEnabled(on);
+    mpZoomerRight->setEnabled(on);
 
     //! @todo Figure out why panner is enabled if zoomer is. Is it needed for something?
     mpPanner->setEnabled(on);
@@ -445,6 +460,7 @@ void PlotWindow::enablePan(bool on)
     mpZoomButton->setChecked(false);
     connect(mpZoomButton,SIGNAL(toggled(bool)),this,SLOT(enableZoom(bool)));
     mpZoomer->setEnabled(false);
+    mpZoomerRight->setEnabled(false);
 }
 
 
@@ -1063,10 +1079,8 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     QString title = QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]");
     QString xLabel = "Time [s]";
 
-    bool firstCurve = false;
     if(mVectorX.isEmpty())
     {
-        firstCurve = true;
         QList< QVector<double> > tempList;
         tempList.append(xArray);
         mVectorX.append(tempList);
@@ -1142,15 +1156,27 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     mpVariablePlot->setAxisTitle(axisY, yLabel);
     mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
 
-    if(firstCurve)
+    if(!mHasLeftCurve && axisY == QwtPlot::yLeft)
     {
             //First curve, so set rubber band zoom base accordingly
         QwtDoubleRect tempDoubleRect;       //The first added curve is used as reference rectangle
-        tempDoubleRect.setX(mpCurves.first()->minXValue());
-        tempDoubleRect.setY(mpCurves.first()->minYValue());
-        tempDoubleRect.setWidth(mpCurves.first()->maxXValue()-mpCurves.first()->minXValue());
-        tempDoubleRect.setHeight(mpCurves.first()->maxYValue()-mpCurves.first()->minYValue());
+        tempDoubleRect.setX(tempCurve->minXValue());
+        tempDoubleRect.setY(tempCurve->minYValue());
+        tempDoubleRect.setWidth(tempCurve->maxXValue()-mpCurves.first()->minXValue());
+        tempDoubleRect.setHeight(tempCurve->maxYValue()-mpCurves.first()->minYValue());
         mpZoomer->setZoomBase(tempDoubleRect);
+        mHasLeftCurve = true;
+    }
+    else if(!mHasRightCurve && axisY == QwtPlot::yRight)
+    {
+            //First curve, so set rubber band zoom base accordingly
+        QwtDoubleRect tempDoubleRect;       //The first added curve is used as reference rectangle
+        tempDoubleRect.setX(tempCurve->minXValue());
+        tempDoubleRect.setY(tempCurve->minYValue());
+        tempDoubleRect.setWidth(tempCurve->maxXValue()-mpCurves.first()->minXValue());
+        tempDoubleRect.setHeight(tempCurve->maxYValue()-mpCurves.first()->minYValue());
+        mpZoomerRight->setZoomBase(tempDoubleRect);
+        mHasRightCurve = true;
     }
 
     QStringList parameterDescription;
