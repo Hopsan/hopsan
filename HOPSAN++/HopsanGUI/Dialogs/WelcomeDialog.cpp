@@ -98,6 +98,11 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     pLayout->addWidget(mpDontShowMe, 3, 0);
     setLayout(pLayout);
 
+    QPalette tempPalette;
+    tempPalette = this->palette();
+    tempPalette.setColor(QPalette::Window, QColor(235, 245, 242));
+    this->setPalette(tempPalette);
+
     connect(mpNew, SIGNAL(clicked()), this, SLOT(createNewModel()));
     connect(mpOpen, SIGNAL(clicked()), this, SLOT(loadExistingModel()));
     connect(mpLastSession, SIGNAL(clicked()), this, SLOT(loadLastSession()));
