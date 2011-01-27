@@ -56,7 +56,7 @@ namespace hopsan {
             mIntegrator.initialize(mTimestep, (*mpND_in), mStartY, mMin, mMax);
 
             (*mpND_out) = (*mpND_in);
-            limit((*mpND_out), mMin, mMax);
+            limitValue((*mpND_out), mMin, mMax);
         }
 
 

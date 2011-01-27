@@ -16,7 +16,7 @@ double hopsan::multByTwo(double input)
 //! @param &value Reference pointer to the value
 //! @param min Lower limit of the value
 //! @param max Upper limit of the value
-void hopsan::limit(double &value, double min, double max)
+void hopsan::limitValue(double &value, double min, double max)
 {
     if(min>max)
     {
@@ -70,10 +70,9 @@ double hopsan::sign(double x)
 }
 
 
-
-
-
-double onPositive(double x)
+//! @brief Returns 1.0 if x is positive, else returns 0.0
+//! @param x Value to determine if it is positive
+double hopsan::onPositive(double x)
 {
     if (x < 0.0) { return 0.0; }
     return 1.0;
@@ -81,178 +80,110 @@ double onPositive(double x)
 
 
 
-double dxOnPositive(double x)
+double hopsan::dxOnPositive(double x)
 {
     return 0.0;
 }
 
 
-
-//double onNegative(double x)
-//{
-
-//    ret_val = 0.0;
-//    if (x < 0.0) { return 0.0; }
-//    return 0.0;
-//}
-
+//! @brief Returns 1.0 if x is negative, else returns 0.0
+//! @param x Value to determine if it is positive
+double hopsan::onNegative(double x)
+{
+    if (x < 0.0) { return 1.0; }
+    return 0.0;
+}
 
 
-//double dxOnNegative(double x)
-//{
-//    return 0.0;
-//}
+double hopsan::dxOnNegative(double x)
+{
+    return 0.0;
+}
 
 
+double hopsan::signedSquareL(double x, double x0)
+{
+    return (-sqrt(x0) + sqrt(x0 + fabs(x))) * hopsan::sign(x);
+}
 
-//double signedSquareL(double x, double x0)
-//{
-//    return (-sqrt(x0) + sqrt(x0 + fabs(x))) * hopsan::sign(x);
-//}
 
-///* -------------------------------------------------------------------- */
-//double dxSignedSquareL(double x, double x0)
-//{
-//    /* System generated locals */
-//    double ret_val;
+double hopsan::dxSignedSquareL(double x, double x0)
+{
+    return (1.0 / (sqrt(x0 + fabs(x)) * 2.0));
+}
 
-//    /* Builtin functions */
-//    double sqrt(double);
 
-///* -------------------------------------------------------------------- */
-//    ret_val = 1 / (sqrt(*x0 + dabs(*x)) * 2);
-//    return ret_val;
-//} /* dxsigsqrl_ */
+double hopsan::squareAbsL(double x, double x0)
+{
+    return (-sqrt(x0) + sqrt(x0 + fabs(x)));
+}
 
-///* -------------------------------------------------------------------- */
-//double sqrabsl_(double *x, double *x0)
-//{
-//    /* System generated locals */
-//    double ret_val;
 
-//    /* Builtin functions */
-//    double sqrt(double);
+double hopsan::dxSquareAbsL(double x, double x0)
+{
+    return 1.0 / (sqrt(x0 + fabs(x)) * 2.0) * hopsan::sign(x);
+}
 
-///* -------------------------------------------------------------------- */
-//    ret_val = -sqrt(*x0) + sqrt(*x0 + dabs(*x));
-//    return ret_val;
-//} /* sqrabsl_ */
 
-///* -------------------------------------------------------------------- */
-//double dxsqrabsl_(double *x, double *x0)
-//{
-//    /* System generated locals */
-//    double ret_val;
+//! @brief Returns 1.0 if input variables have same sign, else returns 0.0
+double hopsan::equalSigns(double x, double y)
+{
+    if (hopsan::sign(x) != hopsan::sign(y)) {
+        return 0.0;
+    }
+    return 1.0;
+}
 
-//    /* Builtin functions */
-//    double sqrt(double);
 
-//    /* Local variables */
-//    extern double sign1_(double *);
+//! @brief Overloads void hopsan::limitValue() with a return value.
+//! @see void hopsan::limitValue(&value, min, max)
+//! @param x Value to be limited
+//! @param xmin Minimum value of x
+//! @param xmax Maximum value of x
+double hopsan::limit(double x, double xmin, double xmax)
+{
+    double output = x;
+    hopsan::limitValue(output, xmin, xmax);
+    return output;
+}
 
-///* -------------------------------------------------------------------- */
-//    ret_val = 1 / (sqrt(*x0 + dabs(*x)) * 2) * sign1_(x);
-//    return ret_val;
-//} /* dxsqrabsl_ */
 
-///* -------------------------------------------------------------------- */
-//double sign1_(double *x)
-//{
-//    /* System generated locals */
-//    double ret_val;
+//! @brief Sets the derivative of x to zero if x is outside of limits.
+//! Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
+//! @param x Value whos derivative is to be limited
+//! @param xmin Minimum value of x
+//! @param xmax Maximum value of x
+//! @returns Limited derivative of x
+double hopsan::dxLimit(double x, double xmin, double xmax)
+{
+    if (x >= xmax) { return 0.0; }
+    if (x <= xmin) { return 0.0; }
+    return 1.0;
+}
 
-///* -------------------------------------------------------------------- */
-//    ret_val = 1.0;
-//    if (*x < 0.0) {
-//        ret_val = -1.0;
-//    }
-//    return ret_val;
-//} /* sign1_ */
 
-///* -------------------------------------------------------------------- */
-//double equalsigns_(double *x, double *y)
-//{
-//    /* System generated locals */
-//    double ret_val;
+//! @brief Overloads double hopsan::limit() to also include sx (derivative of x) as input
+//! @see void hopsan::limit(&x, min, max)
+//! @param x Value to be limited
+//! @param sx Derivative of x
+//! @param xmin Minimum value of x
+//! @param xmax Maximum value of x
+//! @returns Limited x value
+double hopsan::limit2(double x, double sx, double xmin, double xmax)
+{
+    return hopsan::limit(x, xmin, xmax);
+}
 
-//    /* Local variables */
-//    extern double sign1_(double *);
 
-///* -------------------------------------------------------------------- */
-//    ret_val = 1.0;
-//    if (sign1_(x) != sign1_(y)) {
-//        ret_val = 0.0;
-//    }
-//    return ret_val;
-//} /* equalsigns_ */
-
-///* -------------------------------------------------------------------- */
-//double limitdouble_(double *x, double *xmin, double *xmax)
-//{
-//    /* System generated locals */
-//    double ret_val;
-
-///* -------------------------------------------------------------------- */
-//    ret_val = *x;
-//    if (*x >= *xmax) {
-//        ret_val = *xmax;
-//    }
-//    if (*x <= *xmin) {
-//        ret_val = *xmin;
-//    }
-//    return ret_val;
-//} /* limitdouble_ */
-
-///* -------------------------------------------------------------------- */
-//double dxlimitdouble_(double *x, double *xmin, double *xmax)
-//{
-//    /* System generated locals */
-//    double ret_val;
-
-///* -------------------------------------------------------------------- */
-//    ret_val = 1.0;
-//    if (*x >= *xmax) {
-//        ret_val = 0.0;
-//    }
-//    if (*x <= *xmin) {
-//        ret_val = 0.0;
-//    }
-//    return ret_val;
-//} /* dxlimitdouble_ */
-
-///* -------------------------------------------------------------------- */
-//double limit2double_(double *x, double *sx, double *xmin, double *xmax)
-//{
-//    /* System generated locals */
-//    double ret_val;
-
-///* -------------------------------------------------------------------- */
-//    ret_val = *x;
-//    if (*x >= *xmax) {
-//        ret_val = *xmax;
-//    }
-//    if (*x <= *xmin) {
-//        ret_val = *xmin;
-//    }
-//    return ret_val;
-//} /* limit2double_ */
-
-///* -------------------------------------------------------------------- */
-//double dxlimit2double_(double *x, double *sx, double *xmin, double *xmax)
-//{
-//    /* System generated locals */
-//    double ret_val;
-
-///* -------------------------------------------------------------------- */
-//    ret_val = 1.0;
-//    if (*x >= *xmax && *sx >= 0.0) {
-//        ret_val = 0.0;
-//    }
-//    if (*x <= *xmin && *sx <= 0.0) {
-//        ret_val = 0.0;
-//    }
-///* 	write(*,*)"x ",x,sx,DxLimit2double */
-//    return ret_val;
-//} /* dxlimit2double_ */
-
-///* ============================================================ */
+//! @brief Limits the derivative of x when x is outside of its limits.
+//! Returns 1.0 if x is within borders, or if x is outside borders but derivative has opposite sign (so that x can only move back to the limited range).
+//! @param x Value whos derivative is to be limited
+//! @param xmin Minimum value of x
+//! @param xmax Maximum value of x
+//! @returns Limited derivative of x
+double hopsan::dxLimit2(double x, double sx, double xmin, double xmax)
+{
+    if (x >= xmax && sx >= 0.0) { return 0.0; }
+    if (x <= xmin && sx <= 0.0) { return 0.0; }
+    return 1.0;
+}

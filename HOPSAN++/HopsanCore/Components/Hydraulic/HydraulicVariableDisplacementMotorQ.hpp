@@ -99,7 +99,7 @@ namespace hopsan {
             eps = (*mpND_eps);
 
             //Motor equations
-            limit(eps, -1, 1);
+            limitValue(eps, -1, 1);
 
             dp = dp / (3.1415 * 2) * eps;
             ble = Bm + Zc1 * dp*dp + Zc2 * dp*dp + Zx3;

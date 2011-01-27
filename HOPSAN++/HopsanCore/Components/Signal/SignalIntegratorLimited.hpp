@@ -53,9 +53,9 @@ namespace hopsan {
 
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
             mPrevU = startY;
-            limit(startY, mMin, mMax);
+            limitValue(startY, mMin, mMax);
 
-            limit((*mpND_in), mMin, mMax);
+            limitValue((*mpND_in), mMin, mMax);
         }
 
 
