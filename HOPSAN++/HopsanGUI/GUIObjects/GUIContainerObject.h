@@ -139,9 +139,11 @@ public slots:
         //Enter and exit a container object
     void enterContainer();
     void exitContainer();
-        //Rotate objects
+        //Rotate and flip objects
     void rotateRight();
-    //void rotateLeft();
+    void rotateLeft();
+    void flipHorizontal();
+    void flipVertical();
 
 signals:
         //Selection
@@ -158,7 +160,10 @@ signals:
     void deleteSelected();
     void setAllGfxType(graphicsType);
     void componentChanged();
-    void rotateObjectsRight();
+    void rotateSelectedObjectsRight();
+    void rotateSelectedObjectsLeft();
+    void flipSelectedObjectsHorizontal();
+    void flipSelectedObjectsVertical();
 
 
 protected:

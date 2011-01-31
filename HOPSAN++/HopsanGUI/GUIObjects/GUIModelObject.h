@@ -83,6 +83,7 @@ public:
 public slots:
     void deleteMe();
     void rotate90cw(undoStatus undoSettings = UNDO);
+    void rotate90ccw(undoStatus undoSettings = UNDO);
     //! @todo maybe flip should work on all gui objects
     void flipVertical(undoStatus undoSettings = UNDO);
     void flipHorizontal(undoStatus undoSettings = UNDO);

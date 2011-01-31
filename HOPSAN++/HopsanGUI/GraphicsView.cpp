@@ -261,19 +261,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressDelete();
     }
-    else if (ctrlPressed && event->key() == Qt::Key_R && !mpContainerObject->mIsRenamingObject)
-    {
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->rotateRight();
-    }
-    else if (ctrlPressed && event->key() == Qt::Key_E && !mpContainerObject->mIsRenamingObject)
-    {
-        if(mpContainerObject->isObjectSelected())
-        {
-            mpContainerObject->mUndoStack->newPost();
-            mpParentProjectTab->hasChanged();
-        }
-        emit keyPressCtrlE();
-    }
     else if (event->key() == Qt::Key_Escape)
     {
         if(mpContainerObject->getIsCreatingConnector())
@@ -281,24 +268,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             delete(mpContainerObject->mpTempConnector);
             mpContainerObject->setIsCreatingConnector(false);
         }
-    }
-    else if(ctrlPressed && event->key() == Qt::Key_D && !mpContainerObject->mIsRenamingObject)
-    {
-        if(mpContainerObject->isObjectSelected())
-        {
-            mpContainerObject->mUndoStack->newPost();
-            mpParentProjectTab->hasChanged();
-        }
-        emit keyPressShiftK();
-    }
-    else if(ctrlPressed && event->key() == Qt::Key_F && !mpContainerObject->mIsRenamingObject)
-    {
-        if(mpContainerObject->isObjectSelected())
-        {
-            mpContainerObject->mUndoStack->newPost();
-            mpParentProjectTab->hasChanged();
-        }
-        emit keyPressShiftL();
     }
     else if(ctrlPressed && event->key() == Qt::Key_Up)
     {

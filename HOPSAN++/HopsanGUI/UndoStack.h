@@ -45,7 +45,7 @@ public:
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
-    void registerRotatedObject(QString objectName);
+    void registerRotatedObject(QString objectName, double angle);
     void registerVerticalFlip(QString objectName);
     void registerHorizontalFlip(QString objectName);
     void registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt);

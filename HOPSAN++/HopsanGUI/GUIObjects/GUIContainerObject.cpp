@@ -100,6 +100,9 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()), Qt::UniqueConnection);
     connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()), Qt::UniqueConnection);
     connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateRight()), Qt::UniqueConnection);
+    connect(gpMainWindow->rotateLeftAction,     SIGNAL(triggered()),        this,     SLOT(rotateLeft()), Qt::UniqueConnection);
+    connect(gpMainWindow->flipHorizontalAction, SIGNAL(triggered()),        this,     SLOT(flipHorizontal()), Qt::UniqueConnection);
+    connect(gpMainWindow->flipVerticalAction,   SIGNAL(triggered()),        this,     SLOT(flipVertical()), Qt::UniqueConnection);
     connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
     connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
@@ -124,15 +127,18 @@ void GUIContainerObject::disconnectMainWindowActions()
 
 //    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        this,    SLOT(hideNames()));
 //    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        this,    SLOT(showNames()));
-    disconnect(gpMainWindow->toggleNamesAction,     SIGNAL(triggered(bool)),  this,     SLOT(toggleNames(bool)));
-    disconnect(gpMainWindow->togglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
+    disconnect(gpMainWindow->toggleNamesAction,     SIGNAL(triggered(bool)),    this,      SLOT(toggleNames(bool)));
+    disconnect(gpMainWindow->togglePortsAction,     SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
     disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),        this,    SLOT(disableUndo()));
     disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
     disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
-    disconnect(gpMainWindow->alignXAction,          SIGNAL(triggered()),        this,     SLOT(alignX()));
-    disconnect(gpMainWindow->alignYAction,          SIGNAL(triggered()),        this,     SLOT(alignY()));
-    disconnect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateRight()));
+    disconnect(gpMainWindow->alignXAction,          SIGNAL(triggered()),        this,    SLOT(alignX()));
+    disconnect(gpMainWindow->alignYAction,          SIGNAL(triggered()),        this,    SLOT(alignY()));
+    disconnect(gpMainWindow->rotateRightAction,     SIGNAL(triggered()),        this,    SLOT(rotateRight()));
+    disconnect(gpMainWindow->rotateLeftAction,      SIGNAL(triggered()),        this,    SLOT(rotateLeft()));
+    disconnect(gpMainWindow->flipHorizontalAction,  SIGNAL(triggered()),        this,    SLOT(flipHorizontal()));
+    disconnect(gpMainWindow->flipVerticalAction,    SIGNAL(triggered()),        this,    SLOT(flipVertical()));
     disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
 
     disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
@@ -1798,6 +1804,9 @@ void GUIContainerObject::exitContainer()
     connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignX()));
     connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignY()));
     connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateRight()));
+    connect(gpMainWindow->rotateLeftAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateLeft()));
+    connect(gpMainWindow->flipHorizontalAction, SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipHorizontal()));
+    connect(gpMainWindow->flipVerticalAction,   SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipVertical()));
     connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
     connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
     connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
@@ -1816,6 +1825,7 @@ void GUIContainerObject::exitContainer()
 }
 
 
+//! @brief Rotates all selected objects right (clockwise)
 void GUIContainerObject::rotateRight()
 {
     if(this->isObjectSelected())
@@ -1823,5 +1833,39 @@ void GUIContainerObject::rotateRight()
         mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
     }
-    emit rotateObjectsRight();
+    emit rotateSelectedObjectsRight();
+}
+
+
+//! @brief Rotates all selected objects left (counter-clockwise)
+void GUIContainerObject::rotateLeft()
+{
+    if(this->isObjectSelected())
+    {
+        mUndoStack->newPost();
+        mpParentProjectTab->hasChanged();
+    }
+    emit rotateSelectedObjectsLeft();
+}
+
+
+void GUIContainerObject::flipHorizontal()
+{
+    if(this->isObjectSelected())
+    {
+        mUndoStack->newPost();
+        mpParentProjectTab->hasChanged();
+    }
+    emit flipSelectedObjectsHorizontal();
+}
+
+
+void GUIContainerObject::flipVertical()
+{
+    if(this->isObjectSelected())
+    {
+        mUndoStack->newPost();
+        mpParentProjectTab->hasChanged();
+    }
+    emit flipSelectedObjectsVertical();
 }

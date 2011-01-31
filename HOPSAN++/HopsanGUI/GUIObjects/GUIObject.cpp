@@ -176,7 +176,10 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         {
             mpSelectionBox->setActive();
             connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            connect(mpParentContainerObject, SIGNAL(rotateObjectsRight()), this, SLOT(rotate90cw()));
+            connect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsRight()), this, SLOT(rotate90cw()));
+            connect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
+            connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
+            connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
@@ -191,7 +194,10 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         else
         {
             disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject, SIGNAL(rotateObjectsRight()), this, SLOT(rotate90cw()));
+            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsRight()), this, SLOT(rotate90cw()));
+            disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
+            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
+            disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
@@ -305,7 +311,7 @@ void GUIObject::rotate90cw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName());
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), 90);
     }
 
     emit objectMoved();
@@ -326,7 +332,7 @@ void GUIObject::rotate90ccw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName());    //! @todo This will register a clockwise rotation, which will be bad...
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), -90);    //! @todo This will register a clockwise rotation, which will be bad...
     }
 
     emit objectMoved();

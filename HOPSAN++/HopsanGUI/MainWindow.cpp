@@ -313,21 +313,21 @@ void MainWindow::createActions()
 {
     newAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-New.png"), tr("&New"), this);
     newAction->setShortcut(tr("New"));
-    newAction->setStatusTip(tr("Create New Project"));
+    newAction->setToolTip(tr("Create New Project"));
     connect(newAction, SIGNAL(triggered()), mpProjectTabs, SLOT(addNewProjectTab()));
 
     openAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Open.png"), tr("&Open"), this);
     openAction->setShortcut(QKeySequence("Ctrl+o"));
-    openAction->setStatusTip(tr("Load Model File"));
+    openAction->setToolTip(tr("Load Model File (Ctrl+O)"));
     connect(openAction, SIGNAL(triggered()), mpProjectTabs, SLOT(loadModel()));
 
     saveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+s"));
-    saveAction->setStatusTip(tr("Save Model File"));
+    saveAction->setToolTip(tr("Save Model File (Ctrl+S)"));
 
     saveAsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Save As"), this);
     saveAsAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
-    saveAsAction->setStatusTip(tr("Save Model File As"));
+    saveAsAction->setToolTip(tr("Save Model File As (Ctrl+Alt+S)"));
 
     closeAction = new QAction(this);
     closeAction->setText("Close");
@@ -337,15 +337,15 @@ void MainWindow::createActions()
     undoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Undo.png"), tr("&Undo"), this);
     undoAction->setText("Undo");
     undoAction->setShortcut(QKeySequence(tr("Ctrl+z")));
-    undoAction->setStatusTip(tr("Undo One Step"));
+    undoAction->setToolTip(tr("Undo One Step (Ctrl+Z)"));
 
     redoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Redo.png"), tr("&Redo"), this);
     redoAction->setText("Redo");
     redoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
-    redoAction->setStatusTip(tr("Redo One Step"));
+    redoAction->setToolTip(tr("Redo One Step (Ctrl+Y)"));
 
     openUndoAction = new QAction(tr("&Undo History"), this);
-    openUndoAction->setText("Undo History");
+    openUndoAction->setToolTip("Undo History (Ctrl+Alt+U)");
     connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndoWidget()));
     openUndoAction->setShortcut(QKeySequence("Ctrl+Alt+u"));
 
@@ -355,30 +355,28 @@ void MainWindow::createActions()
     disableUndoAction->setChecked(false);
 
     openSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&System Parameters"), this);
-    openSystemParametersAction->setText("System Parameters");
+    openSystemParametersAction->setToolTip("System Parameters (Ctrl+Alt+Y)");
     openSystemParametersAction->setShortcut(tr("Ctrl+alt+y"));
     connect(openSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
-    cutAction->setStatusTip(tr("Cut Selection"));
+    cutAction->setToolTip(tr("Cut (Ctrl+X)"));
 
     copyAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Copy.png"), tr("&Copy"), this);
     copyAction->setShortcut(tr("Ctrl+c"));
-    copyAction->setStatusTip(tr("Copy Selection"));
+    copyAction->setToolTip("Copy (Ctrl+C)");
 
     pasteAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Paste.png"), tr("&Paste"), this);
     pasteAction->setShortcut(tr("Ctrl+v"));
-    pasteAction->setStatusTip(tr("Paste Selection"));
+    pasteAction->setToolTip(tr("Paste (Ctrl+V)"));
 
     simulateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Simulate"), this);
-    simulateAction->setShortcut(tr("Simulate"));
-    simulateAction->setStatusTip(tr("Simulate Current Project"));
+    simulateAction->setToolTip(tr("Simulate Current Project (Ctrl+Shift+S)"));
     simulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
 
     plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
-    plotAction->setShortcut(tr("Plot"));
-    plotAction->setStatusTip(tr("Plot Variables"));
+    plotAction->setToolTip(tr("Plot Variables (Ctrl+Alt+P)"));
     connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
     plotAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
 
@@ -387,11 +385,11 @@ void MainWindow::createActions()
     connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
 
     propertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
-    propertiesAction->setText("Model Properties");
+    propertiesAction->setToolTip("Model Properties (Ctrl+Alt+M)");
     propertiesAction->setShortcut(QKeySequence("Ctrl+Alt+m"));
 
     optionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
-    optionsAction->setText("Options");
+    optionsAction->setToolTip("Options (Ctrl+Alt+O)");
     optionsAction->setShortcut(QKeySequence("Ctrl+Alt+o"));
 
     alignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
@@ -402,35 +400,35 @@ void MainWindow::createActions()
 
     rotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left (Ctrl+E)"), this);
     rotateLeftAction->setText("Rotate Left (Ctrl+E)");
+    rotateLeftAction->setShortcut(QKeySequence("Ctrl+E"));
 
     rotateRightAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateRight.png"), tr("&Rotate Right (Ctrl+R)"), this);
-    rotateRightAction->setText("Rotate Right (Ctrl+ER)");
+    rotateRightAction->setText("Rotate Right (Ctrl+R)");
+    rotateRightAction->setShortcut(QKeySequence("Ctrl+R"));
 
     flipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Rotate Left"), this);
-    flipHorizontalAction->setText("Rotate Left");
+    flipHorizontalAction->setText("Rotate Left (Ctrl+F)");
+    flipHorizontalAction->setShortcut(QKeySequence("Ctrl+F"));
 
     flipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Rotate Left"), this);
-    flipVerticalAction->setText("Rotate Left");
+    flipVerticalAction->setText("Rotate Left (Ctrl+D");
+    flipVerticalAction->setShortcut(QKeySequence("Ctrl+D"));
 
-    resetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
-    resetZoomAction->setText("Reset Zoom");
+    resetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom (Ctrl+0)"), this);
+    resetZoomAction->setText("Reset Zoom (Ctrl+0)");
+    resetZoomAction->setShortcut(QKeySequence("Ctrl+0"));
 
-    zoomInAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomIn.png"), tr("&Zoom In"), this);
-    zoomInAction->setText("Zoom In");
+    zoomInAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomIn.png"), tr("&Zoom In (Ctrl+Plus)"), this);
+    zoomInAction->setText("Zoom In (Ctrl+Plus)");
+    zoomInAction->setShortcut(QKeySequence("Ctrl++"));
 
-    zoomOutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomOut.png"), tr("&Zoom Out"), this);
-    zoomOutAction->setText("Zoom Out");
+    zoomOutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomOut.png"), tr("&Zoom Out (Ctrl+Minus)"), this);
+    zoomOutAction->setText("Zoom Out (Ctrl+Minus)");
+    zoomOutAction->setShortcut(QKeySequence("Ctrl+-"));
 
-    centerViewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-CenterView.png"), tr("&Center View"), this);
-    centerViewAction->setText("Center View");
-
-//    hideNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
-//    hideNamesAction->setText("Hide All Component Names");
-//    hideNamesAction->setShortcut(QKeySequence("Ctrl+h"));
-
-//    showNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
-//    showNamesAction->setText("Show All Component Names");
-//    showNamesAction->setShortcut(QKeySequence("Ctrl+j"));
+    centerViewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-CenterView.png"), tr("&Center View (Ctrl+Space)"), this);
+    centerViewAction->setText("Center View (Ctrl+Space)");
+    centerViewAction->setShortcut(QKeySequence("Ctrl+Space"));
 
     QIcon toggleNamesIcon;
     toggleNamesIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleNames.png", QSize(), QIcon::Normal, QIcon::On);
@@ -447,13 +445,6 @@ void MainWindow::createActions()
     aboutAction->setText("About");
     connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
     connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
-
-//    QIcon hidePortsIcon;
-//    hidePortsIcon.addFile(QString(ICONPATH) + "Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
-//    hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
-//    hidePortsAction->setText("Hide All Ports");
-//    hidePortsAction->setCheckable(true);
-//    hidePortsAction->setShortcut(QKeySequence("Ctrl+g"));
 
     QIcon togglePortsIcon;
     togglePortsIcon.addFile(QString(ICONPATH) + "Hopsan-TogglePorts.png", QSize(), QIcon::Normal, QIcon::On);

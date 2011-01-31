@@ -789,7 +789,65 @@ void GUIModelObject::rotate90cw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName());
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), 90);
+    }
+
+    emit objectMoved();
+}
+
+
+//! @brief Rotates a component 90 degrees clockwise
+//! @param undoSettings Tells whether or not this shall be registered in undo stsack
+//! @see rotateTo(qreal angle);
+//! @todo try to reuse the code in rotate guiobject
+void GUIModelObject::rotate90ccw(undoStatus undoSettings)
+{
+    this->setTransformOriginPoint(this->boundingRect().center());
+    this->setRotation(normDeg360(this->rotation()-90));
+
+    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
+    if (this->rotation() < 0.0)
+    {
+        this->setRotation(360+this->rotation());
+    }
+
+    int tempNameTextPos = mNameTextPos;
+    this->snapNameTextPosition(mpNameText->pos());
+    setNameTextPos(tempNameTextPos);
+
+    //! @todo myabe use signals and slots instead
+    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    {
+        mPortListPtrs.value(i)->refreshPortOverlayPosition();
+    }
+
+    //! @todo danger real == real
+    if(!mIconRotation)
+    {
+        mpIcon->setRotation(-this->rotation());
+        if(this->rotation() == 0)
+        {
+            mpIcon->setPos(0,0);
+        }
+        else if(this->rotation() == 90)
+        {
+            mpIcon->setPos(0,this->boundingRect().height());
+        }
+        else if(this->rotation() == 180)
+        {
+            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
+        }
+        else if(this->rotation() == 270)
+        {
+            mpIcon->setPos(this->boundingRect().width(),0);
+        }
+
+        //mpIcon->setPos(this->boundingRect().center());
+    }
+
+    if(undoSettings == UNDO)
+    {
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), -90);
     }
 
     emit objectMoved();

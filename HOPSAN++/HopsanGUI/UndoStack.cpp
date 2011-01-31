@@ -193,15 +193,17 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "rotate")
         {
             QString name = stuffElement.attribute("objectname");
+            double angle = stuffElement.attribute("angle").toDouble();
             if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            //! @todo Make a function for rotation clockwise, this is crazy!
-            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
-            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
-            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
+            double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()-angle;
+            if(targetAngle >= 360) { targetAngle = 0; }
+            if(targetAngle < 0) { targetAngle = 270; }
+            mpParentContainerObject->getGUIModelObject(name)->rotateTo(targetAngle);
+
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {
@@ -503,12 +505,16 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == "rotate")
         {
             QString name = stuffElement.attribute("objectname");
+            double angle = stuffElement.attribute("angle").toDouble();
             if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
+            double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()+angle;
+            if(targetAngle >= 360) { targetAngle = 0; }
+            if(targetAngle < 0) { targetAngle = 270; }
+            mpParentContainerObject->getGUIModelObject(name)->rotateTo(targetAngle);
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {
@@ -827,7 +833,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 
 //! @brief Register function for rotating an object
 //! @param item Pointer to the object
-void UndoStack::registerRotatedObject(QString objectName)
+void UndoStack::registerRotatedObject(QString objectName, double angle)
 {
     if(mpParentContainerObject->mUndoDisabled)
         return;
@@ -835,6 +841,7 @@ void UndoStack::registerRotatedObject(QString objectName)
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "rotate");
     stuffElement.setAttribute("objectname", objectName);
+    stuffElement.setAttribute("angle", angle);
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
