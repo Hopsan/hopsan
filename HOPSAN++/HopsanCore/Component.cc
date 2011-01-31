@@ -1198,7 +1198,6 @@ void Component::loadStartValues()
     {
         (*portIt)->loadStartValues();
     }
-
 }
 
 

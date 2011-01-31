@@ -33,6 +33,7 @@ namespace hopsan {
     public:
         //The user should never bother about Nodes
         void logData(const double time);  //Public because simlation threads must be able to log data
+        void setData(const size_t &data_type, const double &data);
         Component *getWritePortComponentPtr();
 
     protected:
@@ -43,6 +44,7 @@ namespace hopsan {
         enum PLOTORNOT {PLOT, NOPLOT};
 
         void copyNodeVariables(Node *pNode);
+        virtual void setSpecialStartValues(Node *pNode);
 
         void setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime);
         void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
@@ -51,7 +53,7 @@ namespace hopsan {
         void preAllocateLogSpace();
         void saveLogData(std::string filename);
 
-        void setData(const size_t &data_type, const double &data);
+        //void setData is now public!
         double getData(const size_t data_type);
         double &getDataRef(const size_t data_type);
         double *getDataPtr(const size_t data_type);
@@ -72,6 +74,13 @@ namespace hopsan {
         std::vector<double> mDataVector;
         std::vector<Port*> mPortPtrs;
 
+        //WAS: Private member variables, be made them protected to get access in inherented classes
+        std::string mName;
+        std::vector<std::string> mDataNames;
+        std::vector<std::string> mDataUnits;
+        std::vector<Node::PLOTORNOT> mPlotBehaviour;
+        ComponentSystem *mpOwnerSystem;
+
     private:
         //Private member fuctions
         void setPort(Port *pPort);
@@ -79,13 +88,6 @@ namespace hopsan {
         bool isConnectedToPort(Port *pPort);
         void enableLog();
         void disableLog();
-
-        //Private member variables
-        std::string mName;
-        std::vector<std::string> mDataNames;
-        std::vector<std::string> mDataUnits;
-        std::vector<Node::PLOTORNOT> mPlotBehaviour;
-        ComponentSystem *mpOwnerSystem;
 
         //Log specific
         std::vector<double> mTimeStorage;

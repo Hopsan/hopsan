@@ -204,19 +204,26 @@ void Node::copyNodeVariables(Node *pNode)
     {
         for(size_t i=0; i<mDataNames.size(); ++i)
         {
+            cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
             if(mPlotBehaviour[i] == Node::PLOT)
             {
-                //cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << endl;
                 pNode->mDataNames[i] = mDataNames[i];
                 pNode->mDataVector[i] = mDataVector[i];
                 pNode->mDataUnits[i] = mDataUnits[i];
             }
         }
+        setSpecialStartValues(pNode); //Handles Wave, imp variables and similar
     }
     else
     {
         assert(false);
     }
+}
+
+void Node::setSpecialStartValues(Node */*pNode*/)
+{
+    //This method schould be implemented in child Nodes
+    cout << "This nodetype seem not to have any hidden variables for the user." << endl;
 }
 
 

@@ -11,6 +11,8 @@
 
 #include "../Node.h"
 
+#include <iostream>
+
 namespace hopsan {
 
     DLLIMPORTEXPORT void register_nodes(NodeFactory* nfampND_ct);
@@ -57,6 +59,19 @@ namespace hopsan {
             setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
             setDataNameAndUnit(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
         }
+
+        virtual void setSpecialStartValues(Node *pNode)
+        {
+            for(size_t i=0; i<mDataNames.size(); ++i)
+            {
+                if(WAVEVARIABLE==i)
+                {
+                    pNode->setData(i, mDataVector[PRESSURE]);
+                    std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
+                }
+                //! todo Maybe also write CHARIMP?
+            }
+        }
     };
 
     //!
@@ -79,6 +94,18 @@ namespace hopsan {
             setDataNameAndUnit(POSITION, "Position", "m");
             setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
             setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
+        }
+
+        virtual void setSpecialStartValues(Node *pNode)
+        {
+            for(size_t i=0; i<mDataNames.size(); ++i)
+            {
+                if(WAVEVARIABLE==i)
+                {
+                    pNode->setData(i, mDataVector[FORCE]);
+                }
+                //! todo Maybe also write CHARIMP?
+            }
         }
     };
 
@@ -104,7 +131,18 @@ namespace hopsan {
             setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
             setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
         }
-    };
+
+        virtual void setSpecialStartValues(Node *pNode)
+        {
+            for(size_t i=0; i<mDataNames.size(); ++i)
+            {
+                if(WAVEVARIABLE==i)
+                {
+                    pNode->setData(i, mDataVector[TORQUE]);
+                }
+                //! todo Maybe also write CHARIMP?
+            }
+        }    };
 }
 
 #endif // NODES_H_INCLUDED
