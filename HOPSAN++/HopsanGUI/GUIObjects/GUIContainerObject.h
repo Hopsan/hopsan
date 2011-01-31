@@ -38,7 +38,7 @@ public:
     //Handle GuiModelObjects and GuiWidgets
     void addTextWidget(QPoint position, undoStatus undoSettings=UNDO);
     void addBoxWidget(QPoint position, undoStatus undoSettings=UNDO);
-    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = NAMEVISIBLE, undoStatus undoSettings = UNDO);
+    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
@@ -88,6 +88,7 @@ public:
     QList<GUIWidget *> mSelectedGUIWidgetsList;
 
     bool mPortsHidden;
+    bool mNamesHidden;
     bool mUndoDisabled;
     bool mIsRenamingObject;
     bool mJustStoppedCreatingConnector;
@@ -114,6 +115,7 @@ public slots:
         //show/hide
     void hideNames();
     void showNames();
+    void toggleNames(bool value);
     void hidePorts(bool doIt);
         //Create and remove
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);

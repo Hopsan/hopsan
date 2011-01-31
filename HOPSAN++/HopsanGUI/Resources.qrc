@@ -64,5 +64,13 @@
         <file>graphics/lastsessionactive.png</file>
         <file>graphics/newactive.png</file>
         <file>graphics/openactive.png</file>
+        <file>graphics/uiicons/Hopsan-AlignX.png</file>
+        <file>graphics/uiicons/Hopsan-AlignY.png</file>
+        <file>graphics/uiicons/Hopsan-FlipHorizontal.png</file>
+        <file>graphics/uiicons/Hopsan-FlipVertical.png</file>
+        <file>graphics/uiicons/Hopsan-RotateLeft.png</file>
+        <file>graphics/uiicons/Hopsan-RotateRight.png</file>
+        <file>graphics/uiicons/Hopsan-ToggleNames.png</file>
+        <file>graphics/uiicons/Hopsan-TogglePorts.png</file>
     </qresource>
 </RCC>

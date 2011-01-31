@@ -68,7 +68,7 @@ public:
     QPointF rectPos;
 
 public slots:
-    void hideIfNotConnected(bool hidePortsActionTriggered);
+    void hideIfNotConnected(bool togglePortsActionTriggered);
     void setVisible(bool value);
 
 signals:

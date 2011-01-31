@@ -7,6 +7,7 @@
 //!
 //$Id$
 
+#include "MainWindow.h"
 #include "GUIPortAppearance.h"
 #include "common.h"
 

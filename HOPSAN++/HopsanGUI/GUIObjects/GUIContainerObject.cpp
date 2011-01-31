@@ -49,6 +49,7 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     setIsCreatingConnector(false);
     mIsRenamingObject = false;
     mPortsHidden = false;
+    mNamesHidden = false;
     mUndoDisabled = false;
     mGfxType = USERGRAPHICS;
 
@@ -63,9 +64,12 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     mUndoStack = new UndoStack(this);
     mUndoStack->clear();
 
+    gpMainWindow->toggleNamesAction->setChecked(true);
+    gpMainWindow->togglePortsAction->setChecked(true);
+
     //Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
-    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)), Qt::UniqueConnection);
+
 }
 
 
@@ -85,8 +89,10 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()), Qt::UniqueConnection);
 
-    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()), Qt::UniqueConnection);
-    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()), Qt::UniqueConnection);
+    //connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()), Qt::UniqueConnection);
+    //connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()), Qt::UniqueConnection);
+    connect(gpMainWindow->togglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()), Qt::UniqueConnection);
     connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
     connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
@@ -115,14 +121,16 @@ void GUIContainerObject::disconnectMainWindowActions()
     disconnect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()));
     disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()));
 
-    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        this,    SLOT(hideNames()));
-    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        this,    SLOT(showNames()));
+//    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        this,    SLOT(hideNames()));
+//    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        this,    SLOT(showNames()));
+    disconnect(gpMainWindow->toggleNamesAction,     SIGNAL(triggered(bool)),  this,     SLOT(toggleNames(bool)));
+    disconnect(gpMainWindow->togglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
     disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),        this,    SLOT(disableUndo()));
     disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
     disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
-    disconnect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()));
-    disconnect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()));
+    disconnect(gpMainWindow->alignXAction,          SIGNAL(triggered()),        this,     SLOT(alignX()));
+    disconnect(gpMainWindow->alignYAction,          SIGNAL(triggered()),        this,     SLOT(alignY()));
     disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
 
     disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
@@ -509,11 +517,18 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     {
         mpTempGUIModelObject->showName(NOUNDO);
     }
-    else
+    else if(nameStatus == NAMENOTVISIBLE)
     {
         mpTempGUIModelObject->hideName(NOUNDO);
     }
-
+    else if(!mNamesHidden)
+    {
+        mpTempGUIModelObject->showName(NOUNDO);
+    }
+    else if(mNamesHidden)
+    {
+        mpTempGUIModelObject->hideName(NOUNDO);
+    }
 
     if(undoSettings == UNDO)
     {
@@ -634,12 +649,12 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
         this->removeConnector(pConnectorList[i], undoSettings);
     }
 
-    if (undoSettings == UNDO)
+    if (undoSettings == UNDO && !mUndoDisabled)
     {
         //Register removal of model object in undo stack
         this->mUndoStack->registerDeletedObject(it.value());
-        emit componentChanged(); //!< @todo Why do we need to emit this signal after regestering in undostack
-        qDebug() << "Emitting!";
+        //emit componentChanged(); //!< @todo Why do we need to emit this signal after regestering in undostack
+        //qDebug() << "Emitting!";
     }
 
 
@@ -1433,10 +1448,27 @@ void GUIContainerObject::showNames()
 }
 
 
+//! @brief Toggles name text on or off
+//! @see showNames();
+//! @see hideNames();
+void GUIContainerObject::toggleNames(bool value)
+{
+    if(value)
+    {
+        emit showAllNameText();
+    }
+    else
+    {
+        emit hideAllNameText();
+    }
+    mNamesHidden = !value;
+}
+
+
 //! @brief Slot that sets hide ports flag to true or false
 void GUIContainerObject::hidePorts(bool doIt)
 {
-    mPortsHidden = doIt;
+    mPortsHidden = !doIt;
 }
 
 
@@ -1755,8 +1787,9 @@ void GUIContainerObject::exitContainer()
 //    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
 //    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
 
-    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
-    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
+//    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
+//    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
+    connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    mpParentContainerObject,     SLOT(toggleNames(bool)));
     connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
     connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
     connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));

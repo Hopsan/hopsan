@@ -119,10 +119,10 @@ void Configuration::saveToXml()
 
     //Save to file
     const int IndentSize = 4;
-    QFile xmlsettings(QString(MAINPATH) + "hopsanconfig.xml");
+    QFile xmlsettings(gExecPath+QString(MAINPATH) + "hopsanconfig.xml");
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " << QString(MAINPATH) << "settings.xml";
+        qDebug() << "Failed to open file for writing: " << gExecPath+QString(MAINPATH) << "settings.xml";
         return;
     }
     QTextStream out(&xmlsettings);
@@ -239,7 +239,7 @@ void Configuration::loadFromXml()
     loadDefaultsFromXml();
 
     //Read from hopsanconfig.xml
-    QFile file(QString(MAINPATH) + "hopsanconfig.xml");
+    QFile file(gExecPath+QString(MAINPATH) + "hopsanconfig.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
@@ -374,11 +374,11 @@ void Configuration::loadFromXml()
 void Configuration::loadDefaultsFromXml()
 {
     //Read from hopsandefaults.xml
-    QFile file(QString(MAINPATH) + "hopsandefaults");
+    QFile file(gExecPath+QString(MAINPATH) + "hopsandefaults");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
-                                 gpMainWindow->tr("Unable to read default configuration file. Please reinstall program."));
+                                 "Unable to read default configuration file. Please reinstall program.\n" + gExecPath+QString(MAINPATH));
 
         qApp->quit();
     }

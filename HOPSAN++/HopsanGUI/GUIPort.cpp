@@ -86,7 +86,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
     GraphicsView *pView = mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpGraphicsView; //! @todo need to be able to access this in some nicer way then ptr madness
-    connect(gpMainWindow->hidePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(hideIfNotConnected(bool)));
+    connect(gpMainWindow->togglePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(hideIfNotConnected(bool)));
     connect(pView,                          SIGNAL(zoomChange(qreal)),  this, SLOT(setPortOverlayScale(qreal)));
 }
 
@@ -558,16 +558,16 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 
 
 //! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
-//! @param hidePortsActionTriggered is true if ports shall be hidden, otherwise false.
-void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
+//! @param togglePortsActionTriggered is true if ports shall be hidden, otherwise false.
+void GUIPort::hideIfNotConnected(bool togglePortsActionTriggered)
 {
     if(mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab == mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
-        if(!isConnected() && hidePortsActionTriggered)
+        if(!isConnected() && !togglePortsActionTriggered)
         {
             this->hide();
         }
-        else if(!isConnected() && !hidePortsActionTriggered)
+        else if(!isConnected() && togglePortsActionTriggered)
         {
             this->show();
         }

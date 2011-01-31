@@ -72,6 +72,7 @@ public:
     //Toolbar items
     QToolBar *mpFileToolBar;
     QToolBar *mpEditToolBar;
+    QToolBar *mpToolsToolBar;
     QToolBar *mpSimToolBar;
     QToolBar *mpSimulationToolBar;
     QToolBar *mpViewToolBar;
@@ -104,13 +105,19 @@ public:
     QAction *zoomInAction;
     QAction *zoomOutAction;
     QAction *centerViewAction;
-    QAction *hideNamesAction;
-    QAction *showNamesAction;
-    QAction *hidePortsAction;
+    //QAction *hideNamesAction;
+    //QAction *showNamesAction;
+    //QAction *hidePortsAction;
+    QAction *toggleNamesAction;
+    QAction *togglePortsAction;
     QAction *showPortsAction;
     QAction *exportPDFAction;
     QAction *alignXAction;
     QAction *alignYAction;
+    QAction *rotateLeftAction;
+    QAction *rotateRightAction;
+    QAction *flipHorizontalAction;
+    QAction *flipVerticalAction;
     QAction *aboutAction;
 
     //Set and get methods for simulation parameters in toolbar

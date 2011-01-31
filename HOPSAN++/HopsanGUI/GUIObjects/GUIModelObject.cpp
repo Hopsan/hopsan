@@ -57,6 +57,11 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelOb
     mpNameText = new GUIModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
     this->setNameTextPos(0); //Set initial name text position
+    if(pParentContainer != 0 && pParentContainer->mNamesHidden)
+    {
+        qDebug() << "Hiding name!";
+        this->hideName(NOUNDO);
+    }
 
         //Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
@@ -265,7 +270,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     QFile iconFile(iconPath);
     if (!iconFile.exists())
     {
-        iconPath = OBJECTICONPATH + QString("missingcomponenticon.svg");
+        iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
 
     //If we have no Icon, create one

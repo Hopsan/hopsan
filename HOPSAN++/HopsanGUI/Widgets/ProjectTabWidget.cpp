@@ -454,6 +454,8 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
     getContainer(index)->disconnectMainWindowActions();
 
+    getCurrentContainer()->mUndoDisabled = true;    //This is necessary to prevent each component from registering it being deleted in the undo stack
+
     //Delete project tab
     delete widget(index);
     //We dont need to call removeTab here, this seems to be handled automatically
@@ -595,5 +597,8 @@ void ProjectTabWidget::tabChanged()
         {
             gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->mpSystem->mGfxType);
         }
+
+        gpMainWindow->toggleNamesAction->setChecked(!getCurrentContainer()->mNamesHidden);
+        gpMainWindow->togglePortsAction->setChecked(!getCurrentContainer()->mPortsHidden);
     }
 }

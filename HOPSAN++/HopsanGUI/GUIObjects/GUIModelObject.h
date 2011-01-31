@@ -86,8 +86,8 @@ public slots:
     //! @todo maybe flip should work on all gui objects
     void flipVertical(undoStatus undoSettings = UNDO);
     void flipHorizontal(undoStatus undoSettings = UNDO);
-    void hideName(undoStatus undoSettings = UNDO);
-    void showName(undoStatus undoSettings = UNDO);
+    void hideName(undoStatus undoSettings = NOUNDO);
+    void showName(undoStatus undoSettings = NOUNDO);
     void setIcon(graphicsType);
 
 signals:

@@ -190,4 +190,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicShuttleValve.hpp \
     Components/Hydraulic/HydraulicPressureControlledPump.hpp \
     Components/Hydraulic/HydraulicPressureDropValve.hpp \
-    Components/Hydraulic/HydraulicPressureReducingValve.hpp
+    Components/Hydraulic/HydraulicPressureReducingValve.hpp \
+    Components/Mechanic/MechanicLeverArm.hpp

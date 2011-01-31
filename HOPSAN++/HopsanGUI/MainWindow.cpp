@@ -40,6 +40,8 @@ CopyStack gCopyStack;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {    
+    qDebug() << gExecPath;
+
     //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
     gpMainWindow = this;
     //std::cout << "Starting Hopsan!";
@@ -124,32 +126,32 @@ MainWindow::MainWindow(QWidget *parent)
         mpLibrary->addExternalLibrary(gConfig.getUserLibs().at(i));
     }
 
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "benchmarking");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "benchmarking");
 
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "Subsystem");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Subsystem");
 
     mpLibrary->addEmptyLibrary("Signal");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Sources & Sinks","Signal");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Arithmetics","Signal");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Non-Linearities","Signal");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Filters","Signal");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Logic","Signal");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Sources & Sinks","Signal");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Arithmetics","Signal");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Non-Linearities","Signal");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Filters","Signal");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Logic","Signal");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
 
     mpLibrary->addEmptyLibrary("Mechanic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Transformers","Mechanic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Mass Loads","Mechanic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Springs & Dampers","Mechanic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Sensors","Mechanic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Transformers","Mechanic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Mass Loads","Mechanic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Springs & Dampers","Mechanic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sensors","Mechanic");
 
     mpLibrary->addEmptyLibrary("Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/Sources & Sinks","Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/restrictors","Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/volumes","Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/actuators","Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
-    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Sources & Sinks","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/restrictors","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/volumes","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/actuators","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
 
     //Create one new project tab, IMPORTANT: must be after Subsystem library has been loaded as we need Subsystem Appearance
     //mpProjectTabs->addNewProjectTab();
@@ -201,14 +203,15 @@ MainWindow::~MainWindow()
 void MainWindow::initializeWorkspace()
 {
     //! @todo This has to do with file associations, but is not finished...
-    //    for(size_t i=0; i<qApp->arguments().size(); ++i)
-    //    {
-    //        if(qApp->arguments().at(i).endsWith(".hmf"))
-    //        {
-    //            mpProjectTabs->closeAllProjectTabs();
-    //            mpProjectTabs->loadModel(qApp->arguments().at(i));
-    //        }
-    //    }
+    for(size_t i=0; i<qApp->arguments().size(); ++i)
+    {
+        if(qApp->arguments().at(i).endsWith(".hmf"))
+        {
+            mpProjectTabs->closeAllProjectTabs();
+            mpProjectTabs->loadModel(qApp->arguments().at(i));
+            return;
+        }
+    }
 
     if(gConfig.getShowWelcomeDialog())
     {
@@ -391,6 +394,24 @@ void MainWindow::createActions()
     optionsAction->setText("Options");
     optionsAction->setShortcut(QKeySequence("Ctrl+Alt+o"));
 
+    alignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
+    alignXAction->setText("Align Vertical");
+
+    alignYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignY.png"), tr("&Align Horizontal (by last selected)"), this);
+    alignYAction->setText("Align Horizontal");
+
+    rotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left"), this);
+    rotateLeftAction->setText("Rotate Left");
+
+    rotateRightAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateRight.png"), tr("&Rotate Right"), this);
+    rotateRightAction->setText("Rotate Right");
+
+    flipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Rotate Left"), this);
+    flipHorizontalAction->setText("Rotate Left");
+
+    flipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Rotate Left"), this);
+    flipVerticalAction->setText("Rotate Left");
+
     resetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
 
@@ -403,34 +424,44 @@ void MainWindow::createActions()
     centerViewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-CenterView.png"), tr("&Center View"), this);
     centerViewAction->setText("Center View");
 
-    hideNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
-    hideNamesAction->setText("Hide All Component Names");
-    hideNamesAction->setShortcut(QKeySequence("Ctrl+h"));
+//    hideNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
+//    hideNamesAction->setText("Hide All Component Names");
+//    hideNamesAction->setShortcut(QKeySequence("Ctrl+h"));
 
-    showNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
-    showNamesAction->setText("Show All Component Names");
-    showNamesAction->setShortcut(QKeySequence("Ctrl+j"));
+//    showNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
+//    showNamesAction->setText("Show All Component Names");
+//    showNamesAction->setShortcut(QKeySequence("Ctrl+j"));
+
+    QIcon toggleNamesIcon;
+    toggleNamesIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleNames.png", QSize(), QIcon::Normal, QIcon::On);
+    toggleNamesAction = new QAction(toggleNamesIcon, tr("&Hide All Ports"), this);
+    toggleNamesAction->setText("Hide All Ports");
+    toggleNamesAction->setCheckable(true);
+    toggleNamesAction->setChecked(true);
+    toggleNamesAction->setShortcut(QKeySequence("Ctrl+g"));
 
     exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
     exportPDFAction->setText("Export Model to PDF");
-
-    alignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
-    alignXAction->setText("Align Vertical");
-
-    alignYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignY.png"), tr("&Align Horizontal (by last selected)"), this);
-    alignYAction->setText("Align Horizontal");
 
     aboutAction = new QAction(this);
     aboutAction->setText("About");
     connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
     connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
 
-    QIcon hidePortsIcon;
-    hidePortsIcon.addFile(QString(ICONPATH) + "Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
-    hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
-    hidePortsAction->setText("Hide All Ports");
-    hidePortsAction->setCheckable(true);
-    hidePortsAction->setShortcut(QKeySequence("Ctrl+g"));
+//    QIcon hidePortsIcon;
+//    hidePortsIcon.addFile(QString(ICONPATH) + "Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
+//    hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
+//    hidePortsAction->setText("Hide All Ports");
+//    hidePortsAction->setCheckable(true);
+//    hidePortsAction->setShortcut(QKeySequence("Ctrl+g"));
+
+    QIcon togglePortsIcon;
+    togglePortsIcon.addFile(QString(ICONPATH) + "Hopsan-TogglePorts.png", QSize(), QIcon::Normal, QIcon::On);
+    togglePortsAction = new QAction(togglePortsIcon, tr("&Hide All Ports"), this);
+    togglePortsAction->setText("Hide All Ports");
+    togglePortsAction->setCheckable(true);
+    togglePortsAction->setChecked(true);
+    togglePortsAction->setShortcut(QKeySequence("Ctrl+g"));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(100);
@@ -567,12 +598,20 @@ void MainWindow::createToolbars()
     mpViewToolBar->addAction(resetZoomAction);
     mpViewToolBar->addAction(zoomInAction);
     mpViewToolBar->addAction(zoomOutAction);
-    mpViewToolBar->addAction(hideNamesAction);
-    mpViewToolBar->addAction(showNamesAction);
-    mpViewToolBar->addAction(hidePortsAction);
+    mpViewToolBar->addAction(toggleNamesAction);
+    mpViewToolBar->addAction(togglePortsAction);
+    //mpViewToolBar->addAction(hideNamesAction);
+    //mpViewToolBar->addAction(showNamesAction);
+    //mpViewToolBar->addAction(hidePortsAction);
     mpViewToolBar->addAction(exportPDFAction);
-    mpViewToolBar->addAction(alignXAction);
-    mpViewToolBar->addAction(alignYAction);
+
+    mpToolsToolBar = addToolBar(tr("Tools Toolbar"));
+    mpToolsToolBar->addAction(alignXAction);
+    mpToolsToolBar->addAction(alignYAction);
+    mpToolsToolBar->addAction(rotateRightAction);
+    mpToolsToolBar->addAction(rotateLeftAction);
+    mpToolsToolBar->addAction(flipHorizontalAction);
+    mpToolsToolBar->addAction(flipVerticalAction);
 
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
     mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -638,7 +677,7 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
     {
-        hidePortsAction->setChecked(mpProjectTabs->getCurrentTab()->mpSystem->mPortsHidden);
+        togglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->mpSystem->mPortsHidden);
     }
 
     bool noTabs = !(mpProjectTabs->count() > 0);
@@ -653,9 +692,11 @@ void MainWindow::updateToolBarsToNewTab()
     resetZoomAction->setEnabled(!noTabs);
     zoomInAction->setEnabled(!noTabs);
     zoomOutAction->setEnabled(!noTabs);
-    hideNamesAction->setEnabled(!noTabs);
-    showNamesAction->setEnabled(!noTabs);
-    hidePortsAction->setEnabled(!noTabs);
+    toggleNamesAction->setEnabled(!noTabs);
+    togglePortsAction->setEnabled(!noTabs);
+    //hideNamesAction->setEnabled(!noTabs);
+    //showNamesAction->setEnabled(!noTabs);
+    //hidePortsAction->setEnabled(!noTabs);
     exportPDFAction->setEnabled(!noTabs);
     alignXAction->setEnabled(!noTabs);
     alignYAction->setEnabled(!noTabs);

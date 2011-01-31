@@ -17,10 +17,14 @@
 
 //Global stuff
 MainWindow* gpMainWindow = 0;
+QString gExecPath;
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    gExecPath = qApp->arguments().first();
+    gExecPath.chop(13);
 
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     QSplashScreen splash(pixmap);

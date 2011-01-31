@@ -8,6 +8,7 @@
 //$Id$
 
 #include "qdebug.h"
+#include "MainWindow.h"
 #include "GUIModelObjectAppearance.h"
 #include "../Utilities/GUIUtilities.h"
 #include "../version.h"
@@ -92,7 +93,7 @@ QString GUIModelObjectAppearance::getFullIconPath(graphicsType gfxType)
     else
     {
         //No icon available use som noname icon
-        return OBJECTICONPATH + QString("missingcomponenticon.svg");
+        return QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
 }
 
