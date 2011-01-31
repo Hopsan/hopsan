@@ -99,6 +99,7 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
     connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()), Qt::UniqueConnection);
     connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()), Qt::UniqueConnection);
+    connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateRight()), Qt::UniqueConnection);
     connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
     connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
@@ -131,6 +132,7 @@ void GUIContainerObject::disconnectMainWindowActions()
     disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
     disconnect(gpMainWindow->alignXAction,          SIGNAL(triggered()),        this,     SLOT(alignX()));
     disconnect(gpMainWindow->alignYAction,          SIGNAL(triggered()),        this,     SLOT(alignY()));
+    disconnect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateRight()));
     disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
 
     disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
@@ -1795,6 +1797,7 @@ void GUIContainerObject::exitContainer()
     connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
     connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignX()));
     connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignY()));
+    connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateRight()));
     connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
     connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
     connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
@@ -1810,4 +1813,15 @@ void GUIContainerObject::exitContainer()
         //Refresh external port appearance
     //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal
     this->refreshExternalPortsAppearanceAndPosition();
+}
+
+
+void GUIContainerObject::rotateRight()
+{
+    if(this->isObjectSelected())
+    {
+        mUndoStack->newPost();
+        mpParentProjectTab->hasChanged();
+    }
+    emit rotateObjectsRight();
 }

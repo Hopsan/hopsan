@@ -176,8 +176,10 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         {
             mpSelectionBox->setActive();
             connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject, SIGNAL(rotateObjectsRight()), this, SLOT(rotate90cw()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
@@ -189,8 +191,10 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         else
         {
             disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            disconnect(mpParentContainerObject, SIGNAL(rotateObjectsRight()), this, SLOT(rotate90cw()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
@@ -306,6 +310,28 @@ void GUIObject::rotate90cw(undoStatus undoSettings)
 
     emit objectMoved();
 }
+
+//! @brief Rotates a component 90 degrees counter-clockwise
+//! @param undoSettings Tells whether or not this shall be registered in undo stsack
+//! @see rotateTo(qreal angle);
+void GUIObject::rotate90ccw(undoStatus undoSettings)
+{
+    this->setTransformOriginPoint(this->boundingRect().center());
+    this->setRotation(this->rotation()-90);
+
+    if (this->rotation() < 0)
+    {
+        this->setRotation(360+this->rotation());
+    }
+
+    if(undoSettings == UNDO)
+    {
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName());    //! @todo This will register a clockwise rotation, which will be bad...
+    }
+
+    emit objectMoved();
+}
+
 
 
 //! @brief Slot that moves component one pixel upwards

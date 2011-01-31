@@ -400,11 +400,11 @@ void MainWindow::createActions()
     alignYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignY.png"), tr("&Align Horizontal (by last selected)"), this);
     alignYAction->setText("Align Horizontal");
 
-    rotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left"), this);
-    rotateLeftAction->setText("Rotate Left");
+    rotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left (Ctrl+E)"), this);
+    rotateLeftAction->setText("Rotate Left (Ctrl+E)");
 
-    rotateRightAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateRight.png"), tr("&Rotate Right"), this);
-    rotateRightAction->setText("Rotate Right");
+    rotateRightAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateRight.png"), tr("&Rotate Right (Ctrl+R)"), this);
+    rotateRightAction->setText("Rotate Right (Ctrl+ER)");
 
     flipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Rotate Left"), this);
     flipHorizontalAction->setText("Rotate Left");
@@ -434,11 +434,11 @@ void MainWindow::createActions()
 
     QIcon toggleNamesIcon;
     toggleNamesIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleNames.png", QSize(), QIcon::Normal, QIcon::On);
-    toggleNamesAction = new QAction(toggleNamesIcon, tr("&Hide All Ports"), this);
-    toggleNamesAction->setText("Hide All Ports");
+    toggleNamesAction = new QAction(toggleNamesIcon, tr("&Show Component Names (Ctrl+N)"), this);
+    toggleNamesAction->setText("Show Component Names (Ctrl+N)");
     toggleNamesAction->setCheckable(true);
     toggleNamesAction->setChecked(true);
-    toggleNamesAction->setShortcut(QKeySequence("Ctrl+g"));
+    toggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
 
     exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
     exportPDFAction->setText("Export Model to PDF");
@@ -457,11 +457,11 @@ void MainWindow::createActions()
 
     QIcon togglePortsIcon;
     togglePortsIcon.addFile(QString(ICONPATH) + "Hopsan-TogglePorts.png", QSize(), QIcon::Normal, QIcon::On);
-    togglePortsAction = new QAction(togglePortsIcon, tr("&Hide All Ports"), this);
-    togglePortsAction->setText("Hide All Ports");
+    togglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
+    togglePortsAction->setText("Show Unconnected Ports (Ctrl+T)");
     togglePortsAction->setCheckable(true);
     togglePortsAction->setChecked(true);
-    togglePortsAction->setShortcut(QKeySequence("Ctrl+g"));
+    togglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(100);

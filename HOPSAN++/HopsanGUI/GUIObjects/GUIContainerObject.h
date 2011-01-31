@@ -139,6 +139,9 @@ public slots:
         //Enter and exit a container object
     void enterContainer();
     void exitContainer();
+        //Rotate objects
+    void rotateRight();
+    //void rotateLeft();
 
 signals:
         //Selection
@@ -155,6 +158,7 @@ signals:
     void deleteSelected();
     void setAllGfxType(graphicsType);
     void componentChanged();
+    void rotateObjectsRight();
 
 
 protected:

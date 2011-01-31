@@ -263,12 +263,16 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (ctrlPressed && event->key() == Qt::Key_R && !mpContainerObject->mIsRenamingObject)
     {
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->rotateRight();
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_E && !mpContainerObject->mIsRenamingObject)
+    {
         if(mpContainerObject->isObjectSelected())
         {
             mpContainerObject->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
-        emit keyPressCtrlR();
+        emit keyPressCtrlE();
     }
     else if (event->key() == Qt::Key_Escape)
     {
