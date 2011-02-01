@@ -10,9 +10,7 @@
 #ifndef HYDRAULICCOMPONENTTAMPLTE_HPP_INCLUDED
 #define HYDRAULICCOMPONENTTAMPLTE_HPP_INCLUDED
 
-#include "Component.h"
-#include "CoreUtilities/Delay.h"
-#include "CoreUtilities/SecondOrderFilter.h"
+#include "../ComponentEssentials.h"
 
 namespace hopsan {
 

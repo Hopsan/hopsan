@@ -52,6 +52,8 @@ namespace hopsan {
             mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, t);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+
+            (*mpND_Zx) = 0.0;
         }
 
 

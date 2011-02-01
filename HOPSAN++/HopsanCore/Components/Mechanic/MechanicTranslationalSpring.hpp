@@ -49,6 +49,11 @@ namespace hopsan {
             mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+
+            Zc = k*mTimestep;
+
+            (*mpND_Zc1) = Zc;
+            (*mpND_Zc2) = Zc;
         }
 
 

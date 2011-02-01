@@ -29,11 +29,10 @@ class HydraulicCylinderC : public ComponentC
 
     private:
         //Local Constants
-        int n;
         double alfa, wfak;
 
-        // Local variables
-        double clim, zlim, zlim0, V1, V2, V1min, V2min, pi1, qi1, ci1, pi2, qi2, ci2, c1_0, ci1_0, c2_0, ci2_0, xi3, vi3, cp1_0, cp2_0, cp1, cp2;
+        // "Global" variables
+        double zlim0, V1min, V2min, ci1, ci2;
 
         //Parameters
         double betae, me, V01, V02, A1, A2, sl, cLeak, bp;
@@ -54,7 +53,6 @@ class HydraulicCylinderC : public ComponentC
         {
             //Set member attributes
             mTypeName = "HydraulicCylinderC";
-            n = 0;
             alfa = .01;
             wfak = .1;
             betae = 1000000000.0;
@@ -114,6 +112,9 @@ class HydraulicCylinderC : public ComponentC
             double x3 = (*mpND_x3);
             double v3 = (*mpND_v3);
 
+            double c1, Zc1, c2, Zc2, c3, Zx3;
+            double qi1, qi2, V1, V2, xi3, vi3;
+
             zlim0 = wfak * me / mTimestep;
             V1min = betae * mTimestep*mTimestep * A1*A1 / (wfak * me);
             V2min = betae * mTimestep*mTimestep * A2*A2 / (wfak * me);
@@ -123,18 +124,18 @@ class HydraulicCylinderC : public ComponentC
             V2 = V01 + A2 * (sl - xi3);
             if (V1 < V1min) { V1 = V1min; }
             if (V2 < V2min) { V2 = V2min; }
-            double Zc1 = betae * mTimestep / V1;
-            double Zc2 = betae * mTimestep / V2;
+            Zc1 = betae * mTimestep / V1;
+            Zc2 = betae * mTimestep / V2;
 
-            double c1 = p1 - Zc1 * q1;
-            double c2 = p2 - Zc2 * q2;
+            c1 = p1 - Zc1 * q1;
+            c2 = p2 - Zc2 * q2;
 
             qi1 = -A1 * vi3;
             qi2 = A2 * vi3;
             ci1 = p1 - Zc1 * (qi1 - cLeak * (p1 - p2));
             ci2 = p2 - Zc2 * (qi2 - cLeak * (p2 - p1));
-            double c3 = f3;
-            double Zx3 = A1 * A1 * Zc1 + A2 * A2 * Zc2 + bp;
+            c3 = f3;
+            Zx3 = A1 * A1 * Zc1 + A2 * A2 * Zc2 + bp;
 
              //Write to nodes
             (*mpND_c1) = c1;
@@ -147,17 +148,19 @@ class HydraulicCylinderC : public ComponentC
 
         void simulateOneTimestep()
         {
-            //Read variables from nodes
-            double p1 = (*mpND_p1);
-            double q1 = (*mpND_q1);
-            double p2 = (*mpND_p2);
-            double q2 = (*mpND_q2);
-            double c1 = (*mpND_c1);
-            double c2 = (*mpND_c2);
-            double x3 = (*mpND_x3);
-            double v3 = (*mpND_v3);
+            //Declare local variables;
+            double pi1, pi2, clim, zlim, qi1, qi2, V1, V2, xi3, vi3, c1_0, ci1_0, c2_0, ci2_0, cp1_0, cp2_0, cp1, cp2;
+            double p1, q1, p2, q2, c1, c2, x3, v3, c3, Zc1, Zc2, Zx3;
 
-            double c3, Zc1, Zc2, Zx3;
+            //Read variables from nodes
+            p1 = (*mpND_p1);
+            q1 = (*mpND_q1);
+            p2 = (*mpND_p2);
+            q2 = (*mpND_q2);
+            c1 = (*mpND_c1);
+            c2 = (*mpND_c2);
+            x3 = (*mpND_x3);
+            v3 = (*mpND_v3);
 
             //Internal mechanical port
             xi3 = -x3;
@@ -221,10 +224,10 @@ class HydraulicCylinderC : public ComponentC
         //This function was translated from old HOPSAN using F2C. A few manual adjustments were necessary.
 
         /* ---------------------------------------------------------------- */
-        /*     Function that simulate the end of the stroke. If X is */
-        /*     smaller than 0 or greater than SL a large spring force will */
-        /*     act to force X into the interval again. The spring constant */
-        /*     is as high possible without numerical instability. */
+        /*     Function that simulate the end of the stroke. If X is        */
+        /*     smaller than 0 or greater than SL a large spring force will  */
+        /*     act to force X into the interval again. The spring constant  */
+        /*     is as high possible without numerical instability.           */
         /* ---------------------------------------------------------------- */
 
         void limitStroke(double *clp, double *zlim, double *xp, double *sxp, double *zlim0, double *sl, double time, double timestep)

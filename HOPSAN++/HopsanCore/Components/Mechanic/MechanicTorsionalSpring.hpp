@@ -53,9 +53,15 @@ namespace hopsan {
             mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
             mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
-            mpND_w2 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c2 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
+            mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CHARIMP);
+
+            Zx = k*mTimestep;
+
+            (*mpND_Zx1) = Zx;
+            (*mpND_Zx2) = Zx;
+
         }
 
 
@@ -68,15 +74,12 @@ namespace hopsan {
             lastc2 = (*mpND_c2);
 
             //Spring equations
-            Zx = k*mTimestep;
             c1 = lastc2 + 2.0*Zx*w2;
             c2 = lastc1 + 2.0*Zx*w1;
 
             //Write new values to nodes
             (*mpND_c1) = c1;
-            (*mpND_Zx1) = Zx;
             (*mpND_c2) = c2;
-            (*mpND_Zx2) = Zx;
         }
     };
 }

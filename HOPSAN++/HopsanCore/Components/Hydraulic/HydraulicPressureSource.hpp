@@ -47,6 +47,7 @@ namespace hopsan {
 
             setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure);
             setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
+            setStartValue(mpP1, NodeHydraulic::WAVEVARIABLE, mZc);
         }
 
 

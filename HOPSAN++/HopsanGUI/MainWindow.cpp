@@ -567,13 +567,16 @@ void MainWindow::createMenus()
 //! @brief Creates the toolbars
 void MainWindow::createToolbars()
 {
+    //File toolbar, contains all file handling stuff (open, save etc)
     mpFileToolBar = addToolBar(tr("File Toolbar"));
     mpFileToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpFileToolBar->addAction(newAction);
     mpFileToolBar->addAction(openAction);
     mpFileToolBar->addAction(saveAction);
     mpFileToolBar->addAction(saveAsAction);
+    mpFileToolBar->addAction(exportPDFAction);
 
+    //Edit toolbar, contains clipboard operations, undo/redo and global options
     mpEditToolBar = addToolBar(tr("Edit Toolbar"));
     mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpEditToolBar->addAction(cutAction);
@@ -583,6 +586,7 @@ void MainWindow::createToolbars()
     mpEditToolBar->addAction(redoAction);
     mpEditToolBar->addAction(optionsAction);
 
+    //View toolbar, contains all cosmetic and zooming tools
     mpViewToolBar = addToolBar(tr("View Toolbar"));
     mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpViewToolBar->addAction(centerViewAction);
@@ -591,11 +595,8 @@ void MainWindow::createToolbars()
     mpViewToolBar->addAction(zoomOutAction);
     mpViewToolBar->addAction(toggleNamesAction);
     mpViewToolBar->addAction(togglePortsAction);
-    //mpViewToolBar->addAction(hideNamesAction);
-    //mpViewToolBar->addAction(showNamesAction);
-    //mpViewToolBar->addAction(hidePortsAction);
-    mpViewToolBar->addAction(exportPDFAction);
 
+    //Tools toolbar, contains all tools used to modify the model
     mpToolsToolBar = addToolBar(tr("Tools Toolbar"));
     mpToolsToolBar->addAction(alignXAction);
     mpToolsToolBar->addAction(alignYAction);
@@ -604,6 +605,7 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(flipHorizontalAction);
     mpToolsToolBar->addAction(flipVerticalAction);
 
+    //Simulation toolbar, contains tools for simulationg, plotting and model preferences
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
     mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpSimToolBar->addWidget(mpStartTimeLineEdit);
