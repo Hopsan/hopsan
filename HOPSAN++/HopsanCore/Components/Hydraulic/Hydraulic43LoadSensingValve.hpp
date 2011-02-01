@@ -122,6 +122,7 @@ namespace hopsan {
             //Declare local variables
             double xv, xpanom, xpbnom, xatnom, xbtnom, Kcpa, Kcpb, Kcat, Kcbt, qpa, qpb, qat, qbt;
             double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pload, qload, cload, Zcload;
+            bool cav = false;
 
             //Get variable values from nodes
             cp = (*mpND_cp);
@@ -175,8 +176,65 @@ namespace hopsan {
                 qt = qat;
             }
 
+            pp = cp + qp*Zcp;
+            pt = ct + qt*Zct;
             pa = ca + qa*Zca;
             pb = cb + qb*Zcb;
+
+            //Cavitation check
+            if(pa < 0.0)
+            {
+                ca = 0.0;
+                Zca = 0;
+                cav = true;
+            }
+            if(pb < 0.0)
+            {
+                cb = 0.0;
+                Zcb = 0;
+                cav = true;
+            }
+            if(pp < 0.0)
+            {
+                cp = 0.0;
+                Zcp = 0;
+                cav = true;
+            }
+            if(pt < 0.0)
+            {
+                ct = 0.0;
+                Zct = 0;
+                cav = true;
+            }
+
+            if(cav)
+            {
+                qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+                qpb = qTurb_pb.getFlow(cp, cb, Zcp, Zcb);
+                qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
+                qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
+
+                if (xv >= 0.0)
+                {
+                    qp = -qpa;
+                    qa = qpa;
+                    qb = -qbt;
+                    qt = qbt;
+                }
+                else
+                {
+                    qp = -qpb;
+                    qa = -qat;
+                    qb = qpb;
+                    qt = qat;
+                }
+
+                pp = cp + qp*Zcp;
+                pt = ct + qt*Zct;
+                pa = ca + qa*Zca;
+                pb = cb + qb*Zcb;
+            }
+
 
             if(xv >= 0.0)
             {
@@ -189,9 +247,9 @@ namespace hopsan {
 
             //Write new values to nodes
 
-            (*mpND_pp) = cp + qp*Zcp;
+            (*mpND_pp) = pp;
             (*mpND_qp) = qp;
-            (*mpND_pt) = ct + qt*Zct;
+            (*mpND_pt) = pt;
             (*mpND_qt) = qt;
             (*mpND_pa) = pa;
             (*mpND_qa) = qa;
