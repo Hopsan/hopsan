@@ -17,11 +17,34 @@
 	\endhtmlonly
  
 	\section toolbar Toolbar
-		The toolbar consists of three parts. The first part of the toolbar consists of file operations such as creating, loading and saving models. The second part has buttons for editing tools, such as copy, paste and undo. The last part holds all simulation controls, such as setting up simulation parameters, running a simulation and opening the plot widget.
-
-		\htmlonly
-			<img src="../graphics/toolbar.png" width=800 border=0><br>
+		The buttons at the top of the main window is divided into five toolbars:    
+    
+    \htmlonly
+			<br><img src="../graphics/File Toolbar.png" border=0><br><br>
 		\endhtmlonly
+		The first one contains file operations such as creating, loading and saving models.
+		
+		\htmlonly
+      <br><br><img src="../graphics/Edit Toolbar.png" border=0><br><br>
+    \endhtmlonly
+    The second toolbar has buttons for editing tools, such as copy, paste and undo.
+    
+		\htmlonly
+      <br><br><img src="../graphics/View Toolbar.png" border=0><br><br>
+    \endhtmlonly
+    The third one holds view operations such as zooming, and changing how models are displayed.
+    
+		\htmlonly
+      <br><br><img src="../graphics/Tools Toolbar.png" border=0><br><br>
+    \endhtmlonly
+    The forth toolbar consists of tools for modifying the model.
+    
+		\htmlonly
+      <br><br><img src="../graphics/Simulation Toolbar.png" border=0><br><br>
+		\endhtmlonly
+		Finally, the fifth toolbar contains simulation controls such as simulating, plotting or changing simulation parameters.
+		
+		
 		
 	\section workspace Workspace
 		Models are displayed in the workspace area. More than one model can be opened at the same time. In this case, each model appears in its own tab.
@@ -59,15 +82,15 @@ To change parameteres of a component, you can double-click on it to open its par
 
 
 \section using-global-parameters Using Global Parameters
-Global system parameters can be used to quickly change a parameter value in several components at once. To do this, open the \a System \a Parameters widget by clicking on the little earth globe icon in the toolbar or by pressing Ctrl+Alt+Y.
+Global system parameters can be used to quickly change a parameter value in several components at once. To do this, open the \a System \a Parameters widget by clicking on the little earth globe icon in the toolbar or by pressing Ctrl+Alt+Y. From here new system parameters can be added or removed by clicking on the "Set" and "Unset" buttons. Values can be changed directly by double-clicking on their values in the list. They can then be used as parameters in components by clicking on the icon to the right of the parameter value box in the component's parameter dialog. When a system parameter is changed, it will changed for all components that use it. Should a system parameter be removed, the components that use it will change to simply using the last numerical value of the parameter instead.
 
 
 \section subsystems Subsystems
-Blabla...
+Subsystems are not completely stable, and the use of them is discourage in the current release of Hopsan NG. 
 
 
 \section widgets Widgets
-Blabla...
+To make models more nice looking and understandable, it is possible to add box widgets and text widgets. These are purely cosmetical and do not modify the behaviour of the system in any way. To add a widget, simply right click on the workspace and select "Add Text Widget" or "Add Box Widget" from the popup menu. 
 
 
 
