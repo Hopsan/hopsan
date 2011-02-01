@@ -34,7 +34,7 @@ namespace hopsan {
         TurbulentFlowFunction qTurb_pa;
         double xv, xpanom, Kcpa, qpa;
 
-        double *mpND_cp, *mpND_Zcp, *mpND_ca, *mpND_Zca, *xvmpND_in, *mpND_pp, *mpND_qp, *mpND_pa, *mpND_qa;
+        double *mpND_cp, *mpND_Zcp, *mpND_ca, *mpND_Zca, *mpND_xvin, *mpND_pp, *mpND_qp, *mpND_pa, *mpND_qa;
 
         Port *mpPP, *mpPA, *mpIn;
 
@@ -81,7 +81,7 @@ namespace hopsan {
             mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
             mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
 
-            xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
@@ -94,13 +94,14 @@ namespace hopsan {
         {
             //Declare local variables
             double cp, Zcp, ca, Zca, xvin, pp, qp, pa, qa;
+            bool cav = false;
 
             //Read variables from nodes
             cp = (*mpND_cp);
             Zcp = (*mpND_Zcp);
             ca = (*mpND_ca);
             Zca = (*mpND_Zca);
-            xvin = (*xvmpND_in);
+            xvin = (*mpND_xvin);
 
             //Dynamics of spool position (second order low pass filter)
             filter.update(xvin);
@@ -124,10 +125,46 @@ namespace hopsan {
                 qa = 0;
             }
 
+            pp = cp + qp*Zcp;
+            pa = ca + qa*Zca;
+
+            //Cavitation check
+            if(pa < 0.0)
+            {
+                ca = 0.0;
+                Zca = 0;
+                cav = true;
+            }
+            if(pp < 0.0)
+            {
+                cp = 0.0;
+                Zcp = 0;
+                cav = true;
+            }
+
+            if(cav)
+            {
+                qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+
+                if (xv >= 0.0)
+                {
+                    qp = -qpa;
+                    qa = qpa;
+                }
+                else
+                {
+                    qp = 0;
+                    qa = 0;
+                }
+
+                pp = cp + qp*Zcp;
+                pa = ca + qa*Zca;
+            }
+
             //Calculate pressures from flow and impedance
-            (*mpND_pp) = cp + qp * Zcp;
+            (*mpND_pp) = pp;
             (*mpND_qp) = qp;
-            (*mpND_pa) = ca + qa * Zca;
+            (*mpND_pa) = pa;
             (*mpND_qa) = qa;
         }
     };

@@ -30,7 +30,7 @@ namespace hopsan {
         double omegah;
         double deltah;
 
-        double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *xvmpND_in;
+        double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_xvin;
 
         SecondOrderFilter filter;
         TurbulentFlowFunction qTurb_pa;
@@ -84,7 +84,7 @@ namespace hopsan {
             mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
             mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
 
-            xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
@@ -97,6 +97,7 @@ namespace hopsan {
             //Declare local variables
             double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
             double pa, qa, ca, Zca, pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin;
+            bool cav = false;
 
             //Get variable values from nodes
             cp = (*mpND_cp);
@@ -105,7 +106,7 @@ namespace hopsan {
             Zct = (*mpND_Zct);
             ca = (*mpND_ca);
             Zca = (*mpND_Zca);
-            xvin = (*xvmpND_in);
+            xvin = (*mpND_xvin);
 
             if(doubleToBool(xvin))
             {
@@ -144,13 +145,61 @@ namespace hopsan {
                 qt = qat;
             }
 
+            pp = cp + qp*Zcp;
+            pa = ca + qa*Zca;
+            pt = ct + qt*Zct;
+
+            //Cavitation check
+            if(pa < 0.0)
+            {
+                ca = 0.0;
+                Zca = 0;
+                cav = true;
+            }
+            if(pp < 0.0)
+            {
+                cp = 0.0;
+                Zcp = 0;
+                cav = true;
+            }
+            if(pt < 0.0)
+            {
+                ct = 0.0;
+                Zct = 0;
+                cav = true;
+            }
+
+            if(cav)
+            {
+                qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+                qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
+
+                if (xv >= 0.0)
+                {
+                    qp = -qpa;
+                    qa = qpa;
+                    qt = 0;
+                }
+                else
+                {
+                    qp = 0;
+                    qa = -qat;
+                    qt = qat;
+                }
+
+                pp = cp + qp*Zcp;
+                pa = ca + qa*Zca;
+                pt = ct + qt*Zct;
+            }
+
+
             //Write new values to nodes
 
-            (*mpND_pp) = cp + qp*Zcp;
+            (*mpND_pp) = pp;
             (*mpND_qp) = qp;
-            (*mpND_pa) = ca + qa*Zca;
+            (*mpND_pa) = pa;
             (*mpND_qa) = qa;
-            (*mpND_pt) = ct + qt*Zct;
+            (*mpND_pt) = pt;
             (*mpND_qt) = qt;
         }
     };

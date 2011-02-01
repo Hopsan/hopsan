@@ -34,11 +34,11 @@ namespace hopsan {
         double omegah;
         double deltah;
 
-        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *xvmpND_in;
+        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_xvin;
 
         SecondOrderFilter filter;
-        TurbulentFlowFunction qTurb__pa;
-        TurbulentFlowFunction qTurb__bt;
+        TurbulentFlowFunction qTurb_pa;
+        TurbulentFlowFunction qTurb_bt;
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
 
     public:
@@ -102,7 +102,7 @@ namespace hopsan {
             mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WAVEVARIABLE);
             mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CHARIMP);
 
-            xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
@@ -116,6 +116,7 @@ namespace hopsan {
             //Declare local variables
             double xv, Kc, qpa, qbt;
             double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb;
+            bool cav = false;
 
             //Get variable values from nodes
             cp = (*mpND_cp);
@@ -126,7 +127,7 @@ namespace hopsan {
             Zca = (*mpND_Zca);
             cb = (*mpND_cb);
             Zcb = (*mpND_Zcb);
-            xvin = (*xvmpND_in);
+            xvin = (*mpND_xvin);
 
             //Dynamics of spool position (second order low pass filter)
             filter.update(xvin);
@@ -136,10 +137,10 @@ namespace hopsan {
             Kc = Cq*f*pi*d*xv*sqrt(2.0/890.0);
 
             //Calculate flow
-            qTurb__pa.setFlowCoefficient(Kc);
-            qTurb__bt.setFlowCoefficient(Kc);
-            qpa = qTurb__pa.getFlow(cp, ca, Zcp, Zca);
-            qbt = qTurb__bt.getFlow(cb, ct, Zcb, Zct);
+            qTurb_pa.setFlowCoefficient(Kc);
+            qTurb_bt.setFlowCoefficient(Kc);
+            qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+            qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
 
             if (xv >= 0.0)
             {
@@ -156,15 +157,72 @@ namespace hopsan {
                 qt = 0;
             }
 
+            pp = cp + qp*Zcp;
+            pt = ct + qt*Zct;
+            pa = ca + qa*Zca;
+            pb = cb + qb*Zcb;
+
+            //Cavitation check
+            if(pa < 0.0)
+            {
+                ca = 0.0;
+                Zca = 0;
+                cav = true;
+            }
+            if(pb < 0.0)
+            {
+                cb = 0.0;
+                Zcb = 0;
+                cav = true;
+            }
+            if(pp < 0.0)
+            {
+                cp = 0.0;
+                Zcp = 0;
+                cav = true;
+            }
+            if(pt < 0.0)
+            {
+                ct = 0.0;
+                Zct = 0;
+                cav = true;
+            }
+
+            if(cav)
+            {
+                qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+                qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
+
+                if (xv >= 0.0)
+                {
+                    qp = -qpa;
+                    qa = qpa;
+                    qb = -qbt;
+                    qt = qbt;
+                }
+                else
+                {
+                    qp = 0;
+                    qa = 0;
+                    qb = 0;
+                    qt = 0;
+                }
+
+                pp = cp + qp*Zcp;
+                pt = ct + qt*Zct;
+                pa = ca + qa*Zca;
+                pb = cb + qb*Zcb;
+            }
+
             //Write new values to nodes
 
-            (*mpND_pp) = cp + qp*Zcp;
+            (*mpND_pp) = pp;
             (*mpND_qp) = qp;
-            (*mpND_pt) = ct + qt*Zct;
+            (*mpND_pt) = pt;
             (*mpND_qt) = qt;
-            (*mpND_pa) = ca + qa*Zca;
+            (*mpND_pa) = pa;
             (*mpND_qa) = qa;
-            (*mpND_pb) = cb + qb*Zcb;
+            (*mpND_pb) = pb;
             (*mpND_qb) = qb;
         }
     };

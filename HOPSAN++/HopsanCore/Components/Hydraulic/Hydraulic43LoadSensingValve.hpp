@@ -33,7 +33,7 @@ namespace hopsan {
         double omegah;
         double deltah;
 
-        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_pload, *mpND_qload, *mpND_cload, *mpND_Zcload, *xvmpND_in;
+        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_pload, *mpND_qload, *mpND_cload, *mpND_Zcload, *mpND_xvin;
 
         SecondOrderFilter filter;
         TurbulentFlowFunction qTurb_pa;
@@ -109,7 +109,7 @@ namespace hopsan {
             mpND_cload = getSafeNodeDataPtr(mpPL, NodeHydraulic::WAVEVARIABLE);
             mpND_Zcload = getSafeNodeDataPtr(mpPL, NodeHydraulic::CHARIMP);
 
-            xvmpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
 
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
@@ -135,7 +135,7 @@ namespace hopsan {
             Zcb = (*mpND_Zcb);
             cload = (*mpND_cload);
             Zcload = (*mpND_Zcload);
-            xvin = (*xvmpND_in);
+            xvin = (*mpND_xvin);
 
             filter.update(xvin);
             xv = filter.value();

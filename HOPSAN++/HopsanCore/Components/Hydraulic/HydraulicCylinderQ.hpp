@@ -167,6 +167,10 @@ namespace hopsan {
             p1 = c1 + Zc1*q1;
             p2 = c2 + Zc2*q2;
 
+            //Cavitation check
+            if(p1 < 0.0) { p1 = 0.0; }
+            if(p2 < 0.0) { p2 = 0.0; }
+
             //Write new values to nodes
             (*mpND_p1) = p1;
             (*mpND_q1) = q1;
