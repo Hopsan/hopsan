@@ -386,6 +386,23 @@ void PlotWindow::setGeneration(int gen)
             mpCurves[i]->setData(mVectorX[mCurrentGeneration][i], mVectorY[mCurrentGeneration][i]);
         }
     }
+
+    QString physicalQuantityLeft = QString(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
+    qDebug() << "1";
+    QString physicalQuantityRight = QString(mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
+    if(mHasLeftCurve)
+    {
+        qDebug() << "Halloj! " << physicalQuantityLeft;
+        qDebug() << "Hej!" << mCurrentUnitsLeft.find(physicalQuantityLeft).value();
+        this->setUnit(QwtPlot::yLeft, physicalQuantityLeft, mCurrentUnitsLeft.find(physicalQuantityLeft).value());
+    }
+    if(mHasRightCurve)
+    {
+        qDebug() << "Halloj! " << physicalQuantityRight << mCurrentUnitsRight.find(physicalQuantityRight).value();
+        this->setUnit(QwtPlot::yRight, physicalQuantityRight, mCurrentUnitsRight.find(physicalQuantityRight).value());
+    }
+    qDebug() << "3";
+
     mpVariablePlot->replot();
 
     QString numStr1;
@@ -1045,24 +1062,39 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 //! @param selectedUnit Name of the new unit
 void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUnit)
 {
-    double scale = gConfig.getCustomUnits(physicalQuantity).find(selectedUnit).value();
-
-    for(int i=0; i<mpCurves.size(); ++i)
+    if( !(yAxis == QwtPlot::yRight && !mHasRightCurve) && !(yAxis == QwtPlot::yLeft && !mHasLeftCurve) )
     {
-        if(mpCurves.at(i)->yAxis() == yAxis)
-        {
-                //Change the curve data to the new x-data and the temporary y-array
-            QVector<double> tempVectorY;
-            for(int j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
-            {
-                tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
-            }
-            mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
-            //mCurveParameters[i][3] = selectedUnit;
-        }
-    }
 
-    mpVariablePlot->setAxisTitle(yAxis, physicalQuantity + " [" + selectedUnit + "]");
+        qDebug() << "Asking configuration for scale of " << physicalQuantity << " [" << selectedUnit << "]";
+        double scale = gConfig.getCustomUnits(physicalQuantity).find(selectedUnit).value();
+        qDebug() << "Scale = " << scale;
+        for(int i=0; i<mpCurves.size(); ++i)
+        {
+            if(mpCurves.at(i)->yAxis() == yAxis)
+            {
+                    //Change the curve data to the new x-data and the temporary y-array
+                QVector<double> tempVectorY;
+                for(int j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
+                {
+                    tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
+                }
+                mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
+                //mCurveParameters[i][3] = selectedUnit;
+            }
+        }
+
+        if(yAxis == QwtPlot::yLeft)
+        {
+            mCurrentUnitsLeft.remove(physicalQuantity);
+            mCurrentUnitsLeft.insert(physicalQuantity, selectedUnit);
+        }
+        else if(yAxis == QwtPlot::yRight)
+        {
+            mCurrentUnitsRight.remove(physicalQuantity);
+            mCurrentUnitsRight.insert(physicalQuantity, selectedUnit);
+        }
+        mpVariablePlot->setAxisTitle(yAxis, physicalQuantity + " [" + selectedUnit + "]");
+    }
 }
 
 

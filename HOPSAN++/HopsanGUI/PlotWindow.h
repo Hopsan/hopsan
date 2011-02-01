@@ -121,6 +121,9 @@ private:
 
     QRubberBand *mpHoverRect;
 
+    QString mUnitLeft;
+    QString mUnitRight;
+
     int nCurves;
     QStringList mCurveColors;
     bool mHasSpecialXAxis;
