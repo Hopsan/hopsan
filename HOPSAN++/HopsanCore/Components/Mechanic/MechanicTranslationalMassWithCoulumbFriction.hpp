@@ -146,9 +146,23 @@ namespace hopsan {
             v2 = mFilter.update(f-fe);
             v1 = -v2;
             x2 = mInt.update(v2);
+            if(x2>xmax)
+            {
+                x2=xmax;
+                v2=0;
+                v1=0;
+            }
+            else if(x2<xmin)
+            {
+                x2=xmin;
+                v2=0;
+                v1=0;
+            }
             x1 = -x2 + mLength;
             f1 = c1 + Zx1*v1;
             f2 = c2 + Zx2*v2;
+
+
 
             //Write new values to nodes
             (*mpND_f1) = f1;

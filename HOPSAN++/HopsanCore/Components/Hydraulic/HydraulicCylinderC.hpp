@@ -77,7 +77,7 @@ class HydraulicCylinderC : public ComponentC
             registerParameter("me", "Equivalent Load Mass", "[kg]", me);
             registerParameter("V01", "Dead Volume in Chamber 1", "[m^3]", V01);
             registerParameter("V02", "Dead Volume in Chamber 2", "[m^3]", V02);
-            registerParameter("bp", "Damping Coefficient", "[Ns/m]", bp);
+            registerParameter("bp", "Viscous Friction", "[Ns/m]", bp);
             registerParameter("betae", "Bulk Modulus", "[Pa]", betae);
             registerParameter("cLeak", "Leakage Coefficient", "-", cLeak);
 

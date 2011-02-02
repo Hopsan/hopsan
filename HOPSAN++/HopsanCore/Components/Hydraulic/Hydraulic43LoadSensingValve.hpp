@@ -60,7 +60,7 @@ namespace hopsan {
             overlap_at = 0.0;
             overlap_bt = 0.0;
             omegah = 100.0;
-            deltah = 0.0;
+            deltah = 1.0;
 
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
