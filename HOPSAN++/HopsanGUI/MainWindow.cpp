@@ -202,9 +202,10 @@ MainWindow::~MainWindow()
 }
 
 
+//! @brief Initializes the workspace by either opening specified model, loading last session or showing the Welcome dialog
 void MainWindow::initializeWorkspace()
 {
-    //! @todo This has to do with file associations, but is not finished...
+    //File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(size_t i=0; i<qApp->arguments().size(); ++i)
     {
         if(qApp->arguments().at(i).endsWith(".hmf"))
@@ -226,18 +227,11 @@ void MainWindow::initializeWorkspace()
         {
             for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
             {
-                //mpProjectTabs->loadModel(mLastSessionModels.at(i));
                 mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
             }
-            if(mpProjectTabs->count() > 1)      //Close the empty project if at least one last session model is loaded
-            {
-                mpProjectTabs->closeProjectTab(0);
-            }
+            mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
         }
     }
-
-    //while(mpWelcomeDialog->isVisible()) {}
-    //mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
 }
 
 

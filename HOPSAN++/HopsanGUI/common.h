@@ -22,7 +22,8 @@
 #define PORTICONPATH "../../HopsanGUI/graphics/porticons/"
 #define GRAPHICSPATH "../../HopsanGUI/graphics/"
 #define COMPONENTPATH "../../HopsanGUI/componentData/"
-#define MODELPATH "/../../Models/"
+#define MODELPATH "../../Models/"
+#define HELPPATH "../../HopsanGUI/docs/html/"
 
 //Relese++ defines
 //#define MAINPATH "./"
@@ -32,6 +33,7 @@
 //#define GRAPHICSPATH ":graphics/"
 //#define COMPONENTPATH "componentData/"
 //#define MODELPATH "Models/"
+//#define HELPPATH "Help/"
 
 //! @todo all of these dont have to be common
 //Enums

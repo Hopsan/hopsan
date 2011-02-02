@@ -563,8 +563,6 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 //! @param togglePortsActionTriggered is true if ports shall be hidden, otherwise false.
 void GUIPort::hideIfNotConnected(bool togglePortsActionTriggered)
 {
-    qDebug() << "hideIfNotConnected(" << togglePortsActionTriggered << ")";
-
     if(mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab == mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
         if(!isConnected() && !togglePortsActionTriggered)

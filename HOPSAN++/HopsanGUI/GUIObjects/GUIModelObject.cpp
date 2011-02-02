@@ -59,7 +59,6 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelOb
     this->setNameTextPos(0); //Set initial name text position
     if(pParentContainer != 0 && pParentContainer->mNamesHidden)
     {
-        qDebug() << "Hiding name!";
         this->hideName(NOUNDO);
     }
 
