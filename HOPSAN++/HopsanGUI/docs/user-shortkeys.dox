@@ -43,16 +43,12 @@
 <td><u>S</u>imulate Current Model</td>
 </tr>
 <tr>
-<td>Ctrl+H</td>
-<td><u>H</u>ide All Component Names</td>
+<td>Ctrl+N</td>
+<td>Show Component Names</td>
 </tr>
 <tr>
-<td>Ctrl+J</td>
-<td>Show All Component Names</td>
-</tr>
-<tr>
-<td>Ctrl+G</td>
-<td>Hide Non-Connected Ports</td>
+<td>Ctrl+T</td>
+<td>Show Non-Connected Ports</td>
 </tr>
 <tr>
 <td>Ctrl+A</td>
@@ -79,16 +75,32 @@
 <td>Paste</td>
 </tr>
 <tr>
-<td>Ctrl+D</td>
+<td>Ctrl+F</td>
 <td>Flip Horizontal</td>
 </tr>
 <tr>
-<td>Ctrl+F</td>
+<td>Ctrl+D</td>
 <td>Flip Vertical</td>
 </tr>
 <tr>
 <td>Ctrl+R</td>
 <td>Rotate</td>
+</tr>
+<tr>
+<td>Ctrl+Space</td>
+<td>Center Viewport</td>
+</tr>
+<tr>
+<td>Ctrl+0</td>
+<td>Reset Zoom</td>
+</tr>
+<tr>
+<td>Ctrl+Plus</td>
+<td>Increase Zoom</td>
+</tr>
+<tr>
+<td>Ctrl+Minus</td>
+<td>Decrease Zoom</td>
 </tr>
 </table> 
 \endhtmlonly

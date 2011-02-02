@@ -1,6 +1,6 @@
 /*!
 \page getting-started Getting Started
-\todo write this
+  This guide will help you understand the basic functions in Hopsan NG. It provides an overview of the program, how to build a model, simulate and plot the results.
 
 -# \subpage overview \n
 -# \subpage building-a-model \n
@@ -8,8 +8,6 @@
 -# \subpage plotting \n
 
 \page overview Overview
-	\todo finish this
-	
 	The first thing you will see when you open Hopsan NG is a welcome dialog. From here you can choose to create a new model, load an existing model or open the models from last session. You also have the option to always open the last session, without showing the welcome dialog. When you have made your selection, the main window will appear. It will look like the screenshot bellow (with some cosmetic differences depending on your operating system). It consists of a toolbar at the top, a workspace area in the middle, a component library to the left and a message widget at the bottom. More windows and widgets can be opened later.
 	
 	\htmlonly
@@ -91,7 +89,6 @@ To make models more nice looking and understandable, it is possible to add box w
 
 
 \page running-a-simulation Running a simulation
-\todo write this
 \section how-simulations-work How simulations work
 Hopsan NG uses fixed time step simulations with distributed solvers. This means that the number of iterations is stop time minus start time divided by the time step. If the start time is negative, the negative time will be simulated but not logged for plotting. This can be used to avoid initial transients in the simulation, which are normally caused by incorrect start values. Simulations always begin with an initialization phase. Here all start values are set, and all equations initalized (in case they require initalization). During the simulation phase, each time step will begin with simulating all C-components, then it will simulate all Q-components and finally the signal components. When everything in the time step is simulated, the data will be logged for plotting. This is only performed a certain amount of times, depending on how many log samples the user has selected in the Model Preferences dialog. After the simulation there is a finalize phase, where components has the opportunity to clean up things. This is not used by most components, and nothing the user needs to bother about. When the simulation is finished, data will be loaded from the core to the GUI so that it can be plotted by the user.
 
