@@ -22,6 +22,7 @@
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
+#include "Dialogs/HelpDialog.h"
 #include "Dialogs/WelcomeDialog.h"
 
 #include "UndoStack.h"
@@ -54,11 +55,12 @@ MainWindow::MainWindow(QWidget *parent)
     this->setObjectName("MainWindow");
     this->resize(1024,768);
     this->setFont(QFont("Comic Sans"));
-    this->setWindowTitle("HOPSAN NG");
+    this->setWindowTitle("Hopsan NG");
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
 
     mpAboutDialog = new AboutDialog(this);
+    mpHelpDialog = new HelpDialog(this);
 
     mpPlotWidget = 0;
     mpSystemParametersWidget = 0;
@@ -446,6 +448,10 @@ void MainWindow::createActions()
     connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
     connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
 
+    helpAction = new QAction(this);
+    helpAction->setText("User Guide");
+    connect(helpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
+
     QIcon togglePortsIcon;
     togglePortsIcon.addFile(QString(ICONPATH) + "Hopsan-TogglePorts.png", QSize(), QIcon::Normal, QIcon::On);
     togglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
@@ -554,6 +560,7 @@ void MainWindow::createMenus()
 
     menuSimulation->addAction(plotAction);
 
+    menuHelp->addAction(helpAction);
     menuHelp->addAction(aboutAction);
 
     menubar->addAction(menuFile->menuAction());

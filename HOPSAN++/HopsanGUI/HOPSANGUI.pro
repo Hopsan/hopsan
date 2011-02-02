@@ -2,6 +2,7 @@
 # Project created by QtCreator 2009-12-28T14:27:59
 # -------------------------------------------------
 QT += svg xml
+QT += core gui webkit
 TARGET = HOPSANGUI
 TEMPLATE = app
 SOURCES += main.cpp \
@@ -45,7 +46,8 @@ SOURCES += main.cpp \
     Widgets/QuickNavigationWidget.cpp \
     GUIObjects/GUIContainerPort.cpp \
     Dialogs/ContainerPortPropertiesDialog.cpp \
-    Dialogs/WelcomeDialog.cpp
+    Dialogs/WelcomeDialog.cpp \
+    Dialogs/HelpDialog.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -91,7 +93,8 @@ HEADERS += MainWindow.h \
     Widgets/QuickNavigationWidget.h \
     GUIObjects/GUIContainerPort.h \
     Dialogs/ContainerPortPropertiesDialog.h \
-    Dialogs/WelcomeDialog.h
+    Dialogs/WelcomeDialog.h \
+    Dialogs/HelpDialog.h
 
 OTHER_FILES += 
 

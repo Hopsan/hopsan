@@ -17,7 +17,7 @@
 
 
 //! @class AboutDialog
-//! @brief A class for displaying the "About HOPSAN" dialog
+//! @brief A class for displaying the "About Hopsan NG" dialog
 //!
 //! Shows a cool picture, some logotypes, current version and some license information
 //!
@@ -31,7 +31,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
         //Set the name and size of the main window
     this->setObjectName("AboutDialog");
     this->resize(480,640);
-    this->setWindowTitle("About HOPSAN");
+    this->setWindowTitle("About Hopsan NG");
     this->setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
     this->num = 0;
     this->title = "";
@@ -47,7 +47,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     mpHopsanLogotype->setAlignment(Qt::AlignCenter);
 
     QLabel *pVersionText = new QLabel();
-    pVersionText->setText("\nHOPSAN GUI version " + QString(HOPSANGUIVERSION) + "\n");
+    pVersionText->setText("\nHopsan GUI version " + QString(HOPSANGUIVERSION) + "\n");
     QFont tempFont = pVersionText->font();
     tempFont.setBold(true);
     pVersionText->setFont(tempFont);

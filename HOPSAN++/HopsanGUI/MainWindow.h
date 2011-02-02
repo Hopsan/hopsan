@@ -28,6 +28,7 @@ class Configuration;
 class CopyStack;
 class AboutDialog;
 class WelcomeDialog;
+class HelpDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -51,6 +52,7 @@ public:
     Configuration *mpConfig;
 
     AboutDialog *mpAboutDialog;
+    HelpDialog *mpHelpDialog;
 
     QStatusBar *mpStatusBar;
     PlotWidget *mpPlotWidget;
@@ -119,6 +121,7 @@ public:
     QAction *flipHorizontalAction;
     QAction *flipVerticalAction;
     QAction *aboutAction;
+    QAction *helpAction;
 
     //Set and get methods for simulation parameters in toolbar
     void setStartTimeInToolBar(double startTime);
