@@ -1470,6 +1470,7 @@ void GUIContainerObject::toggleNames(bool value)
         emit hideAllNameText();
     }
     mNamesHidden = !value;
+    mpParentProjectTab->hasChanged();
 }
 
 
@@ -1477,6 +1478,7 @@ void GUIContainerObject::toggleNames(bool value)
 void GUIContainerObject::hidePorts(bool doIt)
 {
     mPortsHidden = !doIt;
+    mpParentProjectTab->hasChanged();
 }
 
 

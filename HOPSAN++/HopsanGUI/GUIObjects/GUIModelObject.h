@@ -80,6 +80,10 @@ public:
     enum { Type = GUIMODELOBJECT };
     int type() const;
 
+    //Temporary - these belong in container object, but they must be here because of the load function
+    bool mPortsHidden;
+    bool mNamesHidden;
+
 public slots:
     void deleteMe();
     void rotate90cw(undoStatus undoSettings = UNDO);

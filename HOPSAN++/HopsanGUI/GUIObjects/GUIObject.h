@@ -55,6 +55,7 @@ public:
 
     //Public members
     QPointF mOldPos;
+    GUIContainerObject *mpParentContainerObject;
 
 public slots:
     virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
@@ -85,7 +86,6 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     //Protected members
-    GUIContainerObject *mpParentContainerObject;
     QString mHmfTagName;
     bool mIsFlipped;
     GUIObjectSelectionBox *mpSelectionBox;

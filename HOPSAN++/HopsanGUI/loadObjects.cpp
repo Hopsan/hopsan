@@ -42,6 +42,9 @@ void ModelObjectLoadData::readGuiDataFromDomElement(QDomElement &rDomElement)
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
     nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
+    portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
+    namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
+
 }
 
 //! @brief Reads the System load data from an XML DOM element
@@ -285,14 +288,14 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
         appearanceData.setName(rData.name);
 
         nameVisibility nameStatus;
-//        if(rData.textVisible)
-//        {
-//           nameStatus = NAMEVISIBLE;
-//        }
-//        else
-//        {
-//            nameStatus = NAMENOTVISIBLE;
-//        }
+        if(rData.textVisible)
+        {
+           nameStatus = NAMEVISIBLE;
+        }
+        else
+        {
+            nameStatus = NAMENOTVISIBLE;
+        }
 
         GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
         pObj->setNameTextPos(rData.nameTextPos);

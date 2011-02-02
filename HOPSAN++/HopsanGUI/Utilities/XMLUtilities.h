@@ -64,6 +64,8 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_GROUPTAG "group"
 #define HMF_TEXTWIDGETTAG "textwidget"
 #define HMF_BOXWIDGETTAG "boxwidget"
+#define HMF_PORTSTAG "ports"
+#define HMF_NAMESTAG "names"
 
 #define HMF_NAMETAG "name"
 #define HMF_TYPETAG "typename"

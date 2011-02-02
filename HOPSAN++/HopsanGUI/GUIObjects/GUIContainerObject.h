@@ -87,8 +87,6 @@ public:
     QList<GUIModelObject *> mSelectedGUIModelObjectsList;
     QList<GUIWidget *> mSelectedGUIWidgetsList;
 
-    bool mPortsHidden;
-    bool mNamesHidden;
     bool mUndoDisabled;
     bool mIsRenamingObject;
     bool mJustStoppedCreatingConnector;

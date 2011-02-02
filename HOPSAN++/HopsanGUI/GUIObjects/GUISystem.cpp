@@ -221,6 +221,10 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
             this->mpParentProjectTab->mpGraphicsView->getViewPort(x,y,zoom);
             appendViewPortTag(guiStuff, x, y, zoom);
         }
+        QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
+        portsHiddenElement.setAttribute("hidden", mPortsHidden);
+        QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
+        namesHiddenElement.setAttribute("hidden", mNamesHidden);
 
         this->refreshExternalPortsAppearanceAndPosition();
         QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOTTAG);
@@ -318,6 +322,10 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
+        this->mNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
+        this->mPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
+        gpMainWindow->toggleNamesAction->setChecked(!mNamesHidden);
+        gpMainWindow->togglePortsAction->setChecked(!mPortsHidden);
         //! @todo load viewport and pose and stuff
 
         //Load simulation time

@@ -37,6 +37,8 @@ public:
     bool isFlipped;
     int nameTextPos;
     int textVisible;
+    bool portsHidden;
+    bool namesHidden;
 
     void readDomElement(QDomElement &rDomElement);
 
