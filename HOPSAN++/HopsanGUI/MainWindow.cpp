@@ -231,6 +231,10 @@ void MainWindow::initializeWorkspace()
             }
             mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
         }
+        else
+        {
+            updateToolBarsToNewTab();       //This will disable the buttons if last session did not contain any models
+        }
     }
 }
 
@@ -688,18 +692,20 @@ void MainWindow::updateToolBarsToNewTab()
     zoomOutAction->setEnabled(!noTabs);
     toggleNamesAction->setEnabled(!noTabs);
     togglePortsAction->setEnabled(!noTabs);
-    //hideNamesAction->setEnabled(!noTabs);
-    //showNamesAction->setEnabled(!noTabs);
-    //hidePortsAction->setEnabled(!noTabs);
     exportPDFAction->setEnabled(!noTabs);
     alignXAction->setEnabled(!noTabs);
     alignYAction->setEnabled(!noTabs);
+    rotateLeftAction->setEnabled(!noTabs);
+    rotateRightAction->setEnabled(!noTabs);
+    flipHorizontalAction->setEnabled(!noTabs);
+    flipVerticalAction->setEnabled(!noTabs);
     mpStartTimeLineEdit->setEnabled(!noTabs);
     mpTimeStepLineEdit->setEnabled(!noTabs);
     mpFinishTimeLineEdit->setEnabled(!noTabs);
     simulateAction->setEnabled(!noTabs);
     plotAction->setEnabled(!noTabs);
     propertiesAction->setEnabled(!noTabs);
+    openSystemParametersAction->setEnabled(!noTabs);
 }
 
 

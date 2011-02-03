@@ -80,7 +80,16 @@ void UndoWidget::refreshList()
 {
     if(gpMainWindow->mpProjectTabs->count() == 0)
     {
+        mpClearButton->setEnabled(false);
+        mpUndoButton->setEnabled(false);
+        mpRedoButton->setEnabled(false);
         return;
+    }
+    else
+    {
+        mpClearButton->setEnabled(true);
+        mpUndoButton->setEnabled(true);
+        mpRedoButton->setEnabled(true);
     }
 
     QTableWidgetItem *item;
