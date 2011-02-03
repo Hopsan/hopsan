@@ -207,12 +207,18 @@ public slots:
 
     double getParameter(MainWindow* o, const QString& compName, const QString& parName)
     {
-        return o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getParameterValue(parName);
+        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasGUIModelObject(compName))
+        {
+            return o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getParameterValue(parName);
+        }
     }
 
     void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
     {
-        o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->setParameterValue(parName, QString::number(value));
+        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasGUIModelObject(compName))
+        {
+            o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->setParameterValue(parName, QString::number(value));
+        }
     }
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)

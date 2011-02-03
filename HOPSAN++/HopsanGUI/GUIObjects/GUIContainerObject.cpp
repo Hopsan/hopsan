@@ -48,8 +48,8 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
         //Initialize
     setIsCreatingConnector(false);
     mIsRenamingObject = false;
-    mPortsHidden = false;
-    mNamesHidden = false;
+    mPortsHidden = !gpMainWindow->togglePortsAction->isChecked();
+    mNamesHidden = !gpMainWindow->toggleNamesAction->isChecked();
     mUndoDisabled = false;
     mGfxType = USERGRAPHICS;
 

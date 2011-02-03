@@ -10,6 +10,8 @@
         <progressbar_step>50</progressbar_step>
         <multicore>false</multicore>
         <numberofthreads>0</numberofthreads>
+        <togglenamesbuttonchecked>true</togglenamesbuttonchecked>
+        <toggleportsbuttonchecked>true</toggleportsbuttonchecked>
     </settings>
     <style>
         <penstyle width="3" situation="Primary" capstyle="32" type="NonFinished" style="1" color="#778899" gfxtype="Iso"/>

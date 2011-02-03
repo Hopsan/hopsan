@@ -72,5 +72,6 @@
         <file>graphics/uiicons/Hopsan-RotateRight.png</file>
         <file>graphics/uiicons/Hopsan-ToggleNames.png</file>
         <file>graphics/uiicons/Hopsan-TogglePorts.png</file>
+        <file>graphics/objecticons/missingcomponenticon.svg</file>
     </qresource>
 </RCC>

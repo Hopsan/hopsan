@@ -256,11 +256,11 @@
      inkscape:window-height="774"
      id="namedview2818"
      showgrid="false"
-     inkscape:zoom="0.94193443"
-     inkscape:cx="325.4013"
-     inkscape:cy="137.59307"
-     inkscape:window-x="88"
-     inkscape:window-y="78"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="440.05486"
+     inkscape:cy="177.15096"
+     inkscape:window-x="91"
+     inkscape:window-y="68"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer2"
      inkscape:snap-page="true" />
@@ -272,12 +272,12 @@
     <image
        sodipodi:absref="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\inkscape_pasted_image_20100328_115041.png"
        xlink:href="inkscape_pasted_image_20100328_115041.png"
-       style="filter:url(#filter4076)"
-       width="748.82208"
-       height="341.78137"
-       id="image4072"
+       y="-82.886467"
        x="-14.364407"
-       y="-82.886467" />
+       id="image4072"
+       height="341.78137"
+       width="748.82208"
+       style="filter:url(#filter4076)" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -295,12 +295,12 @@
        xml:space="preserve"
        style="font-size:80px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        x="27.29237"
-       y="169.02345"
+       y="169.92693"
        id="text3610"><tspan
          sodipodi:role="line"
          id="tspan3612"
          x="27.29237"
-         y="169.02345">HOPSAN </tspan></text>
+         y="169.92693">HOPSAN </tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
@@ -310,7 +310,7 @@
          sodipodi:role="line"
          id="tspan3620"
          x="537.22876"
-         y="169.51173">0.1.4</tspan></text>
+         y="169.51173">0.2.0</tspan></text>
     <g
        id="g3391"
        transform="matrix(0.343057,0,0,0.343057,121.72305,215.65484)">

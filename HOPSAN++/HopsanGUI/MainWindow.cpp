@@ -431,7 +431,7 @@ void MainWindow::createActions()
     toggleNamesAction = new QAction(toggleNamesIcon, tr("&Show Component Names (Ctrl+N)"), this);
     toggleNamesAction->setText("Show Component Names (Ctrl+N)");
     toggleNamesAction->setCheckable(true);
-    toggleNamesAction->setChecked(true);
+    toggleNamesAction->setChecked(gConfig.getToggleNamesButtonCheckedLastSession());
     toggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
 
     exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
@@ -451,7 +451,7 @@ void MainWindow::createActions()
     togglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
     togglePortsAction->setText("Show Unconnected Ports (Ctrl+T)");
     togglePortsAction->setCheckable(true);
-    togglePortsAction->setChecked(true);
+    togglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
     togglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");

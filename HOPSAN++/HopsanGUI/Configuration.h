@@ -32,6 +32,8 @@ public:
     bool getInvertWheel();
     bool getUseMulticore();
     size_t getNumberOfThreads();
+    bool getToggleNamesButtonCheckedLastSession();
+    bool getTogglePortsButtonCheckedLastSession();
     int getProgressBarStep();
     bool getEnableProgressBar();
     QColor getBackgroundColor();
@@ -67,6 +69,8 @@ private:
     bool mInvertWheel;
     bool mUseMulticore;
     size_t mNumberOfThreads;
+    bool mToggleNamesButtonCheckedLastSession;
+    bool mTogglePortsButtonCheckedLastSession;
     int mProgressBarStep;
     bool mEnableProgressBar;
     QColor mBackgroundColor;

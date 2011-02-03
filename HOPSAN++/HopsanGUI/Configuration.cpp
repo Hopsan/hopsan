@@ -45,6 +45,8 @@ void Configuration::saveToXml()
     appendDomValueNode(settings, "progressbar_step", mProgressBarStep);
     appendDomBooleanNode(settings, "multicore", mUseMulticore);
     appendDomValueNode(settings, "numberofthreads", mNumberOfThreads);
+    appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->toggleNamesAction->isChecked());
+    appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->togglePortsAction->isChecked());
 
     QDomElement style = appendDomElement(configRoot, "style");
 
@@ -286,7 +288,11 @@ void Configuration::loadFromXml()
             if(!settingsElement.firstChildElement("multicore").isNull())
                 mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
             if(!settingsElement.firstChildElement("numberofthreads").isNull())
-                this->mNumberOfThreads = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
+                mNumberOfThreads = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
+            if(!settingsElement.firstChildElement("togglenamesbuttonchecked").isNull())
+                mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("togglenamesbuttonchecked"));
+            if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
+                mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
 
 
             QDomElement styleElement = configRoot.firstChildElement("style");
@@ -424,6 +430,11 @@ void Configuration::loadDefaultsFromXml()
                 mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
             if(!settingsElement.firstChildElement("numberofthreads").isNull())
                 this->mNumberOfThreads = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
+            if(!settingsElement.firstChildElement("togglenamesbuttonchecked").isNull())
+                mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("togglenamesbuttonchecked"));
+            if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
+                mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
+
             QDomElement styleElement = configRoot.firstChildElement("style");
             QDomElement penElement = styleElement.firstChildElement("penstyle");
             while(!penElement.isNull())
@@ -513,6 +524,20 @@ bool Configuration::getUseMulticore()
 size_t Configuration::getNumberOfThreads()
 {
     return this->mNumberOfThreads;
+}
+
+
+//! @brief Returns whether or not the toggle names button was checked at the end of last session
+bool Configuration::getToggleNamesButtonCheckedLastSession()
+{
+    return this->mToggleNamesButtonCheckedLastSession;
+}
+
+
+//! @brief Returns whether or not the toggle ports button was checked at the end of last session
+bool Configuration::getTogglePortsButtonCheckedLastSession()
+{
+    return this->mTogglePortsButtonCheckedLastSession;
 }
 
 

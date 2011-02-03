@@ -398,6 +398,8 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     this->addTab(newTab, tabName);
     this->setCurrentWidget(newTab);
 
+    newTab->setSaved(true);
+
     mNumberOfUntitledTabs += 1;
 }
 
