@@ -71,6 +71,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
 
 
     //Signal components
+    cfampND_ct->registerCreatorFunction("SignalAbsoluteValue", SignalAbsoluteValue::Creator);
     cfampND_ct->registerCreatorFunction("SignalSource", SignalSource::Creator);
     cfampND_ct->registerCreatorFunction("SignalGain", SignalGain::Creator);
     cfampND_ct->registerCreatorFunction("SignalSink", SignalSink::Creator);

@@ -120,12 +120,12 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem *item)
     //Filter out value labels
     if(item->column() == 1)
     {
-        QTableWidgetItem *neighborItem = itemAt(item->row(), item->column()-1);
+        QTableWidgetItem *neighborItem = this->item(item->row(), item->column()-1);
         QString parName = neighborItem->text();
         QString parValue = item->text();
 
-        QString apa = item->text();
-        double ko = getParameter(parName);
+//        QString apa = item->text();
+//        double ko = getParameter(parName);
         if(item->text() != QString::number(getParameter(parName)))
         {
             gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();

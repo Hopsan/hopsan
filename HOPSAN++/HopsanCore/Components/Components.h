@@ -55,6 +55,7 @@
 
 
 /* Signal Components */
+#include "Signal/SignalAbsoluteValue.hpp"
 #include "Signal/SignalSource.hpp"
 #include "Signal/SignalGain.hpp"
 #include "Signal/SignalSink.hpp"

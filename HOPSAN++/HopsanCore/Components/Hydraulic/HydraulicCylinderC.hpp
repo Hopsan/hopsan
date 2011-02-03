@@ -58,7 +58,7 @@ class HydraulicCylinderC : public ComponentC
             betae = 1000000000.0;
             me = 1000.0;
             V01 = 0.0003;
-            V01 = 0.0003;
+            V02 = 0.0003;
             A1 = 0.001;
             A2 = 0.001;
             sl = 1.0;
