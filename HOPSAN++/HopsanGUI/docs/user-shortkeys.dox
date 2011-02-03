@@ -19,23 +19,23 @@
 <td><u></u>Quit Program</td>
 </tr>
 <tr>
-<td>Ctrl+Alt+O</td>
+<td>Ctrl+Shift+O</td>
 <td>Open <u>O</u>ptions</td>
 </tr>
 <tr>
-<td>Ctrl+Alt+M</td>
+<td>Ctrl+Shift+M</td>
 <td>Open <u>M</u>odel Properties</td>
 </tr>
 <tr>
-<td>Ctrl+Alt+P</td>
+<td>Ctrl+Shift+P</td>
 <td>Open <u>P</u>lot Widget</td>
 </tr>
 <tr>
-<td>Ctrl+Alt+U</td>
+<td>Ctrl+Shift+U</td>
 <td>Open <u>U</u>ndo Widget</td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Y</td>
+<td>Ctrl+Shift+Y</td>
 <td>Open S<u>y</u>stem Parameters Widget</td>
 </tr>
 <tr>

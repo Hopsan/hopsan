@@ -345,9 +345,9 @@ void MainWindow::createActions()
     redoAction->setToolTip(tr("Redo One Step (Ctrl+Y)"));
 
     openUndoAction = new QAction(tr("&Undo History"), this);
-    openUndoAction->setToolTip("Undo History (Ctrl+Alt+U)");
+    openUndoAction->setToolTip("Undo History (Ctrl+Shift+U)");
     connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndoWidget()));
-    openUndoAction->setShortcut(QKeySequence("Ctrl+Alt+u"));
+    openUndoAction->setShortcut(QKeySequence("Ctrl+Shift+u"));
 
     disableUndoAction = new QAction(tr("&Disable Undo"), this);
     disableUndoAction->setText("Disable Undo");
@@ -355,8 +355,8 @@ void MainWindow::createActions()
     disableUndoAction->setChecked(false);
 
     openSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&System Parameters"), this);
-    openSystemParametersAction->setToolTip("System Parameters (Ctrl+Alt+Y)");
-    openSystemParametersAction->setShortcut(tr("Ctrl+alt+y"));
+    openSystemParametersAction->setToolTip("System Parameters (Ctrl+Shift+Y)");
+    openSystemParametersAction->setShortcut(tr("Ctrl+Shift+y"));
     connect(openSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
@@ -376,21 +376,21 @@ void MainWindow::createActions()
     simulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
 
     plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
-    plotAction->setToolTip(tr("Plot Variables (Ctrl+Alt+P)"));
+    plotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
     connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
-    plotAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
+    plotAction->setShortcut(QKeySequence("Ctrl+Shift+p"));
 
     loadLibsAction = new QAction(this);
     loadLibsAction->setText("Load Libraries");
     connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
 
     propertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
-    propertiesAction->setToolTip("Model Properties (Ctrl+Alt+M)");
-    propertiesAction->setShortcut(QKeySequence("Ctrl+Alt+m"));
+    propertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");
+    propertiesAction->setShortcut(QKeySequence("Ctrl+Shift+m"));
 
     optionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
-    optionsAction->setToolTip("Options (Ctrl+Alt+O)");
-    optionsAction->setShortcut(QKeySequence("Ctrl+Alt+o"));
+    optionsAction->setToolTip("Options (Ctrl+Shift+O)");
+    optionsAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
 
     alignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
     alignXAction->setText("Align Vertical");

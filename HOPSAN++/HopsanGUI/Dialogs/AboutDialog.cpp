@@ -82,15 +82,15 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pSpecialThanksText->setWordWrap(true);
     pSpecialThanksText->setAlignment(Qt::AlignCenter);
 
-    QLabel *pLicenseHeading = new QLabel();
-    pLicenseHeading->setText("License Information:");
-    pLicenseHeading->setFont(tempFont);
-    pLicenseHeading->setAlignment(Qt::AlignCenter);
+//    QLabel *pLicenseHeading = new QLabel();
+//    pLicenseHeading->setText("License Information:");
+//    pLicenseHeading->setFont(tempFont);
+//    pLicenseHeading->setAlignment(Qt::AlignCenter);
 
-    QLabel *pLicenseText = new QLabel();
-    pLicenseText->setText("Bla bla bla very important license information and other nonsense stuff which I can think of to fill up this box so we can se if it looks fine or if it needs any nice improvements to look even better than it already does even though it does not contain any useful information about anything at all...\n");
-    pLicenseText->setWordWrap(true);
-    pLicenseText->setAlignment(Qt::AlignJustify);
+//    QLabel *pLicenseText = new QLabel();
+//    pLicenseText->setText("Hopsan NG is a free software package developed at the Divistion of Fluid and Mechatronic Systems (Flumes). It must not be sold or redestributed without permision from Flumes.\n");
+//    pLicenseText->setWordWrap(true);
+//    pLicenseText->setAlignment(Qt::AlignJustify);
 
     QLabel *pContactHeading = new QLabel();
     pContactHeading->setText("Contact Information:");
@@ -98,7 +98,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pContactHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContactText = new QLabel();
-    pContactText->setText(QString::fromUtf8("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: someone@liu.se"));
+    pContactText->setText(QString::fromUtf8("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: robert.braun@liu.se"));
     pContactText->setWordWrap(true);
     pContactText->setAlignment(Qt::AlignCenter);
 
@@ -127,8 +127,8 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pLayout->addWidget(pContributorsText, 5, 0);
     pLayout->addWidget(pSpecialThanksHeading, 6, 0);
     pLayout->addWidget(pSpecialThanksText, 7, 0);
-    pLayout->addWidget(pLicenseHeading, 8, 0);
-    pLayout->addWidget(pLicenseText, 9, 0);
+    //pLayout->addWidget(pLicenseHeading, 8, 0);
+    //pLayout->addWidget(pLicenseText, 9, 0);
     pLayout->addWidget(pContactHeading, 10, 0);
     pLayout->addWidget(pContactText, 11, 0);
     pLayout->addWidget(pLithFlumesLogotype, 12, 0);
