@@ -14,6 +14,8 @@
 
 #define pi 3.14159
 
+#include <sstream>
+
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
@@ -27,7 +29,7 @@ namespace hopsan {
     {
 
     private:
-        double cp1, cp2, cp1e, cp2e;
+        double cp1, cp2, v1min, v2min;
         double alfa, wfak, betae, je, v1, v2, dp, cim, bm;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3,*mpND_c3, *mpND_Zx3, *mpND_eps;
@@ -59,7 +61,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
-            mpIn = addReadPort("eps", "NodeSignal");
+            mpIn = addReadPort("eps", "NodeSignal", Port::NOTREQUIRED);
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("betae", "Bulk modulus of oil", "[Pa]", betae);
@@ -94,10 +96,10 @@ namespace hopsan {
             mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WAVEVARIABLE);
             mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CHARIMP);
 
-            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 1.0);
 
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
-            double dpr, dpe, ka, v1min, v2min, v1e, v2e, ap, wp, qp1, qp2, cp1, cp2;
+            double dpr, dpe, ka, v1e, v2e, ap, wp, qp1, qp2;
 
             //Read input variables from nodes
             p1 = (*mpND_p1);
@@ -129,7 +131,35 @@ namespace hopsan {
             c2 = p2 - Zc2*q2;
             qp1 = dpe * w3;
             qp2 = -dpe * w3;
+
+            std::stringstream ss;
+
+//            ss.flush();
+//            ss << "p1 = " << p1;
+//            this->addDebugMessage(ss.str());
+
+//            ss.flush();
+//            ss << "Zc1 = " << Zc1;
+//            this->addDebugMessage(ss.str());
+
+//            ss.flush();
+//            ss << "qp1 = " << qp1;
+//            this->addDebugMessage(ss.str());
+
+//            ss.flush();
+//            ss << "cim = " << cim;
+//            this->addDebugMessage(ss.str());
+
+//            ss.flush();
+//            ss << "p2 = " << p2;
+//            this->addDebugMessage(ss.str());
+
             cp1 = p1 - Zc1 * (qp1 - cim * (p1 - p2));
+
+//            ss.flush();
+//            ss << "cp1 = " << cp1;
+//            this->addDebugMessage(ss.str());
+
             cp2 = p2 - Zc2 * (qp2 - cim * (p2 - p1));
             mDelayedCp1.initialize(1, cp1);
             mDelayedCp2.initialize(1, cp2);
@@ -146,7 +176,7 @@ namespace hopsan {
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
             (*mpND_c2) = c2;
-            (*mpND_Zc1) = Zc2;
+            (*mpND_Zc2) = Zc2;
             (*mpND_t3) = t3;
             (*mpND_a3) = a3;
             (*mpND_w3) = w3;
@@ -157,9 +187,9 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare Local variables
-            double cp10e, cp20e, v1min, v2min, ka, ap, c1e, c2e, p1e, ct1, ct2, p2e,
+            double cp10e, cp20e, ka, ap, c1e, c2e, p1e, p2e, ct1, ct2,
                    v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, dpr, wp, ct1e,
-                   ct2e, pm1e, pm2e, pp1e, qp1e, qp2e, pp2e;
+                   ct2e, pm1e, pm2e, pp1e, qp1e, qp2e, pp2e, cp1e, cp2e;
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
 
             //Read input variables from nodes
@@ -178,6 +208,8 @@ namespace hopsan {
             v1e = std::max(v1,v1min);
             v2e = std::max(v2,v2min);
 
+            std::stringstream ss;
+
             dpr = dp / (pi * 2);
             dpe = dpr * eps;    //Effective displacement
             ka = 1 / (1 - alfa);
@@ -185,8 +217,14 @@ namespace hopsan {
             wp = -w3;
             Zc1 = 2*ka*betae*mTimestep / (2*v1e);
             Zc2 = 2*ka*betae*mTimestep / (2*v2e);
+
             qp1 = dpe*w3;
             qp2 = -dpe*w3;
+
+//            ss.flush();
+//            ss << "cp1 = " << cp1;
+//            this->addDebugMessage(ss.str());
+
             pp1 = (cp1 + qp1*Zc1 + cim*(cp2*Zc1 + cp1*Zc2)) / (cim*(Zc1 + Zc2) + 1);
             pp2 = (cp2 + qp2*Zc2 + cim*(cp2*Zc1 + cp1*Zc2)) / (cim*(Zc1 + Zc2) + 1);
             pp1e = pp1;
@@ -250,6 +288,12 @@ namespace hopsan {
             (*mpND_t3) = t3;
             (*mpND_c3) = c3;
             (*mpND_Zx3) = Zx3;
+
+
+//            ss.clear();
+//            ss << "Output = " << c1 << " " << Zc1 << " " << c2 << " " << Zc2 << " " << t3 << " " << c3 << " " << Zx3;
+//            this->addDebugMessage(ss.str());
+
         }
     };
 }
