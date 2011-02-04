@@ -326,6 +326,17 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         this->mPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
         gpMainWindow->toggleNamesAction->setChecked(!mNamesHidden);
         gpMainWindow->togglePortsAction->setChecked(!mPortsHidden);
+        double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
+        double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
+        double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
+        qDebug() << "Zoom to " << zoom;
+
+        mpParentProjectTab->mpGraphicsView->scale(zoom, zoom);
+        mpParentProjectTab->mpGraphicsView->mZoomFactor = zoom;
+        //emit mpParentProjectTab->mpGraphicsView->zoomChange(zoom);
+
+        qDebug() << "Center on " << x << ", " << y;
+        mpParentProjectTab->mpGraphicsView->centerOn(x, y);
         //! @todo load viewport and pose and stuff
 
         //Load simulation time
