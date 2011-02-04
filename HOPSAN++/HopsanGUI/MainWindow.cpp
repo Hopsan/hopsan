@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setObjectName("MainWindow");
     this->resize(1024,768);
     this->setFont(QFont("Comic Sans"));
-    this->setWindowTitle("Hopsan NG");
+    this->setWindowTitle("Hopsan");
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
 
@@ -406,12 +406,12 @@ void MainWindow::createActions()
     rotateRightAction->setText("Rotate Right (Ctrl+R)");
     rotateRightAction->setShortcut(QKeySequence("Ctrl+R"));
 
-    flipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Rotate Left"), this);
-    flipHorizontalAction->setText("Rotate Left (Ctrl+F)");
+    flipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Flip Horizontal"), this);
+    flipHorizontalAction->setText("Flip Horizontal (Ctrl+F)");
     flipHorizontalAction->setShortcut(QKeySequence("Ctrl+F"));
 
-    flipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Rotate Left"), this);
-    flipVerticalAction->setText("Rotate Left (Ctrl+D");
+    flipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Flip Vertical"), this);
+    flipVerticalAction->setText("Flip Vertical (Ctrl+D");
     flipVerticalAction->setShortcut(QKeySequence("Ctrl+D"));
 
     resetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom (Ctrl+0)"), this);

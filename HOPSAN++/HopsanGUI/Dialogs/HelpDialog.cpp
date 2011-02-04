@@ -30,7 +30,7 @@ HelpDialog::HelpDialog(MainWindow *parent)
 {
     this->setObjectName("HelpDialog");
     this->resize(480,640);
-    this->setWindowTitle("Hopsan NG User Guide");
+    this->setWindowTitle("Hopsan User Guide");
 
     mpHelp = new QWebView(this);
     qDebug() << gExecPath << QString(HELPPATH) << "hopsan-user.html";

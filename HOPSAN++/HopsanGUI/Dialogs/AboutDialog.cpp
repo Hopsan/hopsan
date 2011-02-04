@@ -17,7 +17,7 @@
 
 
 //! @class AboutDialog
-//! @brief A class for displaying the "About Hopsan NG" dialog
+//! @brief A class for displaying the "About Hopsan" dialog
 //!
 //! Shows a cool picture, some logotypes, current version and some license information
 //!
@@ -31,7 +31,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
         //Set the name and size of the main window
     this->setObjectName("AboutDialog");
     this->resize(480,640);
-    this->setWindowTitle("About Hopsan NG");
+    this->setWindowTitle("About Hopsan");
     this->setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
     this->num = 0;
     this->title = "";
@@ -88,7 +88,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
 //    pLicenseHeading->setAlignment(Qt::AlignCenter);
 
 //    QLabel *pLicenseText = new QLabel();
-//    pLicenseText->setText("Hopsan NG is a free software package developed at the Divistion of Fluid and Mechatronic Systems (Flumes). It must not be sold or redestributed without permision from Flumes.\n");
+//    pLicenseText->setText("Hopsan is a free software package developed at the Divistion of Fluid and Mechatronic Systems (Flumes). It must not be sold or redestributed without permision from Flumes.\n");
 //    pLicenseText->setWordWrap(true);
 //    pLicenseText->setAlignment(Qt::AlignJustify);
 

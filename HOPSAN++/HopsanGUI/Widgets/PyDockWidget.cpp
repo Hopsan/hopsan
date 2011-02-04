@@ -37,7 +37,7 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
 //        mainContext.addObject("test", test);
 
         mpPyConsole = new PythonQtScriptingConsole(NULL, mainContext);
-        mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan NG.");
+        mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan.");
         mpPyConsole->appendCommandPrompt();
 
         mpScriptFileLineEdit = new QLineEdit();

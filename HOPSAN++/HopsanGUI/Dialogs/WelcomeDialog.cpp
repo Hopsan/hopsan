@@ -21,7 +21,7 @@
 
 
 //! @class WelcomeDialog
-//! @brief A class for displaying the "Welcome to Hopsan NG" dialog
+//! @brief A class for displaying the "Welcome to Hopsan" dialog
 //!
 //! Shows a cool picture, some logotypes, current version and some license information
 //!
@@ -34,7 +34,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
         //Set the name and size of the main window
     this->setObjectName("WelcomeDialog");
     this->resize(480,640);
-    this->setWindowTitle("Welcome to Hopsan NG");
+    this->setWindowTitle("Welcome to Hopsan");
     this->setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
     this->setMouseTracking(true);
     this->setAttribute(Qt::WA_NoMousePropagation, false);

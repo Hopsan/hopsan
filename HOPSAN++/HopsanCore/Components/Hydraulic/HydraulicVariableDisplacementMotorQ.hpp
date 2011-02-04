@@ -49,7 +49,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
-            mpIn = addReadPort("in", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("Dp", "Displacement", "m^3/rev", dp);
             registerParameter("Bm", "Viscous Friction", "Ns/m", Bm);       //! @todo Figure out these units
@@ -87,7 +87,7 @@ namespace hopsan {
         {
             //Declare local variables
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3;
-            double dp, ble, gamma, c1a, c2a, ct, omega3, phi3, q1a, q2a, q1leak, q2leak;
+            double dpe, ble, gamma, c1a, c2a, ct, q1a, q2a, q1leak, q2leak;
 
             //Get variable values from nodes
             c1 = (*mpND_c1);
@@ -101,19 +101,19 @@ namespace hopsan {
             //Motor equations
             limitValue(eps, -1, 1);
 
-            dp = dp / (3.1415 * 2) * eps;
-            ble = Bm + Zc1 * dp*dp + Zc2 * dp*dp + Zx3;
+            dpe = dp / (3.1415 * 2) * eps;
+            ble = Bm + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
             gamma = 1 / (cim * (Zc1 + Zc2) + 1);
             c1a = (cim * Zc2 + 1) * gamma * c1 + cim * gamma * Zc1 * c2;
             c2a = (cim * Zc1 + 1) * gamma * c2 + cim * gamma * Zc2 * c1;
-            ct = c1a * dp - c2a * dp - c3;
+            ct = c1a * dpe - c2a * dpe - c3;
             mIntegrator.setDamping(ble / J * mTimestep);
             mIntegrator.integrate(ct/J);
-            omega3 = mIntegrator.valueFirst();
-            phi3 = mIntegrator.valueSecond();
+            w3 = mIntegrator.valueFirst();
+            a3 = mIntegrator.valueSecond();
 
             //Ideal Flow
-            q1a = -dp * omega3;
+            q1a = -dpe * a3;
             q2a = -q1a;
             p1 = c1a + gamma * Zc1 * q1a;
             p2 = c2a + gamma * Zc2 * q2a;
@@ -130,7 +130,7 @@ namespace hopsan {
             if (p1 < 0.0) { p1 = 0.0; }
             if (p2 < 0.0) { p2 = 0.0; }
 
-            t3 = c3 + omega3 * Zx3;
+            t3 = c3 + a3 * Zx3;
 
             //Write new values to nodes
             (*mpND_p1) = p1;

@@ -84,7 +84,10 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->refreshParentContainerSigSlotConnections();
     this->setPortOverlayScale(mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpGraphicsView->mZoomFactor);
 
-    this->hideIfNotConnected(!mpParentGuiModelObject->mpParentContainerObject->mPortsHidden);
+    if(mpParentGuiModelObject->mpParentContainerObject != 0)
+    {
+        this->hideIfNotConnected(!mpParentGuiModelObject->mpParentContainerObject->mPortsHidden);
+    }
 
     //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
     GraphicsView *pView = mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpGraphicsView; //! @todo need to be able to access this in some nicer way then ptr madness
