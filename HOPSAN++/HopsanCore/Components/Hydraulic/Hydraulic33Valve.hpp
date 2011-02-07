@@ -52,8 +52,8 @@ namespace hopsan {
             d = 0.01;
             f = 1.0;
             xvmax = 0.01;
-            overlap_pa = 0.0;
-            overlap_at = 0.0;
+            overlap_pa = -1e-6;
+            overlap_at = -1e-6;
             omegah = 100.0;
             deltah = 1.0;
 
