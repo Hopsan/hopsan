@@ -1,0 +1,1649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.2" hopsanguiversion="0.2.0" hopsancoreversion="0">
+    <system cqs_type="S" name="Load Sensing System">
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="3037.14797297004" y="2357.389385855467" zoom="0.5972708660046227"/>
+            <ports hidden="0"/>
+            <names hidden="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="Subsystem" displayname="Load Sensing System">
+                    <icon isopath="subsystemtmp.svg" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters>
+            <favoriteparameter dataunit="Pa" portname="P2" componentname="Variable Pump With Pressure Control" dataname="Pressure"/>
+            <favoriteparameter dataunit="Pa" portname="PREF" componentname="Variable Pump With Pressure Control" dataname="Pressure"/>
+            <favoriteparameter dataunit="m" portname="P2" componentname="Translational Mass With Coulumb Friction" dataname="Position"/>
+            <favoriteparameter dataunit="m" portname="P2" componentname="Translational Mass With Coulumb Friction_2" dataname="Position"/>
+            <favoriteparameter dataunit="rad" portname="P2" componentname="Rotational Inertia" dataname="Angle"/>
+            <parameter value="0.001" name="Cyl_A1"/>
+            <parameter value="0.001" name="Cyl_A2"/>
+            <parameter value="100" name="Cyl_Bp"/>
+            <parameter value="0.0003" name="Cyl_V01"/>
+            <parameter value="0.0003" name="Cyl_V02"/>
+            <parameter value="1e-010" name="Cyl_cLeak"/>
+        </parameters>
+        <objects>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring">
+                <parameters>
+                    <parameter value="100" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2743" y="2096" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCheckValve" name="Check Valve">
+                <parameters>
+                    <parameter value="2.5e-006" name="Ks"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2537" y="2357" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicPositionSensor" name="Position Sensor">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2733" y="2043" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicRotationalInertia" name="Rotational Inertia">
+                <parameters>
+                    <parameter value="1" name="J"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="3907" y="2093" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="Cylinder C">
+                <parameters>
+                    <parameter value="Cyl_A1" name="A1"/>
+                    <parameter value="Cyl_A2" name="A2"/>
+                    <parameter value="1" name="sl"/>
+                    <parameter value="5" name="me"/>
+                    <parameter value="Cyl_V01" name="V01"/>
+                    <parameter value="Cyl_V02" name="V02"/>
+                    <parameter value="Cyl_Bp" name="bp"/>
+                    <parameter value="1e+009" name="betae"/>
+                    <parameter value="Cyl_cLeak" name="cLeak"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Velocity" value="0"/>
+                    <startvalue portname="P3" variable="Force" value="0"/>
+                    <startvalue portname="P3" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2571" y="2096" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
+                <parameters>
+                    <parameter value="2e+007" name="pref"/>
+                    <parameter value="0.01" name="tao"/>
+                    <parameter value="1e-008" name="kcs"/>
+                    <parameter value="1e-008" name="kcf"/>
+                    <parameter value="0.01" name="qnom"/>
+                    <parameter value="500000" name="ph"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2539" y="2485" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="0" name="BaseValue"/>
+                    <parameter value="0.7" name="Amplitude"/>
+                    <parameter value="3" name="StepTime"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2217" y="2194" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract_1">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3586" y="2196" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="Cylinder C_2">
+                <parameters>
+                    <parameter value="Cyl_A1" name="A1"/>
+                    <parameter value="Cyl_A2" name="A2"/>
+                    <parameter value="1" name="sl"/>
+                    <parameter value="5" name="me"/>
+                    <parameter value="Cyl_V01" name="V01"/>
+                    <parameter value="Cyl_V02" name="V02"/>
+                    <parameter value="Cyl_Bp" name="bp"/>
+                    <parameter value="1e+009" name="betae"/>
+                    <parameter value="Cyl_cLeak" name="cLeak"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Velocity" value="0"/>
+                    <startvalue portname="P3" variable="Force" value="0"/>
+                    <startvalue portname="P3" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3209" y="2097" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCheckValve" name="Check Valve_1">
+                <parameters>
+                    <parameter value="2.5e-008" name="Ks"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="4008" y="2357" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract_3">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2947" y="2195" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureControlledPump" name="Variable Pump With Pressure Control">
+                <parameters>
+                    <parameter value="1e+006" name="pdif"/>
+                    <parameter value="125" name="speed"/>
+                    <parameter value="0.0025" name="qmax"/>
+                    <parameter value="0" name="qmin"/>
+                    <parameter value="7e+007" name="lp"/>
+                    <parameter value="1e+009" name="rp"/>
+                    <parameter value="200" name="wp1"/>
+                    <parameter value="1e-012" name="Kcp"/>
+                    <parameter value="0.001" name="taov"/>
+                    <parameter value="0.15" name="tp"/>
+                    <parameter value="0.12" name="tm"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2384" y="2487" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3549" y="2580" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCheckValve" name="Check Valve_3">
+                <parameters>
+                    <parameter value="2.5e-006" name="Ks"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2537" y="2623" flipped="0" a="270"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicMachineC" name="C-type Variable Machine">
+                <parameters>
+                    <parameter value="1e+009" name="betae"/>
+                    <parameter value="1" name="je"/>
+                    <parameter value="0.005" name="v1"/>
+                    <parameter value="0.005" name="v2"/>
+                    <parameter value="5e-005" name="dp"/>
+                    <parameter value="5e-012" name="cim"/>
+                    <parameter value="0" name="bm"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="P3" variable="Torque" value="0"/>
+                    <startvalue portname="P3" variable="Angle" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="4000" y="2093" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCheckValve" name="Check Valve_5">
+                <parameters>
+                    <parameter value="2.5e-006" name="Ks"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="3173" y="2357" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant">
+                <parameters>
+                    <parameter value="1" name="Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="4107" y="2048" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic43LoadSensingValve" name="4/3 Servo Valve with Load Sensing Port_1">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="1" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="4008" y="2187" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic43LoadSensingValve" name="4/3 Servo Valve with Load Sensing Port_3">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="1" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="3175" y="2187" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2577" y="2224" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMassWithCoulumbFriction" name="Translational Mass With Coulumb Friction_2">
+                <parameters>
+                    <parameter value="100" name="m"/>
+                    <parameter value="0" name="b"/>
+                    <parameter value="100" name="fs"/>
+                    <parameter value="90" name="fk"/>
+                    <parameter value="-1e+006" name="xmin"/>
+                    <parameter value="1e+006" name="xmax"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="3316" y="2101" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicAngleSensor" name="Angle Sensor">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3947" y="2044" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Transformer">
+                <parameters>
+                    <parameter value="100" name="f"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2876" y="2096" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume4" name="Hydraulic Volume with 4 Ports">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Flow" value="0"/>
+                    <startvalue portname="P3" variable="Pressure" value="100000"/>
+                    <startvalue portname="P4" variable="Flow" value="0"/>
+                    <startvalue portname="P4" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2537" y="2412" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_2">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3703" y="2644" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step_1">
+                <parameters>
+                    <parameter value="0" name="BaseValue"/>
+                    <parameter value="0.5" name="Amplitude"/>
+                    <parameter value="1" name="StepTime"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2865" y="2195" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_3">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2537" y="2305" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass">
+                <parameters>
+                    <parameter value="10" name="m"/>
+                    <parameter value="0" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2806" y="2096" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume3" name="Hydraulic Volume with 3 Ports_3">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Flow" value="0"/>
+                    <startvalue portname="P3" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3173" y="2412" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_4">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="4008" y="2306" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring_2">
+                <parameters>
+                    <parameter value="100" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3380" y="2097" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_6">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2537" y="2572" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_2">
+                <parameters>
+                    <parameter value="10" name="m"/>
+                    <parameter value="0" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="3443" y="2097" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant_4">
+                <parameters>
+                    <parameter value="5" name="Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3525" y="2195" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_9">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3867" y="2579" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicShuttleValve" name="Shuttle Valve">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="3703" y="2580" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic43LoadSensingValve" name="4/3 Servo Valve with Load Sensing Port">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="1" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2540.41" y="2184" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTorqueTransformer" name="Torque Transformer">
+                <parameters>
+                    <parameter value="0" name="t"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Torque" value="0"/>
+                    <startvalue portname="P1" variable="Angle" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3720" y="2094" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2318" y="2194" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_10">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3174" y="2306" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_1">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="4048" y="2227" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicShuttleValve" name="Shuttle Valve_2">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2962" y="2487" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_11">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2818" y="2487" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume_12">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3114" y="2487" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_2">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2399" y="2587" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Transformer_2">
+                <parameters>
+                    <parameter value="100" name="f"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3512" y="2097" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_3">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2537" y="2663" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_5">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3214" y="2225" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLosslessConnector" name="Lossless Q-type Connector">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2815" y="2412" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain_1">
+                <parameters>
+                    <parameter value="0.04" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3010" y="2195" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain_2">
+                <parameters>
+                    <parameter value="0.1" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3677" y="2197" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain">
+                <parameters>
+                    <parameter value="0.04" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2379" y="2194" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMassWithCoulumbFriction" name="Translational Mass With Coulumb Friction">
+                <parameters>
+                    <parameter value="100" name="m"/>
+                    <parameter value="0" name="b"/>
+                    <parameter value="30" name="fs"/>
+                    <parameter value="25" name="fk"/>
+                    <parameter value="-1e+006" name="xmin"/>
+                    <parameter value="1e+006" name="xmax"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2680" y="2100" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTorsionalSpring" name="Torsional Spring">
+                <parameters>
+                    <parameter value="100" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Torque" value="0"/>
+                    <startvalue portname="P1" variable="Angle" value="0"/>
+                    <startvalue portname="P2" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Torque" value="0"/>
+                    <startvalue portname="P2" variable="Angle" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3842" y="2078" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicRotationalInertia" name="Rotational Inertia_1">
+                <parameters>
+                    <parameter value="1" name="J"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="3775" y="2093" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicPositionSensor" name="Position Sensor_2">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="3370" y="2044" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <textwidget>
+                <hopsangui>
+                    <pose x="1945" y="2441"/>
+                    <textobject fontcolor="#556b2f" text="This example model shows a load sensing &#xa;system with two linear actuators and &#xa;one motor. The pump is tuned to always&#xa;provide a pressure that is 20 bar higher &#xa;than the highest load pressure. Maximum &#xa;system pressure is limited to 200 bar by a &#xa;pressure relief valve.&#xa;&#xa;This model also demonstrates the use of&#xa;system parameters and favorite plot &#xa;variables." font="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0"/>
+                </hopsangui>
+            </textwidget>
+            <boxwidget>
+                <hopsangui>
+                    <pose x="1935" y="2434"/>
+                    <size width="324" height="230.5500000000002"/>
+                    <line width="2" style="solidline" color="#556b2f"/>
+                </hopsangui>
+            </boxwidget>
+        </objects>
+        <connections>
+            <connect endport="PT" endcomponent="4/3 Servo Valve with Load Sensing Port" startport="P1" startcomponent="Tank C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2577" y="2209.5"/>
+                        <coordinate x="2579.9038" y="2209.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="4/3 Servo Valve with Load Sensing Port_1" startport="P1" startcomponent="Tank C_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="4048" y="2212.5"/>
+                        <coordinate x="4047.4938" y="2212.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Check Valve" startport="P2" startcomponent="Hydraulic Volume_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2537" y="2330"/>
+                        <coordinate x="2537" y="2331"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve with Load Sensing Port" startport="P1" startcomponent="Hydraulic Volume_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2537" y="2280"/>
+                        <coordinate x="2537" y="2297.337851822068"/>
+                        <coordinate x="2539.8994" y="2297.337851822068"/>
+                        <coordinate x="2539.8994" y="2209.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PA" endcomponent="4/3 Servo Valve with Load Sensing Port" startport="P1" startcomponent="Cylinder C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2516.4742" y="2116"/>
+                        <coordinate x="2516.4742" y="2139.337851822068"/>
+                        <coordinate x="2539.8994" y="2139.337851822068"/>
+                        <coordinate x="2539.8994" y="2158.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PB" endcomponent="4/3 Servo Valve with Load Sensing Port" startport="P2" startcomponent="Cylinder C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2596.0614" y="2116"/>
+                        <coordinate x="2596.0614" y="2139.337851822068"/>
+                        <coordinate x="2579.9038" y="2139.337851822068"/>
+                        <coordinate x="2579.9038" y="2158.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction" startport="P3" startcomponent="Cylinder C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2630.5" y="2096"/>
+                        <coordinate x="2648.135" y="2096"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Spring" startport="P2" startcomponent="Translational Mass With Coulumb Friction">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2711.865" y="2096"/>
+                        <coordinate x="2726.5" y="2096"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Spring" startport="P1" startcomponent="Translational Mass">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2774" y="2096"/>
+                        <coordinate x="2759.5" y="2096"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass" startport="P1" startcomponent="Force Transformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2856.5" y="2096"/>
+                        <coordinate x="2838" y="2096"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass With Coulumb Friction" startport="P1" startcomponent="Position Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2733" y="2055.5"/>
+                        <coordinate x="2711.865" y="2096"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain_2" startport="out" startcomponent="Subtract_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3598.5" y="2196"/>
+                        <coordinate x="3664.5" y="2197"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Rotational Inertia" startport="P1" startcomponent="Angle Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3947" y="2056.5"/>
+                        <coordinate x="3939" y="2093"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume_9" startport="P1" startcomponent="Shuttle Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3738" y="2580"/>
+                        <coordinate x="3842" y="2579"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Shuttle Valve" startport="P2" startcomponent="Hydraulic Volume">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3574" y="2580"/>
+                        <coordinate x="3649.014257126269" y="2580"/>
+                        <coordinate x="3649.014257126269" y="2580"/>
+                        <coordinate x="3668" y="2580"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Rotational Inertia" startport="P2" startcomponent="Torsional Spring">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3858.5" y="2092.5"/>
+                        <coordinate x="3875" y="2093"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Torsional Spring" startport="P2" startcomponent="Rotational Inertia_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3807" y="2093"/>
+                        <coordinate x="3825.5" y="2092.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Rotational Inertia_1" startport="P1" startcomponent="Torque Transformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3722.4" y="2092.115"/>
+                        <coordinate x="3743" y="2093"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Subtract_1" startport="out" startcomponent="Angle Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3947" y="2031.5"/>
+                        <coordinate x="3947" y="2028.378951822068"/>
+                        <coordinate x="3586" y="2028.378951822068"/>
+                        <coordinate x="3586" y="2183.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve with Load Sensing Port_1" startport="out" startcomponent="Gain_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3689.5" y="2197"/>
+                        <coordinate x="3897" y="2197.2"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve with Load Sensing Port" startport="out" startcomponent="Gain">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2391.5" y="2194"/>
+                        <coordinate x="2429.41" y="2194.2"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="P1" startcomponent="Tank C_5">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3214" y="2210.5"/>
+                        <coordinate x="3214.4938" y="2212.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass With Coulumb Friction_2" startport="P3" startcomponent="Cylinder C_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3268.5" y="2097"/>
+                        <coordinate x="3284.135" y="2097"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Spring_2" startport="P2" startcomponent="Translational Mass With Coulumb Friction_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3347.865" y="2097"/>
+                        <coordinate x="3363.5" y="2097"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Spring_2" startport="P1" startcomponent="Translational Mass_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3411" y="2097"/>
+                        <coordinate x="3396.5" y="2097"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass_2" startport="P1" startcomponent="Force Transformer_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3492.5" y="2097"/>
+                        <coordinate x="3475" y="2097"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass With Coulumb Friction_2" startport="P1" startcomponent="Position Sensor_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3370" y="2056.5"/>
+                        <coordinate x="3347.865" y="2097"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PA" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="P1" startcomponent="Cylinder C_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3154.4742" y="2117"/>
+                        <coordinate x="3154.4742" y="2142.695092408912"/>
+                        <coordinate x="3174.4894" y="2142.695092408912"/>
+                        <coordinate x="3174.4894" y="2161.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PB" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="P2" startcomponent="Cylinder C_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3234.0614" y="2117"/>
+                        <coordinate x="3234.0614" y="2142.695092408912"/>
+                        <coordinate x="3214.4938" y="2142.695092408912"/>
+                        <coordinate x="3214.4938" y="2161.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="out" startcomponent="Gain_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3022.5" y="2195"/>
+                        <coordinate x="3064" y="2197.2"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Subtract">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2330.5" y="2194"/>
+                        <coordinate x="2366.5" y="2194"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Subtract" startport="out" startcomponent="Position Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2733" y="2030.5"/>
+                        <coordinate x="2733" y="2018.844944020651"/>
+                        <coordinate x="2318" y="2018.844944020651"/>
+                        <coordinate x="2318" y="2181.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Subtract_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2959.5" y="2195"/>
+                        <coordinate x="2997.5" y="2195"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="out" endcomponent="Position Sensor_2" startport="in2" startcomponent="Subtract_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2947" y="2182.5"/>
+                        <coordinate x="2947" y="2022.01924756675"/>
+                        <coordinate x="3370" y="2022.01924756675"/>
+                        <coordinate x="3370" y="2031.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract_1" startport="out" startcomponent="Constant_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3537.5" y="2195"/>
+                        <coordinate x="3573.5" y="2196"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Shuttle Valve_2" startport="P2" startcomponent="Hydraulic Volume_11">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2843" y="2487"/>
+                        <coordinate x="2909.190346154538" y="2487"/>
+                        <coordinate x="2909.190346154538" y="2487"/>
+                        <coordinate x="2927" y="2487"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume_11" startport="PL" startcomponent="4/3 Servo Valve with Load Sensing Port">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2559.9016" y="2209.5"/>
+                        <coordinate x="2559.9016" y="2279.39645782207"/>
+                        <coordinate x="2624.94537880938" y="2279.39645782207"/>
+                        <coordinate x="2624.94537880938" y="2487"/>
+                        <coordinate x="2793" y="2487"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Shuttle Valve_2" startport="P1" startcomponent="Hydraulic Volume_12">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3089" y="2487"/>
+                        <coordinate x="3018.223301457315" y="2487"/>
+                        <coordinate x="3018.223301457315" y="2487"/>
+                        <coordinate x="2997" y="2487"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PL" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="P2" startcomponent="Hydraulic Volume_12">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3139" y="2487"/>
+                        <coordinate x="3251.236640809378" y="2487"/>
+                        <coordinate x="3251.236640809378" y="2268.18357382207"/>
+                        <coordinate x="3194.4916" y="2268.18357382207"/>
+                        <coordinate x="3194.4916" y="2212.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume" startport="P3" startcomponent="Shuttle Valve_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2962" y="2504.5"/>
+                        <coordinate x="2962" y="2580"/>
+                        <coordinate x="3524" y="2580"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="P1" startcomponent="Hydraulic Volume_10">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3174" y="2281"/>
+                        <coordinate x="3174.4894" y="2212.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume_10" startport="P2" startcomponent="Check Valve_5">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3173" y="2331"/>
+                        <coordinate x="3174" y="2331"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P3" endcomponent="Hydraulic Volume with 3 Ports_3" startport="P1" startcomponent="Check Valve_5">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3173" y="2383"/>
+                        <coordinate x="3173" y="2397"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume_4" startport="P2" startcomponent="Check Valve_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="4008" y="2331"/>
+                        <coordinate x="4008" y="2331"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve with Load Sensing Port_1" startport="P1" startcomponent="Hydraulic Volume_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="4008" y="2281"/>
+                        <coordinate x="4007.4894" y="2212.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="C-type Variable Machine" startport="PA" startcomponent="4/3 Servo Valve with Load Sensing Port_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="4007.4894" y="2161.5"/>
+                        <coordinate x="4007.7064" y="2143"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Rotational Inertia" startport="P3" startcomponent="C-type Variable Machine">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3948" y="2093"/>
+                        <coordinate x="3951.000967809377" y="2093"/>
+                        <coordinate x="3951.000967809377" y="2093"/>
+                        <coordinate x="3939" y="2093"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PB" endcomponent="4/3 Servo Valve with Load Sensing Port_1" startport="P1" startcomponent="C-type Variable Machine">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="4007.7064" y="2043"/>
+                        <coordinate x="4007.7064" y="2029.851828337348"/>
+                        <coordinate x="4072.295057397409" y="2029.851828337348"/>
+                        <coordinate x="4072.295057397409" y="2142.952056155245"/>
+                        <coordinate x="4047.4938" y="2142.952056155245"/>
+                        <coordinate x="4047.4938" y="2161.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="eps" endcomponent="C-type Variable Machine" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="4094.5" y="2048"/>
+                        <coordinate x="4052" y="2048.56"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume_6" startport="P1" startcomponent="Check Valve_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2537" y="2597"/>
+                        <coordinate x="2537" y="2597"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Tank C_3" startport="P2" startcomponent="Check Valve_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2537" y="2649"/>
+                        <coordinate x="2537" y="2648.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Check Valve_1" startport="P1" startcomponent="Hydraulic Volume with 3 Ports_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3198" y="2412"/>
+                        <coordinate x="4008" y="2412"/>
+                        <coordinate x="4008" y="2383"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume with 3 Ports_3" startport="P1" startcomponent="Lossless Q-type Connector">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2845" y="2412"/>
+                        <coordinate x="3128.466667809377" y="2412"/>
+                        <coordinate x="3128.466667809377" y="2412"/>
+                        <coordinate x="3148" y="2412"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume_9" startport="PL" startcomponent="4/3 Servo Valve with Load Sensing Port_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="4027.4916" y="2212.5"/>
+                        <coordinate x="4027.4916" y="2579"/>
+                        <coordinate x="3892" y="2579"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Check Valve" startport="P3" startcomponent="Hydraulic Volume with 4 Ports">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2537" y="2397"/>
+                        <coordinate x="2537" y="2383"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume with 4 Ports" startport="P2" startcomponent="Lossless Q-type Connector">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2785" y="2412"/>
+                        <coordinate x="2562" y="2412"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P4" endcomponent="Hydraulic Volume with 4 Ports" startport="P1" startcomponent="Pressure Relief Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2537.0008" y="2445"/>
+                        <coordinate x="2537" y="2427"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume_6" startport="P2" startcomponent="Pressure Relief Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2537.0008" y="2525"/>
+                        <coordinate x="2537" y="2547"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2237" y="2194"/>
+                        <coordinate x="2305.5" y="2194"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract_3" startport="out" startcomponent="Step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2885" y="2195"/>
+                        <coordinate x="2914.966667809377" y="2195"/>
+                        <coordinate x="2914.966667809377" y="2195"/>
+                        <coordinate x="2934.5" y="2195"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P3" endcomponent="Shuttle Valve" startport="P1" startcomponent="Hydraulic Volume_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3703" y="2619"/>
+                        <coordinate x="3703" y="2597.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PREF" endcomponent="Variable Pump With Pressure Control" startport="P2" startcomponent="Hydraulic Volume_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="3703" y="2669"/>
+                        <coordinate x="3703" y="2697.872651822069"/>
+                        <coordinate x="2318.9885" y="2697.872651822069"/>
+                        <coordinate x="2318.9885" y="2548.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume with 4 Ports" startport="P2" startcomponent="Variable Pump With Pressure Control">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2399.071918492375" y="2425.5"/>
+                        <coordinate x="2399.071918492375" y="2412"/>
+                        <coordinate x="2512" y="2412"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Variable Pump With Pressure Control" startport="P1" startcomponent="Tank C_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2399" y="2572.5"/>
+                        <coordinate x="2399.071918492375" y="2548.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
