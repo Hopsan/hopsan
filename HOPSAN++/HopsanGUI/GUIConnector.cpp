@@ -87,8 +87,9 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
-    mpStartPort->setIsConnected(true);
-    mpEndPort->setIsConnected(true);
+    mpStartPort->addConnection();
+    mpEndPort->addConnection();
+
 //    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 //    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->getGuiModelObject()->getCenterPos();
@@ -334,7 +335,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     this->disconnectPortSigSlots(mpStartPort);
     mpStartPort = port;
-    mpStartPort->setIsConnected(true);
+    mpStartPort->addConnection();
     this->connectPortSigSlots(mpStartPort);
 //    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
 //    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
@@ -352,7 +353,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->disconnectPortSigSlots(mpEndPort);
     mpEndPort = port;
     mEndPortConnected = true;
-    mpEndPort->setIsConnected(true);
+    mpEndPort->addConnection();
     this->connectPortSigSlots(mpEndPort);
 
         //Figure out whether or not the last line had the right direction, and make necessary corrections

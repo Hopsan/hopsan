@@ -960,17 +960,14 @@ bool GUIContainerObject::hasConnector(QString startComp, QString startPort, QStr
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
 void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus undoSettings)
 {
-    bool doDelete = false;
-    bool startPortHasMoreConnections = false;
-    bool endPortWasConnected = false;
-    bool endPortHasMoreConnections = false;
+    bool doDelete = false;          //! @todo Why would we not want to delete the connector when we call the function that is meant to delete it?
+    bool endPortWasConnected = false;       //Tells if connector is finished or being created
 
     if(undoSettings == UNDO)
     {
         mUndoStack->registerDeletedConnector(pConnector);
     }
 
-    qDebug() << "removeConnector in: " << this->getName();
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
         if(mSubConnectorList[i] == pConnector)
@@ -984,17 +981,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
                  emit checkMessages();
                  endPortWasConnected = true;
              }
-             doDelete = true;
-        }
-        else if( (pConnector->getStartPort() == mSubConnectorList[i]->getStartPort()) ||
-                 (pConnector->getStartPort() == mSubConnectorList[i]->getEndPort()) )
-        {
-            startPortHasMoreConnections = true;
-        }
-        else if( (pConnector->getEndPort() == mSubConnectorList[i]->getStartPort()) ||
-                 (pConnector->getEndPort() == mSubConnectorList[i]->getEndPort()) )
-        {
-            endPortHasMoreConnections = true;
+             doDelete = true;       //Connector exists, so delete it?!
         }
         if(mSubConnectorList.empty())
         {
@@ -1002,23 +989,25 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
         }
     }
 
-    if(endPortWasConnected && !endPortHasMoreConnections)
+
+    //Show the end port if it exists and if it is no longer connected
+    if(endPortWasConnected)
     {
-        pConnector->getEndPort()->setVisible(!mPortsHidden);
-        pConnector->getEndPort()->setIsConnected(false);
+        pConnector->getEndPort()->removeConnection();
+        if(!pConnector->getEndPort()->isConnected())
+        {
+            pConnector->getEndPort()->setVisible(!mPortsHidden);
+        }
     }
 
-    if(!startPortHasMoreConnections)
+    //Show the start port if it is no longer connected
+    pConnector->getStartPort()->removeConnection();
+    if(!pConnector->getStartPort()->isConnected())
     {
         pConnector->getStartPort()->setVisible(!mPortsHidden);
-        pConnector->getStartPort()->setIsConnected(false);
-    }
-    else if(startPortHasMoreConnections && !endPortWasConnected)
-    {
-        pConnector->getStartPort()->setVisible(false);
-        pConnector->getStartPort()->setIsConnected(true);
     }
 
+    //Delete the connector and remove it from scene and lists
     if(doDelete)
     {
         mSubConnectorList.removeAll(pConnector);
@@ -1026,6 +1015,8 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
         mpScene->removeItem(pConnector);
         delete pConnector;
     }
+
+    //Refresh the graphics view
     mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 

@@ -24,6 +24,7 @@ class GUIContainerObject;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 
+
 class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
@@ -32,25 +33,21 @@ public:
     ~GUIPort();
     virtual void refreshParentContainerSigSlotConnections();
 
-    QPointF getCenterPos();
-    void updatePosition(qreal x, qreal y);
-    void updatePositionByFraction(qreal x, qreal y);
-
     GUIContainerObject *getParentContainerObjectPtr();
     GUIModelObject *getGuiModelObject();
-
-    portDirection getPortDirection();
-    qreal getPortHeading();
-
-    void magnify(bool blowup);
-    void show();
-    void hide();
-
     QString getName();
     void setDisplayName(const QString name);
     QString getGuiModelObjectName();
-
+    QPointF getCenterPos();
+    portDirection getPortDirection();
+    qreal getPortHeading();
     bool getLastNodeData(QString dataName, double& rData);
+
+    void updatePosition(qreal x, qreal y);
+    void updatePositionByFraction(qreal x, qreal y);
+    void magnify(bool blowup);
+    void show();
+    void hide();
 
     virtual QString getPortType();
     virtual QString getNodeType();
@@ -60,16 +57,20 @@ public:
 //    void setStartValueDataByNames(QVector<QString> names, QVector<double> values);
     bool setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt);
 
-    void setIsConnected(bool isConnected);
+    void addConnection();
+    void removeConnection();
     bool isConnected();
 
-        //Public member variables
     GUIModelObject *mpParentGuiModelObject;
     QPointF rectPos;
 
 public slots:
     void hideIfNotConnected(bool togglePortsActionTriggered);
     void setVisible(bool value);
+    bool plot(QString dataName, QString dataUnit=QString());
+    void refreshPortOverlayPosition();
+    void refreshPortGraphics();
+    void refreshPortGraphics(QString cqsType, QString portType, QString nodeType);
 
 signals:
     void portClicked(GUIPort *item);
@@ -81,42 +82,29 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-//    QVariant itemChange( GraphicsItemChange change, const QVariant & value );
-
     void addPortGraphicsOverlay(QString filepath);
-
     void openRightClickMenu(QPoint screenPos);
 
 protected slots:
     void setPortOverlayScale(qreal scale);
-
-    //protected slots:
-public: //! @todo This was made public temporarly to test plot in Python
-    bool plot(QString dataName, QString dataUnit=QString());
-    void refreshPortOverlayPosition();
-    void refreshPortGraphics();
-    void refreshPortGraphics(QString cqsType, QString portType, QString nodeType);
 
 private:
     void setPortOverlayIconScale();
 
     QColor myLineColor;
     qreal myLineWidth;
-
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
-
     qreal mMag;
     qreal mOverlaySetScale;
     bool mIsMagnified;
-    bool mIsConnected;
-
+    size_t mnConnections;
     GUIPortAppearance *mpPortAppearance;
     QString mName;
-
     QGraphicsTextItem *mpPortLabel;
     QGraphicsSvgItem* mpPortGraphicsOverlay;
 };
+
 
 class GroupPort : public GUIPort
 {

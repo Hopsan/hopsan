@@ -3,7 +3,7 @@
 # -------------------------------------------------
 QT += svg xml
 QT += core gui webkit
-TARGET = HOPSANGUI
+TARGET = HopsanGUI
 TEMPLATE = app
 SOURCES += main.cpp \
     MainWindow.cpp \

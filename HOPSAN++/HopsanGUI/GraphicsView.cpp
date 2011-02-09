@@ -396,8 +396,11 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         if((mpContainerObject->mpTempConnector->getNumberOfLines() == 1 && mpContainerObject->mpTempConnector->isMakingDiagonal()) ||  (mpContainerObject->mpTempConnector->getNumberOfLines() == 2 && !mpContainerObject->mpTempConnector->isMakingDiagonal()))
         {
-            mpContainerObject->mpTempConnector->getStartPort()->setIsConnected(false);
-            mpContainerObject->mpTempConnector->getStartPort()->show();
+            mpContainerObject->mpTempConnector->getStartPort()->removeConnection();
+            if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected())
+            {
+                mpContainerObject->mpTempConnector->getStartPort()->show();
+            }
             mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
             mpContainerObject->setIsCreatingConnector(false);
             mpContainerObject->mJustStoppedCreatingConnector = true;

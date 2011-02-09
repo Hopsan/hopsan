@@ -78,7 +78,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mMag = GOLDENRATIO;
     mOverlaySetScale = 1.0;
     mIsMagnified = false;
-    mIsConnected = false;
+    mnConnections = 0;
 
     //Create connections to the parent container object
     this->refreshParentContainerSigSlotConnections();
@@ -497,12 +497,26 @@ portDirection GUIPort::getPortDirection()
 }
 
 
-//! @brief Access method for mIsConnected
-//! @param isConnected tells if the port is connected or not.
-void GUIPort::setIsConnected(bool isConnected)
+////! @brief Access method for mIsConnected
+////! @param isConnected tells if the port is connected or not.
+//void GUIPort::setIsConnected(bool isConnected)
+//{
+//    //! @todo Maybe should this be handled in core only snd just ask core if connected or not
+//    mIsConnected = isConnected;
+//}
+
+
+void GUIPort::addConnection()
 {
-    //! @todo Maybe should this be handled in core only snd just ask core if connected or not
-    mIsConnected = isConnected;
+    ++mnConnections;
+    qDebug() << "Adding connection, connections = " << mnConnections;
+}
+
+
+void GUIPort::removeConnection()
+{
+    --mnConnections;
+    qDebug() << "Removing connection, connections = " << mnConnections;
 }
 
 
@@ -510,7 +524,7 @@ void GUIPort::setIsConnected(bool isConnected)
 //! @return if the port is connected or not
 bool GUIPort::isConnected()
 {
-    return mIsConnected;
+    return (mnConnections > 0);
 }
 
 
