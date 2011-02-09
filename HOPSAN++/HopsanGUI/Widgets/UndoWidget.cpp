@@ -193,8 +193,8 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert("rename",                 "Renamed Object");
     tagMap.insert("modifiedconnector",      "Modified Connector");
     tagMap.insert("rotate",                 "Rotated Object");
-    tagMap.insert("flipvertical",           "Flipped Vertical");
-    tagMap.insert("fliphorizontal",         "Flipped Horizontal");
+    tagMap.insert("verticalflip",           "Flipped Vertical");
+    tagMap.insert("horizontalflip",         "Flipped Horizontal");
     tagMap.insert("namevisibilitychange",   "Changed Name Visibility");
     tagMap.insert("paste",                  "Paste");
     tagMap.insert("movedmultiple",          "Moved Objects");

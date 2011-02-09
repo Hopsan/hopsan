@@ -542,15 +542,40 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
     //    groupAction = rMenu.addAction(tr("Group components"));
 
     QAction *showNameAction = rMenu.addAction(tr("Show name"));
+    QAction *rotateRightAction = rMenu.addAction(tr("Rotate Clockwise"));
+    QAction *rotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise"));
+    QAction *flipVerticalAction = rMenu.addAction(tr("Flip Vertically"));
+    QAction *flipHorizontalAction = rMenu.addAction(tr("Flip Horizontally"));
     showNameAction->setCheckable(true);
     showNameAction->setChecked(mpNameText->isVisible());
+    rMenu.addSeparator();
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
-
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
+
 
     if (selectedAction == parameterAction)
     {
         openPropertiesDialog();
+    }
+    else if (selectedAction == rotateRightAction)
+    {
+        mpParentContainerObject->mUndoStack->newPost();
+        this->rotate90cw();
+    }
+    else if (selectedAction == rotateLeftAction)
+    {
+        mpParentContainerObject->mUndoStack->newPost();
+        this->rotate90ccw();
+    }
+    else if (selectedAction == flipVerticalAction)
+    {
+        mpParentContainerObject->mUndoStack->newPost();
+        this->flipVertical();
+    }
+    else if (selectedAction == flipHorizontalAction)
+    {
+        mpParentContainerObject->mUndoStack->newPost();
+        this->flipHorizontal();
     }
     else if (selectedAction == showNameAction)
     {
@@ -572,6 +597,8 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
     {
         return selectedAction;
     }
+
+
 
     //Return 0 action if any of the above actions were triggered
     return 0;
