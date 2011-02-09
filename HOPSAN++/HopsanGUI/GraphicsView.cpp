@@ -414,11 +414,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             mpContainerObject->mpTempConnector->drawConnector();
             this->updateViewPort();
         }
-        //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
     else if  ((event->button() == Qt::LeftButton) && (mpContainerObject->getIsCreatingConnector()))
     {
-        qDebug() << "Adding connector point: " << event->pos();
         mpContainerObject->mpTempConnector->addPoint(this->mapToScene(event->pos()));
     }
     QGraphicsView::mousePressEvent(event);

@@ -234,11 +234,15 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 //! @see addLibrary(QString libDir, QString parentLib)
 //! @see addLibrary()
 //! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
-void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryName, QString libraryPath)
+void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryName, QString libraryPath, QString iconPath)
 {
     QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
     newTreePost->setText(0, QString(libraryName));
     newTreePost->setToolTip(0,libraryPath);
+    if(!iconPath.isEmpty())
+    {
+        newTreePost->setIcon(0, QIcon(iconPath));
+    }
 
     LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0, parentLibraryName + libraryName, this, newTreePost);
     newLibContent->setDragEnabled(true);

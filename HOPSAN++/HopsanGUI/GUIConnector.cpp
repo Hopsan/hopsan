@@ -84,7 +84,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mMakingDiagonal = false;
 
     this->setParentContainer(pParentContainer);
-    setFlags(QGraphicsItem::ItemIsFocusable);
+    //setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
     mpStartPort->addConnection();
@@ -146,6 +146,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 
     this->determineAppearance();
     this->drawConnector();
+    this->connectPortSigSlots(mpEndPort);
 
         //Make all lines selectable and all lines except first and last movable
     for(int i=1; i<mpLines.size()-1; ++i)
@@ -160,6 +161,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 //    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
 //    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 //    this->refreshParentContainerSigSlotConnections();
+
+    mpParentContainerObject->getContainedScenePtr()->addItem(this);
 }
 
 
@@ -849,6 +852,10 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
                {
                    mpLines[i]->setSelected(false);
                }
+               if(lineNumber == -1)
+               {
+                   mpLines[0]->setSelected(true);
+               }
             }
         }
         else
@@ -857,7 +864,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             for (int i=0; i != mpLines.size(); ++i)
             {
                if(mpLines[i]->isSelected())
-                {
+               {
                    noneSelected = false;
                }
             }
@@ -1026,6 +1033,7 @@ void GUIConnector::determineAppearance()
 //! @brief Slot that "deactivates" a connector if it is deselected
 void GUIConnector::deselect()
 {
+    qDebug() << "Deselecting connector!";
     this->setPassive();
 }
 
@@ -1033,6 +1041,7 @@ void GUIConnector::deselect()
 //! @brief Slot that "activates" a connector if it is selected
 void GUIConnector::select()
 {
+    qDebug() << "Selecting connector!";
     this->doSelect(true, -1);
 }
 

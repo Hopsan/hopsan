@@ -132,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Subsystem");
 
-    mpLibrary->addEmptyLibrary("Signal");
+    mpLibrary->addEmptyLibrary("Signal"/*, "", "", QString(ICONPATH) + "signal.png"*/);
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Sources & Sinks","Signal");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Arithmetics","Signal");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Non-Linearities","Signal");
@@ -140,13 +140,13 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Logic","Signal");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
 
-    mpLibrary->addEmptyLibrary("Mechanic");
+    mpLibrary->addEmptyLibrary("Mechanic"/*, "", "", ":graphics/splash2.svg"*/);
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Transformers","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Mass Loads","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Springs & Dampers","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sensors","Mechanic");
 
-    mpLibrary->addEmptyLibrary("Hydraulic");
+    mpLibrary->addEmptyLibrary("Hydraulic"/*, "", "", QString(ICONPATH) + "hydraulics.png"*/);
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Sources & Sinks","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/restrictors","Hydraulic");

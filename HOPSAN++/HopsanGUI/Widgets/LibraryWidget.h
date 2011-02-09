@@ -80,7 +80,7 @@ class LibraryWidget : public QWidget
 public:
     //Member functions
     LibraryWidget(MainWindow *parent = 0);
-    void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString(), QString libraryPath=QString());
+    void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString(), QString libraryPath=QString(), QString iconPath=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
     void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
     void addExternalLibrary(QString libDir);

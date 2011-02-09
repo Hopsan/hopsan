@@ -3334,19 +3334,29 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
         //Obtain number of processor cores from environment variable, or use user specified value if not zero
     size_t nCores;
-    if(nThreads != 0)
+    size_t nSystemCores;
+    if(getenv("NUMBER_OF_PROCESSORS") != 0)
     {
-        nCores = nThreads;
-    }
-    else if (getenv("NUMBER_OF_PROCESSORS")!=0) //! @todo This appears to be a Windows only environment variable. Figure out how to do it on Unix (and Mac OS)
-    {
-        string nCoresString = getenv("NUMBER_OF_PROCESSORS");
-        nCores = atoi(nCoresString.c_str());
+        string temp = getenv("NUMBER_OF_PROCESSORS");   //! @todo This appears to be a Windows only environment variable. Figure out how to do it on Unix (and Mac OS)
+        nSystemCores = atoi(temp.c_str());
     }
     else
     {
-        nCores = 1; //At least on single core Ubuntu 10.04 getenv("NUMBER_OF_PROCESSORS") returns NULL and crash, solved by this if block
+        nSystemCores = 1;       //If Unix system, make sure there is at least one thread
     }
+    if(nThreads != 0)
+    {
+        nCores = nThreads;
+        if(nCores > nSystemCores)       //Limit number of threads to the number of system cores
+        {
+            nCores = nSystemCores;
+        }
+    }
+    else
+    {
+        nCores = nSystemCores;
+    }
+
 
         //Create vector used for time measurement (DEBUG)
     vector<double> timeVector;                                                                              //DEBUG

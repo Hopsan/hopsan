@@ -73,5 +73,8 @@
         <file>graphics/uiicons/Hopsan-ToggleNames.png</file>
         <file>graphics/uiicons/Hopsan-TogglePorts.png</file>
         <file>graphics/objecticons/missingcomponenticon.svg</file>
+        <file>graphics/uiicons/hydraulics.png</file>
+        <file>graphics/uiicons/signal.png</file>
+        <file>graphics/splash2.svg</file>
     </qresource>
 </RCC>
