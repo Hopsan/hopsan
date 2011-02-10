@@ -135,7 +135,7 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
         //Open a dialog where text and font can be selected
     mpEditTextDialog = new QDialog(gpMainWindow);
-    mpEditTextDialog->setWindowTitle("Set Text Label");
+    mpEditTextDialog->setWindowTitle("Edit Text Widget");
 
     mpTextBox = new QTextEdit();
     mpTextBox->setPlainText(mpTextItem->toPlainText());
@@ -352,7 +352,7 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
         //Open a dialog where line width and color can be selected
     mpEditBoxDialog = new QDialog(gpMainWindow);
-    mpEditBoxDialog->setWindowTitle("Set Text Label");
+    mpEditBoxDialog->setWindowTitle("Edit Box Widget");
 
     mpWidthLabelInDialog = new QLabel("Line Width: ");
     mpWidthBoxInDialog = new QSpinBox();
