@@ -139,7 +139,7 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     mpTextBox = new QTextEdit();
     mpTextBox->setPlainText(mpTextItem->toPlainText());
-    mpTextBox->setMaximumHeight(70);
+    //mpTextBox->setMaximumHeight(1000);
     mpFontInDialogButton = new QPushButton("Change Font");
     mpColorInDialogButton = new QPushButton("Change Color");
     mpExampleLabel = new QLabel("Hopsan is cool!");
