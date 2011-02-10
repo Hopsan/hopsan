@@ -1841,7 +1841,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     if (!pComp1->getPort(portname1, pPort1))
     {
         ss << "Component: "<< pComp1->getName() << " does not have a port named " << portname1;
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        gCoreMessageHandler.addErrorMessage(ss.str(), "portdoesnotexist");
         return false;
     }
 
@@ -1849,7 +1849,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     {
         //raise Exception('type of port does not exist')
         ss << "Component: "<< pComp2->getName() << " does not have a port named " << portname2;
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        gCoreMessageHandler.addErrorMessage(ss.str(), "portdoesnotexist");
         return false;
     }
 
@@ -1863,7 +1863,7 @@ bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
     if (pPort1->getNodeType() != pPort2->getNodeType())
     {
         stringstream ss;
-        ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." << std::endl <<
+        ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." <<
               "When connecting: {" << pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} to {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
@@ -2161,7 +2161,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     if (pPort1 == pPort2)
     {
         ss << "You can not connect a port to it self";
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        gCoreMessageHandler.addErrorMessage(ss.str(), "selfconnection");
         return false;
     }
 
