@@ -547,12 +547,13 @@ void MainWindow::createMenus()
     menuEdit->addAction(cutAction);
     menuEdit->addAction(pasteAction);
 
+    //The View menu shall be alphabetically sorted!
     menuView->addAction(mpLibDock->toggleViewAction());
-    menuView->addAction(mpMessageDock->toggleViewAction());
-    menuView->addAction(mpFileToolBar->toggleViewAction());
     menuView->addAction(mpEditToolBar->toggleViewAction());
-    menuView->addAction(mpSimToolBar->toggleViewAction());
+    menuView->addAction(mpFileToolBar->toggleViewAction());
+    menuView->addAction(mpMessageDock->toggleViewAction());
     menuView->addAction(mpPyDockWidget->toggleViewAction());
+    menuView->addAction(mpSimToolBar->toggleViewAction());
 
     menuTools->addAction(optionsAction);
 
