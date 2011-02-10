@@ -241,7 +241,35 @@ void ComponentPropertiesDialog::createEditStuff()
     {
         pStartValueLabel->hide();
     }
-    setLayout(mainLayout);
+
+    QWidget *pPrimaryWidget = new QWidget(this);
+    pPrimaryWidget->setLayout(mainLayout);
+
+    QScrollArea *pScrollArea = new QScrollArea(this);
+//    pScrollArea->setLayout(mainLayout);
+    pScrollArea->setWidget(pPrimaryWidget);
+    pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    QGridLayout *pPrimaryLayout = new QGridLayout(this);
+    pPrimaryLayout->addWidget(pScrollArea);
+    setLayout(pPrimaryLayout);
+
+    pPrimaryWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    pPrimaryLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+    pScrollArea->setMinimumHeight(std::min(pPrimaryWidget->height()+10, maxHeight));
+    if(pScrollArea->minimumHeight() == maxHeight)
+    {
+        pScrollArea->setMinimumWidth(pPrimaryWidget->width()+19);
+    }
+    else
+    {
+        pScrollArea->setMinimumWidth(pPrimaryWidget->width()+3);
+    }
+    pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+
+    //this->setMinimumHeight(600);
 
     setWindowTitle(tr("Parameters"));
 }
