@@ -12,6 +12,7 @@
 
 #include "common.h"
 #include "GUIPort.h"
+#include "GUIConnector.h"
 
 #include "MainWindow.h"
 #include "CoreAccess.h"
@@ -211,7 +212,6 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
     if (event->button() == Qt::LeftButton)
     {
-        qDebug() << "portClick emitted\n";
         emit portClicked(this);
     }
     else if (event->button() == Qt::RightButton)

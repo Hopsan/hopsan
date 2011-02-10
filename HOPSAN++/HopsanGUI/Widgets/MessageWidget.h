@@ -69,6 +69,7 @@ public:
     QString message;
     QString type;
     QString tag;
+    QString time;
 };
 
 #endif // MESSAGEWIDGET_H

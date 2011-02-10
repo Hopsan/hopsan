@@ -10,6 +10,7 @@
 #include "MessageWidget.h"
 #include "../MainWindow.h"
 #include "../CoreAccess.h"
+#include <QDateTime>
 
 using namespace hopsan;
 
@@ -24,8 +25,12 @@ using namespace hopsan;
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QWidget(pParent)
 {
+    this->setFont(QFont(this->font().family(), 8));
+
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setReadOnly(true);
+    mpTextEdit->setPalette(QPalette(QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("whitesmoke")));
+    //mpTextEdit->setTextBackgroundColor(QColor("gray"));
 
     mGroupByTag = false;
 
@@ -109,7 +114,7 @@ void MessageWidget::setMessageColor(QString type)
     }
     else if (type == "warning")
     {
-        mpTextEdit->setTextColor("ORANGE");
+        mpTextEdit->setTextColor("DARKORANGE");
     }
     else if (type == "info")
     {
@@ -130,7 +135,7 @@ void MessageWidget::setMessageColor(QString type)
 void MessageWidget::updateDisplay()
 {
     mpTextEdit->clear();         //Clear the message box (we can not call this->clear(), since this would also clear the message list and we wouldn't have anything to print)
-    QStringList usedTags;
+    //QStringList usedTags;
 
         //Loop through message list and print messages
     for(int msg=0; msg<mMessageList.size(); ++msg)
@@ -146,19 +151,19 @@ void MessageWidget::updateDisplay()
                 size_t nTags = subsequentTagCount(mMessageList.at(msg).tag, msg);
                 if(nTags == 1)                      //There is only one tag, so avoid appending "(0 similar)"
                 {
-                    mpTextEdit->append(mMessageList.at(msg).message);
+                    mpTextEdit->append("[" + mMessageList.at(msg).time + "] " + mMessageList.at(msg).message);
                 }
                 else                                //There are more than one tag, so append ("X similar)"
                 {
                     QString numString;
                     numString.setNum(nTags-1);
-                    mpTextEdit->append(mMessageList.at(msg).message + "    (" + numString + " similar)");
+                    mpTextEdit->append("[" + mMessageList.at(msg).time + "] " + mMessageList.at(msg).message + "    (" + numString + " similar)");
                 }
                 msg += nTags-1;
             }
             else        //Message is not tagged, or group by tag setting is not active
             {
-                mpTextEdit->append(mMessageList.at(msg).message);
+                mpTextEdit->append("[" + mMessageList.at(msg).time + "] " + mMessageList.at(msg).message);
             }
         }
     }
@@ -208,6 +213,7 @@ size_t MessageWidget::tagCount(QString tag)
 void MessageWidget::printCoreMessages()
 {
     size_t nmsg = mpCoreAccess->getNumberOfMessages();
+
     for (size_t idx=0; idx < nmsg; ++idx)
     {
         QString message, type, tag;
@@ -323,9 +329,12 @@ void MessageWidget::showDebugMessages(bool value)
 
 //! @brief Constructor for the GUIMessage class
 GUIMessage::GUIMessage(QString message, QString type, QString tag)
-{
+{    
+    QTime time = QTime::currentTime();
+
     this->message = message;
     this->type = type;
     this->tag = tag;
+    this->time = time.toString();
 }
 
