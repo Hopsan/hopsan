@@ -65,6 +65,7 @@ public:
 
 protected slots:
     void showListOfSystemParameters();
+    void pickColor();
 
 protected:
     GUIModelObject *mpGUIModelObject;
@@ -76,6 +77,7 @@ protected:
 
 private:
     void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0);
+    double defaultValue;
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

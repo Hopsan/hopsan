@@ -378,6 +378,7 @@ ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, doub
 {
     QString dataValueStr;
     dataValueStr.setNum(dataValue);
+    defaultValue = dataValue;
     commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject);
 }
 
@@ -385,6 +386,7 @@ ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, doub
 ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
     : QGridLayout(parent)
 {
+    defaultValue = dataValue.toDouble();
     commonConstructorCode(dataName, descriptionName, dataValue, unitName, pGUIModelObject);
 }
 
@@ -418,7 +420,12 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     addWidget(&mSystemParameterToolButton, 0, 3);
     addWidget(&mUnitNameLabel, 0, 4);
 
+    QPalette palette( mDataValuesLineEdit.palette() );
+    palette.setColor( QPalette::Text, QColor("gray") );
+    mDataValuesLineEdit.setPalette(palette);
+
     connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
+    connect(&mDataValuesLineEdit, SIGNAL(editingFinished()), this, SLOT(pickColor()));
 }
 
 
@@ -472,5 +479,23 @@ void ParameterLayout::showListOfSystemParameters()
     if(selectedAction != 0)
     {
         mDataValuesLineEdit.setText(selectedAction->text());
+    }
+}
+
+
+void ParameterLayout::pickColor()
+{
+    qDebug() << "Pick color, value = " << mDataValuesLineEdit.text().toDouble() << ", default = " << defaultValue;
+    if(mDataValuesLineEdit.text().toDouble() == defaultValue)
+    {
+        QPalette palette( mDataValuesLineEdit.palette() );
+        palette.setColor( QPalette::Text, QColor("gray") );
+        mDataValuesLineEdit.setPalette(palette);
+    }
+    else
+    {
+        QPalette palette( mDataValuesLineEdit.palette() );
+        palette.setColor( QPalette::Text, QColor("black") );
+        mDataValuesLineEdit.setPalette(palette);
     }
 }
