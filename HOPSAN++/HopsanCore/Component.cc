@@ -658,6 +658,7 @@ void Component::registerParameter(const string name, const string description, c
     //! @todo handle trying to add multiple comppar with same name
     CompParameter new_comppar(name, description, unit, rValue);
     mParameters.push_back(new_comppar); //Copy parameters into storage
+    mDefaultParameters.insert(std::pair<std::string, double>(description+name, rValue));
 }
 
 
@@ -689,6 +690,13 @@ double Component::getParameterValue(const string name)
     //! @todo maybe break out find parameter function (maybe even use something else then vector for storage)
     return 0.0;
 }
+
+
+double Component::getDefaultParameterValue(const string name)
+{
+    return mDefaultParameters.find(name)->second;
+}
+
 
 //! @brief Get a pointer to a parameter
 //!

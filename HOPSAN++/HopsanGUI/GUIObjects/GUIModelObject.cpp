@@ -436,14 +436,6 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     nametext.setAttribute("position", getNameTextPos());
     nametext.setAttribute("visible", mpNameText->isVisible());
 
-    QMap<QString, double>::iterator it;
-    for(it=mDefaultParameters.begin(); it!=mDefaultParameters.end(); ++it)
-    {
-        QDomElement temp = appendDomElement(xmlGuiStuff, HMF_DEFAULTPARAMETERTAG);
-        temp.setAttribute("name", it.key());
-        temp.setAttribute("value", it.value());
-    }
-
     return xmlGuiStuff;
 }
 

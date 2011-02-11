@@ -128,6 +128,7 @@ namespace hopsan {
         const std::string getParameterUnit(const std::string name);
         const std::string getParameterDescription(const std::string name);
         double getParameterValue(const std::string name);
+        double getDefaultParameterValue(const std::string name);
         double *getParameterValuePtr(const std::string name);
         std::string getParameterValueTxt(const std::string name);
         bool setParameterValue(const std::string name, const double value);
@@ -147,6 +148,8 @@ namespace hopsan {
         //System parent
         ComponentSystem *getSystemParent();
         size_t getModelHierarchyDepth();
+
+        std::map<std::string, double> mDefaultParameters;
 
         // Component type identification
         bool isComponentC();

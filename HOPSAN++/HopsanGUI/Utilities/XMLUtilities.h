@@ -89,7 +89,6 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_NAMETEXTTAG "nametext"
 #define HMF_NAMETEXTPOSTAG "nametextpos"
 #define HMF_VISIBLETAG "nametextvisible"
-#define HMF_DEFAULTPARAMETERTAG "defaultparameter"
 
 #define HMF_CONNECTORSTARTCOMPONENTTAG "startcomponent"
 #define HMF_CONNECTORSTARTPORTTAG "startport"

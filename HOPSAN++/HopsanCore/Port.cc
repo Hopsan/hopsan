@@ -397,6 +397,7 @@ void Port::setStartValue(const size_t &idx, const double &value)
     if(mpStartNode)
     {
         mpStartNode->setData(idx, value);
+        mpComponent->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
     }
     else
     {
