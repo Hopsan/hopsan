@@ -84,6 +84,8 @@ public:
     bool mPortsHidden;
     bool mNamesHidden;
 
+    QMap<QString, double> mDefaultParameters;
+
 public slots:
     void deleteMe();
     void rotate90cw(undoStatus undoSettings = UNDO);

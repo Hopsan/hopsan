@@ -378,7 +378,6 @@ ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, doub
 {
     QString dataValueStr;
     dataValueStr.setNum(dataValue);
-    defaultValue = dataValue;
     commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject);
 }
 
@@ -386,7 +385,6 @@ ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, doub
 ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
     : QGridLayout(parent)
 {
-    defaultValue = dataValue.toDouble();
     commonConstructorCode(dataName, descriptionName, dataValue, unitName, pGUIModelObject);
 }
 
@@ -423,6 +421,12 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     QPalette palette( mDataValuesLineEdit.palette() );
     palette.setColor( QPalette::Text, QColor("gray") );
     mDataValuesLineEdit.setPalette(palette);
+
+    if(!pGUIModelObject->mDefaultParameters.contains(dataName))
+    {
+        pGUIModelObject->mDefaultParameters.insert(dataName, dataValue.toDouble());
+    }
+    pickColor();
 
     connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
     connect(&mDataValuesLineEdit, SIGNAL(editingFinished()), this, SLOT(pickColor()));
@@ -486,7 +490,7 @@ void ParameterLayout::showListOfSystemParameters()
 void ParameterLayout::pickColor()
 {
     qDebug() << "Pick color, value = " << mDataValuesLineEdit.text().toDouble() << ", default = " << defaultValue;
-    if(mDataValuesLineEdit.text().toDouble() == defaultValue)
+    if(mDataValuesLineEdit.text().toDouble() == mpGUIModelObject->mDefaultParameters.find(this->mDataNameLabel.text()).value())
     {
         QPalette palette( mDataValuesLineEdit.palette() );
         palette.setColor( QPalette::Text, QColor("gray") );
