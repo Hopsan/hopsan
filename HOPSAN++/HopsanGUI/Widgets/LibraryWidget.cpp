@@ -38,17 +38,12 @@ using namespace hopsan;
 LibraryContentItem::LibraryContentItem(GUIModelObjectAppearance *pAppearanceData, QListWidget *pParent)
         : QListWidgetItem(pParent, QListWidgetItem::UserType)
 {
-    //Set font
-    //QFont font;
-    //font.setPointSizeF(0.001);
-    //this->setFont(font);
-
-    this->setToolTip(pAppearanceData->getNonEmptyName());
-    this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
-
+    setToolTip(pAppearanceData->getNonEmptyName());
+    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
     mpAppearanceData = pAppearanceData;
     selectIcon(USERGRAPHICS);
 }
+
 
 //! @brief Copy Constructor
 LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
@@ -56,11 +51,13 @@ LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
 {
 }
 
+
 //! @brief Get a pointer to appearanceData
 GUIModelObjectAppearance *LibraryContentItem::getAppearanceData()
 {
     return mpAppearanceData;
 }
+
 
 //! @brief Wraps the apperancedata get name function
 QString LibraryContentItem::getTypeName()
@@ -68,28 +65,20 @@ QString LibraryContentItem::getTypeName()
     return mpAppearanceData->getTypeName();
 }
 
+
 //! @brief Selects and loads either user or ISO icon
 //! @param [in] gfxType Select wheter to use user (false) or iso (true) icon
 void LibraryContentItem::selectIcon(graphicsType gfxType)
 {
-    //Set Icon, prefere user, if its empty use iso
     QIcon icon;
-    //QPixmap testPixMap;
-
     QString iconPath = mpAppearanceData->getFullIconPath(gfxType);
-    //Check if specified file exist, else use unknown icon
     QFile iconFile(iconPath);
-    if (!iconFile.exists())
+    if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
     {
         iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
-
     icon.addFile(iconPath,QSize(55,55));
-
-    //this->setSizeHint(QSize(55,55));
     this->setIcon(icon);
-
-    //this->setData(Qt::UserRole, QVariant(icon));
 }
 
 
@@ -100,22 +89,22 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, QString ma
 {
     mpParentLibraryWidget = pParentLibraryWidget;
     mpParentTreeWidgetItem = pParentTreeWidgetItem;
+
     mMapKey = mapKey;
     mpHoveredItem = 0x0;
-    this->setViewMode(QListView::IconMode);
-    this->setResizeMode(QListView::Adjust);
-    this->setMouseTracking(true);
-    this->setSelectionRectVisible(false);
-    this->setDragEnabled(true);
-    this->setIconSize(QSize(40,40));
-    this->setGridSize(QSize(50,50));
-    this->setAcceptDrops(true);
-    this->setDropIndicatorShown(true);
-    //this->setSpacing(10);
+    setViewMode(QListView::IconMode);
+    setResizeMode(QListView::Adjust);
+    setMouseTracking(true);
+    setSelectionRectVisible(false);
+    setDragEnabled(true);
+    setIconSize(QSize(40,40));
+    setGridSize(QSize(50,50));
+    setAcceptDrops(true);
+    setDropIndicatorShown(true);
 
     connect(this,SIGNAL(itemEntered(QListWidgetItem*)),this,SLOT(highLightItem(QListWidgetItem*)));
-
 }
+
 
 void LibraryContent::mousePressEvent(QMouseEvent *event)
 {
@@ -142,9 +131,11 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     {
         if(tempItem != mpHoveredItem)
         {
+            tempItem->setForeground(QColor("lightblue"));
             tempItem->setBackgroundColor(QColor("lightblue"));
             if(mpHoveredItem != 0x0)
             {
+                mpHoveredItem->setForeground(QColor("white"));
                 mpHoveredItem->setBackgroundColor(QColor("white"));
             }
             mpHoveredItem = tempItem;
@@ -188,12 +179,8 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(pItem->icon().pixmap(40,40));
-
-    //qDebug() << "Debug stream: " << mimeData->text();
-
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
-    //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
 }
 
 
@@ -248,7 +235,6 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
     newLibContent->setDragEnabled(true);
     newLibContent->mIsUserLib = (parentLibraryName == "User defined libraries");
 
-    //newLibContent->setDropIndicatorShown(true);
     mLibraryContentPtrsMap.insert(parentLibraryName + libraryName, newLibContent);
 
     mpGrid->addWidget(newLibContent);
@@ -415,13 +401,11 @@ void LibraryWidget::addLibrary()
 //! @see addLibrary(QString libDir, QString parentLib)
 void LibraryWidget::addExternalLibrary(QString libDir)
 {
-    qDebug() << "looking for dll or so in: " << libDir;
     //*****Core Interaction*****
 
         // Load all .dll or .so files in specified folder
     HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
     QDir libDirObject(libDir + "/");
-    QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
     QStringList filters;
     #ifdef WIN32
         filters << "*.dll";
@@ -447,8 +431,6 @@ void LibraryWidget::addExternalLibrary(QString libDir)
 //! @param libraryName is the name of the library where the component should be added.
 void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent)
 {
-    //qDebug() << "Adding componentType: " << newComponent->getTypeName();
-
     //First add the item to the overview LibraryContent (This will cast to QListWidget Item and not preserver our stuff)
     mLibraryContentPtrsMap.value(parentLibraryName + libraryName)->addItem(newComponent);
     //Now add it to our own MultiMap to retain a pointer the the LibraryContentItem with our own stuff

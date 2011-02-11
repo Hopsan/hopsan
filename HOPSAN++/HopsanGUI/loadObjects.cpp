@@ -21,6 +21,8 @@
 #include "MainWindow.h"
 #include "UndoStack.h"
 
+#include <QMap>
+
 
 //! @brief Reads the ModelObject load data from an XML DOM element
 //! @param[in] rDomElement The DOM element to read from
@@ -44,6 +46,13 @@ void ModelObjectLoadData::readGuiDataFromDomElement(QDomElement &rDomElement)
     textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
     portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
     namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
+
+    QDomElement defaultParameterTag = guiData.firstChildElement(HMF_DEFAULTPARAMETERTAG);
+    while(!defaultParameterTag.isNull())
+    {
+        defaultParameterMap.insert(defaultParameterTag.attribute("name"), defaultParameterTag.attribute("value").toDouble());
+        defaultParameterTag = defaultParameterTag.nextSiblingElement(HMF_DEFAULTPARAMETERTAG);
+    }
 
 }
 
@@ -299,6 +308,13 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
 
         GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
         pObj->setNameTextPos(rData.nameTextPos);
+
+        QMap<QString, double>::iterator it;
+        QMap<QString, double> map = QMap<QString, double>(rData.defaultParameterMap);
+        for(it=map.begin(); it!=map.end(); ++it)
+        {
+            pObj->mDefaultParameters.insert(it.key(), it.value());
+        }
 
         if (rData.isFlipped)
         {

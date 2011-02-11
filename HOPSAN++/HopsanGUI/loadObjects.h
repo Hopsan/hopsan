@@ -39,6 +39,7 @@ public:
     int textVisible;
     bool portsHidden;
     bool namesHidden;
+    QMap<QString, double> defaultParameterMap;
 
     void readDomElement(QDomElement &rDomElement);
 
