@@ -1027,67 +1027,41 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings)
 {
-    qDebug() << "mIsCreatingConnector: " << getIsCreatingConnector();
-        //When clicking start port
+        //When clicking start port (begin creation of connector)
     if (!getIsCreatingConnector())
     {
-        qDebug() << "CreatingConnector in: " << this->getName() << " startPortName: " << pPort->getName();
         mpTempConnector = new GUIConnector(pPort, this);
-        this->deselectAll();
+        deselectAll();
         setIsCreatingConnector(true);
         mpTempConnector->drawConnector();
     }
-        //When clicking end port
+        //When clicking end port (finish creation of connector)
     else
     {
-        qDebug() << "clicking end port: " << pPort->getName();
-        GUIPort *pStartPort = mpTempConnector->getStartPort();
 
         bool success = false;
-        //If we are connecting to group run special gui only check if connection OK
+
+            //If we are connecting to group run special gui only check if connection OK
         if (pPort->getGuiModelObject()->type() == GUIGROUP)
         {
             //! @todo do this
         }
         else
         {
-            success = this->getCoreSystemAccessPtr()->connect(pStartPort->getGuiModelObjectName(), pStartPort->getName(), pPort->getGuiModelObjectName(), pPort->getName() );
+            success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(), mpTempConnector->getStartPortName(), pPort->getGuiModelObjectName(), pPort->getName() );
         }
 
-        qDebug() << "GUI Connect success?: " << success;
         if (success)
         {
             setIsCreatingConnector(false);
             pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
-
-            //If containerport refresh graphics
-            qDebug() << "Port Types: " << mpTempConnector->getStartPort()->getPortType() << " " << mpTempConnector->getEndPort()->getPortType();
-            QString cqsType, portType, nodeType;
-            if (mpTempConnector->getStartPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
-            {
-                cqsType = mpTempConnector->getStartPort()->getGuiModelObject()->getTypeCQS();
-                portType = mpTempConnector->getStartPort()->getPortType();
-                nodeType = mpTempConnector->getStartPort()->getNodeType();
-                mpTempConnector->getStartPort()->refreshPortGraphics(cqsType, portType, nodeType);
-            }
-            if (mpTempConnector->getEndPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
-            {
-                cqsType = mpTempConnector->getEndPort()->getGuiModelObject()->getTypeCQS();
-                portType = mpTempConnector->getEndPort()->getPortType();
-                nodeType = mpTempConnector->getEndPort()->getNodeType();
-                mpTempConnector->getEndPort()->refreshPortGraphics(cqsType, portType, nodeType);
-            }
-
-                //Hide ports; connected ports shall not be visible
-            mpTempConnector->getStartPort()->hide();
-            mpTempConnector->getEndPort()->hide();
-
+            mpTempConnector->finishCreation();
             mSubConnectorList.append(mpTempConnector);
 
-            mUndoStack->newPost(); //!< @todo should we really create a new post even if we dont want to be abled to undo, see if bellow
             if(undoSettings == UNDO)
             {
+                mUndoStack->newPost();
                 mUndoStack->registerAddedConnector(mpTempConnector);
             }
             mpParentProjectTab->hasChanged();
@@ -1095,6 +1069,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         emit checkMessages();
      }
 }
+
 
 //! @brief Copies the selected components, and then deletes them.
 //! @see copySelected()

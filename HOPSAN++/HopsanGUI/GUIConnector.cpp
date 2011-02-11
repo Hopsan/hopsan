@@ -39,7 +39,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
     mpParentContainerObject = 0;
     mpStartPort = 0;
     mpEndPort = 0;
-    mEndPortConnected = false;
+    mIsConnected = false;
     mMakingDiagonal = false;
 
     setFlags(QGraphicsItem::ItemIsFocusable);
@@ -80,7 +80,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpParentContainerObject = 0;
     mpStartPort = 0;
     mpEndPort = 0;
-    mEndPortConnected = false;
+    mIsConnected = false;
     mMakingDiagonal = false;
 
     this->setParentContainer(pParentContainer);
@@ -122,8 +122,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
         }
     }
 
-    mEndPortConnected = true;
-    emit endPortConnected();
+    mIsConnected = true;
+    emit connectionFinished();
     this->setPassive();
 //    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
@@ -141,7 +141,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
         connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
         connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
         connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-        connect(this,SIGNAL(endPortConnected()),mpTempLine,SLOT(setConnected()));
+        connect(this,SIGNAL(connectionFinished()),mpTempLine,SLOT(setConnected()));
     }
 
     this->determineAppearance();
@@ -172,7 +172,7 @@ GUIConnector::~GUIConnector()
     delete mpGUIConnectorAppearance;
 
     mpStartPort->getGuiModelObject()->forgetConnector(this);
-    if(mEndPortConnected)
+    if(mIsConnected)
     {
         mpEndPort->getGuiModelObject()->forgetConnector(this);
     }
@@ -340,24 +340,29 @@ void GUIConnector::setStartPort(GUIPort *port)
     mpStartPort = port;
     mpStartPort->addConnection();
     this->connectPortSigSlots(mpStartPort);
-//    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
-//    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
 
-//! @brief Sets the pointer to the end port of a connector, and executes the final tasks before creation of the connetor is complete. Then flags that the end port is connected.
+//! @brief Sets the pointer to the end port of a connector
 //! @param *port Pointer to the new end port
 //! @see setStartPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
 void GUIConnector::setEndPort(GUIPort *port)
 {
-        //Set the end port pointer, flag that the end port is connector and tell the port to flag that it is connected
     this->disconnectPortSigSlots(mpEndPort);
     mpEndPort = port;
-    mEndPortConnected = true;
     mpEndPort->addConnection();
     this->connectPortSigSlots(mpEndPort);
+
+
+}
+
+
+//! @brief Executes the final tasks before creation of the connetor is complete. Then flags that the connection if finished.
+void GUIConnector::finishCreation()
+{
+    mIsConnected = true;
 
         //Figure out whether or not the last line had the right direction, and make necessary corrections
     if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) && (mGeometries.back() == HORIZONTAL)) ||
@@ -377,21 +382,19 @@ void GUIConnector::setEndPort(GUIPort *port)
         QPointF offsetPoint = getOffsetPointfromPort(mpStartPort, mpEndPort);
         mPoints[mPoints.size()-2] = mpEndPort->mapToScene(mpEndPort->boundingRect().center()) + offsetPoint;
         if(offsetPoint.x() != 0.0)
+        {
             mPoints[mPoints.size()-3].setX(mPoints[mPoints.size()-2].x());
+        }
         else
+        {
             mPoints[mPoints.size()-3].setY(mPoints[mPoints.size()-2].y());
+        }
         this->drawConnector();
-        //mpParentSystem->setBackgroundBrush(mpParentSystem->mBackgroundColor);
         mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
 
         //Make sure the end point of the connector is the center position of the end port
-    this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
-
-        //Connect the connector with delete and select slots in the new end component.
-        //This will make it deleted when component is deleted, and selected if both start and end components are selected.
-//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
-//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    this->updateEndPoint(mpEndPort->mapToScene(mpEndPort->boundingRect().center()));
 
         //Make all lines selectable and all lines except first and last movable
     if(mpLines.size() > 1)
@@ -406,14 +409,9 @@ void GUIConnector::setEndPort(GUIPort *port)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
 
-        //Let the world know that we are connected!
-    emit endPortConnected();
-
-        //Figure out which connector appearance to use
-    this->determineAppearance();
-
-        //Make line passive (deselected)
-    this->setPassive();
+    emit connectionFinished();      //Let the world know that we are connected!
+    this->determineAppearance();    //Figure out which connector appearance to use
+    this->setPassive();             //Make line passive (deselected)
 
         //Snap if close to a snapping position
     if(gConfig.getSnapping())
@@ -443,6 +441,28 @@ void GUIConnector::setEndPort(GUIPort *port)
             }
         }
     }
+
+        //If containerport refresh graphics
+    qDebug() << "Port Types: " << getStartPort()->getPortType() << " " << getEndPort()->getPortType();
+    QString cqsType, portType, nodeType;
+    if (getStartPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
+    {
+        cqsType = getStartPort()->getGuiModelObject()->getTypeCQS();
+        portType = getStartPort()->getPortType();
+        nodeType = getStartPort()->getNodeType();
+        getStartPort()->refreshPortGraphics(cqsType, portType, nodeType);
+    }
+    if (getEndPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
+    {
+        cqsType = getEndPort()->getGuiModelObject()->getTypeCQS();
+        portType = getEndPort()->getPortType();
+        nodeType = getEndPort()->getNodeType();
+        getEndPort()->refreshPortGraphics(cqsType, portType, nodeType);
+    }
+
+        //Hide ports; connected ports shall not be visible
+    mpStartPort->hide();
+    mpEndPort->hide();
 }
 
 
@@ -579,7 +599,7 @@ bool GUIConnector::isConnected()
 {
     //qDebug() << "Entering isConnected()";
     //return (getStartPort()->isConnected and getEndPort()->isConnected);
-    return (getStartPort()->isConnected() && mEndPortConnected);
+    return (getStartPort()->isConnected() && mIsConnected);
 }
 
 
@@ -640,7 +660,7 @@ void GUIConnector::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //! @brief Draws lines between the points in the mPoints vector, and stores them in the mpLines vector
 void GUIConnector::drawConnector()
 {
-    if(!mEndPortConnected)        //End port is not connected, which means we are creating a new line
+    if(!mIsConnected)        //End port is not connected, which means we are creating a new line
     {
             //Remove lines if there are too many
         while(mpLines.size() > mPoints.size()-1)
@@ -658,7 +678,7 @@ void GUIConnector::drawConnector()
             connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
             connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
             connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-            connect(this,SIGNAL(endPortConnected()),mpTempLine,SLOT(setConnected()));
+            connect(this,SIGNAL(connectionFinished()),mpTempLine,SLOT(setConnected()));
             mpLines.push_back(mpTempLine);
         }
     }
@@ -730,7 +750,7 @@ void GUIConnector::updateEndPoint(QPointF point)
 //! @param lineNumber Number of the line to update (the line that has moved)
 void GUIConnector::updateLine(int lineNumber)
 {
-   if ((mEndPortConnected) && (lineNumber != 0) && (lineNumber != int(mpLines.size())))
+   if ((mIsConnected) && (lineNumber != 0) && (lineNumber != int(mpLines.size())))
     {
         if(mGeometries[lineNumber] == HORIZONTAL)
         {
@@ -834,7 +854,7 @@ void GUIConnector::makeDiagonal(bool enable)
 //! @see setPassive()
 void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 {
-    if(mEndPortConnected)     //Non-finished connectors shall not be selectable
+    if(mIsConnected)     //Non-finished connectors shall not be selectable
     {
         if(lineSelected)
         {
@@ -885,7 +905,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 //! @see doSelect(bool lineSelected, int lineNumber)
 void GUIConnector::selectIfBothComponentsSelected()
 {
-    if(mEndPortConnected && mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected())
+    if(mIsConnected && mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected())
     {
         mpLines[0]->setSelected(true);
         doSelect(true,0);
@@ -898,7 +918,7 @@ void GUIConnector::selectIfBothComponentsSelected()
 void GUIConnector::setActive()
 {
     connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-    if(mEndPortConnected)
+    if(mIsConnected)
     {
         mIsActive = true;
         for (int i=0; i!=mpLines.size(); ++i )
@@ -915,7 +935,7 @@ void GUIConnector::setActive()
 void GUIConnector::setPassive()
 {
     disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-    if(mEndPortConnected)
+    if(mIsConnected)
     {
         mIsActive = false;
         for (int i=0; i!=mpLines.size(); ++i )
@@ -933,7 +953,7 @@ void GUIConnector::setPassive()
 //! @see setUnHovered()
 void GUIConnector::setHovered()
 {
-    if(mEndPortConnected && !mIsActive)
+    if(mIsConnected && !mIsActive)
     {
         for (int i=0; i!=mpLines.size(); ++i )
         {
@@ -948,7 +968,7 @@ void GUIConnector::setHovered()
 //! @see setPassive()
 void GUIConnector::setUnHovered()
 {
-    if(mEndPortConnected && !mIsActive)
+    if(mIsConnected && !mIsActive)
     {
         for (int i=0; i!=mpLines.size(); ++i )
         {

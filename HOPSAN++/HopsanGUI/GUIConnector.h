@@ -46,6 +46,7 @@ public:
     void removePoint(bool deleteIfEmpty = false);
     void setStartPort(GUIPort *port);
     void setEndPort(GUIPort *port);
+    void finishCreation();
     void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getNumberOfLines();
     connectorGeometry getGeometry(int lineNumber);
@@ -95,14 +96,14 @@ public slots:
     void select();
 
 signals:
-    void endPortConnected();
+    void connectionFinished();
 
 private:
     void disconnectPortSigSlots(GUIPort* pPort);
     void connectPortSigSlots(GUIPort* pPort);
 
     bool mIsActive;
-    bool mEndPortConnected;
+    bool mIsConnected;
     bool mMakingDiagonal;
 
     GUIContainerObject *mpParentContainerObject;
