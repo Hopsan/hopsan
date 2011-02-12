@@ -1,6 +1,6 @@
 //!
 //! @file   HydraulicPressureSource.hpp
-//! @author Robert Braun
+//! @author Robert Braun <robert.braun@liu.se>
 //! @date   2009-12-21
 //!
 //! @brief Contains a Hydraulic Tank Component of C-type
@@ -43,7 +43,7 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
-            registerParameter("P", "Default pressure", "Pa", mPressure);
+            registerParameter("P", "Default Pressure", "Pa", mPressure);
 
             setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
             setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure);
