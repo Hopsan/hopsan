@@ -400,7 +400,11 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     mUnitNameLabel.setMinimumWidth(50);
     mUnitNameLabel.setMaximumWidth(50);
 
+    mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-Undo.png"));
+    mResetDefaultToolButton.setToolTip("Reset Default Value");
+
     mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
+    mSystemParameterToolButton.setToolTip("Map To System Parameter");
 
     mDataNameLabel.setText(dataName);
     mDataNameLabel.adjustSize();
@@ -412,8 +416,9 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     addWidget(&mDescriptionNameLabel, 0, 0);
     addWidget(&mDataNameLabel, 0, 1);
     addWidget(&mDataValuesLineEdit, 0, 2);
-    addWidget(&mSystemParameterToolButton, 0, 3);
-    addWidget(&mUnitNameLabel, 0, 4);
+    addWidget(&mUnitNameLabel, 0, 3);
+    addWidget(&mResetDefaultToolButton, 0, 4);
+    addWidget(&mSystemParameterToolButton, 0, 5);
 
     QPalette palette( mDataValuesLineEdit.palette() );
     palette.setColor( QPalette::Text, QColor("gray") );
@@ -421,6 +426,7 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
 
     pickColor();
 
+    connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
     connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
     connect(&mDataValuesLineEdit, SIGNAL(editingFinished()), this, SLOT(pickColor()));
 }
@@ -452,6 +458,16 @@ QString ParameterLayout::getDataValueTxt()
 void ParameterLayout::setDataValueTxt(QString valueTxt)
 {
     mDataValuesLineEdit.setText(valueTxt);
+}
+
+
+//! @brief Sets the value in the text field to the default parameter value
+void ParameterLayout::setDefaultValue()
+{
+    QString tempText;
+    tempText.setNum(mpGUIModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->getDefaultParameterValue(mpGUIModelObject->getName(), this->mDescriptionNameLabel.text() + this->mDataNameLabel.text()));
+    mDataValuesLineEdit.setText(tempText);
+    pickColor();
 }
 
 

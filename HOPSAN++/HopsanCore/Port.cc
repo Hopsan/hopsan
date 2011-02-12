@@ -357,6 +357,7 @@ bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
 //! @param[in] sysParNames is a Vector of names of System parameters that should be associated to the start value
 bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames)
 {
+    cout << "In setStartValueDataByNames()" << endl;
     bool success = false;
     if(mpStartNode)
     {
@@ -397,7 +398,9 @@ void Port::setStartValue(const size_t &idx, const double &value)
     if(mpStartNode)
     {
         mpStartNode->setData(idx, value);
-        mpComponent->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
+        //mpComponent->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
+        mpComponent->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
+        std::cout << "Overwriting " << this->getPortName() << mpStartNode->getDataName(idx) << " with " << value << endl;
     }
     else
     {
@@ -493,7 +496,19 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
 {
     mPortType = POWERPORT;
     if(mpComponent->isComponentC())
+    {
         mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+
+        //Copy all start values to default parameters map in component
+        std::vector<std::string> names;
+        std::vector<std::string> data;
+        mpStartNode->getDataNamesAndUnits(names, data);
+        for(size_t i=0; i<names.size(); ++i)
+        {
+            portOwner->mDefaultParameters.insert(std::pair<std::string, double>(portname + mpStartNode->getDataName(i), mpStartNode->getData(i)));
+            std::cout << "Writing " << portname << mpStartNode->getDataName(i) << " with " << mpStartNode->getData(i) << endl;
+        }
+    }
 }
 
 
@@ -528,6 +543,12 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 {
     mPortType = WRITEPORT;
     mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+
+    //Copy start value to default parameters map in component
+    std::vector<std::string> names;
+    std::vector<std::string> data;
+    mpStartNode->getDataNamesAndUnits(names, data);
+    portOwner->mDefaultParameters.insert(std::pair<std::string, double>(portname + names.at(0), mpStartNode->getData(0)));
 }
 
 

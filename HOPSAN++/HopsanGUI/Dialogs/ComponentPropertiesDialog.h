@@ -64,6 +64,7 @@ public:
     void setDataValueTxt(QString valueTxt);
 
 protected slots:
+    void setDefaultValue();
     void showListOfSystemParameters();
     void pickColor();
 
@@ -73,6 +74,7 @@ protected:
     QLabel mDescriptionNameLabel;
     QLineEdit mDataValuesLineEdit;
     QLabel mUnitNameLabel;
+    QToolButton mResetDefaultToolButton;
     QToolButton mSystemParameterToolButton;
 
 private:
