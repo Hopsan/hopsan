@@ -268,6 +268,7 @@ void ComponentPropertiesDialog::createEditStuff()
         pScrollArea->setMinimumWidth(pPrimaryWidget->width()+3);
     }
     pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     //this->setMinimumHeight(600);
 

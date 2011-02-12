@@ -206,7 +206,7 @@ MainWindow::~MainWindow()
 void MainWindow::initializeWorkspace()
 {
     //File association - ignore everything else and open the specified file if there is a hmf file in the argument list
-    for(size_t i=0; i<qApp->arguments().size(); ++i)
+    for(int i=0; i<qApp->arguments().size(); ++i)
     {
         if(qApp->arguments().at(i).endsWith(".hmf"))
         {
