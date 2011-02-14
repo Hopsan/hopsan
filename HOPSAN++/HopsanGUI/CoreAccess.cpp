@@ -634,10 +634,10 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
 
 bool CoreSystemAccess::setSystemParameter(QString name, double value)
 {
-    //Makes sure name is not a number
+    //Makes sure name is not a number and not empty
     bool isDbl;
     name.toDouble(&isDbl);
-    if(isDbl)
+    if(isDbl || name.isEmpty())
     {
         return false;
     }
