@@ -1278,7 +1278,7 @@ void GUIContainerObject::alignX()
     if(mSelectedGUIModelObjectsList.size() > 1)
     {
         mUndoStack->newPost("alignx");
-        for(size_t i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
+        for(int i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.last()->getCenterPos().x(), mSelectedGUIModelObjectsList.at(i)->getCenterPos().y()));
@@ -1296,7 +1296,7 @@ void GUIContainerObject::alignY()
     if(mSelectedGUIModelObjectsList.size() > 1)
     {
         mUndoStack->newPost("aligny");
-        for(size_t i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
+        for(int i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.at(i)->getCenterPos().x(), mSelectedGUIModelObjectsList.last()->getCenterPos().y()));
@@ -1314,13 +1314,13 @@ QPointF GUIContainerObject::getCenterPointFromSelection()
     double sumX = 0;
     double sumY = 0;
     int nSelected = 0;
-    for(size_t i=0; i<mSelectedGUIModelObjectsList.size(); ++i)
+    for(int i=0; i<mSelectedGUIModelObjectsList.size(); ++i)
     {
         sumX += mSelectedGUIModelObjectsList.at(i)->getCenterPos().x();
         sumY += mSelectedGUIModelObjectsList.at(i)->getCenterPos().y();
         ++nSelected;
     }
-    for(size_t i=0; i<mSelectedGUIWidgetsList.size(); ++i)
+    for(int i=0; i<mSelectedGUIWidgetsList.size(); ++i)
     {
         sumX += mSelectedGUIWidgetsList.at(i)->getCenterPos().x();
         sumY += mSelectedGUIWidgetsList.at(i)->getCenterPos().y();
