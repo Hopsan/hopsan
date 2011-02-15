@@ -400,7 +400,7 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     mUnitNameLabel.setMinimumWidth(50);
     mUnitNameLabel.setMaximumWidth(50);
 
-    mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-Undo.png"));
+    mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
     mResetDefaultToolButton.setToolTip("Reset Default Value");
 
     mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));

@@ -74,5 +74,6 @@
         <file>graphics/uiicons/Hopsan-TogglePorts.png</file>
         <file>graphics/objecticons/missingcomponenticon.svg</file>
         <file>graphics/splash2.svg</file>
+        <file>graphics/uiicons/Hopsan-ResetDefault.png</file>
     </qresource>
 </RCC>
