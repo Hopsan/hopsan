@@ -107,9 +107,6 @@ public:
     QAction *zoomInAction;
     QAction *zoomOutAction;
     QAction *centerViewAction;
-    //QAction *hideNamesAction;
-    //QAction *showNamesAction;
-    //QAction *hidePortsAction;
     QAction *toggleNamesAction;
     QAction *togglePortsAction;
     QAction *showPortsAction;
@@ -122,6 +119,7 @@ public:
     QAction *flipVerticalAction;
     QAction *aboutAction;
     QAction *helpAction;
+    QAction *newVersionsAction;
 
     //Set and get methods for simulation parameters in toolbar
     void setStartTimeInToolBar(double startTime);
@@ -149,6 +147,7 @@ private slots:
     void openUndoWidget();
     void openSystemParametersWidget();
     void openRecentModel();
+    void openArchiveURL();
 
 private:
     //Dock area widgets

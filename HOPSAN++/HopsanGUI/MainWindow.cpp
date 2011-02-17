@@ -450,6 +450,10 @@ void MainWindow::createActions()
     helpAction->setText("User Guide");
     connect(helpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
 
+    newVersionsAction = new QAction(this);
+    newVersionsAction->setText("Check For New Versions");
+    connect(newVersionsAction, SIGNAL(triggered()), this, SLOT(openArchiveURL()));
+
     QIcon togglePortsIcon;
     togglePortsIcon.addFile(QString(ICONPATH) + "Hopsan-TogglePorts.png", QSize(), QIcon::Normal, QIcon::On);
     togglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
@@ -560,6 +564,7 @@ void MainWindow::createMenus()
     menuSimulation->addAction(plotAction);
 
     menuHelp->addAction(helpAction);
+    menuHelp->addAction(newVersionsAction);
     menuHelp->addAction(aboutAction);
 
     menubar->addAction(menuFile->menuAction());
@@ -668,6 +673,12 @@ void MainWindow::openRecentModel()
     {
         mpProjectTabs->loadModel(action->text());
     }
+}
+
+
+void MainWindow::openArchiveURL()
+{
+    QDesktopServices::openUrl(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/archive?l=en"));
 }
 
 
