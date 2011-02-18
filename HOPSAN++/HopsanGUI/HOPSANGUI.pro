@@ -3,7 +3,12 @@
 # -------------------------------------------------
 QT += svg xml
 QT += core gui webkit
+
 TARGET = HopsanGUI
+CONFIG(debug, debug|release) {
+  TARGET = $${TARGET}_d
+}
+
 TEMPLATE = app
 SOURCES += main.cpp \
     MainWindow.cpp \
@@ -99,26 +104,17 @@ HEADERS += MainWindow.h \
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
+DESTDIR = ../bin
 CONFIG(debug, debug|release) {
-    DESTDIR = ../bin/debug
-    LIBS += -L../bin/debug \
-        -lHopsanCore
+  DEBUG_EXT = _d
+} else {
+  DEBUG_EXT =
 }
-CONFIG(release, debug|release) {
-    DESTDIR = ../bin/release
-    LIBS += -L../bin/release \
-        -lHopsanCore
-}
+LIBS += -L$$PWD/../lib -lHopsanCore$${DEBUG_EXT}
 
 #Define a parameter PYTHONQT_PATH e.g. '/home/apako69/pythonqt' in the project settings, also add '/home/apako69/pythonqt/lib' to LD_LIBRARY_PATH on *nix.
-CONFIG(release, debug|release) {
-    LIBS += -L$(PYTHONQT_PATH)/lib -lPythonQt \
-                                   -lPythonQt_QtAll
-}
-CONFIG(debug, debug|release) {
-    LIBS += -L$(PYTHONQT_PATH)/lib -lPythonQt_d \
-                                   -lPythonQt_QtAll_d
-}
+LIBS += -L$(PYTHONQT_PATH)/lib -lPythonQt$${DEBUG_EXT} \
+                               -lPythonQt_QtAll$${DEBUG_EXT}
 
 INCLUDEPATH += $(PYTHONQT_PATH)/src \
                $(PYTHONQT_PATH)/extensions/PythonQt_QtAll

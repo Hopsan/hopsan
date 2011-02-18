@@ -7,6 +7,10 @@ TARGET = HopsanCore
 TEMPLATE = lib
 CONFIG += dll
 
+CONFIG(debug, debug|release) {
+  TARGET = $${TARGET}_d
+}
+
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
@@ -19,8 +23,8 @@ win32:INCLUDEPATH += c:/tbb/tbb30_20100406oss/include/tbb
 
 # win32:INCLUDEPATH += C:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\include\tbb
 # Stada upp denna rora, nagot for windoesanvandarna!
-CONFIG(debug, debug|release) { 
-    DESTDIR = ../bin/debug
+DESTDIR = ../lib
+CONFIG(debug, debug|release) {
     win32:LIBS += -Lc:/tbb30_20100915oss/build/windows_ia32_gcc_mingw_debug
     win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
     
@@ -29,7 +33,6 @@ CONFIG(debug, debug|release) {
     win32:LIBS += -ltbb_debug
 }
 CONFIG(release, debug|release) { 
-    DESTDIR = ../bin/release
     win32:LIBS += -LC:/tbb30_20100915oss/build/windows_ia32_gcc_mingw_release
     win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_release
     win32:LIBS += -Lc:/tbb/tbb30_20100406oss_win/tbb30_20100406oss/lib/ia32/vc9

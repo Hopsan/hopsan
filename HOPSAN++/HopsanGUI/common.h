@@ -16,14 +16,14 @@
 #define SNAPDISTANCE 10
 
 //Development defines, swich commen block with release++ bellow on real release
-#define MAINPATH "../../"
-#define OBJECTICONPATH "../../HopsanGUI/graphics/objecticons/"
-#define ICONPATH "../../HopsanGUI/graphics/uiicons/"
-#define PORTICONPATH "../../HopsanGUI/graphics/porticons/"
-#define GRAPHICSPATH "../../HopsanGUI/graphics/"
-#define COMPONENTPATH "../../HopsanGUI/componentData/"
-#define MODELPATH "../../Models/"
-#define HELPPATH "../../HopsanGUI/docs/html/"
+#define MAINPATH "../"
+#define OBJECTICONPATH "../HopsanGUI/graphics/objecticons/"
+#define ICONPATH "../HopsanGUI/graphics/uiicons/"
+#define PORTICONPATH "../HopsanGUI/graphics/porticons/"
+#define GRAPHICSPATH "../HopsanGUI/graphics/"
+#define COMPONENTPATH "../HopsanGUI/componentData/"
+#define MODELPATH "../Models/"
+#define HELPPATH "../HopsanGUI/docs/html/"
 
 //Relese++ defines
 //#define MAINPATH "./"

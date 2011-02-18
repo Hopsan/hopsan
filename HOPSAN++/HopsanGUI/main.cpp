@@ -23,12 +23,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    gExecPath = qApp->arguments().first();
-#ifdef WIN32
-    gExecPath.chop(13);//removes HOPSANGUI.exe
-#else
-    gExecPath.chop(9);//removes HOPSANGUI
-#endif
+    gExecPath = qApp->applicationDirPath().append('/');
 
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     QSplashScreen splash(pixmap);
