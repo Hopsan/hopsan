@@ -1,0 +1,19 @@
+/*!
+\page hopsancore-dependence Hopsan Core Dependence Libraries
+HopsanCore depends on one external library for multi threaded simulations. Here is a description on how to build and install it.
+
+\section tbb TBB Intel Thread Building Blocks
+\subsection tbb-linux Build/Install TBB on Ubuntu
+-# sudo aptitude install libtbb-dev
+
+\subsection tbb-windows-mingw Build/Install TBB on Windows using minGW
+-# Open a Qt Command Prompt (you can find it in the start menu). Navigate to the tbb directory.
+-# Run "mingw32-make compiler=gcc"
+
+\subsection tbb-windows-vcpp Build/Install TBB on Windows using VC++
+These libs are already build with VC++ in the Windows specific download.
+-# Download the latest stable releses for windows, for example: "tbb30_20100406oss_win.zip"
+-# Unzip it into "c:\tbb". Check the lib and include path in the HopsanCore project file to make sure that the unpacked path is correct.
+-# Add the apropriate tbb bin path (where the DLL is) to your build/run environment path, example: "C:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\bin\ia32\vc9" for 32-bit VC9.0 compiler compatability.
+
+*/

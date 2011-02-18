@@ -1,0 +1,12 @@
+These formulas are meant for the latex formula renderer in inkscape 0.48
+You will need some dependencies for this render extension to show,
+On Linux you need, dvi2ps and pstoedit as well as latex.
+On windows you need, "write what you need here"
+
+lp1filter: \(\displaystyle\frac{1}{\frac{s}{w}+1}\)
+firstorder: \(\displaystyle\frac{\frac{s}{w_{1}}+1}{\frac{s}{w_{2}}+1}\)
+
+lp2filter: \(\displaystyle\frac{1}{\frac{s^{2}}{w^2}+\frac{2d}{w}s+1}\)
+secondorder: \(\displaystyle\frac{\frac{s^{2}}{w_{1}^2}+\frac{2d_{1}}{w_{1}}s+1}{\frac{s^{2}}{w_{2}^2}+\frac{2d_{2}}{w_{2}}s+1}\)
+
+integrator: \(\displaystyle\frac{1}{s}\)

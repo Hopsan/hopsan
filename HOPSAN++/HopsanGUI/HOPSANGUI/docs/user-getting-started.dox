@@ -1,0 +1,115 @@
+/*!
+\page getting-started Getting Started
+  This guide will help you understand the basic functions in Hopsan NG. It provides an overview of the program, how to build a model, simulate and plot the results.
+
+-# \subpage overview \n
+-# \subpage building-a-model \n
+-# \subpage running-a-simulation \n
+-# \subpage plotting \n
+
+\page overview Overview
+	The first thing you will see when you open Hopsan NG is a welcome dialog. From here you can choose to create a new model, load an existing model or open the models from last session. You also have the option to always open the last session, without showing the welcome dialog. When you have made your selection, the main window will appear. It will look like the screenshot bellow (with some cosmetic differences depending on your operating system). It consists of a toolbar at the top, a workspace area in the middle, a component library to the left and a message widget at the bottom. More windows and widgets can be opened later.
+	
+	\htmlonly
+		<br><a href="../graphics/mainwindow.png"><img src="../graphics/mainwindow.png" width=500 border=0></a><br>
+	\endhtmlonly
+ 
+	\section toolbar Toolbar
+		The buttons at the top of the main window is divided into five toolbars. The first one contains file operations such as creating, loading and saving models. It is also possible to export the current viewport to PDF format.
+    
+    \htmlonly
+			<br><img src="../graphics/File Toolbar.png" border=0><br><br>
+		\endhtmlonly
+				
+	  The second toolbar has buttons for editing tools, such as copy, cut, paste, undo and redo. There is also an icon that opens the global program options. 
+		\htmlonly
+      <br><br><img src="../graphics/Edit Toolbar.png" border=0><br><br>
+    \endhtmlonly
+    
+    The third toolbar consists of viewport operations such as centering the viewport and zooming. It is also possible to chooce whether or not component names and unconnected ports shall be displayed.
+		\htmlonly
+      <br><br><img src="../graphics/View Toolbar.png" border=0><br><br>
+    \endhtmlonly
+    
+    The forth toolbar consists of tools for modifying the model. It is possible to align, rotate and flip components. Alignments are always relative to the last selected component.
+		\htmlonly
+      <br><br><img src="../graphics/Tools Toolbar.png" border=0><br><br>
+    \endhtmlonly
+    
+    Finally, the last toolbar contains simulation controls selecting start time, time step and stop time, running a simlation, plotting and changing simulation parameters. This toolbar also has the icon for changing model specific properties. Note that after changing simulation parameters it is necessary to click outside the text field before clicking on Simulate; otherwise the changes will not apply for this simulation.
+		\htmlonly
+      <br><br><img src="../graphics/Simulation Toolbar.png" border=0><br><br>
+		\endhtmlonly
+				
+	\section workspace Workspace
+		Models are displayed in the workspace area. More than one model can be opened at the same time. In this case, each model appears in its own tab. It is possible to move around or zoom either by using the scroll wheel on the mouse, or by using toolbar buttons.
+		
+	\section library Library
+		Components are added to the workspace by dragging them from the library widget to the left. Standard libraries exist with hydraulic, mechanic and signal components. Each of these categories have a number of subcategories, which makes it easier to find a certain component. External libraries can be loaded either from the File menu, or by right clicking in the library and selecting "Add External Library". Unloading an external library is done in the same way. 
+		
+		\htmlonly
+			<a href="../graphics/library.png"><img src="../graphics/library.png" height=400 border=0></a><br>
+		\endhtmlonly
+		
+	\section message-widget Message Widget
+		The message widget at the bottom is the program's way of communicating with the user. Messages are displayed in different colors depending on their purpose; black for default messages, orange for warnings, red for errors and blue for debug messages. It is possible to filter which type of message to show by clicking on the colored buttons, and to clear the entire message history. Note that this action cannot be undone! Messages of similar type can also be grouped together, to make the contents more readable.
+		
+	\section python-widget Python Widget
+		It is possible to control Hopsan NG with the Python scripting language. This can be used to facilitate complicated and time consuming operations, or to automate the execution in different ways. See separate section for more information on existing commands and limitations.
+		
+		
+\page building-a-model Building a model
+	Models must be built according to the transmission line element method. You are adviced to read the section on this before you begin.
+	
+	The first thing you need to do is create a new model, if you have not already done so. Click on File->New->Project, or press the New button in the toolbar. An empty model should now be visible in the workspace area. 
+	
+\section adding-components Adding Components
+	Next step is to add the components. To do this, you first need to find the components in the library. Standard components are divided into three libraries; hydraulic, mechanic and signal. These can in turn be filtered by different usages. When you have located the component you want, it can be added to your model by dragging it from the library to the workspace. The new component appear where you drop it, and can then be moved, rotated and flipped to a wanted position.
+
+\section connecting-components Connecting Components
+  Components in HOPSAN are connected by creating a \a node between two or more \a ports. In the graphical interface, a node is represented by a \a connector, represented by a line in the workspace. The color and style of the line tells of which type the node is. A black line represent bi-directional energy transmitting nodes (for example hydraulic or mechanic connections), while blue dotted lines reperesnt uni-directional signal connections. The connection is created by clicking on one of the ports, drawing the connector the way you want it and finally clikcing on the end port. Most ports, but not all, must be connected before simulating the model. Note that the TLM method results in that C-type components, such as volumes, can only be connected to Q-type components, such as valves or orifices. This can feel a little tricky, but is on the other hand always physically motivated. Signal components are simulated sequencially and do not obey these rules.
+	\htmlonly
+		<br><img src="../graphics/ports.png" width=300 border=0><img src="../graphics/node.png" width=300 border=0><br>
+	\endhtmlonly
+
+\section changing-component-parameters Changing Component Parameters
+To change parameteres of a component, you can double-click on it to open its parameter dialog box. Here it is possible to change the name of the component and its parameters. If the component is of C-type or signal type it is also possible to adjust the start values for its connected nodes. Errenous start values can potentially cause unwanted behaviour such as "jump steps" at the beginning of the plots.
+
+
+\section using-global-parameters Using Global Parameters
+Global system parameters can be used to quickly change a parameter value in several components at once. To do this, open the \a System \a Parameters widget by clicking on the little earth globe icon in the toolbar or by pressing Ctrl+Alt+Y. From here new system parameters can be added or removed by clicking on the "Set" and "Unset" buttons. Values can be changed directly by double-clicking on their values in the list. They can then be used as parameters in components by clicking on the icon to the right of the parameter value box in the component's parameter dialog. When a system parameter is changed, it will changed for all components that use it. Should a system parameter be removed, the components that use it will change to simply using the last numerical value of the parameter instead.
+
+
+\section subsystems Subsystems
+Subsystems are not completely stable, and the use of them is discourage in the current release of Hopsan NG. 
+
+
+\section widgets Widgets
+To make models more nice looking and understandable, it is possible to add box widgets and text widgets. These are purely cosmetical and do not modify the behaviour of the system in any way. To add a widget, simply right click on the workspace and select "Add Text Widget" or "Add Box Widget" from the popup menu. A new widget will then appear at the menu position. Its appearance can then be modified by double clicking on it. Box widgets can also be resized by dragging the lines with the mouse.
+
+
+\page running-a-simulation Running a simulation
+\section how-simulations-work How simulations work
+Hopsan NG uses fixed time step simulations with distributed solvers. This means that the number of iterations is stop time minus start time divided by the time step. If the start time is negative, the negative time will be simulated but not logged for plotting. This can be used to avoid initial transients in the simulation, which are normally caused by incorrect start values. Simulations always begin with an initialization phase. Here all start values are set, and all equations initalized (in case they require initalization). During the simulation phase, each time step will begin with simulating all C-components, then it will simulate all Q-components and finally the signal components. When everything in the time step is simulated, the data will be logged for plotting. This is only performed a certain amount of times, depending on how many log samples the user has selected in the Model Preferences dialog. After the simulation there is a finalize phase, where components has the opportunity to clean up things. This is not used by most components, and nothing the user needs to bother about. When the simulation is finished, data will be loaded from the core to the GUI so that it can be plotted by the user.
+
+\section setting-up-simulation-parameters Setting up simulation parameters
+Start value, time step and stop time are changed directly in the toolbar at the top of the main window. Choosing the time step is always a trade-off; smaller time steps will give more accurate results, but will also slow down the simulation. Apart from these settings, it is also possible to change how many data samples that will be logged for plotting. This is done in the Model Preferences dialog, which is accessed from the monkey wrench icon in the simulation toolbar. This is also a trade-off; too few data samples will result in less good looking plots, while too much logging will slow down the simulation. When all setup is finished, the simulation is executed by clicking on the green "play" button in the simulation toolbar. If the progress bar is enabled (can be disabled from Options Dialog for performance reasons), it is possible to abort the simulation by clikcing "Abort". 
+
+\section multi-threaded-simulations Multi-threaded simulations
+Hopsan NG uses multi-threaded simulations to take advantage of so called multi-core architecture in modern processors. This is activated from the Options dialog. It is also possible to select how many threads that are to be used. By choosing zero threads, the simulation engine will automatically ask the operating system how many cores (or "hyperthreads") the computer has, and use this amount of threads. Note that this only works in the Windows version! It is also very important to not choose a higher number of threads than the number of cores, because this will lock up the program completely. 
+
+Though the intention of parallelizing is to reduce simulation time, there is no guarantee that a parallel simulation will be faster. There are always overhead costs involved, and for small model they can be larger than the actual benefits. The overhead cost can also increase when using a higher number of cores, which means that on some systems a small model may run faster with two cores, but slower with four. In order to maximize the benefits, it is adviced to select processor affinity in Windows Task Manager to specify exactly which cores that shall be used (unless all cores are to be used of course). It is also recommended to disable the simlation progress bar before simulations using all cores, because it will not be able to update itself anyway.
+
+\page plotting Plotting
+Plot curves are shown in plot windows. There are two methods to open a new plot window. The easist way is to right click on a port in the workspace and choose "Plot <variable>" from the menu. This will create a new plot window with the seleved plot variable. The more advanced way is to open the plot widget, by clicking on the plot icon in the simulation toolbar or by pressing Ctrl+Shift+P. A list with all components in the current model will then appear. This list can be expanded so that it shows all ports in each component. From here a plot window can be created either by double clicking on a port name, or by dragging it to the workspace. 
+
+Because this list can be long and time consuming to search, it is possible to mark those variables that are especially interesting as \a favorite \a variables. This is done by right clicking on them and choosing this in the drop-down menu. Favorite parameters gets a yellow star in front of their names, and they always appear at the top in the widget to make them easily accessible. 
+
+Once a plot window has been opened, it is possible to add more plot curves to it by dragging items from the variable list to the window. New curves can be added either to the left y-axis, to the right y-axis or to the x-axis. The latter will replace the time vector and result in an XY-plot. Adding curves with different physical units to the same y-axis is generally not recommended, because they will use the same scale.
+
+\htmlonly
+<br><img src="../graphics/Plot Window Toolbar.png"><br><br>
+\endhtmlonly
+
+The plot window contains several useful tools. First of all it is possible to zoom or pan the graphs by using the two leftmost icons. Another way to change zoom factor is by using the scroll wheel on your mouse. To return to the original position, simply right click anywhere in the plot area. The third button is used to save plot windows, so that they can be opened at a later time. Plot windows are saved in the XML-based .hmpf (Hopsan Model Plot File) format. These can be opened from the plot widget by using the "Load Plot Window From XML" button. It is also possible to export plots graphically to .svg (Scaleable Vector Graphics) format, and to save and load plots by using the GNUPLOT format. The next set of tool buttons are used to modify the plot window cosmetically. It is possible to show or hide the grid, to change background color, to change line color and to change the width of the plot curves. The final set of buttons is used to control \a plot \a generations. If the same model are simulated several times, a new generation is added to the plot window as long as the "Auto Update" checkbox is checked. To move between different generations, press the left arrow or right arrow icons. A generation that is no longer of interest can be removed by clicking the red X button.
+*/

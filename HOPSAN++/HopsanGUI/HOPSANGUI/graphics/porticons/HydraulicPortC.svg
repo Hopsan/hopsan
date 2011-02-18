@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="10"
+   height="10"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47pre4 r22446"
+   sodipodi:docname="HydraulicPortC.svg">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective2841"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="17.7"
+     inkscape:cx="9.1236682"
+     inkscape:cy="-0.98702445"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1274"
+     inkscape:window-height="942"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-356.39287,-588.82649)">
+    <rect
+       style="fill:#01ff01;stroke:#000000;stroke-width:0.50000000000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
+       id="rect2815"
+       width="9.5"
+       height="9.5"
+       x="356.64288"
+       y="589.07648" />
+    <g
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       id="text2815">
+      <path
+         d="m 359.00849,593.68569 c 0,0.48001 0.0667,0.92334 0.2,1.33 0.13333,0.40667 0.32,0.76 0.56,1.06 0.24,0.3 0.52333,0.53334 0.85,0.7 0.32666,0.16667 0.67999,0.25 1.06,0.25 0.19999,0 0.38333,-0.02 0.55,-0.06 0.16666,-0.0333 0.31666,-0.0767 0.45,-0.13 0.13333,-0.06 0.24666,-0.12333 0.34,-0.19 0.0933,-0.0667 0.15999,-0.13 0.2,-0.19 0.04,-0.06 0.0633,-0.18 0.07,-0.36 0.0133,-0.18666 0.02,-0.44666 0.02,-0.78 -1e-5,-0.11333 -0.0333,-0.16999 -0.1,-0.17 -0.0533,1e-5 -0.09,0.0433 -0.11,0.13 -0.0133,0.08 -0.0467,0.19334 -0.1,0.34 -0.13334,0.37334 -0.30001,0.65334 -0.5,0.84 -0.20001,0.18667 -0.46001,0.28 -0.78,0.28 -0.26667,0 -0.51667,-0.0733 -0.75,-0.22 -0.23334,-0.15333 -0.44001,-0.36333 -0.62,-0.63 -0.17334,-0.27333 -0.31001,-0.59666 -0.41,-0.97 -0.1,-0.37333 -0.15,-0.78333 -0.15,-1.23 0,-0.47999 0.05,-0.90999 0.15,-1.29 0.1,-0.37999 0.23666,-0.69999 0.41,-0.96 0.17333,-0.25999 0.37333,-0.45999 0.6,-0.6 0.23333,-0.13999 0.48333,-0.20999 0.75,-0.21 0.51333,1e-5 0.90333,0.24668 1.17,0.74 0.0867,0.15334 0.13999,0.28334 0.16,0.39 0.02,0.10667 0.0633,0.16001 0.13,0.16 0.06,10e-6 0.09,-0.0433 0.09,-0.13 -1e-5,-0.30666 -0.01,-0.54999 -0.03,-0.73 -0.02,-0.17999 -0.0467,-0.28999 -0.08,-0.33 -0.0333,-0.0333 -0.0933,-0.07 -0.18,-0.11 -0.08,-0.0467 -0.18334,-0.0867 -0.31,-0.12 -0.12001,-0.04 -0.25667,-0.0733 -0.41,-0.1 -0.14667,-0.0267 -0.30334,-0.04 -0.47,-0.04 -0.38667,10e-6 -0.74667,0.0833 -1.08,0.25 -0.33334,0.16668 -0.62667,0.40001 -0.88,0.7 -0.24667,0.29334 -0.44334,0.64334 -0.59,1.05 -0.14,0.40667 -0.21,0.85001 -0.21,1.33"
+         style="font-size:10px;font-variant:normal;font-stretch:normal;font-family:Apple Garamond Light;-inkscape-font-specification:'Apple Garamond Light,'"
+         id="path2849" />
+    </g>
+  </g>
+</svg>

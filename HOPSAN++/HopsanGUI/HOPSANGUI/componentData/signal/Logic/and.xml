@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SignalAnd" displayname="Logical And Operator">
+        <icon isopath="" iconrotation="OFF" userpath="and.svg"/>
+        <portpose x="1" y="0.5" a="0" name="out"/>
+        <portpose x="0" y="0.25" a="0" name="in1"/>
+        <portpose x="0" y="0.75" a="0" name="in2"/>
+    </modelobject>
+</hopsanobjectappearance>

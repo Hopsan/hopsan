@@ -1,0 +1,37 @@
+/*!
+\page requirements-qt Basic Requirements: Qt Creator, Qt libs and Compilers
+HopsanGUI uses the Qt-libs for the GUI components, and qmake to generate makefiles. We are also using Qt Creator and qmake for the HopsanCore even though it is not using any Qt libraris. You need to install the apropriate Qt-libs and the Qt-Creator IDE from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a>
+
+\section qt-linux gcc in Linux
+On Linux based operationg systems you should use the gcc compiler. Download and install the Qt SDK for Linux. You can use the Qt-libs in you distribution package repository and install Qt-Creator separately but if you want the latest Qt version you should use the SDK.
+
+\section qt-mingw minGW (gcc in Windows)
+If you want to use the MinGW open-source compiler you should download the Qt SDK as it comes prepackaged with a patched MinGW suitable for Qt-libs. The libs them selfes are also compiled with MinGW. Make sure that you do not mix minGW versions. You need to use the version that comes with Qt as it is patched to work with Qt.
+
+\section qt-mscompiler VC++ (The Microsoft Visual C++ Compiler)
+Follow the guide if you wish to use the Microsoft Visual C++ compiler with Qt Creator for Hopsan development.
+
+The Visual Studio compiled Qt-libraries that are currently available (2010-09-22), were compiled using VisualStudio2008.
+For this reason we should use the VC9 (Visual C++ 2008) compiler package with HopsanGUI and HopsanCore. This may change in the future.
+I (Peter) tried VC++ 2010 but was unable to make it work on my 64-bit computer.
+
+You may either download and install Visual Studio 2008 (requires free registration after 30-days) or install the Windows SDK.
+As we already have an IDE (QtCreator) this guide will use the SDK.
+
+The guide assumes that you start from scratch, without the Qt SDK installed. It should be possible to install into the SDK aswell and then select between multiple Qt versions.
+
+-# Download and install the Microsoft Windows SDK 7.0 from <a href="http://www.microsoft.com/downloads/en/default.aspx " target="_blank">Microsoft Download Center</a>.
+You don't need to install the .NET stuff, but make sure that you install the "Debugging Tools for Windows"
+-# If you are using a 64-bit OS you will also need to install the 32-bit version of the debugging tools. The SDK will autmatically install the 64-bit version. If you can not get the newest version manually then select version 6.11.1.404 from the archive downloads list that you can find <a href="http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx#b " target="_blank">here</a>.
+-# Download the Qt-libs compiled with VS from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a> and then manually install the latest version of QtCreator (you can find it on the same download page).
+-# When you start QtCreator for the first time go to Tools->Options->Qt4. Here you should manually find the qmake.exe for your VS compiled version of the Qt-Libs. You may find it in a place like "C:\Qt\4.6.3\bin". If the Microsoft SDK has been properly installed the Microsoft Visual C++ Compilers 9.0 toolchain should be automatically set up. Change the name to something indicating that VC++ is used. Be sure to rebuild the debugger helper.
+-# Open your Qt projects and they should automatically add/readd build settings for your new Qt version wich VC++.
+-# If you get an error about "cl.exe" not being found, add the "Visual Studio 9.0/VC/bin" folder to your PATH system environment variable.
+
+To get a working debugger
+-# Go into Tools->Options->Debugger->Cdb and check the Cdb box. Now set the path to the Debugging tools for Windows 32-bit version. (Autodetect should work).
+-# If you want the debugger to automatically download debugger symbols for the Windows libraries, then create a folder, eg. "C:\websymbols" and add the following line to "Symbol Paths:" under the Cdb tab: "SRV*c:\websymbols*http://msdl.microsoft.com/download/symbols" (without quotes). You websymbols folder will act as a cache for symbol retreival.
+
+Hints
+-# You may need to add the directory to cl.exe to your PATH environment variable, e.g "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin" (Be sure not to use spaces in Windows)
+*/

@@ -5,7 +5,7 @@ QT -= core \
     gui
 TARGET = HopsanCore
 TEMPLATE = lib
-CONFIG += dll
+CONFIG += shared
 
 CONFIG(debug, debug|release) {
   TARGET = $${TARGET}_d

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SignalTime" displayname="Time">
+        <icon isopath="time.svg" iconrotation="OFF" userpath=""/>
+        <portpose x="1" y="0.5" a="0" name="out"/>
+    </modelobject>
+</hopsanobjectappearance>

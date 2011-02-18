@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicOptimizedTurbulentOrifice" displayname="Optimized Turbulent Orifice">
+        <icon isopath="../hydraulic/restrictors/turbulentorifice_iso.svg" iconrotation="ON" userpath="../hydraulic/restrictors/turbulentorifice_user.svg"/>
+        <portpose x="1" y="0.5" a="0" name="P1"/>
+        <portpose x="0" y="0.5" a="180" name="P2"/>
+    </modelobject>
+</hopsanobjectappearance>

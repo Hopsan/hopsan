@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HopsanGUIGroup" displayname="Group">
+        <icon isopath="../../graphics/objecticons/group.svg" iconrotation="" userpath=""/>
+    </modelobject>
+</hopsanobjectappearance>

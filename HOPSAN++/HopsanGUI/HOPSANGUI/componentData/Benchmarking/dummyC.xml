@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicDummyC" displayname="C-Type Dummy">
+        <icon isopath="dummyC.svg" iconrotation="ON" userpath=""/>
+		<help text="I am a dumb turtle. I will walk as far as you tell me to. I will never do anything useful. I am only telling you this because you want to see what the help text will look like." picture="turtle.png"/>
+        <portpose x="1" y="0.5" a="0" name="P1"/>
+        <portpose x="0" y="0.5" a="0" name="in"/>
+    </modelobject>
+</hopsanobjectappearance>
