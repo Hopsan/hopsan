@@ -27,13 +27,13 @@ namespace hopsan {
     public:
 	
 	Vec(): n(0), body(0) { } //!< default no-argument constructor
-	//! constructs a vector of length n
-	Vec(int size): n(0), body(0) { create(size); }
-	Vec(const Vec &src): n(0), body(0) { copy(src); } //!< copy constructor
+        Vec(const Vec &src): n(0), body(0) { copy(src); } //!< copy constructor
 	~Vec() { delete [] body; body=0; n=0; } //!< destructor
 	//! creates (or resets) vector length and allocated space
 	void create(int size);
-	//! returns the length (number of elements) of the vector
+        //! constructs a vector of length n
+        Vec(int size): n(0), body(0) { Vec::create(size); }
+        //! returns the length (number of elements) of the vector
 	int length() const { return n; }
 	//! prints vector contents to stdout
 	void print() const;

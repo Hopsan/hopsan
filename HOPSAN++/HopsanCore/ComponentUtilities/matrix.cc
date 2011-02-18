@@ -407,30 +407,30 @@ void copy_matrix(Matrix &dst, Matrix &src)
 			t = dst[j];
 			for (i=src.cols(); i<ncols; i++) t[i] = 0.0;
 		}
-	}
+        }
 }
 
 // overloaded insertion operator <<
 std::ostream& operator << (std::ostream& s, const Vec& v)
 {
-	char buf[16];
-	int n = v.length();
-	if (n > 0)
-		{
-		//int old_precision = s.precision() ; // get current precision
-		s << "[" ;
-		for (int i=0; i<n; i++)
-		{
+        char buf[16];
+        int n = v.length();
+        if (n > 0)
+                {
+                //int old_precision = s.precision() ; // get current precision
+                s << "[" ;
+                for (int i=0; i<n; i++)
+                {
 //			sprintf_s(buf,15,"%.4g",v[i]);
-			//s << setprecision (2)
-				//<< setiosflags (ios_base::showpoint|ios_base::fixed)
-			s << buf ;
-			i!=n-1 ? s << ", " : s << "]" ;
-			}
+                        //s << setprecision (2)
+                                //<< setiosflags (ios_base::showpoint|ios_base::fixed)
+                        s << buf ;
+                        i!=n-1 ? s << ", " : s << "]" ;
+                        }
       //s << endl ;
-		// reset precision and ios flags
-		//s.precision (old_precision) ;
-		//std::resetiosflags (ios::showpoint|std::ios::fixed) ;
-		}
-	return s ;
-	}
+                // reset precision and ios flags
+                //s.precision (old_precision) ;
+                //std::resetiosflags (ios::showpoint|std::ios::fixed) ;
+                }
+        return s ;
+        }

@@ -10,7 +10,9 @@
 #include "ComponentUtilities/TurbulentFlowFunction.h"
 #include "ComponentUtilities/ValveHysteresis.h"
 #include "ComponentUtilities/DoubleIntegratorWithDamping.h"
-#include "ComponentUtilities/Hysteresis.h"
+#include "ComponentUtilities/ValveHysteresis.h"
+#include "ComponentUtilities/ludcmp.h"
+#include "ComponentUtilities/matrix.h"
 
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 

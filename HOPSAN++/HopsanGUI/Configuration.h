@@ -83,19 +83,6 @@ private:
     QMap< QString, QMap<QString, double> > mCustomUnits;
 
     QMap < QString, QMap< QString, QMap<QString, QPen> > > mPenStyles;
-//    QPen mPrimaryPenPowerUser;
-//    QPen mActivePenPowerUser;
-//    QPen mHoverPenPowerUser;
-//    QPen mPrimaryPenSignalUser;
-//    QPen mActivePenSignalUser;
-//    QPen mHoverPenSignalUser;
-//    QPen mPrimaryPenPowerIso;
-//    QPen mActivePenPowerIso;
-//    QPen mHoverPenPowerIso;
-//    QPen mPrimaryPenSignalIso;
-//    QPen mActivePenSignalIso;
-//    QPen mHoverPenSignalIso;
-//    QPen mNonFinishedPen;
 };
 
 #endif // CONFIGURATION_H

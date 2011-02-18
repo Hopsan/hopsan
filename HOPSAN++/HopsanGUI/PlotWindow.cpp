@@ -1154,7 +1154,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     qDebug() << "dataName = " << dataName;
 
         //Change to default unit
-    QString newUnit;
+    QString newUnit = dataUnit;
     if(axisY == QwtPlot::yLeft)
     {
         if(mCurrentUnitsLeft.contains(dataName))
@@ -1166,7 +1166,10 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
             newUnit = mCurrentUnitsRight.find(dataName).value();
     }
     double scale = 1.0;
-    scale = gConfig.getCustomUnits(dataName).find(newUnit).value();
+    if(newUnit != "-")
+    {
+        scale = gConfig.getCustomUnits(dataName).find(newUnit).value();
+    }
     qDebug() << "scale = " << scale;
     QVector<double> tempVectorY;
     for(int j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)
