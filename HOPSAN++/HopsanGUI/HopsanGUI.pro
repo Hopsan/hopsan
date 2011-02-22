@@ -4,26 +4,26 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
-QT += svg xml
-QT += core gui webkit
+include( ../Common.prf )
 
-DESTDIR = ../bin
 TARGET = HopsanGUI
 TEMPLATE = app
+DESTDIR = $${PWD}/../bin
 
-include( ../Common.prf )
+QT += svg xml
+QT += core gui webkit
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #Set default pythonqt path if it can be found, or use custom value supplied through env variable
-PYTHONQT_DEFAULT_PATHS = ../ExternalDependencies/PythonQt2.0.1
+PYTHONQT_DEFAULT_PATHS = $${PWD}/../ExternalDependencies/PythonQt2.0.1
 PYTHONQT_PATH = $$selectPath($$(PYTHONQT_PATH), $$PYTHONQT_DEFAULT_PATHS, "pythonqt")
 
-INCLUDEPATH += ../HopsanCore
+INCLUDEPATH += $${PWD}/../HopsanCore
 INCLUDEPATH += $${PYTHONQT_PATH}/src \
                $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
 
-LIBS += -L../lib -lHopsanCore$${DEBUG_EXT}
+LIBS += -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
 #Can not build PythonQt in debug for now (mingw)
 LIBS += -L$${PYTHONQT_PATH}/lib -lPythonQt\#$${DEBUG_EXT} \
                                 -lPythonQt_QtAll#$${DEBUG_EXT}
@@ -45,7 +45,7 @@ win32 {
     #DEFINES += STATICCORE
 
     #Set QWT paths, Paths that are earlier in the list will be used if found
-    QWT_PATHS *= ../ExternalDependencies/qwt-5.2-svn
+    QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-5.2-svn
     QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
 
     INCLUDEPATH += $${QWT_PATH}/include
@@ -67,19 +67,14 @@ win32 {
 
     #Temporary hack
     CONFIG(debug, debug|release) {
-        LIBS += -L../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_debug
+        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_debug
         LIBS += -ltbb_debug
     }
     CONFIG(release, debug|release) {
-        LIBS += -L../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_release
+        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_release
         LIBS += -ltbb
     }
 
-
-    #system(setx PATH=%PATH%;$$PWD$${QWT_PATH}/lib)
-    #rc = $$system(PATH)
-    #message(rc $$rc)
-    #message(thepath $$(PATH))
     #Debug output
     #message(Includepath is $$INCLUDEPATH)
     #message(Libs is $${LIBS})

@@ -1,15 +1,16 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
-QT -= core \
-    gui
+include( ../Common.prf )
 
-DESTDIR = ../lib
 TARGET = HopsanCore
 TEMPLATE = lib
 CONFIG += shared
+DESTDIR = $${PWD}/../lib
 
-include( ../Common.prf )
+QT -= core \
+    gui
+
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 # -------------------------------------------------
@@ -21,8 +22,8 @@ win32 {
     DEFINES -= UNICODE
 
     #Set default tbb path alternatives, higher up is prefered
-    TBB_PATHS *= ../ExternalDependencies/tbb30_20101215oss
-    TBB_PATHS *= ../ExternalDependencies/tbb30_20100406oss
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20101215oss
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100406oss
     #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
     TBB_PATH = $$selectPath($$(TBB_PATH), $$TBB_PATHS, "tbb")
 
@@ -38,8 +39,9 @@ win32 {
     }
 
     #Debug output
-    #message(Includepath is $$INCLUDEPATH)
-    #message(Libs is $${LIBS})
+    message(pwd $${PWD})
+    message(Includepath is $$INCLUDEPATH)
+    message(Libs is $${LIBS})
 }
 unix { 
     LIBS += -ltbb
