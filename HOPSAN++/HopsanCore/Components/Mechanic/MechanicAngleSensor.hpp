@@ -1,6 +1,6 @@
 //!
 //! @file   MechanicAngleSensor.hpp
-//! @author Robert Braun <bjorn.eriksson@liu.se>
+//! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-08-12
 //!
 //! @brief Contains a Mechanic Angle Sensor Component

@@ -127,4 +127,5 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
     cfampND_ct->registerCreatorFunction("MechanicPositionSensor", MechanicPositionSensor::Creator);
     cfampND_ct->registerCreatorFunction("MechanicAngleSensor", MechanicAngleSensor::Creator);
     cfampND_ct->registerCreatorFunction("MechanicTranslationalLosslessConnector", MechanicTranslationalLosslessConnector::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicAngularVelocitySensor", MechanicAngularVelocitySensor::Creator);
 }

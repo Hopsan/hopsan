@@ -23,7 +23,8 @@ win32:INCLUDEPATH += c:/tbb/tbb30_20100406oss/include/tbb
 
 # win32:INCLUDEPATH += C:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\include\tbb
 # Stada upp denna rora, nagot for windoesanvandarna!
-DESTDIR = ../lib
+# DESTDIR = ../HopsanNG/lib
+DESTDIR = ../../HOPSAN++/bin
 CONFIG(debug, debug|release) {
     win32:LIBS += -Lc:/tbb30_20100915oss/build/windows_ia32_gcc_mingw_debug
     win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
@@ -197,4 +198,5 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicLeverArm.hpp \
     Components/Signal/SignalAbsoluteValue.hpp \
     Components/Hydraulic/HydraulicTankC.hpp \
-    Components/Hydraulic/HydraulicTankQ.hpp
+    Components/Hydraulic/HydraulicTankQ.hpp \
+    Components/Mechanic/MechanicAngularVelocitySensor.hpp
