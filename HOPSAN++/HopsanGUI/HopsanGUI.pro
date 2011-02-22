@@ -24,9 +24,9 @@ INCLUDEPATH += $${PYTHONQT_PATH}/src \
                $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
 
 LIBS += -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
-#Can not build PythonQt in debug for now (mingw)
-LIBS += -L$${PYTHONQT_PATH}/lib -lPythonQt\#$${DEBUG_EXT} \
-                                -lPythonQt_QtAll#$${DEBUG_EXT}
+#PythonQt has same debug extension as Hopsan
+LIBS += -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
+                                -lPythonQt_QtAll$${DEBUG_EXT}
 
 # -------------------------------------------------
 # Platform specific additional project options
