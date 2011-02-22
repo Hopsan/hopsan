@@ -13,7 +13,7 @@
 #include "GUISystem.h"
 #include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"
-#include "UndoStack.h"
+#include "../UndoStack.h"
 
 #include <QLabel>
 #include <QDialog>

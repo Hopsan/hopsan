@@ -1,0 +1,33 @@
+#Determine debug extension
+CONFIG(debug, debug|release) {
+  DEBUG_EXT = _d
+} else {
+  DEBUG_EXT =
+}
+
+#Helpfunction to select one of multiple choice paths to includ
+defineReplace(selectPath){
+    PATH = $$1
+    DEFAULT_PATHS = $$2
+    NAME = $$3
+
+    !exists($${PATH}) {
+        !isEmpty(PATH) {
+            message(The custom $${NAME} path $${PATH} does not exist!)
+        }
+        #Clear the path in case it containes rubish
+        PATH =
+        for(path,DEFAULT_PATHS){
+            isEmpty(PATH):exists($${path}){
+                PATH = $${path}
+                message(Setting $${NAME} path to one of the defaults $${PATH})
+            }
+        }
+    } else {
+        message(Using custom $${NAME} path $${PATH})
+    }
+    !exists($${PATH}){
+        message(Warning! The $${NAME} path $${PATH} does not exist)
+    }
+    return($${PATH})
+}

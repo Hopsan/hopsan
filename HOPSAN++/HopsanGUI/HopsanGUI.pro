@@ -1,15 +1,98 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-12-28T14:27:59
 # -------------------------------------------------
+# -------------------------------------------------
+# Global project options
+# -------------------------------------------------
 QT += svg xml
 QT += core gui webkit
 
+DESTDIR = ../bin
 TARGET = HopsanGUI
-CONFIG(debug, debug|release) {
-  TARGET = $${TARGET}_d
-}
-
 TEMPLATE = app
+
+include( ../Common.prf )
+
+TARGET = $${TARGET}$${DEBUG_EXT}
+
+#Set default pythonqt path if it can be found, or use custom value supplied through env variable
+PYTHONQT_DEFAULT_PATHS = ../ExternalDependencies/PythonQt2.0.1
+PYTHONQT_PATH = $$selectPath($$(PYTHONQT_PATH), $$PYTHONQT_DEFAULT_PATHS, "pythonqt")
+
+INCLUDEPATH += ../HopsanCore
+INCLUDEPATH += $${PYTHONQT_PATH}/src \
+               $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
+
+LIBS += -L../lib -lHopsanCore$${DEBUG_EXT}
+#Can not build PythonQt in debug for now (mingw)
+LIBS += -L$${PYTHONQT_PATH}/lib -lPythonQt\#$${DEBUG_EXT} \
+                                -lPythonQt_QtAll#$${DEBUG_EXT}
+
+# -------------------------------------------------
+# Platform specific additional project options
+# -------------------------------------------------
+unix {
+    LIBS += -Wl,-rpath,./,../lib
+    LIBS += -lqwt-qt4
+    INCLUDEPATH += /usr/include/qwt-qt4/
+    INCLUDEPATH += /usr/include/python2.6
+
+    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+
+    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
+}
+win32 {
+    #DEFINES += STATICCORE
+
+    #Set QWT paths, Paths that are earlier in the list will be used if found
+    QWT_PATHS *= ../ExternalDependencies/qwt-5.2-svn
+    QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
+
+    INCLUDEPATH += $${QWT_PATH}/include
+    INCLUDEPATH += $${QWT_PATH}/src #Need to include this one also couse qwt is strange
+    LIBS += -L$${QWT_PATH}/lib
+
+    CONFIG(debug, debug|release) {
+        LIBS += -lqwtd5
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -lqwt5
+    }
+
+    #Set Python paths
+    PYTHON_DEFAULT_PATHS *= c:/Python26
+    PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
+    INCLUDEPATH += $${PYTHON_PATH}/include
+    LIBS += -L$${PYTHON_PATH}/libs
+
+    #Temporary hack
+    CONFIG(debug, debug|release) {
+        LIBS += -L../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_debug
+        LIBS += -ltbb_debug
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_release
+        LIBS += -ltbb
+    }
+
+
+    #system(setx PATH=%PATH%;$$PWD$${QWT_PATH}/lib)
+    #rc = $$system(PATH)
+    #message(rc $$rc)
+    #message(thepath $$(PATH))
+    #Debug output
+    #message(Includepath is $$INCLUDEPATH)
+    #message(Libs is $${LIBS})
+}
+RESOURCES += \  
+    Resources.qrc
+
+# Release compile only, will add the application icon
+RC_FILE = HOPSANGUI.rc
+
+# -------------------------------------------------
+# Project files
+# -------------------------------------------------
 SOURCES += main.cpp \
     MainWindow.cpp \
     Widgets/ProjectTabWidget.cpp \
@@ -100,59 +183,3 @@ HEADERS += MainWindow.h \
     Dialogs/ContainerPortPropertiesDialog.h \
     Dialogs/WelcomeDialog.h \
     Dialogs/HelpDialog.h
-
-OTHER_FILES += 
-
-# win32:DEFINES += STATICCORE
-DESTDIR = ../bin
-CONFIG(debug, debug|release) {
-  DEBUG_EXT = _d
-} else {
-  DEBUG_EXT =
-}
-LIBS += -L$$PWD/../lib -lHopsanCore$${DEBUG_EXT}
-
-#Define a parameter PYTHONQT_PATH e.g. '/home/apako69/pythonqt' in the project settings, also add '/home/apako69/pythonqt/lib' to LD_LIBRARY_PATH on *nix.
-LIBS += -L$(PYTHONQT_PATH)/lib -lPythonQt$${DEBUG_EXT} \
-                               -lPythonQt_QtAll$${DEBUG_EXT}
-
-INCLUDEPATH += $(PYTHONQT_PATH)/src \
-               $(PYTHONQT_PATH)/extensions/PythonQt_QtAll
-
-INCLUDEPATH += ../HopsanCore
-unix {
-    LIBS += -Wl,-rpath,./
-    LIBS += -lqwt-qt4
-    INCLUDEPATH += /usr/include/qwt-qt4/
-    INCLUDEPATH += /usr/include/python2.6
-
-    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
-
-    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
-}
-win32 {
-    INCLUDEPATH += c:/temp_qwt/src
-    INCLUDEPATH += c:/temp_qwt/include
-    LIBS += -Lc:/temp_qwt/lib
-
-    INCLUDEPATH += c:/Qwt-5.2.2-svn/include
-    INCLUDEPATH += ../ExternalDependencies/Qwt-5.2/src
-    INCLUDEPATH += c:/Qwt-5.2.1-svn/include
-    LIBS += -Lc:/Qwt-5.2.2-svn/lib
-    LIBS += -L../ExternalDependencies/qwt-build-desktop/lib
-    LIBS += -Lc:/Qwt-5.2.1-svn/lib
-
-    CONFIG(debug, debug|release) {
-        LIBS += -lqwtd5
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -lqwt5
-    }
-    INCLUDEPATH += $(PYTHON_PATH)/include
-    LIBS += -L$(PYTHON_PATH)/libs
-}
-RESOURCES += \  
-    Resources.qrc
-
-# Release compile only, will add the application icon
-RC_FILE = HOPSANGUI.rc

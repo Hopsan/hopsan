@@ -8,7 +8,7 @@
 //$Id$
 
 #include "qdebug.h"
-#include "MainWindow.h"
+#include "../MainWindow.h"
 #include "GUIModelObjectAppearance.h"
 #include "../Utilities/GUIUtilities.h"
 #include "../version.h"
