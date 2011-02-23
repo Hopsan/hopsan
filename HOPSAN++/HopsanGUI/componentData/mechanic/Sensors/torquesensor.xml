@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="MechanicAngularVelocitySensor" displayname="Angular Velocity Sensor">
-        <icon isopath="angularvelocitysensor_iso.svg" iconrotation="ON" userpath="angularvelocitysensor_user.svg"/>
+    <modelobject typename="MechanicTorqueSensor" displayname="Torque Sensor">
+        <icon isopath="torquesensor_iso.svg" iconrotation="ON" userpath="torquesensor_user.svg"/>
         <portpose x="0.5" y="1" a="90" name="P1"/>
         <portpose x="0.5" y="0" a="270" name="out"/>
     </modelobject>

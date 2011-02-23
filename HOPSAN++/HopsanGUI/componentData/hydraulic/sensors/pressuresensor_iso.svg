@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -8,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="40"
-   height="59.500008"
+   width="39.991394"
+   height="40.00098"
    id="svg2385"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.0 r9654"
    version="1.0"
    sodipodi:docname="pressuresensor_iso.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -58,8 +59,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.919596"
-     inkscape:cx="3.3772105"
-     inkscape:cy="21.710605"
+     inkscape:cx="3.3729093"
+     inkscape:cy="2.2115882"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -67,7 +68,11 @@
      inkscape:window-height="938"
      inkscape:window-x="22"
      inkscape:window-y="29"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata2390">
     <rdf:RDF>
@@ -83,10 +88,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-358.37554,-532.1431)">
+     transform="translate(-358.37984,-532.14311)">
     <path
        sodipodi:type="arc"
-       style="fill:#ffffff;stroke:#000000;stroke-width:3.26019526000000020;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3.26019526;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none"
        id="path2395"
        sodipodi:cx="155"
        sodipodi:cy="513.07648"
@@ -101,16 +106,14 @@
          d="m 368.87145,540.93175 c 21.99948,21.99948 21.99948,21.99948 21.99948,21.99948"
          class="st3"
          id="path206"
-         style="stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3;stroke-dasharray:none" />
+         style="stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
       <path
          d="m 371.52824,547.40711 -5.15685,-8.97586 8.95562,5.19591 -3.79884,3.77989 z"
          class="st5"
          id="path229-7"
-         style="fill:#000000;fill-opacity:1;stroke:none" />
+         style="fill:#000000;fill-opacity:1;stroke:none"
+         inkscape:connector-curvature="0" />
     </g>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.99974799px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 378.37554,572.14272 0,19.00051"
-       id="path3643" />
   </g>
 </svg>

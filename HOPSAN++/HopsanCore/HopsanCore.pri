@@ -149,4 +149,5 @@ HEADERS += win32dll.h \
     Components/Signal/SignalAbsoluteValue.hpp \
     Components/Hydraulic/HydraulicTankC.hpp \
     Components/Hydraulic/HydraulicTankQ.hpp \
-    Components/Hydraulic/HydraulicPressureSourceC.hpp
+    Components/Hydraulic/HydraulicPressureSourceC.hpp \
+    Components/Mechanic/MechanicTorqueSensor.hpp

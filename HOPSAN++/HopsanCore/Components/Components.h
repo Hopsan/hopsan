@@ -110,6 +110,7 @@
 #include "Mechanic/MechanicAngleSensor.hpp"
 #include "Mechanic/MechanicTranslationalLosslessConnector.hpp"
 #include "Mechanic/MechanicAngularVelocitySensor.hpp"
+#include "Mechanic/MechanicTorqueSensor.hpp"
 
 
 

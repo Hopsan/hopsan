@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -8,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="40"
-   height="59.500008"
+   width="39.991394"
+   height="40.00098"
    id="svg2385"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.0 r9654"
    version="1.0"
    sodipodi:docname="flowsensor_iso.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -58,8 +59,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.6"
-     inkscape:cx="7.4064883"
-     inkscape:cy="12.754375"
+     inkscape:cx="-13.937099"
+     inkscape:cy="-6.7446418"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -67,7 +68,11 @@
      inkscape:window-height="938"
      inkscape:window-x="88"
      inkscape:window-y="78"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata2390">
     <rdf:RDF>
@@ -83,10 +88,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-371.88857,-540.86221)">
+     transform="translate(-371.89287,-540.86222)">
     <path
        sodipodi:type="arc"
-       style="fill:#ffffff;stroke:#000000;stroke-width:3.26019526000000020;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3.26019526;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none"
        id="path2395"
        sodipodi:cx="155"
        sodipodi:cy="513.07648"
@@ -120,9 +125,5 @@
        sodipodi:start="5.115221"
        sodipodi:end="7.4525559"
        sodipodi:open="true" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.99974799px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 391.88844,580.86183 0,19.00051"
-       id="path3643" />
   </g>
 </svg>
