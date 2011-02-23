@@ -72,7 +72,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicTLMlossless.hpp \
     Components/Hydraulic/HydraulicSubSysExample.hpp \
     Components/Hydraulic/HydraulicPressureSourceQ.hpp \
-    Components/Hydraulic/HydraulicPressureSource.hpp \
     Components/Hydraulic/HydraulicPressureSensor.hpp \
     Components/Hydraulic/HydraulicPressureReliefValve.hpp \
     Components/Hydraulic/HydraulicPowerSensor.hpp \
@@ -149,4 +148,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicPressureReducingValve.hpp \
     Components/Signal/SignalAbsoluteValue.hpp \
     Components/Hydraulic/HydraulicTankC.hpp \
-    Components/Hydraulic/HydraulicTankQ.hpp
+    Components/Hydraulic/HydraulicTankQ.hpp \
+    Components/Hydraulic/HydraulicPressureSourceC.hpp

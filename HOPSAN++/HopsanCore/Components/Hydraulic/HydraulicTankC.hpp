@@ -32,7 +32,7 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicTankC("PressureSource");
+            return new HydraulicTankC("TankC");
         }
 
         HydraulicTankC(const std::string name) : ComponentC(name)

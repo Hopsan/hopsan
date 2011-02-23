@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="HydraulicPressureSource" displayname="C-type Pressure Source">
+    <modelobject typename="HydraulicPressureSourceC" displayname="C-type Pressure Source">
         <icon isopath="pressuresource_iso.svg" iconrotation="ON" userpath="pressuresource_user.svg"/>
         <portpose x="0.5" y="1" a="270" name="In"/>
         <portpose x="0.5" y="0" a="90" name="P1"/>

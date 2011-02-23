@@ -388,6 +388,7 @@ void PlotWindow::setGeneration(int gen)
     }
 
     QString physicalQuantityLeft = QString(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
+    if(physicalQuantityLeft == "Angular") { physicalQuantityLeft = "Angular Velocity"; }        //! @todo Det här är nog det fulaste vi har i hela koden :)
     qDebug() << "1";
     QString physicalQuantityRight = QString(mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
     if(mHasLeftCurve)
