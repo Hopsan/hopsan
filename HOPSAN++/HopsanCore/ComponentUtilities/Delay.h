@@ -18,7 +18,7 @@
 namespace hopsan {
 
     //! @todo maybe this should not be a header only function, or maybe it should
-    class Delay
+    class DLLIMPORTEXPORT Delay
     {
     public:
         Delay()

@@ -198,7 +198,7 @@ int read_matrix(Matrix &mx, string &title, FILE *in)
 	char *cp;
 	char buf[256];
 
-//	fscanf_s(in," %d %d",&nrows,&ncols);
+    //	fscanf_s(in," %d %d",&nrows,&ncols);
 	if (feof(in)) return -1;
 	fgets(buf,255,in);
 	if (feof(in)) return -1;
@@ -212,13 +212,13 @@ int read_matrix(Matrix &mx, string &title, FILE *in)
 	for (j=0; j<nrows; j++) {
 		v  = mx[j];
 		for (i=0; i<ncols; i++) {
-//			fscanf_s(in," %lf",&vin);
+            //			fscanf_s(in," %lf",&vin);
 			*v++ = vin;
 		}
 		if (feof(in)) {
 			printf("\nerror reading %s\n",title);
 			printf("Matrix has %d rows and %d columns\n",
-				mx.rows(),mx.cols());
+                   mx.rows(),mx.cols());
 			printf("Unexpected EOF reading row %d",j+1);
 			return -1;
 		}
@@ -226,7 +226,11 @@ int read_matrix(Matrix &mx, string &title, FILE *in)
 	return 0;
 }
 
-
+//Constructors
+Vec::Vec(): n(0), body(0) { }
+Vec::Vec(const Vec &src): n(0), body(0) { copy(src); }
+Vec::Vec(int size): n(0), body(0) { Vec::create(size); }
+Vec::~Vec() { delete [] body; body=0; n=0; }
 
 //! create memory for elements of vector
 void Vec::create(int size)
@@ -264,7 +268,7 @@ double Vec::min()
 
 double Vec::norm()
 {
-	double sum = 0;0;
+    double sum = 0;
 	for (int i=0; i<n; i++) sum += body[i]*body[i];
 	return sqrt(sum);
 }
@@ -274,9 +278,9 @@ void Vec::normalize()
 	double vnorm = norm();
 	for (int i=0; i<n; i++) body[i] /= vnorm;
 }
-	
 
-Vec& Vec::apply(V_FmpND_ct fct)
+
+Vec& Vec::apply(V_FCT_PTR fct)
 {
 	for (int i=0; i<n; i++) body[i] = (*fct)(body[i]);
 	return *this;
@@ -407,30 +411,30 @@ void copy_matrix(Matrix &dst, Matrix &src)
 			t = dst[j];
 			for (i=src.cols(); i<ncols; i++) t[i] = 0.0;
 		}
-        }
+    }
 }
 
 // overloaded insertion operator <<
 std::ostream& operator << (std::ostream& s, const Vec& v)
 {
-        char buf[16];
-        int n = v.length();
-        if (n > 0)
-                {
-                //int old_precision = s.precision() ; // get current precision
-                s << "[" ;
-                for (int i=0; i<n; i++)
-                {
-//			sprintf_s(buf,15,"%.4g",v[i]);
-                        //s << setprecision (2)
-                                //<< setiosflags (ios_base::showpoint|ios_base::fixed)
-                        s << buf ;
-                        i!=n-1 ? s << ", " : s << "]" ;
-                        }
-      //s << endl ;
-                // reset precision and ios flags
-                //s.precision (old_precision) ;
-                //std::resetiosflags (ios::showpoint|std::ios::fixed) ;
-                }
-        return s ;
+    char buf[16];
+    int n = v.length();
+    if (n > 0)
+    {
+        //int old_precision = s.precision() ; // get current precision
+        s << "[" ;
+        for (int i=0; i<n; i++)
+        {
+            //			sprintf_s(buf,15,"%.4g",v[i]);
+            //s << setprecision (2)
+            //<< setiosflags (ios_base::showpoint|ios_base::fixed)
+            s << buf ;
+            i!=n-1 ? s << ", " : s << "]" ;
         }
+        //s << endl ;
+        // reset precision and ios flags
+        //s.precision (old_precision) ;
+        //std::resetiosflags (ios::showpoint|std::ios::fixed) ;
+    }
+    return s ;
+}

@@ -116,8 +116,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalOr.hpp \
     Components/Signal/SignalXor.hpp \
     Components/Signal/SignalTime.hpp \
-    ComponentUtilities/Integrator.hpp \
-    ComponentUtilities/FirstOrderFilter.hpp \
     ComponentUtilities/SecondOrderTransferFunction.h \
     Components/Signal/SignalDummy.hpp \
     Components/Hydraulic/HydraulicDummyC.hpp \

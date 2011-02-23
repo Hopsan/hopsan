@@ -17,14 +17,15 @@
 
 #ifndef LUDCMP_HPP_INCLUDED
 #define LUDCMP_HPP_INCLUDED
+#include "../win32dll.h"
 
 namespace hopsan {
 
     class Matrix;
     class Vec;
 
-    int ludcmp(Matrix &a, int order[]);
-    void solvlu(const Matrix &a, const Vec &b, Vec &x, const int order[]);
+    int DLLIMPORTEXPORT ludcmp(Matrix &a, int order[]);
+    void DLLIMPORTEXPORT solvlu(const Matrix &a, const Vec &b, Vec &x, const int order[]);
     static int pivot(Matrix &a, int order[], int jcol);
 }
 #define TINY 1e-20

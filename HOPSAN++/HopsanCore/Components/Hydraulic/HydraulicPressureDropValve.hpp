@@ -114,7 +114,6 @@ namespace hopsan {
             }
 
             //Help variable gamma
-            gamma;
             if (p1>p2)
             {
                 if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*x0) != 0.0 )
@@ -139,7 +138,6 @@ namespace hopsan {
             }
 
             //Help variable b2
-            b2;
             if (p1 > p2)
             {
                 b2 = gamma*(Zc1+Zc2)*sqrt(p1-p2);

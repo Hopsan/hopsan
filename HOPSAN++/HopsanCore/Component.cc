@@ -2014,7 +2014,7 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 
     vector<Port*>::iterator pit;
     Component *pMinLevelComp;
-    size_t min = 99999999999999; //! @todo not hardcoded value like this, should use a defined MAX value (maybe for unsinged int)
+    size_t min = std::numeric_limits<size_t>::max();
     for (pit=pNode->mPortPtrs.begin(); pit!=pNode->mPortPtrs.end(); ++pit)
     {
         if ((*pit)->mpComponent->getModelHierarchyDepth() < min)

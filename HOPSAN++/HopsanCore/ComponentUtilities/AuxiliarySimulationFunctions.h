@@ -10,29 +10,30 @@
 
 #ifndef AUXILIARYSIMULATIONFUNCTIONS_H
 #define AUXILIARYSIMULATIONFUNCTIONS_H
+#include "../win32dll.h"
 
 namespace hopsan {
 
-    double multByTwo(double input);     //! @todo Vad är det här bra för?
-    void limitValue(double &value, double min, double max);
-    bool doubleToBool(double value);
-    double boolToDouble(bool value);
-    double sign(double x);
+    double DLLIMPORTEXPORT multByTwo(double input);     //! @todo Vad är det här bra för?
+    void DLLIMPORTEXPORT limitValue(double &value, double min, double max);
+    bool DLLIMPORTEXPORT doubleToBool(double value);
+    double DLLIMPORTEXPORT boolToDouble(bool value);
+    double DLLIMPORTEXPORT sign(double x);
 
     //! Functions converted from auxhop in old Hopsan
-    double onPositive(double x);
-    double dxOnPositive(double x);
-    double onNegative(double x);
-    double dxOnNegative(double x);
-    double signedSquareL(double x, double x0);
-    double dxSignedSquareL(double x, double x0);
-    double squareAbsL(double x, double x0);
-    double dxSquareAbsL(double x, double x0);
-    double equalSigns(double x, double y);
-    double limit(double x, double xmin, double xmax);
-    double dxLimit(double x, double xmin, double xmax);
-    double limit2(double x, double sx, double xmin, double xmax);
-    double dxLimit2(double x, double sx, double xmin, double xmax);
+    double DLLIMPORTEXPORT onPositive(double x);
+    double DLLIMPORTEXPORT dxOnPositive(double x);
+    double DLLIMPORTEXPORT onNegative(double x);
+    double DLLIMPORTEXPORT dxOnNegative(double x);
+    double DLLIMPORTEXPORT signedSquareL(double x, double x0);
+    double DLLIMPORTEXPORT dxSignedSquareL(double x, double x0);
+    double DLLIMPORTEXPORT squareAbsL(double x, double x0);
+    double DLLIMPORTEXPORT dxSquareAbsL(double x, double x0);
+    double DLLIMPORTEXPORT equalSigns(double x, double y);
+    double DLLIMPORTEXPORT limit(double x, double xmin, double xmax);
+    double DLLIMPORTEXPORT dxLimit(double x, double xmin, double xmax);
+    double DLLIMPORTEXPORT limit2(double x, double sx, double xmin, double xmax);
+    double DLLIMPORTEXPORT dxLimit2(double x, double sx, double xmin, double xmax);
 
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H
