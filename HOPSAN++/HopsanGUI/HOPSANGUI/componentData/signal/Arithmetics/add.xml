@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="SignalAdd" displayname="Add">
-        <icon isopath="add.svg" iconrotation="ON" userpath=""/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
-        <portpose x="0" y="0.5" a="0" name="in1"/>
-        <portpose x="0.5" y="0" a="90" name="in2"/>
-    </modelobject>
-</hopsanobjectappearance>

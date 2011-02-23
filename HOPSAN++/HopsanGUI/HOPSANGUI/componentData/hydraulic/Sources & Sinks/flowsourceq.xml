@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="HydraulicFlowSourceQ" displayname="Q-type Flow Source">
-        <icon isopath="flowsource_iso.svg" iconrotation="OFF" userpath="flowsource_user.svg"/>
-        <portpose x="1" y="0.5" a="0" name="P1"/>
-        <portpose x="0" y="0.5" a="0" name="in"/>
-    </modelobject>
-</hopsanobjectappearance>

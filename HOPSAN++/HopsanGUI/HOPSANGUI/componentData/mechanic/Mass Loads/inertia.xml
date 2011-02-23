@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="MechanicRotationalInertia" displayname="Rotational Inertia">
-        <help picture="inertiahelp.svg"/>
-		<icon isopath="inertia_iso.svg" iconrotation="ON" userpath="inertia_user.svg"/>
-        <portpose x="0" y="0.5" a="0" name="P1"/>
-        <portpose x="1" y="0.5" a="0" name="P2"/>
-    </modelobject>
-</hopsanobjectappearance>

@@ -39,9 +39,8 @@ win32 {
     }
 
     #Debug output
-    message(pwd $${PWD})
-    message(Includepath is $$INCLUDEPATH)
-    message(Libs is $${LIBS})
+    #message(Includepath is $$INCLUDEPATH)
+    #message(Libs is $${LIBS})
 }
 unix { 
     LIBS += -ltbb

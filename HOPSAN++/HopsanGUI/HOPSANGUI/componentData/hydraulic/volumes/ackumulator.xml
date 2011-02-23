@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="HydraulicAckumulator" displayname="Gas Accumulator">
-        <help text="Q-type hydraulic gas accumulator with laminar restrictor. Internal oil volume can be obtained from signal port." picture="ackumulatorhelp.svg"/>
-		<icon isopath="ackumulator_iso.svg" iconrotation="ON" userpath="ackumulator_user.svg"/>
-        <portpose x="0.5" y="1" a="90" name="P1"/>
-        <portpose x="0.5" y="0" a="270" name="out"/>
-    </modelobject>
-</hopsanobjectappearance>
