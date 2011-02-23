@@ -13,14 +13,20 @@ todo
 -# First checkout the 5.2 stable branch from "https://qwt.svn.sourceforge.net/svnroot/qwt/branches/qwt-5.2".
  -# Put the working copy in the ExternalDependencies directory and name in qwt-5.2-svn
 -# Open the qwtconfig/qwtconfig.pri file and make sure that "CONFIG += debug_and_release" and "CONFIG += build_all" is selected (somwhere around line 50)
--# Open the qwt.pro file in QtCreator and build the project, (both debug and release will be built automatically). 
+-# Open the qwt.pro file in QtCreator
+  -# DEACTIVATE shadow build in both debug and release config
+  -# Build the project, (both debug and release will be built automatically). 
 
 \section pythonqt Build/Install PythonQt 
 If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
 \subsection pythonqt-ubuntu Ubuntu
 -# Install the python-dev package (sudo aptitude install python-dev)
 -# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
--# Go to the PythonQt directory and run "qmake" followed by "make all", if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
+  -# Place the ex: PythonQt2.0.1 directory in ExternalDependencies, qmake will search for it there
+-# Go to the PythonQt directory and open the PythonQt project
+  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in common.prf (We need both a debug and a release build)
+  -# DEACTIVATE shadow build in both debug and release config
+  -# Build the PythonQt project, if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
 -# In the HopsanGUI project. Go to the project tab and add the following variable:\n
 PYTHONQT_PATH = /home/homsi68/pythonqt or whatever your path is
 -# In the HopsanGUI project. Go to the project tab and add the folowinf variable:\n
@@ -47,6 +53,7 @@ PYTHON_LIB  = c:\\Python26\\libs
   -# Go to the project tab and add the following variables in BOTH Debug and Release mode:\n
 PYTHON_PATH = c:\\Python26 \n
 PYTHON_LIB  = c:\\Python26\\libs
+  -# DEACTIVATE shadow build in both debug and release config
   -# PythonQt uses wired includes, you will need to add the PythonQt/src dir to the INCLUDEPATH, one way to do this is to add (your own version of): "INCLUDEPATH += C:\Users\petno25\Desktop\subversion\HOPSAN++MinGW\ExternalDependencies\PythonQt2.0.1\src" to the common.prf file. 
   -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in common.prf (We need both a debug and a release build)
   -# Change the \#ifdef WIN32 in the code in file "PythonQtConversion.cpp" row 676 and 1041 to something else e.g. apaWIN32 so it is NOT true when you compile. 

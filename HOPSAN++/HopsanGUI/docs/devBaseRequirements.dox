@@ -2,8 +2,8 @@
 \page requirements-qt Basic Requirements: Qt Creator, Qt libs and Compilers
 HopsanGUI uses the Qt-libs for the GUI components, and qmake to generate makefiles. We are also using Qt Creator and qmake for the HopsanCore even though it is not using any Qt libraris. You need to install the apropriate Qt-libs and the Qt-Creator IDE from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a>
 
-\section qt-linux gcc in Linux
-On Linux based operationg systems you should use the gcc compiler. Download and install the Qt SDK for Linux. You can use the Qt-libs in you distribution package repository and install Qt-Creator separately but if you want the latest Qt version you should use the SDK.
+\section qt-linux gcc in Ubuntu
+On Linux based operationg systems you should use the gcc compiler. Download and install the Qt SDK for Linux. You can use the Qt-libs in you distribution package repository and install Qt-Creator separately but if you want the latest Qt version you should probably use the SDK. To install gcc (ans some other tools) in Ubuntu run "aptitude install build-essential" or use apt-get if you dont want to use aptitude.
 
 \section qt-mingw minGW (gcc in Windows)
 If you want to use the MinGW open-source compiler you should download the Qt SDK as it comes prepackaged with a patched MinGW suitable for Qt-libs. The libs them selfes are also compiled with MinGW. Make sure that you do not mix minGW versions. You need to use the version that comes with Qt as it is patched to work with Qt.
