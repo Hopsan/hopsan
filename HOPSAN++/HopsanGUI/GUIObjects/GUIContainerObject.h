@@ -143,6 +143,8 @@ public slots:
     void flipHorizontal();
     void flipVertical();
 
+    void collectPlotData();
+
 signals:
         //Selection
     void deselectAllNameText();
@@ -183,6 +185,7 @@ private:
     bool mIsCreatingConnector;
     QGraphicsScene *mpScene;
     double mPasteOffset;
+    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
 
 };
 

@@ -1837,3 +1837,34 @@ void GUIContainerObject::flipVertical()
     }
     emit flipSelectedObjectsVertical();
 }
+
+
+//! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
+void GUIContainerObject::collectPlotData()
+{
+    GUIModelObjectMapT::iterator moit;
+    QList<GUIPort*>::iterator pit;
+    for(moit=mGUIModelObjectMap.begin(); moit!=mGUIModelObjectMap.end(); ++moit)
+    {
+        for(pit=moit.value()->getPortListPtrs().begin(); pit!=moit.value()->getPortListPtrs().end(); ++pit)
+        {
+            QVector<QString> names;
+            QVector<QString> units;
+            getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(moit.value()->getName(), (*pit)->getName(), names, units);
+
+            QVector<QString>::iterator nit;
+            for(nit=names.begin(); nit!=names.end(); ++nit)
+            {
+                QVector<double> data;
+                getCoreSystemAccessPtr()->getPlotData(moit.value()->getName(), (*pit)->getName(), (*nit), data);
+                QMap<QString, QVector<double> > variableMap;
+                variableMap.insert((*nit), data);
+                QMap< QString, QMap<QString, QVector<double> > > portMap;
+                portMap.insert((*pit)->getName(), variableMap);
+                QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > componentMap;
+                componentMap.insert(moit.value()->getName(), portMap);
+                mPlotData.append(componentMap);
+            }
+        }
+    }
+}

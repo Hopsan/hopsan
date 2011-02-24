@@ -79,6 +79,9 @@ public slots:
     void save();
     void saveAs();
 
+private slots:
+    void collectPlotData();
+
 signals:
     void checkMessages();
     void simulationFinished();

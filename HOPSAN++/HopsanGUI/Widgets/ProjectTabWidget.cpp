@@ -42,6 +42,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpSystem = new GUISystem(this, 0);
 
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
 
     emit checkMessages();
 
@@ -243,6 +244,13 @@ void ProjectTab::save()
 void ProjectTab::saveAs()
 {
     saveModel(NEWFILE);
+}
+
+
+//! @brief Slot that tells the current system to collect plot data from core
+void ProjectTab::collectPlotData()
+{
+    this->mpSystem->collectPlotData();
 }
 
 
