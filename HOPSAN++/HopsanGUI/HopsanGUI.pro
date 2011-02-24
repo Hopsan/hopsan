@@ -69,12 +69,14 @@ win32 {
     CONFIG(debug, debug|release) {
         LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_debug
         LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
+        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100915oss/build/windows_ia32_gcc_mingw_debug
         LIBS += -ltbb_debug
     }
     CONFIG(release, debug|release) {
         LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_release
         LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100406oss/build/windows_ia32_gcc_mingw_release
-        LIBS += -ltbb
+        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100915oss/build/windows_ia32_gcc_mingw_release
+         LIBS += -ltbb
     }
 
     #Debug output
