@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.2" hopsanguiversion="0.2.0" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.2" hopsanguiversion="0.2.1" hopsancoreversion="0">
     <system cqs_type="S" name="Position Servo">
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2500" zoom="1"/>
+            <viewport x="2500" y="2620" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <hopsanobjectappearance>
@@ -134,7 +134,19 @@
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="HydraulicPressureSource" name="Prescribed Pressure C">
+            <component typename="SignalGain" name="Gain">
+                <parameters>
+                    <parameter value="0.04" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2461" y="2573" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
                 <parameters>
                     <parameter value="2e+007" name="P"/>
                 </parameters>
@@ -143,19 +155,7 @@
                     <startvalue portname="P1" variable="Pressure" value="2e+007"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2598" y="2636" flipped="0" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalGain" name="Gain">
-                <parameters>
-                    <parameter value="0.01" name="Gain"/>
-                </parameters>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2468" y="2573" flipped="0" a="0"/>
+                    <pose x="2598.9216" y="2627" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -237,7 +237,7 @@
             <connect endport="P2" endcomponent="Translational Mass" startport="P1" startcomponent="Position Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2791" y="2427.5"/>
+                        <coordinate x="2791" y="2433"/>
                         <coordinate x="2767" y="2468"/>
                     </coordinates>
                     <geometries>
@@ -248,7 +248,7 @@
             <connect endport="in2" endcomponent="Subtract" startport="out" startcomponent="Position Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2791" y="2402.5"/>
+                        <coordinate x="2791" y="2397"/>
                         <coordinate x="2791" y="2385"/>
                         <coordinate x="2413" y="2385"/>
                         <coordinate x="2413" y="2560.5"/>
@@ -271,22 +271,11 @@
                     </geometries>
                 </hopsangui>
             </connect>
-            <connect endport="PP" endcomponent="4/3 Servo Valve" startport="P1" startcomponent="Prescribed Pressure C">
+            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2598" y="2624"/>
-                        <coordinate x="2598.9216" y="2588"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="4/3 Servo Valve" startport="out" startcomponent="Gain">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2480.5" y="2573"/>
-                        <coordinate x="2509.5" y="2573"/>
+                        <coordinate x="2365" y="2573"/>
+                        <coordinate x="2400.5" y="2573"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -297,18 +286,29 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2425.5" y="2573"/>
-                        <coordinate x="2455.5" y="2573"/>
+                        <coordinate x="2448.5" y="2573"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
                 </hopsangui>
             </connect>
-            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step">
+            <connect endport="in" endcomponent="4/3 Servo Valve" startport="out" startcomponent="Gain">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2365" y="2573"/>
-                        <coordinate x="2400.5" y="2573"/>
+                        <coordinate x="2473.5" y="2573"/>
+                        <coordinate x="2509.5" y="2573"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve" startport="P1" startcomponent="C-type Pressure Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2598.9216" y="2615"/>
+                        <coordinate x="2598.9216" y="2588"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>

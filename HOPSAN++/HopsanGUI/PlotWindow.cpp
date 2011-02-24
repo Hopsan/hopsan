@@ -1428,3 +1428,45 @@ void PlotWindow::close()
 
     QMainWindow::close();
 }
+
+
+
+
+
+//! Stuff for new plot window
+
+PlotTabWidget::PlotTabWidget(QWidget *parent)
+    : QTabWidget(parent)
+{
+    //! @todo Write something here...
+}
+
+
+
+PlotTab::PlotTab(PlotTabWidget *parent)
+    : QWidget(parent)
+{
+    //! @todo Write something here...
+}
+
+
+
+PlotCurve::PlotCurve(QString componentName, QString portName, QString dataName, QVector<double> dataVector, QVector<double> timeVector, PlotTab *parent)
+{
+    mComponentName = componentName;
+    mPortName = portName;
+    mDataName = dataName;
+    mDataVector = dataVector;
+    mTimeVector = timeVector;
+
+    mpPlotInfoBox = new PlotInfoBox();
+
+    //! @todo Write more here...
+}
+
+
+
+PlotInfoBox::PlotInfoBox()
+{
+    //! @todo Use the existing version
+}

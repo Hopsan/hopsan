@@ -139,7 +139,7 @@ namespace hopsan {
             double Zc2 = (*mpND_Zc2);
             double c3 = (*mpND_c3);
 
-            double speed1, qmaxl, qminl, lpe, gamma, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax, v;
+            double speed1, qmaxl, qminl, lpe, gamma, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
 
             speed1 = speed;
             if (p2 < 1.0) { p2 = 1.0; }
@@ -161,9 +161,9 @@ namespace hopsan {
             ymin = qminl * denom;
             vmax = qmaxl * denom * sqrt(fabs(p2 - 1e5) / (pnom * tp));
             vmin = -qmaxl * denom * sqrt(fabs(p2 - 1e5) / (pnom * tm));
-            qp = fltppu(v, u, y0, wp1, g1, g2, ymin, ymax, vmin, vmax) / denom;
-            double z = qp / qmaxl;
-            double vz = v / (qmaxl * denom);
+            qp = fltppu(u, y0, wp1, g1, g2, ymin, ymax, vmin, vmax) / denom;
+//            double z = qp / qmaxl;
+//            double vz = v / (qmaxl * denom);
 
             //Calucluate pressures
             p1 = c1e - Zc1 * gamma * qp;
@@ -191,12 +191,13 @@ namespace hopsan {
 
         //High pass filter times an integration, with separate minimum and maximum values for input and output variables. Converted from old Hopsan.
 
-        double fltppu(double v, double u, double y0, double w01,
+        double fltppu(double u, double y0, double w01,
                       double c1, double c2, double ymin, double ymax, double vmin,
                       double vmax)
         {
 
                 /* Local variables */
+            double v;
             double ret_val;
             double alf1, alf2, g, ws;
 

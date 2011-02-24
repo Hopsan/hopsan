@@ -135,4 +135,74 @@ private:
     void setActiveMarker(QwtPlotMarker *marker);
 };
 
+
+//! Stuff bellow are for new plot window
+
+
+class PlotCurve;
+class PlotInfoBox;
+
+//! @brief Tab widget for plots in plot window
+//! @todo Not sure if this is needed
+class PlotTabWidget : public QTabWidget
+{
+    Q_OBJECT
+public:
+    PlotTabWidget(QWidget *parent);
+};
+
+
+//! @brief Plot window tab containing a plot area with plot curves
+class PlotTab : public QWidget
+{
+    Q_OBJECT
+public:
+    PlotTab(PlotTabWidget *parent);
+private:
+    QList<PlotCurve> mPlotCurves;
+    QVector<double> mSpecialXAxis;
+    QColor mBackgroundColor;
+    bool mShowGrid();
+};
+
+
+//! @brief Class describing a plot curve in plot window
+class PlotCurve
+{
+public:
+    PlotCurve(QString componentName, QString portName, QString dataName, QVector<double> dataVector, QVector<double> timeVector, PlotTab *parent);
+    int getGeneration();
+    QString getComponentName();
+    QString getPortName();
+    QString getDataName();
+    QString getDataUnit();
+    QVector<double> getDataVector();
+    QVector<double> getTimeVector();
+    int setGeneration();
+    void setDataVector(QVector<double>);
+    void setTimeVector(QVector<double>);
+    void setLineWidth(int);
+    void setLineColor(QString colorName);
+private:
+    int mGeneration;
+    QString mComponentName;
+    QString mPortName;
+    QString mDataName;
+    QVector<double> mDataVector;
+    QVector<double> mTimeVector;
+    QString mLineColorName;
+    int mLineWidth;
+    int mAxisY;
+    PlotInfoBox *mpPlotInfoBox;
+};
+
+
+//! @todo Use the already created one
+class PlotInfoBox : public QWidget
+{
+    Q_OBJECT
+public:
+    PlotInfoBox();
+};
+
 #endif // PLOTWINDOW_H

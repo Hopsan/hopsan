@@ -134,6 +134,7 @@ class HydraulicCylinderC : public ComponentC
             qi2 = A2 * vi3;
             ci1 = p1 - Zc1 * (qi1 - cLeak * (p1 - p2));
             ci2 = p2 - Zc2 * (qi2 - cLeak * (p2 - p1));
+
             c3 = f3;
             Zx3 = A1 * A1 * Zc1 + A2 * A2 * Zc2 + bp;
 
@@ -149,7 +150,7 @@ class HydraulicCylinderC : public ComponentC
         void simulateOneTimestep()
         {
             //Declare local variables;
-            double pi1, pi2, clim, zlim, qi1, qi2, V1, V2, xi3, vi3, c1_0, ci1_0, c2_0, ci2_0, cp1_0, cp2_0, cp1, cp2;
+            double pi1, pi2, clim, zlim, qi1, qi2, V1, V2, xi3, vi3, c1_0, ci1_0, c2_0, ci2_0, cp1_0, cp2_0;
             double p1, q1, p2, q2, c1, c2, x3, v3, c3, Zc1, Zc2, Zx3;
 
             //Read variables from nodes
@@ -203,12 +204,12 @@ class HydraulicCylinderC : public ComponentC
             cp1_0 = (p1 + Zc1*q1 + pi1 + Zc1*qi1) / 2;
             if (p2 < 0.0) { p2 = 0.0; }
             cp2_0 = (p2 + Zc2*q2 + pi2 + Zc2*qi2) / 2;
-            cp1 = (1 - alfa) * cp1_0 + alfa * cp1;
-            cp2 = (1 - alfa) * cp2_0 + alfa * cp2;
+            ci1 = (1 - alfa) * cp1_0 + alfa * ci1;
+            ci2 = (1 - alfa) * cp2_0 + alfa * ci2;
 
             //Calculate force (with limitation function)
             this->limitStroke(&clim, &zlim, &xi3, &vi3, &zlim0, &sl, mTime, mTimestep);
-            c3 = cp1*A1 - cp2*A2 + clim;
+            c3 = ci1*A1 - ci2*A2 + clim;
             Zx3 = A1*A1 * Zc1 + A2*A2 * Zc2 + bp + zlim;
 
             //Write to nodes

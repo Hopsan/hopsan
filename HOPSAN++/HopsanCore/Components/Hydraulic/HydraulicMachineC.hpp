@@ -132,34 +132,7 @@ namespace hopsan {
             qp1 = dpe * w3;
             qp2 = -dpe * w3;
 
-            std::stringstream ss;
-
-//            ss.flush();
-//            ss << "p1 = " << p1;
-//            this->addDebugMessage(ss.str());
-
-//            ss.flush();
-//            ss << "Zc1 = " << Zc1;
-//            this->addDebugMessage(ss.str());
-
-//            ss.flush();
-//            ss << "qp1 = " << qp1;
-//            this->addDebugMessage(ss.str());
-
-//            ss.flush();
-//            ss << "cim = " << cim;
-//            this->addDebugMessage(ss.str());
-
-//            ss.flush();
-//            ss << "p2 = " << p2;
-//            this->addDebugMessage(ss.str());
-
             cp1 = p1 - Zc1 * (qp1 - cim * (p1 - p2));
-
-//            ss.flush();
-//            ss << "cp1 = " << cp1;
-//            this->addDebugMessage(ss.str());
-
             cp2 = p2 - Zc2 * (qp2 - cim * (p2 - p1));
             mDelayedCp1.initialize(1, cp1);
             mDelayedCp2.initialize(1, cp2);
@@ -273,8 +246,10 @@ namespace hopsan {
             // Effective characteristics at the motor taking account for cavitation
             cp10e = 2*pm1e - pp1e - Zc1*qp1e;
             cp20e = 2*pm2e - pp2e - Zc2*qp2e;
-            cp1e = alfa*mDelayedCp1e.update(cp1e) + (1 - alfa)*cp10e;
-            cp2e = alfa*mDelayedCp2e.update(cp2e) + (1 - alfa)*cp20e;
+            cp1e = alfa*mDelayedCp1e.getOldest() + (1 - alfa)*cp10e;
+            cp2e = alfa*mDelayedCp2e.getOldest() + (1 - alfa)*cp20e;
+            mDelayedCp1e.update(cp1e);
+            mDelayedCp2e.update(cp2e);
 
                 // Force characteristics
             c3 = (cp1e - cp2e)*dpe;

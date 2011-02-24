@@ -85,7 +85,7 @@ namespace hopsan {
         {
             //Declare local variables
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3;
-            double dp, ble, gamma, c1a, c2a, ct, omega3, phi3, q1a, q2a, q1leak, q2leak;
+            double ble, gamma, c1a, c2a, ct, q1a, q2a, q1leak, q2leak;
 
             //Get variable values from nodes
             c1 = (*mpND_c1);
@@ -105,11 +105,11 @@ namespace hopsan {
             ct = c1a * dp - c2a * dp - c3;
             mIntegrator.setDamping(ble / J * mTimestep);
             mIntegrator.integrate(ct/J);
-            omega3 = mIntegrator.valueFirst();
-            phi3 = mIntegrator.valueSecond();
+            w3 = mIntegrator.valueFirst();
+            a3 = mIntegrator.valueSecond();
 
             //Ideal Flow
-            q1a = -dp * omega3;
+            q1a = -dp * w3;
             q2a = -q1a;
             p1 = c1a + gamma * Zc1 * q1a;
             p2 = c2a + gamma * Zc2 * q2a;
@@ -126,7 +126,7 @@ namespace hopsan {
             if (p1 < 0.0) { p1 = 0.0; }
             if (p2 < 0.0) { p2 = 0.0; }
 
-            t3 = c3 + omega3 * Zx3;
+            t3 = c3 + w3 * Zx3;
 
             //Write new values to nodes
             (*mpND_p1) = p1;
