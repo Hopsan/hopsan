@@ -1843,6 +1843,8 @@ void GUIContainerObject::flipVertical()
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
 void GUIContainerObject::collectPlotData()
 {
+    bool timeVectorObtained = false;
+
     GUIModelObjectMapT::iterator moit;
     QList<GUIPort*>::iterator pit;
     for(moit=mGUIModelObjectMap.begin(); moit!=mGUIModelObjectMap.end(); ++moit)
@@ -1865,7 +1867,26 @@ void GUIContainerObject::collectPlotData()
                 QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > componentMap;
                 componentMap.insert(moit.value()->getName(), portMap);
                 mPlotData.append(componentMap);
+
+                if(!timeVectorObtained)
+                {
+                    mTimeVectors.append(QVector<double>::fromStdVector(getCoreSystemAccessPtr()->getTimeVector(moit.value()->getName(), (*pit)->getName())));
+                    timeVectorObtained = true;
+                }
             }
         }
     }
+}
+
+
+
+QVector<double> GUIContainerObject::getTimeVector(int generation)
+{
+    return mTimeVectors.at(generation);
+}
+
+
+QVector<double> GUIContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
+{
+    return mPlotData.at(generation).find(componentName).value().find(portName).value().find(dataName).value();
 }

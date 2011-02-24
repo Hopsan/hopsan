@@ -104,6 +104,9 @@ public:
 
     QList<QStringList> mFavoriteParameters;
 
+    QVector<double> getTimeVector(int generation);
+    QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
+
 public slots:
         //Selection
     void selectAll();
@@ -186,6 +189,7 @@ private:
     QGraphicsScene *mpScene;
     double mPasteOffset;
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
+    QList< QVector<double> > mTimeVectors;
 
 };
 

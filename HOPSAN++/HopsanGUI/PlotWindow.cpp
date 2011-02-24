@@ -1461,18 +1461,88 @@ PlotTab::PlotTab(PlotTabWidget *parent)
 
 
 
-PlotCurve::PlotCurve(QString componentName, QString portName, QString dataName, QVector<double> dataVector, QVector<double> timeVector, PlotTab *parent)
+PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QString dataName, PlotTab *parent)
 {
+    mGeneration = generation;
     mComponentName = componentName;
     mPortName = portName;
     mDataName = dataName;
-    mDataVector = dataVector;
-    mTimeVector = timeVector;
+
+    mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(generation, componentName, portName, dataName);
+    mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(generation);
 
     mpPlotInfoBox = new PlotInfoBox();
 
     //! @todo Write more here...
+    //! @todo Add the actual QwtPlotCurve (or inherit it?)
 }
+
+
+int PlotCurve::getGeneration()
+{
+    return mGeneration;
+}
+
+
+QString PlotCurve::getComponentName()
+{
+    return mComponentName;
+}
+
+
+QString PlotCurve::getPortName()
+{
+    return mPortName;
+}
+
+
+QString PlotCurve::getDataName()
+{
+    return mDataName;
+}
+
+
+QString PlotCurve::getDataUnit()
+{
+    return mDataUnit;
+}
+
+
+QVector<double> PlotCurve::getDataVector()
+{
+    return mDataVector;
+}
+
+
+QVector<double> PlotCurve::getTimeVector()
+{
+    return mTimeVector;
+}
+
+
+void PlotCurve::setGeneration(int generation)
+{
+    mGeneration = generation;
+    mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
+    mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(mGeneration);
+
+    //! @todo Redraw the actual plot curve somehow
+}
+
+
+void PlotCurve::setLineWidth(int lineWidth)
+{
+    mLineWidth = lineWidth;
+    //! @todo Actually change the width of the line
+}
+
+
+void PlotCurve::setLineColor(QString colorName)
+{
+    mLineColorName = colorName;
+    //! @todo Actually change the color of the curve
+}
+
 
 
 

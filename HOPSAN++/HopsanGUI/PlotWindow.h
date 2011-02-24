@@ -170,7 +170,7 @@ private:
 class PlotCurve
 {
 public:
-    PlotCurve(QString componentName, QString portName, QString dataName, QVector<double> dataVector, QVector<double> timeVector, PlotTab *parent);
+    PlotCurve(int generation, QString componentName, QString portName, QString dataName, PlotTab *parent);
     int getGeneration();
     QString getComponentName();
     QString getPortName();
@@ -178,9 +178,8 @@ public:
     QString getDataUnit();
     QVector<double> getDataVector();
     QVector<double> getTimeVector();
-    int setGeneration();
-    void setDataVector(QVector<double>);
-    void setTimeVector(QVector<double>);
+    void setGeneration(int generation);
+    void setDataUnit();
     void setLineWidth(int);
     void setLineColor(QString colorName);
 private:
@@ -188,6 +187,7 @@ private:
     QString mComponentName;
     QString mPortName;
     QString mDataName;
+    QString mDataUnit;
     QVector<double> mDataVector;
     QVector<double> mTimeVector;
     QString mLineColorName;

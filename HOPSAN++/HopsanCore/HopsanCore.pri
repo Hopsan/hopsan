@@ -148,4 +148,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicTankC.hpp \
     Components/Hydraulic/HydraulicTankQ.hpp \
     Components/Hydraulic/HydraulicPressureSourceC.hpp \
-    Components/Mechanic/MechanicTorqueSensor.hpp
+    Components/Mechanic/MechanicTorqueSensor.hpp \
+    Components/Hydraulic/Hydraulic22DirectionalValve.hpp
