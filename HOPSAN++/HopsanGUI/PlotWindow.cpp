@@ -536,12 +536,17 @@ void PlotWindow::exportGNUPLOT()
     }
 
     QwtPlotCurve *pSelectedCurve;
+    pSelectedCurve = 0; //this will supress a warning message
 
     for(int i=0; i<mpCurves.size(); ++i)
     {
         if (selectedAction->text() == mpCurves[i]->title().text())
         {
             pSelectedCurve = mpCurves[i];
+        }
+        else
+        {
+            assert(false);
         }
     }
 
@@ -644,12 +649,17 @@ void PlotWindow::setLineColor()
     }
 
     QwtPlotCurve *pSelectedCurve;
+    pSelectedCurve = 0; //This will supress a warning
 
     for(int i=0; i<mpCurves.size(); ++i)
     {
         if (selectedAction->text() == mpCurves[i]->title().text())
         {
             pSelectedCurve = mpCurves[i];
+        }
+        else
+        {
+            assert(false);
         }
     }
 

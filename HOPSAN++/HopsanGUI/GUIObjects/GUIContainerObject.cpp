@@ -905,6 +905,7 @@ GUIModelObject *GUIContainerObject::getGUIModelObject(QString name)
 GUIConnector* GUIContainerObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
     GUIConnector *item;
+    item = 0;
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
         if((mSubConnectorList[i]->getStartComponentName() == startComp) &&

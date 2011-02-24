@@ -450,6 +450,8 @@ void GUIBoxWidget::updateWidgetFromDialog()
         selectedStyle = Qt::DotLine;
     else if(mpStyleBoxInDialog->currentIndex() == 3)
         selectedStyle = Qt::DashDotLine;
+    else
+        selectedStyle = Qt::SolidLine;      //This shall never happen, but will supress a warning message
 
     mpParentContainerObject->mUndoStack->newPost();
     mpParentContainerObject->mUndoStack->registerModifiedBoxWidgetStyle(mWidgetIndex, mpRectItem->pen().width(), mpRectItem->pen().style(), mpRectItem->pen().color(),

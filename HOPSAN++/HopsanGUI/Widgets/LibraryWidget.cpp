@@ -563,7 +563,7 @@ void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
     QMenu menu;
 
     QAction *loadAction;
-    QAction *unloadAction;
+    QAction *unloadAction = new QAction(this);
     loadAction = menu.addAction(QString("Load External Library"));
 
 

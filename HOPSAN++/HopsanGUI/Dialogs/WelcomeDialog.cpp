@@ -137,6 +137,8 @@ bool WelcomeDialog::focusNextPrevChild(bool next)
 
     qDebug() << "Key pressed!";
     this->updateGraphics();
+
+    return true;    //Silly, but will supress warning message
 }
 
 

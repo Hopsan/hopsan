@@ -402,7 +402,7 @@ void UndoStack::undoOneStep()
         }
     }
 
-    for(size_t i=0; i<addedWidgetList.size(); ++i)
+    for(int i=0; i<addedWidgetList.size(); ++i)
     {
         mpParentContainerObject->mWidgetMap.find(addedWidgetList.at(i)).value()->deleteMe(NOUNDO);
     }

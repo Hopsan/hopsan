@@ -211,6 +211,8 @@ public slots:
         {
             return o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getParameterValue(parName);
         }
+        assert(false);
+        return 0;
     }
 
     void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
