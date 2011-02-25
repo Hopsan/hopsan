@@ -187,3 +187,30 @@ double hopsan::dxLimit2(double x, double sx, double xmin, double xmax)
     if (x <= xmin && sx <= 0.0) { return 0.0; }
     return 1.0;
 }
+
+//! @brief Wrapper function, for using Mathematica syntax
+double hopsan::Power(double x, double y)
+{
+    return pow(x, y);
+}
+
+
+//! @brief Wrapper function, for using Mathematica syntax
+double hopsan::Sin(double x)
+{
+    return sin(x);
+}
+
+
+//! @brief Wrapper function, for using Mathematica syntax
+double hopsan::Cos(double x)
+{
+    return cos(x);
+}
+
+
+//! @brief Wrapper function, for using Mathematica syntax
+double hopsan::Tan(double x)
+{
+    return tan(x);
+}
