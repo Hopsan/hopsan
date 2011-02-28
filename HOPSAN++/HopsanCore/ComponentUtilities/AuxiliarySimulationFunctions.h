@@ -34,10 +34,13 @@ namespace hopsan {
     double DLLIMPORTEXPORT dxLimit(double x, double xmin, double xmax);
     double DLLIMPORTEXPORT limit2(double x, double sx, double xmin, double xmax);
     double DLLIMPORTEXPORT dxLimit2(double x, double sx, double xmin, double xmax);
+
+    //! Wrapped functions for Mathematica syntax
     double DLLIMPORTEXPORT Power(double x, double y);
     double DLLIMPORTEXPORT Sin(double x);
     double DLLIMPORTEXPORT Cos(double x);
     double DLLIMPORTEXPORT Tan(double x);
+    double DLLIMPORTEXPORT Sqrt(double x);
 
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H
