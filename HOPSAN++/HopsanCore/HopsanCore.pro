@@ -27,15 +27,18 @@ win32 {
     #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
     TBB_PATH = $$selectPath($$(TBB_PATH), $$TBB_PATHS, "tbb")
 
-    INCLUDEPATH += $${TBB_PATH}/include/tbb
+    exists($${TBB_PATH}) {
+        INCLUDEPATH += $${TBB_PATH}/include/tbb
 
-    CONFIG(debug, debug|release) {
-        LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_debug
-        LIBS += -ltbb_debug
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_release
-        LIBS += -ltbb
+        CONFIG(debug, debug|release) {
+            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_debug
+            LIBS += -ltbb_debug
+        }
+        CONFIG(release, debug|release) {
+            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_release
+            LIBS += -ltbb
+        }
+        DEFINES += USETBB
     }
 
     #Debug output

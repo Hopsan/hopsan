@@ -20,7 +20,7 @@
 #include "CoreUtilities/FileAccess.h"
 #include "Port.h"
 
-#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
+//#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb.h"
 #include "tick_count.h"
