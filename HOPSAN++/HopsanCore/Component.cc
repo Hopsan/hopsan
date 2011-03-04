@@ -13,6 +13,7 @@
 #include <sstream>
 #include <cassert>
 #include <math.h>
+#include <limits>
 #include <stdlib.h>
 #include "stdio.h"
 #include "Component.h"
@@ -20,7 +21,6 @@
 #include "CoreUtilities/FileAccess.h"
 #include "Port.h"
 
-//#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb.h"
 #include "tick_count.h"
@@ -3491,7 +3491,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
 #else
     //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
-void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT)
+void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nThreads)
 {
     this->simulate(startT, stopT);
 }

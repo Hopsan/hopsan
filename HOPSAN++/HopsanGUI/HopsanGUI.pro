@@ -65,23 +65,27 @@ win32 {
     INCLUDEPATH += $${PYTHON_PATH}/include
     LIBS += -L$${PYTHON_PATH}/libs
 
-    #Temporary hack
-    CONFIG(debug, debug|release) {
-        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_debug
-        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
-        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100915oss/build/windows_ia32_gcc_mingw_debug
-        LIBS += -ltbb_debug
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20101215oss/build/windows_ia32_gcc_mingw_release
-        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100406oss/build/windows_ia32_gcc_mingw_release
-        LIBS += -L$${PWD}/../ExternalDependencies/tbb30_20100915oss/build/windows_ia32_gcc_mingw_release
-         LIBS += -ltbb
+    #Temporary TBB hack, should not do this as gui does not require TBB, only here to get TBB into RUNTIMEPATH
+    #Set default tbb path alternatives, higher up is prefered
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20101215oss
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100915oss
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100406oss
+    #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
+    TBB_PATH = $$selectPath($$(TBB_PATH), $$TBB_PATHS, "tbb")
+    exists($${TBB_PATH}) {
+        CONFIG(debug, debug|release) {
+            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_debug
+            LIBS += -ltbb_debug
+        }
+        CONFIG(release, debug|release) {
+            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_release
+            LIBS += -ltbb
+        }
     }
 
     #Debug output
-    #message(Includepath is $$INCLUDEPATH)
-    #message(Libs is $${LIBS})
+    #message(GUI Includepath is $$INCLUDEPATH)
+    #message(GUI Libs is $${LIBS})
 }
 RESOURCES += \  
     Resources.qrc

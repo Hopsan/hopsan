@@ -26,7 +26,6 @@ win32 {
     TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100406oss
     #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
     TBB_PATH = $$selectPath($$(TBB_PATH), $$TBB_PATHS, "tbb")
-
     exists($${TBB_PATH}) {
         INCLUDEPATH += $${TBB_PATH}/include/tbb
 
@@ -44,6 +43,7 @@ win32 {
     #Debug output
     #message(Includepath is $$INCLUDEPATH)
     #message(Libs is $${LIBS})
+    #message(Defines is $${DEFINES})
 }
 unix { 
     LIBS += -ltbb
