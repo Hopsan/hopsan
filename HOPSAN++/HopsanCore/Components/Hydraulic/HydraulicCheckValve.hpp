@@ -47,7 +47,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            registerParameter("Ks", "Restrictor Coefficient", "-", mKs);
+            registerParameter("Ks", "Restrictor Coefficient", "[]", mKs);
         }
 
 

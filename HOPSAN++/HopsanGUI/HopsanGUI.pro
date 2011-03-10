@@ -32,7 +32,7 @@ LIBS += -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
-    LIBS += -Wl,-rpath,./,../lib
+    LIBS += -Wl,-rpath,./
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
     INCLUDEPATH += /usr/include/python2.6

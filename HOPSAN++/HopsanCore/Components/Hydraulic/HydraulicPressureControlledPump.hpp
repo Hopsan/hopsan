@@ -7,6 +7,7 @@
 //! Written by Petter Krus 9005617
 //! Translated to HOPSAN NG by Robert Braun 101220
 //!
+//$Id$
 
 #ifndef HYDRAULICPRESSURECONTROLLEDPUMP_HPP_INCLUDED
 #define HYDRAULICPRESSURECONTROLLEDPUMP_HPP_INCLUDED
@@ -60,17 +61,17 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPREF = addPowerPort("PREF", "NodeHydraulic");
 
-            registerParameter("pdif", "Reference pressure difference", "Pa", pdif);
-            registerParameter("speed", "Pump speed", "rad/s", speed);
-            registerParameter("qmax", "Nomainal maximal flow", "m^3/s", qmax);
-            registerParameter("qmin", "Nominal minimal flow", "m^3/s", qmin);
-            registerParameter("lp", "Regulator inductance at nominal pressure", "-", lp);
-            registerParameter("rp", "Static characteristic at nominal pressure", "-", rp);
-            registerParameter("wp1", "Lead frequency of regulator", "rad/s", wp1);
-            registerParameter("Kcp", "Leakage coefficient of pump", "-", Kcp);
-            registerParameter("taov", "Time constant of control valve", "s", taov);
-            registerParameter("tp", "Time from min to full displacement", "s", tp);
-            registerParameter("tm", "Time from full to min displacement", "s", tm);
+            registerParameter("pdif", "Reference pressure difference", "[Pa]", pdif);
+            registerParameter("speed", "Pump speed", "[rad/s]", speed);
+            registerParameter("qmax", "Nomainal maximal flow", "[m^3/s]", qmax);
+            registerParameter("qmin", "Nominal minimal flow", "[m^3/s]", qmin);
+            registerParameter("lp", "Regulator inductance at nominal pressure", "[]", lp);
+            registerParameter("rp", "Static characteristic at nominal pressure", "[]", rp);
+            registerParameter("wp1", "Lead frequency of regulator", "[rad/s]", wp1);
+            registerParameter("Kcp", "Leakage coefficient of pump", "[]", Kcp);
+            registerParameter("taov", "Time constant of control valve", "[s]", taov);
+            registerParameter("tp", "Time from min to full displacement", "[s]", tp);
+            registerParameter("tm", "Time from full to min displacement", "[s]", tm);
         }
 
 

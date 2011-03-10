@@ -41,7 +41,7 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("Gain", "Gain value", "-", mGain);
+            registerParameter("Gain", "Gain value", "[-]", mGain);
         }
 
 

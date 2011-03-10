@@ -7,7 +7,6 @@
 //! Written by Petter Krus 901015
 //! Revised by Petter Krus 920324
 //! Translated to HOPSAN NG by Robert Braun 100122
-
 //$Id$
 
 #ifndef HYDRAULICPRESSURERELIEFVALVE_HPP_INCLUDED

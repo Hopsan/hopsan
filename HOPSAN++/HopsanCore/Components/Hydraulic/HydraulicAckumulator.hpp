@@ -55,11 +55,11 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");     //External port
             mpOut = addWritePort("out", "NodeSignal");     //Internal pressure output
 
-            registerParameter("Pmin", "Minimum Internal Pressure", "Pa", Pmin);
-            registerParameter("Vtot", "Total Volume", "m^3", Vtot);
-            registerParameter("Betae", "Effective Bulk Modulus", "Pa", Betae);
-            registerParameter("Kappa", "Polytropic Exponent", "-", Kappa);
-            registerParameter("Kce", "Flow-Pressure Coefficient", "(m^3/s)/Pa", Kce);
+            registerParameter("Pmin", "Minimum Internal Pressure", "[Pa]", Pmin);
+            registerParameter("Vtot", "Total Volume", "[m^3]", Vtot);
+            registerParameter("Betae", "Effective Bulk Modulus", "[Pa]", Betae);
+            registerParameter("Kappa", "Polytropic Exponent", "[-]", Kappa);
+            registerParameter("Kce", "Flow-Pressure Coefficient", "[(m^3/s)/Pa]", Kce);
         }
 
 

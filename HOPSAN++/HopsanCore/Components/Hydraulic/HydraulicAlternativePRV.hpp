@@ -65,7 +65,7 @@ namespace hopsan {
             registerParameter("pilotarea", "Working Area of Pilot Pressure", "[m^2]", mPilotArea);
             registerParameter("k", "Steady State Characheristics of Spring", "[N/m]", mK);
             registerParameter("c", "Steady State Damping Coefficient", "[Ns/m]", mC);
-            registerParameter("m", "Ineretia of Spool", "kg", mMass);
+            registerParameter("m", "Ineretia of Spool", "[kg]", mMass);
             registerParameter("xhyst", "Hysteresis of Spool Position", "[m]", mXhyst);
             registerParameter("xmax", "Maximum Spool Position", "[m]", mXmax);
 

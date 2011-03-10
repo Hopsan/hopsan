@@ -53,9 +53,9 @@ namespace hopsan {
 
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("BaseValue", "Base Value", "-", mBaseValue);
-            registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
-            registerParameter("StepTime", "Step Time", "-", mStepTime);
+            registerParameter("BaseValue", "Base Value", "[-]", mBaseValue);
+            registerParameter("Amplitude", "Amplitude", "[-]", mAmplitude);
+            registerParameter("StepTime", "Step Time", "[-]", mStepTime);
         }
 
 

@@ -79,7 +79,7 @@ class HydraulicCylinderC : public ComponentC
             registerParameter("V02", "Dead Volume in Chamber 2", "[m^3]", V02);
             registerParameter("bp", "Viscous Friction", "[Ns/m]", bp);
             registerParameter("betae", "Bulk Modulus", "[Pa]", betae);
-            registerParameter("cLeak", "Leakage Coefficient", "-", cLeak);
+            registerParameter("cLeak", "Leakage Coefficient", "[]", cLeak);
 
             setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
             setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);

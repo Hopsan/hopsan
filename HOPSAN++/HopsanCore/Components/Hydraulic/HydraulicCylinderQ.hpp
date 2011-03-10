@@ -77,13 +77,13 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
-            registerParameter("Area1", "Piston Area 1", "m^2", mArea1);
-            registerParameter("Area2", "Piston Area 2", "m^2", mArea2);
-            registerParameter("Stroke", "Stroke", "m", mStroke);
-            registerParameter("Bp", "Viscous Friction Coefficient of Piston", "Ns/m", mBp);
-            registerParameter("Mass", "Inertia Load", "kg", mMass);
-            registerParameter("Bl", "Viscous Friction of Load", "Ns/m", mBl);
-            registerParameter("Kl", "Stiffness of Load", "N/m", mKl);
+            registerParameter("Area1", "Piston Area 1", "[m^2]", mArea1);
+            registerParameter("Area2", "Piston Area 2", "[m^2]", mArea2);
+            registerParameter("Stroke", "Stroke", "[m]", mStroke);
+            registerParameter("Bp", "Viscous Friction Coefficient of Piston", "[Ns/m]", mBp);
+            registerParameter("Mass", "Inertia Load", "[kg]", mMass);
+            registerParameter("Bl", "Viscous Friction of Load", "[Ns/m]", mBl);
+            registerParameter("Kl", "Stiffness of Load", "[N/m]", mKl);
         }
 
 

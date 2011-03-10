@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef SIGNALDEADZONE_HPP_INCLUDED
 #define SIGNALDEADZONE_HPP_INCLUDED
 
@@ -34,8 +36,8 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("StartDead", "Start of Dead Zone", "-", mStartDead);
-            registerParameter("EndDead", "End of Dead Zone", "-", mEndDead);
+            registerParameter("StartDead", "Start of Dead Zone", "[-]", mStartDead);
+            registerParameter("EndDead", "End of Dead Zone", "[-]", mEndDead);
         }
 
         void initialize()

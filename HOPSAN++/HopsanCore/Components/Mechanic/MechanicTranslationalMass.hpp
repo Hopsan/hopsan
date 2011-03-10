@@ -40,8 +40,8 @@ namespace hopsan {
             //Set member attributes
             mTypeName = "MechanicTranslationalMass";
             m = 1.0;
-            B    = 10;
-            k   = 0.0;
+            B = 10;
+            k = 0.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");

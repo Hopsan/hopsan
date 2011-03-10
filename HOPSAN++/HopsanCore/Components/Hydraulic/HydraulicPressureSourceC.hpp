@@ -37,13 +37,13 @@ namespace hopsan {
         HydraulicPressureSourceC(const std::string name) : ComponentC(name)
         {
             mTypeName = "HydraulicPressureSourceC";
-            p       = 1.0e5;
-            Zc             = 0.0;
+            p         = 1.0e5;
+            Zc        = 0.0;
 
             mpIn = addReadPort("In", "NodeSignal", Port::NOTREQUIRED);
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
-            registerParameter("P", "Default pressure", "Pa", p);
+            registerParameter("P", "Default pressure", "[Pa]", p);
 
             setStartValue(mpP1, NodeHydraulic::PRESSURE, p);
             setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);

@@ -51,10 +51,10 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
 
-            registerParameter("Dp", "Displacement", "m^3/rev", dp);
-            registerParameter("Bm", "Viscous Friction", "?", Bm);       //! @todo Figure out these units
-            registerParameter("Cim", "Leakage Coefficient", "?", cim);
-            registerParameter("J", "Inerteia Load", "?", J);
+            registerParameter("Dp", "Displacement", "[m^3/rev]", dp);
+            registerParameter("Bm", "Viscous Friction", "[Nm/rad]", Bm);       //! @todo Figure out these units
+            registerParameter("Cim", "Leakage Coefficient", "[]", cim);
+            registerParameter("J", "Inerteia Load", "[kg*m]", J);
 
         }
 

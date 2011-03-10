@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef HYDRAULICVARIABLEDISPLACEMENTPUMP_HPP_INCLUDED
 #define HYDRAULICVARIABLEDISPLACEMENTPUMP_HPP_INCLUDED
 
@@ -41,10 +43,10 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("Speed", "Angular Velocity", "rad/s", n);
-            registerParameter("Dp", "Displacement", "m^3/rev", dp);
-            registerParameter("Kcp", "Leakage Coefficient", "(m^3/s)/Pa", Kcp);
-            registerParameter("eps", "Displacement Setting", "-", eps);
+            registerParameter("Speed", "Angular Velocity", "[rad/s]", n);
+            registerParameter("Dp", "Displacement", "[m^3/rev]", dp);
+            registerParameter("Kcp", "Leakage Coefficient", "[(m^3/s)/Pa]", Kcp);
+            registerParameter("eps", "Displacement Setting", "[-]", eps);
         }
 
 
