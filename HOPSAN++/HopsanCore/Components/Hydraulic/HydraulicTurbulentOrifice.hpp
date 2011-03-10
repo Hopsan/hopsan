@@ -6,6 +6,8 @@
 //! @brief Contains a Hydraulic Turbulent Orifice
 //! @ingroup HydraulicComponents
 //!
+//$Id$
+
 #ifndef HYDRAULICTURBULENTORIFICE_HPP_INCLUDED
 #define HYDRAULICTURBULENTORIFICE_HPP_INCLUDED
 
@@ -51,7 +53,7 @@ namespace hopsan {
             mpIn = addReadPort("A", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("Cq", "Flow coefficient", "[-]", Cq);
-            registerParameter("A", "Area", "m^3", A);
+            registerParameter("A", "Area", "[m^2]", A);
         }
 
 
