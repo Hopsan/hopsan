@@ -30,7 +30,7 @@
 #include "GUIWidgets.h"
 #include "GUISystem.h"
 
-#include <float.h>
+#include <limits>
 #include <QDomElement>
 
 
@@ -195,8 +195,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     double val;
 
     //Set the initial values to be overwriten by the if bellow
-    //! @todo maybe declare these or something like really big number in HopsanGUI to avoid needing to include float.h
-    double xMin=FLT_MAX, xMax=FLT_MIN, yMin=FLT_MAX, yMax=FLT_MIN;
+    double xMin=std::numeric_limits<double>::max(), xMax=-xMin, yMin=xMin, yMax=xMax;
     for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {
         //if(moit.value()->type() == GUICONTAINERPORT)
