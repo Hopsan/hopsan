@@ -119,6 +119,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
     cfampND_ct->registerCreatorFunction("MechanicTorqueTransformer", MechanicTorqueTransformer::Creator);
     cfampND_ct->registerCreatorFunction("MechanicAngularVelocityTransformer", MechanicAngularVelocityTransformer::Creator);
     cfampND_ct->registerCreatorFunction("MechanicTranslationalMass", MechanicTranslationalMass::Creator);
+    cfampND_ct->registerCreatorFunction("MechanicTranslationalMassWithLever", MechanicTranslationalMassWithLever::Creator);
     cfampND_ct->registerCreatorFunction("MechanicTranslationalMassWithCoulumbFriction", MechanicTranslationalMassWithCoulumbFriction::Creator);
     cfampND_ct->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
     cfampND_ct->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
