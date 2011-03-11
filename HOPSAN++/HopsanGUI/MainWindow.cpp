@@ -53,7 +53,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Set the name and size of the main window
     this->setObjectName("MainWindow");
-    this->resize(1024,768);
+    int sh = qApp->desktop()->screenGeometry().height();
+    int sw = qApp->desktop()->screenGeometry().width();
+    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
+    int w = this->size().width();
+    int h = this->size().height();
+    int x = (sw - w)/2;
+    int y = (sh - h)/2;
+    this->move(x, y);       //Move window to center of screen
     this->setFont(QFont("Comic Sans"));
     this->setWindowTitle("Hopsan");
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
@@ -129,6 +136,8 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "benchmarking");
+
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-Time");
 
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Subsystem");
 
