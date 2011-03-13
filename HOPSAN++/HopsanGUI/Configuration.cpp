@@ -416,7 +416,7 @@ void Configuration::loadDefaultsFromXml()
 
     mStyleSheet.append("QTreeWidget { background-color: rgb(244,247,251); }");
 
-    mStyleSheet.append("QTextEdit { background-color: rgb(244,247,251); }");
+    mStyleSheet.append("QTextEdit { background-color: rgb(244,247,251); border: 1px solid gray; }");
 
     mStyleSheet.append("QListWidget { background-color: rgb(244,247,251); }");
     mStyleSheet.append("QListWidget:item { background-color: rgb(244,247,251); }");
