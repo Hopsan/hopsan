@@ -37,6 +37,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     this->setObjectName("OptionsDialog");
     this->resize(640,480);
     this->setWindowTitle("Options");
+    this->setPalette(gConfig.getPalette());
 
         //Interface Options
     mpBackgroundColorLabel = new QLabel(tr("Work Area Background Color:"));

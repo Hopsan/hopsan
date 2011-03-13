@@ -135,108 +135,6 @@ void Configuration::saveToXml()
 //! @brief Updates all settings from hopsanconfig.xml
 void Configuration::loadFromXml()
 {
-//    //Apply default values
-//    mInvertWheel = false;
-//    mUseMulticore = false;
-//    mNumberOfThreads = 0;
-//    mEnableProgressBar = true;
-//    mProgressBarStep = 50;
-//    mSnapping = true;
-//    mBackgroundColor = QColor("white");
-//    mAntiAliasing = true;
-//    mLastSessionModels.clear();
-//    mRecentModels.clear();
-
-//    mDefaultUnits.insert("Value", "-");
-//    mDefaultUnits.insert("Pressure", "Pa");
-//    mDefaultUnits.insert("Flow", "m^3/s");
-//    mDefaultUnits.insert("Force", "N");
-//    mDefaultUnits.insert("Position", "m");
-//    mDefaultUnits.insert("Velocity", "m/s");
-//    mDefaultUnits.insert("Torque", "Nm");
-//    mDefaultUnits.insert("Angle", "rad");
-//    mDefaultUnits.insert("Angular Velocity", "rad/s");
-
-//    QMap<QString, QPen> isoPenMap;
-//    QMap<QString, QPen> userPenMap;
-
-//    QMap<QString, QMap<QString, QPen> > powerPenMap;
-//    isoPenMap.insert("Primary", QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap));
-//    isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap));
-//    isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap));
-//    powerPenMap.insert("Iso", isoPenMap);
-//    userPenMap.insert("Primary", QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap));
-//    userPenMap.insert("Active", QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap));
-//    userPenMap.insert("Hover", QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap));
-//    powerPenMap.insert("User", userPenMap);
-//    mPenStyles.insert("Power", powerPenMap);
-
-//    isoPenMap.clear();
-//    userPenMap.clear();
-
-//    QMap<QString, QMap<QString, QPen> > signalPenMap;
-//    isoPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
-//    isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
-//    isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
-//    signalPenMap.insert("Iso", isoPenMap);
-//    userPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
-//    userPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
-//    userPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
-//    signalPenMap.insert("User", userPenMap);
-//    mPenStyles.insert("Signal", signalPenMap);
-
-//    isoPenMap.clear();
-
-//    QMap<QString, QMap<QString, QPen> >nonFinishedPenMap;
-//    isoPenMap.insert("Primary", QPen(QColor("lightslategray"),3,Qt::SolidLine, Qt::RoundCap));
-//    nonFinishedPenMap.insert("Iso", isoPenMap);
-//    nonFinishedPenMap.insert("User", isoPenMap);
-//    mPenStyles.insert("NonFinished", nonFinishedPenMap);
-
-
-//    //Definition of custom units
-//    QMap<QString, double> PressureUnitMap;
-//    PressureUnitMap.insert("Pa", 1);
-//    PressureUnitMap.insert("Bar", 1e-5);
-//    PressureUnitMap.insert("MPa", 1e-6);
-//    PressureUnitMap.insert("psi", 1.450326e-4);
-//    QMap<QString, double> FlowUnitMap;
-//    FlowUnitMap.insert("m^3/s", 1);
-//    FlowUnitMap.insert("l/min", 60000);
-//    QMap<QString, double> ForceUnitMap;
-//    ForceUnitMap.insert("N", 1);
-//    ForceUnitMap.insert("kN", 1e-3);
-//    QMap<QString, double> PositionUnitMap;
-//    PositionUnitMap.insert("m", 1);
-//    PositionUnitMap.insert("mm", 1000);
-//    PositionUnitMap.insert("cm", 100);
-//    PositionUnitMap.insert("inch", 39.3700787);
-//    PositionUnitMap.insert("ft", 3.2808);
-//    QMap<QString, double> VelocityUnitMap;
-//    VelocityUnitMap.insert("m/s", 1);
-//    QMap<QString, double> TorqueUnitMap;
-//    TorqueUnitMap.insert("Nm", 1);
-//    QMap<QString, double> AngleUnitMap;
-//    AngleUnitMap.insert("rad", 1);
-//    AngleUnitMap.insert("deg", 57.296);
-//    QMap<QString, double> AngularVelocityUnitMap;
-//    AngularVelocityUnitMap.insert("rad/s", 1);
-//    AngularVelocityUnitMap.insert("deg/s", 57.296);
-//    AngularVelocityUnitMap.insert("rev/s", 0.159155);
-//    AngularVelocityUnitMap.insert("rpm", 9.549296585);
-//    QMap<QString, double> ValueUnitMap;
-//    ValueUnitMap.insert("-", 1);
-//    mCustomUnits.insert("Pressure", PressureUnitMap);
-//    mCustomUnits.insert("Flow", FlowUnitMap);
-//    mCustomUnits.insert("Force", ForceUnitMap);
-//    mCustomUnits.insert("Position", PositionUnitMap);
-//    mCustomUnits.insert("Velocity", VelocityUnitMap);
-//    mCustomUnits.insert("Torque", TorqueUnitMap);
-//    mCustomUnits.insert("Angle", AngleUnitMap);
-//    mCustomUnits.insert("Angular Velocity", AngularVelocityUnitMap);
-//    mCustomUnits.insert("Value", ValueUnitMap);
-
-
     //Read from hopsandefaults.xml
     loadDefaultsFromXml();
 
@@ -494,6 +392,39 @@ void Configuration::loadDefaultsFromXml()
         }
     }
     file.close();
+
+    //! @todo This shall not be hard coded!
+    mPalette = QPalette(QColor("black"), QColor("blue"), QColor("lightblue"), QColor("darkblue"), QColor("blue"),QColor("text"),QColor("gray"), QColor(244,247,251), QColor(222,231,241));
+
+    mStyleSheet.append("QPushButton                 { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);     min-width: 80px; }");
+    mStyleSheet.append("QPushButton:pressed         { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 yellow, stop: 1 white);               min-width: 80px; }");
+    mStyleSheet.append("QPushButton:hover:pressed   { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 yellow, stop: 1 white);               min-width: 80px; }");
+    mStyleSheet.append("QPushButton:default         { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);     min-width: 80px; }");
+    mStyleSheet.append("QPushButton:hover           { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);     min-width: 80px; }");
+
+    mStyleSheet.append("QTabWidget:pane                  { border: 1px solid gray; background-color: rgb(222,231,241); padding: 0px; position: absolute; top: -0px; margin-top: -1px; } ");
+
+    mStyleSheet.append("QTabBar:tab:top                     { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }");
+    mStyleSheet.append("QTabBar:tab:top:hover               { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(244,247,251));                   border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }");
+    mStyleSheet.append("QTabBar:tab:top:selected            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 rgb(222,231,241));        border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }");
+    mStyleSheet.append("QTabBar:tab:top:selected:hover      { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(222,231,241));                   border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }");
+
+    mStyleSheet.append("QTabBar:tab:bottom                  { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }");
+    mStyleSheet.append("QTabBar:tab:bottom:hover            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 white);                   border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }");
+    mStyleSheet.append("QTabBar:tab:bottom:selected         { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 rgb(244,247,251));        border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }");
+    mStyleSheet.append("QTabBar:tab:bottom:selected:hover   { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);                   border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }");
+
+    mStyleSheet.append("QTreeWidget { background-color: rgb(244,247,251); }");
+
+    mStyleSheet.append("QTextEdit { background-color: rgb(244,247,251); }");
+
+    mStyleSheet.append("QListWidget { background-color: rgb(244,247,251); }");
+    mStyleSheet.append("QListWidget:item { background-color: rgb(244,247,251); }");
+    mStyleSheet.append("QListWidget:item:hover { background-color: palegreen; }");
+
+    //mPalette = gpMainWindow->palette();
+    //mStyleSheet.clear();
+
     return;
 }
 
@@ -634,6 +565,18 @@ QPen Configuration::getPen(QString type, graphicsType gfxType, QString situation
         }
     }
     return QPen(QColor("black"), 1, Qt::SolidLine, Qt::SquareCap);
+}
+
+
+QPalette Configuration::getPalette()
+{
+    return mPalette;
+}
+
+
+QString Configuration::getStyleSheet()
+{
+    return mStyleSheet;
 }
 
 

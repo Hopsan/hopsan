@@ -89,6 +89,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     gConfig.loadFromXml();
 
+    setStyleSheet(gConfig.getStyleSheet());
+    setPalette(gConfig.getPalette());
+
     //Create a dock for the componentslibrary
     mpLibDock = new QDockWidget(tr("Component Library"), this);
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -227,7 +230,7 @@ void MainWindow::initializeWorkspace()
 
     if(gConfig.getShowWelcomeDialog())
     {
-        mpWelcomeDialog = new WelcomeDialog(this);
+        mpWelcomeDialog = new WelcomeDialog();
         mpWelcomeDialog->show();
     }
     else

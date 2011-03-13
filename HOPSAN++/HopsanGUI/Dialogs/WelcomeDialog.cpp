@@ -32,6 +32,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     : QDialog(parent)
 {
         //Set the name and size of the main window
+    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setObjectName("WelcomeDialog");
     this->resize(480,640);
     this->setWindowTitle("Welcome to Hopsan");

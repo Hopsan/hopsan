@@ -37,6 +37,8 @@
 ProjectTab::ProjectTab(ProjectTabWidget *parent)
     : QWidget(parent)
 {
+    this->setPalette(gConfig.getPalette());
+
     mpParentProjectTabWidget = parent;
     mpQuickNavigationWidget = new QuickNavigationWidget(this);
     mpSystem = new GUISystem(this, 0);
@@ -323,6 +325,8 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
+    this->setPalette(gConfig.getPalette());
+
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     setTabsClosable(true);
@@ -331,6 +335,8 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
+
+    this->hide();
 }
 
 
@@ -570,6 +576,9 @@ void ProjectTabWidget::loadModel(QString modelFileName)
 
 void ProjectTabWidget::tabChanged()
 {
+    if(count() > 0) { this->show(); }
+    else { this->hide(); }
+
     for(int i=0; i<count(); ++i)
     {
             //If you add a disconnect here, remember to also add it to the close tab function!

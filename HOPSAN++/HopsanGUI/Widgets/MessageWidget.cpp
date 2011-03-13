@@ -10,6 +10,7 @@
 #include "MessageWidget.h"
 #include "../MainWindow.h"
 #include "../CoreAccess.h"
+#include "../Configuration.h"
 #include <QDateTime>
 
 using namespace hopsan;
@@ -26,10 +27,11 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     : QWidget(pParent)
 {
     this->setFont(QFont(this->font().family(), 8));
+    //this->setPalette(gConfig.getPalette());
 
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setReadOnly(true);
-    mpTextEdit->setPalette(QPalette(QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("whitesmoke")));
+    //mpTextEdit->setPalette(QPalette(QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("whitesmoke")));
     //mpTextEdit->setTextBackgroundColor(QColor("gray"));
 
     mGroupByTag = false;

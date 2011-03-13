@@ -15,6 +15,7 @@
 #include <QList>
 #include <QFileInfo>
 #include <QPen>
+#include <QPalette>
 
 #include "common.h"
 
@@ -45,6 +46,8 @@ public:
     QString getDefaultUnit(QString key);
     QMap<QString, double> getCustomUnits(QString key);
     QPen getPen(QString type, graphicsType gfxType, QString situation);
+    QPalette getPalette();
+    QString getStyleSheet();
 
     void setShowWelcomeDialog(bool value);
     void setInvertWheel(bool value);
@@ -81,6 +84,8 @@ private:
     QStringList mLastSessionModels;
     QMap<QString, QString> mDefaultUnits;
     QMap< QString, QMap<QString, double> > mCustomUnits;
+    QPalette mPalette;
+    QString mStyleSheet;
 
     QMap < QString, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };
