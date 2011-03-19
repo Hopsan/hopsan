@@ -26,10 +26,10 @@ namespace hopsan {
 
     private:
         double L1, L2, w, m, B, k;
-   //     double mLength;         //This length is not accesible by the user,
-                                //it is set from the start values by the c-components in the ends
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
-        double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1,
+               *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
+        double f1, x1, v1, c1, Zx1,
+               f2, x2, v2, c2, Zx2; //Node data variables
         double mNum[3];
         double mDen[3];
         SecondOrderFilter mFilter;
@@ -58,27 +58,27 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("L1", "Length", "[m]",         L1);
-            registerParameter("L2", "Length", "[m]",         L2);
-            registerParameter("m", "Mass", "[kg]",                  m);
-            registerParameter("B", "Viscous Friction", "[Ns/m]",    B);
-            registerParameter("k", "Spring Coefficient", "[N/m]",   k);
+            registerParameter("L1", "Length", "[m]",               L1);
+            registerParameter("L2", "Length", "[m]",               L2);
+            registerParameter("m",  "Mass", "[kg]",                m);
+            registerParameter("B",  "Viscous Friction", "[Ns/m]",  B);
+            registerParameter("k",  "Spring Coefficient", "[N/m]", k);
         }
 
 
         void initialize()
         {
             //Assign node data pointers
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_f1  = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_x1  = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
+            mpND_v1  = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_c1  = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
-            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
-            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
+            mpND_f2  = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
+            mpND_x2  = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
+            mpND_v2  = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
+            mpND_c2  = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
 
             //Initialization
@@ -99,7 +99,7 @@ namespace hopsan {
             mInt.initialize(mTimestep, -v1*w, -x1*w);
 
             //Print debug message if velocities do not match
-            if(mpP1->readNode(NodeMechanic::VELOCITY) != -mpP2->readNode(NodeMechanic::VELOCITY))
+            if(mpP1->readNode(NodeMechanic::VELOCITY)*w != -mpP2->readNode(NodeMechanic::VELOCITY))
             {
                 std::stringstream ss;
                 ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<
@@ -113,7 +113,7 @@ namespace hopsan {
         {
             //Get variable values from nodes
             c1 = (*mpND_c1)/w;
-            Zx1 = (*mpND_Zx1)/pow(w,2);
+            Zx1 = (*mpND_Zx1)/pow(w, 2.0);
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 

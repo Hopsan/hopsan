@@ -150,4 +150,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicPressureSourceC.hpp \
     Components/Mechanic/MechanicTorqueSensor.hpp \
     Components/Hydraulic/Hydraulic22DirectionalValve.hpp \
-    Components/Mechanic/MechanicTranslationalMassWithLever.hpp
+    Components/Mechanic/MechanicTranslationalMassWithLever.hpp \
+    Components/Mechanic/MechanicRotationalInertiaWithGearRatio.hpp

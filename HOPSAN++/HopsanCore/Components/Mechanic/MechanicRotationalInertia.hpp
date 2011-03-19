@@ -52,8 +52,8 @@ namespace hopsan {
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
-            registerParameter("B", "Viscous Friction", "[Ns/rad]", B);
-            registerParameter("k", "Spring Coefficient", "[N/rad]", k);
+            registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
+            registerParameter("k", "Spring Coefficient", "[Nm/rad]", k);
         }
 
 

@@ -130,26 +130,30 @@ void PlotParameterTree::updateList()
         QList<GUIPort*>::iterator itp;
         for(itp = portListPtrs.begin(); itp !=portListPtrs.end(); ++itp)
         {
-            QVector<QString> parameterNames;
-            QVector<QString> parameterUnits;
-            gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), parameterNames, parameterUnits);
-            if(!timeVectorRetained)
+            //If the port is not connected it has nothing to plot
+            if((*itp)->isConnected())
             {
-                time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
-                timeVectorRetained = true;
-            }
-            if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
-            {
-                for(int i = 0; i!=parameterNames.size(); ++i)
+                QVector<QString> parameterNames;
+                QVector<QString> parameterUnits;
+                gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), parameterNames, parameterUnits);
+                if(!timeVectorRetained)
                 {
-                    tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
-                    tempComponentItem->addChild(tempPlotParameterItem);
-                    QStringList parameterDescription;
-                    parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
-                    mAvailableParameters.append(parameterDescription);
-                    if(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.contains(parameterDescription))
+                    time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
+                    timeVectorRetained = true;
+                }
+                if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
+                {
+                    for(int i = 0; i!=parameterNames.size(); ++i)
                     {
-                        tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
+                        tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
+                        tempComponentItem->addChild(tempPlotParameterItem);
+                        QStringList parameterDescription;
+                        parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
+                        mAvailableParameters.append(parameterDescription);
+                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.contains(parameterDescription))
+                        {
+                            tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
+                        }
                     }
                 }
             }

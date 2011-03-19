@@ -2013,7 +2013,7 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
     assert(pNode != 0);
 
     vector<Port*>::iterator pit;
-    Component *pMinLevelComp;
+    Component *pMinLevelComp=0;
     size_t min = std::numeric_limits<size_t>::max();
     for (pit=pNode->mPortPtrs.begin(); pit!=pNode->mPortPtrs.end(); ++pit)
     {
@@ -3491,7 +3491,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
 #else
     //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
-void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nThreads)
+void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/)
 {
     this->simulate(startT, stopT);
 }

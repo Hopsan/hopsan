@@ -235,7 +235,7 @@ void MainWindow::initializeWorkspace()
 
     if(gConfig.getShowWelcomeDialog())
     {
-        mpWelcomeDialog = new WelcomeDialog();
+        mpWelcomeDialog = new WelcomeDialog(this);
         mpWelcomeDialog->show();
     }
     else

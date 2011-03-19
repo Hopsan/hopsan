@@ -105,6 +105,7 @@
 #include "Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp"
 #include "Mechanic/MechanicTranslationalSpring.hpp"
 #include "Mechanic/MechanicRotationalInertia.hpp"
+#include "Mechanic/MechanicRotationalInertiaWithGearRatio.hpp"
 #include "Mechanic/MechanicTorsionalSpring.hpp"
 #include "Mechanic/MechanicSpeedSensor.hpp"
 #include "Mechanic/MechanicForceSensor.hpp"
