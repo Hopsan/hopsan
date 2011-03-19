@@ -16,6 +16,7 @@
 #include <QFileInfo>
 #include <QPen>
 #include <QPalette>
+#include <QFont>
 
 #include "common.h"
 
@@ -47,6 +48,7 @@ public:
     QMap<QString, double> getCustomUnits(QString key);
     QPen getPen(QString type, graphicsType gfxType, QString situation);
     QPalette getPalette();
+    QFont getFont();
     QString getStyleSheet();
 
     void setShowWelcomeDialog(bool value);
@@ -85,6 +87,7 @@ private:
     QMap<QString, QString> mDefaultUnits;
     QMap< QString, QMap<QString, double> > mCustomUnits;
     QPalette mPalette;
+    QFont mFont;
     QString mStyleSheet;
 
     QMap < QString, QMap< QString, QMap<QString, QPen> > > mPenStyles;

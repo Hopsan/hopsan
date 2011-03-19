@@ -46,6 +46,9 @@ void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
 void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
 void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop);
 
+//String help functions
+void parseRgbString(QString rgb, double &red, double &green, double &blue);
+
 //Save Load Definitions
 //! @todo clean up this list and give some smarter names
 #define HMF_ROOTTAG "hopsanmodelfile"

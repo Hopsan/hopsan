@@ -28,6 +28,41 @@
         <penstyle width="2" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="User"/>
         <penstyle width="2" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="User"/>
         <penstyle width="1" situation="Primary" capstyle="16" type="Signal" style="2" color="#0000ff" gfxtype="User"/>
+		<palette windowText="0,0,0" button="0,0,255" light="173,216,230" dark="0,0,139" mid="0,0,255" text="0,0,0" bright_text="128,128,128" base="244,247,251" window="226,231,237"/>
+		<font family="Calibri" size="9"/>
+		<stylesheet>
+			QPushButton 						{ border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
+			QPushButton:pressed 				{ border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }
+			QPushButton:hover:pressed   		{ border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }
+			QPushButton:default         		{ border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
+			QPushButton:hover           		{ border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
+
+			QTabWidget:pane             		{ border: 1px solid gray; background-color: rgb(226,231,237); padding: 0px; position: absolute; top: -0px; margin-top: -1px; } 
+
+			QTabBar:tab:top                     { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }
+			QTabBar:tab:top:hover               { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(244,247,251));                   border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }
+			QTabBar:tab:top:selected            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 rgb(226,231,237));        border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }
+			QTabBar:tab:top:selected:hover      { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(226,231,237));                   border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }
+
+			QTabBar:tab:bottom                  { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }
+			QTabBar:tab:bottom:hover            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 white);                   border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }
+			QTabBar:tab:bottom:selected         { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 rgb(244,247,251));        border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }
+			QTabBar:tab:bottom:selected:hover   { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);                   border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }
+
+			QTreeWidget 						{ background-color: rgb(244,247,251); padding: 0px; }
+
+			QTextEdit 							{ background-color: rgb(244,247,251); border: 1px solid gray; }
+
+			QListWidget 						{ background-color: rgb(244,247,251); padding: 0px; }
+			QListWidget:item 					{ background-color: rgb(244,247,251); }
+			QListWidget:item:hover 				{ background-color: palegreen; }
+
+			QMainWindow::separator:hover 		{ background: darkgray; }
+
+			QDockWidget 						{  border: 1px solid gray; padding: 10px;}
+			QDockWidget::title:horizontal 		{ text-align: left center; background: rgb(226,231,237); padding-top: -10px; padding-left: 5px; padding-bottom: -10px; }
+			QDockWidget::title            		{ text-align: left top; background: rgb(226,231,237); padding-left: 5px; padding-right: -50px; }
+		</stylesheet>
     </style>
     <units>
         <defaultunit unit="rad" name="Angle"/>

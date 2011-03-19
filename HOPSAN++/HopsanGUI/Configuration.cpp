@@ -308,8 +308,8 @@ void Configuration::loadDefaultsFromXml()
         }
         else
         {
+                //Load default user settings
             QDomElement settingsElement = configRoot.firstChildElement("settings");
-
             if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
                 mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
             if(!settingsElement.firstChildElement("backgroundcolor").isNull())
@@ -333,6 +333,7 @@ void Configuration::loadDefaultsFromXml()
             if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
 
+                //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement("style");
             QDomElement penElement = styleElement.firstChildElement("penstyle");
             while(!penElement.isNull())
@@ -360,6 +361,34 @@ void Configuration::loadDefaultsFromXml()
 
                 penElement = penElement.nextSiblingElement("penstyle");
             }
+            QDomElement paletteElement = styleElement.firstChildElement("palette");
+            double red, green, blue;
+            QColor windowText, button, light, dark, mid, text, bright_text, base, window;
+            parseRgbString(paletteElement.attribute("windowText"), red, green, blue);
+            windowText.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("button"), red, green, blue);
+            button.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("light"), red, green, blue);
+            light.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("dark"), red, green, blue);
+            dark.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("mid"), red, green, blue);
+            mid.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("text"), red, green, blue);
+            text.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("bright_text"), red, green, blue);
+            bright_text.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("base"), red, green, blue);
+            base.setRgb(red, green, blue);
+            parseRgbString(paletteElement.attribute("window"), red, green, blue);
+            window.setRgb(red, green, blue);
+            mPalette = QPalette(windowText, button, light, dark, mid, text, bright_text, base, window);
+            QDomElement fontElement = styleElement.firstChildElement("font");
+            mFont = QFont(fontElement.attribute("family"), fontElement.attribute("size").toInt());
+            QDomElement styleSheetElement = styleElement.firstChildElement("stylesheet");
+            mStyleSheet.append(styleSheetElement.text());
+
+                //Load default units
             QDomElement unitsElement = configRoot.firstChildElement("units");
             QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
             while (!defaultUnitElement.isNull())
@@ -394,43 +423,9 @@ void Configuration::loadDefaultsFromXml()
     file.close();
 
     //! @todo This shall not be hard coded!
-    mPalette = QPalette(QColor("black"), QColor("blue"), QColor("lightblue"), QColor("darkblue"), QColor("blue"),QColor("text"),QColor("gray"), QColor(244,247,251), QColor(226,231,237));
+    //mPalette = QPalette(QColor("black"), QColor("blue"), QColor("lightblue"), QColor("darkblue"), QColor("blue"),QColor("text"),QColor("gray"), QColor(244,247,251), QColor(226,231,237));
 
-    //mStyleSheet.append("QWidget                     { padding: 0px; }");
-
-    mStyleSheet.append("QPushButton                 { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }");
-    mStyleSheet.append("QPushButton:pressed         { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }");
-    mStyleSheet.append("QPushButton:hover:pressed   { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }");
-    mStyleSheet.append("QPushButton:default         { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }");
-    mStyleSheet.append("QPushButton:hover           { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }");
-
-    mStyleSheet.append("QTabWidget:pane                  { border: 1px solid gray; background-color: rgb(226,231,237); padding: 0px; position: absolute; top: -0px; margin-top: -1px; } ");
-
-    mStyleSheet.append("QTabBar:tab:top                     { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }");
-    mStyleSheet.append("QTabBar:tab:top:hover               { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(244,247,251));                   border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }");
-    mStyleSheet.append("QTabBar:tab:top:selected            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 rgb(226,231,237));        border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }");
-    mStyleSheet.append("QTabBar:tab:top:selected:hover      { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(226,231,237));                   border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }");
-
-    mStyleSheet.append("QTabBar:tab:bottom                  { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }");
-    mStyleSheet.append("QTabBar:tab:bottom:hover            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 white);                   border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }");
-    mStyleSheet.append("QTabBar:tab:bottom:selected         { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 rgb(244,247,251));        border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }");
-    mStyleSheet.append("QTabBar:tab:bottom:selected:hover   { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);                   border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }");
-
-    mStyleSheet.append("QTreeWidget { background-color: rgb(244,247,251); padding: 0px; }");
-
-    mStyleSheet.append("QTextEdit { background-color: rgb(244,247,251); border: 1px solid gray; }");
-
-    mStyleSheet.append("QListWidget { background-color: rgb(244,247,251); padding: 0px; }");
-    mStyleSheet.append("QListWidget:item { background-color: rgb(244,247,251); }");
-    mStyleSheet.append("QListWidget:item:hover { background-color: palegreen; }");
-
-    mStyleSheet.append("QMainWindow::separator:hover { background: darkgray; }");
-
-    mStyleSheet.append("QDockWidget {  border: 1px solid gray; padding: 5px; }");
-    mStyleSheet.append("QDockWidget::title { text-align: left; background: rgb(226,231,237); padding-left: 5px; } ");
-    //mStyleSheet.append("QDockWidget::close-button { subcontrol-position: center right; }");
-    //mStyleSheet.append("QDockWidget::float-button { subcontrol-position: center right; }");
-
+        //Uncomment these line to use native style
     //mPalette = gpMainWindow->palette();
     //mStyleSheet.clear();
 
@@ -580,6 +575,12 @@ QPen Configuration::getPen(QString type, graphicsType gfxType, QString situation
 QPalette Configuration::getPalette()
 {
     return mPalette;
+}
+
+
+QFont Configuration::getFont()
+{
+    return mFont;
 }
 
 

@@ -284,7 +284,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
 //! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
 void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 {
-    //If no directory is set, i.e. cancel is presses, do no more
+    //If no directory is set, i.e. cancel is pressed, do no more
     if (libDir.isEmpty() == true)
         return;
 

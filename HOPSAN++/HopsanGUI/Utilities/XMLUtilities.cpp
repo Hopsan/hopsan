@@ -343,3 +343,12 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
     rStep = domElement.attribute("timestep").toDouble();
     rStop = domElement.attribute("stop").toDouble();
 }
+
+
+void parseRgbString(QString rgb, double &red, double &green, double &blue)
+{
+    QStringList split = rgb.split(",");
+    red = split[0].toDouble();
+    green = split[1].toDouble();
+    blue = split[2].toDouble();
+}

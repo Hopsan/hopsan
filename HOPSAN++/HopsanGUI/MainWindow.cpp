@@ -81,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
     mpMessageDock->setWidget(mpMessageWidget);
+    mpMessageDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
 
     mpMessageWidget->checkMessages();
@@ -93,8 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setStyleSheet(gConfig.getStyleSheet());
     setPalette(gConfig.getPalette());
-    QFont font = QFont("Calibri", 9);
-    qApp->setFont(font);
+    qApp->setFont(gConfig.getFont());
 
     //Create a dock for the componentslibrary
     mpLibDock = new QDockWidget(tr("Component Library"), this);
