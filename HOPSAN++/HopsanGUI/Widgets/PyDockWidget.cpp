@@ -54,9 +54,10 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
 
         QVBoxLayout *pPyLayout = new QVBoxLayout();
         pPyLayout->addWidget(mpPyConsole);
+        pPyLayout->setContentsMargins(4,4,4,4);
         pPyLayout->addLayout(pScriptFileLayout);
 
-        QWidget *pPyWidget = new QWidget();
+        PyWidget *pPyWidget = new PyWidget();
         pPyWidget->setLayout(pPyLayout);
 
         setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -87,4 +88,23 @@ void PyDockWidget::runPyScript()
     QString command = QString("execfile('").append(mpScriptFileLineEdit->text()).append("')");
     mainContext.evalScript(command);
     mpPyConsole->appendCommandPrompt();
+}
+
+
+
+
+PyWidget::PyWidget(QWidget *parent)
+    : QWidget(parent)
+{
+    //Nothing to do...
+}
+
+
+//! @brief Reimplementation of QWidget::sizeHint(), used to reduce the size of the plot widget when docked
+QSize PyWidget::sizeHint() const
+{
+    QSize size = QWidget::sizeHint();
+    //Set very small height. A minimum apperantly stops at resonable size.
+    size.rheight() = 1; //pixels
+    return size;
 }

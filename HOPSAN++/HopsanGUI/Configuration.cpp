@@ -394,33 +394,42 @@ void Configuration::loadDefaultsFromXml()
     file.close();
 
     //! @todo This shall not be hard coded!
-    mPalette = QPalette(QColor("black"), QColor("blue"), QColor("lightblue"), QColor("darkblue"), QColor("blue"),QColor("text"),QColor("gray"), QColor(244,247,251), QColor(222,231,241));
+    mPalette = QPalette(QColor("black"), QColor("blue"), QColor("lightblue"), QColor("darkblue"), QColor("blue"),QColor("text"),QColor("gray"), QColor(244,247,251), QColor(226,231,237));
 
-    mStyleSheet.append("QPushButton                 { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);     min-width: 80px; }");
-    mStyleSheet.append("QPushButton:pressed         { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 yellow, stop: 1 white);               min-width: 80px; }");
-    mStyleSheet.append("QPushButton:hover:pressed   { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 yellow, stop: 1 white);               min-width: 80px; }");
-    mStyleSheet.append("QPushButton:default         { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);     min-width: 80px; }");
-    mStyleSheet.append("QPushButton:hover           { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);     min-width: 80px; }");
+    //mStyleSheet.append("QWidget                     { padding: 0px; }");
 
-    mStyleSheet.append("QTabWidget:pane                  { border: 1px solid gray; background-color: rgb(222,231,241); padding: 0px; position: absolute; top: -0px; margin-top: -1px; } ");
+    mStyleSheet.append("QPushButton                 { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }");
+    mStyleSheet.append("QPushButton:pressed         { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }");
+    mStyleSheet.append("QPushButton:hover:pressed   { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }");
+    mStyleSheet.append("QPushButton:default         { border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }");
+    mStyleSheet.append("QPushButton:hover           { border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }");
+
+    mStyleSheet.append("QTabWidget:pane                  { border: 1px solid gray; background-color: rgb(226,231,237); padding: 0px; position: absolute; top: -0px; margin-top: -1px; } ");
 
     mStyleSheet.append("QTabBar:tab:top                     { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }");
     mStyleSheet.append("QTabBar:tab:top:hover               { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(244,247,251));                   border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }");
-    mStyleSheet.append("QTabBar:tab:top:selected            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 rgb(222,231,241));        border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }");
-    mStyleSheet.append("QTabBar:tab:top:selected:hover      { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(222,231,241));                   border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }");
+    mStyleSheet.append("QTabBar:tab:top:selected            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 rgb(226,231,237));        border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }");
+    mStyleSheet.append("QTabBar:tab:top:selected:hover      { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 white, stop: 1 rgb(226,231,237));                   border: 1px solid gray;     border-bottom: 1px rgb(244,247,251);    border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 0px; }");
 
     mStyleSheet.append("QTabBar:tab:bottom                  { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }");
     mStyleSheet.append("QTabBar:tab:bottom:hover            { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(244,247,251), stop: 1 white);                   border: 1px solid gray;     border-top: 1px solid gray;             border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }");
-    mStyleSheet.append("QTabBar:tab:bottom:selected         { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 rgb(244,247,251));        border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }");
-    mStyleSheet.append("QTabBar:tab:bottom:selected:hover   { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(222,231,241), stop: 1 white);                   border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }");
+    mStyleSheet.append("QTabBar:tab:bottom:selected         { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 rgb(244,247,251));        border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 5px; }");
+    mStyleSheet.append("QTabBar:tab:bottom:selected:hover   { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);                   border: 1px solid gray;     border-top: 1px rgb(244,247,251);       border-bottom-left-radius: 4px;     border-bottom-right-radius: 4px;    padding: 0px; }");
 
-    mStyleSheet.append("QTreeWidget { background-color: rgb(244,247,251); }");
+    mStyleSheet.append("QTreeWidget { background-color: rgb(244,247,251); padding: 0px; }");
 
     mStyleSheet.append("QTextEdit { background-color: rgb(244,247,251); border: 1px solid gray; }");
 
-    mStyleSheet.append("QListWidget { background-color: rgb(244,247,251); }");
+    mStyleSheet.append("QListWidget { background-color: rgb(244,247,251); padding: 0px; }");
     mStyleSheet.append("QListWidget:item { background-color: rgb(244,247,251); }");
     mStyleSheet.append("QListWidget:item:hover { background-color: palegreen; }");
+
+    mStyleSheet.append("QMainWindow::separator:hover { background: darkgray; }");
+
+    mStyleSheet.append("QDockWidget {  border: 1px solid gray; padding: 5px; }");
+    mStyleSheet.append("QDockWidget::title { text-align: left; background: rgb(226,231,237); padding-left: 5px; } ");
+    //mStyleSheet.append("QDockWidget::close-button { subcontrol-position: center right; }");
+    //mStyleSheet.append("QDockWidget::float-button { subcontrol-position: center right; }");
 
     //mPalette = gpMainWindow->palette();
     //mStyleSheet.clear();

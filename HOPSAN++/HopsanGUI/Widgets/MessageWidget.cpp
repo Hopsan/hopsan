@@ -27,7 +27,6 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     : QWidget(pParent)
 {
     this->setFont(QFont(this->font().family(), 8));
-    //this->setPalette(gConfig.getPalette());
 
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setReadOnly(true);
@@ -85,6 +84,8 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mpLayout->addWidget(mpShowDebugMessagesButton,1,4,1,1);
     mpLayout->addWidget(mpGroupByTagCheckBox, 1,5,1,1);
 
+    mpLayout->setContentsMargins(4,4,4,4);
+
     this->setLayout(mpLayout);
     connect(mpClearMessageWidgetButton, SIGNAL(clicked()),this, SLOT(clear()));
     connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showErrorMessages(bool)));
@@ -96,12 +97,12 @@ MessageWidget::MessageWidget(MainWindow *pParent)
 }
 
 
-//! @brief Reimplementation of QTextEdit::sizeHint(), probably used to reduce the size of the message widget
+//! @brief Reimplementation of QWidget::sizeHint(), used to reduce the size of the message widget when docked
 QSize MessageWidget::sizeHint() const
 {
     QSize size = QWidget::sizeHint();
     //Set very small height. A minimum apperantly stops at resonable size.
-    size.rheight() = 48; //pixels
+    size.rheight() = 1; //pixels
     return size;
 }
 

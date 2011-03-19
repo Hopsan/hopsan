@@ -26,12 +26,23 @@ public:
     void saveSettingsToDomElement(QDomElement &rDomElement);
     void loadSettingsFromDomElement(QDomElement &rDomElement);
 
+
 public slots:
     void runPyScript();
 
 private:
     PythonQtScriptingConsole *mpPyConsole;
     QLineEdit *mpScriptFileLineEdit;
+};
+
+
+class PyWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    PyWidget(QWidget * parent = 0);
+    QSize sizeHint() const;
 };
 
 #endif // PYDOCKWIDGET_H

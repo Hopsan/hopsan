@@ -86,6 +86,7 @@ public:
     void addExternalLibrary(QString libDir);
     GUIModelObjectAppearance *getAppearanceData(QString componentType);
     GUIModelObjectAppearance *getAppearanceDataByDisplayName(QString displayName);
+    QSize sizeHint() const;
 
     graphicsType mGfxType;
 

@@ -59,6 +59,7 @@ UndoWidget::UndoWidget(MainWindow *parent)
     mUndoTable->horizontalHeader()->hide();
 
     mpLayout = new QGridLayout();
+    mpLayout->setContentsMargins(4,4,4,4);
     mpLayout->addWidget(mUndoTable, 0, 0);
     mpLayout->addWidget(mpUndoButton, 1, 0);
     mpLayout->addWidget(mpRedoButton, 2, 0);

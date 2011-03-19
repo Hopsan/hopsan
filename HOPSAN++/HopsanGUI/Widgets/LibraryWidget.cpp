@@ -98,7 +98,7 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, QString ma
     setSelectionRectVisible(false);
     setDragEnabled(true);
     setIconSize(QSize(40,40));
-    setGridSize(QSize(50,50));
+    setGridSize(QSize(45,45));
     setAcceptDrops(true);
     setDropIndicatorShown(true);
 
@@ -198,6 +198,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpGrid = new QVBoxLayout(this);
 
     mpGrid->addWidget(mpTree);
+    mpGrid->setContentsMargins(4,4,4,4);
 
     mpComponentNameField = new QLabel("No Component Selected", this);
     mpGrid->addWidget(mpComponentNameField);
@@ -212,6 +213,17 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     this->setGfxType(USERGRAPHICS);
 
     connect(mpTree, SIGNAL(itemClicked (QTreeWidgetItem*, int)), SLOT(showLib(QTreeWidgetItem*, int)));
+}
+
+
+
+//! @brief Reimplementation of QWidget::sizeHint(), used to reduce the size of the library widget when docked
+QSize LibraryWidget::sizeHint() const
+{
+    QSize size = QWidget::sizeHint();
+    //Set very small width. A minimum apperantly stops at resonable size.
+    size.rwidth() = 210; //pixels
+    return size;
 }
 
 

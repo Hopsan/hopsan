@@ -74,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     QMetaObject::connectSlotsByName(this);
 
+
+
     //Create a dock for the MessageWidget
     mpMessageDock = new QDockWidget(tr("Messages"), this);
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -91,6 +93,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setStyleSheet(gConfig.getStyleSheet());
     setPalette(gConfig.getPalette());
+    QFont font = QFont("Calibri", 9);
+    qApp->setFont(font);
 
     //Create a dock for the componentslibrary
     mpLibDock = new QDockWidget(tr("Component Library"), this);
@@ -108,7 +112,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Create a grid on the centralwidget
     mpCentralGridLayout = new QGridLayout(mpCentralWidget);
-    //mpCentralGridLayout->setSpacing(1);
+    qDebug() << mpCentralGridLayout->contentsMargins();
+    mpCentralGridLayout->setContentsMargins(4,4,4,4);
 
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);

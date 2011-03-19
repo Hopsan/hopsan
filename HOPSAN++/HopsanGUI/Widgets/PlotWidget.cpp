@@ -363,6 +363,7 @@ PlotWidget::PlotWidget(MainWindow *parent)
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpPlotParameterTree,0,0,1,1);
     mpLayout->addWidget(mpLoadButton, 1, 0, 1, 1);
+    mpLayout->setContentsMargins(4,4,4,4);
 
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
 }

@@ -61,6 +61,8 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     mpGridLayout->addWidget(mpAddButton, 1, 0);
     mpGridLayout->addWidget(mpRemoveButton, 2, 0);
 
+    mpGridLayout->setContentsMargins(4,4,4,4);
+
     update();
 
     connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openComponentPropertiesDialog()));
