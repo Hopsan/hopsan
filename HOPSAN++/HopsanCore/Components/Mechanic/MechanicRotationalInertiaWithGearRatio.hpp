@@ -15,6 +15,7 @@
 
 namespace hopsan {
 
+    //Verified with AMESim 2011-03-21
     //!
     //! @brief
     //! @ingroup MechanicalComponents
@@ -85,8 +86,8 @@ namespace hopsan {
             den[0] = J;
             den[1] = B;
             den[2] = k;
-            mFilter.initialize(mTimestep, num, den, -t1, -w1);
-            mInt.initialize(mTimestep, -w1, -a1);
+            mFilter.initialize(mTimestep, num, den, -t1*gearRatio, -w1/gearRatio);
+            mInt.initialize(mTimestep, -w1/gearRatio, -a1/gearRatio);
         }
 
 
