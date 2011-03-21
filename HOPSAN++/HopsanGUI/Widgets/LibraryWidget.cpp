@@ -142,8 +142,10 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
         }
 
         //Change name in component name field. Resize the text if needed, so that the library widget does not change size.
-        mpParentLibraryWidget->mpComponentNameField->setFont(QFont(mpParentLibraryWidget->mpComponentNameField->font().family(), min(12.0, mpParentLibraryWidget->width()/(0.615*tempItem->toolTip().size()))));
+        mpParentLibraryWidget->mpComponentNameField->setMaximumWidth(this->width());
+        mpParentLibraryWidget->mpComponentNameField->setFont(QFont(mpParentLibraryWidget->mpComponentNameField->font().family(), min(10.0, .9*mpParentLibraryWidget->width()/(0.615*tempItem->toolTip().size()))));
         mpParentLibraryWidget->mpComponentNameField->setText(tempItem->toolTip());
+
     }
     else
     {
@@ -203,8 +205,10 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpComponentNameField = new QLabel("No Component Selected", this);
     mpGrid->addWidget(mpComponentNameField);
     mpComponentNameField->setAlignment(Qt::AlignCenter);
-    mpComponentNameField->setFont(QFont(mpComponentNameField->font().family(), 12));
+    mpComponentNameField->setFont(QFont(mpComponentNameField->font().family(), 10));
     mpComponentNameField->setText("");
+    mpComponentNameField->setFixedHeight(mpComponentNameField->height());
+    mpComponentNameField->setScaledContents(true);
     //mpComponentNameField->hide();
 
     setLayout(mpGrid);
