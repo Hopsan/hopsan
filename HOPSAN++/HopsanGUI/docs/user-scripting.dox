@@ -29,16 +29,16 @@
 	\section setfinishtime setFinishTime(stop)
 	Sets the finish time of a simulation. Example: hopsan.setFinishTime(16.2)
 
-	\section getstarttime getStartTime
+	\section getstarttime getStartTime()
 	Returns the start time of a simulation. Example: startTime = hopsan.getStartTime()
 
-	\section gettimestep getTimeStep
+	\section gettimestep getTimeStep()
 	Returns the time step time of a simulation. Example: timeStep = hopsan.getTimeStep()
 
-	\section getfinishtime getFinishTime
+	\section getfinishtime getFinishTime()
 	Returns the finish time of a simulation. Example: finishTime = hopsan.getFinishTime()
 
-	\section simulate simulate
+	\section simulate simulate()
 	Simulates the current model. Example hopsan.simulate()
 
 	\section getparameter getParameter(compName, parName)

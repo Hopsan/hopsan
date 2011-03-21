@@ -614,6 +614,19 @@ void MainWindow::createToolbars()
     mpEditToolBar->addAction(redoAction);
     mpEditToolBar->addAction(optionsAction);
 
+    //Simulation toolbar, contains tools for simulationg, plotting and model preferences
+    mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
+    mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpSimToolBar->addWidget(mpStartTimeLineEdit);
+    mpSimToolBar->addWidget(mpTimeLabelDeliminator1);
+    mpSimToolBar->addWidget(mpTimeStepLineEdit);
+    mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
+    mpSimToolBar->addWidget(mpFinishTimeLineEdit);
+    mpSimToolBar->addAction(simulateAction);
+    mpSimToolBar->addAction(plotAction);
+    mpSimToolBar->addAction(propertiesAction);
+    mpSimToolBar->addAction(openSystemParametersAction);
+
     //View toolbar, contains all cosmetic and zooming tools
     mpViewToolBar = addToolBar(tr("View Toolbar"));
     mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -632,19 +645,6 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(rotateLeftAction);
     mpToolsToolBar->addAction(flipHorizontalAction);
     mpToolsToolBar->addAction(flipVerticalAction);
-
-    //Simulation toolbar, contains tools for simulationg, plotting and model preferences
-    mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
-    mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    mpSimToolBar->addWidget(mpStartTimeLineEdit);
-    mpSimToolBar->addWidget(mpTimeLabelDeliminator1);
-    mpSimToolBar->addWidget(mpTimeStepLineEdit);
-    mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
-    mpSimToolBar->addWidget(mpFinishTimeLineEdit);
-    mpSimToolBar->addAction(simulateAction);
-    mpSimToolBar->addAction(plotAction);
-    mpSimToolBar->addAction(propertiesAction);
-    mpSimToolBar->addAction(openSystemParametersAction);
 }
 
 

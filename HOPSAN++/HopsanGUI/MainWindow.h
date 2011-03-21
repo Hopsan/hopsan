@@ -76,7 +76,7 @@ public:
     QToolBar *mpEditToolBar;
     QToolBar *mpToolsToolBar;
     QToolBar *mpSimToolBar;
-    QToolBar *mpSimulationToolBar;
+  //  QToolBar *mpSimulationToolBar; //Seem to not be used...
     QToolBar *mpViewToolBar;
     QLineEdit *mpStartTimeLineEdit;
     QLineEdit *mpTimeStepLineEdit;
