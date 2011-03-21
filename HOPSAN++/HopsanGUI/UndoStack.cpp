@@ -93,7 +93,7 @@ void UndoStack::undoOneStep()
     QList<QDomElement> addedObjectList;
     QStringList movedObjects;
     QList<int> addedWidgetList;
-    int dx, dy;
+    int dx=0, dy=0;
     QDomElement stuffElement = getCurrentPost().firstChildElement("stuff");
     while(!stuffElement.isNull())
     {
@@ -428,7 +428,7 @@ void UndoStack::redoOneStep()
     QList<QDomElement> addedConnectorList;
     QList<QDomElement> modifiedConnectorList;
     QStringList movedObjects;
-    int dx, dy;
+    int dx=0, dy=0;
     QDomElement stuffElement = getCurrentPost().firstChildElement("stuff");
     while(!stuffElement.isNull())
     {
