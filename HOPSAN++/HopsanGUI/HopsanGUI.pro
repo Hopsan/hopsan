@@ -19,27 +19,33 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 PYTHONQT_DEFAULT_PATHS = $${PWD}/../ExternalDependencies/PythonQt2.0.1
 PYTHONQT_PATH = $$selectPath($$(PYTHONQT_PATH), $$PYTHONQT_DEFAULT_PATHS, "pythonqt")
 
-INCLUDEPATH += $${PWD}/../HopsanCore
-INCLUDEPATH += $${PYTHONQT_PATH}/src \
+INCLUDEPATH *= $${PWD}/../HopsanCore
+INCLUDEPATH *= $${PYTHONQT_PATH}/src \
                $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
 
-LIBS += -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
 #PythonQt has same debug extension as Hopsan
-LIBS += -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
+LIBS *= -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
                                 -lPythonQt_QtAll$${DEBUG_EXT}
 
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
-    LIBS += -Wl,-rpath,./
-    LIBS += -lqwt-qt4
-    INCLUDEPATH += /usr/include/qwt-qt4/
-    INCLUDEPATH += /usr/include/python2.6
-
-    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+    INCLUDEPATH *= /usr/include/qwt-qt4/
+    INCLUDEPATH *= /usr/include/python2.6
 
     QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
+
+    LIBS *= -lqwt-qt4
+    LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
+
+    #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
+    #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
+    # TODO: We need to add teh relative paths automatically from the path variables created above
+    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/PythonQt2.0.1/lib\'
+    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
+
 }
 win32 {
     #DEFINES += STATICCORE
