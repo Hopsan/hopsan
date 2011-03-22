@@ -33,9 +33,7 @@ LIBS *= -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
 # -------------------------------------------------
 unix {
     INCLUDEPATH *= /usr/include/qwt-qt4/
-    INCLUDEPATH *= /usr/include/python2.6
-
-    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
+    QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
 
     LIBS *= -lqwt-qt4
     LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
