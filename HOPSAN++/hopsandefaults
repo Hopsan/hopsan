@@ -48,8 +48,14 @@
 
                         QComboBox			{ border: 1px solid gray;	border-style: outset;	border-radius: 5px;	padding: 2px;                                           background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
                         QComboBox:hover       		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;                                           background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
-                        QComboBox:drop-down		{ border: 1px solid gray;	border-style: outset;	border-top-right-radius: 5px;	border-bottom-right-radius: 5px; }
+                        QComboBox:drop-down		{ border: 1px solid gray;	border-style: none;	border-top-right-radius: 5px;	border-bottom-right-radius: 5px; }
 			
+                        QSpinBox			{ border: 1px solid gray;	border-style: outset;	border-radius: 5px;	padding: 2px;                                           background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
+                        QSpinBox:hover       		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;                                           background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
+
+                        QLineEdit			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;                                           background-color: white;     min-width: 80px; }
+                        QLineEdit:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;                                           background-color: white;     min-width: 80px; }
+
                         QTabWidget:pane             	{ border: 1px solid gray; background-color: rgb(226,231,237); padding: 0px; position: absolute; top: -0px; margin-top: -1px; }
 
 			QTabBar:tab:top                     { background-color: rgb(244,247,251);                                                                                       border: 1px solid gray;     border-bottom: 1px solid gray;          border-top-left-radius: 4px;        border-top-right-radius: 4px;       padding: 5px; }
