@@ -220,10 +220,13 @@ void OptionsDialog::updateValues()
     if(gConfig.getUseNativeStyleSheet())
     {
         gpMainWindow->setStyleSheet((" "));
+        QMainWindow dummy;
+        gpMainWindow->setPalette(dummy.palette());
     }
     else
     {
         gpMainWindow->setStyleSheet(gConfig.getStyleSheet());
+        gpMainWindow->setPalette(gConfig.getPalette());
     }
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());

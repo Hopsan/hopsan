@@ -92,12 +92,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     gConfig.loadFromXml();
 
-    if(gConfig.getUseNativeStyleSheet())
-        setStyleSheet(" ");
-    else
+    if(!gConfig.getUseNativeStyleSheet())
+    {
         setStyleSheet(gConfig.getStyleSheet());
-    setPalette(gConfig.getPalette());
-    qApp->setFont(gConfig.getFont());
+        setPalette(gConfig.getPalette());
+        qApp->setFont(gConfig.getFont());
+    }
 
     //Create a dock for the componentslibrary
     mpLibDock = new QDockWidget(tr("Component Library"), this);
