@@ -31,6 +31,7 @@ public:
     void loadDefaultsFromXml();
 
     bool getShowWelcomeDialog();
+    bool getUseNativeStyleSheet();
     bool getInvertWheel();
     bool getUseMulticore();
     size_t getNumberOfThreads();
@@ -52,6 +53,7 @@ public:
     QString getStyleSheet();
 
     void setShowWelcomeDialog(bool value);
+    void setUseNativeStyleSheet(bool value);
     void setInvertWheel(bool value);
     void setUseMultiCore(bool value);
     void setNumberOfThreads(size_t value);
@@ -71,6 +73,7 @@ public:
 
 private:
     bool mShowWelcomeDialog;
+    bool mUseNativeStyleSheet;
     bool mInvertWheel;
     bool mUseMulticore;
     size_t mNumberOfThreads;

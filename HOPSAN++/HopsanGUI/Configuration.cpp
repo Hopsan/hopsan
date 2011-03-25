@@ -37,6 +37,7 @@ void Configuration::saveToXml()
 
     QDomElement settings = appendDomElement(configRoot,"settings");
     appendDomBooleanNode(settings, "showwelcomedialog", mShowWelcomeDialog);
+    appendDomBooleanNode(settings, "nativestylesheet", mUseNativeStyleSheet);
     appendDomTextNode(settings, "backgroundcolor", mBackgroundColor.name());
     appendDomBooleanNode(settings, "antialiasing", mAntiAliasing);
     appendDomBooleanNode(settings, "invertwheel", mInvertWheel);
@@ -171,6 +172,8 @@ void Configuration::loadFromXml()
 
             if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
                 mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
+            if(!settingsElement.firstChildElement("nativestylesheet").isNull())
+                mUseNativeStyleSheet = parseDomBooleanNode(settingsElement.firstChildElement("nativestylesheet"));
             if(!settingsElement.firstChildElement("backgroundcolor").isNull())
                 mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
             if(!settingsElement.firstChildElement("antialiasing").isNull())
@@ -312,6 +315,8 @@ void Configuration::loadDefaultsFromXml()
             QDomElement settingsElement = configRoot.firstChildElement("settings");
             if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
                 mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
+            if(!settingsElement.firstChildElement("nativestylesheet").isNull())
+                mUseNativeStyleSheet = parseDomBooleanNode(settingsElement.firstChildElement("nativestylesheet"));
             if(!settingsElement.firstChildElement("backgroundcolor").isNull())
                 mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
             if(!settingsElement.firstChildElement("antialiasing").isNull())
@@ -438,6 +443,13 @@ void Configuration::loadDefaultsFromXml()
 bool Configuration::getShowWelcomeDialog()
 {
     return this->mShowWelcomeDialog;
+}
+
+
+//! @brief Returns whether or not the welcome dialog shall be shown
+bool Configuration::getUseNativeStyleSheet()
+{
+    return this->mUseNativeStyleSheet;
 }
 
 
@@ -595,6 +607,12 @@ QString Configuration::getStyleSheet()
 void Configuration::setShowWelcomeDialog(bool value)
 {
     this->mShowWelcomeDialog = value;
+}
+
+
+void Configuration::setUseNativeStyleSheet(bool value)
+{
+    this->mUseNativeStyleSheet = value;
 }
 
 //! @brief Set function for invert wheel option

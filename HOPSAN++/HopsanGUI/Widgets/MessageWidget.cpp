@@ -26,12 +26,14 @@ using namespace hopsan;
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QWidget(pParent)
 {
-    this->setFont(QFont(this->font().family(), 8));
+
 
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setReadOnly(true);
     //mpTextEdit->setPalette(QPalette(QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("whitesmoke")));
     //mpTextEdit->setTextBackgroundColor(QColor("gray"));
+
+    mpTextEdit->setFont(QFont(this->font().family(), 8));
 
     mGroupByTag = false;
 

@@ -92,7 +92,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     gConfig.loadFromXml();
 
-    setStyleSheet(gConfig.getStyleSheet());
+    if(gConfig.getUseNativeStyleSheet())
+        setStyleSheet(" ");
+    else
+        setStyleSheet(gConfig.getStyleSheet());
     setPalette(gConfig.getPalette());
     qApp->setFont(gConfig.getFont());
 

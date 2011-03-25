@@ -51,6 +51,10 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpBackgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     mpBackgroundColorButton->setAutoRaise(true);
 
+    mpNativeStyleSheetCheckBox = new QCheckBox(tr("Use Native Style Sheet"));
+    mpNativeStyleSheetCheckBox->setCheckable(true);
+    mpNativeStyleSheetCheckBox->setChecked(gConfig.getUseNativeStyleSheet());
+
     mpShowWelcomeDialogCheckBox = new QCheckBox(tr("Show Welcome Dialog"));
     mpShowWelcomeDialogCheckBox->setCheckable(true);
     mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
@@ -69,12 +73,13 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     mpInterfaceGroupBox = new QGroupBox(tr("Interface"));
     mpInterfaceLayout = new QGridLayout;
-    mpInterfaceLayout->addWidget(mpShowWelcomeDialogCheckBox, 0, 0);
-    mpInterfaceLayout->addWidget(mpInvertWheelCheckBox, 1, 0);
-    mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox, 2, 0);
-    mpInterfaceLayout->addWidget(mpSnappingCheckBox, 3, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorLabel, 4, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorButton, 4, 1);
+    mpInterfaceLayout->addWidget(mpNativeStyleSheetCheckBox,    0, 0);
+    mpInterfaceLayout->addWidget(mpShowWelcomeDialogCheckBox,   1, 0);
+    mpInterfaceLayout->addWidget(mpInvertWheelCheckBox,         2, 0);
+    mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        3, 0);
+    mpInterfaceLayout->addWidget(mpSnappingCheckBox,            4, 0);
+    mpInterfaceLayout->addWidget(mpBackgroundColorLabel,        5, 0);
+    mpInterfaceLayout->addWidget(mpBackgroundColorButton,       5, 1);
     mpInterfaceGroupBox->setLayout(mpInterfaceLayout);
 
         //Simulation Options
@@ -211,6 +216,15 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 void OptionsDialog::updateValues()
 {
     gConfig.setShowWelcomeDialog(mpShowWelcomeDialogCheckBox->isChecked());
+    gConfig.setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
+    if(gConfig.getUseNativeStyleSheet())
+    {
+        gpMainWindow->setStyleSheet((" "));
+    }
+    else
+    {
+        gpMainWindow->setStyleSheet(gConfig.getStyleSheet());
+    }
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
