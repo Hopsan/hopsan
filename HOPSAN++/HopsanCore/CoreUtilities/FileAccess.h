@@ -21,6 +21,10 @@
 #include "../ComponentEssentials.h"
 #include "../HopsanEssentials.h"
 
+#include "rapidxml.hpp"
+#include "rapidxml_utils.hpp"
+//#include "rapidxml_print.hpp"
+
 namespace hopsan {
 
 //    std::string readName(std::stringstream &rTextStream);
@@ -33,13 +37,12 @@ namespace hopsan {
         FileAccess();
 
         void loadModel(std::string filename, ComponentSystem* pModelSystem, double *startTime, double *stopTime);
-        void loadSystemContents(std::stringstream &rLoaddatastream, ComponentSystem* pSubsystem);
-
-        void saveModel(std::string fileName, ComponentSystem* pMainModel, double startTime, double stopTime);
-
+        void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem *pSystem);
+        void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem *pSystem);
+        void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem *pSystem);
 
     private:
-        void saveComponentSystem(std::ofstream& modelFile, ComponentSystem* pMotherModel, std::string motherSystemName);
+
 
     };
 }

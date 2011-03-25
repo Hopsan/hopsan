@@ -16,67 +16,20 @@
 using namespace std;
 using namespace hopsan;
 
-////! @todo clean up this readname and quote stuff
-
-////! @brief This function extracts the name from a text stream
-////! @return The extracted name without quotes, empty string if failed
-////! It is assumed that the name was saved OK. but error indicated by empty string
-//string hopsan::readName(stringstream &rTextStream)
-//{
-//    string tempName;
-//    rTextStream >> tempName;
-
-//    if (tempName.compare(0,1,"\"") == 0)
-//    {
-//        //cout << "begin quote" << endl;
-//        int last = tempName.size()-1; //! @todo find better way to keep track of last character for comparison (not really that important)
-//        while (!tempName.compare(last,1,"\"") == 0)
-//        {
-//            //cout << "not last quote" << endl;
-//            //cout << "tempname: " << tempName << endl;
-//            if (rTextStream.eof())
-//            {
-//                return string(""); //Empty string (failed)
-//            }
-//            else
-//            {
-//                string tmpstr;
-//                rTextStream >> tmpstr;
-//                tempName.append(" " + tmpstr);
-//            }
-//            last = tempName.size()-1;
-//        }
-//        //cout << "last quote" << endl;
-//        //return tempName.remove("\"").trimmed(); //Remove quotes and trimm (just to be sure)
-//        //Trim the ends
-//        //! @todo make sure to trim white spaces also
-//        tempName.erase(tempName.begin());
-//        tempName.erase(--tempName.end());
-//        return tempName;
-//    }
-//    else
-//    {
-//        return string(""); //Empty string (failed)
-//    }
-//}
-
-////! @brief Convenience function if you dont have a stream to read from
-////! @return The extracted name without quotes, empty string if failed
-////! It is assumed that the name was saved OK. but error indicated by empty string
-//string hopsan::readName(string namestring)
-//{
-//    stringstream namestream(namestring);
-//    return readName(namestream);
-//}
-
-////! @brief This function may be used to add quotes around string, usefull for saving names. Ex: "string"
-//string hopsan::addQuotes(string str)
-//{
-//    str.insert(0,"\""); //prepend
-//    str.append("\"");
-//    return str;
-//}
-
+//Help functions
+double readDoubleAttribute(rapidxml::xml_node<> *pNode, string attrName, double defaultValue)
+{
+    rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
+    if (pAttr)
+    {
+        //Convert char* to double, assume null terminated strings
+        return atof(pAttr->value());
+    }
+    else
+    {
+        return defaultValue;
+    }
+}
 
 FileAccess::FileAccess()
 {
@@ -86,35 +39,77 @@ FileAccess::FileAccess()
 //! @todo Update this code
 void FileAccess::loadModel(string filename, ComponentSystem* pModelSystem, double *startTime, double *stopTime)
 {
-        //Read from file
-    cout << "Trying to open model: " << filename.c_str() << endl;
-    ifstream modelFile (filename.c_str());
-    if(!modelFile.is_open())
+    rapidxml::file<> hmfFile(filename.c_str());
+
+    rapidxml::xml_document<> doc;
+    doc.parse<0>(hmfFile.data());
+
+    rapidxml::xml_node<> *pRootNode = doc.first_node();
+
+    //Check for correct root node name
+    if (pRootNode->name() == "hopsanmodelfile")
     {
-        cout << "Model file does not exist!" << endl;
+        rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
+        //! @todo error check
+        //We only want to read toplevel simulation time settings here
+        rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
+        *startTime = readDoubleAttribute(pSimtimeNode, "start", 0);
+        *stopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
+
+
+
+
+    }
+    else
+    {
+        cout << "Not correct hmf file root node name" << endl;
         assert(false);
-        //! @todo Cast an exception
     }
 
-    modelFile.close();
+
+
+
+
+
+
 }
 
 
 //! @brief This function can be used to load subsystem contents from a stream into an existing subsystem
 //! @todo Update this code
-void FileAccess::loadSystemContents(stringstream &rLoaddatastream, ComponentSystem* pSubsystem)
+void FileAccess::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
 {
+    rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
+    double Ts = readDoubleAttribute(pSimtimeNode, "timestep", 0.001);
+    pSystem->setDesiredTimestep(Ts);
+
+    //Load contents
+    rapidxml::xml_node<> *pObject = pSysNode->first_node("objects")->first_node();
+    while (pObject != 0)
+    {
+        if (pObject->name() == "component")
+        {
+            //Add new component
+
+        }
+        else if (pObject->name() == "system")
+        {
+            //Add new system
+        }
+        pObject = pObject->next_sibling();
+    }
 
 }
 
-//! @todo Update this code
-void FileAccess::saveModel(string fileName, ComponentSystem* pMotherOfAllModels, double startTime, double stopTime)
+void FileAccess::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
 {
+    //Load the component
 
 }
 
-//! @todo Update this code
-void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMotherModel, string motherSystemName)
+void FileAccess::loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem)
 {
+    //Load the component
 
 }
+
