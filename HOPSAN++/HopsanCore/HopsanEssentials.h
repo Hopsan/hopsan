@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef HOPSANESSENTIALS_H
-#define HOPSANESSENTIALS_H
+#ifndef HopsanEssentials_H
+#define HopsanEssentials_H
 
 #include "Node.h"
 #include "Port.h"
@@ -17,7 +17,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 namespace hopsan {
-
+extern "C" {
     //! @brief This class gives access to HopsanCore Initialization, externalLib loading and ComponentCreation.
     //!
     //! This is a singleton class and as such it can only be used in one instance in any main program
@@ -55,5 +55,5 @@ namespace hopsan {
         bool loadExternalComponent(const std::string path);
     };
 }
-
-#endif // HOPSANESSENTIALS_H
+}
+#endif // HopsanEssentials_H

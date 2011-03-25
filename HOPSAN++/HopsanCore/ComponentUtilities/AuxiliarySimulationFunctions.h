@@ -13,7 +13,7 @@
 #include "../win32dll.h"
 
 namespace hopsan {
-
+extern "C" {
     double DLLIMPORTEXPORT multByTwo(double input);     //! @todo Vad är det här bra för?
     void DLLIMPORTEXPORT limitValue(double &value, double min, double max);
     bool DLLIMPORTEXPORT doubleToBool(double value);
@@ -41,6 +41,6 @@ namespace hopsan {
     double DLLIMPORTEXPORT Cos(double x);
     double DLLIMPORTEXPORT Tan(double x);
     double DLLIMPORTEXPORT Sqrt(double x);
-
+}
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H

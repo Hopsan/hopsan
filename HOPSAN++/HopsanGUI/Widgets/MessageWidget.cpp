@@ -117,7 +117,7 @@ void MessageWidget::setMessageColor(QString type)
     }
     else if (type == "warning")
     {
-        mpTextEdit->setTextColor("DARKORANGE");
+        mpTextEdit->setTextColor(QColor(216, 115, 0));
     }
     else if (type == "info")
     {

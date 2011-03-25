@@ -54,7 +54,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpNew->setIconSize(QSize(120, 120));
     mpNew->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpNew->setMouseTracking(true);
-    mpNew->setStyleSheet(" QPushButton:flat { border: none; } ");
+    mpNew->setStyleSheet(" QPushButton:flat { border: none; background: none; } ");
 
     mpOpen = new QPushButton(this);
     mpOpenIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "open.png"));
@@ -64,6 +64,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpOpen->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpOpen->setMouseTracking(true);
     mpOpen->setFlat(true);
+    mpOpen->setStyleSheet(" QPushButton:flat { border: none; background: none; } ");
 
     mpLastSession = new QPushButton(this);
     mpLastSessionIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
@@ -74,6 +75,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpLastSession->setMouseTracking(true);
     mpLastSession->setEnabled(!gConfig.getLastSessionModels().empty());
     mpLastSession->setFlat(true);
+    mpLastSession->setStyleSheet(" QPushButton:flat { border: none; background: none; } ");
 
     QHBoxLayout *pButtonLayout = new QHBoxLayout();
     pButtonLayout->addWidget(mpNew);
