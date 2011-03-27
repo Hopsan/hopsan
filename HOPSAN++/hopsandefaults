@@ -52,7 +52,8 @@
                         QComboBox:hover:pressed   	{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
                         QComboBox:hover       		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
                         QComboBox:drop-down		{ border: 1px solid gray;	border-style: none;	border-top-right-radius: 5px;	border-bottom-right-radius: 5px; }
-			
+                        QComboBox::down-arrow           { image: url(:graphics/style-down-arrow.png); }
+
                         QSpinBox			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;   background-color: white; }
                         QSpinBox:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;   background-color: white; }
 
@@ -60,6 +61,8 @@
                         QSpinBox::down-button           { border: 1px solid gray;	border-style: outset;	border-bottom-right-radius: 5px;    border-bottom-left-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: bottom right; }
                         QSpinBox::up-button:hover       { border: 2px solid blue;	border-style: outset;	border-top-right-radius: 5px;       border-top-left-radius: 5px;        padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: top right; }
                         QSpinBox::down-button:hover     { border: 2px solid blue;	border-style: outset;	border-bottom-right-radius: 5px;    border-bottom-left-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: bottom right; }
+                        QSpinBox::up-arrow              { image: url(:graphics/style-arrow-up.png); }
+                        QSpinBox::down-arrow            { image: url(:graphics/style-arrow-down.png); }
 
                         QLineEdit			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;   background-color: white; }
                         QLineEdit:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;   background-color: white; }

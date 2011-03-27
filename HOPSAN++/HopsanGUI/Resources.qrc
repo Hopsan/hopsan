@@ -75,5 +75,7 @@
         <file>graphics/objecticons/missingcomponenticon.svg</file>
         <file>graphics/splash2.svg</file>
         <file>graphics/uiicons/Hopsan-ResetDefault.png</file>
+        <file>graphics/style-arrow-down.png</file>
+        <file>graphics/style-arrow-up.png</file>
     </qresource>
 </RCC>

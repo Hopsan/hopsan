@@ -100,7 +100,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpUseMulticoreCheckBox->setCheckable(true);
     mpUseMulticoreCheckBox->setChecked(gConfig.getUseMulticore());
 
-    mpThreadsLabel = new QLabel(tr("Number of Simulation Threads (0 = Auto)"));
+    mpThreadsLabel = new QLabel(tr("Number of Simulation Threads \n(0 = Auto Detect)"));
     mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
     mpThreadsSpinBox = new QSpinBox();
     mpThreadsSpinBox->setMinimum(0);
@@ -109,12 +109,12 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
     mpThreadsSpinBox->setEnabled(gConfig.getUseMulticore());
 
-    mpThreadsWarningLabel = new QLabel(tr("Caution! Choosing more threads than the number of processor cores may be unstable on some systems."));
-    mpThreadsWarningLabel->setWordWrap(true);
-    QPalette palette = mpThreadsWarningLabel->palette();
-    palette.setColor(mpThreadsWarningLabel->backgroundRole(), Qt::darkRed);
-    palette.setColor(mpThreadsWarningLabel->foregroundRole(), Qt::darkRed);
-    mpThreadsWarningLabel->setPalette(palette);
+    //mpThreadsWarningLabel = new QLabel(tr("Caution! Choosing more threads than the number of processor cores may be unstable on some systems."));
+    //mpThreadsWarningLabel->setWordWrap(true);
+    //QPalette palette = mpThreadsWarningLabel->palette();
+    //palette.setColor(mpThreadsWarningLabel->backgroundRole(), Qt::darkRed);
+    //palette.setColor(mpThreadsWarningLabel->foregroundRole(), Qt::darkRed);
+    //mpThreadsWarningLabel->setPalette(palette);
 
     mpSimulationGroupBox = new QGroupBox(tr("Simulation"));
     mpSimulationLayout = new QGridLayout;
@@ -124,7 +124,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpSimulationLayout->addWidget(mpUseMulticoreCheckBox, 2, 0, 1, 2);
     mpSimulationLayout->addWidget(mpThreadsLabel, 3, 0);
     mpSimulationLayout->addWidget(mpThreadsSpinBox, 3, 1);
-    mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
+    //mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
     mpSimulationGroupBox->setLayout(mpSimulationLayout);
 
     mpValueUnitLabel = new QLabel(tr("Default Value Unit"));
