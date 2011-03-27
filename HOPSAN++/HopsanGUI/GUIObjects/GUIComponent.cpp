@@ -117,7 +117,7 @@ QString GUIComponent::getStartValueTxt(QString portName, QString variable)
 //! @brief Slot that opens the parameter dialog for the component
 void GUIComponent::openPropertiesDialog()
 {
-    ComponentPropertiesDialog *pDialog = new ComponentPropertiesDialog(this);
+    ComponentPropertiesDialog *pDialog = new ComponentPropertiesDialog(this, gpMainWindow);
     pDialog->exec();
     delete pDialog;
 }

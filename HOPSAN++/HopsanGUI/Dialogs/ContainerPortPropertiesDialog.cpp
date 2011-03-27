@@ -16,6 +16,7 @@
 
 #include "../GUIObjects/GUIContainerPort.h"
 #include "../GUIObjects/GUIContainerObject.h"
+#include "../Configuration.h"
 
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
@@ -30,6 +31,7 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(GUIContainerPort *p
     this->setObjectName("PortPropertiesDialog");
     this->resize(640,480);
     this->setWindowTitle("PortPropertiesDialog");
+    this->setPalette(gConfig.getPalette());
 
         //This is the main Vertical layout of the dialog
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);

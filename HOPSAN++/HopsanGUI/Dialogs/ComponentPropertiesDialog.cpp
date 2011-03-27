@@ -22,6 +22,7 @@
 #include "../Widgets/ProjectTabWidget.h"
 #include "../Widgets/SystemParametersWidget.h"
 #include "../Widgets/LibraryWidget.h"
+#include "../Configuration.h"
 
 
 //! @class ComponentPropertiesDialog
@@ -34,10 +35,11 @@
 //! @brief Constructor for the parameter dialog for components
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-ComponentPropertiesDialog::ComponentPropertiesDialog(GUIComponent *pGUIComponent, QWidget *parent)
+ComponentPropertiesDialog::ComponentPropertiesDialog(GUIComponent *pGUIComponent, MainWindow *parent)
     : QDialog(parent)
 {
     mpGUIComponent = pGUIComponent;
+    this->setPalette(gConfig.getPalette());
     createEditStuff();
 }
 
@@ -145,7 +147,7 @@ void ComponentPropertiesDialog::createEditStuff()
                 mvStartValueLayout[j][i]= new ParameterLayout(startDataNamesStr[j][i],
                                                               portName,
                                                               startDataValuesTxt[j][i],
-                                                              startDataUnitsStr[j][i],
+                                                              "["+startDataUnitsStr[j][i]+"]",
                                                               mpGUIComponent);
                 startValueLayout->addLayout(mvStartValueLayout[j][i], sr, 0);
 
@@ -244,9 +246,9 @@ void ComponentPropertiesDialog::createEditStuff()
 
     QWidget *pPrimaryWidget = new QWidget(this);
     pPrimaryWidget->setLayout(mainLayout);
+    pPrimaryWidget->setPalette(gConfig.getPalette());
 
     QScrollArea *pScrollArea = new QScrollArea(this);
-//    pScrollArea->setLayout(mainLayout);
     pScrollArea->setWidget(pPrimaryWidget);
     pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
@@ -258,7 +260,7 @@ void ComponentPropertiesDialog::createEditStuff()
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     pPrimaryLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     int maxHeight = qApp->desktop()->screenGeometry().height()-100;
-    pScrollArea->setMinimumHeight(std::min(pPrimaryWidget->height()+10, maxHeight));
+    pScrollArea->setFixedHeight(std::min(pPrimaryWidget->height()+3, maxHeight));
     if(pScrollArea->minimumHeight() == maxHeight)
     {
         pScrollArea->setMinimumWidth(pPrimaryWidget->width()+19);
@@ -269,8 +271,6 @@ void ComponentPropertiesDialog::createEditStuff()
     }
     pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    //this->setMinimumHeight(600);
 
     setWindowTitle(tr("Parameters"));
 }

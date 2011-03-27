@@ -29,7 +29,7 @@
         <penstyle width="2" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="User"/>
         <penstyle width="2" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="User"/>
         <penstyle width="1" situation="Primary" capstyle="16" type="Signal" style="2" color="#0000ff" gfxtype="User"/>
-		<palette windowText="0,0,0" button="0,0,255" light="173,216,230" dark="0,0,139" mid="0,0,255" text="0,0,0" bright_text="128,128,128" base="244,247,251" window="226,231,237"/>
+                <palette windowText="0,0,0" button="0,0,255" light="173,216,230" dark="0,0,139" mid="0,0,255" text="0,0,0" bright_text="128,128,128" base="244,247,251" window="226,231,237"/>
 		<font family="Calibri" size="9"/>
 		<stylesheet>
                         QPushButton 			{ border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
@@ -53,11 +53,16 @@
                         QComboBox:hover       		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
                         QComboBox:drop-down		{ border: 1px solid gray;	border-style: none;	border-top-right-radius: 5px;	border-bottom-right-radius: 5px; }
 			
-                        QSpinBox			{ border: 1px solid gray;	border-style: outset;	border-radius: 5px;	padding: 2px;                                           background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
-                        QSpinBox:hover       		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;                                           background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
+                        QSpinBox			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;   background-color: white; }
+                        QSpinBox:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;   background-color: white; }
 
-                        QLineEdit			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;                                           background-color: white;     min-width: 80px; }
-                        QLineEdit:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;                                           background-color: white;     min-width: 80px; }
+                        QSpinBox::up-button             { border: 1px solid gray;	border-style: outset;	border-top-right-radius: 5px;       border-top-left-radius: 5px;        padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: top right; }
+                        QSpinBox::down-button           { border: 1px solid gray;	border-style: outset;	border-bottom-right-radius: 5px;    border-bottom-left-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: bottom right; }
+                        QSpinBox::up-button:hover       { border: 2px solid blue;	border-style: outset;	border-top-right-radius: 5px;       border-top-left-radius: 5px;        padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: top right; }
+                        QSpinBox::down-button:hover     { border: 2px solid blue;	border-style: outset;	border-bottom-right-radius: 5px;    border-bottom-left-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: bottom right; }
+
+                        QLineEdit			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;   background-color: white; }
+                        QLineEdit:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;   background-color: white; }
 
                         QTabWidget:pane             	{ border: 1px solid gray; background-color: rgb(226,231,237); padding: 0px; position: absolute; top: -0px; margin-top: -1px; }
 
@@ -81,10 +86,15 @@
 
 			QMainWindow::separator:hover 		{ background: darkgray; }
 
-			QDockWidget 						{  border: 1px solid gray; padding: 10px;}
+                        QDockWidget                             {  border: 1px solid gray; padding: 10px;}
 			QDockWidget::title:horizontal 		{ text-align: left center; background: rgb(226,231,237); padding-top: -10px; padding-left: 5px; padding-bottom: -10px; }
-			QDockWidget::title            		{ text-align: left top; background: rgb(226,231,237); padding-left: 5px; padding-right: -50px; }
-		</stylesheet>
+                        QDockWidget::title            		{ text-align: left top; background: rgb(226,231,237); padding-left: 5px; padding-right: -50px; }
+
+                        QGroupBox                   { border: 1px solid gray;   border-radius: 5px;  margin-top: 7px; }
+                        QGroupBox::title            { subcontrol-origin: margin;    subcontrol-position: top center;    padding: 0 3px; }
+
+
+            </stylesheet>
     </style>
     <units>
         <defaultunit unit="rad" name="Angle"/>

@@ -12,6 +12,8 @@
 
 #include <QtGui>
 
+#include "../MainWindow.h"
+
 class GUIModelObject;
 class GUIComponent;
 class ParameterLayout;
@@ -21,7 +23,7 @@ class ComponentPropertiesDialog : public QDialog
     Q_OBJECT
 
 public:
-    ComponentPropertiesDialog(GUIComponent *pGUIComponent, QWidget *parent = 0);
+    ComponentPropertiesDialog(GUIComponent *pGUIComponent, MainWindow *parent = 0);
 
 protected slots:
     void okPressed();
