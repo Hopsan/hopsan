@@ -1247,15 +1247,6 @@ ComponentSystem::ComponentSystem(string name) : Component(name)
     mDesiredTimestep = 0.001;
 }
 
-//! @todo maybe not have this in this class maybe external function, or maybe all loading internal in all classes
-void ComponentSystem::loadSystemFromFile(string filepath)
-{
-    FileAccess fileaccess;
-    double dummy;
-    fileaccess.loadModel(filepath, this, &dummy, &dummy); //!< @todo fix dummy stuff
-}
-
-
 double ComponentSystem::getDesiredTimeStep()
 {
     return mDesiredTimestep;

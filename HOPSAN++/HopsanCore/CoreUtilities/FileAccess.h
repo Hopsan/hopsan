@@ -36,13 +36,12 @@ namespace hopsan {
     public:
         FileAccess();
 
-        void loadModel(std::string filename, ComponentSystem* pModelSystem, double *startTime, double *stopTime);
+        ComponentSystem* loadModel(std::string filename, double *startTime, double *stopTime);
+
+    private:
         void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem *pSystem);
         void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem *pSystem);
         void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem *pSystem);
-
-    private:
-
 
     };
 }

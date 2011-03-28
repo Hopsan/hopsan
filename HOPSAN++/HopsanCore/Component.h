@@ -213,6 +213,7 @@ namespace hopsan {
         bool mIsComponentSystem;
         bool mIsComponentSignal;
 
+        //! @todo I dont think this is beeing used any longer, might remove
         size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
 
     private:
@@ -239,9 +240,6 @@ namespace hopsan {
         //==========Public functions==========
         //Constructor - Destructor
         ComponentSystem(std::string name="ComponentSystem");
-
-        //Load from external file
-        void loadSystemFromFile(std::string filepath);
 
         //Set the subsystem CQS type
         void setTypeCQS(const std::string cqs_type, bool doOnlyLocalSet=false);

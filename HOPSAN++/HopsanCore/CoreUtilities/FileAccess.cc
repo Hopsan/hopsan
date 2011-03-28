@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <string>
 #include "FileAccess.h"
 #include "../Component.h"
 #include "../HopsanCore.h"
@@ -31,13 +32,29 @@ double readDoubleAttribute(rapidxml::xml_node<> *pNode, string attrName, double 
     }
 }
 
+string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string defaultValue)
+{
+    rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
+    if (pAttr)
+    {
+        //Convert char* to dstring, assume null terminated strings
+        return string(pAttr->value());
+    }
+    else
+    {
+        return defaultValue;
+    }
+
+}
+
+
 FileAccess::FileAccess()
 {
     //Nothing
 }
 
 //! @todo Update this code
-void FileAccess::loadModel(string filename, ComponentSystem* pModelSystem, double *startTime, double *stopTime)
+ComponentSystem* FileAccess::loadModel(string filename, double *startTime, double *stopTime)
 {
     rapidxml::file<> hmfFile(filename.c_str());
 
@@ -56,22 +73,17 @@ void FileAccess::loadModel(string filename, ComponentSystem* pModelSystem, doubl
         *startTime = readDoubleAttribute(pSimtimeNode, "start", 0);
         *stopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
 
+        ComponentSystem * pSys = HopsanEssentials::getInstance()->CreateComponentSystem(); //Create root system
+        loadSystemContents(pSysNode, pSys);
 
-
-
+        return pSys;
     }
     else
     {
         cout << "Not correct hmf file root node name" << endl;
         assert(false);
+        return 0;
     }
-
-
-
-
-
-
-
 }
 
 
@@ -89,27 +101,80 @@ void FileAccess::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSys
     {
         if (pObject->name() == "component")
         {
-            //Add new component
+            loadComponent(pObject, pSystem);
 
         }
         else if (pObject->name() == "system")
         {
             //Add new system
+            ComponentSystem * pSys = HopsanEssentials::getInstance()->CreateComponentSystem();
+            pSystem->addComponent(pSys);
+            loadSystemContents(pObject, pSys);
         }
         pObject = pObject->next_sibling();
     }
+
+    //Load connections
+    rapidxml::xml_node<> *pConnection = pSysNode->first_node("conections")->first_node();
+    while (pConnection != 0)
+    {
+        if (pConnection->name() == "connnect")
+        {
+            loadConnection(pConnection, pSystem);
+        }
+        pConnection->next_sibling();
+    }
+
 
 }
 
 void FileAccess::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
 {
-    //Load the component
+    string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
+    string displayName =  readStringAttribute(pComponentNode, "displayname", typeName);
 
+    Component *pComp = HopsanEssentials::getInstance()->CreateComponent(typeName);
+    pComp->setName(displayName);
+    pSystem->addComponent(pComp);
+
+    //Load parameters
+    rapidxml::xml_node<> *pParam = pComponentNode->first_node("parameters")->first_node();
+    while (pParam != 0)
+    {
+        if (pParam->name() == "parameter")
+        {
+            string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
+            double val = readDoubleAttribute(pParam, "value", 0);
+
+            pComp->setParameterValue(paramName, val);
+        }
+        pParam->next_sibling();
+    }
+
+    //Load startvalues
+    rapidxml::xml_node<> *pStartValue = pComponentNode->first_node("startvalues")->first_node();
+    while (pStartValue != 0)
+    {
+        if (pStartValue->name() == "startvalue")
+        {
+            string portName = readStringAttribute(pStartValue, "portname", "ERROR_NO_PARTNAME_GIVEN");
+            string variableName = readStringAttribute(pStartValue, "variable", "ERROR_NO_PARTNAME_GIVEN");
+            double val = readDoubleAttribute(pParam, "value", 0);
+
+            //! @todo how do I transfrom variable name into variable index?
+            //pComp->setStartValue();
+        }
+        pStartValue->next_sibling();
+    }
 }
 
 void FileAccess::loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem)
 {
-    //Load the component
+    string startcomponent = readStringAttribute(pConnectNode, "startcomponent", "ERROR_NOSTARTCOMPNAME_GIVEN");
+    string startport = readStringAttribute(pConnectNode, "startport", "ERROR_NOSTARTPORTNAME_GIVEN");
+    string endcomponent = readStringAttribute(pConnectNode, "endcomponent", "ERROR_NOENDCOMPNAME_GIVEN");
+    string endport = readStringAttribute(pConnectNode, "endport", "ERROR_NOENDPORTNAME_GIVEN");
 
+    pSystem->connect(startcomponent, startport, endcomponent, endport);
 }
 
