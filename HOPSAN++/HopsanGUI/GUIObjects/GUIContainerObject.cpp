@@ -1846,10 +1846,14 @@ void GUIContainerObject::collectPlotData()
 
     GUIModelObjectMapT::iterator moit;
     QList<GUIPort*>::iterator pit;
+    QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > componentMap;
     for(moit=mGUIModelObjectMap.begin(); moit!=mGUIModelObjectMap.end(); ++moit)
     {
+        QMap< QString, QMap<QString, QVector<double> > > portMap;
         for(pit=moit.value()->getPortListPtrs().begin(); pit!=moit.value()->getPortListPtrs().end(); ++pit)
         {
+            QMap<QString, QVector<double> > variableMap;
+
             QVector<QString> names;
             QVector<QString> units;
             getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(moit.value()->getName(), (*pit)->getName(), names, units);
@@ -1859,24 +1863,21 @@ void GUIContainerObject::collectPlotData()
             {
                 QVector<double> data;
                 getCoreSystemAccessPtr()->getPlotData(moit.value()->getName(), (*pit)->getName(), (*nit), data);
-                QMap<QString, QVector<double> > variableMap;
                 variableMap.insert((*nit), data);
-                QMap< QString, QMap<QString, QVector<double> > > portMap;
-                portMap.insert((*pit)->getName(), variableMap);
-                QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > componentMap;
-                componentMap.insert(moit.value()->getName(), portMap);
-                mPlotData.append(componentMap);
-
                 if(!timeVectorObtained)
                 {
                     mTimeVectors.append(QVector<double>::fromStdVector(getCoreSystemAccessPtr()->getTimeVector(moit.value()->getName(), (*pit)->getName())));
                     timeVectorObtained = true;
                 }
-            }
-        }
-    }
-}
 
+                //qDebug() << "Inserting: " << moit.value()->getName() << ", " << (*pit)->getName() << ", " << (*nit);
+            }
+            portMap.insert((*pit)->getName(), variableMap);
+        }
+        componentMap.insert(moit.value()->getName(), portMap);
+    }
+    mPlotData.append(componentMap);
+}
 
 
 QVector<double> GUIContainerObject::getTimeVector(int generation)
@@ -1887,5 +1888,19 @@ QVector<double> GUIContainerObject::getTimeVector(int generation)
 
 QVector<double> GUIContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
 {
+    qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
+    qDebug() << "Size of data: " << mPlotData.size();
     return mPlotData.at(generation).find(componentName).value().find(portName).value().find(dataName).value();
+}
+
+
+QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > GUIContainerObject::getAllPlotData()
+{
+    return mPlotData;
+}
+
+
+int GUIContainerObject::getNumberOfPlotGenerations()
+{
+    return mPlotData.size();
 }

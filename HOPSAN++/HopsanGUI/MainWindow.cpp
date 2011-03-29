@@ -483,16 +483,16 @@ void MainWindow::createActions()
     togglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
-    mpStartTimeLineEdit->setMaximumWidth(100);
+    mpStartTimeLineEdit->setMaximumWidth(70);
     mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
     mpTimeStepLineEdit = new QLineEdit("0.001");
-    mpTimeStepLineEdit->setMaximumWidth(100);
+    mpTimeStepLineEdit->setMaximumWidth(70);
     mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 999.0, 6, mpStartTimeLineEdit));
     mpFinishTimeLineEdit = new QLineEdit("10.0");
     mpFinishTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpFinishTimeLineEdit));
-    mpFinishTimeLineEdit->setMaximumWidth(100);
+    mpFinishTimeLineEdit->setMaximumWidth(70);
     mpFinishTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
     mpTimeLabelDeliminator2 = new QLabel(tr(" :: "));

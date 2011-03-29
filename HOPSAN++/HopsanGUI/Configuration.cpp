@@ -586,7 +586,10 @@ QPen Configuration::getPen(QString type, graphicsType gfxType, QString situation
 
 QPalette Configuration::getPalette()
 {
-    return mPalette;
+    if(this->mUseNativeStyleSheet)
+        return QPalette();
+    else
+        return mPalette;
 }
 
 
@@ -598,7 +601,10 @@ QFont Configuration::getFont()
 
 QString Configuration::getStyleSheet()
 {
-    return mStyleSheet;
+    if(mUseNativeStyleSheet)
+        return QString();
+    else
+        return mStyleSheet;
 }
 
 

@@ -884,6 +884,7 @@ bool Component::isSimulationOk()
 {
     cout << "Warning this function isSimulationOk() is only available on subsystem components" << endl;
     assert(false);
+	return false;
 }
 
 

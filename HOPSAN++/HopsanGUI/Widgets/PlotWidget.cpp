@@ -242,7 +242,8 @@ PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString p
 
     PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
-    plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
+    //! @todo FIX! FIX! FIX! This will always only plot the first generation!
+    plotWindow->addPlotCurve(0, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
 
     mOpenPlotWindows.append(plotWindow);
 
@@ -254,7 +255,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QVector<double> xVector, QVector
 {
     PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
-    plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, axis);
+    plotWindow->addPlotCurve(0, componentName, portName, dataName, dataUnit, axis);
 
     return plotWindow;
 }
@@ -376,161 +377,164 @@ PlotWidget::PlotWidget(MainWindow *parent)
 //! Loads a plot window from a specified .hpw file. Loads the actual plot data from a .hmpf file.
 void PlotWidget::loadFromXml()
 {
-    QDir fileDialogSaveDir;
-    QString hpwFilePath;
-    hpwFilePath = QFileDialog::getOpenFileName(this, tr("Plot Window File"),
-                                               fileDialogSaveDir.currentPath() + QString(MODELPATH),
-                                               tr("Hopsan Plot Window files (*.hpw)"));
 
-    QFile file(hpwFilePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to read plot window file.");
-        return;
-    }
-    QDomDocument domDocument;
-    QString errorStr;
-    int errorLine, errorColumn;
-    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-    {
-        QMessageBox::information(window(), tr("Hopsan GUI"),
-                                 tr("Parse error at line %1, column %2:\n%3")
-                                 .arg(errorLine)
-                                 .arg(errorColumn)
-                                 .arg(errorStr));
-    }
-    else
-    {
-        QDomElement hpwRoot = domDocument.documentElement();
-        if (hpwRoot.tagName() != "hopsanplot")
-        {
-            QMessageBox::information(window(), tr("Hopsan GUI"),
-                                     "The file is not an Hopsan Plot Window file. Incorrect hpw root tag name: "
-                                     + hpwRoot.tagName() + " != hopsanplot");
-        }
-        else
-        {
-            QString hmpfFileName = hpwRoot.firstChildElement("datafile").text();
-            size_t datasize = parseDomValueNode(hpwRoot.firstChildElement("datasize"));
+    //! @todo Re-implement
 
-            QFile hmpfFile(hmpfFileName);
-            if(!hmpfFile.exists())
-            {
-                qDebug() << "Failed to open file, file not found: " + hmpfFile.fileName();
-                return;
-            }
-            if (!hmpfFile.open(QIODevice::ReadOnly | QIODevice::Text))
-            {
-                return;
-            }
+//    QDir fileDialogSaveDir;
+//    QString hpwFilePath;
+//    hpwFilePath = QFileDialog::getOpenFileName(this, tr("Plot Window File"),
+//                                               fileDialogSaveDir.currentPath() + QString(MODELPATH),
+//                                               tr("Hopsan Plot Window files (*.hpw)"));
 
-            QList< QVector<double> > xData;
-            QList< QList < QVector<double> > > yData;
-            QVector<double> tempVector;
-            xData.append(tempVector);
-            QList< QVector<double> > tempList;
-            for(size_t i=0; i<datasize; ++i)
-            {
-                tempList.append(tempVector);
-            }
-            yData.append(tempList);
+//    QFile file(hpwFilePath);
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//    {
+//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to read plot window file.");
+//        return;
+//    }
+//    QDomDocument domDocument;
+//    QString errorStr;
+//    int errorLine, errorColumn;
+//    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+//    {
+//        QMessageBox::information(window(), tr("Hopsan GUI"),
+//                                 tr("Parse error at line %1, column %2:\n%3")
+//                                 .arg(errorLine)
+//                                 .arg(errorColumn)
+//                                 .arg(errorStr));
+//    }
+//    else
+//    {
+//        QDomElement hpwRoot = domDocument.documentElement();
+//        if (hpwRoot.tagName() != "hopsanplot")
+//        {
+//            QMessageBox::information(window(), tr("Hopsan GUI"),
+//                                     "The file is not an Hopsan Plot Window file. Incorrect hpw root tag name: "
+//                                     + hpwRoot.tagName() + " != hopsanplot");
+//        }
+//        else
+//        {
+//            QString hmpfFileName = hpwRoot.firstChildElement("datafile").text();
+//            size_t datasize = parseDomValueNode(hpwRoot.firstChildElement("datasize"));
+
+//            QFile hmpfFile(hmpfFileName);
+//            if(!hmpfFile.exists())
+//            {
+//                qDebug() << "Failed to open file, file not found: " + hmpfFile.fileName();
+//                return;
+//            }
+//            if (!hmpfFile.open(QIODevice::ReadOnly | QIODevice::Text))
+//            {
+//                return;
+//            }
+
+//            QList< QVector<double> > xData;
+//            QList< QList < QVector<double> > > yData;
+//            QVector<double> tempVector;
+//            xData.append(tempVector);
+//            QList< QVector<double> > tempList;
+//            for(size_t i=0; i<datasize; ++i)
+//            {
+//                tempList.append(tempVector);
+//            }
+//            yData.append(tempList);
 
 
-            QTextStream fileStream(&hmpfFile);
-            QString line;
-            QTextStream lineStream;
-            size_t generation = 0;
-            double value;
-            while( !fileStream.atEnd() )
-            {
-                line = fileStream.readLine();
-                if(line.startsWith("GENERATIONBREAK"))
-                {
-                    ++generation;
-                    xData.append(tempVector);
-                    yData.append(tempList);
-                }
-                else
-                {
-                    lineStream.setString(&line);
-                    lineStream >> value;
-                    xData[generation].append(value);
-                    for(size_t ic=0; ic<datasize; ++ic)
-                    {
-                        lineStream >> value;
-                        yData[generation][ic].append(value);
-                    }
-                }
-            }
-            hmpfFile.close();
+//            QTextStream fileStream(&hmpfFile);
+//            QString line;
+//            QTextStream lineStream;
+//            size_t generation = 0;
+//            double value;
+//            while( !fileStream.atEnd() )
+//            {
+//                line = fileStream.readLine();
+//                if(line.startsWith("GENERATIONBREAK"))
+//                {
+//                    ++generation;
+//                    xData.append(tempVector);
+//                    yData.append(tempList);
+//                }
+//                else
+//                {
+//                    lineStream.setString(&line);
+//                    lineStream >> value;
+//                    xData[generation].append(value);
+//                    for(size_t ic=0; ic<datasize; ++ic)
+//                    {
+//                        lineStream >> value;
+//                        yData[generation][ic].append(value);
+//                    }
+//                }
+//            }
+//            hmpfFile.close();
 
-            QStringList componentName;
-            QStringList portName;
-            QStringList dataName;
-            QStringList dataUnit;
-            QList<size_t> axis;
-            QList<size_t> index;
+//            QStringList componentName;
+//            QStringList portName;
+//            QStringList dataName;
+//            QStringList dataUnit;
+//            QList<size_t> axis;
+//            QList<size_t> index;
 
-                //Create plot window and curves from loaded data
-            QDomElement curveElement = hpwRoot.firstChildElement("plotcurve");
-            componentName.append(curveElement.firstChildElement("component").text());
-            portName.append(curveElement.firstChildElement("port").text());
-            dataName.append(curveElement.firstChildElement("dataname").text());
-            dataUnit.append(curveElement.firstChildElement("unit").text());
-            axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
-            index.append(parseDomValueNode(curveElement.firstChildElement("index")));
+//                //Create plot window and curves from loaded data
+//            QDomElement curveElement = hpwRoot.firstChildElement("plotcurve");
+//            componentName.append(curveElement.firstChildElement("component").text());
+//            portName.append(curveElement.firstChildElement("port").text());
+//            dataName.append(curveElement.firstChildElement("dataname").text());
+//            dataUnit.append(curveElement.firstChildElement("unit").text());
+//            axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
+//            index.append(parseDomValueNode(curveElement.firstChildElement("index")));
 
                 //Create the actual plot window (with first curve, first generation)
-            PlotWindow *pPlotWindow = mpPlotParameterTree->createPlotWindow(xData[0], yData[0][index.first()], axis.first(), componentName.first(), portName.first(), dataName.first(), dataUnit.first());
+//            PlotWindow *pPlotWindow = mpPlotParameterTree->createPlotWindow(xData[0], yData[0][index.first()], axis.first(), componentName.first(), portName.first(), dataName.first(), dataUnit.first());
 
-            pPlotWindow->mpCurves.first()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
-                                                  pPlotWindow->mpCurves.first()->pen().width()));
+//            pPlotWindow->mpCurves.first()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
+//                                                  pPlotWindow->mpCurves.first()->pen().width()));
 
-                //Add the remaining curves (first generation)
-            curveElement = curveElement.nextSiblingElement("plotcurve");
-            while(!curveElement.isNull())
-            {
-                componentName.append(curveElement.firstChildElement("component").text());
-                portName.append(curveElement.firstChildElement("port").text());
-                dataName.append(curveElement.firstChildElement("dataname").text());
-                dataUnit.append(curveElement.firstChildElement("unit").text());
-                axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
-                index.append(parseDomValueNode(curveElement.firstChildElement("index")));
-                pPlotWindow->addPlotCurve(xData[0], yData[0][index.last()], componentName.last(), portName.last(), dataName.last(), dataUnit.last(), axis.last());
+//                //Add the remaining curves (first generation)
+//            curveElement = curveElement.nextSiblingElement("plotcurve");
+//            while(!curveElement.isNull())
+//            {
+//                componentName.append(curveElement.firstChildElement("component").text());
+//                portName.append(curveElement.firstChildElement("port").text());
+//                dataName.append(curveElement.firstChildElement("dataname").text());
+//                dataUnit.append(curveElement.firstChildElement("unit").text());
+//                axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
+//                index.append(parseDomValueNode(curveElement.firstChildElement("index")));
+//                pPlotWindow->addPlotCurve(xData[0], yData[0][index.last()], componentName.last(), portName.last(), dataName.last(), dataUnit.last(), axis.last());
 
-                pPlotWindow->mpCurves.last()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
-                                                     pPlotWindow->mpCurves.last()->pen().width()));
+//                pPlotWindow->mpCurves.last()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
+//                                                     pPlotWindow->mpCurves.last()->pen().width()));
 
-                curveElement = curveElement.nextSiblingElement("plotcurve");
-            }
+//                curveElement = curveElement.nextSiblingElement("plotcurve");
+//            }
 
-                //Add the remaining generations
-            QList< QVector<double> > tempList2;
-            for(int ig=1; ig<xData.size(); ++ig)
-            {
-                pPlotWindow->mVectorX.append(tempList2);
-                pPlotWindow->mVectorY.append(tempList2);
-                for(int ic=0; ic<index.size(); ++ic)
-                {
-                    pPlotWindow->mVectorX.last().append(xData[ig]);
-                    pPlotWindow->mVectorY.last().append(yData[ig][index[ic]]);
-                }
-            }
+//                //Add the remaining generations
+//            QList< QVector<double> > tempList2;
+//            for(int ig=1; ig<xData.size(); ++ig)
+//            {
+//                pPlotWindow->mVectorX.append(tempList2);
+//                pPlotWindow->mVectorY.append(tempList2);
+//                for(int ic=0; ic<index.size(); ++ic)
+//                {
+//                    pPlotWindow->mVectorX.last().append(xData[ig]);
+//                    pPlotWindow->mVectorY.last().append(yData[ig][index[ic]]);
+//                }
+//            }
 
-                //Set current generation and enable discard button if more than one generation
-            pPlotWindow->mpDiscardGenerationButton->setEnabled(xData.size() > 1);
-            pPlotWindow->setGeneration(xData.size()-1);
+//                //Set current generation and enable discard button if more than one generation
+//            pPlotWindow->mpDiscardGenerationButton->setEnabled(xData.size() > 1);
+//            pPlotWindow->setGeneration(xData.size()-1);
 
 
-                //Keep loading xml data
-            pPlotWindow->setLineWidth(parseDomValueNode(hpwRoot.firstChildElement("linewidth")));
-            pPlotWindow->mpVariablePlot->setCanvasBackground(hpwRoot.firstChildElement("backgroundcolor").text());
-            pPlotWindow->enableGrid(parseDomBooleanNode(hpwRoot.firstChildElement("grid")));
-            pPlotWindow->mpVariablePlot->replot();
-        }
-    }
+//                //Keep loading xml data
+//            pPlotWindow->setLineWidth(parseDomValueNode(hpwRoot.firstChildElement("linewidth")));
+//            //pPlotWindow->mpVariablePlot->setCanvasBackground(hpwRoot.firstChildElement("backgroundcolor").text());
+//            pPlotWindow->enableGrid(parseDomBooleanNode(hpwRoot.firstChildElement("grid")));
+//            //pPlotWindow->mpVariablePlot->replot();
+//        }
+//    }
 
-    file.close();
+//    file.close();
 }
 
 

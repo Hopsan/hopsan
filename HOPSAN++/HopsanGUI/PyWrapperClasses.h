@@ -228,9 +228,9 @@ public slots:
         o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName);
     }
 
-    void plotToWindow(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
+    void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
     {
-        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->addPlotCurve(compName, portName, dataName);
+        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->addPlotCurve(generation, compName, portName, dataName);
     }
 
     void discardPlotGeneration(MainWindow* o, const int& windowNumber)

@@ -33,39 +33,38 @@
 		<font family="Calibri" size="9"/>
 		<stylesheet>
                         QPushButton 			{ border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
-                        QPushButton:pressed 		{ border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }
-                        QPushButton:hover:pressed   	{ border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }
+                        QPushButton:pressed 		{ border: 2px solid rgb(70,70,150);   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }
+                        QPushButton:hover:pressed   	{ border: 2px solid rgb(70,70,150);   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white);                min-width: 80px; }
                         QPushButton:default         	{ border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
-                        QPushButton:hover           	{ border: 2px solid blue;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
+                        QPushButton:hover           	{ border: 2px solid rgb(70,70,150);   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }
 
                         QToolButton			{ border: 2px; 			border-style: none;	border-radius: 5px;    	padding: 2px;   background-color: rgb(226,231,237); }
-                        QToolhButton:pressed 		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
-                        QToolButton:hover:pressed   	{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
-                        QToolButton:hover		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
+                        QToolhButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
+                        QToolButton:hover:pressed   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
+                        QToolButton:hover		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
                         QToolButton:checked		{ border: 1px solid gray;   	border-style: inset;    border-radius: 5px;    	padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 lightgray, stop: 1 rgb(226,231,237));  }
-                        QToolButton:hover:checked   	{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 lightgray, stop: 1 rgb(226,231,237)); }
+                        QToolButton:hover:checked   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 lightgray, stop: 1 rgb(226,231,237)); }
                         QToolButton:unchecked		{ border: 2px none;		border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(226,231,237); }
                         QToolButton:hover:unchecked   	{ border: 2px; 			border-style: none;     border-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
 
                         QComboBox			{ border: 1px solid gray;	border-style: outset;	border-radius: 5px;	padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
-                        QComboBox:pressed 		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
-                        QComboBox:hover:pressed   	{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
-                        QComboBox:hover       		{ border: 2px solid blue;   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
+                        QComboBox:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
+                        QComboBox:hover:pressed   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }
+                        QComboBox:hover       		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
                         QComboBox:drop-down		{ border: 1px solid gray;	border-style: none;	border-top-right-radius: 5px;	border-bottom-right-radius: 5px; }
                         QComboBox::down-arrow           { image: url(:graphics/style-down-arrow.png); }
 
+                        QLineEdit			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;                                           background-color: white;     min-width: 80px; }
+                        QLineEdit:hover       		{ border: 2px solid rgb(70,70,150);   	border-style: inset;    border-radius: 5px;     padding: 1px;                                           background-color: white;     min-width: 80px; }
+
                         QSpinBox			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;   background-color: white; }
                         QSpinBox:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;   background-color: white; }
-
                         QSpinBox::up-button             { border: 1px solid gray;	border-style: outset;	border-top-right-radius: 5px;       border-top-left-radius: 5px;        padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: top right; }
                         QSpinBox::down-button           { border: 1px solid gray;	border-style: outset;	border-bottom-right-radius: 5px;    border-bottom-left-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: bottom right; }
                         QSpinBox::up-button:hover       { border: 2px solid blue;	border-style: outset;	border-top-right-radius: 5px;       border-top-left-radius: 5px;        padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: top right; }
                         QSpinBox::down-button:hover     { border: 2px solid blue;	border-style: outset;	border-bottom-right-radius: 5px;    border-bottom-left-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     subcontrol-origin: border;    subcontrol-position: bottom right; }
                         QSpinBox::up-arrow              { image: url(:graphics/style-arrow-up.png); }
                         QSpinBox::down-arrow            { image: url(:graphics/style-arrow-down.png); }
-
-                        QLineEdit			{ border: 1px solid gray;	border-style: inset;	border-radius: 5px;	padding: 2px;   background-color: white; }
-                        QLineEdit:hover       		{ border: 2px solid blue;   	border-style: inset;    border-radius: 5px;     padding: 1px;   background-color: white; }
 
                         QTabWidget:pane             	{ border: 1px solid gray; background-color: rgb(226,231,237); padding: 0px; position: absolute; top: -0px; margin-top: -1px; }
 
