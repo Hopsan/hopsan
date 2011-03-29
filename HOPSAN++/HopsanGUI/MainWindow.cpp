@@ -88,6 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->printGUIInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     mpPyDockWidget = new PyDockWidget(this, this);
+    mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 
     gConfig.loadFromXml();
