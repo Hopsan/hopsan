@@ -13,6 +13,10 @@
 #include <QDialog>
 #include <QCheckBox>
 #include <QLineEdit>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QGroupBox>
+#include <QDialogButtonBox>
 
 //Forward Declaration
 class GUIContainerObject;
@@ -34,6 +38,27 @@ private:
     QLineEdit *mpCQSLineEdit;
     QCheckBox *mpIsoCheckBox;
     QCheckBox *mpDisableUndoCheckBox;
+    QHBoxLayout *mpNameLayout;
+    QLabel *mpNameLabel;
+    QLabel *mpUserIconLabel;
+    QLabel *mpIsoIconLabel;
+    QPushButton *mpIsoIconBrowseButton;
+    QPushButton *mpUserIconBrowseButton;
+    QLabel *mpPyScriptLabel;
+    QLineEdit *mpPyScriptPath;
+    QPushButton *mpPyScriptBrowseButton;
+    QGroupBox *mpAppearanceGroupBox;
+    QGridLayout *mpAppearanceLayout;
+    QGroupBox *mpSettingsGroupBox;
+    QGridLayout *mpSettingsLayout;
+    QHBoxLayout *mpNSamplesLayout;
+    QLabel *mpNSamplesLabel;
+    QHBoxLayout *mpCQSLayout;
+    QLabel *mpCQSLabel;
+    QVBoxLayout *mpMainLayout;
+    QDialogButtonBox *mpButtonBox;
+    QPushButton *mpCancelButton;
+    QPushButton *mpDoneButton;
 
 private slots:
     void setValues();

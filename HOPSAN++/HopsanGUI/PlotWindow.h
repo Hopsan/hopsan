@@ -37,7 +37,6 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft);
-    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void setGeneration(int gen);
     PlotTabWidget *getPlotTabWidget();
     PlotTab *getCurrentPlotTab();
@@ -182,6 +181,10 @@ public:
     void update();
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
+    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
+
+    QVector<double> mVectorX;       //! @todo Should be private
+
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *event);
@@ -217,8 +220,8 @@ private:
     QwtSymbol *mpMarkerSymbol;
     QwtPlotMarker *mpActiveMarker;
 
-    QList< QList< QVector<double> > > mVectorX;
-    QList< QList< QVector<double> > > mVectorY;
+
+    //QList< QList< QVector<double> > > mVectorY;
 
     QString mUnitLeft;
     QString mUnitRight;

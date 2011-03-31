@@ -45,6 +45,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     setWindowTitle("Hopsan Cooler Plot Window");
     setAcceptDrops(false);
     setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    setPalette(gConfig.getPalette());
 
     resize(1000,800);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
 
@@ -409,18 +410,6 @@ void PlotWindow::addPlotCurve(int generation, QString componentName, QString por
 }
 
 
-void PlotWindow::changeXVector(QVector<double> xArray, QString componentName, QString portName, QString dataName, QString dataUnit)
-{
-    //! @todo Re-implement (and move to PlotTab!)
-}
-
-
-//void PlotWindow::checkNewValues()
-//{
-//    //! @todo Re-implement
-//}
-
-
 void PlotWindow::closeEvent(QCloseEvent *event)
 {
     //This is probably not needed anymore because all plot variables will be stored
@@ -645,7 +634,8 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpGrid->attach(mpPlot);
 
     QwtLegend *tempLegend = new QwtLegend();
-    mpPlot->setPalette(QPalette(QColor("black"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("black"), QColor("gray"), QColor("white"), QColor("white")));
+    //mpPlot->setPalette(QPalette(QColor("black"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("black"), QColor("gray"), QColor("white"), QColor("white")));
+    mpPlot->setPalette(gConfig.getPalette());
     mpPlot->insertLegend(tempLegend, QwtPlot::TopLegend);
 
     QGridLayout *pLayout = new QGridLayout(this);
@@ -668,19 +658,25 @@ PlotTab::~PlotTab()
 
 void PlotTab::addCurve(PlotCurve *curve)
 {
-    qDebug() << curve->getComponentName() << curve->getPortName() << curve->getDataName() << curve->getDataUnit() << curve->getGeneration();
+    //qDebug() << curve->getComponentName() << curve->getPortName() << curve->getDataName() << curve->getDataUnit() << curve->getGeneration();
+
+    if(mVectorX.size() > 0)
+    {
+        curve->getCurvePtr()->setData(mVectorX, curve->getDataVector());
+    }
 
     mPlotCurvePtrs.append(curve);
-    curve->setLineWidth(2);
+
     int colorNumber = getNumberOfCurves();
     while(colorNumber > mCurveColors.size())
     {
         colorNumber -= mCurveColors.size();
     }
-    curve->setLineColor(mCurveColors.at(colorNumber));
+
     mpPlot->enableAxis(curve->getAxisY());
     mpPlot->replot();
-
+    curve->setLineColor(mCurveColors.at(colorNumber));
+    curve->setLineWidth(2);
     mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
 }
 
@@ -691,6 +687,19 @@ void PlotTab::removeCurve(PlotCurve *curve)
     mPlotCurvePtrs.removeAll(curve);
     delete(curve);
     mpPlot->replot();
+}
+
+
+void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    mVectorX = xArray;
+
+    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    {
+        mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
+    }
+    mpPlot->replot();
+    //! @todo Re-implement
 }
 
 
@@ -826,7 +835,7 @@ void PlotTab::dropEvent(QDropEvent *event)
             QCursor cursor;
             if(mpParentPlotWindow->mapFromGlobal(cursor.pos()).y() > mpParentPlotWindow->height()/2 && getNumberOfCurves() >= 1)
             {
-                //this->changeXVector(yVector, componentName, portName, dataName, dataUnit);
+                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(gpMainWindow->mpProjectTabs->getCurrentContainer()->getNumberOfPlotGenerations()-1, componentName, portName, dataName), componentName, portName, dataName, "");
             }
             else if(mpParentPlotWindow->mapFromGlobal(cursor.pos()).x() < mpParentPlotWindow->width()/2)
             {
@@ -971,7 +980,10 @@ void PlotCurve::setGeneration(int generation)
 {
     mGeneration = generation;
     mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
-    mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(mGeneration);
+    if(mpParentPlotTab->mVectorX.size() == 0)
+        mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(mGeneration);
+    else
+        mTimeVector = mpParentPlotTab->mVectorX;
 
     mpCurve->setData(mTimeVector, mDataVector);
     mpParentPlotTab->update();

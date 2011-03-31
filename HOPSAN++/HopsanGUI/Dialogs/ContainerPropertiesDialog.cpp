@@ -32,43 +32,42 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
 
         //Set the name and size of the main window
     this->setObjectName("SystemPropertiesDialog");
-    this->resize(640,480);
+    this->resize(380,200);
     this->setWindowTitle("System Properties");
     this->setPalette(gConfig.getPalette());
 
     //Define items in the dialog box
         //Name edit
-    QHBoxLayout *pNameLayout = new QHBoxLayout();
-    QLabel *pNameLabel = new QLabel("Name: ", this);
-    mpNameEdit = new QLineEdit(pContainerObject->getName(), this);
+    mpNameLayout = new QHBoxLayout();
+    mpNameLabel = new QLabel("Name: ", this);
+    mpNameEdit = new QLineEdit(mpContainerObject->getName(), this);
 
-        //Icon paths
-    QHBoxLayout *pUserIconLayout = new QHBoxLayout();
-    QHBoxLayout *pIsoIconLayout = new QHBoxLayout();
-    QLabel *pUserIconLabel = new QLabel("User Icon Path:", this);
-    QLabel *pIsoIconLabel = new QLabel( "ISO Icon Path:", this);
+       //Icon paths
+    mpUserIconLabel = new QLabel("User Icon Path:", this);
+    mpIsoIconLabel = new QLabel( "ISO Icon Path:", this);
     mpUserIconPath = new QLineEdit(mpContainerObject->getUserIconPath(), this);
     mpIsoIconPath = new QLineEdit(mpContainerObject->getIsoIconPath(), this);
-    mpUserIconPath->setMinimumWidth(200);
-    QPushButton *pIsoIconBrowseButton = new QPushButton(tr("..."), this);
-    QPushButton *pUserIconBrowseButton = new QPushButton(tr("..."), this);
-    pIsoIconBrowseButton->setFixedSize(25, 22);
-    pUserIconBrowseButton->setFixedSize(25, 22);
-    pIsoIconBrowseButton->setAutoDefault(false);
-    pUserIconBrowseButton->setAutoDefault(false);
+    mpUserIconLabel->setMinimumWidth(100);
+    mpUserIconPath->setFixedWidth(200);
+    mpIsoIconBrowseButton = new QPushButton(tr("..."), this);
+    mpUserIconBrowseButton = new QPushButton(tr("..."), this);
+//    mpIsoIconBrowseButton->setFixedSize(25, 22);
+//    mpUserIconBrowseButton->setFixedSize(25, 22);
+    mpIsoIconBrowseButton->setAutoDefault(false);
+    mpUserIconBrowseButton->setAutoDefault(false);
 
         //Appearance Group Box
-    QGroupBox *pAppearanceGroupBox = new QGroupBox("Appearance", this);
-    QGridLayout *pAppearanceLayout = new QGridLayout(this);
-    pAppearanceLayout->addWidget(pNameLabel, 0, 0);
-    pAppearanceLayout->addWidget(mpNameEdit, 0, 1, 1, 2);
-    pAppearanceLayout->addWidget(pUserIconLabel, 1, 0);
-    pAppearanceLayout->addWidget(mpUserIconPath, 1, 1);
-    pAppearanceLayout->addWidget(pUserIconBrowseButton, 1, 2);
-    pAppearanceLayout->addWidget(pIsoIconLabel, 2, 0);
-    pAppearanceLayout->addWidget(mpIsoIconPath, 2, 1);
-    pAppearanceLayout->addWidget(pIsoIconBrowseButton, 2, 2);
-    pAppearanceGroupBox->setLayout(pAppearanceLayout);
+    mpAppearanceGroupBox = new QGroupBox("Appearance", this);
+    mpAppearanceLayout = new QGridLayout(this);
+    mpAppearanceLayout->addWidget(mpNameLabel, 0, 0);
+    mpAppearanceLayout->addWidget(mpNameEdit, 0, 1, 1, 2);
+    mpAppearanceLayout->addWidget(mpUserIconLabel, 1, 0);
+    mpAppearanceLayout->addWidget(mpUserIconPath, 1, 1);
+    mpAppearanceLayout->addWidget(mpUserIconBrowseButton, 1, 2);
+    mpAppearanceLayout->addWidget(mpIsoIconLabel, 2, 0);
+    mpAppearanceLayout->addWidget(mpIsoIconPath, 2, 1);
+    mpAppearanceLayout->addWidget(mpIsoIconBrowseButton, 2, 2);
+    mpAppearanceGroupBox->setLayout(mpAppearanceLayout);
 
         //Graphics checkboxes
     mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"), this);
@@ -80,58 +79,68 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpDisableUndoCheckBox->setCheckable(true);
     mpDisableUndoCheckBox->setChecked(mpContainerObject->mUndoDisabled);
 
+    //! @todo Make the script path do something
+    mpPyScriptLabel = new QLabel("Script File:", this);
+    mpPyScriptPath = new QLineEdit(this);
+    mpPyScriptLabel->setFixedWidth(100);
+    mpPyScriptPath->setFixedWidth(200);
+    mpPyScriptBrowseButton = new QPushButton(tr("..."), this);
+
         //Settings Group Box
-    QGroupBox *pSettingsGroupBox = new QGroupBox("Settings", this);
-    QGridLayout *pSettingsLayout = new QGridLayout(this);
-    pSettingsLayout->addWidget(mpIsoCheckBox, 0, 0, 1, 2);
-    pSettingsLayout->addWidget(mpDisableUndoCheckBox, 1, 0, 1, 2);
-    pSettingsGroupBox->setLayout(pSettingsLayout);
+    mpSettingsGroupBox = new QGroupBox("Settings", this);
+    mpSettingsLayout = new QGridLayout(this);
+    mpSettingsLayout->addWidget(mpPyScriptLabel, 0, 0);
+    mpSettingsLayout->addWidget(mpPyScriptPath, 0, 1);
+    mpSettingsLayout->addWidget(mpPyScriptBrowseButton, 0, 2);
+    mpSettingsLayout->addWidget(mpIsoCheckBox, 1, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpDisableUndoCheckBox, 2, 0, 1, 2);
+    mpSettingsGroupBox->setLayout(mpSettingsLayout);
 
         //Set GuiSystem specific stuff
     if (mpContainerObject->type() == GUISYSTEM)
     {
             //Log sampels
-        QHBoxLayout *pNSamplesLayout = new QHBoxLayout();
-        QLabel *pNSamplesLabel = new QLabel(tr("Number of Log Samples:"), this);
-        pNSamplesLabel->setEnabled(true);
+        mpNSamplesLayout = new QHBoxLayout();
+        mpNSamplesLabel = new QLabel(tr("Log Samples:"), this);
+        mpNSamplesLabel->setEnabled(true);
         QString NSamplesText;
         NSamplesText.setNum(mpContainerObject->getNumberOfLogSamples()); //!< @todo what if group
         mpNSamplesEdit = new QLineEdit(this);
         mpNSamplesEdit->setValidator(new QIntValidator(0, 2000000000, this));
         mpNSamplesEdit->setText(NSamplesText);
-        pSettingsLayout->addWidget(pNSamplesLabel, 2, 0);
-        pSettingsLayout->addWidget(mpNSamplesEdit, 2, 1);
+        mpSettingsLayout->addWidget(mpNSamplesLabel, 3, 0);
+        mpSettingsLayout->addWidget(mpNSamplesEdit, 3, 1);
 
             //CQS Type
-        QHBoxLayout *pCQSLayout = new QHBoxLayout();
-        QLabel *pCQSLabel = new QLabel("CQS-type: ", this);
-        mpCQSLineEdit = new QLineEdit(pContainerObject->getTypeCQS(), this);
-        pSettingsLayout->addWidget(pCQSLabel, 3, 0);
-        pSettingsLayout->addWidget(mpCQSLineEdit, 3, 1);
+        mpCQSLayout = new QHBoxLayout();
+        mpCQSLabel = new QLabel("CQS-type: ", this);
+        mpCQSLineEdit = new QLineEdit(mpContainerObject->getTypeCQS(), this);
+        mpSettingsLayout->addWidget(mpCQSLabel, 4, 0);
+        mpSettingsLayout->addWidget(mpCQSLineEdit, 4, 1);
     }
 
 
         //This is the main Vertical layout of the dialog
-    QVBoxLayout *pMainLayout = new QVBoxLayout(this);
-    pMainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    pMainLayout->addWidget(pAppearanceGroupBox);
-    pMainLayout->addWidget(pSettingsGroupBox);
+    mpMainLayout = new QVBoxLayout(this);
+    //mpMainLayout->setsetSizeConstraint(QLayout::SetFixedSize);
+    mpMainLayout->addWidget(mpAppearanceGroupBox);
+    mpMainLayout->addWidget(mpSettingsGroupBox);
 
         //Done and Cancel Buttons
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
-    QPushButton *pDoneButton = new QPushButton(tr("&Done"), this);
-    pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
-    pCancelButton->setAutoDefault(false);
-    pDoneButton->setAutoDefault(true);
-    pMainLayout->addWidget(pButtonBox, 0, Qt::AlignHCenter);
+    mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    mpCancelButton = new QPushButton(tr("&Cancel"), this);
+    mpDoneButton = new QPushButton(tr("&Done"), this);
+    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpDoneButton, QDialogButtonBox::ActionRole);
+    mpCancelButton->setAutoDefault(false);
+    mpDoneButton->setAutoDefault(true);
+    mpMainLayout->addWidget(mpButtonBox, 0, Qt::AlignHCenter);
 
     //Create connections
-    connect(pCancelButton,         SIGNAL(clicked()), this, SLOT(close()));
-    connect(pDoneButton,           SIGNAL(clicked()), this, SLOT(setValues()));
-    connect(pIsoIconBrowseButton,  SIGNAL(clicked()), this, SLOT(browseIso()));
-    connect(pUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
+    connect(mpCancelButton,         SIGNAL(clicked()), this, SLOT(close()));
+    connect(mpDoneButton,           SIGNAL(clicked()), this, SLOT(setValues()));
+    connect(mpIsoIconBrowseButton,  SIGNAL(clicked()), this, SLOT(browseIso()));
+    connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
 }
 
 
