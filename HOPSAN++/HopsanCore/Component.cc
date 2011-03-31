@@ -1110,10 +1110,24 @@ double Component::getMeasuredTime()
 }
 
 
-//! Write an Info message, i.e. for debugging purposes.
+//! Write an Debug message, i.e. for debugging purposes.
 void Component::addDebugMessage(string message)
 {
     gCoreMessageHandler.addDebugMessage(message);
+}
+
+
+//! Write an Error message.
+void Component::addErrorMessage(string message)
+{
+    gCoreMessageHandler.addErrorMessage(message);
+}
+
+
+//! Write an Info message.
+void Component::addInfoMessage(string message)
+{
+    gCoreMessageHandler.addInfoMessage(message);
 }
 
 

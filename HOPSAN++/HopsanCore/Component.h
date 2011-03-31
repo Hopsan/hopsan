@@ -166,6 +166,8 @@ namespace hopsan {
         double getMeasuredTime();
 
         void addDebugMessage(std::string message);
+        void addErrorMessage(std::string message);
+        void addInfoMessage(std::string message);
 
         //Temporarily made public for RT-simulation
         virtual void initialize(); //! @todo Default values are hard set
