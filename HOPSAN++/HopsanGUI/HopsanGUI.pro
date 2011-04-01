@@ -190,3 +190,6 @@ HEADERS += MainWindow.h \
     Dialogs/ContainerPortPropertiesDialog.h \
     Dialogs/WelcomeDialog.h \
     Dialogs/HelpDialog.h
+
+OTHER_FILES += \
+    ../hopsandefaults

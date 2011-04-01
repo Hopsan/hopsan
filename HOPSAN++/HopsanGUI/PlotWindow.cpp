@@ -27,6 +27,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "Configuration.h"
 #include "loadObjects.h"
+#include "Dialogs/OptionsDialog.h"
 
 #include "qwt_scale_engine.h"
 #include "qwt_symbol.h"
@@ -129,8 +130,6 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     addToolBar(mpToolBar);
 
     mpPlotTabs = new PlotTabWidget(this);
-    mpPlotTabs->setAutoFillBackground(true);
-
     this->addPlotTab();
 
             //Create the close button
@@ -210,6 +209,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(mpComponentList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updatePortList()));
     connect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
     connect(mpVariableList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(addPlotCurveFromBoxes()));
+    connect(gpMainWindow->mpOptionsDialog, SIGNAL(paletteChanged()), this, SLOT(updatePalette()));
 }
 
 
@@ -432,8 +432,16 @@ bool PlotWindow::saveToHmpf(QString fileName)
 void PlotWindow::close()
 {
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->reportClosedPlotWindow(this);
-
     QMainWindow::close();
+}
+
+
+void PlotWindow::updatePalette()
+{
+    //    setPalette(QPalette(QColor("red"), QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red")));
+    setPalette(gpMainWindow->palette());//gConfig.getPalette());
+    //this->setStyleSheet(gConfig.getStyleSheet());
+    qDebug() << "Setting palette to " << gConfig.getPalette();
 }
 
 
@@ -523,7 +531,7 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpLayout->addWidget(mpSizeSpinBox,          0,  6);
     mpLayout->addWidget(mpCloseButton,          0,  7);
 
-    setAutoFillBackground(true);
+    //setAutoFillBackground(true);
     setLayout(mpLayout);
 
     connect(mpColorBlob,            SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setActive(bool)));
@@ -634,9 +642,16 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpGrid->attach(mpPlot);
 
     QwtLegend *tempLegend = new QwtLegend();
-    //mpPlot->setPalette(QPalette(QColor("black"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("black"), QColor("gray"), QColor("white"), QColor("white")));
-    mpPlot->setPalette(gConfig.getPalette());
+    //tempLegend->setPalette(QPalette(QColor("black"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("black"), QColor("white"), QColor("white"), QColor("white")));
+    tempLegend->setAutoFillBackground(false);
+
+    QList<QWidget *> tempList = tempLegend->findChildren<QWidget *>();
+    for(size_t i=0; i<tempList.size(); ++i)
+    {
+        tempList.at(i)->setAutoFillBackground(false);
+    }
     mpPlot->insertLegend(tempLegend, QwtPlot::TopLegend);
+    mpPlot->setAutoFillBackground(false);
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpPlot);
@@ -699,7 +714,6 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
         mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
     }
     mpPlot->replot();
-    //! @todo Re-implement
 }
 
 
@@ -1091,6 +1105,7 @@ void PlotCurve::setActive(bool value)
     {
         setLineWidth(mpPlotInfoBox->mpSizeSpinBox->value()+1);
         mpPlotInfoBox->setPalette(QPalette(QColor("lightgray"), QColor("lightgray")));
+        mpPlotInfoBox->setAutoFillBackground(true);
 
         for(int i=0; i<mpParentPlotTab->getCurves().size(); ++i)
         {
@@ -1104,7 +1119,8 @@ void PlotCurve::setActive(bool value)
     else
     {
         setLineWidth(mpPlotInfoBox->mpSizeSpinBox->value());
-        mpPlotInfoBox->setPalette(QPalette(QColor(240,240,240), QColor(240,240,240)));
+//        mpPlotInfoBox->setPalette(QPalette(QColor(240,240,240), QColor(240,240,240)));
+        mpPlotInfoBox->setAutoFillBackground(false);
         mpPlotInfoBox->mpColorBlob->setChecked(false);
     }
 }

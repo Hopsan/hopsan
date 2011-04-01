@@ -75,6 +75,7 @@ public slots:
     void saveToXml();
     bool saveToHmpf(QString fileName);
     void close();
+    void updatePalette();
 
 private:
     QGridLayout *mpLayout;
@@ -184,7 +185,6 @@ public:
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
 
     QVector<double> mVectorX;       //! @todo Should be private
-
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *event);

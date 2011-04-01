@@ -47,6 +47,9 @@ private slots:
     void addCustomUnit();
     void updateCustomUnits();
 
+signals:
+    void paletteChanged();
+
 private:
     QColor mPickedBackgroundColor;
 

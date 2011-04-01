@@ -587,7 +587,12 @@ QPen Configuration::getPen(QString type, graphicsType gfxType, QString situation
 QPalette Configuration::getPalette()
 {
     if(this->mUseNativeStyleSheet)
-        return QPalette();
+    {
+        QMainWindow *dummy = new QMainWindow();
+        QPalette dummyPalette = dummy->palette();
+        delete(dummy);
+        return dummyPalette;
+    }
     else
         return mPalette;
 }

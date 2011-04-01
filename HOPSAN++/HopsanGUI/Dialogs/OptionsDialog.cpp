@@ -226,17 +226,21 @@ void OptionsDialog::updateValues()
 {
     gConfig.setShowWelcomeDialog(mpShowWelcomeDialogCheckBox->isChecked());
     gConfig.setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
+
     if(gConfig.getUseNativeStyleSheet())
     {
         gpMainWindow->setStyleSheet((" "));
         QMainWindow dummy;
         gpMainWindow->setPalette(dummy.palette());
+        this->setPalette(dummy.palette());
     }
     else
     {
         gpMainWindow->setStyleSheet(gConfig.getStyleSheet());
         gpMainWindow->setPalette(gConfig.getPalette());
+        this->setPalette(gConfig.getPalette());
     }
+        emit paletteChanged();
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
