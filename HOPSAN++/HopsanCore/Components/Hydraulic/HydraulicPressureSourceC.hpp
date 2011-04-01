@@ -69,6 +69,12 @@ namespace hopsan {
         {
             (*mpND_c) = (*mpND_in);
             (*mpND_Zc) = Zc;
+
+//            if(mpIn->isConnected())
+//                    (*mpND_c) = (*mpND_in);
+//            else
+//                    (*mpND_c) = p;
+//            (*mpND_Zc) = Zc;
         }
     };
 }
