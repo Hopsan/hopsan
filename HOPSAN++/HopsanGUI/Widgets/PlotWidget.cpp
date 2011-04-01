@@ -242,8 +242,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString p
 
     PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
-    //! @todo FIX! FIX! FIX! This will always only plot the first generation!
-    plotWindow->addPlotCurve(0, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
+    plotWindow->addPlotCurve(mpCurrentContainer->getNumberOfPlotGenerations()-1, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
 
     mOpenPlotWindows.append(plotWindow);
 
