@@ -133,6 +133,8 @@ string Node::getDataUnit(size_t id)
 }
 
 
+//! Get a vector of indexes for intensity variables in the Node
+//! @returns Vector of indexes
 std::vector<size_t> Node::getIntensityVariableIndexes()
 {
     std::vector<size_t> intensityVariableIndexes;
@@ -149,6 +151,8 @@ std::vector<size_t> Node::getIntensityVariableIndexes()
 }
 
 
+//! Get a vector of indexes for flow variables in the Node
+//! @returns Vector of indexes
 std::vector<size_t> Node::getFlowVariableIndexes()
 {
     std::vector<size_t> flowVariableIndexes;
