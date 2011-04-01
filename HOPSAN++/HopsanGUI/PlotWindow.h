@@ -34,6 +34,8 @@ class PlotWindow : public QMainWindow
     Q_OBJECT
     friend class PlotWidget;
     friend class VariableListWidget;
+    friend class PlotTabWidget;     //! @todo Not nice...
+    friend class PlotTab;           //! @todo Not nice at all...
 public:
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft);
@@ -59,10 +61,6 @@ public slots:
     void discardGeneration();
     void discardOldestGeneration();
     void importGNUPLOT();
-    void enableGrid(bool);
-    void enableZoom(bool);
-    void enablePan(bool);
-    void setBackgroundColor();
     void exportSVG();
     void exportGNUPLOT();
     void saveToXml();
@@ -149,6 +147,8 @@ class PlotTabWidget : public QTabWidget
 public:
     PlotTabWidget(PlotWindow *parent);
     PlotWindow *mpParentPlotWindow;
+    PlotTab *getCurrentTab();
+    PlotTab *getTab(int i);
 
 private slots:
     void closePlotTab(int index);
@@ -161,6 +161,7 @@ class PlotTab : public QWidget
 {
     Q_OBJECT
     friend class PlotCurve;
+    friend class PlotTabWidget;
 public:
     PlotTab(PlotWindow *parent);
     ~PlotTab();
@@ -192,7 +193,7 @@ public slots:
     void enableZoom(bool value);
     void enablePan(bool value);
     void enableGrid(bool value);
-    void setBackgroundColor(QColor color);
+    void setBackgroundColor();
 
 private:
     QwtPlot *mpPlot;

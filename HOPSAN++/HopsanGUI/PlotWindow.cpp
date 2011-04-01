@@ -183,7 +183,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     this->setCentralWidget(pCentralWidget);
 
         //Disables zoom function (activated by tool button, off by default)
-    enableZoom(false);
+    //enableZoom(false);
 
     // Populate boxes
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
@@ -194,14 +194,14 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
         //Establish signal and slots connections
     connect(mpNewPlotButton, SIGNAL(clicked()), this, SLOT(addPlotTab()));
     connect(pButtonbox, SIGNAL(rejected()), this, SLOT(close()));
-    connect(mpZoomButton,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
-    connect(mpPanButton,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
+
+
     connect(mpSaveButton,SIGNAL(clicked()),this,SLOT(saveToXml()));
     connect(mpSVGButton,SIGNAL(clicked()),SLOT(exportSVG()));
     connect(mpExportGNUPLOTButton,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
     connect(mpImportGNUPLOTButton,SIGNAL(clicked()),SLOT(importGNUPLOT()));
-    connect(mpGridButton,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
-    connect(mpBackgroundColorButton,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
+
+
     connect(mpComponentList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updatePortList()));
     connect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
     connect(mpVariableList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(addPlotCurveFromBoxes()));
@@ -285,46 +285,46 @@ void PlotWindow::discardOldestGeneration()
 }
 
 
-//! @brief Slot that enables or disables rubber band zooming
-//! param[in] on is true if it shall be enabled or false if it should be disabled
-void PlotWindow::enableZoom(bool value)
-{
-    if(mpPanButton->isChecked() && value)
-    {
-        mpPanButton->setChecked(false);
-        getCurrentPlotTab()->enablePan(false);
-    }
-    getCurrentPlotTab()->enableZoom(value);
-}
+////! @brief Slot that enables or disables rubber band zooming
+////! param[in] on is true if it shall be enabled or false if it should be disabled
+//void PlotWindow::enableZoom(bool value)
+//{
+//    if(mpPanButton->isChecked() && value)
+//    {
+//        mpPanButton->setChecked(false);
+//        getCurrentPlotTab()->enablePan(false);
+//    }
+//    getCurrentPlotTab()->enableZoom(value);
+//}
 
 
-//! @brief Slot that enables or disables panning tool
-//! @param on is true/false if panning shall be enabled/disabled
-void PlotWindow::enablePan(bool value)
-{
-    if(mpZoomButton->isChecked() && value)
-    {
-        mpZoomButton->setChecked(false);
-        getCurrentPlotTab()->enableZoom(false);
-    }
-    getCurrentPlotTab()->enablePan(value);
-}
+////! @brief Slot that enables or disables panning tool
+////! @param on is true/false if panning shall be enabled/disabled
+//void PlotWindow::enablePan(bool value)
+//{
+//    if(mpZoomButton->isChecked() && value)
+//    {
+//        mpZoomButton->setChecked(false);
+//        getCurrentPlotTab()->enableZoom(false);
+//    }
+//    getCurrentPlotTab()->enablePan(value);
+//}
 
 
-//! @brief Slot that turns plot grid on or off
-//! @param on is true/false if it shall be turned on/off.
-void PlotWindow::enableGrid(bool value)
-{
-    getCurrentPlotTab()->enableGrid(value);
-}
+////! @brief Slot that turns plot grid on or off
+////! @param on is true/false if it shall be turned on/off.
+//void PlotWindow::enableGrid(bool value)
+//{
+//    getCurrentPlotTab()->enableGrid(value);
+//}
 
 
-void PlotWindow::setBackgroundColor()
-{
-    QColor color = QColorDialog::getColor(getCurrentPlotTab()->getPlot()->canvasBackground(), this);
-    if (color.isValid())
-        getCurrentPlotTab()->setBackgroundColor(color);
-}
+//void PlotWindow::setBackgroundColor()
+//{
+//    QColor color = QColorDialog::getColor(getCurrentPlotTab()->getPlot()->canvasBackground(), this);
+//    if (color.isValid())
+//        getCurrentPlotTab()->setBackgroundColor(color);
+//}
 
 
 //! @brief Slot that exports current plot to .svg format
@@ -523,9 +523,47 @@ void PlotTabWidget::closePlotTab(int index)
 }
 
 
+PlotTab *PlotTabWidget::getCurrentTab()
+{
+    return qobject_cast<PlotTab *>(currentWidget());
+}
+
+
+PlotTab *PlotTabWidget::getTab(int i)
+{
+    return qobject_cast<PlotTab *>(widget(i));
+}
+
+
 void PlotTabWidget::tabChanged()
 {
-    //! @todo Implement this
+    //! @todo Finish this
+
+    if(count() > 0) { this->show(); }
+    else { this->hide(); }
+
+    for(int i=0; i<count(); ++i)
+    {
+            //If you add a disconnect here, remember to also add it to the close tab function!
+        disconnect(mpParentPlotWindow->mpZoomButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableZoom(bool)));
+        disconnect(mpParentPlotWindow->mpPanButton,                 SIGNAL(toggled(bool)),  getTab(i),  SLOT(enablePan(bool)));
+        disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(clicked()),      getTab(i),  SLOT(setBackgroundColor()));
+        disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
+    }
+
+    mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer->isEnabled());
+    mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner->isEnabled());
+    mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid->isVisible());
+
+    if(this->count() != 0)
+    {
+        connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
+        connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
+        connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(clicked()),      getCurrentTab(),    SLOT(setBackgroundColor()));
+        connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
+    }
+
+
 }
 
 
@@ -582,6 +620,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
     mpZoomer->setZoomBase(QwtDoubleRect());
+    mpZoomer->setEnabled(false);
 
     mpZoomerRight = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot->canvas());   //Zoomer for right y axis
     mpZoomerRight->setMaxStackDepth(10000);
@@ -591,6 +630,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpZoomerRight->setTrackerPen(QColor(Qt::white));
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+    mpZoomer->setEnabled(false);
 
         //Wheel Zoom
     mpMagnifier = new QwtPlotMagnifier(mpPlot->canvas());
@@ -792,6 +832,11 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
 
 void PlotTab::enableZoom(bool value)
 {
+    if(mpParentPlotWindow->mpPanButton->isChecked() && value)
+    {
+        mpParentPlotWindow->mpPanButton->setChecked(false);
+        mpPanner->setEnabled(false);
+    }
     mpZoomer->setEnabled(value);
     mpZoomerRight->setEnabled(value);
 }
@@ -799,6 +844,12 @@ void PlotTab::enableZoom(bool value)
 
 void PlotTab::enablePan(bool value)
 {
+    if(mpParentPlotWindow->mpZoomButton->isChecked() && value)
+    {
+        mpParentPlotWindow->mpZoomButton->setChecked(false);
+        mpZoomer->setEnabled(false);
+        mpZoomerRight->setEnabled(false);
+    }
     mpPanner->setEnabled(value);
 }
 
@@ -809,10 +860,14 @@ void PlotTab::enableGrid(bool value)
 }
 
 
-void PlotTab::setBackgroundColor(QColor color)
+void PlotTab::setBackgroundColor()
 {
-    mpPlot->setCanvasBackground(color);
-    mpPlot->replot();
+    QColor color = QColorDialog::getColor(mpPlot->canvasBackground(), this);
+    if (color.isValid())
+    {
+        mpPlot->setCanvasBackground(color);
+        mpPlot->replot();
+    }
 }
 
 
