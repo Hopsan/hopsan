@@ -191,6 +191,7 @@ namespace hopsan {
 
         //Port functions
         Port* addPort(const std::string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
+        Port* addMultiPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addPowerPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addReadPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addWritePort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
@@ -215,7 +216,6 @@ namespace hopsan {
         bool mIsComponentSystem;
         bool mIsComponentSignal;
 
-        //! @todo I dont think this is beeing used any longer, might remove
         size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
 
     private:

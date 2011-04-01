@@ -28,35 +28,37 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        enum PORTTYPE {POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
+        enum PORTTYPE {MULTIPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
         enum CONREQ {REQUIRED, NOTREQUIRED};
 
         //Constructors - Destructors
         Port(std::string node_type, std::string portname, Component *portOwner);
         virtual ~Port();
 
-        virtual double readNode(const size_t idx);
-        virtual void writeNode(const size_t &idx, const double &value);
+        virtual double readNode(const size_t idx, const size_t portIdx=0);
+        virtual void writeNode(const size_t &idx, const double &value, const size_t portIdx=0);
 
-        double *getNodeDataPtr(const size_t idx);
+        virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0);
 
-        void saveLogData(std::string filename);
-        void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
-        void getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit);
-        int getNodeDataIdFromName(const std::string name);
-        std::vector<double> *getTimeVectorPtr();
-        std::vector<std::vector<double> > *getDataVectorPtr();
+        virtual void saveLogData(std::string filename, const size_t portIdx=0);
+        virtual void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx=0);
+        virtual void getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit, const size_t portIdx=0);
+        virtual int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
+        virtual std::vector<double> *getTimeVectorPtr(const size_t portIdx=0);
+        virtual std::vector<std::vector<double> > *getDataVectorPtr(const size_t portIdx=0);
 
-        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);
-        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits);
-        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values);
-        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames);
+        virtual void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx=0);
+        virtual void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx=0);
+        virtual bool setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values, const size_t portIdx=0);
+        virtual bool setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx=0);
 
-        double getStartValue(const size_t idx);
-        void setStartValue(const size_t &idx, const double &value);
+        virtual double getStartValue(const size_t idx, const size_t portIdx=0);
+        virtual void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
 
         bool isConnected();
         bool isConnectionRequired();
+
+        virtual size_t getNumPorts();
 
         const std::string &getNodeType();
         PORTTYPE getPortType();
@@ -72,13 +74,18 @@ namespace hopsan {
     protected:
 
         PORTTYPE mPortType;
-        Component* mpComponent;
         NodeTypeT mNodeType;
 
-        void setNode(Node* pNode);
-        Node *getNodePtr();
-
         Node* mpStartNode;
+        Component* mpComponent;
+
+        Port* mpParentPort;
+
+        void setNode(Node* pNode, const size_t portIdx=0);
+        Node *getNodePtr(const size_t portIdx=0);
+
+        virtual Port* addSubPort();
+
 
     private:
         std::string mPortName;
@@ -87,10 +94,9 @@ namespace hopsan {
         bool mConnectionRequired;
         bool mIsConnected;
 
-        void addConnectedPort(Port* pPort);
-        void eraseConnectedPort(Port* pPort);
-        std::vector<Port*> &getConnectedPorts();
-        //void clearConnection();
+        void addConnectedPort(Port* pPort, const size_t portIdx=0);
+        void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
+        std::vector<Port*> &getConnectedPorts(const size_t portIdx=0);
     };
 
 
@@ -102,8 +108,47 @@ namespace hopsan {
 
     public:
         //Constructors
-        //SystemPort();
         SystemPort(std::string node_type, std::string portname, Component *portOwner);
+    };
+
+    class MultiPort :public Port
+    {
+        friend class Component;
+        friend class ComponentSystem;
+        friend class ConnectionAssistant;
+
+    public:
+        //Constructors
+        MultiPort(std::string node_type, std::string portname, Component *portOwner);
+
+        //Overloaded virtual functions
+        double readNode(const size_t idx, const size_t portIdx);
+        void writeNode(const size_t &idx, const double &value, const size_t portIdx);
+
+        double *getNodeDataPtr(const size_t idx, const size_t portIdx);
+
+        void saveLogData(std::string filename, const size_t portIdx=0);
+        void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx=0);
+        void getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit, const size_t portIdx=0);
+        int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
+        std::vector<double> *getTimeVectorPtr(const size_t portIdx=0);
+        std::vector<std::vector<double> > *getDataVectorPtr(const size_t portIdx=0);
+
+//        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx=0);
+//        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx=0);
+//        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values, const size_t portIdx=0);
+//        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx=0);
+
+//        double getStartValue(const size_t idx, const size_t portIdx=0);
+//        void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
+
+        size_t getNumPorts();
+
+    protected:
+        Port* addSubPort();
+
+    private:
+        std::vector<Port*> mSubPortsVector;
     };
 
 

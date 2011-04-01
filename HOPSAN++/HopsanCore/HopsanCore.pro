@@ -202,5 +202,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic22DirectionalValve.hpp \
     Components/Mechanic/MechanicTranslationalMassWithLever.hpp \
     Components/Mechanic/MechanicRotationalInertiaWithGearRatio.hpp \
-    Components/Mechanic/MechanicRotationalInertiaWithSingleGear.hpp
-
+    Components/Mechanic/MechanicRotationalInertiaWithSingleGear.hpp \
+    Components/Hydraulic/HydraulicMultiPressureSourceC.hpp

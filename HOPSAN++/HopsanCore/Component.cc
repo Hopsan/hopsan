@@ -956,6 +956,14 @@ Port* Component::addPowerPort(const string portname, const string nodetype, Port
     return addPort(portname, Port::POWERPORT, nodetype, connection_requirement);
 }
 
+//! @brief Convenience method to add a MultiPort
+//! @param [in] porttype The type of port
+//! @param [in] nodetype The type of node that must be connected to the port
+Port* Component::addMultiPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+{
+    return addPort(portname, Port::MULTIPORT, nodetype, connection_requirement);
+}
+
 
 //! @brief Convenience method to add a ReadPort
 //! @param [in] porttype The type of port
@@ -2189,7 +2197,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     {
         if ( (!pPort1->isConnected()) && (!pPort2->isConnected()) )
         {
-            ss << "You are not allowed to connect to blank systemports to each other";
+            ss << "You are not allowed to connect two blank systemports to each other";
             gCoreMessageHandler.addErrorMessage(ss.str());
             return false;
         }

@@ -27,10 +27,10 @@ Port::Port(string node_type, string portname, Component *portOwner)
     mNodeType = node_type;
     mpComponent = portOwner;
     mConnectionRequired = true;
-    //clearConnection();
-    mpNode = 0;
     mConnectedPorts.clear();
+    mpNode = 0;
     mpStartNode = 0;
+    mpParentPort = 0;
 }
 
 
@@ -48,15 +48,6 @@ Port::~Port()
 }
 
 
-////! Helper function for quickly clearing all connection info
-//void Port::clearConnection()
-//{
-//    //! @todo maybe should be virtual so that we may also clear node type in system ports
-//    mpNode = 0;
-//    mConnectedPorts.clear();
-//    mIsConnected = false;
-//}
-
 
 //! Returns the type of node that can be connected to this port
 const string &Port::getNodeType()
@@ -73,9 +64,16 @@ Component* Port::getComponent()
 
 
 //! Returns a pointer to the connected node
-Node* Port::getNodePtr()
+Node* Port::getNodePtr(const size_t portIdx)
 {
     return mpNode;
+}
+
+//! Adds a subport to a multiport
+Port* Port::addSubPort()
+{
+    assert(false);
+    return 0;
 }
 
 
@@ -102,7 +100,7 @@ void Port::loadStartValuesFromSimulation()
 //! Reads a value from the connected node
 //! @param [in] idx The data id of the data to read
 //! @return The data value
-double Port::readNode(const size_t idx)
+double Port::readNode(const size_t idx, const size_t portIdx)
 {
     //! @todo ummm??, if this is a readport node and it is not connected then noone will ever read
     //! @todo maybe use dummy nodes with 0 in for not connected ports
@@ -118,7 +116,7 @@ double Port::readNode(const size_t idx)
 //! Writes a value to the connected node
 //! @param [in] idx The data id of the data to write
 //! @param [in] value The value of the data to read
-void Port::writeNode(const size_t &idx, const double &value)
+void Port::writeNode(const size_t &idx, const double &value, const size_t portIdx)
 {
     //! @todo ummm??, if this is a writeport and it is not connected then noone will ever write. Should the check may be done?
     /*if((this->getPortType() == Port::WRITEPORT) && (!this->isConnected()))     //Signal nodes don't have to be connected
@@ -130,7 +128,7 @@ void Port::writeNode(const size_t &idx, const double &value)
 }
 
 
-double *Port::getNodeDataPtr(const size_t idx)
+double *Port::getNodeDataPtr(const size_t idx, const size_t portIdx)
 {
     return mpNode->getDataPtr(idx);
 }
@@ -139,7 +137,7 @@ double *Port::getNodeDataPtr(const size_t idx)
 
 //! Set the node that the port is connected to
 //! @param [in] pNode A pointer to the Node
-void Port::setNode(Node* pNode)
+void Port::setNode(Node* pNode, const size_t portIdx)
 {
     mpNode = pNode;
     //mIsConnected = true; //!< @todo do we really need this bool, we can compare pointer != 0 instead
@@ -148,7 +146,7 @@ void Port::setNode(Node* pNode)
 
 //! Adds a pointer to an other connected port to a port
 //! @param [in] pPort A pointer to the other port
-void Port::addConnectedPort(Port* pPort)
+void Port::addConnectedPort(Port* pPort, const size_t portIdx)
 {
     mConnectedPorts.push_back(pPort);
 }
@@ -156,7 +154,7 @@ void Port::addConnectedPort(Port* pPort)
 
 //! Removes a pointer to an other connected port from a port
 //! @param [in] pPort The pointer to the other port to be removed
-void Port::eraseConnectedPort(Port* pPort)
+void Port::eraseConnectedPort(Port* pPort, const size_t portIdx)
 {
     vector<Port*>::iterator it;
     bool found = false;
@@ -184,14 +182,14 @@ void Port::eraseConnectedPort(Port* pPort)
 //! Get a vector of pointers to all other ports connected connected to this one
 //! @returns A refernce to the internal vector of connected port pointers
 //! @todo maybe should return const vector so that contents my not be changed
-vector<Port*> &Port::getConnectedPorts()
+vector<Port*> &Port::getConnectedPorts(const size_t portIdx)
 {
     return mConnectedPorts;
 }
 
 
 //! Calls the save log data function of the connected node (if any)
-void Port::saveLogData(string filename)
+void Port::saveLogData(string filename, const size_t portIdx)
 {
     if (mpNode != 0)
     {
@@ -208,7 +206,7 @@ void Port::saveLogData(string filename)
 //! Get all data names and units from the connected node
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
-void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
+void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits, const size_t portIdx)
 {
     if(this->isConnected())
     {
@@ -225,7 +223,7 @@ void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUni
 //! @param [in] dataid The node data id
 //! @param [in,out] rName This string will contain the name
 //! @param [in,out] rUnit This string will contain the unit
-void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rUnit)
+void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rUnit, const size_t portIdx)
 {
     if (mpNode != 0)
     {
@@ -241,7 +239,7 @@ void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rU
 
 
 //! @brief Wraper for the Node function
-int Port::getNodeDataIdFromName(const string name)
+int Port::getNodeDataIdFromName(const string name, const size_t portIdx)
 {
     if (mpNode != 0)
     {
@@ -254,7 +252,7 @@ int Port::getNodeDataIdFromName(const string name)
 }
 
 
-vector<double> *Port::getTimeVectorPtr()
+vector<double> *Port::getTimeVectorPtr(const size_t portIdx)
 {
     if (mpNode != 0)
     {
@@ -267,7 +265,7 @@ vector<double> *Port::getTimeVectorPtr()
 }
 
 
-vector<vector<double> > *Port::getDataVectorPtr()
+vector<vector<double> > *Port::getDataVectorPtr(const size_t portIdx)
 {
     if (mpNode != 0)
     {
@@ -284,7 +282,7 @@ vector<vector<double> > *Port::getDataVectorPtr()
 //! @param[out] rNames is the Vector of names of the star values
 //! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the value of this will be here
 //! @param[out] rUnits is the Vector of units of the star values
-void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
+void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits, const size_t portIdx)
 {
     if(mpStartNode)
     {
@@ -297,7 +295,7 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 //! @param[out] rNames is the Vector of names of the star values
 //! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the name of this will be here
 //! @param[out] rUnits is the Vector of units of the star values
-void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits)
+void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx)
 {
     if(mpStartNode)
     {
@@ -330,7 +328,7 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 //! @brief Sets start values to a start value node in the port
 //! @param[in] names is a Vector of names to be set
 //! @param[in] values is a Vector of start values to be set
-bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
+bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> values, const size_t portIdx)
 {
     bool success = false;
     if(mpStartNode)
@@ -355,7 +353,7 @@ bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
 //!
 //! @param[in] names is a Vector of names to be set
 //! @param[in] sysParNames is a Vector of names of System parameters that should be associated to the start value
-bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames)
+bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx)
 {
     cout << "In setStartValueDataByNames()" << endl;
     bool success = false;
@@ -381,7 +379,7 @@ bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::
 //! @brief Get the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @returns the start value
-double Port::getStartValue(const size_t idx)
+double Port::getStartValue(const size_t idx, const size_t portIdx)
 {
     if(mpStartNode)
         return mpStartNode->getData(idx);
@@ -393,7 +391,7 @@ double Port::getStartValue(const size_t idx)
 //! @brief Set the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @param[in] value is the start value that should be written
-void Port::setStartValue(const size_t &idx, const double &value)
+void Port::setStartValue(const size_t &idx, const double &value, const size_t portIdx)
 {
     if(mpStartNode)
     {
@@ -424,6 +422,11 @@ bool Port::isConnectionRequired()
     return mConnectionRequired;
 }
 
+size_t Port::getNumPorts()
+{
+    return 1;
+}
+
 
 //! Get the port type
 Port::PORTTYPE Port::getPortType()
@@ -440,6 +443,9 @@ string Port::getPortTypeString()
     {
     case POWERPORT :
         return "POWERPORT";
+        break;
+    case MULTIPORT:
+        return "MULTIPORT";
         break;
     case READPORT :
         return "READPORT";
@@ -470,25 +476,11 @@ const string &Port::getComponentName()
 }
 
 
-////! SystemPort constructor
-//SystemPort::SystemPort() : Port()
-//{
-//    mPortType = SYSTEMPORT;
-//}
-
-
 //! SystemPort constructor
 SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = SYSTEMPORT;
 }
-
-
-////! PowerPort constructor
-//PowerPort::PowerPort() : Port()
-//{
-//    mPortType = POWERPORT;
-//}
 
 
 //! PowerPort constructor
@@ -512,13 +504,6 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
 }
 
 
-////Constructor
-//ReadPort::ReadPort() : Port()
-//{
-//    mPortType = READPORT;
-//}
-
-
 ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = READPORT;
@@ -530,13 +515,6 @@ void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/)
     cout << "Could not write to port, this is a ReadPort" << endl;
     assert(false);
 }
-
-
-////Constructor
-//WritePort::WritePort() : Port()
-//{
-//    mPortType = WRITEPORT;
-//}
 
 
 WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
@@ -559,6 +537,102 @@ double WritePort::readNode(const size_t /*idx*/)
     return 0;
 }
 
+MultiPort::MultiPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
+{
+    mPortType = MULTIPORT;
+    //! @todo maybe not use names, or use unique names, or something else, names should not be used
+    stringstream ss;
+    ss << portname << "_" << 0;
+    mSubPortsVector.push_back(new PowerPort(node_type, ss.str(), portOwner));
+}
+
+double MultiPort::readNode(const size_t idx, const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->readNode(idx);
+}
+
+void MultiPort::writeNode(const size_t &idx, const double &value, const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->writeNode(idx,value);
+}
+
+double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getNodeDataPtr(idx);
+}
+
+void MultiPort::saveLogData(std::string filename, const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->saveLogData(filename);
+}
+
+void MultiPort::getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx)
+{
+    mSubPortsVector[portIdx]->getNodeDataNamesAndUnits(rNames, rUnits);
+}
+
+void MultiPort::getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit, const size_t portIdx)
+{
+    mSubPortsVector[portIdx]->getNodeDataNameAndUnit(dataid, rName, rUnit);
+}
+
+int MultiPort::getNodeDataIdFromName(const std::string name, const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getNodeDataIdFromName(name);
+}
+
+std::vector<double> *MultiPort::getTimeVectorPtr(const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getTimeVectorPtr();
+}
+
+std::vector<std::vector<double> > *MultiPort::getDataVectorPtr(const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getDataVectorPtr();
+}
+
+//void MultiPort::getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx)
+//{
+//    mSubPortsVector[portIdx]->getStartValueDataNamesValuesAndUnits(rNames, rValues, rUnits);
+//}
+
+//void MultiPort::getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx)
+//{
+//    mSubPortsVector[portIdx]->getStartValueDataNamesValuesAndUnits(rNames, rValuesTxt, rUnits);
+//}
+
+//bool MultiPort::setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values, const size_t portIdx)
+//{
+//    return mSubPortsVector[portIdx]->setStartValueDataByNames(names, values);
+//}
+
+//bool MultiPort::setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx)
+//{
+//    return mSubPortsVector[portIdx]->setStartValueDataByNames(names, sysParNames);
+//}
+
+//double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
+//{
+//    return mSubPortsVector[portIdx]->getStartValue(idx);
+//}
+
+//void MultiPort::setStartValue(const size_t &idx, const double &value, const size_t portIdx)
+//{
+//    mSubPortsVector[portIdx]->setStartValue(idx, value);
+//}
+
+size_t MultiPort::getNumPorts()
+{
+    return mSubPortsVector.size();
+}
+
+//! Adds a subport to a multiport
+Port* MultiPort::addSubPort()
+{
+    mSubPortsVector.push_back(new PowerPort(mNodeType, "noname, this is a subport", 0));
+    return mSubPortsVector.back();
+}
+
 
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
@@ -569,6 +643,9 @@ Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, string name, C
     {
     case Port::POWERPORT :
         return new PowerPort(nodetype, name, portOwner);
+        break;
+    case Port::MULTIPORT :
+        return new MultiPort(nodetype, name, portOwner);
         break;
     case Port::WRITEPORT :
         return new WritePort(nodetype, name, portOwner);
