@@ -32,7 +32,7 @@ namespace hopsan {
         NodeSignal() : Node(DATALENGTH)
         {
             mNodeType = "NodeSignal";
-            setDataNameAndUnit(VALUE, "Value", "-");
+            setDataCharacteristics(VALUE, "Value", "-", Node::FLOW);
         }
     };
 
@@ -52,12 +52,12 @@ namespace hopsan {
         NodeHydraulic() : Node(DATALENGTH)
         {
             mNodeType = "NodeHydraulic";
-            setDataNameAndUnit(FLOW, "Flow", "m^3/s");
-            setDataNameAndUnit(PRESSURE, "Pressure", "Pa");
-            setDataNameAndUnit(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
-            setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
-            setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
-            setDataNameAndUnit(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
+            setDataCharacteristics(FLOW, "Flow", "m^3/s", Node::FLOW);
+            setDataCharacteristics(PRESSURE, "Pressure", "Pa", Node::INTENSITY);
+            setDataCharacteristics(TEMPERATURE, "Temperature", "K", Node::INTENSITY, Node::NOPLOT);
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "?", Node::INTENSITY, Node::NOPLOT);
+            setDataCharacteristics(CHARIMP, "CharImp", "?", Node::FLOW, Node::NOPLOT);
+            setDataCharacteristics(HEATFLOW, "HeatFlow", "?", Node::FLOW, Node::NOPLOT);
         }
 
         virtual void setSpecialStartValues(Node *pNode)
@@ -89,11 +89,11 @@ namespace hopsan {
         NodeMechanic() : Node(DATALENGTH)
         {
             mNodeType = "NodeMechanic";
-            setDataNameAndUnit(VELOCITY, "Velocity", "m/s");
-            setDataNameAndUnit(FORCE, "Force", "N");
-            setDataNameAndUnit(POSITION, "Position", "m");
-            setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
-            setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
+            setDataCharacteristics(VELOCITY, "Velocity", "m/s", Node::INTENSITY);
+            setDataCharacteristics(FORCE, "Force", "N", Node::FLOW);
+            setDataCharacteristics(POSITION, "Position", "m", Node::INTENSITY);
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "?", Node::FLOW, Node::NOPLOT);
+            setDataCharacteristics(CHARIMP, "CharImp", "?", Node::INTENSITY, Node::NOPLOT);
         }
 
         virtual void setSpecialStartValues(Node *pNode)
@@ -125,11 +125,11 @@ namespace hopsan {
         NodeMechanicRotational() : Node(DATALENGTH)
         {
             mNodeType = "NodeMechanicRotational";
-            setDataNameAndUnit(ANGULARVELOCITY, "Angular Velocity", "rad/s");
-            setDataNameAndUnit(TORQUE, "Torque", "Nm");
-            setDataNameAndUnit(ANGLE, "Angle", "rad");
-            setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
-            setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
+            setDataCharacteristics(ANGULARVELOCITY, "Angular Velocity", "rad/s", Node::INTENSITY);
+            setDataCharacteristics(TORQUE, "Torque", "Nm", Node::FLOW);
+            setDataCharacteristics(ANGLE, "Angle", "rad", Node::INTENSITY);
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "?", Node::FLOW, Node::NOPLOT);
+            setDataCharacteristics(CHARIMP, "CharImp", "?", Node::INTENSITY, Node::NOPLOT);
         }
 
         virtual void setSpecialStartValues(Node *pNode)

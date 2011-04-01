@@ -44,6 +44,7 @@ namespace hopsan {
         NodeTypeT &getNodeType();
 
         enum PLOTORNOT {PLOT, NOPLOT};
+        enum INTENSITYORFLOW {INTENSITY, FLOW};
 
         void copyNodeVariables(Node *pNode);
         virtual void setSpecialStartValues(Node *pNode);
@@ -60,9 +61,11 @@ namespace hopsan {
         double &getDataRef(const size_t data_type);
         double *getDataPtr(const size_t data_type);
 
-        void setDataNameAndUnit(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
+        void setDataCharacteristics(size_t id, std::string name, std::string unit, Node::INTENSITYORFLOW intensityOrFlow, Node::PLOTORNOT plotBehaviour = Node::PLOT);
         std::string getDataName(size_t id);
         std::string getDataUnit(size_t id);
+        std::vector<size_t> getIntensityVariableIndexes();
+        std::vector<size_t> getFlowVariableIndexes();
         int getDataIdFromName(const std::string name);
         void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
         void getDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);
@@ -81,6 +84,7 @@ namespace hopsan {
         std::vector<std::string> mDataNames;
         std::vector<std::string> mDataUnits;
         std::vector<Node::PLOTORNOT> mPlotBehaviour;
+        std::vector<Node::INTENSITYORFLOW> mIntensityOrFlow;
         ComponentSystem *mpOwnerSystem;
 
     private:
