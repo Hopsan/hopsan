@@ -1508,7 +1508,7 @@ void ComponentSystem::sortSignalComponentVector()
                 {
                     if(((*itp)->getPortType() == Port::READPORT) &&
                        ((*itp)->isConnected()) &&
-                       (!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr())) &&
+                       ((!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr())) && (*itp)->getNodePtr()->getWritePortComponentPtr() != 0 &&(*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeCQS() == Component::S) &&
                        ((*itp)->getNodePtr()->getWritePortComponentPtr() != 0) &&
                        ((*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent == this))
                     {
