@@ -72,6 +72,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpZoomButton->setCheckable(true);
     mpZoomButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpZoomButton->setAcceptDrops(false);
+    mpZoomButton->setShortcut(QKeySequence("z"));
     mpToolBar->addWidget(mpZoomButton);
 
     mpPanButton = new QToolButton(mpToolBar);
@@ -197,15 +198,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(mpExportGNUPLOTButton,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
     connect(mpImportGNUPLOTButton,SIGNAL(clicked()),SLOT(importGNUPLOT()));
     connect(mpGridButton,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
-    //connect(mpSizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setLineWidth(int)));
-    //connect(mpColorButton,SIGNAL(clicked()),this,SLOT(setLineColor()));
     connect(mpBackgroundColorButton,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
-    //connect(mpAutoUpdateCheckBox, SIGNAL(toggled(bool)), this, SLOT(setAutoUpdate(bool)));
-    //connect(mpPreviousButton,SIGNAL(clicked()),this,SLOT(stepBack()));
-    //connect(mpNextButton, SIGNAL(clicked()),this,SLOT(stepForward()));
-    //connect(mpDiscardGenerationButton,SIGNAL(clicked()),this,SLOT(discardGeneration()));
-    //connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(checkNewValues()));
-
     connect(mpComponentList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updatePortList()));
     connect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
     connect(mpVariableList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(addPlotCurveFromBoxes()));
@@ -260,36 +253,6 @@ void PlotWindow::addPlotCurveFromBoxes()
                        mpComponentList->currentItem()->text(), mpPortList->currentItem()->text(), mpVariableList->currentItem()->text(), "", QwtPlot::yLeft);
 }
 
-//! @brief Slot that is used to change the "Hold Plot" setting
-//! @param value is a boolean that tells whether it should be turned on or off
-void PlotWindow::setAutoUpdate(bool value)
-{
-    //! @todo Re-implement (and move to PlotCurve)
-}
-
-
-//! @brief Slot that steps back one generation in plot history
-void PlotWindow::stepBack()
-{
-    //! @todo Re-implement
-}
-
-
-//! @brief Slot that steps forward one generation in plot history
-void PlotWindow::stepForward()
-{
-    //! @todo Re-implement
-}
-
-
-//! @brief Changes plot variable generation in the plot window
-//! @param gen Number of the desired generation
-//! @todo Add a check that the generation exists
-void PlotWindow::setGeneration(int gen)
-{
-    //! @todo Re-implement (and move to PlotCurve)
-}
-
 
 PlotTabWidget *PlotWindow::getPlotTabWidget()
 {
@@ -321,8 +284,9 @@ void PlotWindow::discardOldestGeneration()
 
 //! @brief Slot that enables or disables rubber band zooming
 //! param[in] on is true if it shall be enabled or false if it should be disabled
-void PlotWindow::enableZoom(bool on)
+void PlotWindow::enableZoom(bool value)
 {
+    getCurrentPlotTab()->enableZoom(value);
     //! @todo Re-implement
 }
 
@@ -549,6 +513,8 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
     this->setTabsClosable(true);
 
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closePlotTab(int)));
+    connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
+    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
 }
 
 
@@ -559,6 +525,12 @@ void PlotTabWidget::closePlotTab(int index)
     PlotTab *tempTab = mpParentPlotWindow->getCurrentPlotTab();
     tempTab->close();
     delete(tempTab);
+}
+
+
+void PlotTabWidget::tabChanged()
+{
+    //! @todo Implement this
 }
 
 
@@ -819,6 +791,12 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
         mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
     }
     mpPlot->replot();
+}
+
+
+void PlotTab::enableZoom(bool value)
+{
+    mpZoomer->setEnabled(value);
 }
 
 

@@ -68,10 +68,6 @@ public slots:
     void setLineWidth(int);
     void setLineColor();
     void setBackgroundColor();
-   // void checkNewValues();
-    void setAutoUpdate(bool value);
-    void stepBack();
-    void stepForward();
     void saveToXml();
     bool saveToHmpf(QString fileName);
     void close();
@@ -159,6 +155,7 @@ public:
 
 private slots:
     void closePlotTab(int index);
+    void tabChanged();
 };
 
 
@@ -193,6 +190,9 @@ protected:
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
+
+public slots:
+    void enableZoom(bool value);
 
 private:
     QwtPlot *mpPlot;
