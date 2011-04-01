@@ -81,6 +81,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpPanButton->setCheckable(true);
     mpPanButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpPanButton->setAcceptDrops(false);
+    mpPanButton->setShortcut(QKeySequence("x"));
     mpToolBar->addWidget(mpPanButton);
 
     mpSaveButton = new QToolButton(mpToolBar);
@@ -118,6 +119,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpGridButton->setChecked(true);
     mpGridButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpGridButton->setAcceptDrops(false);
+    mpGridButton->setShortcut(QKeySequence("g"));
     mpToolBar->addSeparator();
     mpToolBar->addWidget(mpGridButton);
 
@@ -126,6 +128,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
     mpBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpBackgroundColorButton->setAcceptDrops(false);
+    mpBackgroundColorButton->setShortcut(QKeySequence("c"));
     mpToolBar->addWidget(mpBackgroundColorButton);
 
     addToolBar(mpToolBar);
@@ -286,24 +289,33 @@ void PlotWindow::discardOldestGeneration()
 //! param[in] on is true if it shall be enabled or false if it should be disabled
 void PlotWindow::enableZoom(bool value)
 {
+    if(mpPanButton->isChecked() && value)
+    {
+        mpPanButton->setChecked(false);
+        getCurrentPlotTab()->enablePan(false);
+    }
     getCurrentPlotTab()->enableZoom(value);
-    //! @todo Re-implement
 }
 
 
 //! @brief Slot that enables or disables panning tool
 //! @param on is true/false if panning shall be enabled/disabled
-void PlotWindow::enablePan(bool on)
+void PlotWindow::enablePan(bool value)
 {
-    //! @todo Re-implement
+    if(mpZoomButton->isChecked() && value)
+    {
+        mpZoomButton->setChecked(false);
+        getCurrentPlotTab()->enableZoom(false);
+    }
+    getCurrentPlotTab()->enablePan(value);
 }
 
 
 //! @brief Slot that turns plot grid on or off
 //! @param on is true/false if it shall be turned on/off.
-void PlotWindow::enableGrid(bool on)
+void PlotWindow::enableGrid(bool value)
 {
-    //! @todo Re-implement (and move to PlotTab)
+    getCurrentPlotTab()->enableGrid(value);
 }
 
 
@@ -573,7 +585,8 @@ PlotTab::PlotTab(PlotWindow *parent)
 
         //Panning Tool
     mpPanner = new QwtPlotPanner(mpPlot->canvas());
-    mpPanner->setMouseButton(Qt::MidButton);
+    mpPanner->setMouseButton(Qt::LeftButton);
+    mpPanner->setEnabled(false);
 
         //Rubber Band Zoom
     mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpPlot->canvas());      //Zoomer for left y axis
@@ -797,6 +810,19 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
 void PlotTab::enableZoom(bool value)
 {
     mpZoomer->setEnabled(value);
+    mpZoomerRight->setEnabled(value);
+}
+
+
+void PlotTab::enablePan(bool value)
+{
+    mpPanner->setEnabled(value);
+}
+
+
+void PlotTab::enableGrid(bool value)
+{
+    mpGrid->setVisible(value);
 }
 
 

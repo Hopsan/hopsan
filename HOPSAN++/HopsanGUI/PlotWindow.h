@@ -193,6 +193,8 @@ protected:
 
 public slots:
     void enableZoom(bool value);
+    void enablePan(bool value);
+    void enableGrid(bool value);
 
 private:
     QwtPlot *mpPlot;
