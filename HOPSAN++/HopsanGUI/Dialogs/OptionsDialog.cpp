@@ -240,7 +240,7 @@ void OptionsDialog::updateValues()
         gpMainWindow->setPalette(gConfig.getPalette());
         this->setPalette(gConfig.getPalette());
     }
-        emit paletteChanged();
+    emit paletteChanged();
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
@@ -319,7 +319,6 @@ void OptionsDialog::show()
     buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
     buttonStyle.append("QToolButton:hover:unchecked   	{ border: 1px solid gray;               border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
     mpBackgroundColorButton->setStyleSheet(buttonStyle);
-    //mpBackgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     mPickedBackgroundColor = gConfig.getBackgroundColor();
 
     mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());

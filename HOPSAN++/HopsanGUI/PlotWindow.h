@@ -173,6 +173,7 @@ public:
     PlotWindow *mpParentPlotWindow;
 
     void addCurve(PlotCurve *curve);
+    void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
     QList<PlotCurve *> getCurves();
     void setActivePlotCurve(PlotCurve *pCurve);
@@ -205,6 +206,7 @@ private:
     QColor mBackgroundColor;
     bool mShowGrid();
     QStringList mCurveColors;
+    QStringList mUsedColors;
     QwtPlotGrid * mpGrid;
     QVector <QwtPlotMarker *> mpMarkers;
     QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;

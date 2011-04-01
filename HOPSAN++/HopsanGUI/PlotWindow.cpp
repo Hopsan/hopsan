@@ -540,7 +540,8 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     connect(mpAutoUpdateCheckBox,   SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
 }
 
-
+//! @brief Constructor for the plot tab widget
+//! @param parent Pointer to the plot window the plot tab widget belongs to
 PlotTabWidget::PlotTabWidget(PlotWindow *parent)
     : QTabWidget(parent)
 {
@@ -551,6 +552,8 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
 }
 
 
+//! @brief Closes the plot tab with specified index
+//! @param index Index of tab to close
 void PlotTabWidget::closePlotTab(int index)
 {
     PlotTab *tempTab = mpParentPlotWindow->getCurrentPlotTab();
@@ -559,6 +562,8 @@ void PlotTabWidget::closePlotTab(int index)
 }
 
 
+//! @brief Constructor for plot tabs.
+//! @param parent Pointer to the plot window the tab belongs to
 PlotTab::PlotTab(PlotWindow *parent)
     : QWidget(parent)
 {
@@ -593,8 +598,6 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpPlot->setAcceptDrops(false);
     mpPlot->setCanvasBackground(QColor(Qt::white));
     mpPlot->setAutoReplot(true);
-    mpPlot->setAxisAutoScale(QwtPlot::yLeft);
-    mpPlot->setAxisAutoScale(QwtPlot::xBottom);
 
         //Panning Tool
     mpPanner = new QwtPlotPanner(mpPlot->canvas());
@@ -610,6 +613,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpZoomer->setTrackerPen(QColor(Qt::white));
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+    mpZoomer->setZoomBase(QwtDoubleRect());
 
     mpZoomerRight = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot->canvas());   //Zoomer for right y axis
     mpZoomerRight->setMaxStackDepth(10000);
@@ -662,6 +666,7 @@ PlotTab::PlotTab(PlotWindow *parent)
 }
 
 
+//! @brief Destructor for plot tab. Removes all curves before tab is deleted.
 PlotTab::~PlotTab()
 {
     while(!mPlotCurvePtrs.empty())
@@ -671,6 +676,8 @@ PlotTab::~PlotTab()
 }
 
 
+//! @brief Adds a plot curve to a plot tab
+//! @param curve Pointer to the plot curve
 void PlotTab::addCurve(PlotCurve *curve)
 {
     //qDebug() << curve->getComponentName() << curve->getPortName() << curve->getDataName() << curve->getDataUnit() << curve->getGeneration();
@@ -682,25 +689,123 @@ void PlotTab::addCurve(PlotCurve *curve)
 
     mPlotCurvePtrs.append(curve);
 
-    int colorNumber = getNumberOfCurves();
-    while(colorNumber > mCurveColors.size())
+    size_t i=0;
+    while(mUsedColors.contains(mCurveColors.first()))
     {
-        colorNumber -= mCurveColors.size();
+        mCurveColors.append(mCurveColors.first());
+        mCurveColors.pop_front();
+        ++i;
+        if(i>mCurveColors.size()) break;
     }
+    mUsedColors.append(mCurveColors.first());
 
     mpPlot->enableAxis(curve->getAxisY());
+    rescaleToCurves();
     mpPlot->replot();
-    curve->setLineColor(mCurveColors.at(colorNumber));
+    curve->setLineColor(mCurveColors.first());
     curve->setLineWidth(2);
     mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
 }
 
 
+//! @brief Rescales the axes and the zommers so that all plot curves will fit
+void PlotTab::rescaleToCurves()
+{
+    double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight;
+
+    xMin=0;
+    xMax=10;
+    yMinLeft=0;
+    yMaxLeft=10;
+    yMinRight=0;
+    yMaxRight=10;
+
+    if(!mPlotCurvePtrs.empty())
+    {
+        bool foundFirstLeft = false;
+        bool foundFirstRight = false;
+
+        xMin=mPlotCurvePtrs.first()->getCurvePtr()->minXValue();
+        xMax=mPlotCurvePtrs.first()->getCurvePtr()->maxXValue();
+
+        for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+        {
+            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft)
+            {
+                if(foundFirstLeft == false)
+                {
+                    yMinLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
+                    yMaxLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    foundFirstLeft = true;
+                }
+                else
+                {
+                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue() < yMinLeft)
+                        yMinLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
+                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue() > yMaxLeft)
+                        yMaxLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                }
+            }
+
+            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight)
+            {
+                if(foundFirstRight == false)
+                {
+                    yMinRight=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
+                    yMaxRight=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    foundFirstRight = true;
+                }
+                else
+                {
+                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue() < yMinRight)
+                        yMinRight=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
+                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue() > yMaxRight)
+                        yMaxRight=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                }
+            }
+
+            if(mPlotCurvePtrs.at(i)->getCurvePtr()->minXValue() < xMin)
+                xMin=mPlotCurvePtrs.at(i)->getCurvePtr()->minXValue();
+            if(mPlotCurvePtrs.at(i)->getCurvePtr()->maxXValue() > xMax)
+                xMax=mPlotCurvePtrs.at(i)->getCurvePtr()->maxXValue();
+
+        }
+    }
+
+    mpPlot->setAxisScale(QwtPlot::yLeft, yMinLeft, yMaxLeft);
+    mpPlot->setAxisScale(QwtPlot::yRight, yMinRight, yMaxRight);
+    mpPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
+
+    QwtDoubleRect tempDoubleRect;
+    tempDoubleRect.setX(xMin);
+    tempDoubleRect.setY(yMinLeft);
+    tempDoubleRect.setWidth(xMax-xMin);
+    tempDoubleRect.setHeight(yMaxLeft-yMinLeft);
+    mpZoomer->setZoomBase(tempDoubleRect);
+
+    QwtDoubleRect tempDoubleRect2;
+    tempDoubleRect2.setX(xMin);
+    tempDoubleRect2.setHeight(yMaxRight-yMinRight);
+    tempDoubleRect2.setWidth(xMax-xMin);
+    mpZoomerRight->setZoomBase(tempDoubleRect2);
+}
+
+
 void PlotTab::removeCurve(PlotCurve *curve)
 {
+    for(size_t i=0; i<mUsedColors.size(); ++i)
+    {
+        if(curve->getCurvePtr()->pen().color() == mUsedColors.at(i))
+        {
+            mUsedColors.removeAt(i);
+            break;
+        }
+    }
+
     curve->getCurvePtr()->detach();
     mPlotCurvePtrs.removeAll(curve);
     delete(curve);
+    rescaleToCurves();
     mpPlot->replot();
 }
 
@@ -901,6 +1006,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
     mpCurve->setData(mTimeVector, mDataVector);
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+    mpCurve->setAxis(QwtPlot::xBottom, axisY);
     mpCurve->attach(parent->getPlot());
 
     mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
