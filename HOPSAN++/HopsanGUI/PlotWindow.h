@@ -58,16 +58,13 @@ public slots:
     void addPlotCurveFromBoxes();
     void discardGeneration();
     void discardOldestGeneration();
-    void setUnit(int yAxis, QString physicalQuantity, QString selectedUnit);
-    void enableZoom(bool);
-    void enablePan(bool);
-    void exportSVG();
-    void exportGNUPLOT();
     void importGNUPLOT();
     void enableGrid(bool);
-    void setLineWidth(int);
-    void setLineColor();
+    void enableZoom(bool);
+    void enablePan(bool);
     void setBackgroundColor();
+    void exportSVG();
+    void exportGNUPLOT();
     void saveToXml();
     bool saveToHmpf(QString fileName);
     void close();
@@ -195,6 +192,7 @@ public slots:
     void enableZoom(bool value);
     void enablePan(bool value);
     void enableGrid(bool value);
+    void setBackgroundColor(QColor color);
 
 private:
     QwtPlot *mpPlot;

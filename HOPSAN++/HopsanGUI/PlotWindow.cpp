@@ -67,7 +67,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addWidget(mpNewPlotButton);
 
     mpZoomButton = new QToolButton(mpToolBar);
-    mpZoomButton->setToolTip("Zoom");
+    mpZoomButton->setToolTip("Zoom (Z)");
     mpZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom.png"));
     mpZoomButton->setCheckable(true);
     mpZoomButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -76,7 +76,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addWidget(mpZoomButton);
 
     mpPanButton = new QToolButton(mpToolBar);
-    mpPanButton->setToolTip("Pan");
+    mpPanButton->setToolTip("Pan (X)");
     mpPanButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
     mpPanButton->setCheckable(true);
     mpPanButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -113,7 +113,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addWidget(mpImportGNUPLOTButton);
 
     mpGridButton = new QToolButton(mpToolBar);
-    mpGridButton->setToolTip("Show Grid");
+    mpGridButton->setToolTip("Show Grid (G)");
     mpGridButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Grid.png"));
     mpGridButton->setCheckable(true);
     mpGridButton->setChecked(true);
@@ -124,7 +124,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addWidget(mpGridButton);
 
     mpBackgroundColorButton = new QToolButton(mpToolBar);
-    mpBackgroundColorButton->setToolTip("Select Canvas Color");
+    mpBackgroundColorButton->setToolTip("Select Canvas Color (C)");
     mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
     mpBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpBackgroundColorButton->setAcceptDrops(false);
@@ -319,6 +319,14 @@ void PlotWindow::enableGrid(bool value)
 }
 
 
+void PlotWindow::setBackgroundColor()
+{
+    QColor color = QColorDialog::getColor(getCurrentPlotTab()->getPlot()->canvasBackground(), this);
+    if (color.isValid())
+        getCurrentPlotTab()->setBackgroundColor(color);
+}
+
+
 //! @brief Slot that exports current plot to .svg format
 void PlotWindow::exportSVG()
 {
@@ -340,37 +348,12 @@ void PlotWindow::importGNUPLOT()
 }
 
 
-//! @brief Slot that changes line width of all plot lines
-//! @param size is the desired line width in pixels
-void PlotWindow::setLineWidth(int size)
-{
-    //! @todo Re-implement (and move to PlotCurve)
-}
-
-//! @brief Slot that asks for a line and then opens color selection box to change the line color
-void PlotWindow::setLineColor()
-{
-    //! @todo Re-implement (and move to PlotCurve)
-}
-
-
-//! @brief Slot that opens color selection box to change background color for the plot
-void PlotWindow::setBackgroundColor()
-{
-    //! @todo Re-implement (and move to PlotTab)
-}
 
 
 //! @brief Handles the right-click menu in the plot window
 void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     //! @todo Re-implement
-}
-
-
-void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUnit)
-{
-//! @todo Re-implement (and move to PlotTab!)
 }
 
 
@@ -823,6 +806,13 @@ void PlotTab::enablePan(bool value)
 void PlotTab::enableGrid(bool value)
 {
     mpGrid->setVisible(value);
+}
+
+
+void PlotTab::setBackgroundColor(QColor color)
+{
+    mpPlot->setCanvasBackground(color);
+    mpPlot->replot();
 }
 
 
