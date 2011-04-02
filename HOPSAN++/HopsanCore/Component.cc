@@ -2243,20 +2243,9 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     else
     {
         //Check if we are connecting multiports, in that case add new subport, remember original portPointer though so that we can clean up if failure
-        //! @todo clean up code, maybe have hel function, kjust quick coded for now
-        Port* pOriginalPort1 = 0;
-        Port* pOriginalPort2 = 0;
-        if (pPort1->getPortType() == Port::MULTIPORT)
-        {
-            pOriginalPort1 = pPort1;
-            pPort1 = pPort1->addSubPort();
-        }
-
-        if (pPort2->getPortType() == Port::MULTIPORT)
-        {
-            pOriginalPort2 = pPort2;
-            pPort2 = pPort2->addSubPort();
-        }
+        Port *pMultiPort1=0, *pMultiPort2=0;
+        connAssist.ifMultiportAddSubportAndSwapPtr(pPort1, pMultiPort1);
+        connAssist.ifMultiportAddSubportAndSwapPtr(pPort2, pMultiPort2);
 
         if (!pPort1->isConnected() && !pPort2->isConnected())
         {
@@ -2268,32 +2257,8 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         }
 
         //Handle multiport connection sucess or failure
-        //! @todo write subfunction
-        if (pOriginalPort1 != 0)
-        {
-            if (sucess)
-            {
-                //! @todo What do we need to do to handle sucess
-            }
-            else
-            {
-                //! @todo What do we need to do to handle failure, we need to remove last created subport
-                pOriginalPort1->removeSubPort(pPort1);
-            }
-        }
-
-        if (pOriginalPort2 != 0)
-        {
-            if (sucess)
-            {
-                //! @todo What do we need to do to handle sucess
-            }
-            else
-            {
-                //! @todo What do we need to do to handle failure, we need to remove last created subport
-                pOriginalPort2->removeSubPort(pPort2);
-            }
-        }
+        connAssist.ifMultiportCleanupAfterConnect(pPort1, pMultiPort1, sucess);
+        connAssist.ifMultiportCleanupAfterConnect(pPort2, pMultiPort2, sucess);
     }
 
     //Abbort conenction if there was a connect failure
@@ -2510,6 +2475,79 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
     return true;
 }
 
+//! @brief Detects if a port is a multiport, adds a subport and swaps the pointer, storing original port in argument two ptr
+//! @param [in out] rpPort A refrence to a pointer to the port, will be swapped to new subport if multiport
+//! @param [in out] rpOriginalPort A refrence to a pointer to the original multiport, will be 0 if not a multiport, will point to the multiport otherwise
+void ConnectionAssistant::ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOriginalPort)
+{
+    rpOriginalPort = 0; //Make sure null if not multiport
+    if (rpPort->getPortType() == Port::MULTIPORT)
+    {
+        rpOriginalPort = rpPort;
+        rpPort = rpPort->addSubPort();
+    }
+}
+
+void ConnectionAssistant::ifMultiportCleanupAfterConnect(const Port *pSubPort, Port *pMultiPort, const bool wasSucess)
+{
+    if (pMultiPort != 0)
+    {
+        if (wasSucess)
+        {
+            //! @todo What do we need to do to handle sucess
+        }
+        else
+        {
+            //We need to remove the last created subport
+            pMultiPort->removeSubPort(pSubPort);
+        }
+    }
+}
+
+void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(const Port *pSubPort, Port *pMultiPort, const bool wasSucess)
+{
+    if (pMultiPort != 0)
+    {
+        if (wasSucess)
+        {
+            //If sucessful we should remove the empty port
+            pMultiPort->removeSubPort(pSubPort);
+        }
+        else
+        {
+            //! @todo What do we need to do to handle failure, nothing maybe
+        }
+    }
+}
+
+
+void ConnectionAssistant::ifMultiportPrepareForDissconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2)
+{
+    //First make usre that multiport pointers are zero if no multiports are beeing connected
+    rpMultiPort1=0;
+    rpMultiPort2=0;
+
+    //either port 1 or port2 is a multiport, or both are
+    if (rpPort1->getPortType() == Port::MULTIPORT && rpPort2->getPortType() != Port::MULTIPORT )
+    {
+        rpMultiPort1 = rpPort1;
+        assert(rpPort2->getConnectedPorts().size() == 1);
+        rpPort1 = rpPort2->getConnectedPorts()[0];
+    }
+    else if (rpPort1->getPortType() != Port::MULTIPORT && rpPort2->getPortType() == Port::MULTIPORT )
+    {
+        rpMultiPort2 = rpPort2;
+        assert(rpPort1->getConnectedPorts().size() == 1);
+        rpPort2 = rpPort1->getConnectedPorts()[0];
+    }
+    else if (rpPort1->getPortType() == Port::MULTIPORT && rpPort2->getPortType() == Port::MULTIPORT )
+    {
+        assert("Multiport <-> Multiport disconnection has not been implemented yet" == "Aborting!");
+        //! @todo need to search around to find correct subports
+    }
+
+}
+
 
 //! @brief Disconnect two ports, string version
 //! @todo need to make sure that components and prots given by name exist here
@@ -2548,11 +2586,10 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     stringstream ss;
     //! @todo some more advanced error handling (are the ports really connected to each other and such)
 
-
     if (pPort1->isConnected() && pPort2->isConnected())
     {
 
-        //Check if non of the ports will become empty
+        //Check if non of the ports will become empty, multiports will allways return connected ports size == 0 wich is Ok in this case
         if ( (pPort1->getConnectedPorts().size() > 1) && (pPort2->getConnectedPorts().size() > 1) )
         {
             disconnAssistant.unmergeOrUnjoinConnection(pPort1, pPort2);
@@ -2562,61 +2599,18 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
             //! @todo seems like we can merge this case with the one above
             disconnAssistant.unmergeOrUnjoinConnection(pPort1, pPort2);
         }
-        //If both ports will become empty
+        //If both ports will become empty, or if one or both is a multiport
         else
         {
             //Handle multiports
-            //! @todo maybe this should be handled inside deleteNodeConnection, or some other help function
-            Port* pOriginalPort1 = 0;
-            Port* pOriginalPort2 = 0;
-            //either port 1 or port2 is a multiport, or both are
-            if (pPort1->getPortType() == Port::MULTIPORT && pPort2->getPortType() != Port::MULTIPORT )
-            {
-                pOriginalPort1 = pPort1;
-                assert(pPort2->getConnectedPorts().size() == 1);
-                pPort1 = pPort2->getConnectedPorts()[0];
-            }
-            else if (pPort1->getPortType() != Port::MULTIPORT && pPort2->getPortType() == Port::MULTIPORT )
-            {
-                pOriginalPort2 = pPort2;
-                assert(pPort1->getConnectedPorts().size() == 1);
-                pPort2 = pPort1->getConnectedPorts()[0];
-            }
-            else if (pPort1->getPortType() == Port::MULTIPORT && pPort2->getPortType() == Port::MULTIPORT )
-            {
-                assert("Multiport <-> Multiport disconnection has not been implemented yet" == "Aborting!");
-                //! @todo need to search around to find correct subports
-            }
+            Port* pOriginalPort1=0, *pOriginalPort2=0;
+            disconnAssistant.ifMultiportPrepareForDissconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
 
             bool sucess = disconnAssistant.deleteNodeConnection(pPort1, pPort2);
 
             //Handle multiport connection sucess or failure
-            //! @todo write subfunction
-            if (pOriginalPort1 != 0)
-            {
-                if (sucess)
-                {
-                    //! @todo What do we need to do to handle sucess
-                    pOriginalPort1->removeSubPort(pPort1);
-                }
-                else
-                {
-                    //! @todo What do we need to do to handle failure, nothing maybe
-                }
-            }
-            if (pOriginalPort2 != 0)
-            {
-                if (sucess)
-                {
-                    //! @todo What do we need to do to handle sucess
-                    pOriginalPort2->removeSubPort(pPort2);
-                }
-                else
-                {
-                    //! @todo What do we need to do to handle failure, nothing maybe
-
-                }
-            }
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pOriginalPort1, sucess);
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pOriginalPort2, sucess);
         }
 
         disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);

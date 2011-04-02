@@ -81,7 +81,7 @@ Port* Port::addSubPort()
 }
 
 //! REmoves a subport from multiport
-void Port::removeSubPort(Port* ptr)
+void Port::removeSubPort(const Port* ptr)
 {
     //This should only be implemented and called from multiports
     assert(false);
@@ -654,7 +654,7 @@ Port* MultiPort::addSubPort()
 }
 
 //! Removes a specific subport
-void MultiPort::removeSubPort(Port* ptr)
+void MultiPort::removeSubPort(const Port* ptr)
 {
     std::vector<Port*>::iterator spit;
     for (spit=mSubPortsVector.begin(); spit!=mSubPortsVector.end(); ++spit)
