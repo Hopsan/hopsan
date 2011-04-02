@@ -503,6 +503,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
     {
         mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
 
+        //! @todo We should skip this for sub ports in multiports, we can check if pParentPort is set
         //Copy all start values to default parameters map in component
         std::vector<std::string> names;
         std::vector<std::string> data;
@@ -552,10 +553,10 @@ double WritePort::readNode(const size_t /*idx*/)
 MultiPort::MultiPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = MULTIPORT;
-    //! @todo maybe not use names, or use unique names, or something else, names should not be used
-//    stringstream ss;
-//    ss << portname << "_" << 0;
-//    mSubPortsVector.push_back(new PowerPort(node_type, ss.str(), portOwner));
+    if(getComponent()->isComponentC())
+    {
+        mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+    }
 }
 
 double MultiPort::readNode(const size_t idx, const size_t portIdx)
@@ -632,6 +633,16 @@ std::vector<std::vector<double> > *MultiPort::getDataVectorPtr(const size_t port
 //{
 //    mSubPortsVector[portIdx]->setStartValue(idx, value);
 //}
+
+void MultiPort::loadStartValues()
+{
+    //! @todo what should we do here actaully, from where should we copy the starvalues and where to, maybe we should tell the component programmer to fix this
+}
+
+void MultiPort::loadStartValuesFromSimulation()
+{
+    //! @todo what about this one then how should we handle this
+}
 
 //! Check if the port is curently connected
 bool MultiPort::isConnected()

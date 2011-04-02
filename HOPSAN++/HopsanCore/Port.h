@@ -68,8 +68,8 @@ namespace hopsan {
         const std::string &getPortName();
         const std::string &getComponentName();
 
-        void loadStartValues();
-        void loadStartValuesFromSimulation();
+        virtual void loadStartValues();
+        virtual void loadStartValuesFromSimulation();
 
         Component* getComponent();
 
@@ -144,6 +144,9 @@ namespace hopsan {
 
 //        double getStartValue(const size_t idx, const size_t portIdx=0);
 //        void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
+
+        void loadStartValues();
+        void loadStartValuesFromSimulation();
 
         bool isConnected();
         size_t getNumPorts();
