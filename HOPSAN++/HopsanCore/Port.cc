@@ -43,7 +43,7 @@ Port::~Port()
     mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
     for(size_t i = 0; i < dataNames.size(); ++i)
     {
-        mpComponent->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
+        getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
     }
 }
 
@@ -59,7 +59,10 @@ const string &Port::getNodeType()
 //! Returns the parent component
 Component* Port::getComponent()
 {
-    return mpComponent;
+    if(mpParentPort)
+        return mpParentPort->getComponent();
+    else
+        return mpComponent;
 }
 
 
@@ -197,7 +200,7 @@ void Port::saveLogData(string filename, const size_t portIdx)
     }
     else
     {
-        cout << mpComponent->getName() << "-port:" << mPortName << " can not log data, the Port has no Node connected" << endl;
+        cout << getComponentName() << "-port:" << mPortName << " can not log data, the Port has no Node connected" << endl;
         assert(false);
     }
 }
@@ -307,7 +310,7 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
             //Check if the nodeDataPtr is in the System parameters
-            std::string valueTxt = mpComponent->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
+            std::string valueTxt = getComponent()->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
             if(!(valueTxt.empty()))
             {
                 //The nodeDataPrt is connected to a System parameter, read out this name
@@ -338,7 +341,7 @@ bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
         {
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
-            mpComponent->getSystemParent()->getSystemParameters().unMapParameter(nodeDataPtr);
+            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(nodeDataPtr);
         }
         //Write the value to the start value node
         success = mpStartNode->setDataValuesByNames(names, values);
@@ -364,11 +367,11 @@ bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::
         values.resize(sysParNames.size());
         for(size_t i = 0; i < sysParNames.size(); ++i)
         {
-            mpComponent->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i]);
+            getComponent()->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i]);
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
             //Map the node data to the System parameter
-            success = mpComponent->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
+            success = getComponent()->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
         }
         success *= mpStartNode->setDataValuesByNames(names, values);
     }
@@ -396,8 +399,8 @@ void Port::setStartValue(const size_t &idx, const double &value, const size_t po
     if(mpStartNode)
     {
         mpStartNode->setData(idx, value);
-        //mpComponent->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
-        mpComponent->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
+        //getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
+        getComponent()->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
         std::cout << "Overwriting " << this->getPortName() << mpStartNode->getDataName(idx) << " with " << value << endl;
     }
     else
@@ -472,7 +475,7 @@ const string &Port::getPortName()
 //! Get the name of the commponent that the port is attached to
 const string &Port::getComponentName()
 {
-    return mpComponent->getName();
+    return getComponent()->getName();
 }
 
 
@@ -487,7 +490,7 @@ SystemPort::SystemPort(std::string node_type, std::string portname, Component *p
 PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = POWERPORT;
-    if(mpComponent->isComponentC())
+    if(getComponent()->isComponentC())
     {
         mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
 
@@ -630,6 +633,7 @@ size_t MultiPort::getNumPorts()
 Port* MultiPort::addSubPort()
 {
     mSubPortsVector.push_back(new PowerPort(mNodeType, "noname, this is a subport", 0));
+    mSubPortsVector.back()->mpParentPort = this;
     return mSubPortsVector.back();
 }
 

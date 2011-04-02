@@ -48,6 +48,7 @@
 #include "Hydraulic/HydraulicVariableDisplacementMotorQ.hpp"
 #include "Hydraulic/HydraulicVolume3.hpp"
 #include "Hydraulic/HydraulicVolume4.hpp"
+#include "Hydraulic/HydraulicVolumeMultiPort.hpp"
 #include "Hydraulic/HydraulicLossLessConnector.hpp"
 #include "Hydraulic/HydraulicLossLessTConnector.hpp"
 #include "Hydraulic/HydraulicDummyC.hpp"

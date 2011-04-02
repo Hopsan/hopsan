@@ -203,4 +203,5 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicTranslationalMassWithLever.hpp \
     Components/Mechanic/MechanicRotationalInertiaWithGearRatio.hpp \
     Components/Mechanic/MechanicRotationalInertiaWithSingleGear.hpp \
-    Components/Hydraulic/HydraulicMultiPressureSourceC.hpp
+    Components/Hydraulic/HydraulicMultiPressureSourceC.hpp \
+    Components/Hydraulic/HydraulicVolumeMultiPort.hpp

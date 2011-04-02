@@ -63,6 +63,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
     cfampND_ct->registerCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
     cfampND_ct->registerCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
     cfampND_ct->registerCreatorFunction("HydraulicVolume4", HydraulicVolume4::Creator);
+    cfampND_ct->registerCreatorFunction("HydraulicVolumeMultiPort", HydraulicVolumeMultiPort::Creator);
     cfampND_ct->registerCreatorFunction("HydraulicLosslessConnector", HydraulicLosslessConnector::Creator);
     cfampND_ct->registerCreatorFunction("HydraulicLosslessTConnector", HydraulicLosslessTConnector::Creator);
     cfampND_ct->registerCreatorFunction("HydraulicMachineC", HydraulicMachineC::Creator);

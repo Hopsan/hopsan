@@ -1597,7 +1597,7 @@ Component* ComponentSystem::getComponent(string name)
             if (pPort->getPortType() == Port::SYSTEMPORT)
             {
                 //Return the systemports owner (the system component)
-                tmp = pPort->mpComponent;
+                tmp = pPort->getComponent();
                 //cout << "Found systemport with name: " << name << " returning parent: " << tmp->getName() << endl;
             }
         }
@@ -1927,7 +1927,7 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
     else
     {
         stringstream ss;
-        ss << "Problem occured at connection" << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName();
+        ss << "Problem occured at connection" << pPort1->getComponentName() << " and " << pPort2->getComponentName();
         gCoreMessageHandler.addErrorMessage(ss.str());
         delete pNode;
         rpCreatedNode = 0;
@@ -2031,10 +2031,10 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
     size_t min = std::numeric_limits<size_t>::max();
     for (pit=pNode->mPortPtrs.begin(); pit!=pNode->mPortPtrs.end(); ++pit)
     {
-        if ((*pit)->mpComponent->getModelHierarchyDepth() < min)
+        if ((*pit)->getComponent()->getModelHierarchyDepth() < min)
         {
-            min = (*pit)->mpComponent->getModelHierarchyDepth();
-            pMinLevelComp = (*pit)->mpComponent;
+            min = (*pit)->getComponent()->getModelHierarchyDepth();
+            pMinLevelComp = (*pit)->getComponent();
         }
     }
 
@@ -2172,8 +2172,8 @@ void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
     ConnectionAssistant connAssist;
-    Component* pComp1 = pPort1->mpComponent;
-    Component* pComp2 = pPort2->mpComponent;
+    Component* pComp1 = pPort1->getComponent();
+    Component* pComp2 = pPort2->getComponent();
     bool sucess;
 
     //First some error checking
@@ -2301,18 +2301,18 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
             n_SystemPorts += 1;
         }
 
-        if ((*it)->mpComponent->isComponentC())
+        if ((*it)->getComponent()->isComponentC())
         {
             n_Ccomponents += 1;
-            if ((*it)->mpComponent->isComponentSystem())
+            if ((*it)->getComponent()->isComponentSystem())
             {
                 n_SYScomponentCs += 1;
             }
         }
-        else if ((*it)->mpComponent->isComponentQ())
+        else if ((*it)->getComponent()->isComponentQ())
         {
             n_Qcomponents += 1;
-            if ((*it)->mpComponent->isComponentSystem())
+            if ((*it)->getComponent()->isComponentSystem())
             {
                 n_SYScomponentQs += 1;
             }
@@ -2339,18 +2339,18 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         {
             n_SystemPorts += 1;
         }
-        if ( pPort1->mpComponent->isComponentC() )
+        if ( pPort1->getComponent()->isComponentC() )
         {
             n_Ccomponents += 1;
-            if ( pPort1->mpComponent->isComponentSystem() )
+            if ( pPort1->getComponent()->isComponentSystem() )
             {
                 n_SYScomponentCs += 1;
             }
         }
-        if ( pPort1->mpComponent->isComponentQ() )
+        if ( pPort1->getComponent()->isComponentQ() )
         {
             n_Qcomponents += 1;
-            if ( pPort1->mpComponent->isComponentSystem() )
+            if ( pPort1->getComponent()->isComponentSystem() )
             {
                 n_SYScomponentQs += 1;
             }
@@ -2376,18 +2376,18 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         {
             n_SystemPorts += 1;
         }
-        if ( pPort2->mpComponent->isComponentC() )
+        if ( pPort2->getComponent()->isComponentC() )
         {
             n_Ccomponents += 1;
-            if ( pPort2->mpComponent->isComponentSystem() )
+            if ( pPort2->getComponent()->isComponentSystem() )
             {
                 n_SYScomponentCs += 1;
             }
         }
-        if ( pPort2->mpComponent->isComponentQ() )
+        if ( pPort2->getComponent()->isComponentQ() )
         {
             n_Qcomponents += 1;
-            if ( pPort2->mpComponent->isComponentSystem() )
+            if ( pPort2->getComponent()->isComponentSystem() )
             {
                 n_SYScomponentQs += 1;
             }
@@ -2458,7 +2458,7 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
         if ( (pPort1->getComponent()->getSystemParent() != pPort2->getComponent()) && (pPort2->getComponent()->getSystemParent() != pPort1->getComponent()) )
         {
             stringstream ss;
-            ss << "The components, {"<< pPort1->mpComponent->getName() << "} and {" << pPort2->mpComponent->getName() << "}, "<< "must belong to the same subsystem";
+            ss << "The components, {"<< pPort1->getComponentName() << "} and {" << pPort2->getComponentName() << "}, "<< "must belong to the same subsystem";
             gCoreMessageHandler.addErrorMessage(ss.str());
             return false;
         }
@@ -2498,7 +2498,7 @@ bool ComponentSystem::disconnect(string compname1, string portname1, string comp
 //! @todo whay about system ports they are somewaht speciall
 bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
-    cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
+    cout << "disconnecting " << pPort1->getComponentName() << " " << pPort1->getPortName() << "  and  " << pPort2->getComponentName() << " " << pPort2->getPortName() << endl;
 
     ConnectionAssistant disconnAssistant;
     stringstream ss;
