@@ -2565,7 +2565,58 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         //If both ports will become empty
         else
         {
-            disconnAssistant.deleteNodeConnection(pPort1, pPort2);
+            //Handle multiports
+            //! @todo maybe this should be handled inside deleteNodeConnection, or some other help function
+            Port* pOriginalPort1 = 0;
+            Port* pOriginalPort2 = 0;
+            //either port 1 or port2 is a multiport, or both are
+            if (pPort1->getPortType() == Port::MULTIPORT && pPort2->getPortType() != Port::MULTIPORT )
+            {
+                pOriginalPort1 = pPort1;
+                assert(pPort2->getConnectedPorts().size() == 1);
+                pPort1 = pPort2->getConnectedPorts()[0];
+            }
+            else if (pPort1->getPortType() != Port::MULTIPORT && pPort2->getPortType() == Port::MULTIPORT )
+            {
+                pOriginalPort2 = pPort2;
+                assert(pPort1->getConnectedPorts().size() == 1);
+                pPort2 = pPort1->getConnectedPorts()[0];
+            }
+            else if (pPort1->getPortType() == Port::MULTIPORT && pPort2->getPortType() == Port::MULTIPORT )
+            {
+                assert("Multiport <-> Multiport disconnection has not been implemented yet" == "Aborting!");
+                //! @todo need to search around to find correct subports
+            }
+
+            bool sucess = disconnAssistant.deleteNodeConnection(pPort1, pPort2);
+
+            //Handle multiport connection sucess or failure
+            //! @todo write subfunction
+            if (pOriginalPort1 != 0)
+            {
+                if (sucess)
+                {
+                    //! @todo What do we need to do to handle sucess
+                    pOriginalPort1->removeSubPort(pPort1);
+                }
+                else
+                {
+                    //! @todo What do we need to do to handle failure, nothing maybe
+                }
+            }
+            if (pOriginalPort2 != 0)
+            {
+                if (sucess)
+                {
+                    //! @todo What do we need to do to handle sucess
+                    pOriginalPort2->removeSubPort(pPort2);
+                }
+                else
+                {
+                    //! @todo What do we need to do to handle failure, nothing maybe
+
+                }
+            }
         }
 
         disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);

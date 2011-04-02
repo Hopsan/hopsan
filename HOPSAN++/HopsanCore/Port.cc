@@ -553,9 +553,9 @@ MultiPort::MultiPort(std::string node_type, std::string portname, Component *por
 {
     mPortType = MULTIPORT;
     //! @todo maybe not use names, or use unique names, or something else, names should not be used
-    stringstream ss;
-    ss << portname << "_" << 0;
-    mSubPortsVector.push_back(new PowerPort(node_type, ss.str(), portOwner));
+//    stringstream ss;
+//    ss << portname << "_" << 0;
+//    mSubPortsVector.push_back(new PowerPort(node_type, ss.str(), portOwner));
 }
 
 double MultiPort::readNode(const size_t idx, const size_t portIdx)

@@ -83,7 +83,7 @@ namespace hopsan {
         Component* mpComponent;
 
         void setNode(Node* pNode, const size_t portIdx=0);
-        Node *getNodePtr(const size_t portIdx=0);
+        virtual Node *getNodePtr(const size_t portIdx=0);
 
         virtual Port* addSubPort();
         virtual void removeSubPort(Port* ptr);
