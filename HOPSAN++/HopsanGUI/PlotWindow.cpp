@@ -50,67 +50,50 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
     resize(1000,800);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
 
-    //mpParentMainWindow = parent;
     mpCurrentGUISystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     mpPlotParameterTree = plotParameterTree;
 
-
-        //Create the toolbar and toolbar buttons
+        //Create the toolbar and its buttons
     mpToolBar = new QToolBar(this);
-    mpToolBar->setAcceptDrops(false);
 
     mpNewPlotButton = new QToolButton(mpToolBar);
     mpNewPlotButton->setToolTip("Create New Plot");
     mpNewPlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
     mpNewPlotButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpNewPlotButton->setAcceptDrops(false);
-    mpToolBar->addWidget(mpNewPlotButton);
 
     mpZoomButton = new QToolButton(mpToolBar);
     mpZoomButton->setToolTip("Zoom (Z)");
     mpZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom.png"));
     mpZoomButton->setCheckable(true);
     mpZoomButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpZoomButton->setAcceptDrops(false);
     mpZoomButton->setShortcut(QKeySequence("z"));
-    mpToolBar->addWidget(mpZoomButton);
 
     mpPanButton = new QToolButton(mpToolBar);
     mpPanButton->setToolTip("Pan (X)");
     mpPanButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
     mpPanButton->setCheckable(true);
     mpPanButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpPanButton->setAcceptDrops(false);
     mpPanButton->setShortcut(QKeySequence("x"));
-    mpToolBar->addWidget(mpPanButton);
 
     mpSaveButton = new QToolButton(mpToolBar);
     mpSaveButton->setToolTip("Save Plot Window");
     mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
     mpSaveButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpSaveButton->setAcceptDrops(false);
-    mpToolBar->addWidget(mpSaveButton);
 
     mpSVGButton = new QToolButton(mpToolBar);
     mpSVGButton->setToolTip("Export to SVG");
     mpSVGButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToSvg.png"));
     mpSVGButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpSVGButton->setAcceptDrops(false);
-    mpToolBar->addWidget(mpSVGButton);
 
     mpExportGNUPLOTButton = new QToolButton(mpToolBar);
     mpExportGNUPLOTButton->setToolTip("Export to GNUPLOT");
     mpExportGNUPLOTButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToGnuPlot.png"));
     mpExportGNUPLOTButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpExportGNUPLOTButton->setAcceptDrops(false);
-    mpToolBar->addWidget(mpExportGNUPLOTButton);
 
     mpImportGNUPLOTButton = new QToolButton(mpToolBar);
     mpImportGNUPLOTButton->setToolTip("Import from GNUPLOT");
     mpImportGNUPLOTButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadGnuPlot.png"));
     mpImportGNUPLOTButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpImportGNUPLOTButton->setAcceptDrops(false);
-    mpToolBar->addWidget(mpImportGNUPLOTButton);
 
     mpGridButton = new QToolButton(mpToolBar);
     mpGridButton->setToolTip("Show Grid (G)");
@@ -118,28 +101,45 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpGridButton->setCheckable(true);
     mpGridButton->setChecked(true);
     mpGridButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpGridButton->setAcceptDrops(false);
     mpGridButton->setShortcut(QKeySequence("g"));
-    mpToolBar->addSeparator();
-    mpToolBar->addWidget(mpGridButton);
 
     mpBackgroundColorButton = new QToolButton(mpToolBar);
     mpBackgroundColorButton->setToolTip("Select Canvas Color (C)");
     mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
     mpBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpBackgroundColorButton->setAcceptDrops(false);
     mpBackgroundColorButton->setShortcut(QKeySequence("c"));
+
+    mpShowListsButton = new QToolButton(mpToolBar);
+    mpShowListsButton->setCheckable(true);
+    mpShowListsButton->setChecked(true);
+    mpShowListsButton->setToolTip("Toggle Parameter Lists");
+    mpShowListsButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
+    mpShowListsButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+    mpShowCurvesButton = new QToolButton(mpToolBar);
+    mpShowCurvesButton->setCheckable(true);
+    mpShowCurvesButton->setChecked(true);
+    mpShowCurvesButton->setToolTip("Toggle Curve Controls");
+    mpShowCurvesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurves.png"));
+    mpShowCurvesButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+    mpToolBar->addWidget(mpNewPlotButton);
+    mpToolBar->addWidget(mpZoomButton);
+    mpToolBar->addWidget(mpPanButton);
+    mpToolBar->addWidget(mpSaveButton);
+    mpToolBar->addWidget(mpSVGButton);
+    mpToolBar->addWidget(mpExportGNUPLOTButton);
+    mpToolBar->addWidget(mpImportGNUPLOTButton);
+    mpToolBar->addSeparator();
+    mpToolBar->addWidget(mpGridButton);
     mpToolBar->addWidget(mpBackgroundColorButton);
+    mpToolBar->addWidget(mpShowListsButton);
+    mpToolBar->addWidget(mpShowCurvesButton);
 
     addToolBar(mpToolBar);
 
     mpPlotTabs = new PlotTabWidget(this);
     this->addPlotTab();
-
-            //Create the close button
-    QDialogButtonBox *pButtonbox = new QDialogButtonBox(QDialogButtonBox::Close);
-    pButtonbox->setAcceptDrops(false);
-
     mpComponentsLabel = new QLabel(tr("Components"));
     QFont boldFont = mpComponentsLabel->font();
     boldFont.setBold(true);
@@ -166,7 +166,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     this->setDockOptions(QMainWindow::AllowNestedDocks);
 
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpPlotTabs,0,0,1,3);
+    mpLayout->addWidget(mpPlotTabs,0,0,1,4);
     mpLayout->addWidget(mpComponentsLabel,1,0);
     mpLayout->addWidget(mpPortsLabel,1,1);
     mpLayout->addWidget(mpVariablesLabel,1,2);
@@ -182,9 +182,6 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     pCentralWidget->setLayout(mpLayout);
     this->setCentralWidget(pCentralWidget);
 
-        //Disables zoom function (activated by tool button, off by default)
-    //enableZoom(false);
-
     // Populate boxes
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
     mpComponentList->addItems(plotData.last().keys());
@@ -192,20 +189,18 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     updatePortList();
 
         //Establish signal and slots connections
-    connect(mpNewPlotButton, SIGNAL(clicked()), this, SLOT(addPlotTab()));
-    connect(pButtonbox, SIGNAL(rejected()), this, SLOT(close()));
-
-
-    connect(mpSaveButton,SIGNAL(clicked()),this,SLOT(saveToXml()));
-    connect(mpSVGButton,SIGNAL(clicked()),SLOT(exportSVG()));
-    connect(mpExportGNUPLOTButton,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
-    connect(mpImportGNUPLOTButton,SIGNAL(clicked()),SLOT(importGNUPLOT()));
-
-
-    connect(mpComponentList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updatePortList()));
-    connect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
-    connect(mpVariableList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(addPlotCurveFromBoxes()));
-    connect(gpMainWindow->mpOptionsDialog, SIGNAL(paletteChanged()), this, SLOT(updatePalette()));
+    connect(mpNewPlotButton,                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
+    connect(mpSaveButton,                   SIGNAL(clicked()),                                              this,               SLOT(saveToXml()));
+    connect(mpSVGButton,                    SIGNAL(clicked()),                                              this,               SLOT(exportSVG()));
+    connect(mpExportGNUPLOTButton,          SIGNAL(clicked()),                                              this,               SLOT(exportGNUPLOT()));
+    connect(mpImportGNUPLOTButton,          SIGNAL(clicked()),                                              this,               SLOT(importGNUPLOT()));
+    connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
+    connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
+    connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
+    connect(mpComponentList,                SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
+    connect(mpPortList,                     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
+    connect(mpVariableList,                 SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
+    connect(gpMainWindow->mpOptionsDialog,  SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
 }
 
 
@@ -364,7 +359,7 @@ void PlotWindow::addPlotCurve(int generation, QString componentName, QString por
     qDebug() << "addPlotCurve(" << generation << ", " << componentName << ", " << portName << ", " << dataName << ", " << dataUnit << ", " << axisY << ")";
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
-
+    pTempCurve->updatePlotInfoDockVisibility();
     //getCurrentPlotTab()->getPlot()->replot();
 }
 
@@ -507,9 +502,9 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
     mpParentPlotWindow = parent;
     this->setTabsClosable(true);
 
+    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closePlotTab(int)));
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
-    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
 }
 
 
@@ -517,9 +512,13 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
 //! @param index Index of tab to close
 void PlotTabWidget::closePlotTab(int index)
 {
+    qDebug() << "Tjipp";
     PlotTab *tempTab = mpParentPlotWindow->getCurrentPlotTab();
+    qDebug() << "Tjipp 1;";
     tempTab->close();
+    qDebug() << "Tjipp 2;";
     delete(tempTab);
+    qDebug() << "Tjipp 3;";
 }
 
 
@@ -538,7 +537,7 @@ PlotTab *PlotTabWidget::getTab(int i)
 void PlotTabWidget::tabChanged()
 {
     //! @todo Finish this
-
+    qDebug() << "Tjopp 1";
     if(count() > 0) { this->show(); }
     else { this->hide(); }
 
@@ -551,12 +550,12 @@ void PlotTabWidget::tabChanged()
         disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
     }
 
-    mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer->isEnabled());
-    mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner->isEnabled());
-    mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid->isVisible());
-
     if(this->count() != 0)
     {
+        mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer->isEnabled());
+        mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner->isEnabled());
+        mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid->isVisible());
+
         connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
         connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
         connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(clicked()),      getCurrentTab(),    SLOT(setBackgroundColor()));
@@ -688,8 +687,6 @@ PlotTab::~PlotTab()
 //! @param curve Pointer to the plot curve
 void PlotTab::addCurve(PlotCurve *curve)
 {
-    //qDebug() << curve->getComponentName() << curve->getPortName() << curve->getDataName() << curve->getDataUnit() << curve->getGeneration();
-
     if(mVectorX.size() > 0)
     {
         curve->getCurvePtr()->setData(mVectorX, curve->getDataVector());
@@ -706,7 +703,6 @@ void PlotTab::addCurve(PlotCurve *curve)
         if(i>mCurveColors.size()) break;
     }
     mUsedColors.append(mCurveColors.first());
-
     mpPlot->enableAxis(curve->getAxisY());
     rescaleToCurves();
     mpPlot->replot();
@@ -779,23 +775,28 @@ void PlotTab::rescaleToCurves()
 
         }
     }
+    qDebug() << "Gris 2";
+    double heightLeft = yMaxLeft-yMinLeft;
+    double heightRight = yMaxRight-yMinRight;
 
-    mpPlot->setAxisScale(QwtPlot::yLeft, yMinLeft, yMaxLeft);
-    mpPlot->setAxisScale(QwtPlot::yRight, yMinRight, yMaxRight);
+    mpPlot->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
+    mpPlot->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
     mpPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-
+    qDebug() << "Gris 3";
     QwtDoubleRect tempDoubleRect;
     tempDoubleRect.setX(xMin);
-    tempDoubleRect.setY(yMinLeft);
+    tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
     tempDoubleRect.setWidth(xMax-xMin);
-    tempDoubleRect.setHeight(yMaxLeft-yMinLeft);
+    tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
     mpZoomer->setZoomBase(tempDoubleRect);
-
+qDebug() << "Gris 4";
     QwtDoubleRect tempDoubleRect2;
     tempDoubleRect2.setX(xMin);
-    tempDoubleRect2.setHeight(yMaxRight-yMinRight);
+    tempDoubleRect2.setY(yMinRight-0.05*heightRight);
+    tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
     tempDoubleRect2.setWidth(xMax-xMin);
     mpZoomerRight->setZoomBase(tempDoubleRect2);
+    qDebug() << "Gris 5";
 }
 
 
@@ -826,6 +827,7 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
     {
         mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
     }
+    rescaleToCurves();
     mpPlot->replot();
 }
 
@@ -1013,8 +1015,6 @@ void PlotTab::dropEvent(QDropEvent *event)
             {
                 mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData().size()-1, componentName, portName, dataName, "", QwtPlot::yRight);
             }
-
-            //getPlot()->replot();
         }
     }
 }
@@ -1046,14 +1046,17 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
         mDataUnit = dataUnit;
     }
     mAxisY = axisY;
-
     mAutoUpdate = true;
+    mScaleX = 1.0;
+    mScaleY = 1.0;
+    mOffsetX = 0.0;
+    mOffsetY = 0.0;
 
     mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(generation, componentName, portName, dataName);
     mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(generation);
 
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
-    mpCurve->setData(mTimeVector, mDataVector);
+    updateCurve();
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpCurve->setAxis(QwtPlot::xBottom, axisY);
     mpCurve->attach(parent->getPlot());
@@ -1067,11 +1070,12 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mpPlotInfoDockWidget->setWidget(mpPlotInfoBox);
     mpPlotInfoDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
     mpPlotInfoDockWidget->setMinimumWidth(mpPlotInfoDockWidget->windowTitle().length()*6);
-    mpPlotInfoDockWidget->show();
+    mpPlotInfoDockWidget->hide();
 
     connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
     connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
-    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updateAtTabChange()));
+    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoDockVisibility()));
+    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurvesButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoDockVisibility()));
     connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
 }
@@ -1154,9 +1158,19 @@ void PlotCurve::setGeneration(int generation)
     else
         mTimeVector = mpParentPlotTab->mVectorX;
 
-    mpCurve->setData(mTimeVector, mDataVector);
+    updateCurve();
     mpParentPlotTab->update();
     updatePlotInfoBox();
+}
+
+
+void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double offsetY)
+{
+    mScaleX=scaleX;
+    mScaleY=scaleY;
+    mOffsetX=offsetX;
+    mOffsetY=offsetY;
+    updateCurve();
 }
 
 
@@ -1215,9 +1229,9 @@ void PlotCurve::setLineColor(QString colorName)
 }
 
 
-void PlotCurve::updateAtTabChange()
+void PlotCurve::updatePlotInfoDockVisibility()
 {
-    if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab())
+    if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurvesButton->isChecked())
     {
         mpPlotInfoDockWidget->show();
     }
@@ -1279,6 +1293,20 @@ void PlotCurve::setActive(bool value)
         mpPlotInfoBox->mpColorBlob->setChecked(false);
     }
 }
+
+
+void PlotCurve::updateCurve()
+{
+    QVector<double> tempX;
+    QVector<double> tempY;
+    for(size_t i=0; i<mTimeVector.size(); ++i)
+    {
+        tempX.append(mTimeVector[i]*mScaleX + mOffsetX);
+        tempY.append(mDataVector[i]*mScaleY + mOffsetY);
+    }
+    mpCurve->setData(tempX, tempY);
+}
+
 
 void PlotCurve::setAutoUpdate(bool value)
 {

@@ -37,6 +37,8 @@ class PlotWindow : public QMainWindow
     friend class PlotTabWidget;     //! @todo Not nice...
     friend class PlotTab;           //! @todo Not nice at all...
 public:
+    enum PlotWindowItems {ShowAll, ShowOnlyLists, ShowOnlyCurves, ShowOnlyPlot};
+
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft);
     void setGeneration(int gen);
@@ -45,6 +47,9 @@ public:
 
     //MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
+
+    QToolButton *mpShowListsButton;     //! @todo Should not be public?
+    QToolButton *mpShowCurvesButton;    //! @todo Should not be public?
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent *event);
@@ -260,13 +265,14 @@ public:
     QVector<double> getDataVector();
     QVector<double> getTimeVector();
     void setGeneration(int generation);
-    void setDataUnit();
+    //void setDataUnit();
+    void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
 
 public slots:
     void setLineWidth(int);
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
-    void updateAtTabChange();
+    void updatePlotInfoDockVisibility();
     void updateToNewGeneration();
     void updatePlotInfoBox();
     void removeMe();
@@ -276,6 +282,7 @@ public slots:
 
 private slots:
     void setActive(bool value);
+    void updateCurve();
 
 private:
     QwtPlotCurve *mpCurve;
@@ -292,6 +299,10 @@ private:
     QDockWidget *mpPlotInfoDockWidget;
     PlotInfoBox *mpPlotInfoBox;
     bool mAutoUpdate;
+    double mScaleX;
+    double mScaleY;
+    double mOffsetX;
+    double mOffsetY;
 };
 
 
