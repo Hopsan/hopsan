@@ -2242,6 +2242,22 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //Non of the ports  are blank systemports
     else
     {
+        //Check if we are connecting multiports, in that case add new subport, remember original portPointer though so that we can clean up if failure
+        //! @todo clean up code, maybe have hel function, kjust quick coded for now
+        Port* pOriginalPort1 = 0;
+        Port* pOriginalPort2 = 0;
+        if (pPort1->getPortType() == Port::MULTIPORT)
+        {
+            pOriginalPort1 = pPort1;
+            pPort1 = pPort1->addSubPort();
+        }
+
+        if (pPort2->getPortType() == Port::MULTIPORT)
+        {
+            pOriginalPort2 = pPort2;
+            pPort2 = pPort2->addSubPort();
+        }
+
         if (!pPort1->isConnected() && !pPort2->isConnected())
         {
             sucess = connAssist.createNewNodeConnection(pPort1, pPort2, pResultingNode);
@@ -2249,6 +2265,34 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         else
         {
             sucess = connAssist.mergeOrJoinNodeConnection(pPort1, pPort2, pResultingNode);
+        }
+
+        //Handle multiport connection sucess or failure
+        //! @todo write subfunction
+        if (pOriginalPort1 != 0)
+        {
+            if (sucess)
+            {
+                //! @todo What do we need to do to handle sucess
+            }
+            else
+            {
+                //! @todo What do we need to do to handle failure, we need to remove last created subport
+                pOriginalPort1->removeSubPort(pPort1);
+            }
+        }
+
+        if (pOriginalPort2 != 0)
+        {
+            if (sucess)
+            {
+                //! @todo What do we need to do to handle sucess
+            }
+            else
+            {
+                //! @todo What do we need to do to handle failure, we need to remove last created subport
+                pOriginalPort2->removeSubPort(pPort2);
+            }
         }
     }
 

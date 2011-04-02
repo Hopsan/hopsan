@@ -505,6 +505,7 @@ void Node::disableLog()
 
 int Node::getNumberOfPortsByType(int type)
 {
+    assert(mPortPtrs.size() > 1);
     int n_Ports = 0;
     std::vector<Port*>::iterator it;
     for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)

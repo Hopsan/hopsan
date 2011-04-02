@@ -75,8 +75,16 @@ Node* Port::getNodePtr(const size_t portIdx)
 //! Adds a subport to a multiport
 Port* Port::addSubPort()
 {
+    //This should only be implemented and called from multiports
     assert(false);
     return 0;
+}
+
+//! REmoves a subport from multiport
+void Port::removeSubPort(Port* ptr)
+{
+    //This should only be implemented and called from multiports
+    assert(false);
 }
 
 
@@ -487,9 +495,10 @@ SystemPort::SystemPort(std::string node_type, std::string portname, Component *p
 
 
 //! PowerPort constructor
-PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
+PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner)
 {
     mPortType = POWERPORT;
+    mpParentPort = pParentPort;
     if(getComponent()->isComponentC())
     {
         mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
@@ -500,7 +509,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
         mpStartNode->getDataNamesAndUnits(names, data);
         for(size_t i=0; i<names.size(); ++i)
         {
-            portOwner->mDefaultParameters.insert(std::pair<std::string, double>(portname + mpStartNode->getDataName(i), mpStartNode->getData(i)));
+            getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(portname + mpStartNode->getDataName(i), mpStartNode->getData(i)));
             std::cout << "Writing " << portname << mpStartNode->getDataName(i) << " with " << mpStartNode->getData(i) << endl;
         }
     }
@@ -624,6 +633,13 @@ std::vector<std::vector<double> > *MultiPort::getDataVectorPtr(const size_t port
 //    mSubPortsVector[portIdx]->setStartValue(idx, value);
 //}
 
+//! Check if the port is curently connected
+bool MultiPort::isConnected()
+{
+    //! @todo actaully we should check all subports if they are connected
+    return (mSubPortsVector.size() > 0);
+}
+
 size_t MultiPort::getNumPorts()
 {
     return mSubPortsVector.size();
@@ -632,9 +648,30 @@ size_t MultiPort::getNumPorts()
 //! Adds a subport to a multiport
 Port* MultiPort::addSubPort()
 {
-    mSubPortsVector.push_back(new PowerPort(mNodeType, "noname, this is a subport", 0));
-    mSubPortsVector.back()->mpParentPort = this;
+    mSubPortsVector.push_back(new PowerPort(mNodeType, "noname, this is a subport", 0, this));
+    //mSubPortsVector.back()->mpParentPort = this;
     return mSubPortsVector.back();
+}
+
+//! Removes a specific subport
+void MultiPort::removeSubPort(Port* ptr)
+{
+    std::vector<Port*>::iterator spit;
+    for (spit=mSubPortsVector.begin(); spit!=mSubPortsVector.end(); ++spit)
+    {
+        if ( *spit == ptr )
+        {
+            mSubPortsVector.erase(spit);
+            break;
+        }
+    }
+}
+
+//! Retreives Node Ptr from given subnode
+Node *MultiPort::getNodePtr(const size_t portIdx)
+{
+    assert(mSubPortsVector.size() > portIdx);
+    return mSubPortsVector[portIdx]->getNodePtr();
 }
 
 

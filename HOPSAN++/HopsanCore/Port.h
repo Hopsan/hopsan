@@ -20,12 +20,14 @@ namespace hopsan {
     class Component;
     class ComponentSystem;
     class ConnectionAssistant;
+    class MultiPort;
 
     class DLLIMPORTEXPORT Port
     {
         friend class Component;
         friend class ComponentSystem;
         friend class ConnectionAssistant;
+        friend class MultiPort;
 
     public:
         enum PORTTYPE {MULTIPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
@@ -55,7 +57,7 @@ namespace hopsan {
         virtual double getStartValue(const size_t idx, const size_t portIdx=0);
         virtual void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
 
-        bool isConnected();
+        virtual bool isConnected();
         bool isConnectionRequired();
 
         virtual size_t getNumPorts();
@@ -84,6 +86,7 @@ namespace hopsan {
         Node *getNodePtr(const size_t portIdx=0);
 
         virtual Port* addSubPort();
+        virtual void removeSubPort(Port* ptr);
 
 
     private:
@@ -142,10 +145,13 @@ namespace hopsan {
 //        double getStartValue(const size_t idx, const size_t portIdx=0);
 //        void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
 
+        bool isConnected();
         size_t getNumPorts();
 
     protected:
         Port* addSubPort();
+        void removeSubPort(Port* ptr);
+        Node *getNodePtr(const size_t portIdx=0);
 
     private:
         std::vector<Port*> mSubPortsVector;
@@ -159,9 +165,8 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructors
-        //PowerPort();
-        PowerPort(std::string node_type, std::string portname, Component *portOwner);
+        //Constructor
+        PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
     };
 
 
@@ -172,8 +177,7 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructors
-        //ReadPort();
+        //Constructor
         ReadPort(std::string node_type, std::string portname, Component *portOwner);
 
         void writeNode(const size_t idx, const double value);
@@ -187,8 +191,7 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructors
-        //WritePort();
+        //Constructor
         WritePort(std::string node_type, std::string portname, Component *portOwner);
 
         double readNode(const size_t idx);
