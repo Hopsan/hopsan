@@ -775,7 +775,18 @@ void PlotTab::rescaleToCurves()
 
         }
     }
-    qDebug() << "Gris 2";
+
+    if(yMaxLeft == yMinLeft)
+    {
+        yMaxLeft = yMaxLeft+1;
+        yMinLeft = yMinLeft-1;
+    }
+    if(yMaxRight == yMinRight)
+    {
+        yMaxRight = yMaxRight+1;
+        yMinRight = yMinRight-1;
+    }
+
     double heightLeft = yMaxLeft-yMinLeft;
     double heightRight = yMaxRight-yMinRight;
 
