@@ -7,6 +7,8 @@
 //$Id$
 
 #include "Components.h"
+#include "signal.h"
+#include "stdlib.h"
 
 //! @defgroup HydraulicComponents HydraulicComponents
 //! @ingroup Components
@@ -24,8 +26,24 @@
 
 using namespace hopsan;
 
+
+//vvv The function to be run at SEGFAULT, see below. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
+void terminate (int /*param*/)
+{
+    std::cout << ("Terminating program because of SEGFAULT, putz...") << std::endl;
+    exit(1);
+    //Maybe have a global message tracker to write ino in on whats going on that could be used to ptint here?!
+}
+//^^^
+
+
 DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
 {
+    //vvv Repoint SEGFAULT to the terminate function, could be used to tell component makers info about their fault. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
+    void (*prev_fn)(int);
+    prev_fn = signal (SIGSEGV,terminate);
+    //^^^
+
     //Hydraulic components
     cfampND_ct->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
     cfampND_ct->registerCreatorFunction("HydraulicTurbulentOrifice", HydraulicTurbulentOrifice::Creator);
