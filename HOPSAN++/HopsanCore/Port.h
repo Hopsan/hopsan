@@ -74,7 +74,7 @@ namespace hopsan {
 
         Component* getComponent();
 
-        Port* mpParentPort; ///////////////////////TEMPORARILY PUBLIC (To be able to set it in addSubPort())
+
     protected:
 
         PORTTYPE mPortType;
@@ -82,6 +82,8 @@ namespace hopsan {
 
         Node* mpStartNode;
         Component* mpComponent;
+
+        Port* mpParentPort;
 
         void setNode(Node* pNode, const size_t portIdx=0);
         virtual Node *getNodePtr(const size_t portIdx=0);
@@ -124,6 +126,7 @@ namespace hopsan {
     public:
         //Constructors
         MultiPort(std::string node_type, std::string portname, Component *portOwner);
+        ~MultiPort();
 
         //Overloaded virtual functions
         double readNode(const size_t idx, const size_t portIdx);
@@ -154,7 +157,7 @@ namespace hopsan {
 
     protected:
         Port* addSubPort();
-        void removeSubPort(const Port* ptr);
+        void removeSubPort(Port* ptr);
         Node *getNodePtr(const size_t portIdx=0);
 
     private:

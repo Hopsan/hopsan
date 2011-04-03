@@ -1217,6 +1217,13 @@ Component::~Component()
     {
         mpSystemParent->getSystemParameters().unMapParameter(mParameters[i].getValuePtr());
     }
+
+    //Delete any ports that have been added to the component
+    PortPtrMapT::iterator ppmit;
+    for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
+    {
+        delete (*ppmit).second;
+    }
 }
 
 
@@ -1361,18 +1368,18 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 
 
 //! Remove a sub component from a system, can also be used to actually delete the component
-//! @param[in] mpND_c A pointer to the component to remove
+//! @param[in] pComponent A pointer to the component to remove
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
-void ComponentSystem::removeSubComponent(Component* pComp, bool doDelete)
+void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 {
-    std::string compName;
-    compName = pComp->getName();
+    std::string compName = pComponent->getName();
 
     //Disconnect all ports before erase from system
     PortPtrMapT::iterator ports_it;
     vector<Port*>::iterator conn_ports_it;
-    for (ports_it = pComp->mPortPtrMap.begin(); ports_it != pComp->mPortPtrMap.end(); ++ports_it)
+    for (ports_it = pComponent->mPortPtrMap.begin(); ports_it != pComponent->mPortPtrMap.end(); ++ports_it)
     {
+        //! @todo what about multiports here
         vector<Port*> connected_ports = ports_it->second->getConnectedPorts(); //Get a copy of the connected ports ptr vector
         //We can not use an iterator directly connected to the vector inside the port as this will be changed by the disconnect calls
         for (conn_ports_it = connected_ports.begin(); conn_ports_it != connected_ports.end(); ++conn_ports_it)
@@ -1382,12 +1389,12 @@ void ComponentSystem::removeSubComponent(Component* pComp, bool doDelete)
     }
 
     //Remove from storage
-    removeSubComponentPtrFromStorage(pComp);
+    removeSubComponentPtrFromStorage(pComponent);
 
     //Shall we also delete the component completely
     if (doDelete)
     {
-        delete pComp; //! @todo can I really delete here or do I need to use the factory for external components
+        delete pComponent; //! @todo can I really delete here or do I need to use the factory for external components
     }
 
     gCoreMessageHandler.addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");

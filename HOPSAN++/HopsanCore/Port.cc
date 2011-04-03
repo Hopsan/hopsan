@@ -37,13 +37,16 @@ Port::Port(string node_type, string portname, Component *portOwner)
 //Destructor
 Port::~Port()
 {
-    //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted port.
-    //! dataNames and dataUnits are here just to decide the number of elements in the start node.
-    std::vector<std::string> dataNames, dataUnits;
-    mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
-    for(size_t i = 0; i < dataNames.size(); ++i)
+    if (mpStartNode != 0)
     {
-        getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
+        //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted port.
+        //! dataNames and dataUnits are here just to decide the number of elements in the start node.
+        std::vector<std::string> dataNames, dataUnits;
+        mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
+        for(size_t i = 0; i < dataNames.size(); ++i)
+        {
+            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
+        }
     }
 }
 
@@ -573,6 +576,12 @@ MultiPort::MultiPort(std::string node_type, std::string portname, Component *por
     }
 }
 
+MultiPort::~MultiPort()
+{
+    //Deleate all subports thay may remain, if everything is working this shoudl be zero
+    assert(mSubPortsVector.size() == 0); //should be removed by otehr code, use this assert to check if that is working
+}
+
 double MultiPort::readNode(const size_t idx, const size_t portIdx)
 {
     return mSubPortsVector[portIdx]->readNode(idx);
@@ -679,7 +688,7 @@ Port* MultiPort::addSubPort()
 }
 
 //! Removes a specific subport
-void MultiPort::removeSubPort(const Port* ptr)
+void MultiPort::removeSubPort(Port* ptr)
 {
     std::vector<Port*>::iterator spit;
     for (spit=mSubPortsVector.begin(); spit!=mSubPortsVector.end(); ++spit)
@@ -687,6 +696,7 @@ void MultiPort::removeSubPort(const Port* ptr)
         if ( *spit == ptr )
         {
             mSubPortsVector.erase(spit);
+            delete ptr;
             break;
         }
     }
@@ -724,6 +734,7 @@ Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, string name, C
         break;
     default :
        //! @todo maybe defualt should be impossible
+       assert(false);
        return new Port(nodetype, name, portOwner);
     }
 }

@@ -40,7 +40,7 @@ namespace hopsan {
         HydraulicVolumeMultiPort(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "HydraulicVolume";
+            mTypeName = "HydraulicVolumeMultiPort";
             mBulkmodulus   = 1.0e9;
             mVolume        = 1.0e-3;
             mAlpha         = 0.1;
