@@ -36,6 +36,7 @@ void HopsanEssentials::Initialize()
     //Do some other stuff
     mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
     hopsanLogFile.open("hopsan_logfile.txt");
+    hopsanLogFile << "This file logs the actions done by HosanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n";
 }
 
 
