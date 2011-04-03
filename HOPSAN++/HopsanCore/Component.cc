@@ -1949,7 +1949,7 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
     }
 
     //Ok, should we merge or join node connection
-    //lets allways merge, but if node is missing in one prt than the "merge" is actually a join
+    //lets allways merge, but if node is missing in one port than the "merge" is actually a join
     if (!pPort1->isConnected())
     {
         pMergeFrom = pPort1;
@@ -1971,27 +1971,9 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
     Node *pKeepNode = pMergeTo->getNodePtr();
     Node *pDiscardNode = pMergeFrom->getNodePtr();
 
-//    vector<Port*>::iterator pit;
-//    //Replace the node in pMergeFrom and all its connected ports, also clear them from the node to be discarded
-//    pMergeFrom->setNode(pKeepNode);
-//    pKeepNode->setPort(pMergeFrom);
-////    if (pDiscardNode != 0)
-////    {
-////        pDiscardNode->removePort(pMergeFrom); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
-////    }
-//    //! @todo is checking the connected ports really enough, the other ports may have other connections that uses the node (should do this recursivly)
-//    for (pit=pMergeFrom->getConnectedPorts().begin(); pit!=pMergeFrom->getConnectedPorts().end(); ++pit) //getConnectedPorts return a reference thats why we can call it withou making a copy
-//    {
-//        //connect keppnode to ports
-//        (*pit)->setNode(pKeepNode);
-//        pKeepNode->setPort(*pit);
-////        //Discconect old ports from the node to be discarded
-////        if (pDiscardNode != 0)
-////        {
-////            pDiscardNode->removePort(*pit); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
-////        }
-//    }
-    //
+    assert(pKeepNode != pDiscardNode);
+
+    //set the new node recursively in the other port
     recursivelySetNode(pMergeFrom,0, pKeepNode);
 
     //let the ports know about each other
@@ -2187,8 +2169,19 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
+    //Prevent connection if porst are already connected to each other
+    //! @todo What will happend with multiports
+    if (pPort1->isConnectedTo(pPort2))
+    {
+        ss << "These two ports are already connected to each other";
+        gCoreMessageHandler.addErrorMessage(ss.str(), "allreadyconnected");
+        return false;
+    }
+
     if (!connAssist.ensureNotCrossConnecting(pPort1, pPort2))
     {
+        ss << "You can not cross-connect between systems";
+        gCoreMessageHandler.addErrorMessage(ss.str(), "crossconnection");
         return false;
     }
 

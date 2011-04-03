@@ -426,6 +426,20 @@ bool Port::isConnected()
     return (mConnectedPorts.size() > 0);
 }
 
+//! Check if this port is connected to other port
+bool Port::isConnectedTo(Port *pOtherPort)
+{
+    std::vector<Port*>::iterator pit;
+    for(pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
+    {
+        if ( *pit == pOtherPort )
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 //! Check if the port MUST be connected
 bool Port::isConnectionRequired()
