@@ -52,7 +52,6 @@ public:
     QToolButton *mpShowCurvesButton;    //! @todo Should not be public?
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent *event);
     virtual void closeEvent(QCloseEvent *);
 
 signals:
@@ -72,6 +71,7 @@ public slots:
     bool saveToHmpf(QString fileName);
     void close();
     void updatePalette();
+    void createPlotWindowFromTab();
 
 private:
     QGridLayout *mpLayout;
@@ -88,6 +88,7 @@ private:
     QToolButton *mpImportGNUPLOTButton;
     QToolButton *mpGridButton;
     QToolButton *mpBackgroundColorButton;
+    QToolButton *mpNewWindowFromTabButton;
 
     PlotTabWidget *mpPlotTabs;
     QLabel *mpComponentsLabel;
@@ -132,8 +133,8 @@ private:
 
     QGridLayout *mpLayout;
     QSpinBox *mpSizeSpinBox;
-    //QSpinBox *mpGenerationSpinBox;
     QToolButton *mpColorButton;
+    QToolButton *mpScaleButton;
     QCheckBox *mpAutoUpdateCheckBox;
     QLabel *mpLabel;
     QLabel *mpSizeLabel;
@@ -193,6 +194,7 @@ protected:
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent *);
 
 public slots:
     void enableZoom(bool value);
@@ -272,7 +274,9 @@ public slots:
     void setLineWidth(int);
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
+    void openScaleDialog();
     void updatePlotInfoDockVisibility();
+    void updateScaleFromDialog();
     void updateToNewGeneration();
     void updatePlotInfoBox();
     void removeMe();
@@ -303,6 +307,11 @@ private:
     double mScaleY;
     double mOffsetX;
     double mOffsetY;
+
+    QDoubleSpinBox *mpXScaleSpinBox;
+    QDoubleSpinBox *mpXOffsetSpinBox;
+    QDoubleSpinBox *mpYScaleSpinBox;
+    QDoubleSpinBox *mpYOffsetSpinBox;
 };
 
 

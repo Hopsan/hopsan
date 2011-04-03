@@ -45,7 +45,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Hopsan Cooler Plot Window");
     setAcceptDrops(false);
-    setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setPalette(gConfig.getPalette());
 
     resize(1000,800);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
@@ -123,6 +123,11 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpShowCurvesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurves.png"));
     mpShowCurvesButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
+    mpNewWindowFromTabButton = new QToolButton(mpToolBar);
+    mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
+    mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-OpenTabInNewPlotWindow.png"));
+    mpNewWindowFromTabButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
     mpToolBar->addWidget(mpNewPlotButton);
     mpToolBar->addWidget(mpZoomButton);
     mpToolBar->addWidget(mpPanButton);
@@ -135,6 +140,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addWidget(mpBackgroundColorButton);
     mpToolBar->addWidget(mpShowListsButton);
     mpToolBar->addWidget(mpShowCurvesButton);
+    mpToolBar->addWidget(mpNewWindowFromTabButton);
 
     addToolBar(mpToolBar);
 
@@ -197,6 +203,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
+    connect(mpNewWindowFromTabButton,       SIGNAL(clicked()),                                              this,               SLOT(createPlotWindowFromTab()));
     connect(mpComponentList,                SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
     connect(mpPortList,                     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
     connect(mpVariableList,                 SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
@@ -343,15 +350,6 @@ void PlotWindow::importGNUPLOT()
 }
 
 
-
-
-//! @brief Handles the right-click menu in the plot window
-void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
-{
-    //! @todo Re-implement
-}
-
-
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY)
 {
     getCurrentPlotTab()->getPlot()->replot();
@@ -396,6 +394,17 @@ void PlotWindow::updatePalette()
     setPalette(gpMainWindow->palette());//gConfig.getPalette());
     //this->setStyleSheet(gConfig.getStyleSheet());
     qDebug() << "Setting palette to " << gConfig.getPalette();
+}
+
+
+void PlotWindow::createPlotWindowFromTab()
+{
+    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
+    pPlotWindow->show();
+    for(size_t i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
+    {
+        pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+    }
 }
 
 
@@ -444,6 +453,13 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpColorButton->setToolTip("Select Line Color");
     mpColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LineColor.png"));
     mpColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpColorButton->setFixedSize(25, 25);
+
+    mpScaleButton = new QToolButton(this);
+    mpScaleButton->setToolTip("Scale Curve");
+    mpScaleButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+    mpScaleButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpScaleButton->setFixedSize(25, 25);
 
     mpSizeLabel = new QLabel(tr("Line Width: "));
     mpSizeLabel->setAcceptDrops(false);
@@ -474,16 +490,18 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpCloseButton = new QToolButton(this);
     mpCloseButton->setToolTip("Next Generation");
     mpCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
+    mpCloseButton->setFixedSize(20, 20);
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpColorBlob,            0,  0);
     mpLayout->addWidget(mpGenerationLabel,      0,  1);
     mpLayout->addWidget(mpPreviousButton,       0,  2);
     mpLayout->addWidget(mpNextButton,           0,  3);
-    mpLayout->addWidget(mpAutoUpdateCheckBox,   0,  4);
-    mpLayout->addWidget(mpColorButton,          0,  5);
-    mpLayout->addWidget(mpSizeSpinBox,          0,  6);
-    mpLayout->addWidget(mpCloseButton,          0,  7);
+    mpLayout->addWidget(mpSizeSpinBox,          0,  4);
+    mpLayout->addWidget(mpCloseButton,          0,  5);
+    mpLayout->addWidget(mpColorButton,          1,  2);
+    mpLayout->addWidget(mpScaleButton,          1,  3);
+    mpLayout->addWidget(mpAutoUpdateCheckBox,   1,  4,1,2);
 
     //setAutoFillBackground(true);
     setLayout(mpLayout);
@@ -631,12 +649,15 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
     mpZoomer->setEnabled(false);
 
+    //! @todo This doesn't work right now. Do we need a wheel zoom?
         //Wheel Zoom
     mpMagnifier = new QwtPlotMagnifier(mpPlot->canvas());
     mpMagnifier->setAxisEnabled(QwtPlot::yLeft, true);
     mpMagnifier->setAxisEnabled(QwtPlot::yRight, true);
     mpMagnifier->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
     mpMagnifier->setWheelFactor(1.1);
+    mpMagnifier->setMouseButton(Qt::LeftButton);
+    mpMagnifier->setEnabled(false);
 
         //Curve Marker
     mpMarkerSymbol = new QwtSymbol();
@@ -793,21 +814,20 @@ void PlotTab::rescaleToCurves()
     mpPlot->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
     mpPlot->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
     mpPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-    qDebug() << "Gris 3";
+
     QwtDoubleRect tempDoubleRect;
     tempDoubleRect.setX(xMin);
     tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
     tempDoubleRect.setWidth(xMax-xMin);
     tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
     mpZoomer->setZoomBase(tempDoubleRect);
-qDebug() << "Gris 4";
+
     QwtDoubleRect tempDoubleRect2;
     tempDoubleRect2.setX(xMin);
     tempDoubleRect2.setY(yMinRight-0.05*heightRight);
     tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
     tempDoubleRect2.setWidth(xMax-xMin);
     mpZoomerRight->setZoomBase(tempDoubleRect2);
-    qDebug() << "Gris 5";
 }
 
 
@@ -1031,6 +1051,245 @@ void PlotTab::dropEvent(QDropEvent *event)
 }
 
 
+//! @brief Handles the right-click menu in the plot tab
+void PlotTab::contextMenuEvent(QContextMenuEvent *event)
+{
+    QWidget::contextMenuEvent(event);
+
+    if(this->mpZoomer->isEnabled())
+    {
+        return;
+    }
+
+    QMenu menu;
+
+    QMenu *yAxisRightMenu;
+    QMenu *yAxisLeftMenu;
+//    QMenu *insertMarkerMenu;
+//    QMenu *selectMarkerMenu;
+//    QMenu *changeUnitMenuLeft;
+//    QMenu *changeUnitMenuRight;
+//    QMenu *removeCurveMenu;
+
+    QAction *setRightAxisLogarithmic;
+    QAction *setLeftAxisLogarithmic;
+
+    yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
+    yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
+
+
+
+//        //Create menu for changing unit on left axis
+//    changeUnitMenuLeft = yAxisLeftMenu->addMenu(QString("Change Unit"));
+//    QString physicalQuantityLeft = "Pressure";//mpPlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpPlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
+//    QMap<QString, double>::iterator itul;
+//    QMap<QString, double> customMap = gConfig.getCustomUnits(physicalQuantityLeft);
+//    for(itul=customMap.begin(); itul!=customMap.end(); ++itul)
+//    {
+//        QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
+//        std::string axisTitle = mpPlot->axisTitle(QwtPlot::yLeft).text().toStdString();
+//        if(axisTitle.substr(axisTitle.find("[")+1, axisTitle.find("]")-axisTitle.find("[")-1) == itul.key().toStdString())
+//        {
+//           QFont tempFont = tempAction->font();
+//            tempFont.setBold(true);
+//            tempAction->setFont(tempFont);
+//        }
+//    }
+
+
+//        //Create menu for changing unit on right axis
+//    QString physicalQuantityRight;
+//    if(mpPlot->axisEnabled(QwtPlot::yRight))
+//    {
+//        changeUnitMenuRight = yAxisRightMenu->addMenu(QString("Change Unit"));
+//        physicalQuantityRight = QString("Flow");//(mpPlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpPlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
+//        QMap<QString, double>::iterator itur;
+//        customMap = gConfig.getCustomUnits(physicalQuantityRight);
+//        for(itur=customMap.begin(); itur!=customMap.end(); ++itur)
+//        {
+//            QAction *tempAction = changeUnitMenuRight->addAction(itur.key());
+//            std::string axisTitle = mpPlot->axisTitle(QwtPlot::yRight).text().toStdString();
+//            if(axisTitle.substr(axisTitle.find("[")+1, axisTitle.find("]")-axisTitle.find("[")-1) == itur.key().toStdString())
+//            {
+//                QFont tempFont = tempAction->font();
+//                tempFont.setBold(true);
+//                tempAction->setFont(tempFont);
+//            }
+//        }
+//    }
+
+
+        //Create actions for making axis logarithmic
+    if(mpPlot->axisEnabled(QwtPlot::yLeft))
+    {
+        setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
+        setLeftAxisLogarithmic->setCheckable(true);
+        setLeftAxisLogarithmic->setChecked(mLeftAxisLogarithmic);
+    }
+    if(mpPlot->axisEnabled(QwtPlot::yRight))
+    {
+        setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
+        setRightAxisLogarithmic->setCheckable(true);
+        setRightAxisLogarithmic->setChecked(mRightAxisLogarithmic);
+    }
+
+
+//        //Create menu for insereting curve markers
+//    insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
+//    QMap <QAction *, QwtPlotCurve *> actionToCurveMap;
+//    QAction *tempAction;
+//    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+//    {
+//        tempAction = insertMarkerMenu->addAction(this->mPlotCurvePtrs[i]->getCurvePtr()->title().text());
+//        actionToCurveMap.insert(tempAction, mPlotCurvePtrs[i]->getCurvePtr());
+//        if(mCurveToMarkerMap.contains(mPlotCurvePtrs[i]->getCurvePtr()))
+//        {
+//           tempAction->setDisabled(true);
+//        }
+//    }
+
+
+//        //Create menu for selecting curve markers
+//    selectMarkerMenu = menu.addMenu(QString("Change Active Marker"));
+//    QMap <QAction *, QwtPlotMarker *> actionToMarkerMap;
+//    if(mpMarkers.size() < 2)
+//    {
+//        selectMarkerMenu->setDisabled(true);    //Disable the select marker menu if there are less than two markers
+//    }
+//    else
+//    {
+//        for(int i=0; i<mpMarkers.size(); ++i)
+//        {
+//            tempAction = selectMarkerMenu->addAction(mMarkerToCurveMap.value(mpMarkers[i])->title().text());
+//            actionToMarkerMap.insert(tempAction, mpMarkers[i]);
+//            if(mpActiveMarker == mpMarkers[i])
+//            {
+//                QFont tempFont = tempAction->font();
+//                tempFont.setBold(true);
+//                tempAction->setFont(tempFont);
+//            }
+//        }
+//    }
+
+
+//        //Create menu for removing curves
+//    removeCurveMenu = menu.addMenu(QString("Remove Plot Curve"));
+//    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+//    {
+//        tempAction = removeCurveMenu->addAction(mPlotCurvePtrs[i]->getCurvePtr()->title().text());
+//        actionToCurveMap.insert(tempAction, mPlotCurvePtrs[i]->getCurvePtr());
+//    }
+
+
+
+
+    // ----- Wait for user to make a selection ----- //
+
+    QCursor *cursor;
+    QAction *selectedAction = menu.exec(cursor->pos());
+
+    // ----- User has selected something -----  //
+
+
+
+        // Check if user did not click on a menu item
+    if(selectedAction == 0)
+    {
+        return;
+    }
+
+
+//        // Change unit on left axis
+//    if((selectedAction->parentWidget() == changeUnitMenuLeft) && (gConfig.getCustomUnits(physicalQuantityLeft).contains(selectedAction->text())))
+//    {
+//        //this->setUnit(QwtPlot::yLeft, physicalQuantityLeft, selectedAction->text());
+//    }
+
+
+//        // Change unit on right axis
+//    if((selectedAction->parentWidget() == changeUnitMenuRight) && (gConfig.getCustomUnits(physicalQuantityRight).contains(selectedAction->text())))
+//    {
+//        //this->setUnit(QwtPlot::yRight, physicalQuantityRight, selectedAction->text());
+//    }
+
+
+        //Make axis logarithmic
+    if (selectedAction == setRightAxisLogarithmic)
+    {
+        mRightAxisLogarithmic = !mRightAxisLogarithmic;
+        if(mRightAxisLogarithmic)
+        {
+            mpPlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
+        }
+        else
+        {
+            mpPlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+        }
+    }
+    else if (selectedAction == setLeftAxisLogarithmic)
+    {
+        mLeftAxisLogarithmic = !mLeftAxisLogarithmic;
+        if(mLeftAxisLogarithmic)
+        {
+            mpPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+        }
+        else
+        {
+            mpPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+        }
+    }
+
+
+//        //Insert curve marker
+//    QMap<QAction *, QwtPlotCurve *>::iterator it;
+//    if(selectedAction->parentWidget() == insertMarkerMenu)
+//    {
+//        for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
+//        {
+//            if(selectedAction == it.key())
+//            {
+//                this->insertMarker(it.value());
+//            }
+//        }
+//    }
+
+//        //Change active curve marker
+//    QMap<QAction *, QwtPlotMarker *>::iterator itm;
+//    for(itm = actionToMarkerMap.begin(); itm!=actionToMarkerMap.end(); ++itm)
+//    {
+//        if(selectedAction == itm.key())
+//        {
+//            this->setActiveMarker(itm.value());
+//        }
+//    }
+
+
+//        //Remove plot curve
+//    if(selectedAction->parentWidget() == removeCurveMenu)
+//    {
+//        for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
+//        {
+//            if(selectedAction == it.key())
+//            {
+//                it.value()->detach();
+//                int i;
+//                for(i=0; i<mPlotCurvePtrs.size(); ++i)
+//                {
+//                    if(mPlotCurvePtrs[i]->getCurvePtr() == it.value())
+//                    {
+//                        break;
+//                    }
+//                }
+//                mpCurves.remove(i);
+//                delete(it.value());
+//            }
+//        }
+//        mpPlot->replot();
+//    }
+}
+
+
+//! @todo Why is this here?
 void PlotTab::mouseReleaseEvent(QMouseEvent *event)
 {
     qDebug() << "Mouse released!";
@@ -1077,7 +1336,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mpPlotInfoBox->mpSizeSpinBox->setValue(2);
     mpPlotInfoDockWidget = new QDockWidget(mComponentName+", "+mPortName+", "+mDataName+" ["+mDataUnit+"]", mpParentPlotTab->mpParentPlotWindow);
     mpPlotInfoDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
-    mpPlotInfoDockWidget->setMaximumHeight(60);
+    mpPlotInfoDockWidget->setMaximumHeight(100);
     mpPlotInfoDockWidget->setWidget(mpPlotInfoBox);
     mpPlotInfoDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
     mpPlotInfoDockWidget->setMinimumWidth(mpPlotInfoDockWidget->windowTitle().length()*6);
@@ -1085,6 +1344,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 
     connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
     connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
+    connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
     connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoDockVisibility()));
     connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurvesButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoDockVisibility()));
     connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
@@ -1237,6 +1497,71 @@ void PlotCurve::setLineColor(QString colorName)
         color = QColor(colorName);
     }
     setLineColor(color);
+}
+
+
+void PlotCurve::openScaleDialog()
+{
+    QDialog *pScaleDialog = new QDialog(mpParentPlotTab->mpParentPlotWindow);
+    pScaleDialog->setWindowTitle("Change Curve Scale");
+
+    QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
+    mpXScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
+    mpXScaleSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpXScaleSpinBox->setDecimals(10);
+    mpXScaleSpinBox->setSingleStep(0.1);
+    mpXScaleSpinBox->setValue(mScaleX);
+
+    QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
+    mpXOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
+    mpXOffsetSpinBox->setDecimals(10);
+    mpXOffsetSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpXOffsetSpinBox->setSingleStep(0.1);
+    mpXOffsetSpinBox->setValue(mOffsetX);
+
+    QLabel *pYScaleLabel = new QLabel("Y-Axis Scale: ", pScaleDialog);
+    mpYScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
+    mpYScaleSpinBox->setSingleStep(0.1);
+    mpYScaleSpinBox->setDecimals(10);
+    mpYScaleSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpYScaleSpinBox->setValue(mScaleY);
+
+    QLabel *pYOffsetLabel = new QLabel("Y-Axis Offset: ", pScaleDialog);
+    mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
+    mpYOffsetSpinBox->setDecimals(10);
+    mpYOffsetSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpYOffsetSpinBox->setSingleStep(0.1);
+    mpYOffsetSpinBox->setValue(mOffsetY);
+
+    QPushButton *pDoneButton = new QPushButton("Done", pScaleDialog);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
+
+    QGridLayout *pDialogLayout = new QGridLayout(pScaleDialog);
+    pDialogLayout->addWidget(pXScaleLabel,0,0);
+    pDialogLayout->addWidget(mpXScaleSpinBox,0,1);
+    pDialogLayout->addWidget(pXOffsetLabel,1,0);
+    pDialogLayout->addWidget(mpXOffsetSpinBox,1,1);
+    pDialogLayout->addWidget(pYScaleLabel,2,0);
+    pDialogLayout->addWidget(mpYScaleSpinBox,2,1);
+    pDialogLayout->addWidget(pYOffsetLabel,3,0);
+    pDialogLayout->addWidget(mpYOffsetSpinBox,3,1);
+    pDialogLayout->addWidget(pButtonBox,4,0,1,2);
+    pScaleDialog->setLayout(pDialogLayout);
+    pScaleDialog->show();
+
+    connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
+    connect(mpXScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
+    connect(mpXOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
+    connect(mpYScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
+    connect(mpYOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
+}
+
+
+void PlotCurve::updateScaleFromDialog()
+{
+    setScaling(mpXScaleSpinBox->value(), mpYScaleSpinBox->value(), mpXOffsetSpinBox->value(), mpYOffsetSpinBox->value());
+    mpParentPlotTab->rescaleToCurves();
 }
 
 
