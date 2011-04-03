@@ -15,6 +15,8 @@
 #include "Component.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include <iostream>
+#include <fstream>
 
 namespace hopsan {
 extern "C" {
@@ -55,5 +57,9 @@ extern "C" {
         bool loadExternalComponent(const std::string path);
     };
 }
+
+void addLogMess(std::string log);
+
+static std::ofstream hopsanLogFile;
 }
 #endif // HopsanEssentials_H

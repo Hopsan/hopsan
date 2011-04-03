@@ -16,6 +16,7 @@
 #include "Components/Components.h"
 #include "Nodes/Nodes.h"
 #include "version.h"
+#include <string>
 
 using namespace std;
 using namespace hopsan;
@@ -34,6 +35,7 @@ void HopsanEssentials::Initialize()
 
     //Do some other stuff
     mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
+    hopsanLogFile.open("hopsan_logfile.txt");
 }
 
 
@@ -69,6 +71,7 @@ HopsanEssentials::~HopsanEssentials()
     std::cout << "Clearing factories" << std::endl;
     mpNodeFactory->clearFactory();
     mpComponentFactory->clearFactory();
+    hopsanLogFile.close();
 
     mHasInstance = false;
 }
@@ -82,6 +85,7 @@ std::string HopsanEssentials::getCoreVersion()
 //! Creates a component with the specified key-value and returns a pointer to this component.
 Component* HopsanEssentials::CreateComponent(const string &rString)
 {
+    addLogMess(rString);
     return mpComponentFactory->createInstance(rString.c_str());
 }
 
@@ -112,4 +116,9 @@ size_t HopsanEssentials::checkMessage()
 bool HopsanEssentials::loadExternalComponent(const string path)
 {
     return mExternalLoader.load(path);
+}
+
+void hopsan::addLogMess(std::string log)
+{
+    hopsanLogFile << log << "\n";
 }

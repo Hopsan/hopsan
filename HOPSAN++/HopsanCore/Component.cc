@@ -656,6 +656,11 @@ void Component::stopSimulation()
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
     //! @todo handle trying to add multiple comppar with same name
+
+    std::stringstream ss;
+    ss << getName() << "::registerParameter";
+    addLogMess(ss.str());
+
     CompParameter new_comppar(name, description, unit, rValue);
     mParameters.push_back(new_comppar); //Copy parameters into storage
     mDefaultParameters.insert(std::pair<std::string, double>(description+name, rValue));
@@ -924,6 +929,10 @@ double *Component::getTimePtr()
 //! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
 {
+    std::stringstream ss;
+    ss << getName() << "::addPort";
+    addLogMess(ss.str());
+
     //Make sure name is unique before insert
     string newname = this->determineUniquePortName(portname);
 
@@ -1032,6 +1041,10 @@ void Component::deletePort(const string name)
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
 {
+    std::stringstream ss;
+    ss << getName() << "::getSafeNodeDataPtr";
+    addLogMess(ss.str());
+
     double *pND;
     if(pPort->isConnected())
     {
@@ -1155,6 +1168,9 @@ double Component::getStartValue(Port* pPort, const size_t idx)
 //! @param[in] value is the start value that should be written
 void Component::setStartValue(Port* pPort, const size_t &idx, const double &value)
 {
+    std::stringstream ss;
+    ss << getName() << "::setStartValue";
+    addLogMess(ss.str());
     pPort->setStartValue(idx, value);
 }
 

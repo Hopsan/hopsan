@@ -6,4 +6,5 @@
 #include "Component.h"
 #include "Port.h"
 
+
 #endif // COMPONENTESSENTIALS_H_INCLUDED
