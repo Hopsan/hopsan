@@ -291,11 +291,13 @@ void MainWindow::openPlotWidget()
 
             mpPlotWidgetDock->show();
             mpPlotWidgetDock->raise();
+            plotAction->setChecked(true);
+            connect(mpPlotWidgetDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updatePlotActionButton(bool)));
         }
         else
         {
             mpPlotWidgetDock->hide();
-
+            plotAction->setChecked(false);
         }
     }
 }
@@ -378,6 +380,7 @@ void MainWindow::createActions()
     openSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&System Parameters"), this);
     openSystemParametersAction->setToolTip("System Parameters (Ctrl+Shift+Y)");
     openSystemParametersAction->setShortcut(tr("Ctrl+Shift+y"));
+    openSystemParametersAction->setCheckable(true);
     connect(openSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
@@ -398,6 +401,7 @@ void MainWindow::createActions()
 
     plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     plotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
+    plotAction->setCheckable(true);
     connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
     plotAction->setShortcut(QKeySequence("Ctrl+Shift+p"));
 
@@ -678,6 +682,8 @@ void MainWindow::openSystemParametersWidget()
 
         mpSystemParametersDock->show();
         mpSystemParametersDock->raise();
+
+        connect(mpSystemParametersDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateSystemParametersActionButton(bool)));
     }
     else
     {
@@ -686,6 +692,7 @@ void MainWindow::openSystemParametersWidget()
 }
 
 
+//! @brief Opens a recent model
 void MainWindow::openRecentModel()
 {
     QAction *action = qobject_cast<QAction *>(sender());
@@ -700,6 +707,20 @@ void MainWindow::openRecentModel()
 void MainWindow::openArchiveURL()
 {
     QDesktopServices::openUrl(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/archive?l=en"));
+}
+
+
+//! @brief Changes the checked setting of plot widget button when plot widget is opened or closed
+void MainWindow::updatePlotActionButton(bool)
+{
+    plotAction->setChecked(mpPlotWidgetDock->isVisible() || !tabifiedDockWidgets(mpPlotWidgetDock).isEmpty());
+}
+
+
+//! @brief Changes the checked setting of system parameters button when the system parameter widget is opened or closed
+void MainWindow::updateSystemParametersActionButton(bool)
+{
+    openSystemParametersAction->setChecked(mpSystemParametersDock->isVisible() || !tabifiedDockWidgets(mpSystemParametersDock).isEmpty());
 }
 
 

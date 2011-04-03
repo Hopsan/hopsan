@@ -148,6 +148,8 @@ private slots:
     void openSystemParametersWidget();
     void openRecentModel();
     void openArchiveURL();
+    void updatePlotActionButton(bool);
+    void updateSystemParametersActionButton(bool);
 
 private:
     //Dock area widgets
