@@ -1326,21 +1326,21 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
     //cout << "Trying to rename: " << old_name << " to " << new_name << endl;
     //First find the post in the map where the old name resides, copy the data stored there
     SubComponentMapT::iterator it = mSubComponentMap.find(oldname);
-    Component* temp_mpND_c;
+    Component* temp_comp_ptr;
     if (it != mSubComponentMap.end())
     {
         //If found erase old record
-        temp_mpND_c = it->second;
+        temp_comp_ptr = it->second;
         mSubComponentMap.erase(it);
 
         //insert new (with new name)
         string mod_new_name = this->determineUniqueComponentName(newname);
 
         //cout << "new name is: " << mod_name << endl;
-        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_mpND_c));
+        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_comp_ptr));
 
         //Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
-        temp_mpND_c->setName(mod_new_name, true);
+        temp_comp_ptr->setName(mod_new_name, true);
     }
     else
     {
@@ -1355,23 +1355,23 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(string name, bool doDelete)
 {
-    Component* mpND_c = getSubComponent(name);
-    removeSubComponent(mpND_c, doDelete);
+    Component* pComp = getSubComponent(name);
+    removeSubComponent(pComp, doDelete);
 }
 
 
 //! Remove a sub component from a system, can also be used to actually delete the component
 //! @param[in] mpND_c A pointer to the component to remove
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
-void ComponentSystem::removeSubComponent(Component* mpND_c, bool doDelete)
+void ComponentSystem::removeSubComponent(Component* pComp, bool doDelete)
 {
     std::string compName;
-    compName = mpND_c->getName();
+    compName = pComp->getName();
 
     //Disconnect all ports before erase from system
     PortPtrMapT::iterator ports_it;
     vector<Port*>::iterator conn_ports_it;
-    for (ports_it = mpND_c->mPortPtrMap.begin(); ports_it != mpND_c->mPortPtrMap.end(); ++ports_it)
+    for (ports_it = pComp->mPortPtrMap.begin(); ports_it != pComp->mPortPtrMap.end(); ++ports_it)
     {
         vector<Port*> connected_ports = ports_it->second->getConnectedPorts(); //Get a copy of the connected ports ptr vector
         //We can not use an iterator directly connected to the vector inside the port as this will be changed by the disconnect calls
@@ -1382,12 +1382,12 @@ void ComponentSystem::removeSubComponent(Component* mpND_c, bool doDelete)
     }
 
     //Remove from storage
-    removeSubComponentPtrFromStorage(mpND_c);
+    removeSubComponentPtrFromStorage(pComp);
 
     //Shall we also delete the component completely
     if (doDelete)
     {
-        delete mpND_c; //! @todo can I really delete here or do I need to use the factory for external components
+        delete pComp; //! @todo can I really delete here or do I need to use the factory for external components
     }
 
     gCoreMessageHandler.addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");
@@ -1432,9 +1432,9 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
     mSubComponentMap.insert(pair<string, Component*>(pComponent->getName(), pComponent));
 }
 
-void ComponentSystem::removeSubComponentPtrFromStorage(Component* mpND_c)
+void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
 {
-    SubComponentMapT::iterator it = mSubComponentMap.find(mpND_c->getName());
+    SubComponentMapT::iterator it = mSubComponentMap.find(pComponent->getName());
     if (it != mSubComponentMap.end())
     {
         vector<Component*>::iterator cit; //Component iterator
@@ -1443,7 +1443,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* mpND_c)
         case Component::C :
             for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
             {
-                if ( *cit == mpND_c )
+                if ( *cit == pComponent )
                 {
                     mComponentCptrs.erase(cit);
                     break;
@@ -1453,7 +1453,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* mpND_c)
         case Component::Q :
             for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
             {
-                if ( *cit == mpND_c )
+                if ( *cit == pComponent )
                 {
                     mComponentQptrs.erase(cit);
                     break;
@@ -1463,7 +1463,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* mpND_c)
         case Component::S :
             for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
             {
-                if ( *cit == mpND_c )
+                if ( *cit == pComponent )
                 {
                     mComponentSignalptrs.erase(cit);
                     break;
@@ -1473,7 +1473,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* mpND_c)
         case Component::NOCQSTYPE :
             for (cit = mComponentUndefinedptrs.begin(); cit != mComponentUndefinedptrs.end(); ++cit)
             {
-                if ( *cit == mpND_c )
+                if ( *cit == pComponent )
                 {
                     mComponentUndefinedptrs.erase(cit);
                     break;
@@ -1489,7 +1489,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* mpND_c)
     }
     else
     {
-        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + mpND_c->getName() + " does not exist (Does Nothing)");
+        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + pComponent->getName() + " does not exist (Does Nothing)");
     }
 }
 
