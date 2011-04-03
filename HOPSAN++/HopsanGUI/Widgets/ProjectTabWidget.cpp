@@ -534,6 +534,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     if(!file.exists())
     {
         qDebug() << "File not found: " + file.fileName();
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("File not found: " + file.fileName());
         return;
     }
     QFileInfo fileInfo(file);

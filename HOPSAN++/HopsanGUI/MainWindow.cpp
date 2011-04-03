@@ -250,7 +250,10 @@ void MainWindow::initializeWorkspace()
             {
                 mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
             }
-            mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+            if(mpProjectTabs->count() != 0) // Failed loading last session models
+            {
+                mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+            }
         }
         else
         {
