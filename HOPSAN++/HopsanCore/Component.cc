@@ -2535,7 +2535,7 @@ void ConnectionAssistant::ifMultiportPrepareForDissconnect(Port *&rpPort1, Port 
     }
     else if (rpPort1->getPortType() == Port::MULTIPORT && rpPort2->getPortType() == Port::MULTIPORT )
     {
-        assert("Multiport <-> Multiport disconnection has not been implemented yet" == "Aborting!");
+        assert("Multiport <-> Multiport disconnection has not been implemented yet Aborting!" == 0);
         //! @todo need to search around to find correct subports
     }
 

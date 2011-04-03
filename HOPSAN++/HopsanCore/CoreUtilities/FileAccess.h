@@ -1,9 +1,9 @@
 //!
-//! @file   FileAccess.h
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-02-03
+//! @file   FileAccess.cc
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2011-03-20
 //!
-//! @brief Contains the file access functions
+//! @brief Contains the HopsanCore hmf loader functions
 //!
 //$Id$
 
@@ -12,14 +12,9 @@
 
 
 #include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
 
 #include "../win32dll.h"
 #include "../ComponentEssentials.h"
-#include "../HopsanEssentials.h"
 
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
@@ -27,16 +22,11 @@
 
 namespace hopsan {
 
-//    std::string readName(std::stringstream &rTextStream);
-//    std::string readName(std::string namestring);
-//    std::string addQuotes(std::string str);
-
     class DLLIMPORTEXPORT FileAccess
     {
     public:
         FileAccess();
-
-        ComponentSystem* loadModel(std::string filename, double *startTime, double *stopTime);
+        ComponentSystem* loadModel(std::string filename, double &rStartTime, double &rStopTime);
 
     private:
         void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem *pSystem);

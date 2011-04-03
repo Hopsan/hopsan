@@ -1,18 +1,17 @@
 //!
 //! @file   FileAccess.cc
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-02-03
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2011-03-20
 //!
-//! @brief Contains the file access functions
+//! @brief Contains the HopsanCore hmf loader functions
 //!
 //$Id$
 
 #include <iostream>
 #include <cassert>
-#include <string>
+#include <cstring>
 #include "FileAccess.h"
-#include "../Component.h"
-#include "../HopsanCore.h"
+#include "../HopsanEssentials.h"
 
 using namespace std;
 using namespace hopsan;
@@ -37,7 +36,7 @@ string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string 
     rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
     if (pAttr)
     {
-        //Convert char* to dstring, assume null terminated strings
+        //Convert char* to string, assume null terminated strings
         return string(pAttr->value());
     }
     else
@@ -54,8 +53,9 @@ FileAccess::FileAccess()
 }
 
 //! @todo Update this code
-ComponentSystem* FileAccess::loadModel(string filename, double *startTime, double *stopTime)
+ComponentSystem* FileAccess::loadModel(string filename, double &rStartTime, double &rStopTime)
 {
+    cout << "Loading from file: " << filename << endl;
     rapidxml::file<> hmfFile(filename.c_str());
 
     rapidxml::xml_document<> doc;
@@ -64,14 +64,14 @@ ComponentSystem* FileAccess::loadModel(string filename, double *startTime, doubl
     rapidxml::xml_node<> *pRootNode = doc.first_node();
 
     //Check for correct root node name
-    if (pRootNode->name() == "hopsanmodelfile")
+    if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
     {
         rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
         //! @todo error check
         //We only want to read toplevel simulation time settings here
         rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
-        *startTime = readDoubleAttribute(pSimtimeNode, "start", 0);
-        *stopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
+        rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
+        rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
 
         ComponentSystem * pSys = HopsanEssentials::getInstance()->CreateComponentSystem(); //Create root system
         loadSystemContents(pSysNode, pSys);
@@ -80,7 +80,7 @@ ComponentSystem* FileAccess::loadModel(string filename, double *startTime, doubl
     }
     else
     {
-        cout << "Not correct hmf file root node name" << endl;
+        cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         assert(false);
         return 0;
     }
@@ -92,40 +92,46 @@ ComponentSystem* FileAccess::loadModel(string filename, double *startTime, doubl
 void FileAccess::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
 {
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
+    assert(pSimtimeNode != 0); //!< @todo smarter error handling
     double Ts = readDoubleAttribute(pSimtimeNode, "timestep", 0.001);
     pSystem->setDesiredTimestep(Ts);
 
     //Load contents
-    rapidxml::xml_node<> *pObject = pSysNode->first_node("objects")->first_node();
-    while (pObject != 0)
+    rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");
+    if (pObjects)
     {
-        if (pObject->name() == "component")
+        rapidxml::xml_node<> *pObject = pObjects->first_node();
+        while (pObject != 0)
         {
-            loadComponent(pObject, pSystem);
-
+            if (strcmp(pObject->name(), "component")==0)
+            {
+                loadComponent(pObject, pSystem);
+            }
+            else if (strcmp(pObject->name(), "system")==0)
+            {
+                //Add new system
+                ComponentSystem * pSys = HopsanEssentials::getInstance()->CreateComponentSystem();
+                pSystem->addComponent(pSys);
+                loadSystemContents(pObject, pSys);
+            }
+            pObject = pObject->next_sibling();
         }
-        else if (pObject->name() == "system")
-        {
-            //Add new system
-            ComponentSystem * pSys = HopsanEssentials::getInstance()->CreateComponentSystem();
-            pSystem->addComponent(pSys);
-            loadSystemContents(pObject, pSys);
-        }
-        pObject = pObject->next_sibling();
     }
 
     //Load connections
-    rapidxml::xml_node<> *pConnection = pSysNode->first_node("conections")->first_node();
-    while (pConnection != 0)
+    rapidxml::xml_node<> *pConnections = pSysNode->first_node("conections");
+    if (pConnections)
     {
-        if (pConnection->name() == "connnect")
+        rapidxml::xml_node<> *pConnection = pConnections->first_node();
+        while (pConnection != 0)
         {
-            loadConnection(pConnection, pSystem);
+            if (strcmp(pConnection->name(), "connnect")==0)
+            {
+                loadConnection(pConnection, pSystem);
+            }
+            pConnection = pConnection->next_sibling();
         }
-        pConnection->next_sibling();
     }
-
-
 }
 
 void FileAccess::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
@@ -138,33 +144,41 @@ void FileAccess::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSy
     pSystem->addComponent(pComp);
 
     //Load parameters
-    rapidxml::xml_node<> *pParam = pComponentNode->first_node("parameters")->first_node();
-    while (pParam != 0)
+    rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
+    if (pParams)
     {
-        if (pParam->name() == "parameter")
+        rapidxml::xml_node<> *pParam = pParams->first_node();
+        while (pParam != 0)
         {
-            string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
-            double val = readDoubleAttribute(pParam, "value", 0);
+            if (strcmp(pParam->name(), "parameter")==0)
+            {
+                string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
+                double val = readDoubleAttribute(pParam, "value", 0);
 
-            pComp->setParameterValue(paramName, val);
+                pComp->setParameterValue(paramName, val);
+            }
+            pParam = pParam->next_sibling();
         }
-        pParam->next_sibling();
     }
 
     //Load startvalues
-    rapidxml::xml_node<> *pStartValue = pComponentNode->first_node("startvalues")->first_node();
-    while (pStartValue != 0)
+    rapidxml::xml_node<> *pStartValues = pComponentNode->first_node("startvalues");
+    if (pStartValues)
     {
-        if (pStartValue->name() == "startvalue")
+        rapidxml::xml_node<> *pStartValue = pStartValues->first_node();
+        while (pStartValue != 0)
         {
-            string portName = readStringAttribute(pStartValue, "portname", "ERROR_NO_PARTNAME_GIVEN");
-            string variableName = readStringAttribute(pStartValue, "variable", "ERROR_NO_PARTNAME_GIVEN");
-            double val = readDoubleAttribute(pParam, "value", 0);
+            if (strcmp(pStartValue->name(), "startvalue")==0)
+            {
+                string portName = readStringAttribute(pStartValue, "portname", "ERROR_NO_PARTNAME_GIVEN");
+                string variableName = readStringAttribute(pStartValue, "variable", "ERROR_NO_PARTNAME_GIVEN");
+                double val = readDoubleAttribute(pStartValue, "value", 0);
 
-            //! @todo how do I transfrom variable name into variable index?
-            //pComp->setStartValue();
+                //! @todo how do I transfrom variable name into variable index?
+                //pComp->setStartValue();
+            }
+            pStartValue = pStartValue->next_sibling();
         }
-        pStartValue->next_sibling();
     }
 }
 

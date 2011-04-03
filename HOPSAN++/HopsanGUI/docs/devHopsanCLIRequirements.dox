@@ -1,0 +1,15 @@
+/*!
+\page devHopsanCLIRequirements HopsanCLI Dependence Libraries
+HopsanCLI depends on the Templatized C++ Command Line Parser Library for convenient commandline argument parsing.
+
+\section tclap Templatized C++ Command Line Parser Library
+\subsection tclap-linux Build/Install tclap on Ubuntu
+-# sudo aptitude install libtclap-dev
+
+\subsection tbb-windows-mingw Build/Install tclap on Windows using MinGW
+-# Write this
+
+\subsection tbb-windows-vcpp Build/Install tclap on Windows using VC++ 
+-# Write this
+
+*/
