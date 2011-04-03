@@ -31,6 +31,10 @@ unix {
     # TODO: We need to add teh relative paths automatically from the path variables created above
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
 }
+win32 {
+    INCLUDEPATH *= $${PWD}/../ExternalDependencies/tclap-1.2.0/include
+
+}
 
 # -------------------------------------------------
 # Project files
