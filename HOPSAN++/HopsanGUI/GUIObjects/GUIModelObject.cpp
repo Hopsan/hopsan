@@ -188,8 +188,12 @@ void GUIModelObject::setNameTextScale(qreal scale)
 //! @param item Pointer to connector that shall be stored
 void GUIModelObject::rememberConnector(GUIConnector *item)
 {
-    mGUIConnectorPtrs.append(item);
-    connect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
+    //Only append if new connector, prevents double registration if we connect to ourselves
+    if ( !mGUIConnectorPtrs.contains(item) )
+    {
+        mGUIConnectorPtrs.append(item);
+        connect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
+    }
 }
 
 
