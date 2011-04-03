@@ -29,6 +29,7 @@ public:
 
 public slots:
     void runPyScript();
+    void runPyScript(QString command);
 
 private:
     PythonQtScriptingConsole *mpPyConsole;

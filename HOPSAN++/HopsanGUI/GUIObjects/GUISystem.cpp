@@ -19,6 +19,7 @@
 #include "../Widgets/ProjectTabWidget.h"
 #include "../Dialogs/ContainerPropertiesDialog.h"
 #include "../Utilities/GUIUtilities.h"
+#include "../Widgets/PyDockWidget.h"
 
 GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -163,6 +164,7 @@ int GUISystem::type() const
     return Type;
 }
 
+
 //! @brief Opens the GUISystem properties dialog
 void GUISystem::openPropertiesDialog()
 {
@@ -225,6 +227,9 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
         portsHiddenElement.setAttribute("hidden", mPortsHidden);
         QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
         namesHiddenElement.setAttribute("hidden", mNamesHidden);
+
+        QDomElement scriptFileElement = appendDomElement(guiStuff, HMF_SCRIPTFILETAG);
+        scriptFileElement.setAttribute("path", mScriptFilePath);
 
         this->refreshExternalPortsAppearanceAndPosition();
         QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOTTAG);
@@ -329,7 +334,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
         double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
         double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
-        qDebug() << "Zoom to " << zoom;
+        setScriptFile(guiStuff.firstChildElement(HMF_SCRIPTFILETAG).attribute("path"));
 
         mpParentProjectTab->mpGraphicsView->scale(zoom, zoom);
         mpParentProjectTab->mpGraphicsView->mZoomFactor = zoom;
@@ -351,7 +356,6 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             loadSystemParameter(xmlSubObject, this);
-
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
         }
 
@@ -454,6 +458,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             mpParentProjectTab->mpGraphicsView->updateViewPort();
         }
         this->mpParentProjectTab->setSaved(true);
+
+        gpMainWindow->mpPyDockWidget->runPyScript(mScriptFilePath);
 
         emit checkMessages();
     }

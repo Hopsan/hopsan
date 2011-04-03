@@ -33,7 +33,7 @@ public:
     GUIContainerObject *getCurrentContainer();
     GUISystem *getSystem(int index);
 
-        //Public member variables
+    //Public member variables
 
 public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");

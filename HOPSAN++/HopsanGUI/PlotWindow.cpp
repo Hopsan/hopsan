@@ -287,48 +287,6 @@ void PlotWindow::discardOldestGeneration()
 }
 
 
-////! @brief Slot that enables or disables rubber band zooming
-////! param[in] on is true if it shall be enabled or false if it should be disabled
-//void PlotWindow::enableZoom(bool value)
-//{
-//    if(mpPanButton->isChecked() && value)
-//    {
-//        mpPanButton->setChecked(false);
-//        getCurrentPlotTab()->enablePan(false);
-//    }
-//    getCurrentPlotTab()->enableZoom(value);
-//}
-
-
-////! @brief Slot that enables or disables panning tool
-////! @param on is true/false if panning shall be enabled/disabled
-//void PlotWindow::enablePan(bool value)
-//{
-//    if(mpZoomButton->isChecked() && value)
-//    {
-//        mpZoomButton->setChecked(false);
-//        getCurrentPlotTab()->enableZoom(false);
-//    }
-//    getCurrentPlotTab()->enablePan(value);
-//}
-
-
-////! @brief Slot that turns plot grid on or off
-////! @param on is true/false if it shall be turned on/off.
-//void PlotWindow::enableGrid(bool value)
-//{
-//    getCurrentPlotTab()->enableGrid(value);
-//}
-
-
-//void PlotWindow::setBackgroundColor()
-//{
-//    QColor color = QColorDialog::getColor(getCurrentPlotTab()->getPlot()->canvasBackground(), this);
-//    if (color.isValid())
-//        getCurrentPlotTab()->setBackgroundColor(color);
-//}
-
-
 //! @brief Slot that exports current plot to .svg format
 void PlotWindow::exportSVG()
 {
@@ -350,21 +308,18 @@ void PlotWindow::importGNUPLOT()
 }
 
 
+//! @brief Creates a new plot curve from a plot variable in current container object and adds it to the current plot tab
+//! @param generation Generation of plot data
+//! @param componentName Name of component where variable is located
+//! @param portName Name of port where variable is located
+//! @param dataName Name of variable
+//! @param dataUnit Unit of variable
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY)
 {
     getCurrentPlotTab()->getPlot()->replot();
-
-    qDebug() << "addPlotCurve(" << generation << ", " << componentName << ", " << portName << ", " << dataName << ", " << dataUnit << ", " << axisY << ")";
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
     pTempCurve->updatePlotInfoDockVisibility();
-    //getCurrentPlotTab()->getPlot()->replot();
-}
-
-
-void PlotWindow::closeEvent(QCloseEvent *event)
-{
-    //This is probably not needed anymore because all plot variables will be stored
 }
 
 
@@ -381,6 +336,7 @@ bool PlotWindow::saveToHmpf(QString fileName)
 }
 
 
+//! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::close()
 {
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->reportClosedPlotWindow(this);
@@ -388,15 +344,14 @@ void PlotWindow::close()
 }
 
 
+//! @brief Slot that updates the palette to match the one used in main window
 void PlotWindow::updatePalette()
 {
-    //    setPalette(QPalette(QColor("red"), QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red"),QColor("red")));
-    setPalette(gpMainWindow->palette());//gConfig.getPalette());
-    //this->setStyleSheet(gConfig.getStyleSheet());
-    qDebug() << "Setting palette to " << gConfig.getPalette();
+    setPalette(gpMainWindow->palette());
 }
 
 
+//! @brief Creates a new plot window and adds the curves from current plot tab
 void PlotWindow::createPlotWindowFromTab()
 {
     PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
@@ -408,6 +363,9 @@ void PlotWindow::createPlotWindowFromTab()
 }
 
 
+//! @brief Constructor for variable list widget
+//! @param parentPlotWindow Pointer to plot window
+//! @param parent Pointer to parent widget
 VariableListWidget::VariableListWidget(PlotWindow *parentPlotWindow, QWidget *parent)
     : QListWidget(parent)
 {
@@ -416,6 +374,7 @@ VariableListWidget::VariableListWidget(PlotWindow *parentPlotWindow, QWidget *pa
 }
 
 
+//! @brief Initializes drag operations from variable list widget
 void VariableListWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (!(event->buttons() & Qt::LeftButton))
@@ -433,6 +392,9 @@ void VariableListWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 
+//! @brief Constructor for plot info box
+//! @param pParentPlotCurve pointer to parent plot curve
+//! @param parent Pointer to parent widget
 PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     : QWidget(parent)
 {
@@ -503,7 +465,6 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpLayout->addWidget(mpScaleButton,          1,  3);
     mpLayout->addWidget(mpAutoUpdateCheckBox,   1,  4,1,2);
 
-    //setAutoFillBackground(true);
     setLayout(mpLayout);
 
     connect(mpColorBlob,            SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setActive(bool)));
@@ -511,6 +472,7 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     connect(mpNextButton,           SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setNextGeneration()));
     connect(mpAutoUpdateCheckBox,   SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
 }
+
 
 //! @brief Constructor for the plot tab widget
 //! @param parent Pointer to the plot window the plot tab widget belongs to
@@ -540,22 +502,25 @@ void PlotTabWidget::closePlotTab(int index)
 }
 
 
+//! @brief Returns a pointer to current plot tab
 PlotTab *PlotTabWidget::getCurrentTab()
 {
     return qobject_cast<PlotTab *>(currentWidget());
 }
 
 
+//! @brief Returns a pointer to plot tab with index i
+//! @param i Index of plot tab
 PlotTab *PlotTabWidget::getTab(int i)
 {
     return qobject_cast<PlotTab *>(widget(i));
 }
 
 
+//! @brief Slot that updates all necessary things when plot tab changes
 void PlotTabWidget::tabChanged()
 {
     //! @todo Finish this
-    qDebug() << "Tjopp 1";
     if(count() > 0) { this->show(); }
     else { this->hide(); }
 
@@ -850,6 +815,8 @@ void PlotTab::removeCurve(PlotCurve *curve)
 }
 
 
+//! @brief Changes the X vector of current plot tab to specified variable
+//
 void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     mVectorX = xArray;

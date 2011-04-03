@@ -109,6 +109,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue);
 #define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
 #define HMF_SIMULATIONTIMETAG "simulationtime"
+#define HMF_SCRIPTFILETAG "scriptfile"
 
 
 #endif // XMLUTILITIES_H

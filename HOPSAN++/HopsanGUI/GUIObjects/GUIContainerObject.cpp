@@ -1488,6 +1488,18 @@ bool GUIContainerObject::isConnectorSelected()
 }
 
 
+void GUIContainerObject::setScriptFile(QString path)
+{
+    mScriptFilePath = path;
+}
+
+
+QString GUIContainerObject::getScriptFile()
+{
+    return mScriptFilePath;
+}
+
+
 //! @brief Returns the path to the icon with user graphics.
 QString GUIContainerObject::getUserIconPath()
 {

@@ -91,6 +91,13 @@ void PyDockWidget::runPyScript()
 }
 
 
+void PyDockWidget::runPyScript(QString path)
+{
+    PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
+    QString command = QString("execfile('").append(path).append("')");
+    mainContext.evalScript(command);
+    mpPyConsole->appendCommandPrompt();
+}
 
 
 PyWidget::PyWidget(QWidget *parent)

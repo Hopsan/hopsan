@@ -117,6 +117,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         mpCQSLineEdit = new QLineEdit(mpContainerObject->getTypeCQS(), this);
         mpSettingsLayout->addWidget(mpCQSLabel, 4, 0);
         mpSettingsLayout->addWidget(mpCQSLineEdit, 4, 1);
+
+        mpPyScriptPath->setText(mpContainerObject->getScriptFile());
     }
 
 
@@ -141,6 +143,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     connect(mpDoneButton,           SIGNAL(clicked()), this, SLOT(setValues()));
     connect(mpIsoIconBrowseButton,  SIGNAL(clicked()), this, SLOT(browseIso()));
     connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
+    connect(mpPyScriptBrowseButton, SIGNAL(clicked()), this, SLOT(browseScript()));
 }
 
 
@@ -193,6 +196,7 @@ void ContainerPropertiesDialog::setValues()
     {
         mpContainerObject->setNumberOfLogSamples(mpNSamplesEdit->text().toInt());
         mpContainerObject->setTypeCQS(this->mpCQSLineEdit->text());
+        mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }
 
     this->done(0);
@@ -221,5 +225,18 @@ void ContainerPropertiesDialog::browseIso()
     if (!modelFileName.isEmpty())
     {
         mpIsoIconPath->setText(modelFileName);
+    }
+}
+
+
+//! @brief Slot that opens a file dialog where user can select a script file for the system
+void ContainerPropertiesDialog::browseScript()
+{
+    QDir fileDialogOpenDir;
+    QString scriptFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
+                                                         fileDialogOpenDir.currentPath() + QString(MODELPATH));
+    if (!scriptFileName.isEmpty())
+    {
+        mpPyScriptPath->setText(scriptFileName);
     }
 }

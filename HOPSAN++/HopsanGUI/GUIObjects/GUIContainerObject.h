@@ -79,6 +79,9 @@ public:
     QList<GUIConnector *> mSelectedSubConnectorsList;
     QList<GUIConnector *> mSubConnectorList;
 
+    void setScriptFile(QString path);
+    QString getScriptFile();
+
     //SHOULD BE PROTECTED
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
     GUIModelObjectMapT mGUIModelObjectMap;
@@ -183,6 +186,8 @@ protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
+    QString mScriptFilePath;
+
 protected slots:
 
 
@@ -192,7 +197,6 @@ private:
     double mPasteOffset;
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
     QList< QVector<double> > mTimeVectors;
-
 };
 
 #endif // GUICONTAINEROBJECT_H

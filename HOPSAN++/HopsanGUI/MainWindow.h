@@ -56,6 +56,7 @@ public:
 
     QStatusBar *mpStatusBar;
     PlotWidget *mpPlotWidget;
+    PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
 
     //Menubar items
@@ -157,7 +158,6 @@ private:
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
-    PyDockWidget *mpPyDockWidget;
     QDockWidget *mpSystemParametersDock;
 
     //Methods that adjusts simulation parameters if they are illegal

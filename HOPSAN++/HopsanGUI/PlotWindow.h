@@ -51,9 +51,6 @@ public:
     QToolButton *mpShowListsButton;     //! @todo Should not be public?
     QToolButton *mpShowCurvesButton;    //! @todo Should not be public?
 
-protected:
-    virtual void closeEvent(QCloseEvent *);
-
 signals:
     void curveAdded();
 
