@@ -20,6 +20,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/FileAccess.h"
 #include "Port.h"
+#include "HopsanEssentials.h"
 
 #ifdef USETBB
 #include "tbb.h"
