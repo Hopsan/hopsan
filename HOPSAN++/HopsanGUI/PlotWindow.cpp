@@ -308,7 +308,9 @@ void PlotWindow::importGNUPLOT()
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY)
 {
     getCurrentPlotTab()->getPlot()->replot();
+    qDebug() << "dataUnit = " << dataUnit;
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
+    qDebug() << "dataUnit = " << dataUnit;
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
     pTempCurve->updatePlotInfoDockVisibility();
@@ -1062,9 +1064,10 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
     QMenu *yAxisRightMenu;
     QMenu *yAxisLeftMenu;
+    QMenu *changeUnitsMenu;
 //    QMenu *insertMarkerMenu;
 //    QMenu *selectMarkerMenu;
-//    QMenu *changeUnitMenuLeft;
+
 //    QMenu *changeUnitMenuRight;
 //    QMenu *removeCurveMenu;
 
@@ -1073,6 +1076,21 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
+
+    changeUnitsMenu = menu.addMenu(QString("Change Units"));
+
+    QMap<QString, double> unitMap;
+    QList<PlotCurve *>::iterator itc;
+    QMap<QString, double>::iterator itu;
+    for(itc=mPlotCurvePtrs.begin(); itc!=mPlotCurvePtrs.end(); ++itc)
+    {
+        QMenu *pTempMenu = changeUnitsMenu->addMenu(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
+        unitMap = gConfig.getCustomUnits((*itc)->getDataName());
+        for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
+        {
+            QAction *pTempAction = pTempMenu->addAction(itu.key());
+        }
+    }
 
 
 
@@ -1306,7 +1324,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mDataName = dataName;
     if(dataUnit.isEmpty())
     {
-        mDataUnit = mpParentPlotTab->mCurrentUnitsLeft.find(dataName).value();
+        mDataUnit = gConfig.getDefaultUnit(dataName);//mpParentPlotTab->mCurrentUnitsLeft.find(dataName).value();
     }
     else
     {
@@ -1429,6 +1447,13 @@ void PlotCurve::setGeneration(int generation)
     updateCurve();
     mpParentPlotTab->update();
     updatePlotInfoBox();
+}
+
+
+void PlotCurve::setDataUnit(QString unit)
+{
+    mDataUnit = unit;
+    updateCurve();
 }
 
 
@@ -1630,8 +1655,7 @@ void PlotCurve::setActive(bool value)
 
 void PlotCurve::updateCurve()
 {
-
-
+    double unitScale = gConfig.getCustomUnits(mDataName).find(mDataUnit).value();
     QVector<double> tempX;
     QVector<double> tempY;
     if(mpParentPlotTab->mHasSpecialXAxis)
@@ -1639,7 +1663,7 @@ void PlotCurve::updateCurve()
         for(size_t i=0; i<mTimeVector.size(); ++i)
         {
             tempX.append(mpParentPlotTab->mVectorX[i]*mScaleX + mOffsetX);
-            tempY.append(mDataVector[i]*mScaleY + mOffsetY);
+            tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);
         }
     }
     else
@@ -1647,7 +1671,7 @@ void PlotCurve::updateCurve()
         for(size_t i=0; i<mTimeVector.size(); ++i)
         {
             tempX.append(mTimeVector[i]*mScaleX + mOffsetX);
-            tempY.append(mDataVector[i]*mScaleY + mOffsetY);
+            tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);
         }
     }
     mpCurve->setData(tempX, tempY);

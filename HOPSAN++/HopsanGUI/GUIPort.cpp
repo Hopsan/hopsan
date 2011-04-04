@@ -269,7 +269,8 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
     {
         if (selectedAction == parameterActions[i])
         {
-            plot(parameterNames[i], parameterUnits[i]);
+            //plot(parameterNames[i], parameterUnits[i]);
+            plot(parameterNames[i], "");
         }
     }
 }
@@ -424,8 +425,8 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     bool success = false;
     if(this->isConnected())
     {
-        if(dataUnit.isEmpty())
-            dataUnit = mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
+        //if(dataUnit.isEmpty())
+//            dataUnit = mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
 
         if(gpMainWindow->mpPlotWidget == 0)
         {

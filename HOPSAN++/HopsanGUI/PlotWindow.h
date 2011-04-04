@@ -265,7 +265,7 @@ public:
     QVector<double> getDataVector();
     QVector<double> getTimeVector();
     void setGeneration(int generation);
-    //void setDataUnit();
+    void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
 
 public slots:
