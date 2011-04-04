@@ -2512,7 +2512,7 @@ void ConnectionAssistant::ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&
     }
 }
 
-void ConnectionAssistant::ifMultiportCleanupAfterConnect(const Port *pSubPort, Port *pMultiPort, const bool wasSucess)
+void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pSubPort, Port *pMultiPort, const bool wasSucess)
 {
     if (pMultiPort != 0)
     {
@@ -2528,14 +2528,15 @@ void ConnectionAssistant::ifMultiportCleanupAfterConnect(const Port *pSubPort, P
     }
 }
 
-void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(const Port *pSubPort, Port *pMultiPort, const bool wasSucess)
+void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess)
 {
     if (pMultiPort != 0)
     {
         if (wasSucess)
         {
             //If sucessful we should remove the empty port
-            pMultiPort->removeSubPort(pSubPort);
+            pMultiPort->removeSubPort(rpSubPort); //! @todo maybe should set the pointer to 0 inside when deleted, need ref to ptr or ptr ptr
+            rpSubPort = pMultiPort; //We copy the multiport pointer back to the support pointer to make sure that it is still working
         }
         else
         {

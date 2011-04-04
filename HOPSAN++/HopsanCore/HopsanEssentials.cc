@@ -113,7 +113,10 @@ ComponentSystem* HopsanEssentials::CreateComponentSystem()
 Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
 {
     Node *pNode = mpNodeFactory->createInstance(rNodeType.c_str());
-    pNode->mNodeType = rNodeType;
+    if (pNode)
+    {
+        pNode->mNodeType = rNodeType;
+    }
     return pNode;
 }
 

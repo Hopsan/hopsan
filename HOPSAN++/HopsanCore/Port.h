@@ -89,7 +89,7 @@ namespace hopsan {
         virtual Node *getNodePtr(const size_t portIdx=0);
 
         virtual Port* addSubPort();
-        virtual void removeSubPort(const Port* ptr);
+        virtual void removeSubPort(Port* ptr);
 
 
     private:

@@ -79,16 +79,14 @@ Node* Port::getNodePtr(const size_t portIdx)
 //! Adds a subport to a multiport
 Port* Port::addSubPort()
 {
-    //This should only be implemented and called from multiports
-    assert(false);
+    assert("This should only be implemented and called from multiports" == 0);
     return 0;
 }
 
 //! REmoves a subport from multiport
-void Port::removeSubPort(const Port* ptr)
+void Port::removeSubPort(Port* /*ptr*/)
 {
-    //This should only be implemented and called from multiports
-    assert(false);
+    assert("This should only be implemented and called from multiports" == 0);
 }
 
 

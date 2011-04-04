@@ -90,9 +90,9 @@ namespace hopsan {
         bool ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
         void ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOrignialPort);
-        void ifMultiportCleanupAfterConnect(const Port *pSubPort, Port *pMultiPort, const bool wasSucess);
+        void ifMultiportCleanupAfterConnect(Port *pSubPort, Port *pMultiPort, const bool wasSucess);
         void ifMultiportPrepareForDissconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2);
-        void ifMultiportCleanupAfterDissconnect(const Port *pSubPort, Port *pMultiPort, const bool wasSucess);
+        void ifMultiportCleanupAfterDissconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess);
 
     private:
         void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
