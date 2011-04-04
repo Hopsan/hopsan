@@ -32,7 +32,6 @@ Port::Port(string node_type, string portname, Component *portOwner, Port *pParen
     mConnectedPorts.clear();
     mpNode = 0;
     mpStartNode = 0;
-
 }
 
 
@@ -522,7 +521,6 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
     mPortType = POWERPORT;
     if(getComponent()->isComponentC())
     {
-        //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
         mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
 
         // Skipp this if parent port is set, that is if we are a subport in a multiport
@@ -541,7 +539,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
 }
 
 
-ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner)
+ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = READPORT;
 }
@@ -556,7 +554,6 @@ void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/)
 WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = WRITEPORT;
-    //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
     mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
 
     //Copy start value to default parameters map in component
@@ -568,8 +565,7 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 
 double WritePort::readNode(const size_t /*idx*/)
 {
-    cout << "Could not read from port, this is a WritePort" << endl;
-    assert(false);
+    assert("Could not read from port, this is a WritePort" == 0);
     return 0;
 }
 
@@ -581,7 +577,7 @@ MultiPort::MultiPort(std::string node_type, std::string portname, Component *por
 MultiPort::~MultiPort()
 {
     //Deleate all subports thay may remain, if everything is working this shoudl be zero
-    assert(mSubPortsVector.size() == 0); //should be removed by otehr code, use this assert to check if that is working
+    assert(mSubPortsVector.size() == 0); //should be removed by other code, use this assert to check if that is working
 }
 
 double MultiPort::readNode(const size_t idx, const size_t portIdx)
@@ -629,36 +625,6 @@ std::vector<std::vector<double> > *MultiPort::getDataVectorPtr(const size_t port
     return mSubPortsVector[portIdx]->getDataVectorPtr();
 }
 
-//void MultiPort::getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx)
-//{
-//    mSubPortsVector[portIdx]->getStartValueDataNamesValuesAndUnits(rNames, rValues, rUnits);
-//}
-
-//void MultiPort::getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx)
-//{
-//    mSubPortsVector[portIdx]->getStartValueDataNamesValuesAndUnits(rNames, rValuesTxt, rUnits);
-//}
-
-//bool MultiPort::setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values, const size_t portIdx)
-//{
-//    return mSubPortsVector[portIdx]->setStartValueDataByNames(names, values);
-//}
-
-//bool MultiPort::setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx)
-//{
-//    return mSubPortsVector[portIdx]->setStartValueDataByNames(names, sysParNames);
-//}
-
-//double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
-//{
-//    return mSubPortsVector[portIdx]->getStartValue(idx);
-//}
-
-//void MultiPort::setStartValue(const size_t &idx, const double &value, const size_t portIdx)
-//{
-//    mSubPortsVector[portIdx]->setStartValue(idx, value);
-//}
-
 void MultiPort::loadStartValues()
 {
     //! @todo what should we do here actaully, from where should we copy the starvalues and where to, maybe we should tell the component programmer to fix this
@@ -680,15 +646,6 @@ size_t MultiPort::getNumPorts()
 {
     return mSubPortsVector.size();
 }
-
-////! Adds a subport to a multiport
-//Port* MultiPort::addSubPort()
-//{
-//    //mSubPortsVector.push_back(new PowerPort(mNodeType, "noname, this is a subport", 0, this));
-//     mSubPortsVector.push_back( CreatePort(mPortType, mNodeType, "noname subport", 0, this) );
-//    //mSubPortsVector.back()->mpParentPort = this;
-//    return mSubPortsVector.back();
-//}
 
 //! Removes a specific subport
 void MultiPort::removeSubPort(Port* ptr)
@@ -717,7 +674,6 @@ PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Comp
     mPortType = POWERMULTIPORT;
     if(getComponent()->isComponentC())
     {
-        //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
         mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
     }
 }
