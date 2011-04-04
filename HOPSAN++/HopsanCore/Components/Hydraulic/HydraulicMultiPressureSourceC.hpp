@@ -59,14 +59,19 @@ namespace hopsan {
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, p);
 
             mNumPorts = mpMP->getNumPorts();
+
+            //! @todo write help function to set the size and contents of a these vectors automatically
+            mND_p_vec.resize(mNumPorts);
+            mND_c_vec.resize(mNumPorts);
+            mND_Zc_vec.resize(mNumPorts);
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mND_p_vec.push_back(getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::PRESSURE));
-                mND_c_vec.push_back(getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WAVEVARIABLE));
-                mND_Zc_vec.push_back(getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CHARIMP));
+                mND_p_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::PRESSURE);
+                mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WAVEVARIABLE);
+                mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CHARIMP);
 
                 //! @todo how should we divide startvalues among connected ports
-                *(mND_p_vec.back()) = p; //Override the startvalue for the pressure
+                *(mND_p_vec[i]) = p; //Override the startvalue for the pressure
             }
             mpMP->setStartValue(NodeHydraulic::PRESSURE, p); //This is here to show the user that the start value is hard coded!
 

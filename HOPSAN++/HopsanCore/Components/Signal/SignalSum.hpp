@@ -12,6 +12,7 @@
 
 #include "../../ComponentEssentials.h"
 #include <vector>
+#include <sstream>
 
 namespace hopsan {
 
@@ -44,22 +45,31 @@ namespace hopsan {
         void initialize()
         {
             nInputs = mpMultiInPort->getNumPorts();
+            mNDp_in_vec.resize(nInputs);
             for (size_t i=0; i<nInputs; ++i)
             {
-                mNDp_in_vec.push_back( getSafeMultiPortNodeDataPtr(mpMultiInPort, i, NodeSignal::VALUE, 0) );
+                mNDp_in_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInPort, i, NodeSignal::VALUE, 0);
             }
             mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::VALUE, 0);
+            std::stringstream ss;
+            ss << "nInputs: " << nInputs;
+            addInfoMessage(ss.str());
         }
 
 
         void simulateOneTimestep()
         {
+            std::stringstream ss;
+            ss << "Values:";
             double sum = 0;
             for (size_t i=0; i<nInputs; ++i)
             {
+                ss << " " << *mNDp_in_vec[i];
                 sum += *mNDp_in_vec[i];
             }
             (*mpND_out) = sum; //Write value to output node
+            ss << " Sum: " << sum;
+            addInfoMessage(ss.str());
         }
     };
 }
