@@ -1411,7 +1411,7 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 
 
 //! Remove a sub component from a system, can also be used to actually delete the component
-//! @param[in] pComponent A pointer to the component to remove
+//! @param[in] c_ptr A pointer to the component to remove
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 {
