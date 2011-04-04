@@ -552,6 +552,7 @@ PlotTab::PlotTab(PlotWindow *parent)
 {
     mpParentPlotWindow = parent;
     this->setAcceptDrops(true);
+    mHasSpecialXAxis=false;
 
         //Initiate default values for left y-axis
     mCurrentUnitsLeft.insert("Value", gConfig.getDefaultUnit("Value"));
@@ -1091,47 +1092,6 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
             QAction *pTempAction = pTempMenu->addAction(itu.key());
         }
     }
-
-
-
-//        //Create menu for changing unit on left axis
-//    changeUnitMenuLeft = yAxisLeftMenu->addMenu(QString("Change Unit"));
-//    QString physicalQuantityLeft = "Pressure";//mpPlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpPlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
-//    QMap<QString, double>::iterator itul;
-//    QMap<QString, double> customMap = gConfig.getCustomUnits(physicalQuantityLeft);
-//    for(itul=customMap.begin(); itul!=customMap.end(); ++itul)
-//    {
-//        QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
-//        std::string axisTitle = mpPlot->axisTitle(QwtPlot::yLeft).text().toStdString();
-//        if(axisTitle.substr(axisTitle.find("[")+1, axisTitle.find("]")-axisTitle.find("[")-1) == itul.key().toStdString())
-//        {
-//           QFont tempFont = tempAction->font();
-//            tempFont.setBold(true);
-//            tempAction->setFont(tempFont);
-//        }
-//    }
-
-
-//        //Create menu for changing unit on right axis
-//    QString physicalQuantityRight;
-//    if(mpPlot->axisEnabled(QwtPlot::yRight))
-//    {
-//        changeUnitMenuRight = yAxisRightMenu->addMenu(QString("Change Unit"));
-//        physicalQuantityRight = QString("Flow");//(mpPlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpPlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
-//        QMap<QString, double>::iterator itur;
-//        customMap = gConfig.getCustomUnits(physicalQuantityRight);
-//        for(itur=customMap.begin(); itur!=customMap.end(); ++itur)
-//        {
-//            QAction *tempAction = changeUnitMenuRight->addAction(itur.key());
-//            std::string axisTitle = mpPlot->axisTitle(QwtPlot::yRight).text().toStdString();
-//            if(axisTitle.substr(axisTitle.find("[")+1, axisTitle.find("]")-axisTitle.find("[")-1) == itur.key().toStdString())
-//            {
-//                QFont tempFont = tempAction->font();
-//                tempFont.setBold(true);
-//                tempAction->setFont(tempFont);
-//            }
-//        }
-//    }
 
 
         //Create actions for making axis logarithmic
