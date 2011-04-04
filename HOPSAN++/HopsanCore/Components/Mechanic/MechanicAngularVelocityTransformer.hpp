@@ -38,7 +38,6 @@ namespace hopsan {
         MechanicAngularVelocityTransformer(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            mTypeName = "MechanicAngularVelocityTransformer";
             w = 0.0;
 
             //Add ports to the component

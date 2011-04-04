@@ -63,7 +63,6 @@ namespace hopsan {
 
         HydraulicCylinderQ(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicCylinderQ";
             mArea1  = 0.0001;
             mArea2  = 0.0001;
             mStroke = 0.01;

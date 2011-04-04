@@ -37,7 +37,6 @@ namespace hopsan {
 
         SignalIntegratorLimited2(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalIntegratorLimited2";
             mStartY = 0.0;
 
             mMin = -1.5E+300;   //! @todo Shouldn't these be registered parameters?

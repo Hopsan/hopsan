@@ -52,7 +52,6 @@ namespace hopsan {
 
         SignalSineWave(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalSineWave";
             mStartTime = 0.0;
             mFrequency = 1.0;
             mAmplitude = 1.0;

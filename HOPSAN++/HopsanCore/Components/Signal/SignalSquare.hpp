@@ -32,7 +32,6 @@ namespace hopsan {
 
         SignalSquare(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalSquare";
 
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");

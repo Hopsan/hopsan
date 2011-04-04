@@ -36,7 +36,6 @@ namespace hopsan {
 
         HydraulicTankQ(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicTankQ";
             p = 1e5;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");

@@ -41,7 +41,6 @@ namespace hopsan {
         sep2() : ComponentQ()
         {
             //Set member attributes
-            mTypeName = "sep2";
 
             //Startvalues
             X2S = 0;

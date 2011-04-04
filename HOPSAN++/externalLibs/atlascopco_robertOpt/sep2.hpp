@@ -42,7 +42,6 @@ namespace hopsan {
         sep2() : ComponentQ()
         {
             //Set member attributes
-            mTypeName = "sep2";
 
             //Add ports to the component
             pP1 = addPowerPort("P1", "NodeMechanic");

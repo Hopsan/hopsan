@@ -46,7 +46,6 @@ namespace hopsan {
         MechanicTranslationalMassWithLever(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            mTypeName = "MechanicTranslationalMassWithLever";
             L1 = 1;
             L2 = 1;
             m = 1.0;

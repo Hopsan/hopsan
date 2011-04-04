@@ -42,7 +42,6 @@ namespace hopsan {
 
         HydraulicPressureControlledPump(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicPressureControlledPump";
             pnom = 7e6;
             speednom = 125;
             pdif = 1000000;

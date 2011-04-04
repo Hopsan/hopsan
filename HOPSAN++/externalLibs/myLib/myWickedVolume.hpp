@@ -32,7 +32,6 @@ namespace hopsan {
         MyWickedVolume(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "MyWickedVolume";
             mStartPressure = 0.0;
             mStartFlow     = 0.0;
             mBulkmodulus   = 1.0e9;

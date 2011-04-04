@@ -46,7 +46,6 @@ namespace hopsan {
         HydraulicMachineC(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "HydraulicMachineC";
             betae = 1000000000;
             je = 1;
             v1 = 0.005;

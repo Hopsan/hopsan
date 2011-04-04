@@ -34,7 +34,6 @@ namespace hopsan {
 
         SignalStopSimulation(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalStopSimulation";
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
         }

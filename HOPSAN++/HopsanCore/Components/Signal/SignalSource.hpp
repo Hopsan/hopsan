@@ -34,7 +34,6 @@ namespace hopsan {
 
         SignalSource(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalSource";
             mValue = 1.0;
 
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

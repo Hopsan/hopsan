@@ -52,7 +52,6 @@ class HydraulicCylinderC : public ComponentC
         HydraulicCylinderC(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "HydraulicCylinderC";
             alfa = .01;
             wfak = .1;
             betae = 1000000000.0;

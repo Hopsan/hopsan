@@ -37,7 +37,6 @@ namespace hopsan {
 
         SignalHysteresis(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalHysteresis";
             mHysteresisWidth = 1.0;
 
             mpIn = addReadPort("in", "NodeSignal");

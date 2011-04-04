@@ -34,7 +34,6 @@ namespace hopsan {
 
         MechanicTorqueSensor(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "MechanicTorqueSensor";
 
             mpP1 = addReadPort("P1", "NodeMechanicRotational");
             mpOut = addWritePort("out", "NodeSignal");

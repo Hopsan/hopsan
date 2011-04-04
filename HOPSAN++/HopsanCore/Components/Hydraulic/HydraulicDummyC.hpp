@@ -23,7 +23,6 @@ namespace hopsan {
         HydraulicDummyC(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "HydraulicDummyC";
 
             //Add ports to the component
             mpP1 = addReadPort("in", "NodeSignal");

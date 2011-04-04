@@ -35,7 +35,6 @@ namespace hopsan {
         MechanicTorqueTransformer(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "MechanicForceTransformer";
             t = 0.0;
 
             //Add ports to the component

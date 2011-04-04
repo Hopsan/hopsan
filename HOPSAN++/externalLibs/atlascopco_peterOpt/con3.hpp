@@ -46,7 +46,6 @@ namespace hopsan {
         con3() : ComponentQ()
 
         {
-            mTypeName = "con3";
 
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");

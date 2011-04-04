@@ -45,7 +45,6 @@ namespace hopsan {
 
         Hydraulic32DirectionalValve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "Hydraulic32DirectionalValve";
             Cq = 0.67;
             d = 0.01;
             f = 1.0;

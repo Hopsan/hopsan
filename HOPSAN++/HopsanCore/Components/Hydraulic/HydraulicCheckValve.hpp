@@ -41,7 +41,6 @@ namespace hopsan {
 
         HydraulicCheckValve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicCheckValve";
             mKs = 0.000000025;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");

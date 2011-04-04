@@ -43,7 +43,6 @@ namespace hopsan {
 
         HydraulicTurbulentOrifice(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicTurbulentOrificeName";
             Cq = 0.67;
             A = 0.00001;
             Kc = Cq*A*sqrt(2.0/890.0);

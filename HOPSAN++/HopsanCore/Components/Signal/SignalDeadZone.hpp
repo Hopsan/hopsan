@@ -29,7 +29,6 @@ namespace hopsan {
 
         SignalDeadZone(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalDeadZone";
             mStartDead = -1.0;
             mEndDead = 1.0;
 

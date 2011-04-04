@@ -34,7 +34,6 @@ namespace hopsan {
 
         SignalDummy(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalDummy";
 
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

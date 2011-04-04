@@ -43,7 +43,6 @@ namespace hopsan {
 
         HydraulicAckumulator(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicAckumulator";
             Pmin                   = 1000000.0;
             Vtot                   = 0.005;
             Voil                   = 0.0;

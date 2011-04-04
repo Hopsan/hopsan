@@ -33,7 +33,6 @@ namespace hopsan {
 
         MechanicForceSensor(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "MechanicForceSensor";
 
             mpP1 = addReadPort("P1", "NodeMechanic", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

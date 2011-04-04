@@ -35,7 +35,6 @@ namespace hopsan {
 
         SignalSmallerThan(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalSmallerThan";
             mLimit = 0.0;
 
             mpIn = addReadPort("in", "NodeSignal");

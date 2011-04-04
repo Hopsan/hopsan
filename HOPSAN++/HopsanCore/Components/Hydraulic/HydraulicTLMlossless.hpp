@@ -43,7 +43,6 @@ namespace hopsan {
         HydraulicTLMlossless(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "HydraulicTLMlossless";
             mTimeDelay     = 0.1;
             mZc            = 1.0e9;
             mAlpha         = 0.0;

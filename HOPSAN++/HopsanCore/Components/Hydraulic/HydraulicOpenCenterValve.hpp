@@ -54,7 +54,6 @@ namespace hopsan {
 
         HydraulicOpenCenterValve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicOpenCenterValve";
             Cq = 0.67;
             d = 0.01;
             f = 1.0;

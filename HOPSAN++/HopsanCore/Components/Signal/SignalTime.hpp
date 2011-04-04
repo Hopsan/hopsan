@@ -33,7 +33,6 @@ namespace hopsan {
 
         SignalTime(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalTime";
 
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 

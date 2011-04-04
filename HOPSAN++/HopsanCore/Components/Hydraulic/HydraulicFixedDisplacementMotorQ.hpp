@@ -41,7 +41,6 @@ namespace hopsan {
 
         HydraulicFixedDisplacementMotorQ(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicFixedDisplacementMotorQ";
             dp = 0.00005;
             Bm = 0;
             cim = 0;

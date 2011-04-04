@@ -36,7 +36,6 @@ std::endl;
                              const double timestep = 0.001)
         : ComponentQ(name,timestep)
      {
-        mTypeName=HydraulicLaminarOrificeCG;
                              mKcv = Kcv,
                              mKcv2 = Kcv2,
 

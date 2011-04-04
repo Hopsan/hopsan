@@ -44,7 +44,6 @@ namespace hopsan {
         MechanicRotationalInertiaWithGearRatio(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            mTypeName = "MechanicRotationalInertiaWithGearRatio";
             gearRatio = 1;
             J = 1.0;
             B = 10;

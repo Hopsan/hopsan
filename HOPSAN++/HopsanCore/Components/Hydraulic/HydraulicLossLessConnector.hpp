@@ -36,7 +36,6 @@ namespace hopsan {
 
         HydraulicLosslessConnector(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicLosslessConnector";
             Kc = 1.0e-11;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");

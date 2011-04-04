@@ -50,7 +50,6 @@ namespace hopsan {
 
         SignalSquareWave(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalSquareWave";
             mStartTime = 0.0;
             mFrequency = 1.0;
             mAmplitude = 1.0;

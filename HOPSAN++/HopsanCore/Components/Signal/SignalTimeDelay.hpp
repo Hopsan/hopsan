@@ -36,7 +36,6 @@ namespace hopsan {
 
         SignalTimeDelay(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalTimeDelay";
             mTimeDelay = 1.0;
 
             registerParameter("TD", "Time delay", "[s]", mTimeDelay);

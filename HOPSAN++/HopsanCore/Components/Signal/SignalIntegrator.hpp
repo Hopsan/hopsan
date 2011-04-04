@@ -36,7 +36,6 @@ namespace hopsan {
 
         SignalIntegrator(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalIntegrator";
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

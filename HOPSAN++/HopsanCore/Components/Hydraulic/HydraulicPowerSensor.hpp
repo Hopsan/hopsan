@@ -34,7 +34,6 @@ namespace hopsan {
 
         HydraulicPowerSensor(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "HydraulicPowerSensor";
 
             mpP1 = addReadPort("P1", "NodeHydraulic");
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

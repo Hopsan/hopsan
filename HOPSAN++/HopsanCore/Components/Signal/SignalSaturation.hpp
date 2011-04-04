@@ -35,7 +35,6 @@ namespace hopsan {
 
         SignalSaturation(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalSaturation";
             mUpperLimit = 1.0;
             mLowerLimit = -1.0;
 

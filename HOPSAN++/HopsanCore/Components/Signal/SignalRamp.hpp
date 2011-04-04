@@ -51,7 +51,6 @@ namespace hopsan {
 
         SignalRamp(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalRamp";
             mBaseValue = 0.0;
             mAmplitude = 1.0;
             mStartTime = 1.0;

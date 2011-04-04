@@ -46,7 +46,6 @@ namespace hopsan {
         MechanicTranslationalMassWithCoulumbFriction(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            mTypeName = "MechanicTranslationalMassWithCoulumbFriction";
             m = 1000.0;
             b = 0;
             fs = 50;

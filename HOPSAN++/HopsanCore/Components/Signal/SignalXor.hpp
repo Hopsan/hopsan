@@ -35,7 +35,6 @@ namespace hopsan {
 
         SignalXor(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalXor";
 
             mpIn1 = addReadPort("in1", "NodeSignal");
             mpIn2 = addReadPort("in2", "NodeSignal");

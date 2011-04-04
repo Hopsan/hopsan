@@ -47,7 +47,6 @@ namespace hopsan {
 
         aturb() : ComponentQ()
         {
-            mTypeName = "aturb";
 
             //Add port to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");

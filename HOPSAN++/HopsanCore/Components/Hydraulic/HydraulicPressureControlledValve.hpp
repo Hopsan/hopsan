@@ -42,7 +42,6 @@ namespace hopsan {
 
         HydraulicPressureControlledValve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicPressureControlledValve";
             pref = 2000000;
             tao = 0.01;
             Kcs = 0.00000001;

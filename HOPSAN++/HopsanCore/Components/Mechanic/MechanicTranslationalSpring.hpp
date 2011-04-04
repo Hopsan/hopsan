@@ -29,7 +29,6 @@ namespace hopsan {
         MechanicTranslationalSpring(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "MechanicTranslationalSpring";
             k = 100.0;
 
             //Add ports to the component

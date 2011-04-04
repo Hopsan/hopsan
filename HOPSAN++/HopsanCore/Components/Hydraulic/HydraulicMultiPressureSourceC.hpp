@@ -40,7 +40,6 @@ namespace hopsan {
 
         HydraulicMultiPressureSourceC() : ComponentC()
         {
-            //mTypeName = "HydraulicMultiPressureSourceC"; //!< @todo do we really need to set these here it is just one more place tpo make a mistake, we still need to write it again in the cc file as register key value, maybe this value should be aoutmatically uset to set teh mTypeName variable whne a component is registerd in the core
             p         = 1.0e5;
             Zc        = 0.0;
 

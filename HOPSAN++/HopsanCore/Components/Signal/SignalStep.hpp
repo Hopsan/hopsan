@@ -46,7 +46,6 @@ namespace hopsan {
 
         SignalStep(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalStep";
             mBaseValue = 0.0;
             mAmplitude = 1.0;
             mStepTime = 1.0;

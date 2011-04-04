@@ -36,7 +36,6 @@ namespace hopsan {
         MechanicTorsionalSpring(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "MechanicTorsionalSpring";
             k   = 100.0;
 
             //Add ports to the component

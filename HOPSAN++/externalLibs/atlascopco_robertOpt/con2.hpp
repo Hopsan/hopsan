@@ -41,7 +41,6 @@ namespace hopsan {
 
         con2() : ComponentQ()
         {
-            mTypeName = "con2";
 
             //Add port to the component
             pP1 = addPowerPort("P1", "NodeMechanic");

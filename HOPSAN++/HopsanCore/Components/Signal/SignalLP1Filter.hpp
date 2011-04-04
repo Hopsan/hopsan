@@ -36,7 +36,6 @@ namespace hopsan {
 
         SignalLP1Filter(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalLP1Filter";
 
             mMin = -1.5E+300;
             mMax = 1.5E+300;

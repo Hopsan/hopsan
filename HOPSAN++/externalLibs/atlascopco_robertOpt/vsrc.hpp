@@ -40,7 +40,6 @@ namespace hopsan {
         vsrc() : ComponentQ()
         {
             //Set member attributes
-            mTypeName = "vsrc";
 
             //Startvalues
             V1S = 0;

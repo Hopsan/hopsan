@@ -36,7 +36,6 @@ namespace hopsan {
 
         SignalIntegratorLimited(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalIntegratorLimited";
 
             mMin = -1.5E+300;   //! @todo Shouldn't these be registered parameters?
             mMax = 1.5E+300;

@@ -33,7 +33,6 @@ namespace hopsan {
 
         SignalAdd(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalAdd";
 
             mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);
             mpIn2 = addReadPort("in2", "NodeSignal", Port::NOTREQUIRED);

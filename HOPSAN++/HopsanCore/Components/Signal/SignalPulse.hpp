@@ -46,7 +46,6 @@ namespace hopsan {
 
         SignalPulse(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalPulse";
             mBaseValue = 0.0;
             mStartTime = 1.0;
             mStopTime = 2.0;

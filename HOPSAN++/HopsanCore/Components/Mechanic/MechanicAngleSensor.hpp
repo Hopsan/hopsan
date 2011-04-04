@@ -34,7 +34,6 @@ namespace hopsan {
 
         MechanicAngleSensor(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "MechanicAngleSensor";
 
             mpP1 = addReadPort("P1", "NodeMechanicRotational");
             mpOut = addWritePort("out", "NodeSignal");

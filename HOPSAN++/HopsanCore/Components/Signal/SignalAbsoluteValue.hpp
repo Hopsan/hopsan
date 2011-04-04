@@ -33,7 +33,6 @@ namespace hopsan {
 
         SignalAbsoluteValue(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalAbsoluteValue";
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

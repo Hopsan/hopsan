@@ -42,7 +42,6 @@ namespace hopsan {
 
         HydraulicAlternativePRV(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicAlternativePRV";
             mPref = 20000000;
             mCq = 0.67;
             mSpoolDiameter = 0.01;

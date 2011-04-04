@@ -41,7 +41,6 @@ namespace hopsan {
         fsrc() : ComponentQ()
         {
             //Set member attributes
-            mTypeName = "fsrc";
 
             //Startvalues
             F1S = 0;

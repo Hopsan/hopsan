@@ -41,7 +41,6 @@ namespace hopsan {
         MechanicTranslationalLosslessConnector(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            mTypeName = "MechanicTranslationalLosslessConnector";
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");

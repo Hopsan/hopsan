@@ -44,7 +44,6 @@ namespace hopsan {
 
         dturb() : ComponentQ()
         {
-            mTypeName = "dturb";
 
                 //Add port to the component
             pP1 = addPowerPort("P1", "NodeHydraulic");

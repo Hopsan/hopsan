@@ -51,7 +51,6 @@ namespace hopsan {
         ubar() : ComponentC()
         {
             //Set member attributes
-            mTypeName = "ubar";
 //            Alpha=0.0;//Filtering of characteristics if >0
 
             //Add ports to the component

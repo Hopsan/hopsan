@@ -20,7 +20,6 @@ namespace hopsan {
 
         HydraulicDummyQ(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicDummyQ";
 
             mpP1 = addReadPort("in", "NodeSignal");
             mpP2 = addPowerPort("P1", "NodeHydraulic");

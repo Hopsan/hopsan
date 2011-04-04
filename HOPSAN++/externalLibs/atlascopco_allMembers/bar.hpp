@@ -69,7 +69,6 @@ namespace hopsan {
         bar() : ComponentC()
         {
             //Set member attributes
-            mTypeName = "bar";
             Alpha=0.0;//Filtering of characteristics if >0
             Kappa=0.035;  //Parameter required for  damping (verified for steel)
             Cs=1.01;      //Parameter required for  damping (verified for steel)

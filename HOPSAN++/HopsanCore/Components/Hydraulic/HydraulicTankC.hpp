@@ -37,7 +37,6 @@ namespace hopsan {
 
         HydraulicTankC(const std::string name) : ComponentC(name)
         {
-            mTypeName = "HydraulicTankC";
             mPressure       = 1.0e5;
             mZc             = 0.0;
 

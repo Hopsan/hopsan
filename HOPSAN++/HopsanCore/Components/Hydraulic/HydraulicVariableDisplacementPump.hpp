@@ -33,7 +33,6 @@ namespace hopsan {
 
         HydraulicVariableDisplacementPump(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicVariableDisplacementPump";
             n = 125.0;
             dp = 0.00005;
             Kcp = 0.0;

@@ -30,7 +30,6 @@ namespace hopsan {
 
         HydraulicLaminarOrifice(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "HydraulicLaminarOrifice";
             Kc = 1.0e-11;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");

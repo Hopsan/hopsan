@@ -37,7 +37,6 @@ namespace hopsan {
 
         SignalFirstOrderFilter(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalFirstOrderFilter";
             k = 1;
             min = -1.5E+300;
             max = 1.5E+300;

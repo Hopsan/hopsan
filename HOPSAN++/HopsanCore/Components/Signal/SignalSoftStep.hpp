@@ -55,7 +55,6 @@ namespace hopsan {
 
         SignalSoftStep(const std::string name) : ComponentSignal(name)
         {
-            mTypeName = "SignalSoftStep";
             mStartTime = 1.0;
             mStopTime = 2.0;
             mBaseValue = 0.0;

@@ -45,7 +45,6 @@ namespace hopsan {
         HydraulicTLMRlineR(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            mTypeName = "HydraulicTLMRlineR";
             mTimeDelay     = 0.1;
             mZc            = 1.0e9;
             mAlpha         = 0.0;
