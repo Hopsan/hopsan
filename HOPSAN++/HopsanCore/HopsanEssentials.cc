@@ -7,11 +7,6 @@
 //!
 //$Id$
 
-//!
-//! \mainpage
-//! Library used in HOPSAN CORE is 'tbb 2.2'
-//!
-
 #include "HopsanEssentials.h"
 #include "Components/Components.h"
 #include "Nodes/Nodes.h"
