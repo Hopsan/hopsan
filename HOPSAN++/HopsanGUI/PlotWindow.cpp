@@ -854,10 +854,11 @@ void PlotTab::resetXVector()
 
     mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText(QString("Time [S]")));
 
+    mHasSpecialXAxis = false;
+
     rescaleToCurves();
     mpPlot->replot();
 
-    mHasSpecialXAxis = false;
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
