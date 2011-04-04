@@ -59,17 +59,17 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            std::stringstream ss;
-            ss << "Values:";
+//            std::stringstream ss;
+//            ss << "Values:";
             double sum = 0;
             for (size_t i=0; i<nInputs; ++i)
             {
-                ss << " " << *mNDp_in_vec[i];
+//                ss << " " << *mNDp_in_vec[i];
                 sum += *mNDp_in_vec[i];
             }
             (*mpND_out) = sum; //Write value to output node
-            ss << " Sum: " << sum;
-            addInfoMessage(ss.str());
+//            ss << " Sum: " << sum;
+//            addInfoMessage(ss.str());
         }
     };
 }
