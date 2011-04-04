@@ -36,7 +36,7 @@ void HopsanEssentials::Initialize()
     //Do some other stuff
     mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
     hopsanLogFile.open("hopsan_logfile.txt");
-    hopsanLogFile << "This file logs the actions done by HosanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n";
+    hopsanLogFile << "This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n";
 }
 
 
@@ -89,7 +89,7 @@ std::string HopsanEssentials::getCoreVersion()
 //! Creates a component with the specified key-value and returns a pointer to this component.
 Component* HopsanEssentials::CreateComponent(const string &rString)
 {
-    addLogMess(rString);
+    addLogMess(rString + "::CreateComponent");
     Component* pComp = mpComponentFactory->createInstance(rString.c_str());
     if (pComp)
     {

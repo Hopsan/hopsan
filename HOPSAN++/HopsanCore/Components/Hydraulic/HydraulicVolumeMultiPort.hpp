@@ -11,6 +11,7 @@
 #define HYDRAULICVOLUMEMULTIPORT_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include <vector>
 
 namespace hopsan {
 
@@ -27,8 +28,8 @@ namespace hopsan {
         double mVolume;
         double mBulkmodulus;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
-
+        std::vector<double*> vpN_p, vpN_q, vpN_c, vpN_Zc, vp_C0;
+        size_t mNumPorts;
         Port *mpP1;
 
     public:
@@ -59,32 +60,35 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-
             mZc = mBulkmodulus/mVolume*mTimestep/(1.0-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
-            //Write to nodes
-            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW);
-            (*mpND_Zc1) = mZc;
+            mNumPorts = mpP1->getNumPorts();
+            vpN_p.resize(mNumPorts);
+            vpN_q.resize(mNumPorts);
+            vpN_c.resize(mNumPorts);
+            vpN_Zc.resize(mNumPorts);
+            vp_C0.resize(mNumPorts);
+            for (size_t i=0; i<mNumPorts; ++i)
+            {
+                vpN_p[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0, i);
+                vpN_q[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW, 0.0, i);
+                vpN_c[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE, 0.0, i);
+                vpN_Zc[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP, 0.0, i);
+                (*vpN_Zc[i]) = mZc;
+            }
         }
 
 
         void simulateOneTimestep()
         {
-            //Declare local variables
-            double q1, c1, c10;
-
             //Get variable values from nodes
-            q1 = (*mpND_q1);
-            c1 = (*mpND_c1);
-
-            //Write new values to nodes
-            (*mpND_c1) = c1;
-            (*mpND_Zc1) = mZc;
+            for (size_t i=0; i<mNumPorts; ++i)
+            {
+                (*vp_C0[i]) = (*vpN_p[i]) + mZc*(*vpN_q[i]);
+                (*vpN_c[i]) = mAlpha*(*vpN_c[i]) + (1.0-mAlpha)*(*vp_C0[i]);
+            }
         }
+
 
         void finalize()
         {

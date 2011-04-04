@@ -44,7 +44,6 @@ Node::Node(size_t datalength)
     mDataNames.resize(datalength,"");
     mDataUnits.resize(datalength,"");
     mPlotBehaviour.resize(datalength, Node::PLOT);
-    mIntensityOrFlow.resize(datalength);
 
     //Set log specific variables
     mLogSpaceAllocated = false;
@@ -108,12 +107,11 @@ double *Node::getDataPtr(const size_t data_type)
 //! @param [in] id This is the ENUM data id
 //! @param [in,out] name The variable name
 //! @param [in,out] unit The variable unit
-void Node::setDataCharacteristics(size_t id, string name, string unit, Node::INTENSITYORFLOW intensityOrFlow, Node::PLOTORNOT plotBehaviour)
+void Node::setDataCharacteristics(size_t id, string name, string unit, Node::PLOTORNOT plotBehaviour)
 {
     mDataNames[id] = name;
     mDataUnits[id] = unit;
     mPlotBehaviour[id] = plotBehaviour;
-    mIntensityOrFlow[id] = intensityOrFlow;
 }
 
 
@@ -131,43 +129,6 @@ string Node::getDataUnit(size_t id)
 {
     return mDataUnits[id];
 }
-
-
-//! Get a vector of indexes for intensity variables in the Node
-//! @returns Vector of indexes
-std::vector<size_t> Node::getIntensityVariableIndexes()
-{
-    std::vector<size_t> intensityVariableIndexes;
-    intensityVariableIndexes.clear();
-
-    for(size_t i = 0; i < mIntensityOrFlow.size(); ++i)
-    {
-        if(mIntensityOrFlow[i] == Node::INTENSITY)
-        {
-            intensityVariableIndexes.push_back(i);
-        }
-    }
-    return intensityVariableIndexes;
-}
-
-
-//! Get a vector of indexes for flow variables in the Node
-//! @returns Vector of indexes
-std::vector<size_t> Node::getFlowVariableIndexes()
-{
-    std::vector<size_t> flowVariableIndexes;
-    flowVariableIndexes.clear();
-
-    for(size_t i = 0; i < mIntensityOrFlow.size(); ++i)
-    {
-        if(mIntensityOrFlow[i] == Node::FLOW)
-        {
-            flowVariableIndexes.push_back(i);
-        }
-    }
-    return flowVariableIndexes;
-}
-
 
 
 //! @brief This function gives you the data Id for a names data variable
