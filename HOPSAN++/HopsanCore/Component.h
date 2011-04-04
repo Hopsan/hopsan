@@ -173,6 +173,7 @@ namespace hopsan {
         double getMeasuredTime();
 
         void addDebugMessage(std::string message);
+        void addWarningMessage(std::string message);
         void addErrorMessage(std::string message);
         void addInfoMessage(std::string message);
 
