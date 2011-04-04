@@ -42,8 +42,8 @@ void HopsanEssentials::Initialize()
 
 HopsanEssentials::HopsanEssentials()
 {
-    mpNodeFactory = getCoreNodeFactoryPtr();
-    mpComponentFactory = getCoreComponentFactoryPtr();
+    mpNodeFactory = new NodeFactory; //getCoreNodeFactoryPtr();
+    mpComponentFactory = new ComponentFactory;//getCoreComponentFactoryPtr();
     mpMessageHandler = getCoreMessageHandlerPtr();
     mExternalLoader.setFactory(mpComponentFactory, mpNodeFactory);
     Initialize();
@@ -74,6 +74,9 @@ HopsanEssentials::~HopsanEssentials()
     mpComponentFactory->clearFactory();
     hopsanLogFile.close();
 
+    delete mpNodeFactory;
+    delete mpComponentFactory;
+
     mHasInstance = false;
 }
 
@@ -87,7 +90,12 @@ std::string HopsanEssentials::getCoreVersion()
 Component* HopsanEssentials::CreateComponent(const string &rString)
 {
     addLogMess(rString);
-    return mpComponentFactory->createInstance(rString.c_str());
+    Component* pComp = mpComponentFactory->createInstance(rString.c_str());
+    if (pComp)
+    {
+        pComp->setTypeName(rString);
+    }
+    return pComp;
 }
 
 bool HopsanEssentials::hasComponent(const string type)
@@ -100,6 +108,11 @@ bool HopsanEssentials::hasComponent(const string type)
 ComponentSystem* HopsanEssentials::CreateComponentSystem()
 {
     return new ComponentSystem();
+}
+
+Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
+{
+    return mpNodeFactory->createInstance(rNodeType.c_str());
 }
 
 

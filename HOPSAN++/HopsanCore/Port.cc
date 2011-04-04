@@ -12,6 +12,7 @@
 #include <sstream>
 #include <cassert>
 #include <math.h>
+#include "HopsanEssentials.h"
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
@@ -410,9 +411,10 @@ void Port::setStartValue(const size_t &idx, const double &value, const size_t po
     if(mpStartNode)
     {
         mpStartNode->setData(idx, value);
-        //getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
-        getComponent()->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
-        std::cout << "Overwriting " << this->getPortName() << mpStartNode->getDataName(idx) << " with " << value << endl;
+        ////getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
+        //getComponent()->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
+        //std::cout << "Overwriting " << this->getPortName() << mpStartNode->getDataName(idx) << " with " << value << endl;
+        //!< @todo Major problem with the two lines abouve at least in multiports, will destroy component memory, also a bit unclear will not default startvalue be replaced EVERY time
     }
     else
     {
@@ -518,17 +520,21 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
     mpParentPort = pParentPort;
     if(getComponent()->isComponentC())
     {
-        mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+        //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+        mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
 
-        //! @todo We should skip this for sub ports in multiports, we can check if pParentPort is set
-        //Copy all start values to default parameters map in component
-        std::vector<std::string> names;
-        std::vector<std::string> data;
-        mpStartNode->getDataNamesAndUnits(names, data);
-        for(size_t i=0; i<names.size(); ++i)
+        // Skipp this if parent port is set, that is if we are a subport in a multiport
+        if (mpParentPort == 0)
         {
-            getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(portname + mpStartNode->getDataName(i), mpStartNode->getData(i)));
-            std::cout << "Writing " << portname << mpStartNode->getDataName(i) << " with " << mpStartNode->getData(i) << endl;
+            //Copy all start values to default parameters map in component
+            std::vector<std::string> names;
+            std::vector<std::string> data;
+            mpStartNode->getDataNamesAndUnits(names, data);
+            for(size_t i=0; i<names.size(); ++i)
+            {
+                getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(portname + mpStartNode->getDataName(i), mpStartNode->getData(i)));
+                std::cout << "Writing " << portname << mpStartNode->getDataName(i) << " with " << mpStartNode->getData(i) << endl;
+            }
         }
     }
 }
@@ -550,7 +556,8 @@ void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/)
 WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = WRITEPORT;
-    mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+    //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+    mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
 
     //Copy start value to default parameters map in component
     std::vector<std::string> names;
@@ -572,7 +579,8 @@ MultiPort::MultiPort(std::string node_type, std::string portname, Component *por
     mPortType = MULTIPORT;
     if(getComponent()->isComponentC())
     {
-        mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+        //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+        mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
     }
 }
 

@@ -523,8 +523,8 @@ ComponentSystem *Node::getOwnerSystem()
     return mpOwnerSystem;
 }
 
-NodeFactory hopsan::gCoreNodeFactory;
-DLLIMPORTEXPORT NodeFactory* hopsan::getCoreNodeFactoryPtr()
-{
-    return &gCoreNodeFactory;
-}
+//NodeFactory hopsan::gCoreNodeFactory;
+//DLLIMPORTEXPORT NodeFactory* hopsan::getCoreNodeFactoryPtr()
+//{
+//    return &gCoreNodeFactory;
+//}

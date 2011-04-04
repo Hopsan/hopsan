@@ -99,10 +99,12 @@ namespace hopsan {
     };
 
     class ComponentSystem; //Forward declaration
+    class HopsanEssentials;
 
     class DLLIMPORTEXPORT Component
     {
         friend class ComponentSystem;
+        friend class HopsanEssentials; //Need to be able to set typename
 
     public:
         virtual ~Component();
@@ -154,7 +156,7 @@ namespace hopsan {
         ComponentSystem *getSystemParent();
         size_t getModelHierarchyDepth();
 
-        std::map<std::string, double> mDefaultParameters;
+        std::map<std::string, double> mDefaultParameters; //!< @todo should not be public
 
         // Component type identification
         bool isComponentC();
@@ -211,12 +213,11 @@ namespace hopsan {
         virtual std::string determineUniquePortName(std::string portname);
 
         //==========Protected member variables==========
-        //string mTypeCQS;
         typeCQS mTypeCQS;
-        std::string mTypeName;
+        std::string mTypeName;      //!< @todo we should move this to private when we have cleared out its pressence from all components
         double mTimestep, mDesiredTimestep;
         double mTime;
-        bool mIsComponentC;
+        bool mIsComponentC; //!< @todo we should nou need these bools, we can check type==CQSTYPE in the isComponent*() functions
         bool mIsComponentQ;
         bool mIsComponentSystem;
         bool mIsComponentSignal;
@@ -226,6 +227,7 @@ namespace hopsan {
     private:
         //Private member functions
         void setSystemParent(ComponentSystem *pComponentSystem);
+        void setTypeName(const std::string typeName); //This is suposed to be used by hopsan essentials to set the typename to the same as the registered key value
 
         //Private member variables
         std::string mName;
@@ -364,8 +366,8 @@ namespace hopsan {
     };
 
     typedef ClassFactory<std::string, Component> ComponentFactory;
-    extern ComponentFactory gCoreComponentFactory;
-    DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr();
+    //extern ComponentFactory gCoreComponentFactory;
+    //DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr();
 }
 
 #endif // COMPONENT_H_INCLUDED

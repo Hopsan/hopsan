@@ -1072,6 +1072,11 @@ void Component::setSystemParent(ComponentSystem *pComponentSystem)
     mpSystemParent = pComponentSystem;
 }
 
+void Component::setTypeName(const string typeName)
+{
+    mTypeName = typeName;
+}
+
 //Port &Component::getPortById(const size_t port_idx)
 //{
 //    //! @todo error handle if request outside of vector
@@ -1927,7 +1932,8 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
     }
 
     //Create an instance of the node specified in nodespecifications
-    Node* pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
+    //Node* pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
+    Node* pNode = HopsanEssentials::getInstance()->createNode(pPort1->getNodeType());
 
     // Check so the ports can be connected
     if (ensureConnectionOK(pNode, pPort1, pPort2))
@@ -2143,7 +2149,8 @@ bool ConnectionAssistant::unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2)
         //! @todo maybe make sure that the ports are really systemports to avoid code misstakes
         //Lets keep the node from port1 and create a copy for port two
         Node* pNode1 = pPort1->getNodePtr();
-        Node* pNode2 = gCoreNodeFactory.createInstance(pNode1->getNodeType());
+        //Node* pNode2 = gCoreNodeFactory.createInstance(pNode1->getNodeType());
+        Node* pNode2 = HopsanEssentials::getInstance()->createNode(pNode1->getNodeType());
 
         pNode1->mPortPtrs.clear(); //Clear all port knowledge from the port, we will reset it bellow
 
@@ -3707,8 +3714,8 @@ void ComponentSystem::finalize(const double startT, const double stopT)
 }
 
 
-ComponentFactory hopsan::gCoreComponentFactory;
-DLLIMPORTEXPORT ComponentFactory* hopsan::getCoreComponentFactoryPtr()
-{
-    return &gCoreComponentFactory;
-}
+//ComponentFactory hopsan::gCoreComponentFactory;
+//DLLIMPORTEXPORT ComponentFactory* hopsan::getCoreComponentFactoryPtr()
+//{
+//    return &gCoreComponentFactory;
+//}

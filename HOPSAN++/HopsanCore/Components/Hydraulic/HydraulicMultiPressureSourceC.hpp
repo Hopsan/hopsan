@@ -40,12 +40,12 @@ namespace hopsan {
 
         HydraulicMultiPressureSourceC() : ComponentC()
         {
-            mTypeName = "HydraulicMultiPressureSourceC"; //!< @todo do we really need to set these here it is just one more place tpo make a mistake, we still need to write it again in the cc file as register key value, maybe this value should be aoutmatically uset to set teh mTypeName variable whne a component is registerd in the core
+            //mTypeName = "HydraulicMultiPressureSourceC"; //!< @todo do we really need to set these here it is just one more place tpo make a mistake, we still need to write it again in the cc file as register key value, maybe this value should be aoutmatically uset to set teh mTypeName variable whne a component is registerd in the core
             p         = 1.0e5;
             Zc        = 0.0;
 
             mpIn = addReadPort("In", "NodeSignal", Port::NOTREQUIRED);
-            mpMP = addMultiPort("MP", "NodeHydraulic");
+            mpMP = addMultiPort("MP", "NodeHydraulic"); //addPowerPort("MP", "NodeHydraulic");
 
             registerParameter("P", "Default pressure", "[Pa]", p);
 
@@ -58,11 +58,11 @@ namespace hopsan {
         void initialize()
         {
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, p);
-            mNumPorts=mpMP->getNumPorts();
 
+            mNumPorts = mpMP->getNumPorts();
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mND_p_vec.push_back(getSafeNodeDataPtr(mpMP, NodeHydraulic::PRESSURE, i));
+                mND_p_vec.push_back(getSafeNodeDataPtr(mpMP, NodeHydraulic::PRESSURE, i)); //!< @todo Thiss is WRONG, getSafeNodeDataPtr dosn not suport multiports yet
                 mND_c_vec.push_back(getSafeNodeDataPtr(mpMP, NodeHydraulic::WAVEVARIABLE, i));
                 mND_Zc_vec.push_back(getSafeNodeDataPtr(mpMP, NodeHydraulic::CHARIMP, i));
 
