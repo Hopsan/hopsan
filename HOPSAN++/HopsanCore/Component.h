@@ -198,8 +198,9 @@ namespace hopsan {
 
         //Port functions
         Port* addPort(const std::string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
-        Port* addMultiPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
+        Port* addPowerMultiPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addPowerPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
+        Port* addReadMultiPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addReadPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         Port* addWritePort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
         bool getPort(const std::string portname, Port* &rpPort);
@@ -207,7 +208,8 @@ namespace hopsan {
         void deletePort(const std::string name);
 
         //NodeData ptr function
-        double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0);
+        double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0, int portIdx=-1);
+        double *getSafeMultiPortNodeDataPtr(Port* pPort, const int portIdx, const int dataId, const double defaultValue=0);
 
         //Unique name functions
         virtual std::string determineUniquePortName(std::string portname);

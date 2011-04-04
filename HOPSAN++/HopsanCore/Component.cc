@@ -966,14 +966,21 @@ Port* Component::addPowerPort(const string portname, const string nodetype, Port
     return addPort(portname, Port::POWERPORT, nodetype, connection_requirement);
 }
 
-//! @brief Convenience method to add a MultiPort
+//! @brief Convenience method to add a PowerMultiPort
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addMultiPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+Port* Component::addPowerMultiPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
 {
-    return addPort(portname, Port::MULTIPORT, nodetype, connection_requirement);
+    return addPort(portname, Port::POWERMULTIPORT, nodetype, connection_requirement);
 }
 
+//! @brief Convenience method to add a ReadMultiPort
+//! @param [in] porttype The type of port
+//! @param [in] nodetype The type of node that must be connected to the port
+Port* Component::addReadMultiPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+{
+    return addPort(portname, Port::READMULTIPORT, nodetype, connection_requirement);
+}
 
 //! @brief Convenience method to add a ReadPort
 //! @param [in] porttype The type of port
@@ -1040,16 +1047,24 @@ void Component::deletePort(const string name)
 //! It is only ment to be used insed individual component code and automatically handles creation of dummy veriables
 //! in case optional ports are not connected
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
-double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
+double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue, int portIdx)
 {
     std::stringstream ss;
     ss << getName() << "::getSafeNodeDataPtr";
     addLogMess(ss.str());
 
+    //If this is one of the multiports and we have NOT given a subport idx to use then give an error message to the user sothat they KNOW that they have made a mistake
+    //! @todo it would be nice to solve this in some other way to avoid unecessary code, duoble implemntation in the function bellow is one way but that is even worse, this check would still be needed
+    if ((pPort->getPortType() >= Port::MULTIPORT) && (portIdx<0))
+    {
+        gCoreMessageHandler.addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()"));
+    }
+    portIdx = max(portIdx,0); //Avoid underflow in size_t conversion in getNodeDataPtr()
+
     double *pND;
     if(pPort->isConnected())
     {
-        pND = pPort->getNodeDataPtr(dataId);
+        pND = pPort->getNodeDataPtr(dataId, portIdx);
     }
     else
     {
@@ -1057,6 +1072,11 @@ double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const doubl
         mDummyNDptrs.push_back(pND); //Store the pointer to dummy for automatic finilize removal
     }
     return pND;
+}
+
+double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const int portIdx, const int dataId, const double defaultValue)
+{
+    return getSafeNodeDataPtr(pPort, dataId, defaultValue, portIdx);
 }
 
 
@@ -2505,7 +2525,7 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
 void ConnectionAssistant::ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOriginalPort)
 {
     rpOriginalPort = 0; //Make sure null if not multiport
-    if (rpPort->getPortType() == Port::MULTIPORT)
+    if (rpPort->getPortType() >= Port::MULTIPORT)
     {
         rpOriginalPort = rpPort;
         rpPort = rpPort->addSubPort();
@@ -2553,19 +2573,19 @@ void ConnectionAssistant::ifMultiportPrepareForDissconnect(Port *&rpPort1, Port 
     rpMultiPort2=0;
 
     //either port 1 or port2 is a multiport, or both are
-    if (rpPort1->getPortType() == Port::MULTIPORT && rpPort2->getPortType() != Port::MULTIPORT )
+    if (rpPort1->getPortType() >= Port::MULTIPORT && rpPort2->getPortType() < Port::MULTIPORT )
     {
         rpMultiPort1 = rpPort1;
         assert(rpPort2->getConnectedPorts().size() == 1);
         rpPort1 = rpPort2->getConnectedPorts()[0];
     }
-    else if (rpPort1->getPortType() != Port::MULTIPORT && rpPort2->getPortType() == Port::MULTIPORT )
+    else if (rpPort1->getPortType() < Port::MULTIPORT && rpPort2->getPortType() >= Port::MULTIPORT )
     {
         rpMultiPort2 = rpPort2;
         assert(rpPort1->getConnectedPorts().size() == 1);
         rpPort2 = rpPort1->getConnectedPorts()[0];
     }
-    else if (rpPort1->getPortType() == Port::MULTIPORT && rpPort2->getPortType() == Port::MULTIPORT )
+    else if (rpPort1->getPortType() >= Port::MULTIPORT && rpPort2->getPortType() >= Port::MULTIPORT )
     {
         assert("Multiport <-> Multiport disconnection has not been implemented yet Aborting!" == 0);
         //! @todo need to search around to find correct subports

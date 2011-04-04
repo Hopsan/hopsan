@@ -45,7 +45,7 @@ namespace hopsan {
             mAlpha         = 0.1;
 
             //Add ports to the component
-            mpP1 = addMultiPort("P1", "NodeHydraulic");
+            mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("V", "Volume", "[m^3]",            mVolume);

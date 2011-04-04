@@ -21,17 +21,18 @@ using namespace hopsan;
 
 
 //! Port base class constructor
-Port::Port(string node_type, string portname, Component *portOwner)
+Port::Port(string node_type, string portname, Component *portOwner, Port *pParentPort)
 {
     mPortType = UNDEFINEDPORT;
     mPortName = portname;
     mNodeType = node_type;
     mpComponent = portOwner;
+    mpParentPort = pParentPort; //Only used by subports in multiports
     mConnectionRequired = true;
     mConnectedPorts.clear();
     mpNode = 0;
     mpStartNode = 0;
-    mpParentPort = 0;
+
 }
 
 
@@ -141,7 +142,7 @@ void Port::writeNode(const size_t &idx, const double &value, const size_t portId
 }
 
 
-double *Port::getNodeDataPtr(const size_t idx, const size_t portIdx)
+double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/)
 {
     return mpNode->getDataPtr(idx);
 }
@@ -473,9 +474,6 @@ string Port::getPortTypeString()
     case POWERPORT :
         return "POWERPORT";
         break;
-    case MULTIPORT:
-        return "MULTIPORT";
-        break;
     case READPORT :
         return "READPORT";
         break;
@@ -484,6 +482,12 @@ string Port::getPortTypeString()
         break;
     case SYSTEMPORT :
         return "SYSTEMPORT";
+        break;
+    case POWERMULTIPORT:
+        return "POWERMULTIPORT";
+        break;
+    case READMULTIPORT:
+        return "POWERMULTIPORT";
         break;
     default :
         return "UNDEFINEDPORT";
@@ -506,17 +510,16 @@ const string &Port::getComponentName()
 
 
 //! SystemPort constructor
-SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
+SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = SYSTEMPORT;
 }
 
 
 //! PowerPort constructor
-PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner)
+PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = POWERPORT;
-    mpParentPort = pParentPort;
     if(getComponent()->isComponentC())
     {
         //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
@@ -526,8 +529,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
         if (mpParentPort == 0)
         {
             //Copy all start values to default parameters map in component
-            std::vector<std::string> names;
-            std::vector<std::string> data;
+            std::vector<std::string> names, data;
             mpStartNode->getDataNamesAndUnits(names, data);
             for(size_t i=0; i<names.size(); ++i)
             {
@@ -539,7 +541,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
 }
 
 
-ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
+ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner)
 {
     mPortType = READPORT;
 }
@@ -547,20 +549,18 @@ ReadPort::ReadPort(std::string node_type, std::string portname, Component *portO
 
 void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/)
 {
-    cout << "Could not write to port, this is a ReadPort" << endl;
-    assert(false);
+    assert("Could not write to port, this is a ReadPort" == 0);
 }
 
 
-WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
+WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = WRITEPORT;
     //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
     mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
 
     //Copy start value to default parameters map in component
-    std::vector<std::string> names;
-    std::vector<std::string> data;
+    std::vector<std::string> names, data;
     mpStartNode->getDataNamesAndUnits(names, data);
     portOwner->mDefaultParameters.insert(std::pair<std::string, double>(portname + names.at(0), mpStartNode->getData(0)));
 }
@@ -573,14 +573,9 @@ double WritePort::readNode(const size_t /*idx*/)
     return 0;
 }
 
-MultiPort::MultiPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
+MultiPort::MultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = MULTIPORT;
-    if(getComponent()->isComponentC())
-    {
-        //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
-        mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
-    }
 }
 
 MultiPort::~MultiPort()
@@ -686,13 +681,14 @@ size_t MultiPort::getNumPorts()
     return mSubPortsVector.size();
 }
 
-//! Adds a subport to a multiport
-Port* MultiPort::addSubPort()
-{
-    mSubPortsVector.push_back(new PowerPort(mNodeType, "noname, this is a subport", 0, this));
-    //mSubPortsVector.back()->mpParentPort = this;
-    return mSubPortsVector.back();
-}
+////! Adds a subport to a multiport
+//Port* MultiPort::addSubPort()
+//{
+//    //mSubPortsVector.push_back(new PowerPort(mNodeType, "noname, this is a subport", 0, this));
+//     mSubPortsVector.push_back( CreatePort(mPortType, mNodeType, "noname subport", 0, this) );
+//    //mSubPortsVector.back()->mpParentPort = this;
+//    return mSubPortsVector.back();
+//}
 
 //! Removes a specific subport
 void MultiPort::removeSubPort(Port* ptr)
@@ -716,32 +712,62 @@ Node *MultiPort::getNodePtr(const size_t portIdx)
     return mSubPortsVector[portIdx]->getNodePtr();
 }
 
+PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : MultiPort(node_type, portname, portOwner, pParentPort)
+{
+    mPortType = POWERMULTIPORT;
+    if(getComponent()->isComponentC())
+    {
+        //mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+        mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
+    }
+}
+
+//! Adds a subport to a powermultiport
+Port* PowerMultiPort::addSubPort()
+{
+    mSubPortsVector.push_back( CreatePort(Port::POWERPORT, mNodeType, "noname subport", 0, this) );
+    return mSubPortsVector.back();
+}
+
+ReadMultiPort::ReadMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : MultiPort(node_type, portname, portOwner, pParentPort)
+{
+    mPortType = READMULTIPORT;
+}
+
+//! Adds a subport to a readmultiport
+Port* ReadMultiPort::addSubPort()
+{
+    mSubPortsVector.push_back( CreatePort(Port::READPORT, mNodeType, "noname subport", 0, this) );
+    return mSubPortsVector.back();
+}
 
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
 //!
-Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, string name, Component *portOwner)
+Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, string name, Component *portOwner, Port *pParentPort)
 {
     switch (type)
     {
     case Port::POWERPORT :
-        return new PowerPort(nodetype, name, portOwner);
-        break;
-    case Port::MULTIPORT :
-        return new MultiPort(nodetype, name, portOwner);
+        return new PowerPort(nodetype, name, portOwner, pParentPort);
         break;
     case Port::WRITEPORT :
-        return new WritePort(nodetype, name, portOwner);
+        return new WritePort(nodetype, name, portOwner, pParentPort);
         break;
     case Port::READPORT :
-        return new ReadPort(nodetype, name, portOwner);
+        return new ReadPort(nodetype, name, portOwner, pParentPort);
         break;
     case Port::SYSTEMPORT :
-        return new SystemPort(nodetype, name, portOwner);
+        return new SystemPort(nodetype, name, portOwner, pParentPort);
+        break;
+    case Port::POWERMULTIPORT :
+        return new PowerMultiPort(nodetype, name, portOwner, pParentPort);
+        break;
+    case Port::READMULTIPORT :
+        return new ReadMultiPort(nodetype, name, portOwner, pParentPort);
         break;
     default :
-       //! @todo maybe defualt should be impossible
-       assert(false);
-       return new Port(nodetype, name, portOwner);
+       assert(false); //Should not be able to create any other port type
+       return 0;
     }
 }

@@ -30,11 +30,12 @@ namespace hopsan {
         friend class MultiPort;
 
     public:
-        enum PORTTYPE {MULTIPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
+        //It is VERY important the MultiPort enums commes LAST
+        enum PORTTYPE {UNDEFINEDPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, MULTIPORT, POWERMULTIPORT, READMULTIPORT};
         enum CONREQ {REQUIRED, NOTREQUIRED};
 
         //Constructors - Destructors
-        Port(std::string node_type, std::string portname, Component *portOwner);
+        Port(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
         virtual ~Port();
 
         virtual double readNode(const size_t idx, const size_t portIdx=0);
@@ -113,7 +114,7 @@ namespace hopsan {
 
     public:
         //Constructors
-        SystemPort(std::string node_type, std::string portname, Component *portOwner);
+        SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
     };
 
 
@@ -125,7 +126,7 @@ namespace hopsan {
 
     public:
         //Constructors
-        MultiPort(std::string node_type, std::string portname, Component *portOwner);
+        MultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
         ~MultiPort();
 
         //Overloaded virtual functions
@@ -156,12 +157,10 @@ namespace hopsan {
         size_t getNumPorts();
 
     protected:
-        Port* addSubPort();
+        std::vector<Port*> mSubPortsVector;
+
         void removeSubPort(Port* ptr);
         Node *getNodePtr(const size_t portIdx=0);
-
-    private:
-        std::vector<Port*> mSubPortsVector;
     };
 
 
@@ -185,9 +184,38 @@ namespace hopsan {
 
     public:
         //Constructor
-        ReadPort(std::string node_type, std::string portname, Component *portOwner);
-
+        ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
         void writeNode(const size_t idx, const double value);
+    };
+
+    class PowerMultiPort :public MultiPort
+    {
+        friend class Component;
+        friend class ComponentSystem;
+        friend class ConnectionAssistant;
+
+    public:
+        //Constructor
+        PowerMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+
+    protected:
+        Port* addSubPort();
+
+    };
+
+    class ReadMultiPort :public MultiPort
+    {
+        friend class Component;
+        friend class ComponentSystem;
+        friend class ConnectionAssistant;
+
+    public:
+        //Constructor
+        ReadMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+
+    protected:
+        Port* addSubPort();
+
     };
 
 
@@ -199,12 +227,12 @@ namespace hopsan {
 
     public:
         //Constructor
-        WritePort(std::string node_type, std::string portname, Component *portOwner);
+        WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
 
         double readNode(const size_t idx);
     };
 
-    Port* CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, std::string name, Component *portOwner);
+    Port* CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, std::string name, Component *portOwner, Port *pParentPort=0);
 }
 
 #endif // PORT_H_INCLUDED

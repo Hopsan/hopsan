@@ -44,7 +44,7 @@ namespace hopsan {
             Zc        = 0.0;
 
             mpIn = addReadPort("In", "NodeSignal", Port::NOTREQUIRED);
-            mpMP = addMultiPort("MP", "NodeHydraulic"); //addPowerPort("MP", "NodeHydraulic");
+            mpMP = addPowerMultiPort("MP", "NodeHydraulic"); //addPowerPort("MP", "NodeHydraulic");
 
             registerParameter("P", "Default pressure", "[Pa]", p);
 
@@ -61,9 +61,9 @@ namespace hopsan {
             mNumPorts = mpMP->getNumPorts();
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mND_p_vec.push_back(getSafeNodeDataPtr(mpMP, NodeHydraulic::PRESSURE, i)); //!< @todo Thiss is WRONG, getSafeNodeDataPtr dosn not suport multiports yet
-                mND_c_vec.push_back(getSafeNodeDataPtr(mpMP, NodeHydraulic::WAVEVARIABLE, i));
-                mND_Zc_vec.push_back(getSafeNodeDataPtr(mpMP, NodeHydraulic::CHARIMP, i));
+                mND_p_vec.push_back(getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::PRESSURE));
+                mND_c_vec.push_back(getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WAVEVARIABLE));
+                mND_Zc_vec.push_back(getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CHARIMP));
 
                 //! @todo how should we divide startvalues among connected ports
                 *(mND_p_vec.back()) = p; //Override the startvalue for the pressure
