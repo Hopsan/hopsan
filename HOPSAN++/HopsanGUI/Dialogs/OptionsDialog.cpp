@@ -148,6 +148,12 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpPositionUnitComboBox = new QComboBox();
     mpVelocityUnitLabel = new QLabel(tr("Default Velocity Unit"));
     mpVelocityUnitComboBox = new QComboBox();
+    mpTorqueUnitLabel = new QLabel(tr("Default Torque Unit"));
+    mpTorqueUnitComboBox = new QComboBox();
+    mpAngleUnitLabel = new QLabel(tr("Default Angle Unit"));
+    mpAngleUnitComboBox = new QComboBox();
+    mpAngularVelocityUnitLabel = new QLabel(tr("Default Angular Velocity Unit"));
+    mpAngularVelocityUnitComboBox = new QComboBox();
 
     this->updateCustomUnits();
 
@@ -157,6 +163,9 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpAddForceUnitButton = new QPushButton("Add Custom Force Unit");
     mpAddPositionUnitButton = new QPushButton("Add Custom Position Unit");
     mpAddVelocityUnitButton = new QPushButton("Add Custom Velocity Unit");
+    mpAddTorqueUnitButton = new QPushButton("Add Custom Torque Unit");
+    mpAddAngleUnitButton = new QPushButton("Add Custom Angle Unit");
+    mpAddAngularVelocityUnitButton = new QPushButton("Add Custom Angular Velocity Unit");
 
     mpPlottingGroupBox = new QGroupBox(tr("Plotting"));
     mpPlottingLayout = new QGridLayout;
@@ -178,12 +187,16 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpPlottingLayout->addWidget(mpVelocityUnitLabel, 5, 0);
     mpPlottingLayout->addWidget(mpVelocityUnitComboBox, 5, 1);
     mpPlottingLayout->addWidget(mpAddVelocityUnitButton, 5, 2);
+    mpPlottingLayout->addWidget(mpTorqueUnitLabel, 6, 0);
+    mpPlottingLayout->addWidget(mpTorqueUnitComboBox, 6, 1);
+    mpPlottingLayout->addWidget(mpAddTorqueUnitButton, 6, 2);
+    mpPlottingLayout->addWidget(mpAngleUnitLabel, 7, 0);
+    mpPlottingLayout->addWidget(mpAngleUnitComboBox, 7, 1);
+    mpPlottingLayout->addWidget(mpAddAngleUnitButton, 7, 2);
+    mpPlottingLayout->addWidget(mpAngularVelocityUnitLabel, 8, 0);
+    mpPlottingLayout->addWidget(mpAngularVelocityUnitComboBox, 8, 1);
+    mpPlottingLayout->addWidget(mpAddAngularVelocityUnitButton, 8, 2);
     mpPlottingGroupBox->setLayout(mpPlottingLayout);
-
-    //QLabel *mpPressureUnitLabel;
-    //QComboBox *mpPressureUnitComboBox;
-    //QGroupBox *mpPlottingGroupBox;
-    //QGridLayout *mpPlottingLayout;
 
     mpCancelButton = new QPushButton(tr("&Cancel"));
     mpCancelButton->setAutoDefault(false);
@@ -194,22 +207,25 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
 
-    connect(gpMainWindow->optionsAction,SIGNAL(triggered()),this,SLOT(show()));
-    connect(mpEnableProgressBarCheckBox,SIGNAL(toggled(bool)), mpProgressBarLabel, SLOT(setEnabled(bool)));
-    connect(mpEnableProgressBarCheckBox,SIGNAL(toggled(bool)), mpProgressBarSpinBox, SLOT(setEnabled(bool)));
-    connect(mpBackgroundColorButton, SIGNAL(clicked()), this, SLOT(colorDialog()));
-    connect(mpCancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(mpOkButton, SIGNAL(clicked()), this, SLOT(updateValues()));
+    connect(gpMainWindow->optionsAction,    SIGNAL(triggered()),    this,                   SLOT(show()));
+    connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarLabel,     SLOT(setEnabled(bool)));
+    connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarSpinBox,   SLOT(setEnabled(bool)));
+    connect(mpBackgroundColorButton,        SIGNAL(clicked()),      this,                   SLOT(colorDialog()));
+    connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
+    connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(updateValues()));
 
-    connect(mpAddValueUnitButton, SIGNAL(clicked()), this, SLOT(addValueUnit()));
-    connect(mpAddPressureUnitButton, SIGNAL(clicked()), this, SLOT(addPressureUnit()));
-    connect(mpAddFlowUnitButton, SIGNAL(clicked()), this, SLOT(addFlowUnit()));
-    connect(mpAddForceUnitButton, SIGNAL(clicked()), this, SLOT(addForceUnit()));
-    connect(mpAddPositionUnitButton, SIGNAL(clicked()), this, SLOT(addPositionUnit()));
-    connect(mpAddVelocityUnitButton, SIGNAL(clicked()), this, SLOT(addVelocityUnit()));
+    connect(mpAddValueUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addValueUnit()));
+    connect(mpAddPressureUnitButton,        SIGNAL(clicked()),      this,                   SLOT(addPressureUnit()));
+    connect(mpAddFlowUnitButton,            SIGNAL(clicked()),      this,                   SLOT(addFlowUnit()));
+    connect(mpAddForceUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addForceUnit()));
+    connect(mpAddPositionUnitButton,        SIGNAL(clicked()),      this,                   SLOT(addPositionUnit()));
+    connect(mpAddVelocityUnitButton,        SIGNAL(clicked()),      this,                   SLOT(addVelocityUnit()));
+    connect(mpAddTorqueUnitButton,          SIGNAL(clicked()),      this,                   SLOT(addTorqueUnit()));
+    connect(mpAddAngleUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addAngleUnit()));
+    connect(mpAddAngularVelocityUnitButton, SIGNAL(clicked()),      this,                   SLOT(addAngularVelocityUnit()));
 
-    connect(mpUseMulticoreCheckBox, SIGNAL(toggled(bool)), mpThreadsLabel, SLOT(setEnabled(bool)));
-    connect(mpUseMulticoreCheckBox, SIGNAL(toggled(bool)), mpThreadsSpinBox, SLOT(setEnabled(bool)));
+    connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsLabel,         SLOT(setEnabled(bool)));
+    connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsSpinBox,       SLOT(setEnabled(bool)));
 
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -263,6 +279,9 @@ void OptionsDialog::updateValues()
     gConfig.setDefaultUnit("Force", mpForceUnitComboBox->currentText());
     gConfig.setDefaultUnit("Position", mpPositionUnitComboBox->currentText());
     gConfig.setDefaultUnit("Velocity", mpVelocityUnitComboBox->currentText());
+    gConfig.setDefaultUnit("Torque", mpTorqueUnitComboBox->currentText());
+    gConfig.setDefaultUnit("Angle", mpAngleUnitComboBox->currentText());
+    gConfig.setDefaultUnit("AngularVelocity", mpAngularVelocityUnitComboBox->currentText());
     gConfig.saveToXml();
 
     this->accept();
@@ -366,6 +385,20 @@ void OptionsDialog::addVelocityUnit()
     addCustomUnitDialog("Velocity");
 }
 
+void OptionsDialog::addTorqueUnit()
+{
+    addCustomUnitDialog("Torque");
+}
+
+void OptionsDialog::addAngleUnit()
+{
+    addCustomUnitDialog("Angle");
+}
+
+void OptionsDialog::addAngularVelocityUnit()
+{
+    addCustomUnitDialog("Angular Velocity");
+}
 
 
 //! Slot that opens "Add Custom Unit" dialog
@@ -495,6 +528,48 @@ void OptionsDialog::updateCustomUnits()
         if(mpVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Velocity"))
         {
             mpVelocityUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpTorqueUnitComboBox->clear();
+    QMap<QString, double> customTorqueUnits = gConfig.getCustomUnits("Torque");
+    for(it = customTorqueUnits.begin(); it != customTorqueUnits.end(); ++it)
+    {
+        mpTorqueUnitComboBox->addItem(it.key());
+    }
+    for(int i = 0; i<mpTorqueUnitComboBox->count(); ++i)
+    {
+        if(mpTorqueUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Torque"))
+        {
+            mpTorqueUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpAngleUnitComboBox->clear();
+    QMap<QString, double> customAngleUnits = gConfig.getCustomUnits("Angle");
+    for(it = customAngleUnits.begin(); it != customAngleUnits.end(); ++it)
+    {
+        mpAngleUnitComboBox->addItem(it.key());
+    }
+    for(int i = 0; i<mpAngleUnitComboBox->count(); ++i)
+    {
+        if(mpAngleUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Angle"))
+        {
+            mpAngleUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpAngularVelocityUnitComboBox->clear();
+    QMap<QString, double> customAngularVelocityUnits = gConfig.getCustomUnits("Angular Velocity");
+    for(it = customAngularVelocityUnits.begin(); it != customAngularVelocityUnits.end(); ++it)
+    {
+        mpAngularVelocityUnitComboBox->addItem(it.key());
+    }
+    for(int i = 0; i<mpAngularVelocityUnitComboBox->count(); ++i)
+    {
+        if(mpAngularVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Angular Velocity"))
+        {
+            mpAngularVelocityUnitComboBox->setCurrentIndex(i);
         }
     }
 }

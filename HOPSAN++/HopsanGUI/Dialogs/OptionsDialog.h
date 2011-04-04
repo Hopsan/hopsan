@@ -43,6 +43,9 @@ private slots:
     void addForceUnit();
     void addPositionUnit();
     void addVelocityUnit();
+    void addTorqueUnit();
+    void addAngleUnit();
+    void addAngularVelocityUnit();
     void addCustomUnitDialog(QString physicalQuantity);
     void addCustomUnit();
     void updateCustomUnits();
@@ -91,6 +94,15 @@ private:
     QLabel *mpVelocityUnitLabel;
     QComboBox *mpVelocityUnitComboBox;
     QPushButton *mpAddVelocityUnitButton;
+    QLabel *mpTorqueUnitLabel;
+    QComboBox *mpTorqueUnitComboBox;
+    QPushButton *mpAddTorqueUnitButton;
+    QLabel *mpAngleUnitLabel;
+    QComboBox *mpAngleUnitComboBox;
+    QPushButton *mpAddAngleUnitButton;
+    QLabel *mpAngularVelocityUnitLabel;
+    QComboBox *mpAngularVelocityUnitComboBox;
+    QPushButton *mpAddAngularVelocityUnitButton;
     QGroupBox *mpPlottingGroupBox;
     QGridLayout *mpPlottingLayout;
 

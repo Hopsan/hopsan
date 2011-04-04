@@ -233,16 +233,6 @@ public slots:
         o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->addPlotCurve(generation, compName, portName, dataName);
     }
 
-    void discardPlotGeneration(MainWindow* o, const int& windowNumber)
-    {
-        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->discardGeneration();
-    }
-
-    void discardOldestPlotGeneration(MainWindow* o, const int& windowNumber)
-    {
-        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->discardOldestGeneration();
-    }
-
     int getSimulationTime(MainWindow* o)
     {
         return o->mpProjectTabs->getCurrentTab()->mLastSimulationTime;

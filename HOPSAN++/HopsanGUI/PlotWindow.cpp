@@ -43,7 +43,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle("Hopsan Cooler Plot Window");
+    setWindowTitle("Hopsan Plot Window");
     setAcceptDrops(false);
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setPalette(gConfig.getPalette());
@@ -128,6 +128,12 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-OpenTabInNewPlotWindow.png"));
     mpNewWindowFromTabButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
+    mpResetXVectorButton = new QToolButton(mpToolBar);
+    mpResetXVectorButton->setToolTip("Reset Time Vector");
+    mpResetXVectorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
+    mpResetXVectorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpResetXVectorButton->setEnabled(false);
+
     mpToolBar->addWidget(mpNewPlotButton);
     mpToolBar->addWidget(mpZoomButton);
     mpToolBar->addWidget(mpPanButton);
@@ -141,6 +147,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addWidget(mpShowListsButton);
     mpToolBar->addWidget(mpShowCurvesButton);
     mpToolBar->addWidget(mpNewWindowFromTabButton);
+    mpToolBar->addWidget(mpResetXVectorButton);
 
     addToolBar(mpToolBar);
 
@@ -271,22 +278,6 @@ PlotTab *PlotWindow::getCurrentPlotTab()
 }
 
 
-//! @brief Slot that removes the current generation from the plot window.
-//! @todo There is no check that the number of generations is greater than one. The button shall always be disabled then anyway, but if this is called from outside it will cause problems.
-void PlotWindow::discardGeneration()
-{
-    //! @todo Remove?
-}
-
-
-//! @brief Slot that removes the current generation from the plot window.
-//! @todo There is no check that the number of generations is greater than one. The button shall always be disabled then anyway, but if this is called from outside it will cause problems.
-void PlotWindow::discardOldestGeneration()
-{
-    //! @todo Remove
-}
-
-
 //! @brief Slot that exports current plot to .svg format
 void PlotWindow::exportSVG()
 {
@@ -317,6 +308,7 @@ void PlotWindow::importGNUPLOT()
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY)
 {
     getCurrentPlotTab()->getPlot()->replot();
+    if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
     pTempCurve->updatePlotInfoDockVisibility();
@@ -526,11 +518,11 @@ void PlotTabWidget::tabChanged()
 
     for(int i=0; i<count(); ++i)
     {
-            //If you add a disconnect here, remember to also add it to the close tab function!
         disconnect(mpParentPlotWindow->mpZoomButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableZoom(bool)));
         disconnect(mpParentPlotWindow->mpPanButton,                 SIGNAL(toggled(bool)),  getTab(i),  SLOT(enablePan(bool)));
         disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(clicked()),      getTab(i),  SLOT(setBackgroundColor()));
         disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
+        disconnect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(clicked()),      getCurrentTab(),    SLOT(resetXVector()));
     }
 
     if(this->count() != 0)
@@ -538,11 +530,13 @@ void PlotTabWidget::tabChanged()
         mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer->isEnabled());
         mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner->isEnabled());
         mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid->isVisible());
+        mpParentPlotWindow->mpResetXVectorButton->setEnabled(getCurrentTab()->mHasSpecialXAxis);
 
         connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
         connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
         connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(clicked()),      getCurrentTab(),    SLOT(setBackgroundColor()));
         connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
+        connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(clicked()),      getCurrentTab(),    SLOT(resetXVector()));
     }
 
 
@@ -695,6 +689,17 @@ void PlotTab::addCurve(PlotCurve *curve)
     curve->setLineColor(mCurveColors.first());
     curve->setLineWidth(2);
     mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
+
+    if(!mpPlot->axisTitle(curve->getAxisY()).isEmpty())
+    {
+        mpPlot->setAxisTitle(curve->getAxisY(), QwtText(QString(mpPlot->axisTitle(curve->getAxisY()).text().append(", "))));
+    }
+    mpPlot->setAxisTitle(curve->getAxisY(), QwtText(QString(mpPlot->axisTitle(curve->getAxisY()).text().append(curve->getDataName().append(" [").append(curve->getDataUnit()).append("]")))));
+
+    if(mpPlot->axisTitle(QwtPlot::xBottom).isEmpty())
+    {
+        mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText("Time [s]"));
+    }
 }
 
 
@@ -825,8 +830,32 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
     {
         mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
     }
+
+    mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText(QString(dataName.append(" [").append(dataUnit).append("]"))));
+
     rescaleToCurves();
     mpPlot->replot();
+
+    mVectorX = xArray;
+    mHasSpecialXAxis = true;
+    mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
+}
+
+
+void PlotTab::resetXVector()
+{
+    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    {
+        mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mPlotCurvePtrs.at(i)->getTimeVector(), mPlotCurvePtrs.at(i)->getDataVector());
+    }
+
+    mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText(QString("Time [S]")));
+
+    rescaleToCurves();
+    mpPlot->replot();
+
+    mHasSpecialXAxis = false;
+    mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
 
@@ -839,6 +868,7 @@ void PlotTab::enableZoom(bool value)
     }
     mpZoomer->setEnabled(value);
     mpZoomerRight->setEnabled(value);
+    mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
 
@@ -1003,7 +1033,7 @@ void PlotTab::dropEvent(QDropEvent *event)
             QCursor cursor;
             if(mpParentPlotWindow->mapFromGlobal(cursor.pos()).y() > mpParentPlotWindow->height()/2 && getNumberOfCurves() >= 1)
             {
-                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(gpMainWindow->mpProjectTabs->getCurrentContainer()->getNumberOfPlotGenerations()-1, componentName, portName, dataName), componentName, portName, dataName, "");
+                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(gpMainWindow->mpProjectTabs->getCurrentContainer()->getNumberOfPlotGenerations()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
             }
             else if(mpParentPlotWindow->mapFromGlobal(cursor.pos()).x() < mpParentPlotWindow->width()/2)
             {
@@ -1600,12 +1630,25 @@ void PlotCurve::setActive(bool value)
 
 void PlotCurve::updateCurve()
 {
+
+
     QVector<double> tempX;
     QVector<double> tempY;
-    for(size_t i=0; i<mTimeVector.size(); ++i)
+    if(mpParentPlotTab->mHasSpecialXAxis)
     {
-        tempX.append(mTimeVector[i]*mScaleX + mOffsetX);
-        tempY.append(mDataVector[i]*mScaleY + mOffsetY);
+        for(size_t i=0; i<mTimeVector.size(); ++i)
+        {
+            tempX.append(mpParentPlotTab->mVectorX[i]*mScaleX + mOffsetX);
+            tempY.append(mDataVector[i]*mScaleY + mOffsetY);
+        }
+    }
+    else
+    {
+        for(size_t i=0; i<mTimeVector.size(); ++i)
+        {
+            tempX.append(mTimeVector[i]*mScaleX + mOffsetX);
+            tempY.append(mDataVector[i]*mScaleY + mOffsetY);
+        }
     }
     mpCurve->setData(tempX, tempY);
 }

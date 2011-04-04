@@ -59,8 +59,6 @@ public slots:
     void updatePortList();
     void updateVariableList();
     void addPlotCurveFromBoxes();
-    void discardGeneration();
-    void discardOldestGeneration();
     void importGNUPLOT();
     void exportSVG();
     void exportGNUPLOT();
@@ -86,6 +84,7 @@ private:
     QToolButton *mpGridButton;
     QToolButton *mpBackgroundColorButton;
     QToolButton *mpNewWindowFromTabButton;
+    QToolButton *mpResetXVectorButton;
 
     PlotTabWidget *mpPlotTabs;
     QLabel *mpComponentsLabel;
@@ -183,6 +182,7 @@ public:
     void setActiveMarker(QwtPlotMarker *marker);
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
 
+
     QVector<double> mVectorX;       //! @todo Should be private
 
 protected:
@@ -198,6 +198,7 @@ public slots:
     void enablePan(bool value);
     void enableGrid(bool value);
     void setBackgroundColor();
+    void resetXVector();
 
 private:
     QwtPlot *mpPlot;
