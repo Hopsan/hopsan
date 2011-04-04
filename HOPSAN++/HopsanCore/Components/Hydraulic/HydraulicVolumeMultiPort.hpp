@@ -28,7 +28,8 @@ namespace hopsan {
         double mVolume;
         double mBulkmodulus;
 
-        std::vector<double*> vpN_p, vpN_q, vpN_c, vpN_Zc, vp_C0;
+        std::vector<double*> vpN_p, vpN_q, vpN_c, vpN_Zc;
+        std::vector<double> vp_C0;
         size_t mNumPorts;
         Port *mpP1;
 
@@ -81,18 +82,24 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            double qTot = 0.0;
+
             //Get variable values from nodes
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                (*vp_C0[i]) = (*vpN_p[i]) + mZc*(*vpN_q[i]);
-                (*vpN_c[i]) = mAlpha*(*vpN_c[i]) + (1.0-mAlpha)*(*vp_C0[i]);
+                qTot += (*vpN_q[i]);
+            }
+            for (size_t i=0; i<mNumPorts; ++i)
+            {
+                vp_C0[i] = (*vpN_p[i]) + mZc*qTot;
+                (*vpN_c[i]) = mAlpha*(*vpN_c[i]) + (1.0-mAlpha)*vp_C0[i];
             }
         }
 
 
         void finalize()
         {
-
+            addWarningMessage("This component does NOT behave as it should do, just for testing MultiPort up until now...");
         }
     };
 }
