@@ -2275,6 +2275,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         }
 
         pBlankSysPort->mNodeType = pOtherPort->getNodeType(); //set the nodetype in the sysport
+        //! @todo We must be able to handle connecting multiports to blank systemports
         if (!pOtherPort->isConnected())
         {
             sucess = connAssist.createNewNodeConnection(pBlankSysPort, pOtherPort, pResultingNode);
