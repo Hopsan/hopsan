@@ -22,6 +22,7 @@ namespace hopsan {
     class Component;
     class ComponentSystem;
     class ConnectionAssistant;
+    class HopsanEssentials;
 
     class DLLIMPORTEXPORT Node
     {
@@ -31,6 +32,7 @@ namespace hopsan {
         friend class Component;
         friend class ComponentSystem;
         friend class ConnectionAssistant;
+        friend class HopsanEssentials;
 
     public:
         //The user should never bother about Nodes
@@ -75,7 +77,6 @@ namespace hopsan {
         ComponentSystem *getOwnerSystem();
 
         //Protected member variables
-        NodeTypeT mNodeType;
         std::vector<double> mDataVector;
         std::vector<Port*> mPortPtrs;
 
@@ -95,7 +96,10 @@ namespace hopsan {
         void enableLog();
         void disableLog();
 
-        //Log specific
+        //Private member variables
+        NodeTypeT mNodeType;
+
+        //Log specific variables
         std::vector<double> mTimeStorage;
         std::vector<std::vector<double> > mDataStorage;
         bool mLogSpaceAllocated;

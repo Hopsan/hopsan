@@ -214,7 +214,6 @@ namespace hopsan {
 
         //==========Protected member variables==========
         typeCQS mTypeCQS;
-        std::string mTypeName;      //!< @todo we should move this to private when we have cleared out its pressence from all components
         double mTimestep, mDesiredTimestep;
         double mTime;
         bool mIsComponentC; //!< @todo we should nou need these bools, we can check type==CQSTYPE in the isComponent*() functions
@@ -231,6 +230,7 @@ namespace hopsan {
 
         //Private member variables
         std::string mName;
+        std::string mTypeName;
         std::vector<CompParameter> mParameters;
         std::vector<double*> mDummyNDptrs; //This vector is used by components to store dummy NodeData pointers that are created for non connected optional ports
         ComponentSystem* mpSystemParent;

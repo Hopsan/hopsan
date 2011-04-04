@@ -432,6 +432,7 @@ bool Port::isConnected()
 }
 
 //! Check if this port is connected to other port
+//! @todo how do we handle multiports
 bool Port::isConnectedTo(Port *pOtherPort)
 {
     std::vector<Port*>::iterator pit;

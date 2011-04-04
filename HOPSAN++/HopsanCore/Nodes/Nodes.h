@@ -31,7 +31,6 @@ namespace hopsan {
     private:
         NodeSignal() : Node(DATALENGTH)
         {
-            mNodeType = "NodeSignal";
             setDataCharacteristics(VALUE, "Value", "-", Node::FLOW);
         }
     };
@@ -51,7 +50,6 @@ namespace hopsan {
     private:
         NodeHydraulic() : Node(DATALENGTH)
         {
-            mNodeType = "NodeHydraulic";
             setDataCharacteristics(FLOW, "Flow", "m^3/s", Node::FLOW);
             setDataCharacteristics(PRESSURE, "Pressure", "Pa", Node::INTENSITY);
             setDataCharacteristics(TEMPERATURE, "Temperature", "K", Node::INTENSITY, Node::NOPLOT);
@@ -88,7 +86,6 @@ namespace hopsan {
     private:
         NodeMechanic() : Node(DATALENGTH)
         {
-            mNodeType = "NodeMechanic";
             setDataCharacteristics(VELOCITY, "Velocity", "m/s", Node::INTENSITY);
             setDataCharacteristics(FORCE, "Force", "N", Node::FLOW);
             setDataCharacteristics(POSITION, "Position", "m", Node::INTENSITY);
@@ -124,7 +121,6 @@ namespace hopsan {
     private:
         NodeMechanicRotational() : Node(DATALENGTH)
         {
-            mNodeType = "NodeMechanicRotational";
             setDataCharacteristics(ANGULARVELOCITY, "Angular Velocity", "rad/s", Node::INTENSITY);
             setDataCharacteristics(TORQUE, "Torque", "Nm", Node::FLOW);
             setDataCharacteristics(ANGLE, "Angle", "rad", Node::INTENSITY);
@@ -142,7 +138,8 @@ namespace hopsan {
                 }
                 //! todo Maybe also write CHARIMP?
             }
-        }    };
+        }
+    };
 }
 
 #endif // NODES_H_INCLUDED
