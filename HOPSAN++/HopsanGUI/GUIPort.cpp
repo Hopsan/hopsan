@@ -237,6 +237,15 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         event->ignore();
     }
+    //Disables the user from plotting MULTIPORTS.
+    else if(getPortType() == QString("POWERMULTIPORT"))
+    {
+        QMenu menu;
+        QAction *action;
+        action = menu.addAction(QString("Cannot plot MultiPorts"));
+        action->setDisabled(true);
+        menu.exec(event->screenPos());
+    }
     else
     {
         openRightClickMenu(event->screenPos());
@@ -258,7 +267,6 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
     QAction *tempAction;
     for(int i=0; i<parameterNames.size(); ++i)
     {
-
         tempAction = menu.addAction(QString("Plot "+parameterNames[i]+" ["+parameterUnits[i]+"]"));
         parameterActions.append(tempAction);
     }

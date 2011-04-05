@@ -63,6 +63,10 @@ namespace hopsan {
 
         void initialize()
         {
+            std::stringstream ss;
+            ss << "StartValues: Flow: " << getStartValue(mpP1, NodeHydraulic::FLOW) << "  Pressure: " << getStartValue(mpP1, NodeHydraulic::PRESSURE);
+            addInfoMessage(ss.str());
+
             mNumPorts = mpP1->getNumPorts();
             vpN_p.resize(mNumPorts);
             vpN_q.resize(mNumPorts);
