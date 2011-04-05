@@ -2215,7 +2215,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     ConnectionAssistant connAssist;
     Component* pComp1 = pPort1->getComponent();
     Component* pComp2 = pPort2->getComponent();
-    bool sucess;
+    bool sucess=false;
 
     //First some error checking
     stringstream ss; //Message string stream
@@ -2282,7 +2282,11 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         }
 
         pBlankSysPort->mNodeType = pOtherPort->getNodeType(); //set the nodetype in the sysport
-        //! @todo We must be able to handle connecting multiports to blank systemports
+
+        //Check if we are connecting multiports, in that case add new subport, remember original portPointer though so that we can clean up if failure
+        Port *pOtherMultiPort=0;
+        connAssist.ifMultiportAddSubportAndSwapPtr(pOtherPort, pOtherMultiPort);
+
         if (!pOtherPort->isConnected())
         {
             sucess = connAssist.createNewNodeConnection(pBlankSysPort, pOtherPort, pResultingNode);
@@ -2291,6 +2295,9 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         {
             sucess = connAssist.mergeOrJoinNodeConnection(pBlankSysPort, pOtherPort, pResultingNode);
         }
+
+        //Handle multiport connection sucess or failure
+        connAssist.ifMultiportCleanupAfterConnect(pOtherPort, pOtherMultiPort, sucess);
     }
     //Non of the ports  are blank systemports
     else
@@ -2644,6 +2651,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     {
 
         //Check if non of the ports will become empty, multiports will allways return connected ports size == 0 wich is Ok in this case
+        //! @todo Will that allways be ture regarding multipors, what if we change it (comment above)
         if ( (pPort1->getConnectedPorts().size() > 1) && (pPort2->getConnectedPorts().size() > 1) )
         {
             disconnAssistant.unmergeOrUnjoinConnection(pPort1, pPort2);
@@ -2651,6 +2659,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         else if ( (pPort1->getConnectedPorts().size() > 1) || (pPort2->getConnectedPorts().size() > 1) )
         {
             //! @todo seems like we can merge this case with the one above
+            //! @todo what happens if we dissconnect a multiport from a port with multiple connections (can that even happen)
             disconnAssistant.unmergeOrUnjoinConnection(pPort1, pPort2);
         }
         //If both ports will become empty, or if one or both is a multiport
