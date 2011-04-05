@@ -144,10 +144,12 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addSeparator();
     mpToolBar->addWidget(mpGridButton);
     mpToolBar->addWidget(mpBackgroundColorButton);
+    mpToolBar->addWidget(mpResetXVectorButton);
+    mpToolBar->addSeparator();
     mpToolBar->addWidget(mpShowListsButton);
     mpToolBar->addWidget(mpShowCurvesButton);
     mpToolBar->addWidget(mpNewWindowFromTabButton);
-    mpToolBar->addWidget(mpResetXVectorButton);
+
 
     addToolBar(mpToolBar);
 
@@ -1090,11 +1092,6 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QMenu *yAxisRightMenu;
     QMenu *yAxisLeftMenu;
     QMenu *changeUnitsMenu;
-//    QMenu *insertMarkerMenu;
-//    QMenu *selectMarkerMenu;
-
-//    QMenu *changeUnitMenuRight;
-//    QMenu *removeCurveMenu;
 
     QAction *setRightAxisLogarithmic;
     QAction *setLeftAxisLogarithmic;
@@ -1104,6 +1101,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
     changeUnitsMenu = menu.addMenu(QString("Change Units"));
 
+    QMap<QAction *, PlotCurve *> actionToCurveMap;
     QMap<QString, double> unitMap;
     QList<PlotCurve *>::iterator itc;
     QMap<QString, double>::iterator itu;
@@ -1114,6 +1112,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         for(itu=unitMap.begin(); itu!=unitMap.end(); ++itu)
         {
             QAction *pTempAction = pTempMenu->addAction(itu.key());
+            actionToCurveMap.insert(pTempAction, (*itc));
         }
     }
 
@@ -1198,11 +1197,11 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-//        // Change unit on left axis
-//    if((selectedAction->parentWidget() == changeUnitMenuLeft) && (gConfig.getCustomUnits(physicalQuantityLeft).contains(selectedAction->text())))
-//    {
-//        //this->setUnit(QwtPlot::yLeft, physicalQuantityLeft, selectedAction->text());
-//    }
+        // Change unit on selected curve
+    if(selectedAction->parentWidget()->parentWidget() == changeUnitsMenu)
+    {
+        actionToCurveMap.find(selectedAction).value()->setDataUnit(selectedAction->text());
+    }
 
 
 //        // Change unit on right axis
@@ -1438,6 +1437,9 @@ void PlotCurve::setDataUnit(QString unit)
 {
     mDataUnit = unit;
     updateCurve();
+    mpParentPlotTab->updateLabels();
+    mpParentPlotTab->rescaleToCurves();
+    mpParentPlotTab->update();
 }
 
 
