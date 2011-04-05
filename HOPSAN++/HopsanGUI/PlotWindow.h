@@ -181,9 +181,11 @@ public:
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
+    void updateLabels();
 
 
     QVector<double> mVectorX;       //! @todo Should be private
+    QString mVectorXLabel;
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *event);

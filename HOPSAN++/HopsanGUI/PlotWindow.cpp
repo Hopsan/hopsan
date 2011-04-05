@@ -553,6 +553,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpParentPlotWindow = parent;
     this->setAcceptDrops(true);
     mHasSpecialXAxis=false;
+    mVectorXLabel = QString("Time [s]");
 
         //Initiate default values for left y-axis
     mCurrentUnitsLeft.insert("Value", gConfig.getDefaultUnit("Value"));
@@ -693,16 +694,7 @@ void PlotTab::addCurve(PlotCurve *curve)
     curve->setLineWidth(2);
     mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
 
-    if(!mpPlot->axisTitle(curve->getAxisY()).isEmpty())
-    {
-        mpPlot->setAxisTitle(curve->getAxisY(), QwtText(QString(mpPlot->axisTitle(curve->getAxisY()).text().append(", "))));
-    }
-    mpPlot->setAxisTitle(curve->getAxisY(), QwtText(QString(mpPlot->axisTitle(curve->getAxisY()).text().append(curve->getDataName().append(" [").append(curve->getDataUnit()).append("]")))));
-
-    if(mpPlot->axisTitle(QwtPlot::xBottom).isEmpty())
-    {
-        mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText("Time [s]"));
-    }
+    updateLabels();
 }
 
 
@@ -819,6 +811,7 @@ void PlotTab::removeCurve(PlotCurve *curve)
     mPlotCurvePtrs.removeAll(curve);
     delete(curve);
     rescaleToCurves();
+    updateLabels();
     mpPlot->replot();
 }
 
@@ -834,14 +827,44 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
         mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
     }
 
-    mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText(QString(dataName.append(" [").append(dataUnit).append("]"))));
-
     rescaleToCurves();
+    mVectorXLabel = QString(dataName + " [" + dataUnit + "]");
+    updateLabels();
     mpPlot->replot();
-
     mVectorX = xArray;
     mHasSpecialXAxis = true;
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
+}
+
+
+void PlotTab::updateLabels()
+{
+    mpPlot->setAxisTitle(QwtPlot::yLeft, QwtText());
+    mpPlot->setAxisTitle(QwtPlot::yRight, QwtText());
+
+    QStringList leftUnits, rightUnits;
+    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    {
+        QString newUnit = QString(mPlotCurvePtrs.at(i)->getDataName() + " [" + mPlotCurvePtrs.at(i)->getDataUnit() + "]");
+        if( !(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
+        {
+            if(!mpPlot->axisTitle(mPlotCurvePtrs.at(i)->getAxisY()).isEmpty())
+            {
+                mpPlot->setAxisTitle(mPlotCurvePtrs.at(i)->getAxisY(), QwtText(QString(mpPlot->axisTitle(mPlotCurvePtrs.at(i)->getAxisY()).text().append(", "))));
+            }
+            mpPlot->setAxisTitle(mPlotCurvePtrs.at(i)->getAxisY(), QwtText(QString(mpPlot->axisTitle(mPlotCurvePtrs.at(i)->getAxisY()).text().append(newUnit))));
+            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft)
+            {
+                leftUnits.append(newUnit);
+            }
+            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight)
+            {
+                rightUnits.append(newUnit);
+            }
+        }
+    }
+
+    mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText(mVectorXLabel));
 }
 
 
@@ -852,7 +875,8 @@ void PlotTab::resetXVector()
         mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mPlotCurvePtrs.at(i)->getTimeVector(), mPlotCurvePtrs.at(i)->getDataVector());
     }
 
-    mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText(QString("Time [S]")));
+    mVectorXLabel = QString("Time [s]");
+    updateLabels();
 
     mHasSpecialXAxis = false;
 
