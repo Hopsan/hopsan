@@ -671,7 +671,7 @@ PlotTab::~PlotTab()
 //! @param curve Pointer to the plot curve
 void PlotTab::addCurve(PlotCurve *curve)
 {
-    if(mVectorX.size() > 0)
+    if(mHasSpecialXAxis)
     {
         curve->getCurvePtr()->setData(mVectorX, curve->getDataVector());
     }
@@ -689,12 +689,11 @@ void PlotTab::addCurve(PlotCurve *curve)
     mUsedColors.append(mCurveColors.first());
     mpPlot->enableAxis(curve->getAxisY());
     rescaleToCurves();
+    updateLabels();
     mpPlot->replot();
     curve->setLineColor(mCurveColors.first());
     curve->setLineWidth(2);
     mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
-
-    updateLabels();
 }
 
 
