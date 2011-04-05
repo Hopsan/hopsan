@@ -3687,6 +3687,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         {
             mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         }
+        logAllNodes(mTime); //MOVED HERE BECAUSE C-COMP ARE SETTING START TIMES
 
         //Q components
         for (size_t q=0; q < mComponentQptrs.size(); ++q)
@@ -3694,7 +3695,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
             mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
         }
 
-        logAllNodes(mTime);
+//        logAllNodes(mTime);
 
         mTime += mTimestep;
     }
