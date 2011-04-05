@@ -12,6 +12,8 @@
 
 #include "../../ComponentEssentials.h"
 #include <vector>
+#include <strstream>
+#include <iostream>
 
 namespace hopsan {
 
@@ -61,14 +63,15 @@ namespace hopsan {
 
         void initialize()
         {
-            mZc = mBulkmodulus/mVolume*mTimestep/(1.0-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
-
             mNumPorts = mpP1->getNumPorts();
             vpN_p.resize(mNumPorts);
             vpN_q.resize(mNumPorts);
             vpN_c.resize(mNumPorts);
             vpN_Zc.resize(mNumPorts);
             vp_C0.resize(mNumPorts);
+
+            mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/(1.0-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
+
             for (size_t i=0; i<mNumPorts; ++i)
             {
                 vpN_p[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0, i);
@@ -82,17 +85,27 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double qTot = 0.0;
+            double cTot = 0.0;
+            double pAvg;
 
             //Get variable values from nodes
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                qTot += (*vpN_q[i]);
+                cTot += (*vpN_c[i]) + 2*mZc*(*vpN_q[i]);
             }
+            pAvg = cTot/mNumPorts;
+
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                vp_C0[i] = (*vpN_p[i]) + mZc*qTot;
+                vp_C0[i] = pAvg*2.0-(*vpN_p[i]) - 2.0*mZc*(*vpN_q[i]);
                 (*vpN_c[i]) = mAlpha*(*vpN_c[i]) + (1.0-mAlpha)*vp_C0[i];
+                (*vpN_Zc[i]) = mZc;
+//                if(mTime>1)
+//                {
+//                    std::stringstream ss;
+//                    ss << i << ": " << (*vpN_q[i]);
+//                    addInfoMessage(ss.str());
+//                }
             }
         }
 
