@@ -93,6 +93,7 @@ void PyDockWidget::runPyScript()
 
 void PyDockWidget::runPyScript(QString path)
 {
+    if(path.isEmpty()) return;
     PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
     QString command = QString("execfile('").append(path).append("')");
     mainContext.evalScript(command);
