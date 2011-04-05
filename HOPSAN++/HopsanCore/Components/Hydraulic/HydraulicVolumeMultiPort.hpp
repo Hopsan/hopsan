@@ -12,7 +12,7 @@
 
 #include "../../ComponentEssentials.h"
 #include <vector>
-#include <strstream>
+#include <sstream>
 #include <iostream>
 
 namespace hopsan {
@@ -30,8 +30,8 @@ namespace hopsan {
         double mVolume;
         double mBulkmodulus;
 
-        std::vector<double*> vpN_p, vpN_q, vpN_c, vpN_Zc;
-        std::vector<double> vp_C0;
+        std::vector<double*> mvpN_p, mvpN_q, mvpN_c, mvpN_Zc;
+        std::vector<double> mvp_C0;
         size_t mNumPorts;
         Port *mpP1;
 
@@ -63,60 +63,62 @@ namespace hopsan {
 
         void initialize()
         {
-            std::stringstream ss;
-            ss << "StartValues: Flow: " << getStartValue(mpP1, NodeHydraulic::FLOW) << "  Pressure: " << getStartValue(mpP1, NodeHydraulic::PRESSURE);
-            addInfoMessage(ss.str());
-
             mNumPorts = mpP1->getNumPorts();
-            vpN_p.resize(mNumPorts);
-            vpN_q.resize(mNumPorts);
-            vpN_c.resize(mNumPorts);
-            vpN_Zc.resize(mNumPorts);
-            vp_C0.resize(mNumPorts);
+            mvpN_p.resize(mNumPorts);
+            mvpN_q.resize(mNumPorts);
+            mvpN_c.resize(mNumPorts);
+            mvpN_Zc.resize(mNumPorts);
+            mvp_C0.resize(mNumPorts);
 
             mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/(1.0-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                vpN_p[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0, i);
-                vpN_q[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW, 0.0, i);
-                vpN_c[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE, 0.0, i);
-                vpN_Zc[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP, 0.0, i);
-                (*vpN_Zc[i]) = mZc;
+                mvpN_p[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0, i);
+                mvpN_q[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW, 0.0, i);
+                mvpN_c[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE, 0.0, i);
+                mvpN_Zc[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP, 0.0, i);
+
+                *mvpN_p[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
+                *mvpN_q[i] = getStartValue(mpP1, NodeHydraulic::FLOW)/mNumPorts;
+                *mvpN_c[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
+                *mvpN_Zc[i] = mZc;
+                std::stringstream ss;
+                ss << i << "::StartValues: Flow: " << *mvpN_q[i] << "  Pressure: " << *mvpN_p[i];
+                addInfoMessage(ss.str());
             }
         }
 
 
         void simulateOneTimestep()
         {
+            if(mTime<.002)
+            {
+                std::stringstream ss;
+                ss << "mTime: " << mTime << "  q:" << *mvpN_q[0];
+                addInfoMessage(ss.str());
+            }
             double cTot = 0.0;
             double pAvg;
 
-            //Get variable values from nodes
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                cTot += (*vpN_c[i]) + 2*mZc*(*vpN_q[i]);
+                cTot += (*mvpN_c[i]) + 2.0*mZc*(*mvpN_q[i]);
             }
             pAvg = cTot/mNumPorts;
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                vp_C0[i] = pAvg*2.0-(*vpN_p[i]) - 2.0*mZc*(*vpN_q[i]);
-                (*vpN_c[i]) = mAlpha*(*vpN_c[i]) + (1.0-mAlpha)*vp_C0[i];
-                (*vpN_Zc[i]) = mZc;
-//                if(mTime>1)
-//                {
-//                    std::stringstream ss;
-//                    ss << i << ": " << (*vpN_q[i]);
-//                    addInfoMessage(ss.str());
-//                }
+                mvp_C0[i] = pAvg*2.0-(*mvpN_c[i]) - 2.0*mZc*(*mvpN_q[i]);
+                (*mvpN_c[i]) = mAlpha*(*mvpN_c[i]) + (1.0-mAlpha)*mvp_C0[i];
+                (*mvpN_Zc[i]) = mZc;
             }
         }
 
 
         void finalize()
         {
-            addWarningMessage("This component does NOT behave as it should do, just for testing MultiPort up until now...");
+            addWarningMessage("This component almost works... Slightly small variations from HydraulicVolume");
         }
     };
 }
