@@ -1,5 +1,5 @@
 /*!
-\page hopsangui-dependence Hopsan GUI Dependence libraries
+\page devHopsanGuiRequirements Hopsan GUI Dependence libraries
 HopsanGUI depends on some external libraries. Here is a description on how to build and install them.
 
 \section hopsancore Build The Hopsan Core
@@ -7,7 +7,11 @@ todo
 
 \section qwt Build/Install Qwt - Qt Widgets for Technical Applications
 \subsection qwt-ubuntu Ubuntu
--# sudo aptitude install libqwt5-qt4-dev
+-# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
+ -# Unpack into the ExternalDependencies directory
+-# The default on Unix is to build only Release mode, if you want to change this, you can do that in qwtbuild.pri (if you want to debug into qwt)
+-# For some reason qwt will not build with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
+-# Build the qwt project WITHOUT shadowbuild (make sure you uncheck both for debug and release)
 
 \subsection qwt-windows Windows (minGW and VC++)
 -# First checkout the 5.2 stable branch from "https://qwt.svn.sourceforge.net/svnroot/qwt/branches/qwt-5.2".
