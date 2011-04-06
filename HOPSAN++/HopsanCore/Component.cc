@@ -1240,6 +1240,28 @@ bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
     return true;
 }
 
+//! @brief This function automatically determines the CQS type depending on the what has been connected to the systemports
+void ComponentSystem::determineCQSType()
+{
+    PortPtrMapT::iterator pit;
+    Port* pitr;
+
+    for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
+    {
+        //all ports should be system ports in a subsystem
+        assert((*pit).second->getPortType() == Port::SYSTEMPORT);
+
+//        if (pitr->)
+//        {
+
+
+
+//        }
+
+    }
+
+}
+
 
 ComponentSystem *Component::getSystemParent()
 {

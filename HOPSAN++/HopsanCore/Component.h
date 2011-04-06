@@ -257,6 +257,7 @@ namespace hopsan {
         void setTypeCQS(const std::string cqs_type, bool doOnlyLocalSet=false);
         void setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet=false);
         bool changeTypeCQS(const std::string name, const typeCQS newType);
+        void determineCQSType();
 
         //adding removing and renaming components
         void addComponents(std::vector<Component*> components);
@@ -341,7 +342,7 @@ namespace hopsan {
         std::vector<Component*> mComponentUndefinedptrs;
 
         std::vector<Node*> mSubNodePtrs;
-        NodeFactory mpNodeFactory;
+        //NodeFactory mpNodeFactory;
 
         bool mStop;
 
