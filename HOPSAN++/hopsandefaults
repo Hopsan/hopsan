@@ -46,6 +46,7 @@
                         QToolButton:hover:checked   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 lightgray, stop: 1 rgb(226,231,237)); }
                         QToolButton:unchecked		{ border: 2px none;		border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(226,231,237); }
                         QToolButton:hover:unchecked   	{ border: 2px; 			border-style: none;     border-radius: 5px;     padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
+                        QToolButton::menu-indicator     { image: none; }
 
                         QComboBox			{ border: 1px solid gray;	border-style: outset;	border-radius: 5px;	padding: 2px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white); }
                         QComboBox:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 1px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 beige, stop: 1 white); }

@@ -74,6 +74,7 @@ private:
     QPoint dragStartPosition;
 
     QToolBar *mpToolBar;
+    QMenu *mpSaveMenu;
     QToolButton *mpNewPlotButton;
     QToolButton *mpZoomButton;
     QToolButton *mpPanButton;
@@ -85,6 +86,7 @@ private:
     QToolButton *mpBackgroundColorButton;
     QToolButton *mpNewWindowFromTabButton;
     QToolButton *mpResetXVectorButton;
+    QAction *mpExportToMatlabAction;
 
     PlotTabWidget *mpPlotTabs;
     QLabel *mpComponentsLabel;
@@ -201,6 +203,7 @@ public slots:
     void enableGrid(bool value);
     void setBackgroundColor();
     void resetXVector();
+    void exportToMatlab();
 
 private:
     QwtPlot *mpPlot;
