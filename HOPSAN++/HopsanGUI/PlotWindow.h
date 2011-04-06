@@ -60,10 +60,7 @@ public slots:
     void updateVariableList();
     void addPlotCurveFromBoxes();
     void importGNUPLOT();
-    void exportSVG();
-    void exportGNUPLOT();
     void saveToXml();
-    bool saveToHmpf(QString fileName);
     void close();
     void updatePalette();
     void createPlotWindowFromTab();
@@ -80,13 +77,13 @@ private:
     QToolButton *mpPanButton;
     QToolButton *mpSaveButton;
     QToolButton *mpSVGButton;
-    QToolButton *mpExportGNUPLOTButton;
-    QToolButton *mpImportGNUPLOTButton;
+    QToolButton *mpImportButton;
     QToolButton *mpGridButton;
     QToolButton *mpBackgroundColorButton;
     QToolButton *mpNewWindowFromTabButton;
     QToolButton *mpResetXVectorButton;
     QAction *mpExportToMatlabAction;
+    QAction *mpExportToGnuplotAction;
 
     PlotTabWidget *mpPlotTabs;
     QLabel *mpComponentsLabel;
@@ -204,6 +201,7 @@ public slots:
     void setBackgroundColor();
     void resetXVector();
     void exportToMatlab();
+    void exportToGnuplot();
 
 private:
     QwtPlot *mpPlot;
