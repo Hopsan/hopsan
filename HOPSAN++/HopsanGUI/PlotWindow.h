@@ -71,19 +71,23 @@ private:
     QPoint dragStartPosition;
 
     QToolBar *mpToolBar;
-    QMenu *mpSaveMenu;
+
     QToolButton *mpNewPlotButton;
     QToolButton *mpZoomButton;
     QToolButton *mpPanButton;
-    QToolButton *mpSaveButton;
-    QToolButton *mpSVGButton;
+    QToolButton *mpExportButton;
+    QToolButton *mpExportGfxButton;
     QToolButton *mpImportButton;
     QToolButton *mpGridButton;
     QToolButton *mpBackgroundColorButton;
     QToolButton *mpNewWindowFromTabButton;
     QToolButton *mpResetXVectorButton;
+    QMenu *mpExportMenu;
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
+    QMenu *mpExportGfxMenu;
+    QAction *mpExportPdfAction;
+    QAction *mpExportPngAction;
 
     PlotTabWidget *mpPlotTabs;
     QLabel *mpComponentsLabel;
@@ -202,6 +206,8 @@ public slots:
     void resetXVector();
     void exportToMatlab();
     void exportToGnuplot();
+    void exportToPdf();
+    void exportToPng();
 
 private:
     QwtPlot *mpPlot;

@@ -34,7 +34,8 @@
 #include "qwt_scale_engine.h"
 #include "qwt_symbol.h"
 #include "qwt_text_label.h"
-#include "qwt_double_rect.h"
+#include "qwt_plot_renderer.h"
+//#include "qwt_double_rect.h"
 
 
 //! @brief Constructor for the plot window, where plots are displayed.
@@ -80,21 +81,30 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpExportToMatlabAction = new QAction("Export to Matlab", mpToolBar);
     mpExportToGnuplotAction = new QAction("Export to gnuplot", mpToolBar);
 
-    mpSaveMenu = new QMenu(mpToolBar);
-    mpSaveMenu->addAction(mpExportToMatlabAction);
-    mpSaveMenu->addAction(mpExportToGnuplotAction);
+    mpExportMenu = new QMenu(mpToolBar);
+    mpExportMenu->addAction(mpExportToMatlabAction);
+    mpExportMenu->addAction(mpExportToGnuplotAction);
 
-    mpSaveButton = new QToolButton(mpToolBar);
-    mpSaveButton->setToolTip("Export Plot");
-    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
-    mpSaveButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpSaveButton->setMenu(mpSaveMenu);
-    mpSaveButton->setPopupMode(QToolButton::InstantPopup);
+    mpExportButton = new QToolButton(mpToolBar);
+    mpExportButton->setToolTip("Export Plot");
+    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    mpExportButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpExportButton->setMenu(mpExportMenu);
+    mpExportButton->setPopupMode(QToolButton::InstantPopup);
 
-    mpSVGButton = new QToolButton(mpToolBar);
-    mpSVGButton->setToolTip("Export to SVG");
-    mpSVGButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToSvg.png"));
-    mpSVGButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpExportPdfAction = new QAction("Export to PDF", mpToolBar);
+    mpExportPngAction = new QAction("Export to PNG", mpToolBar);
+
+    mpExportGfxMenu = new QMenu(mpToolBar);
+    mpExportGfxMenu->addAction(mpExportPdfAction);
+    mpExportGfxMenu->addAction(mpExportPngAction);
+
+    mpExportGfxButton = new QToolButton(mpToolBar);
+    mpExportGfxButton->setToolTip("Export to Graphics File");
+    mpExportGfxButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
+    mpExportGfxButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpExportGfxButton->setMenu(mpExportGfxMenu);
+    mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
 
     mpImportButton = new QToolButton(mpToolBar);
     mpImportButton->setToolTip("Import Plot");
@@ -141,12 +151,12 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpResetXVectorButton->setEnabled(false);
 
     mpToolBar->addWidget(mpNewPlotButton);
+    mpToolBar->addWidget(mpImportButton);
+    mpToolBar->addWidget(mpExportButton);
+    mpToolBar->addWidget(mpExportGfxButton);
+    mpToolBar->addSeparator();
     mpToolBar->addWidget(mpZoomButton);
     mpToolBar->addWidget(mpPanButton);
-    mpToolBar->addWidget(mpSaveButton);
-    mpToolBar->addWidget(mpSVGButton);
-    mpToolBar->addWidget(mpImportButton);
-    mpToolBar->addSeparator();
     mpToolBar->addWidget(mpGridButton);
     mpToolBar->addWidget(mpBackgroundColorButton);
     mpToolBar->addWidget(mpResetXVectorButton);
@@ -209,7 +219,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
         //Establish signal and slots connections
     connect(mpNewPlotButton,                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
-    connect(mpSaveButton,                   SIGNAL(clicked()),                                              this,               SLOT(saveToXml()));
+    connect(mpExportButton,                   SIGNAL(clicked()),                                              this,               SLOT(saveToXml()));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
@@ -332,7 +342,7 @@ void PlotWindow::createPlotWindowFromTab()
 {
     PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
     pPlotWindow->show();
-    for(size_t i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
+    for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
         pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
@@ -509,6 +519,8 @@ void PlotTabWidget::tabChanged()
         disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(clicked()),      getTab(i),  SLOT(resetXVector()));
         disconnect(mpParentPlotWindow->mpExportToMatlabAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToMatlab()));
         disconnect(mpParentPlotWindow->mpExportToGnuplotAction,     SIGNAL(triggered()),    getTab(i),  SLOT(exportToGnuplot()));
+        disconnect(mpParentPlotWindow->mpExportPdfAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPdf()));
+        disconnect(mpParentPlotWindow->mpExportPngAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPng()));
     }
 
     if(this->count() != 0)
@@ -525,6 +537,8 @@ void PlotTabWidget::tabChanged()
         connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(clicked()),      getCurrentTab(),    SLOT(resetXVector()));
         connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
         connect(mpParentPlotWindow->mpExportToGnuplotAction,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGnuplot()));
+        connect(mpParentPlotWindow->mpExportPdfAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPdf()));
+        connect(mpParentPlotWindow->mpExportPngAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPng()));
     }
 }
 
@@ -576,19 +590,19 @@ PlotTab::PlotTab(PlotWindow *parent)
         //Rubber Band Zoom
     mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpPlot->canvas());      //Zoomer for left y axis
     mpZoomer->setMaxStackDepth(10000);
-    mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
+    //mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
     mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
     mpZoomer->setRubberBandPen(QColor(Qt::green));
     mpZoomer->setTrackerMode(QwtPicker::ActiveOnly);
     mpZoomer->setTrackerPen(QColor(Qt::white));
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-    mpZoomer->setZoomBase(QwtDoubleRect());
+    mpZoomer->setZoomBase(QRectF());
     mpZoomer->setEnabled(false);
 
     mpZoomerRight = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot->canvas());   //Zoomer for right y axis
     mpZoomerRight->setMaxStackDepth(10000);
-    mpZoomerRight->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
+    //mpZoomerRight->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
     mpZoomerRight->setRubberBandPen(QColor(Qt::green));
     mpZoomerRight->setTrackerMode(QwtPicker::ActiveOnly);
     mpZoomerRight->setTrackerPen(QColor(Qt::white));
@@ -625,7 +639,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     tempLegend->setAutoFillBackground(false);
 
     QList<QWidget *> tempList = tempLegend->findChildren<QWidget *>();
-    for(size_t i=0; i<tempList.size(); ++i)
+    for(int i=0; i<tempList.size(); ++i)
     {
         tempList.at(i)->setAutoFillBackground(false);
     }
@@ -657,7 +671,7 @@ void PlotTab::addCurve(PlotCurve *curve)
 {
     if(mHasSpecialXAxis)
     {
-        curve->getCurvePtr()->setData(mVectorX, curve->getDataVector());
+        curve->getCurvePtr()->setSamples(mVectorX, curve->getDataVector());
     }
 
     mPlotCurvePtrs.append(curve);
@@ -701,7 +715,7 @@ void PlotTab::rescaleToCurves()
         xMin=mPlotCurvePtrs.first()->getCurvePtr()->minXValue();
         xMax=mPlotCurvePtrs.first()->getCurvePtr()->maxXValue();
 
-        for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+        for(int i=0; i<mPlotCurvePtrs.size(); ++i)
         {
             if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft)
             {
@@ -763,14 +777,14 @@ void PlotTab::rescaleToCurves()
     mpPlot->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
     mpPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
 
-    QwtDoubleRect tempDoubleRect;
+    QRectF tempDoubleRect;
     tempDoubleRect.setX(xMin);
     tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
     tempDoubleRect.setWidth(xMax-xMin);
     tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
     mpZoomer->setZoomBase(tempDoubleRect);
 
-    QwtDoubleRect tempDoubleRect2;
+    QRectF tempDoubleRect2;
     tempDoubleRect2.setX(xMin);
     tempDoubleRect2.setY(yMinRight-0.05*heightRight);
     tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
@@ -781,7 +795,7 @@ void PlotTab::rescaleToCurves()
 
 void PlotTab::removeCurve(PlotCurve *curve)
 {
-    for(size_t i=0; i<mUsedColors.size(); ++i)
+    for(int i=0; i<mUsedColors.size(); ++i)
     {
         if(curve->getCurvePtr()->pen().color() == mUsedColors.at(i))
         {
@@ -805,9 +819,9 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
 {
     mVectorX = xArray;
 
-    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
-        mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
+        mPlotCurvePtrs.at(i)->getCurvePtr()->setSamples(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
     }
 
     rescaleToCurves();
@@ -826,7 +840,7 @@ void PlotTab::updateLabels()
     mpPlot->setAxisTitle(QwtPlot::yRight, QwtText());
 
     QStringList leftUnits, rightUnits;
-    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
         QString newUnit = QString(mPlotCurvePtrs.at(i)->getDataName() + " [" + mPlotCurvePtrs.at(i)->getDataUnit() + "]");
         if( !(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
@@ -853,9 +867,9 @@ void PlotTab::updateLabels()
 
 void PlotTab::resetXVector()
 {
-    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
-        mPlotCurvePtrs.at(i)->getCurvePtr()->setData(mPlotCurvePtrs.at(i)->getTimeVector(), mPlotCurvePtrs.at(i)->getDataVector());
+        mPlotCurvePtrs.at(i)->getCurvePtr()->setSamples(mPlotCurvePtrs.at(i)->getTimeVector(), mPlotCurvePtrs.at(i)->getDataVector());
     }
 
     mVectorXLabel = QString("Time [s]");
@@ -897,17 +911,17 @@ void PlotTab::exportToMatlab()
 
         //Write time vector (assume same vector for all curves)
     fileStream << "time=[";
-    for(size_t i=0; i<mPlotCurvePtrs.first()->getTimeVector().size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.first()->getTimeVector().size(); ++i)
     {
         fileStream << mPlotCurvePtrs.first()->getTimeVector()[i] << ",";
     }
     fileStream << "]\n";
 
         //Write data vectors
-    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
         fileStream << "y" << i << "=[";
-        for(size_t j=0; j<mPlotCurvePtrs[i]->getDataVector().size(); ++j)
+        for(int j=0; j<mPlotCurvePtrs[i]->getDataVector().size(); ++j)
         {
             fileStream << mPlotCurvePtrs[i]->getDataVector()[j] << ",";
         }
@@ -918,7 +932,7 @@ void PlotTab::exportToMatlab()
     QStringList matlabColors;
     matlabColors << "r" << "g" << "b" << "c" << "m" << "y";
     fileStream << "hold on\n";
-    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
         fileStream << "plot(time,y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[i]->getCurvePtr()->pen().width() << ")\n";
     }
@@ -953,7 +967,7 @@ void PlotTab::exportToGnuplot()
         //Write initial comment
     fileStream << "# gnuplot File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
     fileStream << "# T";
-    for(size_t i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
         fileStream << "                  Y" << i;
     }
@@ -961,17 +975,17 @@ void PlotTab::exportToGnuplot()
 
         //Write time and data vectors
     QString dummy;
-    for(size_t i=0; i<mPlotCurvePtrs.first()->getTimeVector().size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs.first()->getTimeVector().size(); ++i)
     {
         dummy.setNum(mPlotCurvePtrs.first()->getTimeVector()[i]);
         fileStream << dummy;
-        for(size_t j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
+        for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
 
-        for(size_t k=0; k<mPlotCurvePtrs.size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs.size(); ++k)
         {
             dummy.setNum(mPlotCurvePtrs[k]->getDataVector()[i]);
             fileStream << dummy;
-            for(size_t j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
+            for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
         }
         fileStream << "\n";
     }
@@ -979,6 +993,41 @@ void PlotTab::exportToGnuplot()
     file.close();
 }
 
+
+    //! @brief Slot that exports current plot tab to .pdf
+void PlotTab::exportToPdf()
+{
+     QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", QString(), "Portable Document Format (*.pdf)");
+    if ( !fileName.isEmpty() )
+    {
+        QwtPlotRenderer renderer;
+
+        QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+        printer->setPaperSize(QPrinter::A4);
+        printer->setOrientation(QPrinter::Landscape);
+        printer->setFullPage(false);
+        printer->setOutputFormat(QPrinter::PdfFormat);
+        printer->setOutputFileName(fileName);
+        renderer.renderTo(mpPlot,*printer);
+    }
+}
+
+
+void PlotTab::exportToPng()
+{
+    QString fileName = QFileDialog::getSaveFileName(
+       this, "Export File Name", QString(),
+       "Portable Network Graphics (*.png)");
+
+    //QPicture picture;
+
+    QPixmap pixmap(1024, 768);      //! @todo Resolution should not be hard coded like this
+    pixmap.fill();
+    QwtPlotRenderer renderer;
+    renderer.renderTo(mpPlot, pixmap);
+
+    pixmap.save( fileName );
+}
 
 
 void PlotTab::enableZoom(bool value)
@@ -1419,7 +1468,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
     updateCurve();
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-    mpCurve->setAxis(QwtPlot::xBottom, axisY);
+    mpCurve->setYAxis(axisY);
     mpCurve->attach(parent->getPlot());
 
     mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
@@ -1738,7 +1787,7 @@ void PlotCurve::updateCurve()
     QVector<double> tempY;
     if(mpParentPlotTab->mHasSpecialXAxis)
     {
-        for(size_t i=0; i<mTimeVector.size(); ++i)
+        for(int i=0; i<mTimeVector.size(); ++i)
         {
             tempX.append(mpParentPlotTab->mVectorX[i]*mScaleX + mOffsetX);
             tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);
@@ -1746,13 +1795,13 @@ void PlotCurve::updateCurve()
     }
     else
     {
-        for(size_t i=0; i<mTimeVector.size(); ++i)
+        for(int i=0; i<mTimeVector.size(); ++i)
         {
             tempX.append(mTimeVector[i]*mScaleX + mOffsetX);
             tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);
         }
     }
-    mpCurve->setData(tempX, tempY);
+    mpCurve->setSamples(tempX, tempY);
 }
 
 

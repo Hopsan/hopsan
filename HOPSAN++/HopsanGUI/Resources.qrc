@@ -41,7 +41,6 @@
         <file>graphics/uiicons/Hopsan-SaveAs.png</file>
         <file>graphics/uiicons/Hopsan-SaveToGnuPlot.png</file>
         <file>graphics/uiicons/Hopsan-SaveToPDF.png</file>
-        <file>graphics/uiicons/Hopsan-SaveToSvg.png</file>
         <file>graphics/uiicons/Hopsan-ShowDebugMessages.png</file>
         <file>graphics/uiicons/Hopsan-ShowErrorMessages.png</file>
         <file>graphics/uiicons/Hopsan-ShowInfoMessages.png</file>
@@ -79,5 +78,6 @@
         <file>graphics/style-arrow-up.png</file>
         <file>graphics/uiicons/Hopsan-ShowPlotWindowCurves.png</file>
         <file>graphics/uiicons/Hopsan-ShowPlotWindowLists.png</file>
+        <file>graphics/uiicons/Hopsan-ExportGfx.png</file>
     </qresource>
 </RCC>

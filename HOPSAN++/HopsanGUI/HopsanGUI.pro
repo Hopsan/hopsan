@@ -49,18 +49,17 @@ win32 {
     #DEFINES += STATICCORE
 
     #Set QWT paths, Paths that are earlier in the list will be used if found
-    QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-5.2-svn
+    QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0
     QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
 
-    INCLUDEPATH += $${QWT_PATH}/include
     INCLUDEPATH += $${QWT_PATH}/src #Need to include this one also couse qwt is strange
     LIBS += -L$${QWT_PATH}/lib
 
     CONFIG(debug, debug|release) {
-        LIBS += -lqwtd5
+        LIBS += -lqwtd
     }
     CONFIG(release, debug|release) {
-        LIBS += -lqwt5
+        LIBS += -lqwt
     }
 
     #Set Python paths
