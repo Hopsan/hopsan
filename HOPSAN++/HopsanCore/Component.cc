@@ -1241,25 +1241,64 @@ bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
 }
 
 //! @brief This function automatically determines the CQS type depending on the what has been connected to the systemports
+//! @todo This function will go through all conected ports every time it is run, maybe a quicker version would only be run on the port beeing connected or disconnectd, in the connect and disconnect function
 void ComponentSystem::determineCQSType()
 {
-    PortPtrMapT::iterator pit;
-    Port* pitr;
+    PortPtrMapT::iterator ppmit;
 
-    for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
+    size_t c_ctr=0;
+    size_t q_ctr=0;
+    size_t s_ctr=0;
+
+    for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
     {
         //all ports should be system ports in a subsystem
-        assert((*pit).second->getPortType() == Port::SYSTEMPORT);
+        assert((*ppmit).second->getPortType() == Port::SYSTEMPORT);
 
-//        if (pitr->)
-//        {
+        //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
+        //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if wedont want ot in some other place
+        vector<Port*> connectedPorts = (*ppmit).second->getConnectedPorts(-1); //Make a copy of connected ports
+        vector<Port*>::iterator cpit;
+        for (cpit=connectedPorts.begin(); cpit!=connectedPorts.end(); ++cpit)
+        {
 
-
-
-//        }
-
+            if ( (*cpit)->getComponent()->getSystemParent() == this )
+            {
+                switch ((*cpit)->getComponent()->getTypeCQS())
+                {
+                case C :
+                    ++c_ctr;
+                    break;
+                case Q :
+                    ++q_ctr;
+                    break;
+                case S :
+                    ++s_ctr;
+                    break;
+                default :
+                    assert("This should not happen" == 0);
+                }
+            }
+        }
     }
 
+    //Ok now lets determine i we have a valid CQS type or not
+    if ( (c_ctr > 0) && (q_ctr == 0) )
+    {
+        this->setTypeCQS(C);
+    }
+    else if ( (q_ctr > 0) && (c_ctr == 0) )
+    {
+        this->setTypeCQS(Q);
+    }
+    else if ( (s_ctr > 0) && (c_ctr==0) && (q_ctr==0) )
+    {
+        this->setTypeCQS(S);
+    }
+    else
+    {
+        this->setTypeCQS(NOCQSTYPE);
+    }
 }
 
 
@@ -2349,6 +2388,9 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
+    //Update the CQS type
+    this->determineCQSType();
+
     //Update the node placement
     connAssist.determineWhereToStoreNodeAndStoreIt(pResultingNode);
 
@@ -2707,6 +2749,9 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     {
         gCoreMessageHandler.addWarningMessage("In disconnect: At least one of the ports do not seem to be connected, (does nothing)");
     }
+
+    //Update the CQS type
+    this->determineCQSType();
 
     ss << "Disconnected: {"<< pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} and {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
     cout << ss.str() << endl;

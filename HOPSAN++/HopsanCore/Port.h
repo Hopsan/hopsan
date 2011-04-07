@@ -77,7 +77,6 @@ namespace hopsan {
 
 
     protected:
-
         PORTTYPE mPortType;
         NodeTypeT mNodeType;
 
@@ -86,23 +85,26 @@ namespace hopsan {
 
         Port* mpParentPort;
 
+        std::vector<Port*> mConnectedPorts;
+
         void setNode(Node* pNode, const size_t portIdx=0);
         virtual Node *getNodePtr(const size_t portIdx=0);
 
         virtual Port* addSubPort();
         virtual void removeSubPort(Port* ptr);
 
+        void addConnectedPort(Port* pPort, const size_t portIdx=0);
+        void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
+        virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 
     private:
         std::string mPortName;
         Node* mpNode;
-        std::vector<Port*> mConnectedPorts;
+
         bool mConnectionRequired;
         bool mIsConnected;
 
-        void addConnectedPort(Port* pPort, const size_t portIdx=0);
-        void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
-        std::vector<Port*> &getConnectedPorts(const size_t portIdx=0);
+
     };
 
 
@@ -161,6 +163,9 @@ namespace hopsan {
 
         void removeSubPort(Port* ptr);
         Node *getNodePtr(const size_t portIdx=0);
+
+        std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
+        std::vector<Port*> mAllConnectedPorts;
     };
 
 

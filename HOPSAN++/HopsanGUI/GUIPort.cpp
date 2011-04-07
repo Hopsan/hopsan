@@ -381,6 +381,7 @@ void GUIPort::refreshPortGraphics()
             delete mvPortGraphicsOverlayPtrs.at(i);
         }
     }
+    mvPortGraphicsOverlayPtrs.clear(); //Delete all empty storage locations, will append bellow
 
     if (!this->mpPortAppearance->mIconOverlayPaths.isEmpty())
     {
