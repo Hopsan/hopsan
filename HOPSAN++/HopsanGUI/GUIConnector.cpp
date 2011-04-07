@@ -9,6 +9,7 @@
 
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
+#include <iostream>
 
 #include "MainWindow.h"
 #include "GUIPort.h"
@@ -1035,7 +1036,7 @@ void GUIConnector::determineAppearance()
     }
 
     //Add arrow to the connector if it is of signal type
-    if(mpEndPort->getPortType() == "READPORT" && mpEndPort->getNodeType() == "NodeSignal")
+    if((mpEndPort->getPortType() == "READPORT") || (mpEndPort->getPortType() == "READMULTIPORT") && mpEndPort->getNodeType() == "NodeSignal")
     {
         this->getLastLine()->addEndArrow();
     }

@@ -486,7 +486,7 @@ string Port::getPortTypeString()
         return "POWERMULTIPORT";
         break;
     case READMULTIPORT:
-        return "POWERMULTIPORT";
+        return "READMULTIPORT";
         break;
     default :
         return "UNDEFINEDPORT";
