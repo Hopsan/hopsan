@@ -9,6 +9,7 @@
 
 #include <QtGui>
 #include <QSvgRenderer>
+#include <iostream>
 
 #include "common.h"
 #include "GUIPort.h"
@@ -72,7 +73,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->setAcceptHoverEvents(true);
 
     //Setup port label and overlay (if it exists)
-    this->addPortGraphicsOverlay(pPortAppearance->mIconOverlayPath);
+    this->addPortGraphicsOverlay(pPortAppearance->mIconOverlayPaths);
     this->setRotation(mpPortAppearance->rot);
     this->refreshPortOverlayPosition();
 
@@ -285,18 +286,17 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
 
 
 
-void GUIPort::addPortGraphicsOverlay(QString filepath)
+void GUIPort::addPortGraphicsOverlay(QStringList filepaths)
 {
     //Setup port graphics overlay
-    if (!filepath.isEmpty())
+    if (!filepaths.isEmpty())
     {
         //! @todo check if file exist
-        mpPortGraphicsOverlay = new QGraphicsSvgItem(filepath, this);
-        mpPortGraphicsOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-    }
-    else
-    {
-        mpPortGraphicsOverlay = 0;
+        for(size_t i = 0; i < filepaths.size(); ++i)
+        {
+            mvPortGraphicsOverlayPtrs.append(new QGraphicsSvgItem(filepaths.at(i), this));
+            mvPortGraphicsOverlayPtrs.back()->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+        }
     }
 
     //Setup port label (ports allways have lables)
@@ -329,18 +329,21 @@ void GUIPort::refreshPortOverlayPosition()
     this->mpPortLabel->setPos(pt3-pt2+QPoint(10, 10)); //! @todo This is little messy, GUIPort::magnify fucks the pos for the label a bit
 
     //Refresh the port overlay graphics
-    if (this->mpPortGraphicsOverlay != 0)
+    if (!mvPortGraphicsOverlayPtrs.isEmpty())
     {
-        transf.reset();
-
-        pt1 = this->mpPortGraphicsOverlay->boundingRect().center();
-        transf.rotate(-(this->mpPortGraphicsOverlay->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
-        if (this->mpParentGuiModelObject->isFlipped())
+        for(size_t i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
         {
-            transf.scale(-1.0,1.0);
+            transf.reset();
+
+            pt1 = this->mvPortGraphicsOverlayPtrs.at(i)->boundingRect().center();
+            transf.rotate(-(this->mvPortGraphicsOverlayPtrs.at(i)->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
+            if (this->mpParentGuiModelObject->isFlipped())
+            {
+                transf.scale(-1.0,1.0);
+            }
+            pt2 =  transf * pt1;
+            this->mvPortGraphicsOverlayPtrs.at(i)->setPos(pt3-pt2);
         }
-        pt2 =  transf * pt1;
-        this->mpPortGraphicsOverlay->setPos(pt3-pt2);
     }
 }
 
@@ -371,20 +374,22 @@ void GUIPort::refreshPortGraphics()
 
     //! @todo instead of delete we should use swap graphics trick like above, but we need to fix the scale problem first
     //Setup port graphics overlay
-    if (mpPortGraphicsOverlay!=0)
+    if (!mvPortGraphicsOverlayPtrs.isEmpty())
     {
-        delete mpPortGraphicsOverlay;
+        for(size_t i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
+        {
+            delete mvPortGraphicsOverlayPtrs.at(i);
+        }
     }
 
-    if (!this->mpPortAppearance->mIconOverlayPath.isEmpty())
+    if (!this->mpPortAppearance->mIconOverlayPaths.isEmpty())
     {
-        //! @todo check if file exist
-        mpPortGraphicsOverlay = new QGraphicsSvgItem(this->mpPortAppearance->mIconOverlayPath, this);
-        mpPortGraphicsOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-    }
-    else
-    {
-        mpPortGraphicsOverlay = 0;
+        for(size_t i = 0; i < mpPortAppearance->mIconOverlayPaths.size(); ++i)
+        {
+            //! @todo check if file exist
+            mvPortGraphicsOverlayPtrs.append(new QGraphicsSvgItem(this->mpPortAppearance->mIconOverlayPaths.at(i), this));
+            mvPortGraphicsOverlayPtrs.back()->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+        }
     }
 }
 
@@ -405,9 +410,12 @@ void GUIPort::setPortOverlayScale(qreal scale)
         overlayExtraScaleFactor = 1.0;
     }
 
-    if (this->mpPortGraphicsOverlay != 0)
+    if (!mvPortGraphicsOverlayPtrs.isEmpty())
     {
-        this->mpPortGraphicsOverlay->setScale(mOverlaySetScale * overlayExtraScaleFactor);
+        for(size_t i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
+        {
+            mvPortGraphicsOverlayPtrs.at(i)->setScale(mOverlaySetScale * overlayExtraScaleFactor);
+        }
     }
 }
 

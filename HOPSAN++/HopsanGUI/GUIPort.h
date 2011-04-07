@@ -82,7 +82,7 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void addPortGraphicsOverlay(QString filepath);
+    void addPortGraphicsOverlay(QStringList filepaths);
     void openRightClickMenu(QPoint screenPos);
 
 protected slots:
@@ -102,7 +102,7 @@ private:
     GUIPortAppearance *mpPortAppearance;
     QString mName;
     QGraphicsTextItem *mpPortLabel;
-    QGraphicsSvgItem* mpPortGraphicsOverlay;
+    QVector<QGraphicsSvgItem*> mvPortGraphicsOverlayPtrs;
 };
 
 

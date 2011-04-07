@@ -10,13 +10,14 @@
 #include "MainWindow.h"
 #include "GUIPortAppearance.h"
 #include "common.h"
+#include <iostream>
 
 //! @brief Contains hardcoded appearance for different hopsancore ports
 //! @todo maybe this should be placed in som more generic external .txt file in som way
 void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
 {
     mIconPath.clear();
-    mIconOverlayPath.clear();
+    mIconOverlayPaths.clear();
 
     mIconPath = QString(PORTICONPATH);
     if (nodetype == "NodeSignal")
@@ -51,20 +52,20 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
             mIconPath.append("SystemPort");
         }
 
-        //Select overlay icon depending on cqs type
-        mIconOverlayPath = QString(PORTICONPATH);
+        //Select overlay icon depending on cqs type and multiport
         //! @todo maybe should be able to select bassed on other things than cqs type
+        mIconOverlayPaths.clear();
         if (CQSType == "C")
         {
-            mIconOverlayPath.append("PortOverlayC.svg");
+            mIconOverlayPaths.append(QString(PORTICONPATH) + "PortOverlayC.svg");
         }
         else if (CQSType == "Q")
         {
-            mIconOverlayPath.append("PortOverlayQ.svg");
+            mIconOverlayPaths.append(QString(PORTICONPATH) + "PortOverlayQ.svg");
         }
-        else
+        if (porttype == "POWERMULTIPORT")
         {
-            mIconOverlayPath.clear();
+            mIconOverlayPaths.append(QString(PORTICONPATH) + "MultiPortOverlay.svg");
         }
     }
     mIconPath.append(".svg");

@@ -22,7 +22,7 @@ public:
     qreal y;
     qreal rot;
     QString mIconPath;
-    QString mIconOverlayPath;
+    QStringList mIconOverlayPaths;
 };
 
 typedef QHash<QString, GUIPortAppearance> PortAppearanceMapT;

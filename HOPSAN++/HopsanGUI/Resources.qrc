@@ -4,16 +4,10 @@
         <file>graphics/flumeslith.png</file>
         <file>graphics/splash.png</file>
         <file>graphics/porticons/HydraulicPort.svg</file>
-        <file>graphics/porticons/HydraulicPortC.svg</file>
-        <file>graphics/porticons/HydraulicPortQ.svg</file>
         <file>graphics/porticons/MechanicPort.svg</file>
-        <file>graphics/porticons/MechanicPortC.svg</file>
-        <file>graphics/porticons/MechanicPortQ.svg</file>
         <file>graphics/porticons/PortOverlayC.svg</file>
         <file>graphics/porticons/PortOverlayQ.svg</file>
         <file>graphics/porticons/RotationalMechanicPort.svg</file>
-        <file>graphics/porticons/RotationalMechanicPortC.svg</file>
-        <file>graphics/porticons/RotationalMechanicPortQ.svg</file>
         <file>graphics/porticons/SignalPort_read.svg</file>
         <file>graphics/porticons/SignalPort_write.svg</file>
         <file>graphics/porticons/SystemPort.svg</file>
