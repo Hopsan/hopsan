@@ -13,6 +13,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QCheckBox>
+#include <QListWidget>
 
 class MainWindow;
 
@@ -31,6 +32,7 @@ private slots:
     void createNewModel();
     void loadExistingModel();
     void loadLastSession();
+    void openRecentModel();
 
 private:
     void updateGraphics();
@@ -49,6 +51,9 @@ private:
     QIcon *mpNewActiveIcon;
     QIcon *mpOpenActiveIcon;
     QIcon *mpLastSessionActiveIcon;
+
+    QListWidget *mpRecentList;
+    QStringList mModelList;
 
     QCheckBox *mpDontShowMe;
 };

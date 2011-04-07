@@ -91,15 +91,31 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpActionText->setFont(tempFont);
     mpActionText->setAlignment(Qt::AlignCenter);
 
+    mpRecentList = new QListWidget(this);
+    mpRecentList->setVisible(!gConfig.getRecentModels().empty());
+
+    for(int i=0; i<gConfig.getRecentModels().size(); ++i)
+    {
+        if(!gConfig.getRecentModels().at(i).isEmpty())
+        {
+            mModelList.append(gConfig.getRecentModels().at(i));
+            QString displayName = gConfig.getRecentModels().at(i);
+            mpRecentList->addItem(displayName.section('/', -1));
+        }
+    }
+    mpRecentList->setFixedHeight(4+16*mpRecentList->count());
+    connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
+
     mpDontShowMe = new QCheckBox("Always load last session");
     mpDontShowMe->setChecked(!gConfig.getShowWelcomeDialog());
 
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
-    pLayout->addWidget(mpHeading, 0, 0);
-    pLayout->addLayout(pButtonLayout, 1, 0);
-    pLayout->addWidget(mpActionText, 2, 0);
-    pLayout->addWidget(mpDontShowMe, 3, 0);
+    pLayout->addWidget(mpHeading,       0, 0);
+    pLayout->addLayout(pButtonLayout,   1, 0);
+    pLayout->addWidget(mpActionText,    2, 0);
+    pLayout->addWidget(mpRecentList,     3, 0);
+    pLayout->addWidget(mpDontShowMe,    4, 0);
     setLayout(pLayout);
 
     QPalette tempPalette;
@@ -109,7 +125,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 
     connect(mpNew, SIGNAL(clicked()), this, SLOT(createNewModel()));
     connect(mpOpen, SIGNAL(clicked()), this, SLOT(loadExistingModel()));
-    connect(mpLastSession, SIGNAL(clicked()), this, SLOT(loadLastSession()));
+    connect(mpLastSession, SIGNAL(pressed()), this, SLOT(loadLastSession()));
 }
 
 
@@ -206,6 +222,14 @@ void WelcomeDialog::loadLastSession()
         gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
     }
     gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    this->close();
+}
+
+
+void WelcomeDialog::openRecentModel()
+{
+    gpMainWindow->mpProjectTabs->loadModel(mModelList.at(mpRecentList->currentIndex().row()));
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     this->close();
 }
