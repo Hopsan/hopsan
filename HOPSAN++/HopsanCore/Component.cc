@@ -2714,13 +2714,14 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     if (pPort1->isConnected() && pPort2->isConnected())
     {
 
-        //Check if non of the ports will become empty, multiports will allways return connected ports size == 0 wich is Ok in this case
-        //! @todo Will that allways be ture regarding multipors, what if we change it (comment above)
-        if ( (pPort1->getConnectedPorts().size() > 1) && (pPort2->getConnectedPorts().size() > 1) )
+        //Check if non of the ports will become empty, excluding multiports
+        if ( ( (pPort1->getConnectedPorts().size() > 1) && (pPort1->getPortType() < Port::MULTIPORT) ) &&
+             ( (pPort2->getConnectedPorts().size() > 1) && (pPort2->getPortType() < Port::MULTIPORT) ) )
         {
             disconnAssistant.unmergeOrUnjoinConnection(pPort1, pPort2);
         }
-        else if ( (pPort1->getConnectedPorts().size() > 1) || (pPort2->getConnectedPorts().size() > 1) )
+        else if ( ( (pPort1->getConnectedPorts().size() > 1) && (pPort1->getPortType() < Port::MULTIPORT) ) ||
+                  ( (pPort2->getConnectedPorts().size() > 1) && (pPort2->getPortType() < Port::MULTIPORT) ) )
         {
             //! @todo seems like we can merge this case with the one above
             //! @todo what happens if we dissconnect a multiport from a port with multiple connections (can that even happen)

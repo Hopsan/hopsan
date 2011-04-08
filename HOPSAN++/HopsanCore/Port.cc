@@ -669,31 +669,27 @@ Node *MultiPort::getNodePtr(const size_t portIdx)
     return mSubPortsVector[portIdx]->getNodePtr();
 }
 
-//! @todo Ugly fix for now, we use -2 to indicate that we want all subports, -1 the default will return nothing, (we need this for connect as it dosnt detect multiports in some cases, will need to fix this in a SMART way
+//! we use -1 as portindex to indicate that we want all subports
 std::vector<Port*> &MultiPort::getConnectedPorts(const int portIdx)
 {
-    if (portIdx<-1)
+    if (portIdx<0)
     {
         //Ok lets return ALL connected ports
-        //! @todo since this stupid function returns a reference to the internal vector we need a new memberVector
+        //! @todo since this function returns a reference to the internal vector we need a new memberVector
         mAllConnectedPorts.clear();
         for (size_t i=0; i<mSubPortsVector.size(); ++i)
         {
-            for (size_t j=0; j<mSubPortsVector[i]->getConnectedPorts(-2).size(); ++j)
+            for (size_t j=0; j<mSubPortsVector[i]->getConnectedPorts().size(); ++j)
             {
-                mAllConnectedPorts.push_back(mSubPortsVector[i]->getConnectedPorts(-2)[j]);
+                mAllConnectedPorts.push_back(mSubPortsVector[i]->getConnectedPorts()[j]);
             }
         }
 
         return mAllConnectedPorts;
     }
-    else if (portIdx>=0)
-    {
-        return mSubPortsVector[portIdx]->getConnectedPorts();
-    }
     else
     {
-        return Port::getConnectedPorts();
+        return mSubPortsVector[portIdx]->getConnectedPorts();
     }
 }
 
