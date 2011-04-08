@@ -225,7 +225,7 @@ private:
     QwtPlotZoomer *mpZoomerRight;
     QwtPlotMagnifier *mpMagnifier;
     QwtPlotPanner *mpPanner;
-
+    QList<PlotMarker *> mMarkerPtrs;
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;

@@ -608,7 +608,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpZoomerRight->setTrackerPen(QColor(Qt::white));
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-    //mpZoomer->setEnabled(false);
+    mpZoomerRight->setEnabled(false);
 
     //! @todo This doesn't work right now. Do we need a wheel zoom?
         //Wheel Zoom
@@ -806,6 +806,16 @@ void PlotTab::rescaleToCurves()
 
 void PlotTab::removeCurve(PlotCurve *curve)
 {
+    for(size_t i=0; i<mMarkerPtrs.size(); ++i)
+    {
+        if(mMarkerPtrs.at(i)->getCurve() == curve)
+        {
+            delete(mMarkerPtrs.at(i));
+            mMarkerPtrs.removeAt(i);
+            break;
+        }
+    }
+
     for(int i=0; i<mUsedColors.size(); ++i)
     {
         if(curve->getCurvePtr()->pen().color() == mUsedColors.at(i))
@@ -1136,7 +1146,7 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 
     mpMarkerSymbol->setBrush(pCurve->getCurvePtr()->pen().brush().color());
     PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
-    //tempMarker->setSymbol(mpMarkerSymbol);
+    mMarkerPtrs.append(tempMarker);
 
     tempMarker->attach(mpPlot);
     QCursor cursor;
@@ -1366,8 +1376,17 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 class PlotInfoBox;
 
 
+//! @brief Constructor for plot curves.
+//! @param generation Generation of plot data to use
+//! @param componentName Name of component where plot data is located
+//! @param portName Name of port where plot data is located
+//! @param dataName Name of physical quantity to use (e.g. "Pressure", "Velocity"...)
+//! @param dataUnit Name of unit to show data in
+//! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
+//! @param parent Pointer to plot tab which curve shall be created it
 PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, PlotTab *parent)
 {
+        //Set all member variables
     mpParentPlotTab = parent;
     mGeneration = generation;
     mComponentName = componentName;
@@ -1375,7 +1394,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mDataName = dataName;
     if(dataUnit.isEmpty())
     {
-        mDataUnit = gConfig.getDefaultUnit(dataName);//mpParentPlotTab->mCurrentUnitsLeft.find(dataName).value();
+        mDataUnit = gConfig.getDefaultUnit(dataName);   //Apply default unit if not specified
     }
     else
     {
@@ -1388,15 +1407,18 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mOffsetX = 0.0;
     mOffsetY = 0.0;
 
+        //Get data from container object
     mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(generation, componentName, portName, dataName);
     mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(generation);
 
+        //Create the actualy curve
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
     updateCurve();
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpCurve->setYAxis(axisY);
     mpCurve->attach(parent->getPlot());
 
+        //Create the plot info box
     mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
     updatePlotInfoBox();
     mpPlotInfoBox->mpSizeSpinBox->setValue(2);
@@ -1408,6 +1430,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mpPlotInfoDockWidget->setMinimumWidth(mpPlotInfoDockWidget->windowTitle().length()*6);
     mpPlotInfoDockWidget->hide();
 
+        //Create connections
     connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
     connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
     connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
@@ -1418,6 +1441,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 }
 
 
+//! @brief Destructor for plot curves
+//! Deletes the info box and its dock widgets before the curve is removed.
 PlotCurve::~PlotCurve()
 {
     mpPlotInfoDockWidget->hide();
@@ -1426,66 +1451,80 @@ PlotCurve::~PlotCurve()
 }
 
 
+//! @brief Returns the current generation a plot curve is representing
 int PlotCurve::getGeneration()
 {
     return mGeneration;
 }
 
 
+//! @brief Returns a pointer to the actual Qwt curve in a plot curve object
 QwtPlotCurve *PlotCurve::getCurvePtr()
 {
     return mpCurve;
 }
 
 
+//! @brief Returns a pointer to the plot info dock of a plot curve
 QDockWidget *PlotCurve::getPlotInfoDockWidget()
 {
     return mpPlotInfoDockWidget;
 }
 
 
+//! @brief Returns the name of the component a plot curve is created from
 QString PlotCurve::getComponentName()
 {
     return mComponentName;
 }
 
 
+//! @brief Returns the name of the port a plot curve is created from
 QString PlotCurve::getPortName()
 {
     return mPortName;
 }
 
 
+//! @brief Returns the data name (physical quantity) of a plot curve
 QString PlotCurve::getDataName()
 {
     return mDataName;
 }
 
 
+//! @brief Returns the current data unit of a plot curve
 QString PlotCurve::getDataUnit()
 {
     return mDataUnit;
 }
 
 
+//! @brief Tells which Y-axis a plot curve is assigned to
 int PlotCurve::getAxisY()
 {
     return mAxisY;
 }
 
 
+//! @brief Returns the (unscaled) data vector of a plot curve
 QVector<double> PlotCurve::getDataVector()
 {
     return mDataVector;
 }
 
 
+//! @brief Returns the (unscaled) time vector of a plot curve
+//! This returns the TIME vector, NOT any special X-axes if they are used.
 QVector<double> PlotCurve::getTimeVector()
 {
     return mTimeVector;
 }
 
 
+//! @brief Sets the generation of a plot curve
+//! Updates the data to specified generation, and updates plot info box.
+//! @param genereation Genereation to use
 void PlotCurve::setGeneration(int generation)
 {
     mGeneration = generation;
@@ -1501,6 +1540,8 @@ void PlotCurve::setGeneration(int generation)
 }
 
 
+//! @brief Sets the unit of a plot curve
+//! @param unit Name of new unit
 void PlotCurve::setDataUnit(QString unit)
 {
     mDataUnit = unit;
@@ -1511,6 +1552,11 @@ void PlotCurve::setDataUnit(QString unit)
 }
 
 
+//! @brief Sets the scaling of a plot curve
+//! @param scaleX Scale factor for X-axis
+//! @param scaleY Scale factor for Y-axis
+//! @param offsetX Offset value for X-axis
+//! @param offsetY Offset value for Y-axis
 void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double offsetY)
 {
     mScaleX=scaleX;
@@ -1521,6 +1567,7 @@ void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double 
 }
 
 
+//! @brief Changes a curve to the previous available gneraetion of its data
 void PlotCurve::setPreviousGeneration()
 {
     if(mGeneration>0)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
@@ -1528,6 +1575,7 @@ void PlotCurve::setPreviousGeneration()
 }
 
 
+//! @brief Changes a curve to the next available generation of its data
 void PlotCurve::setNextGeneration()
 {
     if(mGeneration<gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations()-1)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
@@ -1535,6 +1583,8 @@ void PlotCurve::setNextGeneration()
 }
 
 
+//! @brief Sets the line width of a plot curve
+//! @param lineWidth Line width to give curve
 void PlotCurve::setLineWidth(int lineWidth)
 {
     mLineWidth = lineWidth;
@@ -1544,6 +1594,8 @@ void PlotCurve::setLineWidth(int lineWidth)
 }
 
 
+//! @brief Sets the color of a line
+//! @brief color Color to give the line.
 void PlotCurve::setLineColor(QColor color)
 {
     mLineColor = color;
@@ -1560,6 +1612,9 @@ void PlotCurve::setLineColor(QColor color)
 }
 
 
+//! @brief Sets the color of a line
+//! @param colorName Svg name of the color
+//! @see setLineColor(QColor color)
 void PlotCurve::setLineColor(QString colorName)
 {
     QColor color;
@@ -1576,6 +1631,7 @@ void PlotCurve::setLineColor(QString colorName)
 }
 
 
+//! @brief Opens the scaling dialog for a plot curve
 void PlotCurve::openScaleDialog()
 {
     QDialog *pScaleDialog = new QDialog(mpParentPlotTab->mpParentPlotWindow);
@@ -1634,6 +1690,7 @@ void PlotCurve::openScaleDialog()
 }
 
 
+//! @brief Updates the scaling of a plot curve form values in scaling dialog
 void PlotCurve::updateScaleFromDialog()
 {
     setScaling(mpXScaleSpinBox->value(), mpYScaleSpinBox->value(), mpXOffsetSpinBox->value(), mpYOffsetSpinBox->value());
@@ -1641,6 +1698,8 @@ void PlotCurve::updateScaleFromDialog()
 }
 
 
+//! @brief Shows or hides plot info dock
+//! Changes visibility depending on whether or not the tab is currently open, and whether or not the hide plot info dock setting is activated.
 void PlotCurve::updatePlotInfoDockVisibility()
 {
     if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurvesButton->isChecked())
@@ -1654,12 +1713,14 @@ void PlotCurve::updatePlotInfoDockVisibility()
 }
 
 
+//! @brief Tells the parent plot tab of a curve to remove it
 void PlotCurve::removeMe()
 {
     mpParentPlotTab->removeCurve(this);
 }
 
 
+//! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
     if(mAutoUpdate)     //Only change the generation if auto update is on
@@ -1668,6 +1729,7 @@ void PlotCurve::updateToNewGeneration()
 }
 
 
+//! @brief Updates buttons and text in plot info box to correct values
 void PlotCurve::updatePlotInfoBox()
 {
     mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations() > 1);
@@ -1680,6 +1742,8 @@ void PlotCurve::updatePlotInfoBox()
 }
 
 
+//! @brief Activates (highlights) the plot curve
+//! This will also de-activate any other active plot curve.
 void PlotCurve::setActive(bool value)
 {
     if(value)
@@ -1706,6 +1770,8 @@ void PlotCurve::setActive(bool value)
 }
 
 
+//! @brief Updates the values of a curve
+//! Updates a curve with regard to special X-axis, units and scaling.
 void PlotCurve::updateCurve()
 {
     double unitScale = gConfig.getCustomUnits(mDataName).find(mDataUnit).value();
@@ -1731,13 +1797,18 @@ void PlotCurve::updateCurve()
 }
 
 
+//! @brief Sets auto update flag for a plot curve
+//! If this is activated, plot will automatically change to latest plot generation after next simulation.
 void PlotCurve::setAutoUpdate(bool value)
 {
     mAutoUpdate = value;
 }
 
 
-
+//! @brief Constructor for plot markers
+//! @param pCurve Pointer to curve the marker belongs to
+//! @param pPlotTab Plot tab the marker is located in
+//! @param markerSymbol The symbol the marker shall use
 PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSymbol)
     : QwtPlotMarker()
 {
@@ -1749,15 +1820,22 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSym
 }
 
 
+//! @brief Event filter for plot markers
+//! This will interrupt events from plot canvas, to enable using mouse and key events for modifying markers.
+//! @returns True if event was interrupted, false if its propagation shall continue
+//! @param object Pointer to the object the event belongs to (in this case the plot canvas)
+//! @param ev ent Event to be interrupted
 bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 {
+
+        // Key press events, used to initiate moving of a marker if mouse cursor is close enough
     if (event->type() == QEvent::MouseButtonPress)
     {
         qDebug() << "mousePressEvent()";
         QCursor cursor;
         QPointF midPoint;
         midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
+        midPoint.setY(mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
 
         if(!mpPlotTab->mpZoomer->isEnabled() && !mpPlotTab->mpPanner->isEnabled())
         {
@@ -1769,16 +1847,14 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         }
     }
 
-
-
-
+        // Mouse move (hover) events, used to change marker color or move marker if cursor is close enough.
     else if (event->type() == QEvent::MouseMove)
     {
         bool retval = false;
         QCursor cursor;
         QPointF midPoint;
         midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
+        midPoint.setY(mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
         if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
             mMarkerSymbol.setBrush(QColor("red"));
@@ -1804,16 +1880,14 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         return retval;
     }
 
-
-
+        //Mouse release event, will stop moving marker
     else if (event->type() == QEvent::MouseButtonRelease && mIsBeingMoved == true)
     {
         mIsBeingMoved = false;
         return false;
     }
 
-
-
+        //!Keypress event, will delete marker if delete key is pressed
     else if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -1822,11 +1896,12 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
             QCursor cursor;
             QPointF midPoint;
             midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-            midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
+            midPoint.setY(mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
             if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
-                qDebug() << "Delete!";
-                this->deleteLater();
+                plot()->canvas()->removeEventFilter(this);
+                mpPlotTab->mMarkerPtrs.removeAll(this);
+                this->hide();           //! @todo This will only hide and inactivate the marker. Deleting it seem to make program crash.
                 return true;
             }
         }
@@ -1837,6 +1912,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 }
 
 
+//! @brief Returns a pointer to the curve a plot marker belongs to
 PlotCurve *PlotMarker::getCurve()
 {
     return mpCurve;
