@@ -8,18 +8,16 @@ todo
 \section qwt Build/Install Qwt - Qt Widgets for Technical Applications
 \subsection qwt-ubuntu Ubuntu
 -# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
- -# Unpack into the ExternalDependencies directory
+-# Unpack into the ExternalDependencies directory
 -# The default on Unix is to build only Release mode, if you want to change this, you can do that in qwtbuild.pri (if you want to debug into qwt)
--# For some reason qwt will not build with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
 -# Build the qwt project WITHOUT shadowbuild (make sure you uncheck both for debug and release)
+-# If compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
 
 \subsection qwt-windows Windows (minGW and VC++)
--# First checkout the 5.2 stable branch from "https://qwt.svn.sourceforge.net/svnroot/qwt/branches/qwt-5.2".
- -# Put the working copy in the ExternalDependencies directory and name in qwt-5.2-svn
--# Open the qwtconfig/qwtconfig.pri file and make sure that "CONFIG += debug_and_release" and "CONFIG += build_all" is selected (somwhere around line 50)
--# Open the qwt.pro file in QtCreator
-  -# DEACTIVATE shadow build in both debug and release config
-  -# Build the project, (both debug and release will be built automatically). 
+-# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
+-# Unpack into the ExternalDependencies directory
+-# Build the qwt project WITHOUT shadowbuild (make sure you uncheck both for debug and release)
+-# If compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
 
 \section pythonqt Build/Install PythonQt 
 If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
