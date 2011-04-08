@@ -1142,6 +1142,22 @@ void PlotTab::update()
     {
         (*cit)->getCurvePtr()->attach(mpPlot);
     }
+
+    for(int i=0; i<mMarkerPtrs.size(); ++i)
+    {
+        QPointF posF = mMarkerPtrs.at(i)->value();
+        double x = mpPlot->transform(QwtPlot::xBottom, posF.x());
+        double y = mpPlot->transform(QwtPlot::yLeft, posF.y());
+        QPoint pos = QPoint(x,y);
+        qDebug() << "Blö: " << pos;
+        QwtPlotCurve *pCurve = mMarkerPtrs.at(i)->getCurve()->getCurvePtr();
+        mMarkerPtrs.at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
+        //mMarkerPtrs.at(i)->setYValue(pCurve->sample(pCurve->closestPoint(pos)).y());
+        mMarkerPtrs.at(i)->setYValue(mpPlot->invTransform(QwtPlot::yLeft, mpPlot->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
+
+//        qDebug() << "Blä: " << pCurve->sample(pCurve->closestPoint(pos));
+    }
+
     mpPlot->replot();
 }
 
@@ -1158,12 +1174,23 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 
     tempMarker->attach(mpPlot);
     QCursor cursor;
-//    tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
-//    tempMarker->setYValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y());
-
     tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
     tempMarker->setYValue(mpPlot->invTransform(QwtPlot::yLeft, mpPlot->transform(pCurve->getCurvePtr()->yAxis(), pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y())));
 
+    QString xString;
+    QString yString;
+    double x = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x();
+    double y = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(mpPlot->canvas()->mapFromGlobal(cursor.pos()))).y();
+    xString.setNum(x);
+    yString.setNum(y);
+    QwtText tempLabel;
+    tempLabel.setText("("+xString+", "+yString+")");
+    tempLabel.setText("("+xString+", "+yString+")");
+    tempLabel.setColor(pCurve->getCurvePtr()->pen().brush().color());
+    tempLabel.setBackgroundBrush(QColor(255,255,255,235));
+    tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
+    tempMarker->setLabel(tempLabel);
+    tempMarker->setLabelAlignment(Qt::AlignTop);
 
     mpPlot->canvas()->installEventFilter(tempMarker);
     mpPlot->canvas()->setMouseTracking(true);
@@ -1889,8 +1916,21 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 
         if(mIsBeingMoved)
         {
-            setXValue(mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).x());
-            setYValue(mpPlotTab->getPlot()->invTransform(QwtPlot::yLeft, mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).y())));
+            double x = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).x();
+            double y = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).y();
+            setXValue(x);
+            setYValue(mpPlotTab->getPlot()->invTransform(QwtPlot::yLeft, mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), y)));
+
+            QString xString;
+            QString yString;
+            xString.setNum(x);
+            yString.setNum(y);
+            QwtText tempLabel;
+            tempLabel.setText("("+xString+", "+yString+")");
+            tempLabel.setColor(mpCurve->getCurvePtr()->pen().brush().color());
+            tempLabel.setBackgroundBrush(QColor(255,255,255,235));
+            tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
+            setLabel(tempLabel);
         }
         return retval;
     }
