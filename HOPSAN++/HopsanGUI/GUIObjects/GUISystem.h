@@ -41,7 +41,7 @@ public:
 
     QString getTypeName();
     void setName(QString newName);
-    void setTypeCQS(QString typestring);
+    //void setTypeCQS(QString typestring);
     QString getTypeCQS();
 
     void saveToDomElement(QDomElement &rDomElement);

@@ -66,7 +66,7 @@ public:
     bool isConnectorSelected();
 
     //These (overloaded versions) are used in containerPropertiesDialog by systems
-    virtual void setTypeCQS(QString /*typestring*/){assert(false);}
+    //virtual void setTypeCQS(QString /*typestring*/){assert(false);}
     virtual size_t getNumberOfLogSamples(){assert(false);}
     virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
 

@@ -77,7 +77,7 @@ void GUISystem::commonConstructorCode()
         qDebug() << "creating ROOT access system";
         mpCoreSystemAccess = new CoreSystemAccess();
         this->setName("RootSystem");
-        mpCoreSystemAccess->setRootTypeCQS("S");
+        //mpCoreSystemAccess->setRootTypeCQS("S");
         //qDebug() << "the core root system name: " << mpCoreSystemAccess->getRootSystemName();
     }
     else
@@ -118,12 +118,12 @@ QString GUISystem::getTypeName()
     return HOPSANGUISYSTEMTYPENAME;
 }
 
-//! @brief Set the system cqs type
-//! @param[in] typestring A string containgin the CQS type, C Q or S is accepted
-void GUISystem::setTypeCQS(QString typestring)
-{
-    mpCoreSystemAccess->setRootTypeCQS(typestring);
-}
+////! @brief Set the system cqs type
+////! @param[in] typestring A string containgin the CQS type, C Q or S is accepted
+//void GUISystem::setTypeCQS(QString typestring)
+//{
+//    mpCoreSystemAccess->setRootTypeCQS(typestring);
+//}
 
 //! @brief Get the system cqs type
 //! @returns A string containing the CQS type
@@ -322,7 +322,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //! @todo might need some error checking here incase some fields are missing
         //Now load the core specific data, might need inherited function for this
         this->setName(rDomElement.attribute(HMF_NAMETAG));
-        this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
+        //this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);

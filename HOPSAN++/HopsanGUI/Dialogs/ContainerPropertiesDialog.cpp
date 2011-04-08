@@ -114,9 +114,9 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
             //CQS Type
         mpCQSLayout = new QHBoxLayout();
         mpCQSLabel = new QLabel("CQS-type: ", this);
-        mpCQSLineEdit = new QLineEdit(mpContainerObject->getTypeCQS(), this);
+        mpCQSTypeLabel = new QLabel(mpContainerObject->getTypeCQS(), this);
         mpSettingsLayout->addWidget(mpCQSLabel, 4, 0);
-        mpSettingsLayout->addWidget(mpCQSLineEdit, 4, 1);
+        mpSettingsLayout->addWidget(mpCQSTypeLabel, 4, 1);
 
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
     }
@@ -195,7 +195,6 @@ void ContainerPropertiesDialog::setValues()
     if (mpContainerObject->type() == GUISYSTEM)
     {
         mpContainerObject->setNumberOfLogSamples(mpNSamplesEdit->text().toInt());
-        mpContainerObject->setTypeCQS(this->mpCQSLineEdit->text());
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }
 

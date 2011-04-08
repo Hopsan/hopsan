@@ -109,7 +109,7 @@ namespace hopsan {
     public:
         virtual ~Component();
 
-        enum typeCQS {C, Q, S, NOCQSTYPE};
+        enum typeCQS {C, Q, S, UNDEFINEDCQSTYPE};
         //==========Public functions==========
         //Virtual functions
         virtual void loadStartValues();
@@ -127,7 +127,7 @@ namespace hopsan {
         //const string &getTypeCQS();
         typeCQS getTypeCQS();
         std::string getTypeCQSString();
-        std::string convertTypeCQS2String(typeCQS type);
+        //std::string convertTypeCQS2String(typeCQS type);
 
         //Parameters
         void listParametersConsole();
@@ -227,6 +227,9 @@ namespace hopsan {
         size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
 
     private:
+        typedef std::map<std::string, Port*> PortPtrMapT;
+        typedef std::pair<std::string, Port*> PortPtrPairT;
+
         //Private member functions
         void setSystemParent(ComponentSystem *pComponentSystem);
         void setTypeName(const std::string typeName); //This is suposed to be used by hopsan essentials to set the typename to the same as the registered key value
@@ -237,8 +240,6 @@ namespace hopsan {
         std::vector<CompParameter> mParameters;
         std::vector<double*> mDummyNDptrs; //This vector is used by components to store dummy NodeData pointers that are created for non connected optional ports
         ComponentSystem* mpSystemParent;
-        typedef std::map<std::string, Port*> PortPtrMapT;
-        typedef std::pair<std::string, Port*> PortPtrPairT;
         PortPtrMapT mPortPtrMap;
         double mMeasuredTime;
     };
@@ -254,7 +255,7 @@ namespace hopsan {
         ComponentSystem(std::string name="ComponentSystem");
 
         //Set the subsystem CQS type
-        void setTypeCQS(const std::string cqs_type, bool doOnlyLocalSet=false);
+        //void setTypeCQS(const std::string cqs_type, bool doOnlyLocalSet=false);
         void setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet=false);
         bool changeTypeCQS(const std::string name, const typeCQS newType);
         void determineCQSType();

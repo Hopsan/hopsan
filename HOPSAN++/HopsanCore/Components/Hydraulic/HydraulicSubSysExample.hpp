@@ -56,7 +56,7 @@ namespace hopsan {
             connect(volumeR->getPort("P2"), mpSubP2);
 
             //Decide submodel type
-            setTypeCQS("C");
+            setTypeCQS(Component::C);
         }
 
     };

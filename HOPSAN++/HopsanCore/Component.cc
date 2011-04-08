@@ -458,7 +458,7 @@ Component::Component(string name)
     mIsComponentSystem = false;
     mIsComponentSignal = false;
     //mTypeCQS = "";
-    mTypeCQS = Component::NOCQSTYPE;
+    mTypeCQS = Component::UNDEFINEDCQSTYPE;
 
     mpSystemParent = 0;
     mModelHierarchyDepth = 0;
@@ -590,28 +590,28 @@ Component::typeCQS Component::getTypeCQS()
 }
 
 
-//! Convert the C, Q or S type from enum to string
-//! @todo This function may not need to be meber in Component, (maybe enum should be free aswell), this function may be completely useless
-string Component::convertTypeCQS2String(typeCQS type)
-{
-    switch (type)
-    {
-    case C :
-        return "C";
-        break;
-    case Q :
-        return "Q";
-        break;
-    case S :
-        return "S";
-        break;
-    case NOCQSTYPE :
-        return "NOCQSTYPE";
-        break;
-    default :
-        return "Invalid CQS Type";
-    }
-}
+////! Convert the C, Q or S type from enum to string
+////! @todo This function may not need to be meber in Component, (maybe enum should be free aswell), this function may be completely useless
+//string Component::convertTypeCQS2String(typeCQS type)
+//{
+//    switch (type)
+//    {
+//    case C :
+//        return "C";
+//        break;
+//    case Q :
+//        return "Q";
+//        break;
+//    case S :
+//        return "S";
+//        break;
+//    case UNDEFINEDCQSTYPE :
+//        return "NOCQSTYPE";
+//        break;
+//    default :
+//        return "Invalid CQS Type";
+//    }
+//}
 
 
 //! Get the CQStype as string
@@ -628,11 +628,11 @@ string Component::getTypeCQSString()
     case S :
         return "S";
         break;
-    case NOCQSTYPE :
-        return "NOCQSTYPE";
+    case UNDEFINEDCQSTYPE :
+        return "UNDEFINEDCQSTYPE";
         break;
     default :
-        return "Invalid CQS Type";
+        assert("Invalid CQS Type" == 0);
     }
 }
 
@@ -1297,7 +1297,7 @@ void ComponentSystem::determineCQSType()
     }
     else
     {
-        this->setTypeCQS(NOCQSTYPE);
+        this->setTypeCQS(UNDEFINEDCQSTYPE);
     }
 }
 
@@ -1539,7 +1539,7 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
     case Component::S :
         mComponentSignalptrs.push_back(pComponent);
         break;
-    case Component::NOCQSTYPE :
+    case Component::UNDEFINEDCQSTYPE :
         mComponentUndefinedptrs.push_back(pComponent);
         break;
     default :
@@ -1588,7 +1588,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
                 }
             }
             break;
-        case Component::NOCQSTYPE :
+        case Component::UNDEFINEDCQSTYPE :
             for (cit = mComponentUndefinedptrs.begin(); cit != mComponentUndefinedptrs.end(); ++cit)
             {
                 if ( *cit == pComponent )
@@ -1871,27 +1871,27 @@ void ComponentSystem::deleteSystemPort(const string name)
 }
 
 
-//! Set the type C, Q, or S of the subsystem by using string
-void ComponentSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
-{
-    if (cqs_type == string("C"))
-    {
-        setTypeCQS(Component::C, doOnlyLocalSet);
-    }
-    else if (cqs_type == string("Q"))
-    {
-        setTypeCQS(Component::Q, doOnlyLocalSet);
-    }
-    else if (cqs_type == string("S"))
-    {
-        setTypeCQS(Component::S, doOnlyLocalSet);
-    }
-    else
-    {
-        cout << "Error: Specified type \"" << cqs_type << "\" does not exist!" << endl;
-        gCoreMessageHandler.addWarningMessage("Specified type: " + cqs_type + " does not exist!, System CQStype unchanged");
-    }
-}
+////! Set the type C, Q, or S of the subsystem by using string
+//void ComponentSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
+//{
+//    if (cqs_type == string("C"))
+//    {
+//        setTypeCQS(Component::C, doOnlyLocalSet);
+//    }
+//    else if (cqs_type == string("Q"))
+//    {
+//        setTypeCQS(Component::Q, doOnlyLocalSet);
+//    }
+//    else if (cqs_type == string("S"))
+//    {
+//        setTypeCQS(Component::S, doOnlyLocalSet);
+//    }
+//    else
+//    {
+//        cout << "Error: Specified type \"" << cqs_type << "\" does not exist!" << endl;
+//        gCoreMessageHandler.addWarningMessage("Specified type: " + cqs_type + " does not exist!, System CQStype unchanged");
+//    }
+//}
 
 
 //! Set the type C, Q, or S of the subsystem
@@ -1934,8 +1934,8 @@ void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
                 mIsComponentSignal = true;
                 break;
 
-            case Component::NOCQSTYPE :
-                mTypeCQS = Component::NOCQSTYPE;
+            case Component::UNDEFINEDCQSTYPE :
+                mTypeCQS = Component::UNDEFINEDCQSTYPE;
                 mIsComponentC = false;
                 mIsComponentQ = false;
                 mIsComponentSignal = false;
