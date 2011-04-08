@@ -225,7 +225,7 @@ public slots:
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
-        o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName);
+        o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName, "");
     }
 
     void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)

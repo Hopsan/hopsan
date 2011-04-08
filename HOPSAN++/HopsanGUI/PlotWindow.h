@@ -19,6 +19,8 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_panner.h>
+#include <qwt_plot_marker.h>
+#include <qwt_symbol.h>
 
 class MainWindow;
 class VariablePlot;
@@ -28,6 +30,7 @@ class PlotWidget;
 class GUISystem;
 class PlotTabWidget;
 class PlotTab;
+class PlotMarker;
 
 class PlotWindow : public QMainWindow
 {
@@ -167,6 +170,7 @@ class PlotTab : public QWidget
     Q_OBJECT
     friend class PlotCurve;
     friend class PlotTabWidget;
+    friend class PlotMarker;
 public:
     PlotTab(PlotWindow *parent);
     ~PlotTab();
@@ -182,7 +186,6 @@ public:
     int getNumberOfCurves();
     void update();
     void insertMarker(QwtPlotCurve *curve);
-    void setActiveMarker(QwtPlotMarker *marker);
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void updateLabels();
 
@@ -191,7 +194,6 @@ public:
     QString mVectorXLabel;
 
 protected:
-    virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);
@@ -208,25 +210,17 @@ public slots:
     void exportToGnuplot();
     void exportToPdf();
     void exportToPng();
+    void insertMarker(PlotCurve *pCurve, QPoint pos);
 
 private:
     QwtPlot *mpPlot;
 
-    bool mHasLeftCurve;
-    bool mHasRightCurve;
-
     QList<PlotCurve *> mPlotCurvePtrs;
     PlotCurve *mpActivePlotCurve;
-    QVector<double> mSpecialXAxis;
-    QColor mBackgroundColor;
     bool mShowGrid();
     QStringList mCurveColors;
     QStringList mUsedColors;
     QwtPlotGrid * mpGrid;
-    QVector <QwtPlotMarker *> mpMarkers;
-    QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;
-    QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
-    QwtPlotCurve *tempCurve;
     QwtPlotZoomer *mpZoomer;
     QwtPlotZoomer *mpZoomerRight;
     QwtPlotMagnifier *mpMagnifier;
@@ -235,10 +229,7 @@ private:
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;
-    QwtPlotMarker *mpActiveMarker;
-
-
-    //QList< QList< QVector<double> > > mVectorY;
+    QwtSymbol *mpMarkerHoverSymbol;
 
     QString mUnitLeft;
     QString mUnitRight;
@@ -246,8 +237,6 @@ private:
     bool mHasSpecialXAxis;
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
-
-    bool mAutoUpdate;
 
     QRubberBand *mpHoverRect;
 };
@@ -321,6 +310,22 @@ private:
     QDoubleSpinBox *mpYOffsetSpinBox;
 };
 
+
+
+class PlotMarker : public QObject, public QwtPlotMarker
+{
+    Q_OBJECT
+public:
+    PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSymbol);
+    PlotCurve *getCurve();
+    virtual bool eventFilter (QObject *, QEvent *);
+
+private:
+    PlotCurve *mpCurve;
+    PlotTab *mpPlotTab;
+    bool mIsBeingMoved;
+    QwtSymbol mMarkerSymbol;
+};
 
 
 

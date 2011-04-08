@@ -439,6 +439,7 @@ GUIModelObject *GUIPort::getGuiModelObject()
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
 bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
 {
+    qDebug() << mpParentGuiModelObject->getName() << ", " << getName() << ", plot(" << dataName << ", " << dataUnit << ")";
     bool success = false;
     if(this->isConnected())
     {

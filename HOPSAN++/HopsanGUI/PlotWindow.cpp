@@ -87,7 +87,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
     mpExportButton = new QToolButton(mpToolBar);
     mpExportButton->setToolTip("Export Plot");
-    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportPlot.png"));
     mpExportButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpExportButton->setMenu(mpExportMenu);
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
@@ -306,7 +306,7 @@ void PlotWindow::importGNUPLOT()
 //! @param dataUnit Unit of variable
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY)
 {
-    getCurrentPlotTab()->getPlot()->replot();
+    //getCurrentPlotTab()->getPlot()->replot();
     qDebug() << "dataUnit = " << dataUnit;
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
     qDebug() << "dataUnit = " << dataUnit;
@@ -590,8 +590,7 @@ PlotTab::PlotTab(PlotWindow *parent)
         //Rubber Band Zoom
     mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpPlot->canvas());      //Zoomer for left y axis
     mpZoomer->setMaxStackDepth(10000);
-    //mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
-    mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
+    mpZoomer->setRubberBand(QwtPicker::NoRubberBand);
     mpZoomer->setRubberBandPen(QColor(Qt::green));
     mpZoomer->setTrackerMode(QwtPicker::ActiveOnly);
     mpZoomer->setTrackerPen(QColor(Qt::white));
@@ -603,12 +602,13 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpZoomerRight = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot->canvas());   //Zoomer for right y axis
     mpZoomerRight->setMaxStackDepth(10000);
     //mpZoomerRight->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
+    mpZoomerRight->setRubberBand(QwtPicker::NoRubberBand);
     mpZoomerRight->setRubberBandPen(QColor(Qt::green));
     mpZoomerRight->setTrackerMode(QwtPicker::ActiveOnly);
     mpZoomerRight->setTrackerPen(QColor(Qt::white));
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-    mpZoomer->setEnabled(false);
+    //mpZoomer->setEnabled(false);
 
     //! @todo This doesn't work right now. Do we need a wheel zoom?
         //Wheel Zoom
@@ -620,12 +620,17 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpMagnifier->setMouseButton(Qt::LeftButton);
     mpMagnifier->setEnabled(false);
 
-        //Curve Marker
+        //Curve Marker Symbol
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
     mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
-    mpMarkerSymbol->setSize(10,10);
-    mpActiveMarker = 0;
+    mpMarkerSymbol->setSize(7,7);
+
+        //Curve Marker Hover Symbol
+    mpMarkerHoverSymbol = new QwtSymbol();
+    mpMarkerHoverSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    mpMarkerHoverSymbol->setStyle(QwtSymbol::Ellipse);
+    mpMarkerHoverSymbol->setSize(10,10);
 
     mpGrid = new QwtPlotGrid;
     mpGrid->enableXMin(true);
@@ -790,6 +795,12 @@ void PlotTab::rescaleToCurves()
     tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
     tempDoubleRect2.setWidth(xMax-xMin);
     mpZoomerRight->setZoomBase(tempDoubleRect2);
+
+            //Curve Marker
+    mpMarkerSymbol = new QwtSymbol();
+    mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
+    mpMarkerSymbol->setSize(10,10);
 }
 
 
@@ -1038,6 +1049,8 @@ void PlotTab::enableZoom(bool value)
         mpPanner->setEnabled(false);
     }
     mpZoomer->setEnabled(value);
+    if(value)   { mpZoomer->setRubberBand(QwtPicker::RectRubberBand); }
+    else        { mpZoomer->setRubberBand(QwtPicker::NoRubberBand); }
     mpZoomerRight->setEnabled(value);
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
@@ -1049,6 +1062,7 @@ void PlotTab::enablePan(bool value)
     {
         mpParentPlotWindow->mpZoomButton->setChecked(false);
         mpZoomer->setEnabled(false);
+        mpZoomer->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomerRight->setEnabled(false);
     }
     mpPanner->setEnabled(value);
@@ -1116,17 +1130,21 @@ void PlotTab::update()
 
 //! @brief Inserts a curve marker at the specified curve
 //! @param curve is a pointer to the specified curve
-void PlotTab::insertMarker(QwtPlotCurve *curve)
+void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 {
-    //! @todo Re-implement
-}
+    qDebug() << "Inserting curve marker for " << pCurve->getComponentName() << ", " << pCurve->getPortName() << ", " << pCurve->getDataName();
 
+    mpMarkerSymbol->setBrush(pCurve->getCurvePtr()->pen().brush().color());
+    PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
+    //tempMarker->setSymbol(mpMarkerSymbol);
 
-//! @brief Changes the active marker (the on that can be moved around)
-//! @param[in] marker is a pointer to the marker that shall be activated
-void PlotTab::setActiveMarker(QwtPlotMarker *marker)
-{
-    //! @todo Re-implement
+    tempMarker->attach(mpPlot);
+    QCursor cursor;
+    tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
+    tempMarker->setYValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y());
+
+    mpPlot->canvas()->installEventFilter(tempMarker);
+    mpPlot->canvas()->setMouseTracking(true);
 }
 
 
@@ -1234,6 +1252,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QMenu *yAxisRightMenu;
     QMenu *yAxisLeftMenu;
     QMenu *changeUnitsMenu;
+    QMenu *insertMarkerMenu;
 
     QAction *setRightAxisLogarithmic;
     QAction *setLeftAxisLogarithmic;
@@ -1241,8 +1260,9 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
 
-    changeUnitsMenu = menu.addMenu(QString("Change Units"));
 
+        //Create menu and actions for changing units
+    changeUnitsMenu = menu.addMenu(QString("Change Units"));
     QMap<QAction *, PlotCurve *> actionToCurveMap;
     QMap<QString, double> unitMap;
     QList<PlotCurve *>::iterator itc;
@@ -1274,52 +1294,13 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-//        //Create menu for insereting curve markers
-//    insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
-//    QMap <QAction *, QwtPlotCurve *> actionToCurveMap;
-//    QAction *tempAction;
-//    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
-//    {
-//        tempAction = insertMarkerMenu->addAction(this->mPlotCurvePtrs[i]->getCurvePtr()->title().text());
-//        actionToCurveMap.insert(tempAction, mPlotCurvePtrs[i]->getCurvePtr());
-//        if(mCurveToMarkerMap.contains(mPlotCurvePtrs[i]->getCurvePtr()))
-//        {
-//           tempAction->setDisabled(true);
-//        }
-//    }
-
-
-//        //Create menu for selecting curve markers
-//    selectMarkerMenu = menu.addMenu(QString("Change Active Marker"));
-//    QMap <QAction *, QwtPlotMarker *> actionToMarkerMap;
-//    if(mpMarkers.size() < 2)
-//    {
-//        selectMarkerMenu->setDisabled(true);    //Disable the select marker menu if there are less than two markers
-//    }
-//    else
-//    {
-//        for(int i=0; i<mpMarkers.size(); ++i)
-//        {
-//            tempAction = selectMarkerMenu->addAction(mMarkerToCurveMap.value(mpMarkers[i])->title().text());
-//            actionToMarkerMap.insert(tempAction, mpMarkers[i]);
-//            if(mpActiveMarker == mpMarkers[i])
-//            {
-//                QFont tempFont = tempAction->font();
-//                tempFont.setBold(true);
-//                tempAction->setFont(tempFont);
-//            }
-//        }
-//    }
-
-
-//        //Create menu for removing curves
-//    removeCurveMenu = menu.addMenu(QString("Remove Plot Curve"));
-//    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
-//    {
-//        tempAction = removeCurveMenu->addAction(mPlotCurvePtrs[i]->getCurvePtr()->title().text());
-//        actionToCurveMap.insert(tempAction, mPlotCurvePtrs[i]->getCurvePtr());
-//    }
-
+        //Create menu for insereting curve markers
+    insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
+    for(itc=mPlotCurvePtrs.begin(); itc!=mPlotCurvePtrs.end(); ++itc)
+    {
+        QAction *pTempAction = insertMarkerMenu->addAction(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
+        actionToCurveMap.insert(pTempAction, (*itc));
+    }
 
 
 
@@ -1344,13 +1325,6 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     {
         actionToCurveMap.find(selectedAction).value()->setDataUnit(selectedAction->text());
     }
-
-
-//        // Change unit on right axis
-//    if((selectedAction->parentWidget() == changeUnitMenuRight) && (gConfig.getCustomUnits(physicalQuantityRight).contains(selectedAction->text())))
-//    {
-//        //this->setUnit(QwtPlot::yRight, physicalQuantityRight, selectedAction->text());
-//    }
 
 
         //Make axis logarithmic
@@ -1380,60 +1354,12 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-//        //Insert curve marker
-//    QMap<QAction *, QwtPlotCurve *>::iterator it;
-//    if(selectedAction->parentWidget() == insertMarkerMenu)
-//    {
-//        for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
-//        {
-//            if(selectedAction == it.key())
-//            {
-//                this->insertMarker(it.value());
-//            }
-//        }
-//    }
+        //Insert curve marker
+    if(selectedAction->parentWidget() == insertMarkerMenu)
+    {
+        insertMarker(actionToCurveMap.find(selectedAction).value(), event->pos());
+    }
 
-//        //Change active curve marker
-//    QMap<QAction *, QwtPlotMarker *>::iterator itm;
-//    for(itm = actionToMarkerMap.begin(); itm!=actionToMarkerMap.end(); ++itm)
-//    {
-//        if(selectedAction == itm.key())
-//        {
-//            this->setActiveMarker(itm.value());
-//        }
-//    }
-
-
-//        //Remove plot curve
-//    if(selectedAction->parentWidget() == removeCurveMenu)
-//    {
-//        for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
-//        {
-//            if(selectedAction == it.key())
-//            {
-//                it.value()->detach();
-//                int i;
-//                for(i=0; i<mPlotCurvePtrs.size(); ++i)
-//                {
-//                    if(mPlotCurvePtrs[i]->getCurvePtr() == it.value())
-//                    {
-//                        break;
-//                    }
-//                }
-//                mpCurves.remove(i);
-//                delete(it.value());
-//            }
-//        }
-//        mpPlot->replot();
-//    }
-}
-
-
-//! @todo Why is this here?
-void PlotTab::mouseReleaseEvent(QMouseEvent *event)
-{
-    qDebug() << "Mouse released!";
-    QWidget::mouseReleaseEvent(event);
 }
 
 
@@ -1808,4 +1734,110 @@ void PlotCurve::updateCurve()
 void PlotCurve::setAutoUpdate(bool value)
 {
     mAutoUpdate = value;
+}
+
+
+
+PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSymbol)
+    : QwtPlotMarker()
+{
+    mpCurve = pCurve;
+    mpPlotTab = pPlotTab;
+    mIsBeingMoved = false;
+    mMarkerSymbol = markerSymbol;
+    setSymbol(&mMarkerSymbol);
+}
+
+
+bool PlotMarker::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        qDebug() << "mousePressEvent()";
+        QCursor cursor;
+        QPointF midPoint;
+        midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
+        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
+
+        if(!mpPlotTab->mpZoomer->isEnabled() && !mpPlotTab->mpPanner->isEnabled())
+        {
+            if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+            {
+                mIsBeingMoved = true;
+                return true;
+            }
+        }
+    }
+
+
+
+
+    else if (event->type() == QEvent::MouseMove)
+    {
+        bool retval = false;
+        QCursor cursor;
+        QPointF midPoint;
+        midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
+        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
+        if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+        {
+            mMarkerSymbol.setBrush(QColor("red"));
+            this->setSymbol(&mMarkerSymbol);
+            this->plot()->replot();
+            retval=true;
+        }
+        else
+        {
+            if(!mIsBeingMoved)
+            {
+                mMarkerSymbol.setBrush(mpCurve->getCurvePtr()->pen().brush().color());
+                this->setSymbol(&mMarkerSymbol);
+                this->plot()->replot();
+            }
+        }
+
+        if(mIsBeingMoved)
+        {
+            setXValue(mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).x());
+            setYValue(mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).y());
+        }
+        return retval;
+    }
+
+
+
+    else if (event->type() == QEvent::MouseButtonRelease && mIsBeingMoved == true)
+    {
+        mIsBeingMoved = false;
+        return false;
+    }
+
+
+
+    else if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if(keyEvent->key() == Qt::Key_Delete)
+        {
+            QCursor cursor;
+            QPointF midPoint;
+            midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
+            midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
+            if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+            {
+                qDebug() << "Delete!";
+                this->deleteLater();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    return false;
+}
+
+
+PlotCurve *PlotMarker::getCurve()
+{
+    return mpCurve;
 }

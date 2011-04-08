@@ -73,5 +73,6 @@
         <file>graphics/uiicons/Hopsan-ShowPlotWindowCurves.png</file>
         <file>graphics/uiicons/Hopsan-ShowPlotWindowLists.png</file>
         <file>graphics/uiicons/Hopsan-ExportGfx.png</file>
+        <file>graphics/uiicons/Hopsan-ExportPlot.png</file>
     </qresource>
 </RCC>
