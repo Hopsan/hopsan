@@ -72,6 +72,8 @@ void GUIObject::setCenterPos(QPointF pos)
     this->setPos(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0);
 }
 
+void GUIObject::saveToDomElement(QDomElement &/*rDomElement*/){}  //! @todo nothing for now
+
 GUIContainerObject *GUIObject::getParentContainerObject()
 {
     return mpParentContainerObject;

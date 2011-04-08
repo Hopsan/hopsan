@@ -893,8 +893,7 @@ GUIModelObject *GUIContainerObject::getGUIModelObject(QString name)
 {
     if(!mGUIModelObjectMap.contains(name))
     {
-        qDebug() << "Request for pointer to non-existing component" << endl;
-        assert(false);
+        assert("Request for pointer to non-existing component" == 0);
     }
     return mGUIModelObjectMap.find(name).value();
 }
