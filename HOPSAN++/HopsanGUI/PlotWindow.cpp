@@ -622,15 +622,15 @@ PlotTab::PlotTab(PlotWindow *parent)
 
         //Curve Marker Symbol
     mpMarkerSymbol = new QwtSymbol();
-    mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
-    mpMarkerSymbol->setSize(7,7);
+    //mpMarkerSymbol->setPen(QPen(QColor(Qt::red), 3));
+    mpMarkerSymbol->setStyle(QwtSymbol::XCross);
+    mpMarkerSymbol->setSize(10,10);
 
-        //Curve Marker Hover Symbol
-    mpMarkerHoverSymbol = new QwtSymbol();
-    mpMarkerHoverSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    mpMarkerHoverSymbol->setStyle(QwtSymbol::Ellipse);
-    mpMarkerHoverSymbol->setSize(10,10);
+//        //Curve Marker Hover Symbol
+//    mpMarkerHoverSymbol = new QwtSymbol();
+//    mpMarkerHoverSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
+//    mpMarkerHoverSymbol->setStyle(QwtSymbol::Ellipse);
+//    mpMarkerHoverSymbol->setSize(10,10);
 
     mpGrid = new QwtPlotGrid;
     mpGrid->enableXMin(true);
@@ -798,21 +798,25 @@ void PlotTab::rescaleToCurves()
 
             //Curve Marker
     mpMarkerSymbol = new QwtSymbol();
-    mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
+    //mpMarkerSymbol->setPen(QPen(QBrush(Color(Qt::red)), 3));
+    mpMarkerSymbol->setStyle(QwtSymbol::XCross);
     mpMarkerSymbol->setSize(10,10);
 }
 
 
+//! @brief Removes a curve from the plot tab
+//! @param curve Pointer to curve to remove
 void PlotTab::removeCurve(PlotCurve *curve)
 {
-    for(size_t i=0; i<mMarkerPtrs.size(); ++i)
+    for(int i=0; i<mMarkerPtrs.size(); ++i)
     {
         if(mMarkerPtrs.at(i)->getCurve() == curve)
         {
-            delete(mMarkerPtrs.at(i));
+            mpPlot->canvas()->removeEventFilter(mMarkerPtrs.at(i));
+            mMarkerPtrs.at(i)->detach();
+            //delete(mMarkerPtrs.at(i));
             mMarkerPtrs.removeAt(i);
-            break;
+            --i;
         }
     }
 
@@ -835,7 +839,11 @@ void PlotTab::removeCurve(PlotCurve *curve)
 
 
 //! @brief Changes the X vector of current plot tab to specified variable
-//
+//! @param xArray New data for X-axis
+//! @param componentName Name of component from which new data origins
+//! @param portName Name of port form which new data origins
+//! @param dataName Data name (physical quantity) of new data
+//! @param dataUnit Unit of new data
 void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     mVectorX = xArray;
@@ -1144,14 +1152,18 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 {
     qDebug() << "Inserting curve marker for " << pCurve->getComponentName() << ", " << pCurve->getPortName() << ", " << pCurve->getDataName();
 
-    mpMarkerSymbol->setBrush(pCurve->getCurvePtr()->pen().brush().color());
+    mpMarkerSymbol->setPen(QPen(pCurve->getCurvePtr()->pen().brush().color(), 3));
     PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
     mMarkerPtrs.append(tempMarker);
 
     tempMarker->attach(mpPlot);
     QCursor cursor;
+//    tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
+//    tempMarker->setYValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y());
+
     tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
-    tempMarker->setYValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y());
+    tempMarker->setYValue(mpPlot->invTransform(QwtPlot::yLeft, mpPlot->transform(pCurve->getCurvePtr()->yAxis(), pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y())));
+
 
     mpPlot->canvas()->installEventFilter(tempMarker);
     mpPlot->canvas()->setMouseTracking(true);
@@ -1411,17 +1423,20 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(generation, componentName, portName, dataName);
     mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(generation);
 
-        //Create the actualy curve
+        //Create the actual curve
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
     updateCurve();
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpCurve->setYAxis(axisY);
     mpCurve->attach(parent->getPlot());
-
+    qDebug() << "1";
         //Create the plot info box
     mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
+            qDebug() << "2";
     updatePlotInfoBox();
+            qDebug() << "3";
     mpPlotInfoBox->mpSizeSpinBox->setValue(2);
+
     mpPlotInfoDockWidget = new QDockWidget(mComponentName+", "+mPortName+", "+mDataName+" ["+mDataUnit+"]", mpParentPlotTab->mpParentPlotWindow);
     mpPlotInfoDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
     mpPlotInfoDockWidget->setMaximumHeight(100);
@@ -1835,7 +1850,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         QCursor cursor;
         QPointF midPoint;
         midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
+        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
 
         if(!mpPlotTab->mpZoomer->isEnabled() && !mpPlotTab->mpPanner->isEnabled())
         {
@@ -1854,10 +1869,10 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         QCursor cursor;
         QPointF midPoint;
         midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
+        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
         if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
-            mMarkerSymbol.setBrush(QColor("red"));
+            mMarkerSymbol.setPen(QPen(mpCurve->getCurvePtr()->pen().brush().color().lighter(165), 3));
             this->setSymbol(&mMarkerSymbol);
             this->plot()->replot();
             retval=true;
@@ -1866,7 +1881,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         {
             if(!mIsBeingMoved)
             {
-                mMarkerSymbol.setBrush(mpCurve->getCurvePtr()->pen().brush().color());
+                mMarkerSymbol.setPen(QPen(mpCurve->getCurvePtr()->pen().brush().color(), 3));
                 this->setSymbol(&mMarkerSymbol);
                 this->plot()->replot();
             }
@@ -1875,7 +1890,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         if(mIsBeingMoved)
         {
             setXValue(mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).x());
-            setYValue(mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).y());
+            setYValue(mpPlotTab->getPlot()->invTransform(QwtPlot::yLeft, mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).y())));
         }
         return retval;
     }

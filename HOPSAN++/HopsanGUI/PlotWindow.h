@@ -229,7 +229,7 @@ private:
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;
-    QwtSymbol *mpMarkerHoverSymbol;
+    //QwtSymbol *mpMarkerHoverSymbol;
 
     QString mUnitLeft;
     QString mUnitRight;
