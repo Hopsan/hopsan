@@ -12,6 +12,7 @@
 
 #include "GUIObject.h"
 #include "GUIModelObjectAppearance.h"
+#include <QGraphicsSvgItem>
 
 class GUIConnector;
 class GUIModelObjectDisplayName;
@@ -125,6 +126,7 @@ protected:
     graphicsType mIconType;
     bool mIconRotation;
     QGraphicsSvgItem *mpIcon;
+    QString mLastIconPath;
 
     QList<GUIPort*> mPortListPtrs;
     QList<GUIConnector*> mGUIConnectorPtrs;

@@ -276,50 +276,19 @@ void GUIModelObject::setIcon(graphicsType gfxType)
         iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
 
-    //If we have no Icon, create one
-    if (mpIcon == 0)
+    //Avoid swappping icon if same as before
+    if (mLastIconPath != iconPath)
     {
+        if (mpIcon != 0)
+        {
+            mpIcon->deleteLater(); //Shedule previous icon for deletion
+        }
+
         mpIcon = new QGraphicsSvgItem(iconPath, this);
-    }
-    else
-    {
-        qDebug() << "Defualt size before: " << mpIcon->renderer()->defaultSize();
-        QSize oldSize = mpIcon->renderer()->defaultSize();
-        QPointF oldCenter = mpIcon->mapToScene(mpIcon->boundingRect().center());
-        qDebug() << "oldCenter:" << mpIcon->boundingRect().center();
-        qDebug() << "oldCenter in scene:" << oldCenter;
-        //! @todo this seems to load new graphics in old scale, need to fix this
-        //If we have an icon, change graphics, and redraw by calling hide and then show
-        if (mpIcon->renderer()->load(iconPath))
-        {
-            qDebug() << "Defualt size after: " << mpIcon->renderer()->defaultSize();
-
-
-            QSize newSize = mpIcon->renderer()->defaultSize();
-            QTransform scaleTransform;
-            scaleTransform.scale(qreal(newSize.width())/qreal(oldSize.width()), qreal(newSize.height())/qreal(oldSize.height()));
-            //mpIcon->prepareGeometryChange();
-            qDebug() << "scale: " << qreal(newSize.width())/qreal(oldSize.width()) << " " << qreal(newSize.height())/qreal(oldSize.height());
-
-
-            //mpIcon->setTransformOriginPoint(mpIcon->mapFromScene(oldCenter));
-            mpIcon->setTransform(scaleTransform,true);
-
-            //mpIcon->boundingRect().setSize(defSize);
-            mpIcon->hide();
-            mpIcon->show();
-
-            qDebug() << "mpIcon->boundinRect after scale transformation: " << mpIcon->boundingRect();
-
-
-        }
-        else
-        {
-            qDebug() << "failed to swap icon to: " << iconPath;
-        }
+        mLastIconPath = iconPath;
+        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
     }
 
-    mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
     if(mGUIModelObjectAppearance.getIconRotationBehaviour() == "ON")
         mIconRotation = true;

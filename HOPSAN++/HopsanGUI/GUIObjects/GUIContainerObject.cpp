@@ -426,7 +426,7 @@ void GUIContainerObject::removeExternalPort(QString portName)
     {
         if ((*plit)->getName() == portName )
         {
-            //Delete the GUIPort its post in teh portlist and its appearance data
+            //Delete the GUIPort its post in the portlist and its appearance data
             mGUIModelObjectAppearance.erasePortAppearance(portName);
             delete *plit;
             mPortListPtrs.erase(plit);

@@ -12,11 +12,9 @@
 
 #include <QGraphicsWidget>
 #include <QObject>
-#include <QGraphicsSvgItem>
 #include <QPen>
 
 #include <cassert>
-//#include <QtXml>  //This one is only used for the virtual save function
 #include "../common.h"
 
 class QDomElement;
@@ -31,7 +29,7 @@ class GUIObject : public QGraphicsWidget
 
 public:
     GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
-    virtual ~GUIObject();
+    //virtual ~GUIObject();
 
     virtual void setParentContainerObject(GUIContainerObject *pParentContainer);
     virtual GUIContainerObject *getParentContainerObject();
@@ -105,16 +103,12 @@ public:
     void setPassive();
     void setHovered();
 
-    //Public members
-    //GUIObject *mpParentGUIObject;
-
 protected:
     //Protected members
     QVector<QGraphicsLineItem*> mLines;
 
     QPen mActivePen;
     QPen mHoverPen;
-
 };
 
 

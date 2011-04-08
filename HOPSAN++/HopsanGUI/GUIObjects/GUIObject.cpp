@@ -38,11 +38,11 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject 
 }
 
 
-//! @brief Destructor for GUI Objects
-GUIObject::~GUIObject()
-{
+////! @brief Destructor for GUI Objects
+//GUIObject::~GUIObject()
+//{
 
-}
+//}
 
 void GUIObject::setParentContainerObject(GUIContainerObject *pParentContainer)
 {
