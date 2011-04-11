@@ -94,6 +94,8 @@ public:
     bool mIsRenamingObject;
     bool mJustStoppedCreatingConnector;
 
+    int nPlotCurves;
+
     GUIModelObject *mpTempGUIModelObject;
     GUIConnector *mpTempConnector;
     graphicsType mGfxType;

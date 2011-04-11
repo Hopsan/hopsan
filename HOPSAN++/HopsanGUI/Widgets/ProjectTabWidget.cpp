@@ -79,6 +79,7 @@ ProjectTab::~ProjectTab()
 //! e.g. a component added or a connection has changed.
 void ProjectTab::hasChanged()
 {
+    qDebug() << "hasChanged()";
     if (mIsSaved)
     {
         QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
@@ -111,6 +112,7 @@ void ProjectTab::setSaved(bool value)
         {
             tabName.chop(1);
         }
+        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
     }
     mIsSaved = value;
 }
@@ -424,12 +426,13 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 //! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
-    if (!(this->getTab(index)->isSaved()))
+    if (!(getTab(index)->isSaved()))
     {
         QString modelName;
         modelName = tabText(index);
         modelName.chop(1);
         QMessageBox msgBox;
+        msgBox.setWindowIcon(gpMainWindow->windowIcon());
         msgBox.setText(QString("The model '").append(modelName).append("'").append(QString(" is not saved.")));
         msgBox.setInformativeText("Do you want to save your changes before closing?");
         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -445,6 +448,32 @@ bool ProjectTabWidget::closeProjectTab(int index)
             break;
         case QMessageBox::Discard:
             // Don't Save was clicked
+            break;
+        case QMessageBox::Cancel:
+            // Cancel was clicked
+            return false;
+        default:
+            // should never be reached
+            return false;
+        }
+    }
+
+
+    if (getTab(index)->mpSystem->nPlotCurves > 0)
+    {
+        QMessageBox msgBox;
+        msgBox.setWindowIcon(gpMainWindow->windowIcon());
+        msgBox.setText(QString("All open plot curves from this model will be lost."));
+        msgBox.setInformativeText("Are you sure you want to close?");
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+
+        int answer = msgBox.exec();
+
+        switch (answer)
+        {
+        case QMessageBox::Ok:
+            // Ok was clicked
             break;
         case QMessageBox::Cancel:
             // Cancel was clicked
@@ -542,7 +571,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     //Make sure file not already open
     for(int t=0; t!=this->count(); ++t)
     {
-        if( (this->tabText(t) == fileInfo.fileName()) || (this->tabText(t) == (fileInfo.fileName() + "*")) )
+        if( (this->tabText(t) == fileInfo.fileName()) || (this->tabText(t) == (fileInfo.fileName() + "*")) )    //! @todo Not very nice way to check if a model is alraedy open...
         {
             QMessageBox::StandardButton reply;
             reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));

@@ -57,6 +57,8 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
 
     mPasteOffset = -30;
 
+    nPlotCurves = 0;
+
     //Create the scene
     mpScene = new QGraphicsScene(this);
 
@@ -599,7 +601,7 @@ void GUIContainerObject::removeFavoriteParameterByComponentName(QString componen
         }
     }
 
-    mpParentProjectTab->hasChanged();   //! @todo Is this necessary here?
+    //mpParentProjectTab->hasChanged();   //! @todo Is this necessary here?
 }
 
 
@@ -1435,7 +1437,7 @@ void GUIContainerObject::toggleNames(bool value)
         emit hideAllNameText();
     }
     mNamesHidden = !value;
-    mpParentProjectTab->hasChanged();
+    //mpParentProjectTab->hasChanged();
 }
 
 
@@ -1443,7 +1445,7 @@ void GUIContainerObject::toggleNames(bool value)
 void GUIContainerObject::hidePorts(bool doIt)
 {
     mPortsHidden = !doIt;
-    mpParentProjectTab->hasChanged();
+    //mpParentProjectTab->hasChanged();
 }
 
 

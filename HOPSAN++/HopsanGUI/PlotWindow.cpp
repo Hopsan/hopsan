@@ -1426,6 +1426,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 {
         //Set all member variables
     mpParentPlotTab = parent;
+    mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
+    mpContainerObject->nPlotCurves++;
     mGeneration = generation;
     mComponentName = componentName;
     mPortName = portName;
@@ -1446,7 +1448,6 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mOffsetY = 0.0;
 
         //Get data from container object
-    mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
     mDataVector = mpContainerObject->getPlotData(generation, componentName, portName, dataName);
     mTimeVector = mpContainerObject->getTimeVector(generation);
 
@@ -1488,6 +1489,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 //! Deletes the info box and its dock widgets before the curve is removed.
 PlotCurve::~PlotCurve()
 {
+    mpContainerObject->nPlotCurves--;
     mpPlotInfoDockWidget->hide();
     delete(mpPlotInfoBox);
     delete(mpPlotInfoDockWidget);
