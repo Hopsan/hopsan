@@ -539,16 +539,12 @@ void ProjectTabWidget::loadModel()
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH),
                                                          tr("Hopsan Model Files (*.hmf)"));
     loadModel(modelFileName);
-
-    emit newTabAdded();
 }
 
 
 void ProjectTabWidget::loadModel(QAction *action)
 {
     loadModel(action->text());
-
-    emit newTabAdded();
 }
 
 
@@ -601,6 +597,8 @@ void ProjectTabWidget::loadModel(QString modelFileName)
         //! @todo give some cool error message
     }
     pCurrentTab->setSaved(true);
+
+    emit newTabAdded();
 }
 
 
