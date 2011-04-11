@@ -251,6 +251,8 @@ void GUIModelObject::setDisplayName(QString name)
 {
     mGUIModelObjectAppearance.setName(name);
     refreshDisplayName();
+
+    emit nameChanged();
 }
 
 

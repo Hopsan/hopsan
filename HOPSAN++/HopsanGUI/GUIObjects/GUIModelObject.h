@@ -97,6 +97,7 @@ public slots:
     void setIcon(graphicsType);
 
 signals:
+    void nameChanged();
 
 protected:
     //Protected methods
