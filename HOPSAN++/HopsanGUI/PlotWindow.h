@@ -61,14 +61,16 @@ signals:
 
 public slots:
     void addPlotTab();
+    void updateLists();
     void updatePortList();
     void updateVariableList();
     void addPlotCurveFromBoxes();
     void importGNUPLOT();
-    void saveToXml();
     void close();
     void updatePalette();
     void createPlotWindowFromTab();
+    void loadFromXml();
+    void exportToXml();
 
 private:
     QGridLayout *mpLayout;
@@ -82,12 +84,13 @@ private:
     QToolButton *mpPanButton;
     QToolButton *mpExportButton;
     QToolButton *mpExportGfxButton;
-    QToolButton *mpImportButton;
+    QToolButton *mpLoadFromXmlButton;
     QToolButton *mpGridButton;
     QToolButton *mpBackgroundColorButton;
     QToolButton *mpNewWindowFromTabButton;
     QToolButton *mpResetXVectorButton;
     QMenu *mpExportMenu;
+    QAction *mpExportToXmlAction;
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
     QMenu *mpExportGfxMenu;
@@ -190,7 +193,7 @@ public:
     void insertMarker(QwtPlotCurve *curve);
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void updateLabels();
-
+    bool isGridVisible();
 
     QVector<double> mVectorX;       //! @todo Should be private
     QString mVectorXLabel;

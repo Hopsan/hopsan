@@ -77,10 +77,12 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpPanButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpPanButton->setShortcut(QKeySequence("x"));
 
-    mpExportToMatlabAction = new QAction("Export to Matlab", mpToolBar);
-    mpExportToGnuplotAction = new QAction("Export to gnuplot", mpToolBar);
+    mpExportToXmlAction = new QAction("Export to Hopsan Multiplot File (.xml)", mpToolBar);
+    mpExportToMatlabAction = new QAction("Export to Matlab Script File (.m)", mpToolBar);
+    mpExportToGnuplotAction = new QAction("Export to gnuplot data file(.dat)", mpToolBar);
 
     mpExportMenu = new QMenu(mpToolBar);
+    mpExportMenu->addAction(mpExportToXmlAction);
     mpExportMenu->addAction(mpExportToMatlabAction);
     mpExportMenu->addAction(mpExportToGnuplotAction);
 
@@ -105,10 +107,10 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpExportGfxButton->setMenu(mpExportGfxMenu);
     mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
 
-    mpImportButton = new QToolButton(mpToolBar);
-    mpImportButton->setToolTip("Import Plot");
-    mpImportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
-    mpImportButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpLoadFromXmlButton = new QToolButton(mpToolBar);
+    mpLoadFromXmlButton->setToolTip("Import Plot");
+    mpLoadFromXmlButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadFromXmlButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     mpGridButton = new QToolButton(mpToolBar);
     mpGridButton->setToolTip("Show Grid (G)");
@@ -150,7 +152,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpResetXVectorButton->setEnabled(false);
 
     mpToolBar->addWidget(mpNewPlotButton);
-    mpToolBar->addWidget(mpImportButton);
+    mpToolBar->addWidget(mpLoadFromXmlButton);
     mpToolBar->addWidget(mpExportButton);
     mpToolBar->addWidget(mpExportGfxButton);
     mpToolBar->addSeparator();
@@ -211,19 +213,17 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     this->setCentralWidget(pCentralWidget);
 
     // Populate boxes
-    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
-    mpComponentList->addItems(plotData.last().keys());
-    mpComponentList->setCurrentItem(mpComponentList->item(0));
-    updatePortList();
+    updateLists();
 
         //Establish signal and slots connections
     connect(mpNewPlotButton,                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
-    connect(mpExportButton,                   SIGNAL(clicked()),                                              this,               SLOT(saveToXml()));
+    connect(mpExportToXmlAction,            SIGNAL(triggered()),                                            this,               SLOT(exportToXml()));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
     connect(mpNewWindowFromTabButton,       SIGNAL(clicked()),                                              this,               SLOT(createPlotWindowFromTab()));
     connect(mpComponentList,                SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
+    connect(gpMainWindow->mpProjectTabs,    SIGNAL(currentChanged(int)),                                    this,               SLOT(updateLists()));
     connect(mpPortList,                     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
     connect(mpVariableList,                 SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
     connect(gpMainWindow->mpOptionsDialog,  SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
@@ -241,10 +241,29 @@ void PlotWindow::addPlotTab()
 }
 
 
+void PlotWindow::updateLists()
+{
+    qDebug() << "Update lists!";
+    mpVariableList->clear();
+    mpPortList->clear();
+    mpComponentList->clear();
+
+    qDebug() << "Blä!";
+    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
+    if(!plotData.isEmpty())
+    {
+        mpComponentList->addItems(plotData.last().keys());
+        mpComponentList->setCurrentItem(mpComponentList->item(0));
+        updatePortList();
+    }
+}
+
+
 void PlotWindow::updatePortList()
 {
+    qDebug() << "Update port lists!";
     if(mpComponentList->count() == 0) { return; }
-
+    qDebug() << "Should not be here...";
     disconnect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
 
     mpPortList->clear();
@@ -261,7 +280,8 @@ void PlotWindow::updatePortList()
 
 void PlotWindow::updateVariableList()
 {
-    if(mpPortList->count() == 0) { return; }
+    qDebug() << "Update variable lists!";
+    if(mpComponentList->count() == 0 || mpPortList->count() == 0) { return; }
 
     mpVariableList->clear();
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
@@ -348,6 +368,74 @@ void PlotWindow::createPlotWindowFromTab()
         pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }
+
+
+
+
+void PlotWindow::loadFromXml()
+{
+    //! @todo Implement
+}
+
+
+void PlotWindow::exportToXml()
+{
+        //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString filePath;
+    filePath = QFileDialog::getSaveFileName(this, tr("Save Plot To Hopsan XML Plot File"),
+                                            fileDialogSaveDir.currentPath(),
+                                            tr("Hopsan Multiplot File (*.xml)"));
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+
+        //Write to xml file
+    QDomDocument domDocument;
+    QDomElement xmlRootElement = domDocument.createElement("hopsanplot");
+    domDocument.appendChild(xmlRootElement);
+
+    QDomElement dateElement = appendDomElement(xmlRootElement,"date");
+    QDate date = QDate::currentDate();
+    dateElement.setAttribute("year", date.year());
+    dateElement.setAttribute("month", date.month());
+    dateElement.setAttribute("day", date.day());
+
+    QDomElement timeElement = appendDomElement(xmlRootElement,"time");
+    QTime time = QTime::currentTime();
+    timeElement.setAttribute("hour", time.hour());
+    timeElement.setAttribute("minute", time.minute());
+    timeElement.setAttribute("second", time.second());
+
+    for(size_t i=0; i<mpPlotTabs->count(); ++i)
+    {
+        QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
+        if(mpPlotTabs->getTab(i)->isGridVisible())
+        {
+            tabElement.setAttribute("grid", "true");
+        }
+        else
+        {
+            tabElement.setAttribute("grid", "false");
+        }
+        tabElement.setAttribute("red", mpPlotTabs->getTab(i)->getPlot()->canvasBackground().red());
+        tabElement.setAttribute("green", mpPlotTabs->getTab(i)->getPlot()->canvasBackground().green());
+        tabElement.setAttribute("blue", mpPlotTabs->getTab(i)->getPlot()->canvasBackground().blue());
+    }
+
+    appendRootXMLProcessingInstruction(domDocument);
+
+    //Save to file
+    const int IndentSize = 4;
+    QFile xmlsettings(filePath);
+    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: " << filePath;
+        return;
+    }
+    QTextStream out(&xmlsettings);
+    domDocument.save(out, IndentSize);
+}
+
 
 
 //! @brief Constructor for variable list widget
@@ -835,7 +923,7 @@ void PlotTab::removeCurve(PlotCurve *curve)
     delete(curve);
     rescaleToCurves();
     updateLabels();
-    mpPlot->replot();
+    update();
 }
 
 
@@ -857,7 +945,7 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
     rescaleToCurves();
     mVectorXLabel = QString(dataName + " [" + dataUnit + "]");
     updateLabels();
-    mpPlot->replot();
+    update();
     mVectorX = xArray;
     mHasSpecialXAxis = true;
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
@@ -895,6 +983,12 @@ void PlotTab::updateLabels()
 }
 
 
+bool PlotTab::isGridVisible()
+{
+    return mpGrid->isVisible();
+}
+
+
 void PlotTab::resetXVector()
 {
     for(int i=0; i<mPlotCurvePtrs.size(); ++i)
@@ -923,7 +1017,7 @@ void PlotTab::exportToMatlab()
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Save Plot To MATLAB File"),
                                             fileDialogSaveDir.currentPath(),
-                                            tr("MATLAB file (*.m)"));
+                                            tr("MATLAB script file (*.m)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
     file.setFileName(fileInfo.filePath());   //Create a QFile object
@@ -1137,10 +1231,12 @@ int PlotTab::getNumberOfCurves()
 
 void PlotTab::update()
 {
-    //mpPlot->clear();
+    mpPlot->enableAxis(QwtPlot::yLeft, false);
+    mpPlot->enableAxis(QwtPlot::yRight, false);
     QList<PlotCurve *>::iterator cit;
     for(cit=mPlotCurvePtrs.begin(); cit!=mPlotCurvePtrs.end(); ++cit)
     {
+        if(!mpPlot->axisEnabled((*cit)->getAxisY())) { mpPlot->enableAxis((*cit)->getAxisY()); }
         (*cit)->getCurvePtr()->attach(mpPlot);
     }
 
@@ -1150,13 +1246,13 @@ void PlotTab::update()
         double x = mpPlot->transform(QwtPlot::xBottom, posF.x());
         double y = mpPlot->transform(QwtPlot::yLeft, posF.y());
         QPoint pos = QPoint(x,y);
-        qDebug() << "Blö: " << pos;
+        qDebug() << "BlÃ¶: " << pos;
         QwtPlotCurve *pCurve = mMarkerPtrs.at(i)->getCurve()->getCurvePtr();
         mMarkerPtrs.at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
         //mMarkerPtrs.at(i)->setYValue(pCurve->sample(pCurve->closestPoint(pos)).y());
         mMarkerPtrs.at(i)->setYValue(mpPlot->invTransform(QwtPlot::yLeft, mpPlot->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
 
-//        qDebug() << "Blä: " << pCurve->sample(pCurve->closestPoint(pos));
+//        qDebug() << "BlÃ¤: " << pCurve->sample(pCurve->closestPoint(pos));
     }
 
     mpPlot->replot();
@@ -1188,7 +1284,7 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
     tempLabel.setText("("+xString+", "+yString+")");
     tempLabel.setText("("+xString+", "+yString+")");
     tempLabel.setColor(pCurve->getCurvePtr()->pen().brush().color());
-    tempLabel.setBackgroundBrush(QColor(255,255,255,235));
+    tempLabel.setBackgroundBrush(QColor(255,255,255,220));
     tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
     tempMarker->setLabel(tempLabel);
     tempMarker->setLabelAlignment(Qt::AlignTop);
@@ -1307,9 +1403,12 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QAction *setRightAxisLogarithmic;
     QAction *setLeftAxisLogarithmic;
 
+
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
 
+    yAxisLeftMenu->setEnabled(mpPlot->axisEnabled(QwtPlot::yLeft));
+    yAxisRightMenu->setEnabled(mpPlot->axisEnabled(QwtPlot::yRight));
 
         //Create menu and actions for changing units
     changeUnitsMenu = menu.addMenu(QString("Change Units"));
@@ -1936,7 +2035,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
             QwtText tempLabel;
             tempLabel.setText("("+xString+", "+yString+")");
             tempLabel.setColor(mpCurve->getCurvePtr()->pen().brush().color());
-            tempLabel.setBackgroundBrush(QColor(255,255,255,235));
+            tempLabel.setBackgroundBrush(QColor(255,255,255,220));
             tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
             setLabel(tempLabel);
         }

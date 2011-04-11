@@ -373,7 +373,7 @@ PlotWidget::PlotWidget(MainWindow *parent)
 }
 
 
-//! Loads a plot window from a specified .hpw file. Loads the actual plot data from a .hmpf file.
+//! Loads a plot window from a specified .hpw file. Loads the actual plot data from a .xml file.
 void PlotWidget::loadFromXml()
 {
 
@@ -413,16 +413,16 @@ void PlotWidget::loadFromXml()
 //        }
 //        else
 //        {
-//            QString hmpfFileName = hpwRoot.firstChildElement("datafile").text();
+//            QString XmlFileName = hpwRoot.firstChildElement("datafile").text();
 //            size_t datasize = parseDomValueNode(hpwRoot.firstChildElement("datasize"));
 
-//            QFile hmpfFile(hmpfFileName);
-//            if(!hmpfFile.exists())
+//            QFile XmlFile(XmlFileName);
+//            if(!XmlFile.exists())
 //            {
-//                qDebug() << "Failed to open file, file not found: " + hmpfFile.fileName();
+//                qDebug() << "Failed to open file, file not found: " + XmlFile.fileName();
 //                return;
 //            }
-//            if (!hmpfFile.open(QIODevice::ReadOnly | QIODevice::Text))
+//            if (!XmlFile.open(QIODevice::ReadOnly | QIODevice::Text))
 //            {
 //                return;
 //            }
@@ -439,7 +439,7 @@ void PlotWidget::loadFromXml()
 //            yData.append(tempList);
 
 
-//            QTextStream fileStream(&hmpfFile);
+//            QTextStream fileStream(&XmlFile);
 //            QString line;
 //            QTextStream lineStream;
 //            size_t generation = 0;
@@ -465,7 +465,7 @@ void PlotWidget::loadFromXml()
 //                    }
 //                }
 //            }
-//            hmpfFile.close();
+//            XmlFile.close();
 
 //            QStringList componentName;
 //            QStringList portName;
