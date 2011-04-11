@@ -358,9 +358,16 @@ void GUIPort::refreshPortGraphics(QString cqsType, QString portType, QString nod
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
 void GUIPort::refreshPortGraphics()
 {
-    //! @todo the port graphics is not updated when you return to an unconnected systemport, this is probably a problem in core, maybe nodetype is nod reset, need to fix
+    //Remove old port graphics overlay
+    for(int i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
+    {
+        mvPortGraphicsOverlayPtrs.at(i)->deleteLater();
+    }
+    mvPortGraphicsOverlayPtrs.clear(); //Delete all empty storage locations, will append bellow
 
+    //Replace port graphics
     //! @todo this seems to load new graphics in old scale, need to fix this
+    //! @todo we cant use deleteLAter as that would delete this
     //If we have an icon, change graphics, and redraw by calling hide and then show
     if (this->renderer()->load(this->mpPortAppearance->mIconPath))
     {
@@ -372,25 +379,12 @@ void GUIPort::refreshPortGraphics()
         qDebug() << "failed to swap icon to: " << this->mpPortAppearance->mIconPath;
     }
 
-    //! @todo instead of delete we should use swap graphics trick like above, but we need to fix the scale problem first
-    //Setup port graphics overlay
-    if (!mvPortGraphicsOverlayPtrs.isEmpty())
+    //Recreate port graphics overlay
+    for(int i = 0; i < mpPortAppearance->mIconOverlayPaths.size(); ++i)
     {
-        for(size_t i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
-        {
-            delete mvPortGraphicsOverlayPtrs.at(i);
-        }
-    }
-    mvPortGraphicsOverlayPtrs.clear(); //Delete all empty storage locations, will append bellow
-
-    if (!this->mpPortAppearance->mIconOverlayPaths.isEmpty())
-    {
-        for(size_t i = 0; i < mpPortAppearance->mIconOverlayPaths.size(); ++i)
-        {
-            //! @todo check if file exist
-            mvPortGraphicsOverlayPtrs.append(new QGraphicsSvgItem(this->mpPortAppearance->mIconOverlayPaths.at(i), this));
-            mvPortGraphicsOverlayPtrs.back()->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-        }
+        //! @todo check if file exist
+        mvPortGraphicsOverlayPtrs.append(new QGraphicsSvgItem(this->mpPortAppearance->mIconOverlayPaths.at(i), this));
+        mvPortGraphicsOverlayPtrs.back()->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
     }
 }
 

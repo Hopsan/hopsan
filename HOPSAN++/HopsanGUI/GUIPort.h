@@ -61,7 +61,7 @@ public:
     void removeConnection();
     bool isConnected();
 
-    GUIModelObject *mpParentGuiModelObject;
+    GUIModelObject *mpParentGuiModelObject; //!< @todo should be private or protected
     QPointF rectPos;
 
 public slots:
