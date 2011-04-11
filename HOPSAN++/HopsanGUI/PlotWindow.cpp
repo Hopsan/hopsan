@@ -315,6 +315,8 @@ void PlotWindow::addPlotCurve(int generation, QString componentName, QString por
 }
 
 
+//! @brief Saves the plot window to XML
+//! All generations of all open curves will be saved, together with all cosmetic information about the plot window.
 void PlotWindow::saveToXml()
 {
     //! @todo Re-implement
@@ -1771,6 +1773,7 @@ void PlotCurve::updateToNewGeneration()
     if(mAutoUpdate)     //Only change the generation if auto update is on
         setGeneration(mpContainerObject->getNumberOfPlotGenerations()-1);
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
+    mpParentPlotTab->rescaleToCurves();
 }
 
 
