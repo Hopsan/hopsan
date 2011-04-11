@@ -59,6 +59,7 @@ public:
     void setIsoIconPath(QString path);
     void setUserIconPath(QString path);
     CONTAINEREDGE findPortEdge(QPointF center, QPointF pt);
+    virtual void refreshAppearance();
     void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 

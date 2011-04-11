@@ -296,6 +296,13 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     }
 }
 
+//! @brief Overloaded refreshAppearance for containers, to make sure that port positions are updeted if graphics size is changed
+void GUIContainerObject::refreshAppearance()
+{
+    GUIModelObject::refreshAppearance();
+    this->refreshExternalPortsAppearanceAndPosition();
+}
+
 //! @brief Use this function to calculate the placement of the ports on a subsystem icon.
 //! @param[in] w width of the subsystem icon
 //! @param[in] h heigth of the subsystem icon
