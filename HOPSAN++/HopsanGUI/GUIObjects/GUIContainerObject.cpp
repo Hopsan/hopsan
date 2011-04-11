@@ -1285,6 +1285,10 @@ void GUIContainerObject::alignX()
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.last()->getCenterPos().x(), mSelectedGUIModelObjectsList.at(i)->getCenterPos().y()));
             QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
+            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().size(); ++j)
+            {
+                mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().at(j)->drawConnector(true);
+            }
         }
         mpParentProjectTab->hasChanged();
     }
@@ -1303,6 +1307,10 @@ void GUIContainerObject::alignY()
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.at(i)->getCenterPos().x(), mSelectedGUIModelObjectsList.last()->getCenterPos().y()));
             QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
+            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().size(); ++j)
+            {
+                mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().at(j)->drawConnector(true);
+            }
         }
         mpParentProjectTab->hasChanged();
     }

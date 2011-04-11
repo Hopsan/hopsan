@@ -659,7 +659,7 @@ void GUIConnector::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 
 //! @brief Draws lines between the points in the mPoints vector, and stores them in the mpLines vector
-void GUIConnector::drawConnector()
+void GUIConnector::drawConnector(bool alignOperation)
 {
     if(!mIsConnected)        //End port is not connected, which means we are creating a new line
     {
@@ -685,7 +685,7 @@ void GUIConnector::drawConnector()
     }
     else        //End port is connected, so the connector is modified or has moved
     {
-        if(mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected() && this->isActive())
+        if(mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected() && this->isActive() && !alignOperation)
         {
                 //Both components and connector are selected, so move whole connector along with components
             moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),

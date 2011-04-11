@@ -78,7 +78,7 @@ protected:
 
 public slots:
     void setIsoStyle(graphicsType gfxType);
-    void drawConnector();
+    void drawConnector(bool alignOperation=false);
     void updateStartPoint(QPointF point);
     void updateEndPoint(QPointF point);
     void moveAllPoints(qreal offsetX, qreal offsetY);
