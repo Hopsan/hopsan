@@ -22,6 +22,8 @@
 #include <qwt_plot_marker.h>
 #include <qwt_symbol.h>
 
+#include "GUIObjects/GUIContainerObject.h"
+
 class MainWindow;
 class VariablePlot;
 class VariablePlotZoomer;
@@ -291,6 +293,7 @@ private:
     QString mPortName;
     QString mDataName;
     QString mDataUnit;
+    GUIContainerObject *mpContainerObject;
     QVector<double> mDataVector;
     QVector<double> mTimeVector;
     QColor mLineColor;

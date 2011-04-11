@@ -53,7 +53,6 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
     resize(1000,800);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
 
-    mpCurrentGUISystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     mpPlotParameterTree = plotParameterTree;
 
         //Create the toolbar and its buttons
@@ -1447,8 +1446,9 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mOffsetY = 0.0;
 
         //Get data from container object
-    mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(generation, componentName, portName, dataName);
-    mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(generation);
+    mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
+    mDataVector = mpContainerObject->getPlotData(generation, componentName, portName, dataName);
+    mTimeVector = mpContainerObject->getTimeVector(generation);
 
         //Create the actual curve
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
@@ -1480,6 +1480,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurvesButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoDockVisibility()));
     connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
+    connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
 }
 
 
@@ -1570,9 +1571,9 @@ QVector<double> PlotCurve::getTimeVector()
 void PlotCurve::setGeneration(int generation)
 {
     mGeneration = generation;
-    mDataVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
+    mDataVector = mpContainerObject->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
     if(mpParentPlotTab->mVectorX.size() == 0)
-        mTimeVector = gpMainWindow->mpProjectTabs->getCurrentContainer()->getTimeVector(mGeneration);
+        mTimeVector = mpContainerObject->getTimeVector(mGeneration);
     else
         mTimeVector = mpParentPlotTab->mVectorX;
 
@@ -1620,7 +1621,7 @@ void PlotCurve::setPreviousGeneration()
 //! @brief Changes a curve to the next available generation of its data
 void PlotCurve::setNextGeneration()
 {
-    if(mGeneration<gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations()-1)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
+    if(mGeneration<mpContainerObject->getNumberOfPlotGenerations()-1)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
         setGeneration(mGeneration+1);
 }
 
@@ -1766,7 +1767,7 @@ void PlotCurve::removeMe()
 void PlotCurve::updateToNewGeneration()
 {
     if(mAutoUpdate)     //Only change the generation if auto update is on
-        setGeneration(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations()-1);
+        setGeneration(mpContainerObject->getNumberOfPlotGenerations()-1);
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
 }
 
@@ -1774,12 +1775,12 @@ void PlotCurve::updateToNewGeneration()
 //! @brief Updates buttons and text in plot info box to correct values
 void PlotCurve::updatePlotInfoBox()
 {
-    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations() > 1);
-    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations()-1 && gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations() > 1);
+    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getNumberOfPlotGenerations() > 1);
+    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getNumberOfPlotGenerations()-1 && mpContainerObject->getNumberOfPlotGenerations() > 1);
 
     QString numString1, numString2;
     numString1.setNum(mGeneration+1);
-    numString2.setNum(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getNumberOfPlotGenerations());
+    numString2.setNum(mpContainerObject->getNumberOfPlotGenerations());
     mpPlotInfoBox->mpGenerationLabel->setText(numString1 + "(" + numString2 + ")");
 }
 
