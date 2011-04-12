@@ -125,7 +125,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 
     connect(mpNew, SIGNAL(clicked()), this, SLOT(createNewModel()));
     connect(mpOpen, SIGNAL(clicked()), this, SLOT(loadExistingModel()));
-    connect(mpLastSession, SIGNAL(pressed()), this, SLOT(loadLastSession()));
+    connect(mpLastSession, SIGNAL(clicked()), this, SLOT(loadLastSession()));
 }
 
 
@@ -217,8 +217,10 @@ void WelcomeDialog::loadExistingModel()
 
 void WelcomeDialog::loadLastSession()
 {
+
     for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
     {
+        qDebug() << "Opening last session model: " << gConfig.getLastSessionModels().at(i);
         gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
     }
     gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
