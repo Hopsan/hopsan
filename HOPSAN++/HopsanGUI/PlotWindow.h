@@ -69,8 +69,8 @@ public slots:
     void close();
     void updatePalette();
     void createPlotWindowFromTab();
+    void saveToXml();
     void loadFromXml();
-    void exportToXml();
 
 private:
     QGridLayout *mpLayout;

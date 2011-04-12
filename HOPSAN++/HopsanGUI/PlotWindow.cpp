@@ -217,7 +217,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
         //Establish signal and slots connections
     connect(mpNewPlotButton,                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
-    connect(mpExportToXmlAction,            SIGNAL(triggered()),                                            this,               SLOT(exportToXml()));
+    connect(mpExportToXmlAction,            SIGNAL(triggered()),                                            this,               SLOT(saveToXml()));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
@@ -339,47 +339,6 @@ void PlotWindow::addPlotCurve(int generation, QString componentName, QString por
 //! All generations of all open curves will be saved, together with all cosmetic information about the plot window.
 void PlotWindow::saveToXml()
 {
-    //! @todo Re-implement
-}
-
-
-//! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
-void PlotWindow::close()
-{
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->reportClosedPlotWindow(this);
-    QMainWindow::close();
-}
-
-
-//! @brief Slot that updates the palette to match the one used in main window
-void PlotWindow::updatePalette()
-{
-    setPalette(gpMainWindow->palette());
-}
-
-
-//! @brief Creates a new plot window and adds the curves from current plot tab
-void PlotWindow::createPlotWindowFromTab()
-{
-    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
-    pPlotWindow->show();
-    for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
-    {
-        pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
-    }
-}
-
-
-
-
-void PlotWindow::loadFromXml()
-{
-    //! @todo Implement
-}
-
-
-void PlotWindow::exportToXml()
-{
         //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;
@@ -394,13 +353,13 @@ void PlotWindow::exportToXml()
     QDomElement xmlRootElement = domDocument.createElement("hopsanplot");
     domDocument.appendChild(xmlRootElement);
 
-    QDomElement dateElement = appendDomElement(xmlRootElement,"date");
+    QDomElement dateElement = appendDomElement(xmlRootElement,"date");      //Append date tag
     QDate date = QDate::currentDate();
     dateElement.setAttribute("year", date.year());
     dateElement.setAttribute("month", date.month());
     dateElement.setAttribute("day", date.day());
 
-    QDomElement timeElement = appendDomElement(xmlRootElement,"time");
+    QDomElement timeElement = appendDomElement(xmlRootElement,"time");      //Append time tag
     QTime time = QTime::currentTime();
     timeElement.setAttribute("hour", time.hour());
     timeElement.setAttribute("minute", time.minute());
@@ -436,6 +395,39 @@ void PlotWindow::exportToXml()
     domDocument.save(out, IndentSize);
 }
 
+
+//! @brief Loads a plot window from XML
+void PlotWindow::loadFromXml()
+{
+    //! @todo Implement
+}
+
+
+//! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
+void PlotWindow::close()
+{
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->reportClosedPlotWindow(this);
+    QMainWindow::close();
+}
+
+
+//! @brief Slot that updates the palette to match the one used in main window
+void PlotWindow::updatePalette()
+{
+    setPalette(gpMainWindow->palette());
+}
+
+
+//! @brief Creates a new plot window and adds the curves from current plot tab
+void PlotWindow::createPlotWindowFromTab()
+{
+    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
+    pPlotWindow->show();
+    for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
+    {
+        pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+    }
+}
 
 
 //! @brief Constructor for variable list widget
