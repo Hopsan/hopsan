@@ -951,7 +951,7 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
     //Signal autmatic name change
     if (newname != portname)
     {
-        gCoreMessageHandler.addInfoMessage("Automatically changed name of added port from: {" + portname + "} to {" + newname + "}");
+        gCoreMessageHandler.addDebugMessage("Automatically changed name of added port from: {" + portname + "} to {" + newname + "}");
     }
 
     return new_port;
