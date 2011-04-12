@@ -567,7 +567,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     //Make sure file not already open
     for(int t=0; t!=this->count(); ++t)
     {
-        if( (this->tabText(t) == fileInfo.fileName()) || (this->tabText(t) == (fileInfo.fileName() + "*")) )    //! @todo Not very nice way to check if a model is alraedy open...
+        if(this->getContainer(t)->mModelFileInfo.filePath() == fileInfo.filePath())
         {
             QMessageBox::StandardButton reply;
             reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));

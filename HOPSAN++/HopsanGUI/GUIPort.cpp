@@ -18,6 +18,7 @@
 #include "MainWindow.h"
 #include "CoreAccess.h"
 #include "GraphicsView.h"
+#include "Configuration.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
@@ -373,6 +374,9 @@ void GUIPort::refreshPortGraphics()
     {
         this->hide();
         this->show();
+
+        if( isConnected() || !gpMainWindow->togglePortsAction->isChecked())
+            this->hide();
     }
     else
     {

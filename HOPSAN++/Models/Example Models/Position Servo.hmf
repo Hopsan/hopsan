@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.2" hopsanguiversion="0.2.1" hopsancoreversion="0">
-    <system cqs_type="S" name="Position Servo">
+    <system cqs_type="UNDEFINEDCQSTYPE" name="Position Servo">
         <hopsangui>
-            <pose x="0" y="0" flipped="0" a="0"/>
+            <pose x="16.5" y="9.5" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2620" zoom="1"/>
+            <viewport x="2499" y="2619" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <scriptfile path=""/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="Position Servo">
                     <icon isopath="subsystemtmp.svg" iconrotation="" userpath=""/>
@@ -155,7 +156,7 @@
                     <startvalue portname="P1" variable="Pressure" value="2e+007"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2598.9216" y="2627" flipped="0" a="0"/>
+                    <pose x="2598" y="2627" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -307,7 +308,7 @@
             <connect endport="PP" endcomponent="4/3 Servo Valve" startport="P1" startcomponent="C-type Pressure Source">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2598.9216" y="2615"/>
+                        <coordinate x="2598" y="2615"/>
                         <coordinate x="2598.9216" y="2588"/>
                     </coordinates>
                     <geometries>
