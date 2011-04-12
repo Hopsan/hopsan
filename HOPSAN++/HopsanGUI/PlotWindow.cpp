@@ -216,17 +216,18 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     updateLists();
 
         //Establish signal and slots connections
-    connect(mpNewPlotButton,                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
-    connect(mpExportToXmlAction,            SIGNAL(triggered()),                                            this,               SLOT(saveToXml()));
-    connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
-    connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
-    connect(mpShowListsButton,              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
-    connect(mpNewWindowFromTabButton,       SIGNAL(clicked()),                                              this,               SLOT(createPlotWindowFromTab()));
-    connect(mpComponentList,                SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
-    connect(gpMainWindow->mpProjectTabs,    SIGNAL(currentChanged(int)),                                    this,               SLOT(updateLists()));
-    connect(mpPortList,                     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
-    connect(mpVariableList,                 SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
-    connect(gpMainWindow->mpOptionsDialog,  SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
+    connect(mpNewPlotButton,                                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
+    connect(mpExportToXmlAction,                            SIGNAL(triggered()),                                            this,               SLOT(saveToXml()));
+    connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
+    connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
+    connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
+    connect(mpNewWindowFromTabButton,                       SIGNAL(clicked()),                                              this,               SLOT(createPlotWindowFromTab()));
+    connect(mpComponentList,                                SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
+    connect(gpMainWindow->mpProjectTabs,                    SIGNAL(currentChanged(int)),                                    this,               SLOT(updateLists()));
+    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),   SIGNAL(simulationFinished()),                                   this,               SLOT(updateLists()),    Qt::UniqueConnection);
+    connect(mpPortList,                                     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
+    connect(mpVariableList,                                 SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
+    connect(gpMainWindow->mpOptionsDialog,                  SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
 }
 
 
@@ -241,14 +242,21 @@ void PlotWindow::addPlotTab()
 }
 
 
+//! @brief Updates the lists at the bottom of the plot window
 void PlotWindow::updateLists()
 {
     qDebug() << "Update lists!";
+
+        //Disconnect update functions from item change slots, to prevent new updates before this one is finished
+    disconnect(mpComponentList,     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updatePortList()));
+    disconnect(mpPortList,          SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updateVariableList()));
+
+        //Clear everything from the lists
     mpVariableList->clear();
     mpPortList->clear();
     mpComponentList->clear();
 
-    qDebug() << "Blä!";
+        //Fetch new data and add to the lists
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
     if(!plotData.isEmpty())
     {
@@ -256,9 +264,17 @@ void PlotWindow::updateLists()
         mpComponentList->setCurrentItem(mpComponentList->item(0));
         updatePortList();
     }
+
+        //Connect this slot with simulation finished signal from plot tab (in case it has changed)
+    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),   SIGNAL(simulationFinished()),   this,   SLOT(updateLists()),    Qt::UniqueConnection);
+
+        //Reconnect update functions
+    connect(mpComponentList,     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updatePortList()));
+    connect(mpPortList,          SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updateVariableList()));
 }
 
 
+//! @brief Updates the port list
 void PlotWindow::updatePortList()
 {
     qDebug() << "Update port lists!";
@@ -278,6 +294,7 @@ void PlotWindow::updatePortList()
 }
 
 
+//! @brief Updates the variable list
 void PlotWindow::updateVariableList()
 {
     qDebug() << "Update variable lists!";
