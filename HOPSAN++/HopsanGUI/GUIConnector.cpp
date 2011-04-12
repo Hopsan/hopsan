@@ -55,7 +55,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
     this->setPos(startPos);
     this->updateStartPoint(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentContainerObject->mGfxType);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance("Undefined", mpParentContainerObject->mGfxType);
     this->addPoint(startPos);
     this->addPoint(startPos);
     this->drawConnector();

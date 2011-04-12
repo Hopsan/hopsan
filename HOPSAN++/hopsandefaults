@@ -15,8 +15,12 @@
         <toggleportsbuttonchecked>true</toggleportsbuttonchecked>
     </settings>
     <style>
-        <penstyle width="3" situation="Primary" capstyle="32" type="NonFinished" style="1" color="#778899" gfxtype="Iso"/>
-        <penstyle width="3" situation="Primary" capstyle="32" type="NonFinished" style="1" color="#778899" gfxtype="User"/>
+        <penstyle width="1" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="Iso"/>
+        <penstyle width="2" situation="Active" capstyle="32" type="Undefined" style="1" color="#ff0000" gfxtype="Iso"/>
+        <penstyle width="2" situation="Hover" capstyle="32" type="Undefined" style="1" color="#8b0000" gfxtype="Iso"/>
+        <penstyle width="2" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="User"/>
+        <penstyle width="3" situation="Active" capstyle="32" type="Undefined" style="1" color="#ff0000" gfxtype="User"/>
+        <penstyle width="3" situation="Hover" capstyle="32" type="Undefined" style="1" color="#8b0000" gfxtype="User"/>
         <penstyle width="2" situation="Active" capstyle="32" type="Power" style="1" color="#ff0000" gfxtype="Iso"/>
         <penstyle width="2" situation="Hover" capstyle="32" type="Power" style="1" color="#8b0000" gfxtype="Iso"/>
         <penstyle width="1" situation="Primary" capstyle="32" type="Power" style="1" color="#000000" gfxtype="Iso"/>
