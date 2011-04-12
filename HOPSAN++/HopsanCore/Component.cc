@@ -2004,7 +2004,7 @@ bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
     {
         stringstream ss;
         ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." <<
-              "When connecting: {" << pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} to {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
+              " When connecting: {" << pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} to {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
     }
@@ -2874,15 +2874,10 @@ bool ComponentSystem::isSimulationOk()
     //Make sure that there are no components or systems with an undefined cqs_type present
     if (mComponentUndefinedptrs.size() > 0)
     {
-        //! @todo maybe list their names
-        cout << "Wrong CQStype: ";
         for (size_t i=0; i<mComponentUndefinedptrs.size(); ++i)
         {
-             cout << mComponentUndefinedptrs[i]->getName() << " ";
+            gCoreMessageHandler.addErrorMessage(string("The component {") + mComponentUndefinedptrs[i]->getName() + string("} does not have a valid CQS type."));
         }
-        cout << endl;
-
-        gCoreMessageHandler.addErrorMessage("There are components without correct CQS type pressent, you need to fix this before simulation");
         return false;
     }
 
@@ -2899,7 +2894,7 @@ bool ComponentSystem::isSimulationOk()
         {
             if(ports[i]->getNodePtr()->getNumberOfPortsByType(Port::POWERPORT) == 1)
             {
-                gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
+                gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one attached power port!");
                 return false;
             }
         }
