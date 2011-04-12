@@ -376,164 +376,106 @@ PlotWidget::PlotWidget(MainWindow *parent)
 //! Loads a plot window from a specified .hpw file. Loads the actual plot data from a .xml file.
 void PlotWidget::loadFromXml()
 {
+    QDir fileDialogOpenDir;
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load Plot Window Description From XML"),
+                                                         fileDialogOpenDir.currentPath(),
+                                                         tr("Plot Window Description File (*.xml)"));
+    if(fileName.isEmpty())                                                                      //User did not select a file
+    {
+        return;
+    }
+    QFile file(fileName);                                                                       //File is not readable
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 "Unable to read XML file.\n");
+        return;
+    }
 
-    //! @todo Re-implement
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))             //Parse error in file
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 gpMainWindow->tr("Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+        return;
+    }
 
-//    QDir fileDialogSaveDir;
-//    QString hpwFilePath;
-//    hpwFilePath = QFileDialog::getOpenFileName(this, tr("Plot Window File"),
-//                                               fileDialogSaveDir.currentPath() + QString(MODELPATH),
-//                                               tr("Hopsan Plot Window files (*.hpw)"));
+    QDomElement plotRoot = domDocument.documentElement();                                       //File has wrong root tag
+    if (plotRoot.tagName() != "hopsanplot")
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 "The file is not a plot window description file. Incorrect hmf root tag name: "
+                                 + plotRoot.tagName() + " != hopsanplot");
+        return;
+    }
 
-//    QFile file(hpwFilePath);
-//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to read plot window file.");
-//        return;
-//    }
-//    QDomDocument domDocument;
-//    QString errorStr;
-//    int errorLine, errorColumn;
-//    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-//    {
-//        QMessageBox::information(window(), tr("Hopsan GUI"),
-//                                 tr("Parse error at line %1, column %2:\n%3")
-//                                 .arg(errorLine)
-//                                 .arg(errorColumn)
-//                                 .arg(errorStr));
-//    }
-//    else
-//    {
-//        QDomElement hpwRoot = domDocument.documentElement();
-//        if (hpwRoot.tagName() != "hopsanplot")
-//        {
-//            QMessageBox::information(window(), tr("Hopsan GUI"),
-//                                     "The file is not an Hopsan Plot Window file. Incorrect hpw root tag name: "
-//                                     + hpwRoot.tagName() + " != hopsanplot");
-//        }
-//        else
-//        {
-//            QString XmlFileName = hpwRoot.firstChildElement("datafile").text();
-//            size_t datasize = parseDomValueNode(hpwRoot.firstChildElement("datasize"));
+        //Create new plot window
+    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
+    pPlotWindow->show();
 
-//            QFile XmlFile(XmlFileName);
-//            if(!XmlFile.exists())
-//            {
-//                qDebug() << "Failed to open file, file not found: " + XmlFile.fileName();
-//                return;
-//            }
-//            if (!XmlFile.open(QIODevice::ReadOnly | QIODevice::Text))
-//            {
-//                return;
-//            }
+        //Add plot tabs
+    QDomElement tabElement = plotRoot.firstChildElement("plottab");
+    bool first = true;
+    while(!tabElement.isNull())
+    {
+        if(first)      //First tab is created automatically, so don't make one extra
+        {
+            first=false;
+        }
+        else
+        {
+            pPlotWindow->addPlotTab();
+        }
 
-//            QList< QVector<double> > xData;
-//            QList< QList < QVector<double> > > yData;
-//            QVector<double> tempVector;
-//            xData.append(tempVector);
-//            QList< QVector<double> > tempList;
-//            for(size_t i=0; i<datasize; ++i)
-//            {
-//                tempList.append(tempVector);
-//            }
-//            yData.append(tempList);
+        double red, green, blue;
+        parseRgbString(tabElement.attribute("color"), red, green, blue);
+        pPlotWindow->getCurrentPlotTab()->getPlot()->setCanvasBackground(QColor(red, green, blue));
+        pPlotWindow->getCurrentPlotTab()->enableGrid(tabElement.attribute("grid") == "true");
 
+            //Add plot curve to tab
+        QDomElement curveElement = tabElement.firstChildElement("curve");
+        while(!curveElement.isNull())
+        {
+            QString modelName = curveElement.attribute("model");        //Find project tab with model file. Do nothing if not found.
+            bool foundModel = false;
+            int i;
+            for(i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+            {
+                if(gpMainWindow->mpProjectTabs->getTab(i)->mpSystem->mModelFileInfo.filePath() == modelName)
+                {
+                    foundModel = true;
+                    break;
+                }
+            }
 
-//            QTextStream fileStream(&XmlFile);
-//            QString line;
-//            QTextStream lineStream;
-//            size_t generation = 0;
-//            double value;
-//            while( !fileStream.atEnd() )
-//            {
-//                line = fileStream.readLine();
-//                if(line.startsWith("GENERATIONBREAK"))
-//                {
-//                    ++generation;
-//                    xData.append(tempVector);
-//                    yData.append(tempList);
-//                }
-//                else
-//                {
-//                    lineStream.setString(&line);
-//                    lineStream >> value;
-//                    xData[generation].append(value);
-//                    for(size_t ic=0; ic<datasize; ++ic)
-//                    {
-//                        lineStream >> value;
-//                        yData[generation][ic].append(value);
-//                    }
-//                }
-//            }
-//            XmlFile.close();
+            int generation = curveElement.attribute("generation").toInt();
+            QString componentName = curveElement.attribute("component");
+            QString portName = curveElement.attribute("port");
+            QString dataName = curveElement.attribute("data");
+            QString dataUnit = curveElement.attribute("unit");
+            int axisY = curveElement.attribute("axis").toInt();
+            if(foundModel &&
+               gpMainWindow->mpProjectTabs->getContainer(i)->getNumberOfPlotGenerations() >= generation &&
+               gpMainWindow->mpProjectTabs->getContainer(i)->hasGUIModelObject(componentName) &&
+               gpMainWindow->mpProjectTabs->getContainer(i)->getGUIModelObject(componentName)->getPort(portName) != 0)
 
-//            QStringList componentName;
-//            QStringList portName;
-//            QStringList dataName;
-//            QStringList dataUnit;
-//            QList<size_t> axis;
-//            QList<size_t> index;
-
-//                //Create plot window and curves from loaded data
-//            QDomElement curveElement = hpwRoot.firstChildElement("plotcurve");
-//            componentName.append(curveElement.firstChildElement("component").text());
-//            portName.append(curveElement.firstChildElement("port").text());
-//            dataName.append(curveElement.firstChildElement("dataname").text());
-//            dataUnit.append(curveElement.firstChildElement("unit").text());
-//            axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
-//            index.append(parseDomValueNode(curveElement.firstChildElement("index")));
-
-                //Create the actual plot window (with first curve, first generation)
-//            PlotWindow *pPlotWindow = mpPlotParameterTree->createPlotWindow(xData[0], yData[0][index.first()], axis.first(), componentName.first(), portName.first(), dataName.first(), dataUnit.first());
-
-//            pPlotWindow->mpCurves.first()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
-//                                                  pPlotWindow->mpCurves.first()->pen().width()));
-
-//                //Add the remaining curves (first generation)
-//            curveElement = curveElement.nextSiblingElement("plotcurve");
-//            while(!curveElement.isNull())
-//            {
-//                componentName.append(curveElement.firstChildElement("component").text());
-//                portName.append(curveElement.firstChildElement("port").text());
-//                dataName.append(curveElement.firstChildElement("dataname").text());
-//                dataUnit.append(curveElement.firstChildElement("unit").text());
-//                axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
-//                index.append(parseDomValueNode(curveElement.firstChildElement("index")));
-//                pPlotWindow->addPlotCurve(xData[0], yData[0][index.last()], componentName.last(), portName.last(), dataName.last(), dataUnit.last(), axis.last());
-
-//                pPlotWindow->mpCurves.last()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
-//                                                     pPlotWindow->mpCurves.last()->pen().width()));
-
-//                curveElement = curveElement.nextSiblingElement("plotcurve");
-//            }
-
-//                //Add the remaining generations
-//            QList< QVector<double> > tempList2;
-//            for(int ig=1; ig<xData.size(); ++ig)
-//            {
-//                pPlotWindow->mVectorX.append(tempList2);
-//                pPlotWindow->mVectorY.append(tempList2);
-//                for(int ic=0; ic<index.size(); ++ic)
-//                {
-//                    pPlotWindow->mVectorX.last().append(xData[ig]);
-//                    pPlotWindow->mVectorY.last().append(yData[ig][index[ic]]);
-//                }
-//            }
-
-//                //Set current generation and enable discard button if more than one generation
-//            pPlotWindow->mpDiscardGenerationButton->setEnabled(xData.size() > 1);
-//            pPlotWindow->setGeneration(xData.size()-1);
-
-
-//                //Keep loading xml data
-//            pPlotWindow->setLineWidth(parseDomValueNode(hpwRoot.firstChildElement("linewidth")));
-//            //pPlotWindow->mpVariablePlot->setCanvasBackground(hpwRoot.firstChildElement("backgroundcolor").text());
-//            pPlotWindow->enableGrid(parseDomBooleanNode(hpwRoot.firstChildElement("grid")));
-//            //pPlotWindow->mpVariablePlot->replot();
-//        }
-//    }
-
-//    file.close();
+            {
+                pPlotWindow->addPlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelName);
+                double red, green, blue;
+                parseRgbString(curveElement.attribute("color"),red,green,blue);
+                pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineColor(QColor(red, green, blue));
+                pPlotWindow->getCurrentPlotTab()->getCurves().last()->setLineWidth(curveElement.attribute("width").toInt());
+            }
+            curveElement = curveElement.nextSiblingElement("curve");
+        }
+        tabElement = tabElement.nextSiblingElement("plottab");
+    }
+    file.close();
 }
 
 

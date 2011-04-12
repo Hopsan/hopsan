@@ -341,13 +341,13 @@ void PlotWindow::importGNUPLOT()
 //! @param portName Name of port where variable is located
 //! @param dataName Name of variable
 //! @param dataUnit Unit of variable
-void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY)
+void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath)
 {
     //getCurrentPlotTab()->getPlot()->replot();
     qDebug() << "dataUnit = " << dataUnit;
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
     qDebug() << "dataUnit = " << dataUnit;
-    PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, getCurrentPlotTab());
+    PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelPath, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
     pTempCurve->updatePlotInfoDockVisibility();
 }
@@ -417,6 +417,7 @@ void PlotWindow::saveToXml()
             curveElement.setAttribute("port",       mpPlotTabs->getTab(i)->getCurves().at(j)->getPortName());
             curveElement.setAttribute("data",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataName());
             curveElement.setAttribute("unit",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataUnit());
+            curveElement.setAttribute("axis",       mpPlotTabs->getTab(i)->getCurves().at(j)->getAxisY());
             curveElement.setAttribute("width",      mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().width());
             curveElement.setAttribute("color",      makeRgbString(mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().color()));
             curveElement.setAttribute("model",      mpPlotTabs->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->mModelFileInfo.filePath());
@@ -443,76 +444,8 @@ void PlotWindow::saveToXml()
 //! @brief Loads a plot window from XML
 void PlotWindow::loadFromXml()
 {
-    QDir fileDialogOpenDir;
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load Plot Window Description From XML"),
-                                                         fileDialogOpenDir.currentPath(),
-                                                         tr("Plot Window Description File (*.xml)"));
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
-                                 "Unable to read XML file.\n");
-        return;
-    }
-
-    QDomDocument domDocument;
-    QString errorStr;
-    int errorLine, errorColumn;
-    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-    {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
-                                 gpMainWindow->tr("Parse error at line %1, column %2:\n%3")
-                                 .arg(errorLine)
-                                 .arg(errorColumn)
-                                 .arg(errorStr));
-        return;
-    }
-
-    QDomElement plotRoot = domDocument.documentElement();
-    if (plotRoot.tagName() != "hopsanplot")
-    {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
-                                 "The file is not a plot window description file. Incorrect hmf root tag name: "
-                                 + plotRoot.tagName() + " != hopsanplot");
-        return;
-    }
-
-    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
-    pPlotWindow->show();
-
-    QDomElement tabElement = plotRoot.firstChildElement("plottab");
-    bool first = true;
-    while(!tabElement.isNull())
-    {
-        if(first)      //First tab is created automatically, so don't make one extra
-        {
-            first=false;
-        }
-        else
-        {
-            pPlotWindow->addPlotTab();
-        }
-
-        double red, green, blue;
-        parseRgbString(tabElement.attribute("color"), red, green, blue);
-        pPlotWindow->getCurrentPlotTab()->getPlot()->setCanvasBackground(QColor(red, green, blue));
-        pPlotWindow->getCurrentPlotTab()->enableGrid(tabElement.attribute("grid") == "true");
-
-        QDomElement curveElement = tabElement.firstChildElement("curve");
-        while(!curveElement.isNull())
-        {
-            qDebug() << "Adding curve!";
-            curveElement = curveElement.nextSiblingElement("curve");
-        }
-        tabElement = tabElement.nextSiblingElement("plottab");
-    }
-    file.close();
-
-//            for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
-//            {
-//                pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
-//            }
+    gpMainWindow->makeSurePlotWidgetIsCreated();
+    gpMainWindow->mpPlotWidget->loadFromXml();
 }
 
 
@@ -1636,11 +1569,27 @@ class PlotInfoBox;
 //! @param dataUnit Name of unit to show data in
 //! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
 //! @param parent Pointer to plot tab which curve shall be created it
-PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, PlotTab *parent)
+PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath, PlotTab *parent)
 {
         //Set all member variables
     mpParentPlotTab = parent;
-    mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
+    if(modelPath.isEmpty())
+    {
+        mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
+    }
+    else
+    {
+        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+        {
+            if(gpMainWindow->mpProjectTabs->getTab(i)->mpSystem->mModelFileInfo.filePath() == modelPath)
+            {
+                mpContainerObject = gpMainWindow->mpProjectTabs->getContainer(i);
+                break;
+            }
+        }
+    }
+    assert(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
+
     mpContainerObject->nPlotCurves++;
     mGeneration = generation;
     mComponentName = componentName;

@@ -45,7 +45,7 @@ public:
     enum PlotWindowItems {ShowAll, ShowOnlyLists, ShowOnlyCurves, ShowOnlyPlot};
 
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
-    void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft);
+    void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath = QString());
     void setGeneration(int gen);
     PlotTabWidget *getPlotTabWidget();
     PlotTab *getCurrentPlotTab();
@@ -259,7 +259,7 @@ class PlotCurve : public QObject
     Q_OBJECT
     friend class PlotInfoBox;
 public:
-    PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, PlotTab *parent=0);
+    PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath="", PlotTab *parent=0);
     ~PlotCurve();
     PlotTab *mpParentPlotTab;
 
