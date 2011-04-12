@@ -217,6 +217,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
         //Establish signal and slots connections
     connect(mpNewPlotButton,                                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
+    connect(mpLoadFromXmlButton,                            SIGNAL(clicked()),                                              this,               SLOT(loadFromXml()));
     connect(mpExportToXmlAction,                            SIGNAL(triggered()),                                            this,               SLOT(saveToXml()));
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
@@ -359,9 +360,9 @@ void PlotWindow::saveToXml()
         //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;
-    filePath = QFileDialog::getSaveFileName(this, tr("Save Plot To Hopsan XML Plot File"),
+    filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
                                             fileDialogSaveDir.currentPath(),
-                                            tr("Hopsan Multiplot File (*.xml)"));
+                                            tr("Plot Window Description File (*.xml)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
 
@@ -382,6 +383,7 @@ void PlotWindow::saveToXml()
     timeElement.setAttribute("minute", time.minute());
     timeElement.setAttribute("second", time.second());
 
+        //Add tab elements
     for(size_t i=0; i<mpPlotTabs->count(); ++i)
     {
         QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
@@ -393,10 +395,35 @@ void PlotWindow::saveToXml()
         {
             tabElement.setAttribute("grid", "false");
         }
-        tabElement.setAttribute("red", mpPlotTabs->getTab(i)->getPlot()->canvasBackground().red());
-        tabElement.setAttribute("green", mpPlotTabs->getTab(i)->getPlot()->canvasBackground().green());
-        tabElement.setAttribute("blue", mpPlotTabs->getTab(i)->getPlot()->canvasBackground().blue());
+        tabElement.setAttribute("color", makeRgbString(mpPlotTabs->getTab(i)->getPlot()->canvasBackground()));
+
+        if(mpPlotTabs->getTab(i)->mHasSpecialXAxis)
+        {
+            QDomElement specialXElement = appendDomElement(tabElement,"specialx");
+            specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
+            specialXElement.setAttribute("component",   mpPlotTabs->getTab(i)->mVectorXComponent);
+            specialXElement.setAttribute("port",        mpPlotTabs->getTab(i)->mVectorXPortName);
+            specialXElement.setAttribute("data",        mpPlotTabs->getTab(i)->mVectorXDataName);
+            specialXElement.setAttribute("unit",        mpPlotTabs->getTab(i)->mVectorXDataUnit);
+            specialXElement.setAttribute("model",       mpPlotTabs->getTab(i)->mVectorXModelPath);
+        }
+
+            //Add curve elements
+        for(size_t j=0; j<mpPlotTabs->getTab(i)->getCurves().size(); ++j)
+        {
+            QDomElement curveElement = appendDomElement(tabElement,"curve");
+            curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
+            curveElement.setAttribute("component",  mpPlotTabs->getTab(i)->getCurves().at(j)->getComponentName());
+            curveElement.setAttribute("port",       mpPlotTabs->getTab(i)->getCurves().at(j)->getPortName());
+            curveElement.setAttribute("data",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataName());
+            curveElement.setAttribute("unit",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataUnit());
+            curveElement.setAttribute("width",      mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().width());
+            curveElement.setAttribute("color",      makeRgbString(mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().color()));
+            curveElement.setAttribute("model",      mpPlotTabs->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->mModelFileInfo.filePath());
+        }
     }
+
+
 
     appendRootXMLProcessingInstruction(domDocument);
 
@@ -416,7 +443,76 @@ void PlotWindow::saveToXml()
 //! @brief Loads a plot window from XML
 void PlotWindow::loadFromXml()
 {
-    //! @todo Implement
+    QDir fileDialogOpenDir;
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load Plot Window Description From XML"),
+                                                         fileDialogOpenDir.currentPath(),
+                                                         tr("Plot Window Description File (*.xml)"));
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 "Unable to read XML file.\n");
+        return;
+    }
+
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 gpMainWindow->tr("Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+        return;
+    }
+
+    QDomElement plotRoot = domDocument.documentElement();
+    if (plotRoot.tagName() != "hopsanplot")
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 "The file is not a plot window description file. Incorrect hmf root tag name: "
+                                 + plotRoot.tagName() + " != hopsanplot");
+        return;
+    }
+
+    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
+    pPlotWindow->show();
+
+    QDomElement tabElement = plotRoot.firstChildElement("plottab");
+    bool first = true;
+    while(!tabElement.isNull())
+    {
+        if(first)      //First tab is created automatically, so don't make one extra
+        {
+            first=false;
+        }
+        else
+        {
+            pPlotWindow->addPlotTab();
+        }
+
+        double red, green, blue;
+        parseRgbString(tabElement.attribute("color"), red, green, blue);
+        pPlotWindow->getCurrentPlotTab()->getPlot()->setCanvasBackground(QColor(red, green, blue));
+        pPlotWindow->getCurrentPlotTab()->enableGrid(tabElement.attribute("grid") == "true");
+
+        QDomElement curveElement = tabElement.firstChildElement("curve");
+        while(!curveElement.isNull())
+        {
+            qDebug() << "Adding curve!";
+            curveElement = curveElement.nextSiblingElement("curve");
+        }
+        tabElement = tabElement.nextSiblingElement("plottab");
+    }
+    file.close();
+
+//            for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
+//            {
+//                pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+//            }
 }
 
 
@@ -952,6 +1048,14 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
     }
 
     rescaleToCurves();
+
+    mVectorXModelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->mModelFileInfo.filePath();
+    mVectorXComponent = componentName;
+    mVectorXPortName = portName;
+    mVectorXDataName = dataName;
+    mVectorXDataUnit = dataUnit;
+    mVectorXGeneration = gpMainWindow->mpProjectTabs->getCurrentContainer()->getNumberOfPlotGenerations()-1;
+
     mVectorXLabel = QString(dataName + " [" + dataUnit + "]");
     updateLabels();
     update();
@@ -1676,6 +1780,13 @@ QVector<double> PlotCurve::getDataVector()
 QVector<double> PlotCurve::getTimeVector()
 {
     return mTimeVector;
+}
+
+
+//! @brief Returns a pointer to the container object a curve origins from
+GUIContainerObject *PlotCurve::getContainerObjectPtr()
+{
+    return mpContainerObject;
 }
 
 

@@ -195,8 +195,16 @@ public:
     void updateLabels();
     bool isGridVisible();
 
+    bool mHasSpecialXAxis;          //! @todo Should be private
     QVector<double> mVectorX;       //! @todo Should be private
-    QString mVectorXLabel;
+    QString mVectorXLabel;          //! @todo Should be private
+
+    QString mVectorXModelPath;      //! @todo Should be private
+    QString mVectorXComponent;      //! @todo Should be private
+    QString mVectorXPortName;       //! @todo Should be private
+    QString mVectorXDataName;       //! @todo Should be private
+    QString mVectorXDataUnit;       //! @todo Should be private
+    int mVectorXGeneration;         //! @todo Should be private
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
@@ -234,12 +242,10 @@ private:
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;
-    //QwtSymbol *mpMarkerHoverSymbol;
 
     QString mUnitLeft;
     QString mUnitRight;
 
-    bool mHasSpecialXAxis;
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
 
@@ -267,6 +273,7 @@ public:
     int getAxisY();
     QVector<double> getDataVector();
     QVector<double> getTimeVector();
+    GUIContainerObject *getContainerObjectPtr();
     void setGeneration(int generation);
     void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);

@@ -345,6 +345,16 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 }
 
 
+QString makeRgbString(QColor color)
+{
+    QString red, green,blue;
+    red.setNum(color.red());
+    green.setNum(color.green());
+    blue.setNum(color.blue());
+    return QString(red+","+green+","+blue);
+}
+
+
 void parseRgbString(QString rgb, double &red, double &green, double &blue)
 {
     QStringList split = rgb.split(",");

@@ -46,7 +46,8 @@ void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
 void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
 void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop);
 
-//String help functions
+//Color help functions
+QString makeRgbString(QColor color);
 void parseRgbString(QString rgb, double &red, double &green, double &blue);
 
 //Save Load Definitions
