@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="60"
-   height="30"
+   width="59.999985"
+   height="33"
    id="svg3336"
    sodipodi:version="0.32"
    inkscape:version="0.48.0 r9654"
@@ -86,9 +86,9 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="9.7019359"
-     inkscape:cx="39.129397"
-     inkscape:cy="12.470787"
+     inkscape:zoom="7.589112"
+     inkscape:cx="47.66447"
+     inkscape:cy="5.7979815"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -105,7 +105,7 @@
      fit-margin-bottom="0">
     <sodipodi:guide
        orientation="0,1"
-       position="8.8294751,26.362406"
+       position="8.8441725,26.369313"
        id="guide3178" />
   </sodipodi:namedview>
   <metadata
@@ -123,7 +123,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-448.75,-509.90625)">
+     transform="translate(-448.7353,-506.91316)">
     <path
        inkscape:connector-curvature="0"
        style="fill:none;stroke:#000000;stroke-width:1.0002948;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
