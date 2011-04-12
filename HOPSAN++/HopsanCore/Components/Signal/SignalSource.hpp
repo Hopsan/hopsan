@@ -44,7 +44,7 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE, mValue);
 
             //Initialize value to the node
            (*mpND_out) = mValue;
@@ -53,7 +53,9 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            //Nothing to do (only one write port can exist in the node, so no one else shall write to the value)
+           (*mpND_out) = mValue;          //Temporary RT solution  
+
+			//Nothing to do (only one write port can exist in the node, so no one else shall write to the value)
         }
     };
 }

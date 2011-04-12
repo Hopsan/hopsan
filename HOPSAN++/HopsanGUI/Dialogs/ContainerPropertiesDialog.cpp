@@ -21,6 +21,7 @@
 #include "../MainWindow.h"
 #include "../Widgets/LibraryWidget.h"
 #include "../Configuration.h"
+#include "../Widgets/ProjectTabWidget.h"
 
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
@@ -122,11 +123,41 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     }
 
 
+        //System Parameters Group Box
+    if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && !mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().isEmpty())
+    {
+        mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
+        mpSystemParametersLayout = new QGridLayout(this);
+
+        QMap<std::string, double>::iterator it;
+        QMap<std::string, double> tempMap;
+        tempMap = mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap();
+        int row = 0;
+        for(it=tempMap.begin(); it!=tempMap.end(); ++it)
+        {
+            QLabel *pParameterLabel = new QLabel(QString(it.key().c_str()), this);
+            pParameterLabel->setMinimumWidth(100);
+            QString numStr;
+            numStr.setNum(it.value());
+            QLineEdit *pParameterLineEdit = new QLineEdit(numStr, this);
+            pParameterLineEdit->setValidator(new QDoubleValidator(this));
+            mpSystemParametersLayout->addWidget(pParameterLabel, row, 0);
+            mpSystemParametersLayout->addWidget(pParameterLineEdit, row, 1);
+            mSystemParameterLabels.append(pParameterLabel);
+            mSystemParameterLineEdits.append(pParameterLineEdit);
+            ++row;
+        }
+        mpSystemParametersGroupBox->setLayout(mpSystemParametersLayout);
+    }
+
         //This is the main Vertical layout of the dialog
     mpMainLayout = new QVBoxLayout(this);
-    //mpMainLayout->setsetSizeConstraint(QLayout::SetFixedSize);
     mpMainLayout->addWidget(mpAppearanceGroupBox);
     mpMainLayout->addWidget(mpSettingsGroupBox);
+    if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && !mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().isEmpty())
+    {
+        mpMainLayout->addWidget(mpSystemParametersGroupBox);
+    }
 
         //Done and Cancel Buttons
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -196,6 +227,11 @@ void ContainerPropertiesDialog::setValues()
     {
         mpContainerObject->setNumberOfLogSamples(mpNSamplesEdit->text().toInt());
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
+    }
+
+    for(int i=0; i<mSystemParameterLabels.size(); ++i)
+    {
+        mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mSystemParameterLabels.at(i)->text(), mSystemParameterLineEdits.at(i)->text().toDouble());
     }
 
     this->done(0);

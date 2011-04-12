@@ -23,6 +23,7 @@
 #include "../Widgets/LibraryWidget.h"
 #include "../Widgets/QuickNavigationWidget.h"
 #include "../Widgets/PlotWidget.h"
+#include "../Widgets/SystemParametersWidget.h"
 #include "../Utilities/GUIUtilities.h"
 #include "GUIComponent.h"
 #include "GUIGroup.h"
@@ -1767,6 +1768,7 @@ void GUIContainerObject::enterContainer()
         //Upddate plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+    gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
     gpMainWindow->undoAction->setDisabled(this->mUndoDisabled);
     gpMainWindow->redoAction->setDisabled(this->mUndoDisabled);
@@ -1787,7 +1789,7 @@ void GUIContainerObject::exitContainer()
 //    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
 //    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
 //    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
-//    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
+    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
 //    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
 //    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
 
@@ -1811,6 +1813,7 @@ void GUIContainerObject::exitContainer()
         //Update plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+    gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
     gpMainWindow->undoAction->setDisabled(mpParentContainerObject->mUndoDisabled);
     gpMainWindow->redoAction->setDisabled(mpParentContainerObject->mUndoDisabled);

@@ -108,7 +108,7 @@ public:
     void setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit);
     void removeFavoriteParameterByComponentName(QString componentName);
 
-    QList<QStringList> mFavoriteParameters;
+    QList<QStringList> mFavoriteParameters;     //! @todo Should be private!
 
     QVector<double> getTimeVector(int generation);
     QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);

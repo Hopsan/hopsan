@@ -60,6 +60,11 @@ private:
     QPushButton *mpCancelButton;
     QPushButton *mpDoneButton;
 
+    QGroupBox *mpSystemParametersGroupBox;
+    QGridLayout *mpSystemParametersLayout;
+    QList<QLabel *> mSystemParameterLabels;
+    QList<QLineEdit *> mSystemParameterLineEdits;
+
 private slots:
     void setValues();
     void browseUser();
