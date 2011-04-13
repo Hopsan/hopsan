@@ -13,13 +13,15 @@
 
 #include <QPointF>
 #include <QString>
+#include <QDir>
 #include <QFileInfo>
 #include <QTextStream>
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
 QString addQuotes(QString str);
-QString relativePath(QString pathtochange, QString basepath);
+//QString relativePath(QString pathtochange, QDir basedir);
+QString relativePath(QFileInfo pathtochange, QDir basedir);
 qreal deg2rad(qreal deg);
 qreal rad2deg(qreal rad);
 qreal normDeg180(qreal deg);

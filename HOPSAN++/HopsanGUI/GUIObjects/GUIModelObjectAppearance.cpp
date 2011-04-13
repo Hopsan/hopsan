@@ -19,7 +19,6 @@
 
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
-    //Assume all strings default to ""
     mPortAppearanceMap.clear();
 }
 
@@ -34,7 +33,7 @@ QString GUIModelObjectAppearance::getTypeName()
 //! @returns The display name
 QString GUIModelObjectAppearance::getName()
 {
-    return mName;
+    return mDisplayName;
 }
 
 //! @brief This function returns the name or typename (if name is empty)
@@ -42,13 +41,13 @@ QString GUIModelObjectAppearance::getName()
 //! @returns A non-empty name
 QString GUIModelObjectAppearance::getNonEmptyName()
 {
-    if (mName.isEmpty())
+    if (mDisplayName.isEmpty())
     {
         return mTypeName;
     }
     else
     {
-        return mName;
+        return mDisplayName;
     }
 }
 
@@ -70,44 +69,65 @@ QString GUIModelObjectAppearance::getHelpText()
 //! If that is also missing retunr a path to the missing graphics icon
 QString GUIModelObjectAppearance::getFullIconPath(graphicsType gfxType)
 {
-    if ( !mIconPathUser.isEmpty() && (gfxType == USERGRAPHICS) )
+    QFileInfo iconUserFileInfo(QDir(mBasePath), mIconUserPath);
+    QFileInfo iconISOFileInfo(QDir(mBasePath), mIconIsoPath);
+
+    qDebug() << "Type: " << mTypeName << " iconUser: " << iconUserFileInfo.absoluteFilePath();
+    qDebug() << "Type: " << mTypeName << " iconISO: " << iconISOFileInfo.absoluteFilePath();
+
+    // We want USERICON and have USERICON
+    if ( (gfxType == USERGRAPHICS) && iconUserFileInfo.isFile() )
     {
         //Use user icon
-        return mBasePath + mIconPathUser;
+        return iconUserFileInfo.absoluteFilePath();
     }
-    else if ( !mIconPathISO.isEmpty() && (gfxType == ISOGRAPHICS) )
+    // We want ISOICON and have ISOICON
+    else if ( (gfxType == ISOGRAPHICS) &&  iconISOFileInfo.isFile() )
     {
-        //use iso icon
-        return mBasePath + mIconPathISO;
+        //Use ISO icon
+        return  iconISOFileInfo.absoluteFilePath();
     }
-    else if ( mIconPathUser.isEmpty() && !mIconPathISO.isEmpty() )
+    // If what we requested does not exist but USER graphics do exist
+    else if (iconUserFileInfo.isFile() && ! iconISOFileInfo.isFile() )
     {
-        //Want user icon but not available, use iso icon
-        return mBasePath + mIconPathISO;
+        //Use user icon
+        return iconUserFileInfo.absoluteFilePath();
     }
-    else if ( !mIconPathUser.isEmpty() && mIconPathISO.isEmpty() )
+    // If what we requested does not exist but ISO graphics do exist
+    else if ( !iconUserFileInfo.isFile() && iconISOFileInfo.isFile() )
     {
-        //Want ISO icon but not available, Use user icon
-        return mBasePath + mIconPathUser;
+        //Use ISO icon
+        return iconISOFileInfo.absoluteFilePath();
     }
     else
     {
-        //No icon available use som noname icon
+        //No icon available use the missing graphics icon
         return QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
 }
 
-//! @brief Returns the (not full) path to the user graphics icon
-QString GUIModelObjectAppearance::getIconPathUser()
+//! @brief Returns the relative (not full) path to the graphics icon of requested type
+QString GUIModelObjectAppearance::getRelativeIconPath(graphicsType gfxType)
 {
-    return mIconPathUser;
+    if (gfxType == USERGRAPHICS)
+    {
+        return mIconUserPath;
+    }
+    else if (gfxType == ISOGRAPHICS)
+    {
+        return mIconIsoPath;
+    }
+    else
+    {
+        return ""; //Invalid type
+    }
 }
 
-//! @brief Returns the (not full) path to the ISO graphics icon
-QString GUIModelObjectAppearance::getIconPathISO()
-{
-    return mIconPathISO;
-}
+////! @brief Returns the (not full) path to the ISO graphics icon
+//QString GUIModelObjectAppearance::getIconPathISO()
+//{
+//    return  iconISOFileInfo.fileName();
+//}
 
 QString GUIModelObjectAppearance::getIconRotationBehaviour()
 {
@@ -157,7 +177,7 @@ void GUIModelObjectAppearance::addPortAppearance(const QString portName, GUIPort
 }
 
 //! @brief Get the base path that all icon paths are relative
-QString GUIModelObjectAppearance::getBaseIconPath()
+QString GUIModelObjectAppearance::getBasePath()
 {
     return mBasePath;
 }
@@ -167,7 +187,7 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
     mTypeName       = domElement.attribute(HMF_TYPETAG);
-    mName           = domElement.attribute(HMF_DISPLAYNAMETAG);
+    mDisplayName    = domElement.attribute(HMF_DISPLAYNAMETAG);
 
     QDomElement xmlHelp = domElement.firstChildElement("help");
     if(!xmlHelp.isNull())
@@ -177,8 +197,8 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
     }
 
     QDomElement xmlIcon = domElement.firstChildElement("icon");
-    mIconPathISO    = xmlIcon.attribute("isopath");
-    mIconPathUser   = xmlIcon.attribute("userpath");
+    mIconIsoPath = xmlIcon.attribute("isopath");
+    mIconUserPath = xmlIcon.attribute("userpath");
     mIconRotationBehaviour = xmlIcon.attribute("iconrotation");
 
     QString portname;
@@ -199,10 +219,10 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     //! @todo not use hardcoded strings here
     QDomElement xmlObject = appendDomElement(rDomElement, "modelobject");
     xmlObject.setAttribute(HMF_TYPETAG, mTypeName);
-    xmlObject.setAttribute(HMF_DISPLAYNAMETAG, mName);
+    xmlObject.setAttribute(HMF_DISPLAYNAMETAG, mDisplayName);
     QDomElement xmlIcon = appendDomElement(xmlObject, "icon");
-    xmlIcon.setAttribute("isopath", mIconPathISO);
-    xmlIcon.setAttribute("userpath", mIconPathUser);
+    xmlIcon.setAttribute("isopath", mIconIsoPath);
+    xmlIcon.setAttribute("userpath", mIconUserPath);
     xmlIcon.setAttribute("iconrotation", mIconRotationBehaviour);
     if(!mHelpText.isNull() || !mHelpPicture.isNull())
     {
@@ -220,7 +240,7 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     }
 }
 
-//! @brief Temporary hack to test xml appearancedata
+//! @brief Save Appearancedata to XML file, currently used as a test function
 void GUIModelObjectAppearance::saveToXML(QString filename)
 {
     //Save to file
@@ -252,7 +272,7 @@ void GUIModelObjectAppearance::setTypeName(QString name)
 //! @brief Access method to manually set the Name
 void GUIModelObjectAppearance::setName(QString name)
 {
-    mName = name;
+    mDisplayName = name;
 }
 
 //! @brief Access method to manually set the HelpText
@@ -262,31 +282,42 @@ void GUIModelObjectAppearance::setHelpText(QString text)
 }
 
 //! @brief Access method to manually set the BaseIconPath
-void GUIModelObjectAppearance::setBaseIconPath(QString path)
+void GUIModelObjectAppearance::setBasePath(QString path)
 {
+    //Set new base path
     mBasePath = path;
 }
 
 //! @brief Access method to manually set the BasePath relative UserIconPath
-void GUIModelObjectAppearance::setIconPathUser(QString path)
+void GUIModelObjectAppearance::setRelativeIconPath(QString path, graphicsType gfxType)
 {
-    mIconPathUser = path;
+    if (gfxType == USERGRAPHICS)
+    {
+        mIconUserPath = path;
+    }
+    else if (gfxType == ISOGRAPHICS)
+    {
+        mIconUserPath = path;
+    }
+    //else dont do anything
 }
 
-//! @brief Access method to manually set the BasePath relative ISOIconPath
-void GUIModelObjectAppearance::setIconPathISO(QString path)
-{
-    mIconPathISO = path;
-}
+////! @brief Access method to manually set the BasePath relative ISOIconPath
+//void GUIModelObjectAppearance::setIconPathISO(QString path)
+//{
+//     iconISOFileInfo = path;
+//}
 
-//! @brief Check if a IsoIcon path is available, (does not check if icon actaully exists)
+//! @brief Check if a IsoIcon path is available and icon exists
 bool GUIModelObjectAppearance::haveIsoIcon()
 {
-    return !mIconPathISO.isEmpty();
+    QFileInfo fi(QDir(mBasePath), mIconIsoPath);
+    return fi.exists();
 }
 
-//! @brief Check if a UserIcon path is available, (does not check if icon actaully exists)
+//! @brief Check if a UserIcon path is available and icon exists
 bool GUIModelObjectAppearance::haveUserIcon()
 {
-    return !mIconPathUser.isEmpty();
+    QFileInfo fi(QDir(mBasePath), mIconUserPath);
+    return fi.exists();
 }

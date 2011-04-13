@@ -25,18 +25,17 @@ public:
     void setTypeName(QString name);
     void setName(QString name);
     void setHelpText(QString text);
-    void setBaseIconPath(QString path);
-    void setIconPathUser(QString path);
-    void setIconPathISO(QString path);
+    void setBasePath(QString path);
+    void setRelativeIconPath(QString path, graphicsType gfxType);
 
     QString getTypeName();
     QString getName();
     QString getNonEmptyName();
     QString getHelpPicture();
     QString getHelpText();
+    QString getBasePath();
     QString getFullIconPath(graphicsType gfxType=USERGRAPHICS);
-    QString getIconPathUser();
-    QString getIconPathISO();
+    QString getRelativeIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     PortAppearanceMapT &getPortAppearanceMap();
@@ -46,28 +45,23 @@ public:
     bool haveIsoIcon();
     bool haveUserIcon();
 
-    QString getBaseIconPath();
-
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
     void saveToXML(QString filename);
 
 private:
     QString mTypeName;
-    QString mName;
+    QString mDisplayName;
     QString mHelpPicture;
     QString mHelpText;
-    QString mIconPathUser;
-    QString mIconPathISO;
-    //! @todo In the future we should store file info separately for iso and user icons, and not use one common base path
-    //QFileInfo mUserIconInfo;
-    //QFileInfo mISOIconInfo;
+    QString mIconUserPath;
+    QString mIconIsoPath;
     QString mIconRotationBehaviour;
     QPointF mNameTextPos;
 
     PortAppearanceMapT mPortAppearanceMap;
 
-    //BaseDir for path strings, mayb should not be stored in here
+    //BaseDir for path strings
     QString mBasePath;
 
 };

@@ -1520,7 +1520,7 @@ QString GUIContainerObject::getScriptFile()
 //! @brief Returns the path to the icon with user graphics.
 QString GUIContainerObject::getUserIconPath()
 {
-    return this->mGUIModelObjectAppearance.getIconPathUser();
+    return this->mGUIModelObjectAppearance.getRelativeIconPath(USERGRAPHICS);
 }
 
 
@@ -1528,7 +1528,7 @@ QString GUIContainerObject::getUserIconPath()
 //! @todo do we return full path or relative
 QString GUIContainerObject::getIsoIconPath()
 {
-    return this->mGUIModelObjectAppearance.getIconPathISO();
+    return this->mGUIModelObjectAppearance.getRelativeIconPath(ISOGRAPHICS);
 }
 
 
@@ -1536,20 +1536,22 @@ QString GUIContainerObject::getIsoIconPath()
 //! @todo do we safe full path or relative
 void GUIContainerObject::setUserIconPath(QString path)
 {
-    QFileInfo fi;
-    fi.setFile(path);
-    this->mGUIModelObjectAppearance.setIconPathUser(fi.fileName());
-    this->mGUIModelObjectAppearance.setBaseIconPath(fi.absolutePath()+"/");
+    //! @todo FIX correct calc of relative paths
+//    QFileInfo fi;
+//    fi.setFile(path);
+    this->mGUIModelObjectAppearance.setRelativeIconPath(path, USERGRAPHICS);
+    //this->mGUIModelObjectAppearance.setBasePath(fi.absolutePath()+"/");
 }
 
 
 //! @brief Sets the path to the icon with iso graphics.
 void GUIContainerObject::setIsoIconPath(QString path)
 {
-    QFileInfo fi;
-    fi.setFile(path);
-    this->mGUIModelObjectAppearance.setIconPathISO(fi.fileName());
-    this->mGUIModelObjectAppearance.setBaseIconPath(fi.absolutePath()+"/");
+    //! @todo FIX correct calc of relative paths
+//    QFileInfo fi;
+//    fi.setFile(path);
+    this->mGUIModelObjectAppearance.setRelativeIconPath(path, ISOGRAPHICS);
+    //this->mGUIModelObjectAppearance.setBasePath(fi.absolutePath()+"/");
 }
 
 

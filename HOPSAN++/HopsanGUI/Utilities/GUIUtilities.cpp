@@ -74,14 +74,22 @@ QString addQuotes(QString str)
     return str;
 }
 
+////! @brief This function returns the relative absolute path
+////! @param [in] pathtochange The absolute path that you want to change
+////! @param [in] basedir The absolute directory path of the base directory
+////! @returns The realtive pathtochange, relative to basepath
+//QString relativePath(QString pathtochange, QDir basedir)
+//{
+//    return basedir.relativeFilePath(pathtochange);
+//}
+
 //! @brief This function returns the relative absolute path
-//! @param [in] pathtochange The absolute path theat you want to change
-//! @param [in] basedirpath The absolute directory path of the base directory
+//! @param [in] pathtochange The absolute path that you want to change
+//! @param [in] basedir The absolute directory path of the base directory
 //! @returns The realtive pathtochange, relative to basepath
-QString relativePath(QString pathtochange, QString basedirpath)
+QString relativePath(QFileInfo pathtochange, QDir basedir)
 {
-    QDir basedir(basedirpath);
-    return basedir.relativeFilePath(pathtochange);
+    return basedir.relativeFilePath(pathtochange.absoluteFilePath());
 }
 
 //! @brief Utility function to convert degrees to radians

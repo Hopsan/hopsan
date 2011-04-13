@@ -58,7 +58,7 @@ void ComponentPropertiesDialog::createEditStuff()
 
     QLabel *pHelpPicture = new QLabel();
     QPixmap helpPixMap;
-    helpPixMap.load(mpGUIComponent->getAppearanceData()->getBaseIconPath() + mpGUIComponent->getHelpPicture());
+    helpPixMap.load(mpGUIComponent->getAppearanceData()->getBasePath() + mpGUIComponent->getHelpPicture());
     pHelpPicture->setPixmap(helpPixMap);
 
     QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpGUIComponent->getTypeName())->getName(), this);

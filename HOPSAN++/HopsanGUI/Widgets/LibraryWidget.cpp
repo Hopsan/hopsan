@@ -358,7 +358,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 
         bool sucess = true;
         bool success2 = true;
-        pAppearanceData->setBaseIconPath(libDirObject.absolutePath() + "/");
+        pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
 
         //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
         //! @todo Move all core access to CoreAccess

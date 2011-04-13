@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
     <modelobject typename="Subsystem" displayname="">
-        <icon isopath="subsystemtmp.svg" iconrotation="ON" userpath=""/>
+        <icon isopath="" iconrotation="ON" userpath="subsystemtmp.svg"/>
     </modelobject>
 </hopsanobjectappearance>
