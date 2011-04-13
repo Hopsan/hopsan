@@ -26,6 +26,7 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../loadObjects.h"
 #include "MessageWidget.h"
+#include "../Configuration.h"
 
 
 //! @brief Constructor for the parameter items in the parameter tree
@@ -145,6 +146,7 @@ void PlotParameterTree::updateList()
                 {
                     for(int i = 0; i!=parameterNames.size(); ++i)
                     {
+                        parameterUnits[i] = gConfig.getDefaultUnit(parameterNames[i]);
                         tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
                         tempComponentItem->addChild(tempPlotParameterItem);
                         QStringList parameterDescription;
@@ -206,7 +208,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
     {
         //QTreeWidgetItem must be casted to a PlotParameterItem. This is a necessary because double click event can not know which kind of tree item is clicked.
         PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
-        return createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
+        return createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), ""/*tempItem->getDataUnit()*/);
     }
     return 0; //! @todo Should this return 0?
 }

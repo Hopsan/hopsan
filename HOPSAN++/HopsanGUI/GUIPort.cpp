@@ -449,7 +449,7 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
             gpMainWindow->mpPlotWidget = new PlotWidget(gpMainWindow);
         }
 
-        if(gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit))
+        if(gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, ""))
             success = true;
     }
 

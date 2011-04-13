@@ -274,7 +274,7 @@ void PlotWindow::updatePortList()
 {
     qDebug() << "Update port lists!";
     if(mpComponentList->count() == 0) { return; }
-    qDebug() << "Should not be here...";
+
     disconnect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
 
     mpPortList->clear();
