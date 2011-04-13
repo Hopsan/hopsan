@@ -16,7 +16,7 @@ namespace hopsan {
 
     private:
         double f;
-        double *mpND_signal, *mpND_c, *mpND_Zx;
+        double *mpND_signal, *mpND_f, *mpND_c, *mpND_Zx;
         Port *mpIn, *mpP1;
 
     public:
@@ -36,6 +36,8 @@ namespace hopsan {
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("f", "Generated force", "[N]", f);
+
+            disableStartValue(mpP1, NodeMechanic::FORCE);
         }
 
 
@@ -43,9 +45,11 @@ namespace hopsan {
         {
             mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, f);
 
+            mpND_f = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
+            (*mpND_f) = f;
             (*mpND_Zx) = 0.0;
         }
 

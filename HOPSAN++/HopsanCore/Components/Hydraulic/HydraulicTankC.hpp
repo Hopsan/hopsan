@@ -44,8 +44,8 @@ namespace hopsan {
 
             registerParameter("P", "Default Pressure", "[Pa]", mPressure);
 
+            disableStartValue(mpP1, NodeHydraulic::PRESSURE);
             setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
-            setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure);
         }
 
 
@@ -59,7 +59,6 @@ namespace hopsan {
             (*mpND_p) = mPressure;
             (*mpND_c) = mPressure;
             (*mpND_Zc) = mZc;
-            setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure); //Change the startvalue to notify the user
         }
 
 

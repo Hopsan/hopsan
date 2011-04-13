@@ -1209,6 +1209,12 @@ void Component::setStartValue(Port* pPort, const size_t &idx, const double &valu
 }
 
 
+void Component::disableStartValue(Port *pPort, const size_t &idx)
+{
+    pPort->disableStartValue(idx);
+}
+
+
 //! @brief Change the cqs type of a stored subsystem component
 bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
 {

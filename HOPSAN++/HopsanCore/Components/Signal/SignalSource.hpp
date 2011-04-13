@@ -39,6 +39,8 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("Value", "Source Value", "[-]", mValue);
+
+            disableStartValue(mpOut, NodeSignal::VALUE);
         }
 
 

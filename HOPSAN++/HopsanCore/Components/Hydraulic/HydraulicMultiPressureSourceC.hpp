@@ -49,7 +49,7 @@ namespace hopsan {
             registerParameter("P", "Default pressure", "[Pa]", p);
 
             //! @todo should we set startvalues in one or all ports
-            setStartValue(mpMP, NodeHydraulic::PRESSURE, p);
+            disableStartValue(mpMP, NodeHydraulic::PRESSURE);
             setStartValue(mpMP, NodeHydraulic::FLOW, 0.0);
         }
 

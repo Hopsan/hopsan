@@ -423,6 +423,12 @@ void Port::setStartValue(const size_t &idx, const double &value, const size_t po
 }
 
 
+void Port::disableStartValue(const size_t &idx)
+{
+    mpStartNode->mDataNames.at(idx) = "";
+}
+
+
 //! Check if the port is curently connected
 bool Port::isConnected()
 {

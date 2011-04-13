@@ -63,6 +63,8 @@ namespace hopsan {
             registerParameter("Frequency", "Frequencty", "[Hz]", mFrequency);
             registerParameter("Amplitude", "Amplitude", "[-]", mAmplitude);
             registerParameter("Offset", "Offset", "[s]", mOffset);
+
+            disableStartValue(mpOut, NodeSignal::VALUE);
         }
 
 

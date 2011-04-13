@@ -141,16 +141,26 @@ void ComponentPropertiesDialog::createEditStuff()
 //            startValueLayout->addWidget(portLabelName, sr, 0);
 //            ++sr;
 
-            mvStartValueLayout[j].resize(startDataNamesStr[j].size());
+            //mvStartValueLayout[j].resize(startDataNamesStr[j].size());
             for(int i=0; i < startDataNamesStr[j].size(); ++i)
             {
-                mvStartValueLayout[j][i]= new ParameterLayout(startDataNamesStr[j][i],
-                                                              portName,
-                                                              startDataValuesTxt[j][i],
-                                                              "["+startDataUnitsStr[j][i]+"]",
-                                                              mpGUIComponent);
-                startValueLayout->addLayout(mvStartValueLayout[j][i], sr, 0);
+                if(!startDataNamesStr[j][i].isEmpty())
+                {
 
+//                    mvStartValueLayout[j][i]= new ParameterLayout(startDataNamesStr[j][i],
+//                                                                  portName,
+//                                                                  startDataValuesTxt[j][i],
+//                                                                  "["+startDataUnitsStr[j][i]+"]",
+//                                                                  mpGUIComponent);
+
+                    mvStartValueLayout[j].append(new ParameterLayout(startDataNamesStr[j][i],
+                                                                  portName,
+                                                                  startDataValuesTxt[j][i],
+                                                                  "["+startDataUnitsStr[j][i]+"]",
+                                                                  mpGUIComponent));
+
+                      startValueLayout->addLayout(mvStartValueLayout[j].last(), sr, 0);
+                }
                 ++sr;
             }
             ++j;

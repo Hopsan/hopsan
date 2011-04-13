@@ -62,6 +62,8 @@ namespace hopsan {
             registerParameter("Amplitude", "Amplitude", "[-]", mAmplitude);
             registerParameter("StartTime", "Start Time", "[s]", mStartTime);
             registerParameter("StopTime", "Stop Time", "[s]", mStopTime);
+
+            disableStartValue(mpOut, NodeSignal::VALUE);
         }
 
 

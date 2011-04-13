@@ -44,7 +44,7 @@ namespace hopsan {
 
             registerParameter("P", "Default pressure", "[Pa]", p);
 
-            setStartValue(mpP1, NodeHydraulic::PRESSURE, p);
+            disableStartValue(mpP1, NodeHydraulic::PRESSURE);
             setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
         }
 
@@ -58,7 +58,6 @@ namespace hopsan {
             mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
             (*mpND_p) = p; //Override the startvalue for the pressure
-            setStartValue(mpP1, NodeHydraulic::PRESSURE, p); //This is here to show the user that the start value is hard coded!
 
             simulateOneTimestep();
         }
