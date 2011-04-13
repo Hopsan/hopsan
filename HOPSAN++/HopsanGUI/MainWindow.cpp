@@ -149,7 +149,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "benchmarking");
 
-    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-Time");
+    //mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-Time");
 
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Subsystem");
 

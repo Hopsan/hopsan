@@ -272,6 +272,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
             {
                 (*it)->addChild(newTreePost);
                 mpTree->expandItem(*it);
+                (*it)->sortChildren(0, Qt::AscendingOrder);
             }
 
             ++it;
