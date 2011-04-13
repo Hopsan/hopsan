@@ -207,9 +207,9 @@ void Node::copyNodeVariables(Node *pNode)
             cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
             if(mPlotBehaviour[i] == Node::PLOT)
             {
-                pNode->mDataNames[i] = mDataNames[i];
+                //pNode->mDataNames[i] = mDataNames[i];
                 pNode->mDataVector[i] = mDataVector[i];
-                pNode->mDataUnits[i] = mDataUnits[i];
+                //pNode->mDataUnits[i] = mDataUnits[i];
             }
         }
         setSpecialStartValues(pNode); //Handles Wave, imp variables and similar
