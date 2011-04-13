@@ -61,35 +61,36 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpNewPlotButton = new QToolButton(mpToolBar);
     mpNewPlotButton->setToolTip("Create New Plot");
     mpNewPlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
-    mpNewPlotButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     mpZoomButton = new QToolButton(mpToolBar);
     mpZoomButton->setToolTip("Zoom (Z)");
     mpZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom.png"));
     mpZoomButton->setCheckable(true);
-    mpZoomButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpZoomButton->setShortcut(QKeySequence("z"));
 
     mpPanButton = new QToolButton(mpToolBar);
     mpPanButton->setToolTip("Pan (X)");
     mpPanButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
     mpPanButton->setCheckable(true);
-    mpPanButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpPanButton->setShortcut(QKeySequence("x"));
 
-    mpExportToXmlAction = new QAction("Export to Hopsan Multiplot File (.xml)", mpToolBar);
+    mpSaveButton = new QToolButton(mpToolBar);
+    mpSaveButton->setToolTip("Save Plot Window Description File (.xml)");
+    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
+
+    mpExportToCsvAction = new QAction("Export to Comma-Separeted Values File (.csv)", mpToolBar);
     mpExportToMatlabAction = new QAction("Export to Matlab Script File (.m)", mpToolBar);
     mpExportToGnuplotAction = new QAction("Export to gnuplot data file(.dat)", mpToolBar);
 
     mpExportMenu = new QMenu(mpToolBar);
-    mpExportMenu->addAction(mpExportToXmlAction);
+    mpExportMenu->addAction(mpExportToCsvAction);
     mpExportMenu->addAction(mpExportToMatlabAction);
     mpExportMenu->addAction(mpExportToGnuplotAction);
 
     mpExportButton = new QToolButton(mpToolBar);
-    mpExportButton->setToolTip("Export Plot");
+    mpExportButton->setToolTip("Export Plot Tab");
     mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportPlot.png"));
-    mpExportButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpExportButton->setMenu(mpExportMenu);
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
 
@@ -103,27 +104,23 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpExportGfxButton = new QToolButton(mpToolBar);
     mpExportGfxButton->setToolTip("Export to Graphics File");
     mpExportGfxButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
-    mpExportGfxButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpExportGfxButton->setMenu(mpExportGfxMenu);
     mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
 
     mpLoadFromXmlButton = new QToolButton(mpToolBar);
     mpLoadFromXmlButton->setToolTip("Import Plot");
     mpLoadFromXmlButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
-    mpLoadFromXmlButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     mpGridButton = new QToolButton(mpToolBar);
     mpGridButton->setToolTip("Show Grid (G)");
     mpGridButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Grid.png"));
     mpGridButton->setCheckable(true);
     mpGridButton->setChecked(true);
-    mpGridButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpGridButton->setShortcut(QKeySequence("g"));
 
     mpBackgroundColorButton = new QToolButton(mpToolBar);
     mpBackgroundColorButton->setToolTip("Select Canvas Color (C)");
     mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
-    mpBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpBackgroundColorButton->setShortcut(QKeySequence("c"));
 
     mpShowListsButton = new QToolButton(mpToolBar);
@@ -131,28 +128,25 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpShowListsButton->setChecked(true);
     mpShowListsButton->setToolTip("Toggle Parameter Lists");
     mpShowListsButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
-    mpShowListsButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     mpShowCurvesButton = new QToolButton(mpToolBar);
     mpShowCurvesButton->setCheckable(true);
     mpShowCurvesButton->setChecked(true);
     mpShowCurvesButton->setToolTip("Toggle Curve Controls");
     mpShowCurvesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurves.png"));
-    mpShowCurvesButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     mpNewWindowFromTabButton = new QToolButton(mpToolBar);
     mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
     mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-OpenTabInNewPlotWindow.png"));
-    mpNewWindowFromTabButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     mpResetXVectorButton = new QToolButton(mpToolBar);
     mpResetXVectorButton->setToolTip("Reset Time Vector");
     mpResetXVectorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
-    mpResetXVectorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpResetXVectorButton->setEnabled(false);
 
     mpToolBar->addWidget(mpNewPlotButton);
     mpToolBar->addWidget(mpLoadFromXmlButton);
+    mpToolBar->addWidget(mpSaveButton);
     mpToolBar->addWidget(mpExportButton);
     mpToolBar->addWidget(mpExportGfxButton);
     mpToolBar->addSeparator();
@@ -218,7 +212,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
         //Establish signal and slots connections
     connect(mpNewPlotButton,                                SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
     connect(mpLoadFromXmlButton,                            SIGNAL(clicked()),                                              this,               SLOT(loadFromXml()));
-    connect(mpExportToXmlAction,                            SIGNAL(triggered()),                                            this,               SLOT(saveToXml()));
+    connect(mpSaveButton,                                   SIGNAL(clicked()),                                              this,               SLOT(saveToXml()));
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
@@ -644,6 +638,7 @@ void PlotTabWidget::tabChanged()
         disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(clicked()),      getTab(i),  SLOT(setBackgroundColor()));
         disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
         disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(clicked()),      getTab(i),  SLOT(resetXVector()));
+        disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
         disconnect(mpParentPlotWindow->mpExportToMatlabAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToMatlab()));
         disconnect(mpParentPlotWindow->mpExportToGnuplotAction,     SIGNAL(triggered()),    getTab(i),  SLOT(exportToGnuplot()));
         disconnect(mpParentPlotWindow->mpExportPdfAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPdf()));
@@ -662,6 +657,7 @@ void PlotTabWidget::tabChanged()
         connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(clicked()),      getCurrentTab(),    SLOT(setBackgroundColor()));
         connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
         connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(clicked()),      getCurrentTab(),    SLOT(resetXVector()));
+        connect(mpParentPlotWindow->mpExportToCsvAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToCsv()));
         connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
         connect(mpParentPlotWindow->mpExportToGnuplotAction,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGnuplot()));
         connect(mpParentPlotWindow->mpExportPdfAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPdf()));
@@ -1054,6 +1050,58 @@ void PlotTab::resetXVector()
 }
 
 
+void PlotTab::exportToCsv()
+{
+        //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString filePath;
+    QFileInfo fileInfo;
+    QFile file;
+    filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
+                                            fileDialogSaveDir.currentPath(),
+                                            tr("Comma-separated values (*.csv)"));
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    fileInfo.setFile(filePath);
+    file.setFileName(fileInfo.filePath());   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
+        return;
+    }
+    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+
+        //Cycle plot curves
+    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    {
+        fileStream << "x" << i;                                         //Write time/X vector
+        if(mHasSpecialXAxis)
+        {
+            for(int j=0; j<mVectorX.size(); ++j)
+            {
+                fileStream << "," << mVectorX[j];
+            }
+        }
+        else
+        {
+            for(int j=0; j<mPlotCurvePtrs[i]->getTimeVector().size(); ++j)
+            {
+                fileStream << "," << mPlotCurvePtrs[i]->getTimeVector()[j];
+            }
+        }
+        fileStream << "\n";
+
+        fileStream << "y" << i;                                             //Write data vector
+        for(int k=0; k<mPlotCurvePtrs[i]->getDataVector().size(); ++k)
+        {
+            fileStream << "," << mPlotCurvePtrs[i]->getDataVector()[k];
+        }
+        fileStream << "\n";
+    }
+
+    file.close();
+}
+
+
 void PlotTab::exportToMatlab()
 {
         //Open file dialog and initialize the file stream
@@ -1061,7 +1109,7 @@ void PlotTab::exportToMatlab()
     QString filePath;
     QFileInfo fileInfo;
     QFile file;
-    filePath = QFileDialog::getSaveFileName(this, tr("Save Plot To MATLAB File"),
+    filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To MATLAB File"),
                                             fileDialogSaveDir.currentPath(),
                                             tr("MATLAB script file (*.m)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
@@ -1079,21 +1127,33 @@ void PlotTab::exportToMatlab()
         //Write initial comment
     fileStream << "% MATLAB File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
 
-        //Write time vector (assume same vector for all curves)
-    fileStream << "time=[";
-    for(int i=0; i<mPlotCurvePtrs.first()->getTimeVector().size(); ++i)
-    {
-        fileStream << mPlotCurvePtrs.first()->getTimeVector()[i] << ",";
-    }
-    fileStream << "]\n";
-
-        //Write data vectors
+        //Cycle plot curves
     for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
-        fileStream << "y" << i << "=[";
-        for(int j=0; j<mPlotCurvePtrs[i]->getDataVector().size(); ++j)
+        fileStream << "x" << i << "=[";                                         //Write time/X vector
+        if(mHasSpecialXAxis)
         {
-            fileStream << mPlotCurvePtrs[i]->getDataVector()[j] << ",";
+            for(int j=0; j<mVectorX.size(); ++j)
+            {
+                if(j>0) fileStream << ",";
+                fileStream << mVectorX[j];
+            }
+        }
+        else
+        {
+            for(int j=0; j<mPlotCurvePtrs[i]->getTimeVector().size(); ++j)
+            {
+                if(j>0) fileStream << ",";
+                fileStream << mPlotCurvePtrs[i]->getTimeVector()[j];
+            }
+        }
+        fileStream << "]\n";
+
+        fileStream << "y" << i << "=[";                                             //Write data vector
+        for(int k=0; k<mPlotCurvePtrs[i]->getDataVector().size(); ++k)
+        {
+            if(k>0) fileStream << ",";
+            fileStream << mPlotCurvePtrs[i]->getDataVector()[k];
         }
         fileStream << "]\n";
     }
@@ -1104,7 +1164,7 @@ void PlotTab::exportToMatlab()
     fileStream << "hold on\n";
     for(int i=0; i<mPlotCurvePtrs.size(); ++i)
     {
-        fileStream << "plot(time,y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[i]->getCurvePtr()->pen().width() << ")\n";
+        fileStream << "plot(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[i]->getCurvePtr()->pen().width() << ")\n";
     }
 
     file.close();
@@ -1118,7 +1178,7 @@ void PlotTab::exportToGnuplot()
     QString filePath;
     QFileInfo fileInfo;
     QFile file;
-    filePath = QFileDialog::getSaveFileName(this, tr("Save Plot To gnuplot File"),
+    filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To gnuplot File"),
                                             fileDialogSaveDir.currentPath(),
                                             tr("gnuplot file (*.dat)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel

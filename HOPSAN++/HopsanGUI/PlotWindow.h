@@ -82,6 +82,7 @@ private:
     QToolButton *mpNewPlotButton;
     QToolButton *mpZoomButton;
     QToolButton *mpPanButton;
+    QToolButton *mpSaveButton;
     QToolButton *mpExportButton;
     QToolButton *mpExportGfxButton;
     QToolButton *mpLoadFromXmlButton;
@@ -90,7 +91,7 @@ private:
     QToolButton *mpNewWindowFromTabButton;
     QToolButton *mpResetXVectorButton;
     QMenu *mpExportMenu;
-    QAction *mpExportToXmlAction;
+    QAction *mpExportToCsvAction;
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
     QMenu *mpExportGfxMenu;
@@ -219,6 +220,7 @@ public slots:
     void enableGrid(bool value);
     void setBackgroundColor();
     void resetXVector();
+    void exportToCsv();
     void exportToMatlab();
     void exportToGnuplot();
     void exportToPdf();
