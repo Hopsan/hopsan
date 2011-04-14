@@ -1948,18 +1948,18 @@ void GUIContainerObject::definePlotAlias(QString componentName, QString portName
     if(ok)
     {
        QString alias = d;
-       QStringList variableDescription;
-       variableDescription.append(componentName);
-       variableDescription.append(portName);
-       variableDescription.append(dataName);
-       definePlotAlias(alias, variableDescription);
+       definePlotAlias(alias, componentName, portName, dataName);
     }
 }
 
 
-bool GUIContainerObject::definePlotAlias(QString alias, QStringList variableDescription)
+bool GUIContainerObject::definePlotAlias(QString alias, QString componentName, QString portName, QString dataName)
 {
     if(mPlotAliasMap.contains(alias)) return false;
+    QStringList variableDescription;
+    variableDescription.append(componentName);
+    variableDescription.append(portName);
+    variableDescription.append(dataName);
     mPlotAliasMap.insert(alias, variableDescription);
     return true;
 }

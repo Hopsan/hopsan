@@ -361,8 +361,8 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 
         if(selectedAction == defineAliasAction)
         {
-           gpMainWindow->mpProjectTabs->getCurrentContainer()->definePlotAlias(item->getComponentName(), item->getPortName(), item->getDataName());
-           this->updateList();
+            gpMainWindow->mpProjectTabs->getCurrentContainer()->definePlotAlias(item->getComponentName(), item->getPortName(), item->getDataName());
+            this->updateList();
         }
 
         if(selectedAction == addToFavoritesAction)

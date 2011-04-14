@@ -129,6 +129,17 @@ public:
     void readDomElement(QDomElement &rDomElement);
 };
 
+class PlotAliasLoadData
+{
+public:
+    QString alias;
+    QString componentName;
+    QString portName;
+    QString dataName;
+
+    void readDomElement(QDomElement &rDomElement);
+};
+
 GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 
@@ -149,6 +160,8 @@ void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObjec
 void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
 void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerObject* pSystem);
 void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
+void loadPlotAlias(const PlotAliasLoadData &rData, GUIContainerObject* pSystem);
+void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pSystem);
 
 void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
 void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);

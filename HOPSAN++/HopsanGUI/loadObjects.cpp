@@ -222,6 +222,11 @@ void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerO
     dynamic_cast<GUISystem *>(pContainer)->setFavoriteParameter(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
 }
 
+void loadPlotAlias(const PlotAliasLoadData &rData, GUIContainerObject *pContainer)
+{
+    pContainer->definePlotAlias(rData.alias, rData.componentName, rData.portName, rData.dataName);
+}
+
 
 //! @brief xml version
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
@@ -369,6 +374,15 @@ void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem
 }
 
 
+void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pSystem)
+{
+    PlotAliasLoadData data;
+    data.readDomElement(rDomElement);
+    loadPlotAlias(data, pSystem);
+
+}
+
+
 void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
 {
     //Read gui specific stuff
@@ -442,6 +456,15 @@ void FavoriteParameterLoadData::readDomElement(QDomElement &rDomElement)
     portName = rDomElement.attribute("portname"),
     dataName = rDomElement.attribute("dataname");
     dataUnit = rDomElement.attribute("dataunit");
+}
+
+
+void PlotAliasLoadData::readDomElement(QDomElement &rDomElement)
+{
+    alias = rDomElement.attribute("alias");
+    componentName = rDomElement.attribute("component");
+    portName = rDomElement.attribute("port"),
+    dataName = rDomElement.attribute("data");
 }
 
 

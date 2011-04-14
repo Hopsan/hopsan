@@ -205,6 +205,16 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
         mappedElement.setAttribute("name", QString(it.key().c_str()));
         mappedElement.setAttribute("value", it.value());
     }
+
+    QMap<QString, QStringList>::iterator ita;
+    for(ita=mPlotAliasMap.begin(); ita!=mPlotAliasMap.end(); ++ita)
+    {
+        QDomElement aliasElement = appendDomElement(parElement, "alias");
+        aliasElement.setAttribute("alias", ita.key());
+        aliasElement.setAttribute("component", ita.value().at(0));
+        aliasElement.setAttribute("port",ita.value().at(1));
+        aliasElement.setAttribute("data",ita.value().at(2));
+    }
 }
 
 //! @brief Saves the System specific GUI data to XML DOM Element
@@ -437,8 +447,15 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             loadFavoriteParameter(xmlSubObject, this);
-
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_FAVORITEPARAMETERTAG);
+        }
+
+        //9. Load plot variable aliases
+        xmlSubObject = xmlParameters.firstChildElement("alias");
+        while (!xmlSubObject.isNull())
+        {
+            loadPlotAlias(xmlSubObject, this);
+            xmlSubObject = xmlSubObject.nextSiblingElement("alias");
         }
 
         //Refresh the appearnce of the subsystemem and create the GUIPorts based on the loaded portappearance information

@@ -115,7 +115,7 @@ public:
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > getAllPlotData();
     int getNumberOfPlotGenerations();
     void definePlotAlias(QString componentName, QString portName, QString dataName);
-    bool definePlotAlias(QString alias, QStringList variableDescription);
+    bool definePlotAlias(QString alias, QString componentName, QString portName, QString dataName);
     void undefinePlotAlias(QString alias);
     QStringList getPlotVariableFromAlias(QString alias);
     QString getPlotAlias(QString componentName, QString portName, QString dataName);
@@ -196,6 +196,7 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     QString mScriptFilePath;
+    QMap<QString, QStringList> mPlotAliasMap;
 
 protected slots:
 
@@ -206,7 +207,6 @@ private:
     double mPasteOffset;
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
     QList< QVector<double> > mTimeVectors;
-    QMap<QString, QStringList> mPlotAliasMap;
 };
 
 #endif // GUICONTAINEROBJECT_H
