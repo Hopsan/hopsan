@@ -4,6 +4,7 @@
 #define MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 
 #include <sstream>
+#include <math.h>
 
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
@@ -18,7 +19,7 @@ namespace hopsan {
     {
 
     private:
-        double m, B, k;
+        double m, B, k, xMin, xMax;
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
@@ -41,6 +42,8 @@ namespace hopsan {
             m = 1.0;
             B = 10;
             k = 0.0;
+            xMin = -1000.0;
+            xMax = 1000.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
@@ -50,6 +53,8 @@ namespace hopsan {
             registerParameter("m", "Mass", "[kg]",                  m);
             registerParameter("B", "Viscous Friction", "[Ns/m]",    B);
             registerParameter("k", "Spring Coefficient", "[N/m]",   k);
+            registerParameter("x_min", "Minimum Position", "[m]",   xMin);
+            registerParameter("x_max", "Maximum Position", "[m]",   xMax);
         }
 
 
@@ -109,8 +114,21 @@ namespace hopsan {
 
             mFilter.setDen(mDen);
             v2 = mFilter.update(c1-c2);
-            v1 = -v2;
+
             x2 = mInt.update(v2);
+
+            if(x2<xMin)
+            {
+                x2=xMin;
+                v2=std::min(0.0, v2);
+            }
+            if(x2>xMax)
+            {
+                x2=xMax;
+                v2=std::max(0.0, v2);
+            }
+
+            v1 = -v2;
             x1 = -x2 + mLength;
             f1 = c1 + Zx1*v1;
             f2 = c2 + Zx2*v2;
