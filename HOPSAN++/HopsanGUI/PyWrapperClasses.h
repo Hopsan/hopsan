@@ -20,6 +20,7 @@
 #include "GUIPort.h"
 #include "Configuration.h"
 #include "PlotWindow.h"
+#include "Widgets/PyDockWidget.h"
 
 
 //Just for test purposes
@@ -226,6 +227,22 @@ public slots:
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
         o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName, "");
+    }
+
+    void plot(MainWindow* o, const QString &portAlias)
+    {
+        QStringList variableDescription = o->mpProjectTabs->getCurrentContainer()->getPlotVariableFromAlias(portAlias);
+        if(!variableDescription.isEmpty())
+        {
+            QString compName = variableDescription.at(0);
+            QString portName = variableDescription.at(1);
+            QString dataName = variableDescription.at(2);
+            o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName, "");
+        }
+        else
+        {
+            //! @todo Write a message in the python console that the port with specified alias was not found
+        }
     }
 
     void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
