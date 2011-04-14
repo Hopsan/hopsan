@@ -118,7 +118,7 @@ public:
     void readDomElement(QDomElement &rDomElement);
 };
 
-class FavoriteParameterLoadData
+class FavoriteVariableLoadData
 {
 public:
     QString componentName;
@@ -158,8 +158,8 @@ void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, un
 void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObject* pSystem);
 void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
-void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerObject* pSystem);
-void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
+void loadFavoriteVariable(const FavoriteVariableLoadData &rData, GUIContainerObject* pSystem);
+void loadFavoriteVariable(QDomElement &rDomElement, GUIContainerObject* pSystem);
 void loadPlotAlias(const PlotAliasLoadData &rData, GUIContainerObject* pSystem);
 void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pSystem);
 

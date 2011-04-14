@@ -87,8 +87,13 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
 {
     qDebug() << "Creating PlotParameterTree!";
 
-    mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
-    gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.clear();
+    if(gpMainWindow->mpProjectTabs->count() > 0)
+    {
+        mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.clear();
+        connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
+        connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+    }
 
     this->setDragEnabled(true);
     this->setAcceptDrops(false);
@@ -99,8 +104,6 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
     connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(gpMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
     connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(updateList()));
-    connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
-    connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlotWindow(QTreeWidgetItem*)));
 }
 
@@ -158,7 +161,7 @@ void PlotParameterTree::updateList()
                         QStringList parameterDescription;
                         parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
                         mAvailableParameters.append(parameterDescription);
-                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.contains(parameterDescription))
+                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.contains(parameterDescription))
                         {
                             tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
                         }
@@ -169,12 +172,12 @@ void PlotParameterTree::updateList()
     }
 
         //Append favorite plot variables to tree if they still exist
-    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.size(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.size(); ++i)
     {
-        QString componentName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.at(i).at(0);
-        QString portName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.at(i).at(1);
-        QString dataName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.at(i).at(2);
-        QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.at(i).at(3);
+        QString componentName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(0);
+        QString portName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(1);
+        QString dataName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(2);
+        QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(3);
 
         if(!componentName.isEmpty())
         {
@@ -182,16 +185,16 @@ void PlotParameterTree::updateList()
             tempPlotParameterItem->setText(0, tempPlotParameterItem->text(0).prepend(" " + componentName + ", "));
             tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
             this->addTopLevelItem(tempPlotParameterItem);
-            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.at(i)));
+            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i)));
         }
     }
 
-        //Remove no longer existing favorite parameters
-    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.size(); ++i)
+        //Remove no longer existing favorite variables
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.size(); ++i)
     {
-        if(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.at(i)))
+        if(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i)))
         {
-           // gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mFavoriteParameters.at(i));
+           // gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mFavoriteVariables.at(i));
         }
     }
 
@@ -339,13 +342,13 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
         }
 
 
-        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.contains(parameterDescription))
+        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.contains(parameterDescription))
         {
-            addToFavoritesAction = menu.addAction(QString("Add Favorite Parameter"));
+            addToFavoritesAction = menu.addAction(QString("Add Favorite Variable"));
         }
         else
         {
-            removeFromFavoritesAction = menu.addAction(QString("Remove Favorite Parameter"));
+            removeFromFavoritesAction = menu.addAction(QString("Remove Favorite Variable"));
         }
 
         //-- Action --//
@@ -367,12 +370,12 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 
         if(selectedAction == addToFavoritesAction)
         {
-            gpMainWindow->mpProjectTabs->getCurrentContainer()->setFavoriteParameter(parameterDescription.at(0), parameterDescription.at(1), parameterDescription.at(2), parameterDescription.at(3));
+            gpMainWindow->mpProjectTabs->getCurrentContainer()->setFavoriteVariable(parameterDescription.at(0), parameterDescription.at(1), parameterDescription.at(2), parameterDescription.at(3));
         }
 
         if(selectedAction == removeFromFavoritesAction)
         {
-           gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.removeAll(parameterDescription);
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.removeAll(parameterDescription);
            this->updateList();
         }
     }

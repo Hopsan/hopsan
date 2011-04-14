@@ -212,14 +212,14 @@ void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObjec
 
 
 //! @brief Loads a FavouriteParameter from the supplied load data
-//! @param[in] rData The FavoriteParameterLoadData to load from
+//! @param[in] rData The FavoriteVariableLoadData to load from
 //! @param[in] pContainer The Container Object to load into (Must be a system)
-void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerObject *pContainer)
+void loadFavoriteVariable(const FavoriteVariableLoadData &rData, GUIContainerObject *pContainer)
 {
     //! @todo is FAvouriteParameter suposted to be favourite plot varibales or something? rename in such case,
     //! @todo why do we need to make sure that a plotwidget is created every where
     gpMainWindow->makeSurePlotWidgetIsCreated();
-    dynamic_cast<GUISystem *>(pContainer)->setFavoriteParameter(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
+    dynamic_cast<GUISystem *>(pContainer)->setFavoriteVariable(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
 }
 
 void loadPlotAlias(const PlotAliasLoadData &rData, GUIContainerObject *pContainer)
@@ -366,11 +366,11 @@ void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
 }
 
 
-void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
+void loadFavoriteVariable(QDomElement &rDomElement, GUIContainerObject* pSystem)
 {
-    FavoriteParameterLoadData data;
+    FavoriteVariableLoadData data;
     data.readDomElement(rDomElement);
-    loadFavoriteParameter(data, pSystem);
+    loadFavoriteVariable(data, pSystem);
 }
 
 
@@ -450,7 +450,7 @@ void SystemParameterLoadData::readDomElement(QDomElement &rDomElement)
 }
 
 
-void FavoriteParameterLoadData::readDomElement(QDomElement &rDomElement)
+void FavoriteVariableLoadData::readDomElement(QDomElement &rDomElement)
 {
     componentName = rDomElement.attribute("componentname");
     portName = rDomElement.attribute("portname"),

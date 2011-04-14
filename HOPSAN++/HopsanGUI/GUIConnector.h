@@ -73,9 +73,6 @@ public:
 
     QVector<QPointF> mPoints;
 
-protected:
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-
 public slots:
     void setIsoStyle(graphicsType gfxType);
     void drawConnector(bool alignOperation=false);
@@ -105,6 +102,7 @@ private:
     bool mIsActive;
     bool mIsConnected;
     bool mMakingDiagonal;
+    bool mIsDashed;
 
     GUIContainerObject *mpParentContainerObject;
     GUIConnectorAppearance *mpGUIConnectorAppearance;
@@ -155,6 +153,7 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:

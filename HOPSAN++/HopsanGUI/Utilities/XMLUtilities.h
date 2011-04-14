@@ -62,7 +62,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue);
 #define HMF_CONNECTORTAG "connect"
 #define HMF_PARAMETERTAG "parameter"
 #define HMF_PARAMETERS "parameters"
-#define HMF_FAVORITEPARAMETERTAG "favoriteparameter"
+#define HMF_FAVORITEVARIABLETAG "favoritevariable"
 #define HMF_STARTVALUES "startvalues"
 #define HMF_STARTVALUE "startvalue"
 #define HMF_GROUPTAG "group"

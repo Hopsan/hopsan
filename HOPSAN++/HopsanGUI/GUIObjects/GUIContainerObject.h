@@ -104,11 +104,11 @@ public:
     size_t mHighestWidgetIndex;
     QMap<size_t, GUIWidget *> mWidgetMap;
 
-    QList<QStringList> getFavoriteParameters();
-    void setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit);
-    void removeFavoriteParameterByComponentName(QString componentName);
+    QList<QStringList> getFavoriteVariables();
+    void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
+    void removeFavoriteVariableByComponentName(QString componentName);
 
-    QList<QStringList> mFavoriteParameters;     //! @todo Should be private!
+    QList<QStringList> mFavoriteVariables;     //! @todo Should be private!
 
     QVector<double> getTimeVector(int generation);
     QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);

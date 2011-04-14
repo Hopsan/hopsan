@@ -186,11 +186,11 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 
     QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
-    QList<QStringList> favPars = this->getFavoriteParameters();
+    QList<QStringList> favPars = this->getFavoriteVariables();
     QList<QStringList>::iterator itf;
     for(itf = favPars.begin(); itf != favPars.end(); ++itf)
     {
-        QDomElement favoriteElement = appendDomElement(parElement, HMF_FAVORITEPARAMETERTAG);
+        QDomElement favoriteElement = appendDomElement(parElement, HMF_FAVORITEVARIABLETAG);
         favoriteElement.setAttribute("componentname", (*itf).at(0));
         favoriteElement.setAttribute("portname", (*itf).at(1));
         favoriteElement.setAttribute("dataname", (*itf).at(2));
@@ -442,12 +442,12 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
         }
 
-        //8. Load favorite parameters
-        xmlSubObject = xmlParameters.firstChildElement(HMF_FAVORITEPARAMETERTAG);
+        //8. Load favorite variables
+        xmlSubObject = xmlParameters.firstChildElement(HMF_FAVORITEVARIABLETAG);
         while (!xmlSubObject.isNull())
         {
-            loadFavoriteParameter(xmlSubObject, this);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_FAVORITEPARAMETERTAG);
+            loadFavoriteVariable(xmlSubObject, this);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_FAVORITEVARIABLETAG);
         }
 
         //9. Load plot variable aliases

@@ -83,6 +83,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpEndPort = 0;
     mIsConnected = false;
     mMakingDiagonal = false;
+    mIsDashed = false;
 
     this->setParentContainer(pParentContainer);
     //setFlags(QGraphicsItem::ItemIsFocusable);
@@ -651,13 +652,6 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 }
 
 
-//! @brief Handlex context menu eventse for connector
-void GUIConnector::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-    QGraphicsWidget::contextMenuEvent(event);
-}
-
-
 //! @brief Draws lines between the points in the mPoints vector, and stores them in the mpLines vector
 void GUIConnector::drawConnector(bool alignOperation)
 {
@@ -1118,6 +1112,12 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 void GUIConnectorLine::setActive()
 {
         this->setPen(mpConnectorAppearance->getPen("Active"));
+        if(mpParentGUIConnector->mIsDashed)
+        {
+            QPen tempPen = this->pen();
+            tempPen.setStyle(Qt::DashLine);
+            this->setPen(tempPen);
+        }
         this->mpParentGUIConnector->setZValue(1);
 }
 
@@ -1135,6 +1135,12 @@ void GUIConnectorLine::setPassive()
     {
         this->setPen(mpConnectorAppearance->getPen("Primary"));
     }
+    if(mpParentGUIConnector->mIsDashed)
+    {
+        QPen tempPen = this->pen();
+        tempPen.setStyle(Qt::DashLine);
+        this->setPen(tempPen);
+    }
 }
 
 
@@ -1143,7 +1149,13 @@ void GUIConnectorLine::setPassive()
 //! @see setPassive()
 void GUIConnectorLine::setHovered()
 {
-        this->setPen(mpConnectorAppearance->getPen("Hover"));
+    this->setPen(mpConnectorAppearance->getPen("Hover"));
+    if(mpParentGUIConnector->mIsDashed)
+    {
+        QPen tempPen = this->pen();
+        tempPen.setStyle(Qt::DashLine);
+        this->setPen(tempPen);
+    }
 }
 
 
@@ -1203,6 +1215,55 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     }
     this->mpParentGUIConnector->setZValue(1);
     emit lineHoverLeave();
+}
+
+
+//! @brief Handles context menu events for connector
+void GUIConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    if (!mpParentGUIConnector->isConnected() || mpParentGUIConnector->getStartPort()->getNodeType() == "NodeSignal")
+    {
+        event->ignore();
+        return;
+    }
+
+    QMenu menu;
+
+    QAction *pMakeDashedAction;
+    QAction *pMakeSolidAction;
+
+    if(this->pen().style() == Qt::SolidLine)
+    {
+        pMakeDashedAction = menu.addAction("Make Connector Dashed");
+    }
+    else
+    {
+        pMakeSolidAction = menu.addAction("Make Connector Solid");
+    }
+
+    QAction *selectedAction = menu.exec(event->screenPos());
+
+
+    if(selectedAction == pMakeDashedAction)
+    {
+        mpParentGUIConnector->mIsDashed=true;
+        QPen tempPen = this->pen();
+        tempPen.setStyle(Qt::DashLine);
+        for(int i=0; i<mpParentGUIConnector->mpLines.size(); ++i)
+        {
+            mpParentGUIConnector->mpLines.at(i)->setPen(tempPen);
+        }
+    }
+    if(selectedAction == pMakeSolidAction)
+    {
+        mpParentGUIConnector->mIsDashed=false;
+        QPen tempPen = this->pen();
+        tempPen.setStyle(Qt::SolidLine);
+        for(int i=0; i<mpParentGUIConnector->mpLines.size(); ++i)
+        {
+            mpParentGUIConnector->mpLines.at(i)->setPen(tempPen);
+        }
+    }
 }
 
 

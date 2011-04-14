@@ -444,10 +444,7 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
         //if(dataUnit.isEmpty())
 //            dataUnit = mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
 
-        if(gpMainWindow->mpPlotWidget == 0)
-        {
-            gpMainWindow->mpPlotWidget = new PlotWidget(gpMainWindow);
-        }
+        gpMainWindow->makeSurePlotWidgetIsCreated();
 
         if(gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, ""))
             success = true;

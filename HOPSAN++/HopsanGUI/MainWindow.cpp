@@ -260,6 +260,8 @@ void MainWindow::initializeWorkspace()
             updateToolBarsToNewTab();       //This will disable the buttons if last session did not contain any models
         }
     }
+
+    mpPlotWidget = new PlotWidget(this);
 }
 
 

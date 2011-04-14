@@ -563,27 +563,27 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
 
 
 //! @brief Returns a list with the favorite plot parameters.
-QList<QStringList> GUIContainerObject::getFavoriteParameters()
+QList<QStringList> GUIContainerObject::getFavoriteVariables()
 {
-    return mFavoriteParameters;
+    return mFavoriteVariables;
 }
 
 
-//! @brief Defines a new favorite plot parameter
+//! @brief Defines a new favorite plot variable
 //! @param componentName Name of the component where the parameter is located
 //! @param portName Name of the port where the parameter is located
 //! @param dataName Name of the parameter
 //! @param dataUnit Unit of the parameter
-void GUIContainerObject::setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit)
+void GUIContainerObject::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     QStringList tempParameter;
     tempParameter.append(componentName);
     tempParameter.append(portName);
     tempParameter.append(dataName);
     tempParameter.append(dataUnit);
-    if(!mFavoriteParameters.contains(tempParameter))
+    if(!mFavoriteVariables.contains(tempParameter))
     {
-        mFavoriteParameters.append(tempParameter);
+        mFavoriteVariables.append(tempParameter);
     }
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
 
@@ -591,25 +591,21 @@ void GUIContainerObject::setFavoriteParameter(QString componentName, QString por
 }
 
 
-//! @brief Removes all favorite parameters which belongs to the specified component.
+//! @brief Removes all favorite variables which belongs to the specified component.
 //! @param componentName Name of the component
-void GUIContainerObject::removeFavoriteParameterByComponentName(QString componentName)
+void GUIContainerObject::removeFavoriteVariableByComponentName(QString componentName)
 {
     QList<QStringList>::iterator it;
-    for(it=mFavoriteParameters.begin(); it!=mFavoriteParameters.end(); ++it)
+    for(it=mFavoriteVariables.begin(); it!=mFavoriteVariables.end(); ++it)
     {
         if((*it).at(0) == componentName)
         {
-            mFavoriteParameters.removeAll((*it));
-            //! @todo why do we need to care about plotwidget stuff after removing favoriteparameters ?
-            //! Because favorite parameters are shown in the plot widget!
+            mFavoriteVariables.removeAll((*it));
             gpMainWindow->makeSurePlotWidgetIsCreated();
             gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
             return;
         }
     }
-
-    //mpParentProjectTab->hasChanged();   //! @todo Is this necessary here?
 }
 
 
@@ -654,7 +650,7 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
     qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
-    this->removeFavoriteParameterByComponentName(objectName);   //Does nothing unless this is a system
+    this->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
 
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
     GUIModelObject* obj_ptr = it.value();
