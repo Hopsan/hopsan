@@ -45,7 +45,7 @@ namespace hopsan {
             mpOut = addPowerPort("out", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("w", "Generated angular velocity", "[rad/s]", w);
+            registerParameter("omega", "Generated angular velocity", "[rad/s]", w);
         }
 
 

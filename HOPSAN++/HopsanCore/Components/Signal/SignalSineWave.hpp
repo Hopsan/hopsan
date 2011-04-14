@@ -59,10 +59,10 @@ namespace hopsan {
 
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("StartTime", "Start Time", "[s]", mStartTime);
-            registerParameter("Frequency", "Frequencty", "[Hz]", mFrequency);
-            registerParameter("Amplitude", "Amplitude", "[-]", mAmplitude);
-            registerParameter("Offset", "Offset", "[s]", mOffset);
+            registerParameter("t_start", "Start Time", "[s]", mStartTime);
+            registerParameter("f", "Frequencty", "[Hz]", mFrequency);
+            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
+            registerParameter("y_offset", "Offset", "[s]", mOffset);
 
             disableStartValue(mpOut, NodeSignal::VALUE);
         }

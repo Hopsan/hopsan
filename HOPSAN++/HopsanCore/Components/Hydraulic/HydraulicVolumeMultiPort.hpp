@@ -53,8 +53,8 @@ namespace hopsan {
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("V", "Volume", "[m^3]",            mVolume);
-            registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
-            registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+            registerParameter("Beta_e", "Bulkmodulus", "[Pa]", mBulkmodulus);
+            registerParameter("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
 
             setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
             setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);

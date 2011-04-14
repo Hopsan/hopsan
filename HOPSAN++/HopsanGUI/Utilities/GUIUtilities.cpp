@@ -10,8 +10,11 @@
 #include <qmath.h>
 #include <QPoint>
 #include <QDir>
+#include <QDebug>
+#include <QStringList>
 
 #include "GUIUtilities.h"
+
 
 using namespace std;
 
@@ -152,4 +155,77 @@ qreal dist(QPointF &rPoint1, QPointF &rPoint2)
     qreal x = rPoint1.x() - rPoint2.x();
     qreal y = rPoint1.y() - rPoint2.y();
     return sqrt( x*x + y*y );
+}
+
+
+
+QString parseVariableDescription(QString input)
+{
+    QString retval;
+    input.replace("alpha",      QObject::trUtf8("α"), Qt::CaseInsensitive);
+    input.replace("beta",       QObject::trUtf8("β"), Qt::CaseInsensitive);
+    input.replace("delta",      QObject::trUtf8("δ"), Qt::CaseInsensitive);
+    input.replace("epsilon",    QObject::trUtf8("ε"), Qt::CaseInsensitive);
+    input.replace("kappa",      QObject::trUtf8("κ"), Qt::CaseInsensitive);
+    input.replace("tao",        QObject::trUtf8("τ"), Qt::CaseInsensitive);
+    input.replace("omega",      QObject::trUtf8("ω"), Qt::CaseInsensitive);
+
+    if(input.count("_") == 1 && !input.contains("^"))
+    {
+        retval.append(input.section('_',0,0));
+        retval.append("<sub>");
+        retval.append(input.section('_',1,1));
+        retval.append("</sub>");
+    }
+    else if(input.count("^") == 1 && !input.contains("_"))
+    {
+        retval.append(input.section('^',0,0));
+        retval.append("<sup>");
+        retval.append(input.section('^',1,1));
+        retval.append("</sup>");
+    }
+    else
+    {
+        retval = input;
+    }
+
+    return retval;
+}
+
+
+QString parseVariableUnit(QString input)
+{
+    if(!input.startsWith("[") || (!input.endsWith("]")))        //If no square brackets, we don't know what to do, so do nothing
+    {
+        return input;
+    }
+    input = input.mid(1, input.size()-2);              //Remove brackets from input
+    QString retval = input;
+    int idx = 0;
+    int tempidx;
+    qDebug() << "Parsing: " << retval;
+    while(true)
+    {
+        idx=retval.indexOf("^", idx);
+        if(idx==-1) break;
+        retval.remove(idx,1);
+        retval.insert(idx, "<sup>");
+
+        tempidx=100000000000;
+        if(retval.contains("*"))
+            tempidx=min(tempidx, retval.indexOf("*", idx));
+        if(retval.contains("/"))
+            tempidx=min(tempidx, retval.indexOf("/", idx));
+        if(retval.contains("+"))
+            tempidx=min(tempidx, retval.indexOf("+", idx));
+        if(retval.contains("-"))
+            tempidx=min(tempidx, retval.indexOf("-", idx));
+        if(tempidx == -1 || tempidx > retval.size()) tempidx = retval.size();
+        idx=tempidx;
+
+        retval.insert(idx, "</sup>");
+        qDebug() << "Result: " << retval;
+    }
+
+    return retval;
 }

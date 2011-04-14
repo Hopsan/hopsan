@@ -357,7 +357,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         //! @todo maybe use the convenient helpfunction for the stuff above (open file and check xml and root tagname) now that we have one
 
         bool sucess = true;
-        bool success2 = true;
+//        bool success2 = true;
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
 
         //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
@@ -374,31 +374,31 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             {
                 gpMainWindow->mpMessageWidget->printGUIWarningMessage("ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
             }
-            else
-            {
-                    //Check that all ports in core component exists in xml file
-                Component *dummy = pHopsanCore->CreateComponent(pAppearanceData->getTypeName().toStdString());
-                std::vector<Port *> portVector= dummy->getPortPtrVector();
+//            else
+//            {
+//                    //Check that all ports in core component exists in xml file
+//                Component *dummy = pHopsanCore->CreateComponent(pAppearanceData->getTypeName().toStdString());
+//                std::vector<Port *> portVector= dummy->getPortPtrVector();
 
-                for(size_t i=0; i<portVector.size(); ++i)
-                {
-                    if(!pAppearanceData->getPortAppearanceMap().contains(QString(portVector.at(i)->getPortName().c_str())))
-                    {
-                        qDebug() << "Looking for " << QString(portVector.at(i)->getPortName().c_str());
-                        success2 = false;
-                    }
-                }
-                //delete(dummy);
+//                for(size_t i=0; i<portVector.size(); ++i)
+//                {
+//                    if(!pAppearanceData->getPortAppearanceMap().contains(QString(portVector.at(i)->getPortName().c_str())))
+//                    {
+//                        qDebug() << "Looking for " << QString(portVector.at(i)->getPortName().c_str());
+//                        success2 = false;
+//                    }
+//                }
+//                //delete(dummy);
 
-                if(!success2)
-                {
-                    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Port mismatch in " + pAppearanceData->getTypeName() + ". Component will not be available.");
-                }
-            }
+//                if(!success2)
+//                {
+//                    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Port mismatch in " + pAppearanceData->getTypeName() + ". Component will not be available.");
+//                }
+//            }
         }
         //**************************
 
-        if (sucess && success2)
+        if (sucess/* && success2*/)
         {
             //Create library content item
             LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);

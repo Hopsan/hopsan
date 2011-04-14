@@ -23,6 +23,7 @@
 #include "../Widgets/SystemParametersWidget.h"
 #include "../Widgets/LibraryWidget.h"
 #include "../Configuration.h"
+#include "../Utilities/GUIUtilities.h"
 
 
 //! @class ComponentPropertiesDialog
@@ -398,6 +399,8 @@ ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QStr
 
 void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject)
 {
+    mDataName = dataName;
+
     mpGUIModelObject = pGUIModelObject;
 
     mDescriptionNameLabel.setMinimumWidth(30);
@@ -416,12 +419,12 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
     mSystemParameterToolButton.setToolTip("Map To System Parameter");
 
-    mDataNameLabel.setText(dataName);
+    mDataNameLabel.setText(parseVariableDescription(dataName));
     mDataNameLabel.adjustSize();
     mDescriptionNameLabel.setText(descriptionName);
     mDescriptionNameLabel.adjustSize();
     mDataValuesLineEdit.setText(dataValue);
-    mUnitNameLabel.setText(unitName);
+    mUnitNameLabel.setText(parseVariableUnit(unitName));
 
     addWidget(&mDescriptionNameLabel, 0, 0);
     addWidget(&mDataNameLabel, 0, 1);
@@ -450,7 +453,7 @@ QString ParameterLayout::getDescriptionName()
 
 QString ParameterLayout::getDataName()
 {
-    return mDataNameLabel.text();
+    return mDataName;
 }
 
 

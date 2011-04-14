@@ -47,10 +47,10 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("k", "Gain", "[-]", k);
-            registerParameter("wnum", "Numerator break frequency", "[rad/s]", wnum);
-            registerParameter("wden", "Denominator break frequency", "[rad/s]", wden);
-            registerParameter("min", "Output Lower limit", "[-]", min);
-            registerParameter("max", "Output Upper limit", "[-]", max);
+            registerParameter("omega_num", "Numerator break frequency", "[rad/s]", wnum);
+            registerParameter("omega_den", "Denominator break frequency", "[rad/s]", wden);
+            registerParameter("y_min", "Output Lower limit", "[-]", min);
+            registerParameter("y_max", "Output Upper limit", "[-]", max);
         }
 
 

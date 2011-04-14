@@ -70,15 +70,15 @@ class HydraulicCylinderC : public ComponentC
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("A1", "Piston Area 1", "[m^2]", A1);
-            registerParameter("A2", "Piston Area 2", "[m^2]", A2);
-            registerParameter("sl", "Stroke", "[m]", sl);
-            registerParameter("me", "Equivalent Load Mass", "[kg]", me);
-            registerParameter("V01", "Dead Volume in Chamber 1", "[m^3]", V01);
-            registerParameter("V02", "Dead Volume in Chamber 2", "[m^3]", V02);
-            registerParameter("bp", "Viscous Friction", "[Ns/m]", bp);
-            registerParameter("betae", "Bulk Modulus", "[Pa]", betae);
-            registerParameter("cLeak", "Leakage Coefficient", "[]", cLeak);
+            registerParameter("A_1", "Piston Area 1", "[m^2]", A1);
+            registerParameter("A_2", "Piston Area 2", "[m^2]", A2);
+            registerParameter("s_l", "Stroke", "[m]", sl);
+            registerParameter("m_e", "Equivalent Load Mass", "[kg]", me);
+            registerParameter("V_1", "Dead Volume in Chamber 1", "[m^3]", V01);
+            registerParameter("V_2", "Dead Volume in Chamber 2", "[m^3]", V02);
+            registerParameter("B_p", "Viscous Friction", "[Ns/m]", bp);
+            registerParameter("Beta_e", "Bulk Modulus", "[Pa]", betae);
+            registerParameter("c_leak", "Leakage Coefficient", "[]", cLeak);
 
             setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
             setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);

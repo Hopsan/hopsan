@@ -74,17 +74,17 @@ namespace hopsan {
             mpPC2 = addPowerPort("PC2", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
 
-            registerParameter("Cq", "Flow Coefficient", "[-]", Cq);
+            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
-            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("overlap_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
-            registerParameter("overlap_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
-            registerParameter("overlap_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
-            registerParameter("overlap_pa", "Spool Overlap From Port B To T", "[m]", overlap_bt);
-            registerParameter("overlap_cc", "Spool Overlap From Port C1 To C2", "[m]", overlap_bt);
-            registerParameter("omegah", "Resonance Frequency", "[rad/s]", omegah);
-            registerParameter("deltah", "Damping Factor", "[-]", deltah);
+            registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
+            registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
+            registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
+            registerParameter("x_pa", "Spool Overlap From Port B To T", "[m]", overlap_bt);
+            registerParameter("x_cc", "Spool Overlap From Port C1 To C2", "[m]", overlap_bt);
+            registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
+            registerParameter("delta_h", "Damping Factor", "[-]", deltah);
         }
 
 

@@ -57,16 +57,16 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpX  = addWritePort("X", "NodeSignal");
 
-            registerParameter("pref", "Reference Opening Pressure", "[Pa]", mPref);
-            registerParameter("cq", "Flow Coefficient", "[-]", mCq);
-            registerParameter("spooldiameter", "Spool Diameter", "[m]", mSpoolDiameter);
+            registerParameter("p_ref", "Reference Opening Pressure", "[Pa]", mPref);
+            registerParameter("C_q", "Flow Coefficient", "[-]", mCq);
+            registerParameter("D_s", "Spool Diameter", "[m]", mSpoolDiameter);
             registerParameter("frac", "Fraction of Spool Circumference that is Opening", "[-]", mFrac);
-            registerParameter("pilotarea", "Working Area of Pilot Pressure", "[m^2]", mPilotArea);
+            registerParameter("A_p", "Working Area of Pilot Pressure", "[m^2]", mPilotArea);
             registerParameter("k", "Steady State Characheristics of Spring", "[N/m]", mK);
             registerParameter("c", "Steady State Damping Coefficient", "[Ns/m]", mC);
             registerParameter("m", "Ineretia of Spool", "[kg]", mMass);
-            registerParameter("xhyst", "Hysteresis of Spool Position", "[m]", mXhyst);
-            registerParameter("xmax", "Maximum Spool Position", "[m]", mXmax);
+            registerParameter("x_hyst", "Hysteresis of Spool Position", "[m]", mXhyst);
+            registerParameter("x_max", "Maximum Spool Position", "[m]", mXmax);
 
             tid1 = 0.0;
             tid2 = 0.01;

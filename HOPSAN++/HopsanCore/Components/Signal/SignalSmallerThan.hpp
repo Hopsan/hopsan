@@ -40,7 +40,7 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("x", "Limit Value", "-", mLimit);
+            registerParameter("x_limit", "Limit Value", "-", mLimit);
         }
 
 

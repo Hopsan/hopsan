@@ -16,6 +16,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QDebug>
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
@@ -30,5 +31,7 @@ qreal normRad(qreal rad);
 qreal dist(QPointF &rPoint);
 qreal dist(QPointF &rPoint1, QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
+QString parseVariableDescription(QString input);
+QString parseVariableUnit(QString input);
 
 #endif // GUIUTILITIES_H

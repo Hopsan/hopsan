@@ -63,13 +63,13 @@ namespace hopsan {
             mpIn = addReadPort("eps", "NodeSignal", Port::NOTREQUIRED);
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("betae", "Bulk modulus of oil", "[Pa]", betae);
-            registerParameter("je", "Equivalent load of inertia", "[kg*m^2]", je);
-            registerParameter("v1", "Volume at port 1", "[m^3]", v1);
-            registerParameter("v2", "Volume at port 2", "[m^3]", v2);
-            registerParameter("dp", "Displacement", "[m^3/rev]", dp);
-            registerParameter("cim", "Leakage coefficient", "[]", cim);
-            registerParameter("bm", "Viscous friction coefficient", "[Pa]", bm);
+            registerParameter("Beta_e", "Bulk modulus of oil", "[Pa]", betae);
+            registerParameter("J_e,m", "Equivalent load of inertia", "[kg*m^2]", je);
+            registerParameter("V_1", "Volume at port 1", "[m^3]", v1);
+            registerParameter("V_2", "Volume at port 2", "[m^3]", v2);
+            registerParameter("D_m", "Displacement", "[m^3/rev]", dp);
+            registerParameter("C_l,m", "Leakage coefficient", "[]", cim);
+            registerParameter("B_m", "Viscous friction coefficient", "[Pa]", bm);
 
             setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
             setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);

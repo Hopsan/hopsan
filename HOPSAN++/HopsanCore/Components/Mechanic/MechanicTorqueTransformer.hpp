@@ -42,7 +42,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("t", "Generated Torque", "[Nm]", t);
+            registerParameter("T", "Generated Torque", "[Nm]", t);
 
             disableStartValue(mpP1, NodeMechanicRotational::TORQUE);
         }

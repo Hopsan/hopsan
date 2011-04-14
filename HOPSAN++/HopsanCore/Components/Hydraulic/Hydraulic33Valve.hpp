@@ -61,14 +61,14 @@ namespace hopsan {
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
 
-            registerParameter("Cq", "Flow Coefficient", "[-]", Cq);
+            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
-            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("overlap_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
-            registerParameter("overlap_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
-            registerParameter("omegah", "Resonance Frequency", "[rad/s]", omegah);
-            registerParameter("deltah", "Damping Factor", "[-]", deltah);
+            registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
+            registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
+            registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
+            registerParameter("delta_h", "Damping Factor", "[-]", deltah);
         }
 
 

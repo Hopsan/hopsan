@@ -39,8 +39,11 @@ namespace hopsan {
         {
             mStartY = 0.0;
 
-            mMin = -1.5E+300;   //! @todo Shouldn't these be registered parameters?
+            mMin = -1.5E+300;
             mMax = 1.5E+300;
+
+            registerParameter("y_min", "Minimum Limit", "[-]", mMin);
+            registerParameter("y_max", "Maximum Limit", "[-]", mMax);
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

@@ -79,6 +79,8 @@ protected:
     QToolButton mResetDefaultToolButton;
     QToolButton mSystemParameterToolButton;
 
+    QString mDataName;
+
 private:
     void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0);
 };

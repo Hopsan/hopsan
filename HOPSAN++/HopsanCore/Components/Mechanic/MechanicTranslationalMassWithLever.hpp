@@ -58,8 +58,8 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("L1", "Length", "[m]",               L1);
-            registerParameter("L2", "Length", "[m]",               L2);
+            registerParameter("L_1", "Length", "[m]",               L1);
+            registerParameter("L_2", "Length", "[m]",               L2);
             registerParameter("m",  "Mass", "[kg]",                m);
             registerParameter("B",  "Viscous Friction", "[Ns/m]",  B);
             registerParameter("k",  "Spring Coefficient", "[N/m]", k);

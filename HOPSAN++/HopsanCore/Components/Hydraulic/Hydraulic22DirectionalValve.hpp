@@ -55,12 +55,12 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
 
-            registerParameter("Cq", "Flow Coefficient", "[-]", Cq);
+            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
-            registerParameter("xvmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("omegah", "Resonance Frequency", "[rad/s]", omegah);
-            registerParameter("deltah", "Damping Factor", "[-]", deltah);
+            registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
+            registerParameter("delta_h", "Damping Factor", "[-]", deltah);
         }
 
 

@@ -52,9 +52,9 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("TD", "Time delay", "[s]",   mTimeDelay);
-            registerParameter("a", "Low pass coeficient", "[-]", mAlpha);
-            registerParameter("Zc", "Impedance", "[Ns/m^5]",  mZc);
+            registerParameter("deltat", "Time delay", "[s]",   mTimeDelay);
+            registerParameter("alpha", "Low pass coeficient", "[-]", mAlpha);
+            registerParameter("Z_c", "Impedance", "[Ns/m^5]",  mZc);
 
             setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
             setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);

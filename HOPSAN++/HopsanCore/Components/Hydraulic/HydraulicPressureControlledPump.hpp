@@ -60,17 +60,17 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPREF = addPowerPort("PREF", "NodeHydraulic");
 
-            registerParameter("pdif", "Reference pressure difference", "[Pa]", pdif);
-            registerParameter("speed", "Pump speed", "[rad/s]", speed);
-            registerParameter("qmax", "Nomainal maximal flow", "[m^3/s]", qmax);
-            registerParameter("qmin", "Nominal minimal flow", "[m^3/s]", qmin);
-            registerParameter("lp", "Regulator inductance at nominal pressure", "[]", lp);
-            registerParameter("rp", "Static characteristic at nominal pressure", "[]", rp);
-            registerParameter("wp1", "Lead frequency of regulator", "[rad/s]", wp1);
-            registerParameter("Kcp", "Leakage coefficient of pump", "[]", Kcp);
-            registerParameter("taov", "Time constant of control valve", "[s]", taov);
-            registerParameter("tp", "Time from min to full displacement", "[s]", tp);
-            registerParameter("tm", "Time from full to min displacement", "[s]", tm);
+            registerParameter("p_dif", "Reference pressure difference", "[Pa]", pdif);
+            registerParameter("omega_p", "Pump speed", "[rad/s]", speed);
+            registerParameter("q_max", "Nomainal maximal flow", "[m^3/s]", qmax);
+            registerParameter("q_min", "Nominal minimal flow", "[m^3/s]", qmin);
+            registerParameter("l_p", "Regulator inductance at nominal pressure", "[]", lp);
+            registerParameter("r_p", "Static characteristic at nominal pressure", "[]", rp);
+            registerParameter("omega_p,1", "Lead frequency of regulator", "[rad/s]", wp1);
+            registerParameter("C_l,p", "Leakage coefficient of pump", "[]", Kcp);
+            registerParameter("tao_v", "Time constant of control valve", "[s]", taov);
+            registerParameter("t_p", "Time from min to full displacement", "[s]", tp);
+            registerParameter("t_m", "Time from full to min displacement", "[s]", tm);
         }
 
 

@@ -45,7 +45,7 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("w", "Break frequency", "[rad/s]", mW);
+            registerParameter("omega", "Break frequency", "[rad/s]", mW);
         }
 
 

@@ -60,10 +60,10 @@ namespace hopsan {
             //Register changable parameters to the HOPSAN++ core
             registerParameter("m", "Mass", "[kg]", m);
             registerParameter("b", "Viscous Friction Coefficient", "[Ns/m]", b);
-            registerParameter("fs", "Static Friction Force", "[N]",  fs);
-            registerParameter("fk", "Kinetic Friction Force", "[N]",  fk);
-            registerParameter("xmin", "Lower Limit of Position", "[m]",  xmin);
-            registerParameter("xmax", "Upper Limit of Position", "[m]",  xmax);
+            registerParameter("f_s", "Static Friction Force", "[N]",  fs);
+            registerParameter("f_k", "Kinetic Friction Force", "[N]",  fk);
+            registerParameter("x_min", "Lower Limit of Position", "[m]",  xmin);
+            registerParameter("x_max", "Upper Limit of Position", "[m]",  xmax);
         }
 
 

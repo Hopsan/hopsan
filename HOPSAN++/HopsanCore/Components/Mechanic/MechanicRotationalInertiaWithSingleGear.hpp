@@ -54,7 +54,7 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("w", "Gear ratio", "[-]", gearRatio);
+            registerParameter("omega", "Gear ratio", "[-]", gearRatio);
             registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
             registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
             registerParameter("k", "Spring Coefficient", "[Nm/rad]", k);
