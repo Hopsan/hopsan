@@ -1937,3 +1937,60 @@ int GUIContainerObject::getNumberOfPlotGenerations()
 {
     return mPlotData.size();
 }
+
+
+void GUIContainerObject::definePlotAlias(QString componentName, QString portName, QString dataName)
+{
+    bool ok;
+    QString d = QInputDialog::getText(gpMainWindow, tr("Define Variable Alias"),
+                                     tr("Alias:"), QLineEdit::Normal, "", &ok);
+
+    if(ok)
+    {
+       QString alias = d;
+       QStringList variableDescription;
+       variableDescription.append(componentName);
+       variableDescription.append(portName);
+       variableDescription.append(dataName);
+       definePlotAlias(alias, variableDescription);
+    }
+}
+
+
+bool GUIContainerObject::definePlotAlias(QString alias, QStringList variableDescription)
+{
+    if(mPlotAliasMap.contains(alias)) return false;
+    mPlotAliasMap.insert(alias, variableDescription);
+    return true;
+}
+
+
+void GUIContainerObject::undefinePlotAlias(QString alias)
+{
+    mPlotAliasMap.remove(alias);
+}
+
+
+QStringList GUIContainerObject::getPlotVariableFromAlias(QString alias)
+{
+    if(mPlotAliasMap.contains(alias))
+        return mPlotAliasMap.find(alias).value();
+    else
+        return QStringList();
+}
+
+
+QString GUIContainerObject::getPlotAlias(QString componentName, QString portName, QString dataName)
+{
+    QStringList variableDescription;
+    variableDescription.append(componentName);
+    variableDescription.append(portName);
+    variableDescription.append(dataName);
+
+    QMap<QString, QStringList>::iterator it;
+    for(it=mPlotAliasMap.begin(); it!=mPlotAliasMap.end(); ++it)
+    {
+        if(it.value() == variableDescription) return it.key();
+    }
+    return QString();
+}

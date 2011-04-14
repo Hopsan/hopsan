@@ -42,7 +42,13 @@ PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QS
     mPortName = portName;
     mDataName = dataName;
     mDataUnit = dataUnit;
-    this->setText(0, mPortName + ", " + mDataName + ", [" + mDataUnit + "]");
+    QString aliasPrepend = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(componentName, portName, dataName);
+    if(!aliasPrepend.isEmpty())
+    {
+        aliasPrepend.prepend("<");
+        aliasPrepend.append("> ");
+    }
+    this->setText(0, aliasPrepend + mPortName + ", " + mDataName + ", [" + mDataUnit + "]");
 }
 
 
@@ -317,32 +323,57 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
         QStringList parameterDescription;
         parameterDescription << item->getComponentName() << item->getPortName() << item->getDataName() << item->getDataUnit();
         QMenu menu;
-        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.contains(parameterDescription))
+
+        QAction *defineAliasAction;
+        QAction *removeAliasAction;
+        QAction *addToFavoritesAction;
+        QAction *removeFromFavoritesAction;
+
+        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(item->getComponentName(), item->getPortName(), item->getDataName()).isEmpty())
         {
-            QAction *addToFavoritesAction;
-            addToFavoritesAction = menu.addAction(QString("Add Favorite Parameter"));
-
-            QCursor *cursor;
-            QAction *selectedAction = menu.exec(cursor->pos());
-
-            if(selectedAction == addToFavoritesAction)
-            {
-                gpMainWindow->mpProjectTabs->getCurrentContainer()->setFavoriteParameter(parameterDescription.at(0), parameterDescription.at(1), parameterDescription.at(2), parameterDescription.at(3));
-            }
+            defineAliasAction = menu.addAction(QString("Define Variable Alias"));
         }
         else
         {
-            QAction *removeFromFavoritesAction;
+            removeAliasAction = menu.addAction(QString("Remove Variable Alias"));
+        }
+
+
+        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.contains(parameterDescription))
+        {
+            addToFavoritesAction = menu.addAction(QString("Add Favorite Parameter"));
+        }
+        else
+        {
             removeFromFavoritesAction = menu.addAction(QString("Remove Favorite Parameter"));
+        }
 
-            QCursor *cursor;
-            QAction *selectedAction = menu.exec(cursor->pos());
+        //-- Action --//
+        QCursor *cursor;
+        QAction *selectedAction = menu.exec(cursor->pos());
+        //------------//
 
-            if(selectedAction == removeFromFavoritesAction)
-            {
-               gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.removeAll(parameterDescription);
-               this->updateList();
-            }
+        if(selectedAction == removeAliasAction)
+        {
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->undefinePlotAlias(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(item->getComponentName(), item->getPortName(), item->getDataName()));
+           this->updateList();
+        }
+
+        if(selectedAction == defineAliasAction)
+        {
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->definePlotAlias(item->getComponentName(), item->getPortName(), item->getDataName());
+           this->updateList();
+        }
+
+        if(selectedAction == addToFavoritesAction)
+        {
+            gpMainWindow->mpProjectTabs->getCurrentContainer()->setFavoriteParameter(parameterDescription.at(0), parameterDescription.at(1), parameterDescription.at(2), parameterDescription.at(3));
+        }
+
+        if(selectedAction == removeFromFavoritesAction)
+        {
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.removeAll(parameterDescription);
+           this->updateList();
         }
     }
 }

@@ -114,6 +114,12 @@ public:
     QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > getAllPlotData();
     int getNumberOfPlotGenerations();
+    void definePlotAlias(QString componentName, QString portName, QString dataName);
+    bool definePlotAlias(QString alias, QStringList variableDescription);
+    void undefinePlotAlias(QString alias);
+    QStringList getPlotVariableFromAlias(QString alias);
+    QString getPlotAlias(QString componentName, QString portName, QString dataName);
+
 
 public slots:
         //Selection
@@ -200,6 +206,7 @@ private:
     double mPasteOffset;
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
     QList< QVector<double> > mTimeVectors;
+    QMap<QString, QStringList> mPlotAliasMap;
 };
 
 #endif // GUICONTAINEROBJECT_H

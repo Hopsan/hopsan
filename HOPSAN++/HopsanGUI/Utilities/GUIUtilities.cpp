@@ -203,7 +203,7 @@ QString parseVariableUnit(QString input)
     QString retval = input;
     int idx = 0;
     int tempidx;
-    qDebug() << "Parsing: " << retval;
+
     while(true)
     {
         idx=retval.indexOf("^", idx);
@@ -224,8 +224,10 @@ QString parseVariableUnit(QString input)
         idx=tempidx;
 
         retval.insert(idx, "</sup>");
-        qDebug() << "Result: " << retval;
     }
+
+    retval.prepend("[");        //Add brackets to output
+    retval.append("]");
 
     return retval;
 }
