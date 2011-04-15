@@ -99,7 +99,7 @@ namespace hopsan {
             double Zc1 = (*mpND_Zc1);
             double Zc2 = (*mpND_Zc2);
 
-            double gamma, speed1, lpe, y0, qminl, qmaxl, vmin, vmax;
+            double gamma, speed1, lpe, qminl, qmaxl, vmin, vmax;
 
             gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
             speed1 = speed;

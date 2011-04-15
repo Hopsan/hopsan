@@ -78,6 +78,8 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
     startPortName = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
     endComponentName = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
     endPortName = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
+    isDashed = (rDomElement.attribute(HMF_CONNECTORDASHEDTAG) == "true");
+    if(isDashed) qDebug() << "Loading dashed connector";
 
     //Read gui specific stuff
     qreal x,y;
@@ -185,6 +187,8 @@ void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pContaine
         //Hide connected ports
         startPort->hide();
         endPort->hide();
+
+        pTempConnector->setDashed(rData.isDashed);
 
         QObject::connect(startPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
         QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));

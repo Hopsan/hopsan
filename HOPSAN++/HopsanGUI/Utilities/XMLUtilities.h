@@ -98,6 +98,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue);
 #define HMF_CONNECTORSTARTPORTTAG "startport"
 #define HMF_CONNECTORENDCOMPONENTTAG "endcomponent"
 #define HMF_CONNECTORENDPORTTAG "endport"
+#define HMF_CONNECTORDASHEDTAG "dashed"
 
 #define HMF_SYSTEMAPPEARANCETAG "systemappearance"
 #define CAF_ROOTTAG "hopsanobjectappearance"

@@ -33,7 +33,7 @@
         <penstyle width="2" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="User"/>
         <penstyle width="2" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="User"/>
         <penstyle width="1" situation="Primary" capstyle="16" type="Signal" style="2" color="#0000ff" gfxtype="User"/>
-                <palette windowText="0,0,0" button="0,0,255" light="173,216,230" dark="0,0,139" mid="0,0,255" text="0,0,0" bright_text="128,128,128" base="244,247,251" window="226,231,237"/>
+        <palette windowText="0,0,0" button="0,0,255" light="173,216,230" dark="0,0,139" mid="0,0,255" text="0,0,0" bright_text="128,128,128" base="244,247,251" window="226,231,237"/>
 		<font family="Calibri" size="9"/>
 		<stylesheet>
                         QPushButton 			{ border: 1px solid gray;   border-style: outset;   border-radius: 5px;     padding: 4px;   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(226,231,237), stop: 1 white);     min-width: 80px; }

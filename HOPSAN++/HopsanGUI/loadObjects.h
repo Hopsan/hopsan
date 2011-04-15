@@ -62,6 +62,7 @@ class ConnectorLoadData
 {
 public:
     QString startComponentName, endComponentName, startPortName, endPortName;
+    bool isDashed;
     QVector<QPointF> pointVector;
     QStringList geometryList;
 

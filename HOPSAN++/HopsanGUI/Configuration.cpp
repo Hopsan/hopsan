@@ -207,7 +207,7 @@ void Configuration::loadFromXml()
                 int width = penElement.attribute("width").toInt();
                 Qt::PenStyle style = Qt::PenStyle(penElement.attribute("style").toInt());
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
-                QPen pen = QPen(QColor(color), width, style, capStyle);
+                QPen pen = QPen(QColor(color), width, style, capStyle, Qt::RoundJoin);
 
                 if(!mPenStyles.contains(type))
                 {

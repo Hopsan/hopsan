@@ -42,6 +42,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
     mpEndPort = 0;
     mIsConnected = false;
     mMakingDiagonal = false;
+    mIsDashed = false;
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 
@@ -631,6 +632,10 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
     xmlConnect.setAttribute(HMF_CONNECTORSTARTPORTTAG, getStartPortName());
     xmlConnect.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, getEndComponentName());
     xmlConnect.setAttribute(HMF_CONNECTORENDPORTTAG, getEndPortName());
+    if(mIsDashed)
+        xmlConnect.setAttribute(HMF_CONNECTORDASHEDTAG, "true");
+    else
+        xmlConnect.setAttribute(HMF_CONNECTORDASHEDTAG, "false");
 
     //Save gui data to dom
     QDomElement xmlConnectGUI = appendDomElement(xmlConnect, HMF_HOPSANGUITAG);
@@ -1061,6 +1066,25 @@ void GUIConnector::select()
 }
 
 
+//! @Brief Slot that makes a connector dashed or solid
+//! @param value Boolean that is true if connector shall be dashed
+void GUIConnector::setDashed(bool value)
+{
+    mIsDashed=value;
+    for(int i=0; i<mpLines.size(); ++i)
+    {
+        QPen tempPen = mpLines.at(i)->pen();
+        if(value)
+        {
+            tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            tempPen.setStyle(Qt::CustomDashLine);
+        }
+        else
+            tempPen.setStyle(Qt::SolidLine);
+        mpLines.at(i)->setPen(tempPen);
+    }
+}
+
 
 //------------------------------------------------------------------------------------------------------------------------//
 
@@ -1115,7 +1139,8 @@ void GUIConnectorLine::setActive()
         if(mpParentGUIConnector->mIsDashed)
         {
             QPen tempPen = this->pen();
-            tempPen.setStyle(Qt::DashLine);
+            tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            tempPen.setStyle(Qt::CustomDashLine);
             this->setPen(tempPen);
         }
         this->mpParentGUIConnector->setZValue(1);
@@ -1138,7 +1163,8 @@ void GUIConnectorLine::setPassive()
     if(mpParentGUIConnector->mIsDashed)
     {
         QPen tempPen = this->pen();
-        tempPen.setStyle(Qt::DashLine);
+        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+        tempPen.setStyle(Qt::CustomDashLine);
         this->setPen(tempPen);
     }
 }
@@ -1153,7 +1179,8 @@ void GUIConnectorLine::setHovered()
     if(mpParentGUIConnector->mIsDashed)
     {
         QPen tempPen = this->pen();
-        tempPen.setStyle(Qt::DashLine);
+        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+        tempPen.setStyle(Qt::CustomDashLine);
         this->setPen(tempPen);
     }
 }
@@ -1232,7 +1259,7 @@ void GUIConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *pMakeDashedAction;
     QAction *pMakeSolidAction;
 
-    if(this->pen().style() == Qt::SolidLine)
+    if(!mpParentGUIConnector->mIsDashed)
     {
         pMakeDashedAction = menu.addAction("Make Connector Dashed");
     }
@@ -1241,30 +1268,22 @@ void GUIConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         pMakeSolidAction = menu.addAction("Make Connector Solid");
     }
 
+
+    //-- User interaction --//
     QAction *selectedAction = menu.exec(event->screenPos());
+    //----------------------//
 
 
-    if(selectedAction == pMakeDashedAction)
+    if(selectedAction == pMakeDashedAction)         //Make connector dashed
     {
-        mpParentGUIConnector->mIsDashed=true;
-        QPen tempPen = this->pen();
-        tempPen.setStyle(Qt::DashLine);
-        for(int i=0; i<mpParentGUIConnector->mpLines.size(); ++i)
-        {
-            mpParentGUIConnector->mpLines.at(i)->setPen(tempPen);
-        }
+        mpParentGUIConnector->setDashed(true);
     }
-    if(selectedAction == pMakeSolidAction)
+    if(selectedAction == pMakeSolidAction)          //Make connector solid
     {
-        mpParentGUIConnector->mIsDashed=false;
-        QPen tempPen = this->pen();
-        tempPen.setStyle(Qt::SolidLine);
-        for(int i=0; i<mpParentGUIConnector->mpLines.size(); ++i)
-        {
-            mpParentGUIConnector->mpLines.at(i)->setPen(tempPen);
-        }
+        mpParentGUIConnector->setDashed(false);
     }
 }
+
 
 
 //! @brief Returns the number of the line in the connector

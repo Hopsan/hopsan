@@ -91,6 +91,7 @@ public slots:
     void deleteMeWithNoUndo();
     void deselect();
     void select();
+    void setDashed(bool value);
 
 signals:
     void connectionFinished();
@@ -136,6 +137,7 @@ public:
     void setLine(QPointF pos1, QPointF pos2);
     int getLineNumber();
     QPointF mOldPos;
+    void setPen(const QPen &pen);
 
 public slots:
 
@@ -157,8 +159,6 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
-    void setPen(const QPen &pen);
-
     bool mIsActive;
     bool mParentConnectorEndPortConnected;
     bool mHasStartArrow;
