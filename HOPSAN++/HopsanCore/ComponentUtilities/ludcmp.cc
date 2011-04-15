@@ -1,6 +1,6 @@
 //!
 //! @file   ludcmp.cc
-//! @author ?? <??@??.??>
+//! @author <??>
 //! @date   2010-11-29
 //!
 //! @brief Contains a functions to solve eq.systems
@@ -11,7 +11,7 @@
 //! Chapter 2, Programs 3-5, Fig. 2.8-2.10
 //! Gerald/Wheatley, APPLIED NUMERICAL ANALYSIS (fourth edition)
 //! Addison-Wesley, 1989
-//! (found by Petter on the net, url may be nice)
+//! http://www.johnloomis.org/ece538/notes/Matrix/ludcmp.html
 //!
 //$Id$
 
