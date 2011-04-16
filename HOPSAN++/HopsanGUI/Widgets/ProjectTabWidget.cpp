@@ -577,7 +577,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
 
     gpMainWindow->registerRecentModel(fileInfo);
 
-    this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
+    this->addProjectTab(new ProjectTab(this), fileInfo.baseName());
     ProjectTab *pCurrentTab = this->getCurrentTab();
 
     //Check if this is an expected hmf xml file
