@@ -26,7 +26,6 @@ namespace hopsan {
         void setFlowCoefficient(double ks);
     private:
         double mKs;
-        double mR1,mK1,mK2;
     };
 }
 
