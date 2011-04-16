@@ -122,14 +122,16 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 //! @param event contains information of the drag operation.
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
-    if (event->mimeData()->hasText())
-    {
-        event->accept();
-    }
-    else
-    {
-        event->ignore();
-    }
+    event->accept();
+
+//    if (event->mimeData()->hasText())
+//    {
+//        event->accept();
+//    }
+//    else
+//    {
+//        event->ignore();
+//    }
 }
 
 
@@ -137,13 +139,25 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
-    //if (event->mimeData()->hasFormat("application/x-text"))
+    if(event->mimeData()->hasUrls())
+    {
+        for(int i=0; i<event->mimeData()->urls().size(); ++i)
+        {
+            if(event->mimeData()->urls().at(i).toString().endsWith(".hmf"))
+            {
+                gpMainWindow->mpProjectTabs->loadModel(event->mimeData()->urls().at(i).toString().remove(0,8));
+            }
+        }
+        return;
+    }
     if (event->mimeData()->hasText())
     {
         mpContainerObject->mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
 
         QString text = event->mimeData()->text();
+
+
 
         //Check if dropped item is a plot data string, and attempt to open a plot window if so
         if(event->mimeData()->text().startsWith("HOPSANPLOTDATA"))
