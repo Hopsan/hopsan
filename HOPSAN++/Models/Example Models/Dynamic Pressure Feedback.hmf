@@ -31,7 +31,7 @@
             </component>
             <component typename="SignalGain" name="Gain_1">
                 <parameters>
-                    <parameter value="0.025" name="Gain"/>
+                    <parameter value="0.025" name="k"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -53,7 +53,7 @@
             </component>
             <component typename="SignalHP1Filter" name="First order high pass filter">
                 <parameters>
-                    <parameter value="w_cutoff" name="w"/>
+                    <parameter value="w_cutoff" name="omega"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -77,7 +77,7 @@
             </component>
             <component typename="SignalGain" name="Gain_2">
                 <parameters>
-                    <parameter value="9e-011" name="Gain"/>
+                    <parameter value="9e-011" name="k"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -123,10 +123,10 @@
             </component>
             <component typename="SignalSquareWave" name="Square Wave">
                 <parameters>
-                    <parameter value="0" name="StartTime"/>
-                    <parameter value="1" name="Frequency"/>
-                    <parameter value="0.3" name="Amplitude"/>
-                    <parameter value="0.5" name="BaseValue"/>
+                    <parameter value="0" name="t_start"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.3" name="y_A"/>
+                    <parameter value="0.5" name="y_0"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -138,15 +138,15 @@
             </component>
             <component typename="HydraulicCylinderC" name="Cylinder C">
                 <parameters>
-                    <parameter value="0.001" name="A1"/>
-                    <parameter value="0.001" name="A2"/>
-                    <parameter value="1" name="sl"/>
-                    <parameter value="1" name="me"/>
-                    <parameter value="0.0003" name="V01"/>
-                    <parameter value="0.0003" name="V02"/>
-                    <parameter value="100" name="bp"/>
-                    <parameter value="1e+009" name="betae"/>
-                    <parameter value="1e-010" name="cLeak"/>
+                    <parameter value="0.001" name="A_1"/>
+                    <parameter value="0.001" name="A_2"/>
+                    <parameter value="1" name="s_l"/>
+                    <parameter value="1" name="m_e"/>
+                    <parameter value="0.0003" name="V_1"/>
+                    <parameter value="0.0003" name="V_2"/>
+                    <parameter value="100" name="b_p"/>
+                    <parameter value="1e+009" name="beta_e"/>
+                    <parameter value="1e-010" name="c_leak"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
@@ -164,16 +164,16 @@
             </component>
             <component typename="Hydraulic43Valve" name="4/3 Servo Valve">
                 <parameters>
-                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.67" name="C_q"/>
                     <parameter value="0.01" name="d"/>
                     <parameter value="1" name="f"/>
-                    <parameter value="0.01" name="xvmax"/>
-                    <parameter value="0" name="overlap_pa"/>
-                    <parameter value="0" name="overlap_pb"/>
-                    <parameter value="0" name="overlap_at"/>
-                    <parameter value="0" name="overlap_pa"/>
-                    <parameter value="1000" name="omegah"/>
-                    <parameter value="1" name="deltah"/>
+                    <parameter value="0.01" name="x_v,max"/>
+                    <parameter value="0" name="x_pa"/>
+                    <parameter value="0" name="x_pb"/>
+                    <parameter value="0" name="x_at"/>
+                    <parameter value="0" name="xp_pa"/>
+                    <parameter value="1000" name="omega_h"/>
+                    <parameter value="1" name="delta_h"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -183,7 +183,7 @@
             </component>
             <component typename="HydraulicTankC" name="Tank C">
                 <parameters>
-                    <parameter value="100000" name="P"/>
+                    <parameter value="100000" name="p"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
@@ -206,7 +206,7 @@
             </component>
             <component typename="SignalGain" name="Gain">
                 <parameters>
-                    <parameter value="0" name="Gain"/>
+                    <parameter value="0" name="k"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -228,7 +228,7 @@
             </component>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
                 <parameters>
-                    <parameter value="2e+007" name="P"/>
+                    <parameter value="2e+007" name="p"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>

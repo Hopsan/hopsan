@@ -27,7 +27,8 @@ namespace hopsan {
         double mPrevX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
-        SecondOrderTransferFunction mFilterLP;
+        FirstOrderFilter mFilterLP;
+        //SecondOrderTransferFunction mFilterLP;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
                *mpND_p_open, *mpND_c_open, *mpND_p_close, *mpND_c_close;
@@ -49,9 +50,6 @@ namespace hopsan {
             qnom = 0.001;
             ph = 500000;
             pnom = 7e6f;
-            Cs = sqrt(pnom)/Kcs;
-            Cf = 1/(Kcf * sqrt(pnom));
-            x0max = qnom/sqrt(pnom);
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -86,15 +84,16 @@ namespace hopsan {
             mpND_c_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::WAVEVARIABLE);
 
             x0 = 0.00001;
-
             mPrevX0 = 0.0;
+            Cs = sqrt(pnom)/Kcs;
+            Cf = 1/(Kcf * sqrt(pnom));
+            x0max = qnom/sqrt(pnom);
 
             double wCutoff = 1 / tao;      //Ska det vara Timestep/Tao?
             //double wCutoff = 100;     DEBUG
-            double num [3] = {1.0, 0.0, 0.0};
-            double den [3] = {1.0, 1.0/wCutoff, 0.0};
-            mFilterLP.initialize(0.0,0.0);
-            mFilterLP.setCoefficients(num, den, mTimestep);
+            double num [2] = {0.0, 1.0};
+            double den [2] = {1.0/wCutoff, 1.0};
+            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, x0max);
         }
 
 
@@ -130,18 +129,7 @@ namespace hopsan {
 
             xh = ph/b1;
             xsh = mHyst.getValue(xs, xh, mPrevX0);
-            mFilterLP.update(xsh);
-            x0 = mFilterLP.value();
-            if (xsh > x0max)
-            {
-
-                xsh = x0max;
-            }
-            else if (xsh < 0)
-            {
-                xsh = 0;
-            }
-
+            x0 = mFilterLP.update(xsh);
 
             // Turbulent Flow Calculation
             mTurb.setFlowCoefficient(x0);
@@ -174,17 +162,7 @@ namespace hopsan {
                 //if (mTime == 0) { xs = mX0; }
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
                 //! @todo This won't work, filter cannot be updated twice in the same time step with different values...
-                //mFilterLP.update(xsh);
-                //mX0 = mFilterLP.getValue();
-                x0 = xsh;
-                if (x0 > x0max)
-                {
-                    x0 = x0max;
-                }
-                else if (x0 < 0)
-                {
-                    x0 = 0;
-                }
+                x0 = mFilterLP.update(xsh);
                 mTurb.setFlowCoefficient(x0);
                 q2 = mTurb.getFlow(c1, c2, Zc1, Zc2);
                 q1 = -q2;
