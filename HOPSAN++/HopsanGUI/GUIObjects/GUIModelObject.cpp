@@ -261,21 +261,15 @@ void GUIModelObject::setDisplayName(QString name)
 void GUIModelObject::setIcon(graphicsType gfxType)
 {
     QString iconPath;
-    if(gfxType && mGUIModelObjectAppearance.haveIsoIcon())
+    if ( (gfxType == ISOGRAPHICS) && mGUIModelObjectAppearance.hasIcon(ISOGRAPHICS) )
     {
-        iconPath = mGUIModelObjectAppearance.getFullIconPath(ISOGRAPHICS);
+        iconPath = mGUIModelObjectAppearance.getFullAvailableIconPath(ISOGRAPHICS);
         mIconType = ISOGRAPHICS;
     }
     else
     {
-        iconPath = mGUIModelObjectAppearance.getFullIconPath(USERGRAPHICS);
+        iconPath = mGUIModelObjectAppearance.getFullAvailableIconPath(USERGRAPHICS);
         mIconType = USERGRAPHICS;
-    }
-    //Check if specified file exist, else use unknown icon
-    QFile iconFile(iconPath);
-    if (!iconFile.exists())
-    {
-        iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
 
     //Avoid swappping icon if same as before
@@ -300,6 +294,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     if(!mIconRotation)
     {
         //! @todo calulate this instead of if if if if if .......
+        //! @todo make sure that it works with flip and flop
         mpIcon->setRotation(-this->rotation());
         if(this->rotation() == 0)
         {
@@ -318,7 +313,6 @@ void GUIModelObject::setIcon(graphicsType gfxType)
             mpIcon->setPos(this->boundingRect().width(),0);
         }
     }
-
 }
 
 

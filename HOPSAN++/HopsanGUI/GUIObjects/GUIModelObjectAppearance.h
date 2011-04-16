@@ -26,7 +26,7 @@ public:
     void setName(QString name);
     void setHelpText(QString text);
     void setBasePath(QString path);
-    void setRelativeIconPath(QString path, graphicsType gfxType);
+    void setIconPath(QString path, graphicsType gfxType);
 
     QString getTypeName();
     QString getName();
@@ -34,20 +34,19 @@ public:
     QString getHelpPicture();
     QString getHelpText();
     QString getBasePath();
-    QString getFullIconPath(graphicsType gfxType=USERGRAPHICS);
-    QString getRelativeIconPath(graphicsType gfxType=USERGRAPHICS);
+    QString getFullAvailableIconPath(graphicsType gfxType=USERGRAPHICS);
+    QString getIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     PortAppearanceMapT &getPortAppearanceMap();
     void erasePortAppearance(const QString portName);
     void addPortAppearance(const QString portName, GUIPortAppearance *pPortAppearance=0);
 
-    bool haveIsoIcon();
-    bool haveUserIcon();
+    bool hasIcon(const graphicsType gfxType);
 
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
-    void saveToXML(QString filename);
+    void saveToXMLFile(QString filename);
 
 private:
     QString mTypeName;
@@ -63,6 +62,11 @@ private:
 
     //BaseDir for path strings
     QString mBasePath;
+
+    //Private help functions
+    void makeSurePathsAbsolute();
+    void makeSurePathsRelative();
+
 
 };
 

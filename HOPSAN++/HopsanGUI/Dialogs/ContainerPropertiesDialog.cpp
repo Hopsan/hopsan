@@ -46,8 +46,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
        //Icon paths
     mpUserIconLabel = new QLabel("User Icon Path:", this);
     mpIsoIconLabel = new QLabel( "ISO Icon Path:", this);
-    mpUserIconPath = new QLineEdit(mpContainerObject->getUserIconPath(), this);
-    mpIsoIconPath = new QLineEdit(mpContainerObject->getIsoIconPath(), this);
+    mpUserIconPath = new QLineEdit(mpContainerObject->getIconPath(USERGRAPHICS), this);
+    mpIsoIconPath = new QLineEdit(mpContainerObject->getIconPath(ISOGRAPHICS), this);
     mpUserIconLabel->setMinimumWidth(100);
     mpUserIconPath->setFixedWidth(200);
     mpIsoIconBrowseButton = new QPushButton(tr("..."), this);
@@ -201,24 +201,14 @@ void ContainerPropertiesDialog::setValues()
     }
 
     //Set the icon paths, only update and refresh appearance if a change has occured
-    if ( (mpContainerObject->getIsoIconPath() != mpIsoIconPath->text()) || (mpContainerObject->getUserIconPath() != mpUserIconPath->text()) )
+    if ( mpContainerObject->getIconPath(ISOGRAPHICS) != mpIsoIconPath->text() )
     {
-        //mpContainerObject->setUserIconPath(mpUserIconPath->text());
-        //mpContainerObject->setIsoIconPath(mpIsoIconPath->text());
-        //! @todo in the future we should be able to set iso and user icons with different paths separately, right now only user icon is available only try iso if user empty
-        QString newpath;
-        if (mpUserIconPath->text().isEmpty())
-        {
-            newpath = mpIsoIconPath->text();
-        }
-        else
-        {
-            newpath = mpUserIconPath->text();
-        }
-
-        mpContainerObject->setIsoIconPath("");
-        mpContainerObject->setUserIconPath(newpath);
-
+        mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGRAPHICS);
+        mpContainerObject->refreshAppearance();
+    }
+    if ( mpContainerObject->getIconPath(USERGRAPHICS) != mpUserIconPath->text() )
+    {
+        mpContainerObject->setIconPath(mpUserIconPath->text(), USERGRAPHICS);
         mpContainerObject->refreshAppearance();
     }
 

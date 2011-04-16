@@ -1513,41 +1513,19 @@ QString GUIContainerObject::getScriptFile()
 }
 
 
-//! @brief Returns the path to the icon with user graphics.
-QString GUIContainerObject::getUserIconPath()
-{
-    return this->mGUIModelObjectAppearance.getRelativeIconPath(USERGRAPHICS);
-}
-
-
 //! @brief Returns the path to the icon with iso graphics.
-//! @todo do we return full path or relative
-QString GUIContainerObject::getIsoIconPath()
+//! @todo should we return full path or relative
+QString GUIContainerObject::getIconPath(const graphicsType gfxType)
 {
-    return this->mGUIModelObjectAppearance.getRelativeIconPath(ISOGRAPHICS);
+    return mGUIModelObjectAppearance.getIconPath(gfxType);
 }
 
 
-//! @brief Sets the path to the icon with user graphics.
-//! @todo do we safe full path or relative
-void GUIContainerObject::setUserIconPath(QString path)
+//! @brief Sets the path to the icon of the specified type
+//! The path can be relative or absolute
+void GUIContainerObject::setIconPath(const QString path, const graphicsType gfxType)
 {
-    //! @todo FIX correct calc of relative paths
-//    QFileInfo fi;
-//    fi.setFile(path);
-    this->mGUIModelObjectAppearance.setRelativeIconPath(path, USERGRAPHICS);
-    //this->mGUIModelObjectAppearance.setBasePath(fi.absolutePath()+"/");
-}
-
-
-//! @brief Sets the path to the icon with iso graphics.
-void GUIContainerObject::setIsoIconPath(QString path)
-{
-    //! @todo FIX correct calc of relative paths
-//    QFileInfo fi;
-//    fi.setFile(path);
-    this->mGUIModelObjectAppearance.setRelativeIconPath(path, ISOGRAPHICS);
-    //this->mGUIModelObjectAppearance.setBasePath(fi.absolutePath()+"/");
+    mGUIModelObjectAppearance.setIconPath(path, gfxType);
 }
 
 

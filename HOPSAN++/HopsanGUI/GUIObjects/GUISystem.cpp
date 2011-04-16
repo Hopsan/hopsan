@@ -243,6 +243,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 
         this->refreshExternalPortsAppearanceAndPosition();
         QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOTTAG);
+        //!< @todo somehow we need to have set the base path toi the folder to which we are saving here
         this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
     }
     return guiStuff;

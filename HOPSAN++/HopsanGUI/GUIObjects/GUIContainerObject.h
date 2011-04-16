@@ -54,10 +54,8 @@ public:
     void forgetContainedConnector(GUIConnector *pConnector); //! @todo maybe can be protected, other container (and self) should be able to access it, noone else needs to
 
     //Handle container appearance
-    QString getIsoIconPath();
-    QString getUserIconPath();
-    void setIsoIconPath(QString path);
-    void setUserIconPath(QString path);
+    QString getIconPath(const graphicsType gfxType);
+    void setIconPath(const QString path, const graphicsType gfxType);
     CONTAINEREDGE findPortEdge(QPointF center, QPointF pt);
     virtual void refreshAppearance();
     void refreshExternalPortsAppearanceAndPosition();

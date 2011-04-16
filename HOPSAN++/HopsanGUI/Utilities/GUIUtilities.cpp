@@ -92,6 +92,11 @@ QString addQuotes(QString str)
 //! @returns The realtive pathtochange, relative to basepath
 QString relativePath(QFileInfo pathtochange, QDir basedir)
 {
+    if (!pathtochange.isAbsolute())
+    {
+        qDebug() << "pathtochange is not absolute in relativePath utility function, need to handle this nicer";
+        return "";
+    }
     return basedir.relativeFilePath(pathtochange.absoluteFilePath());
 }
 

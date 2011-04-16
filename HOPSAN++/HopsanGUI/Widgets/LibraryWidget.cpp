@@ -71,7 +71,7 @@ QString LibraryContentItem::getTypeName()
 void LibraryContentItem::selectIcon(graphicsType gfxType)
 {
     QIcon icon;
-    QString iconPath = mpAppearanceData->getFullIconPath(gfxType);
+    QString iconPath = mpAppearanceData->getFullAvailableIconPath(gfxType);
     QFile iconFile(iconPath);
     if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
     {
@@ -340,6 +340,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             {
                 //Read appearance data from the caf xml file, begin with the first
                 QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement("modelobject"); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+                pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
                 pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
             }
         }
@@ -358,7 +359,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 
         bool sucess = true;
 //        bool success2 = true;
-        pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
+//        pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
 
         //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
         //! @todo Move all core access to CoreAccess
