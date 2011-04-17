@@ -183,12 +183,12 @@ void ContainerPropertiesDialog::setValues()
 {
     this->mpContainerObject->setName(this->mpNameEdit->text());
 
-    if(mpIsoCheckBox->isChecked())
+    if(mpIsoCheckBox->isChecked() && mpContainerObject->mGfxType != ISOGRAPHICS)
     {
         this->mpContainerObject->setGfxType(ISOGRAPHICS);
         gpMainWindow->mpLibrary->setGfxType(ISOGRAPHICS);
     }
-    else
+    else if(!mpIsoCheckBox->isChecked() && mpContainerObject->mGfxType != USERGRAPHICS)
     {
         this->mpContainerObject->setGfxType(USERGRAPHICS);
         gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
