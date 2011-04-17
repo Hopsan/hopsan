@@ -20,6 +20,7 @@ PYTHONQT_DEFAULT_PATHS = $${PWD}/../ExternalDependencies/PythonQt2.0.1
 PYTHONQT_PATH = $$selectPath($$(PYTHONQT_PATH), $$PYTHONQT_DEFAULT_PATHS, "pythonqt")
 
 #Set QWT paths, Paths that are earlier in the list will be used if found
+QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0
 QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0
 QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0-rc5
 QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")

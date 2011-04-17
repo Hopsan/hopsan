@@ -16,6 +16,7 @@
 #include <QDateTime>
 
 #include <cstring>
+#include <limits>
 
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
@@ -37,6 +38,7 @@
 #include "qwt_plot_renderer.h"
 //#include "qwt_double_rect.h"
 
+const double DBLMAX = std::numeric_limits<double>::max();
 
 //! @brief Constructor for the plot window, where plots are displayed.
 //! @param plotParameterTree is a pointer to the parameter tree from where the plot window was created
@@ -378,7 +380,7 @@ void PlotWindow::saveToXml()
     timeElement.setAttribute("second", time.second());
 
         //Add tab elements
-    for(size_t i=0; i<mpPlotTabs->count(); ++i)
+    for(int i=0; i<mpPlotTabs->count(); ++i)
     {
         QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
         if(mpPlotTabs->getTab(i)->isGridVisible())
@@ -389,7 +391,7 @@ void PlotWindow::saveToXml()
         {
             tabElement.setAttribute("grid", "false");
         }
-        tabElement.setAttribute("color", makeRgbString(mpPlotTabs->getTab(i)->getPlot()->canvasBackground()));
+        tabElement.setAttribute("color", makeRgbString(mpPlotTabs->getTab(i)->getPlot()->canvasBackground().color()));
 
         if(mpPlotTabs->getTab(i)->mHasSpecialXAxis)
         {
@@ -403,7 +405,7 @@ void PlotWindow::saveToXml()
         }
 
             //Add curve elements
-        for(size_t j=0; j<mpPlotTabs->getTab(i)->getCurves().size(); ++j)
+        for(int j=0; j<mpPlotTabs->getTab(i)->getCurves().size(); ++j)
         {
             QDomElement curveElement = appendDomElement(tabElement,"curve");
             curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
@@ -814,7 +816,7 @@ void PlotTab::addCurve(PlotCurve *curve)
 
     mPlotCurvePtrs.append(curve);
 
-    size_t i=0;
+    int i=0;
     while(mUsedColors.contains(mCurveColors.first()))
     {
         mCurveColors.append(mCurveColors.first());
@@ -1306,7 +1308,7 @@ void PlotTab::enableGrid(bool value)
 
 void PlotTab::setBackgroundColor()
 {
-    QColor color = QColorDialog::getColor(mpPlot->canvasBackground(), this);
+    QColor color = QColorDialog::getColor(mpPlot->canvasBackground().color(), this);
     if (color.isValid())
     {
         mpPlot->setCanvasBackground(color);
@@ -1935,7 +1937,7 @@ void PlotCurve::openScaleDialog()
 
     QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
     mpXScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpXScaleSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpXScaleSpinBox->setRange(-DBLMAX, DBLMAX);
     mpXScaleSpinBox->setDecimals(10);
     mpXScaleSpinBox->setSingleStep(0.1);
     mpXScaleSpinBox->setValue(mScaleX);
@@ -1943,7 +1945,7 @@ void PlotCurve::openScaleDialog()
     QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
     mpXOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpXOffsetSpinBox->setDecimals(10);
-    mpXOffsetSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpXOffsetSpinBox->setRange(-DBLMAX, DBLMAX);
     mpXOffsetSpinBox->setSingleStep(0.1);
     mpXOffsetSpinBox->setValue(mOffsetX);
 
@@ -1951,13 +1953,13 @@ void PlotCurve::openScaleDialog()
     mpYScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYScaleSpinBox->setSingleStep(0.1);
     mpYScaleSpinBox->setDecimals(10);
-    mpYScaleSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpYScaleSpinBox->setRange(-DBLMAX, DBLMAX);
     mpYScaleSpinBox->setValue(mScaleY);
 
     QLabel *pYOffsetLabel = new QLabel("Y-Axis Offset: ", pScaleDialog);
     mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYOffsetSpinBox->setDecimals(10);
-    mpYOffsetSpinBox->setRange(-1000000000000000, 1000000000000000);
+    mpYOffsetSpinBox->setRange(-DBLMAX, DBLMAX);
     mpYOffsetSpinBox->setSingleStep(0.1);
     mpYOffsetSpinBox->setValue(mOffsetY);
 

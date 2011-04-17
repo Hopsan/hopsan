@@ -2397,6 +2397,13 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //Update the CQS type
     this->determineCQSType();
 
+    //Update parent cqs-type
+    //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
+    if (mpSystemParent != 0)
+    {
+        this->mpSystemParent->determineCQSType();
+    }
+
     //Update the node placement
     connAssist.determineWhereToStoreNodeAndStoreIt(pResultingNode);
 

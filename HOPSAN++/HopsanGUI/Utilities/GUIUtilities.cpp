@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QStringList>
+#include <limits>
 
 #include "GUIUtilities.h"
 
@@ -216,7 +217,7 @@ QString parseVariableUnit(QString input)
         retval.remove(idx,1);
         retval.insert(idx, "<sup>");
 
-        tempidx=100000000000;
+        tempidx=std::numeric_limits<int>::max();
         if(retval.contains("*"))
             tempidx=min(tempidx, retval.indexOf("*", idx));
         if(retval.contains("/"))

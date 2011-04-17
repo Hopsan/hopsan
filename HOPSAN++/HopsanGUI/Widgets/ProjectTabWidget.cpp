@@ -288,6 +288,9 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
     mpSystem->setName(mpSystem->mModelFileInfo.baseName());
 
+        //Update the basepath for relative appearance data info
+    mpSystem->setAppearanceDataBasePath(mpSystem->mModelFileInfo.absolutePath());
+
         //Save xml document
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument, HMFVERSION, HOPSANGUIVERSION, "0"); //!< @todo need to get coreversion in here somehow, maybe have a global that is set when the hopsan core is instansiated
@@ -590,6 +593,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
         //! @todo check if we could load else give error message and dont attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
         pCurrentTab->mpSystem->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+        pCurrentTab->mpSystem->setAppearanceDataBasePath(pCurrentTab->mpSystem->mModelFileInfo.absolutePath());
         pCurrentTab->mpSystem->loadFromDomElement(systemElement);
     }
     else

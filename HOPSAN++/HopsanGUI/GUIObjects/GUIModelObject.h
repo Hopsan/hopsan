@@ -40,9 +40,9 @@ public:
 
     //CQS methods
     virtual QString getTypeCQS(){return "hasNoCqsType";} //Overloaded in GUISystem and GUIComponent
-    //virtual void setTypeCQS(QString /*typestring*/) {assert(false);} //Only available in GUISystemComponent
 
     //Appearance methods
+    void setAppearanceDataBasePath(const QString basePath);
     virtual GUIModelObjectAppearance* getAppearanceData();
     virtual void refreshAppearance();
 

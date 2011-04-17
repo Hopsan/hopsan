@@ -1069,6 +1069,12 @@ void GUIModelObject::deleteMe()
     mpParentContainerObject->deleteGUIModelObject(this->getName());
 }
 
+//! @brief Sets or updates the appearance data specific base path to which all icon paths should be relative
+//! @todo Maybe this can be combined with the setModelFileInfo function
+void GUIModelObject::setAppearanceDataBasePath(const QString basePath)
+{
+    mGUIModelObjectAppearance.setBasePath(basePath);
+}
 
 //! @brief Returns a pointer to the appearance data object
 GUIModelObjectAppearance* GUIModelObject::getAppearanceData()

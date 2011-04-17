@@ -134,6 +134,7 @@ GUIModelObject* loadGUISystemObject(SystemLoadData &rData, LibraryWidget* pLibra
     if (rData.externalfilepath.isEmpty())
     {
         //Load embeded system
+        pSys->getAppearanceData()->setBasePath(pContainer->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
         pSys->loadFromDomElement(rData.embededSystemDomElement);
     }
     else
