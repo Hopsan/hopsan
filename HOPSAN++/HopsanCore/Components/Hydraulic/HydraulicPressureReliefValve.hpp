@@ -50,9 +50,6 @@ namespace hopsan {
             qnom = 0.001;
             ph = 500000;
             pnom = 7e6f;
-            x0max = qnom / sqrt(pnom);
-            Cs = sqrt(pnom) / Kcs;
-            Cf = 1.0 / (Kcf*sqrt(pnom));
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -79,8 +76,10 @@ namespace hopsan {
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 
             x0 = 0.00001;
-
             mPrevX0 = 0;
+            x0max = qnom / sqrt(pnom);
+            Cs = sqrt(pnom) / Kcs;
+            Cf = 1.0 / (Kcf*sqrt(pnom));
 
             double wCutoff = 1 / tao;
             double num [2] = {0.0, 1.0};

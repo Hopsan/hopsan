@@ -11,6 +11,7 @@
 #define HYDRAULICPRESSURECONTROLLEDVALVE_HPP_INCLUDED
 
 #include <iostream>
+#include <sstream>
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
@@ -118,8 +119,6 @@ namespace hopsan {
             p_close = (*mpND_p_close);
             c_close = (*mpND_c_close);
 
-            //Equations
-
             /* Equations */
 
             b1 = Cs+Cf*(p1-p2);        //Help Variable, equals sqrt(p1-p2)/Kctot
@@ -130,6 +129,13 @@ namespace hopsan {
             xh = ph/b1;
             xsh = mHyst.getValue(xs, xh, mPrevX0);
             x0 = mFilterLP.update(xsh);
+
+            if(mTime<0.01)
+            {
+                std::stringstream ss;
+                ss << "xsh = " << xsh << ", x0 = " << x0;
+                addDebugMessage(ss.str());
+            }
 
             // Turbulent Flow Calculation
             mTurb.setFlowCoefficient(x0);
@@ -142,10 +148,13 @@ namespace hopsan {
             p_open = c_open;
             p_close = c_close;
 
+            p_open = std::max(0.0, p_open);
+            p_close = std::max(0.0, p_close);
+
             // Check for cavitation
             if (p1 < 0.0)
             {
-                c1 = 0.f;
+                c1 = 0.0;
                 Zc1 = 0.0;
                 cav = true;
             }
@@ -157,13 +166,6 @@ namespace hopsan {
             }
             if (cav)        //Cavitatiaon, redo calculations with new c and Zc
             {
-                xs = (p_open - pref - p_close)/b1;
-                xh = ph / b1;
-                //if (mTime == 0) { xs = mX0; }
-                xsh = mHyst.getValue(xs, xh, mPrevX0);
-                //! @todo This won't work, filter cannot be updated twice in the same time step with different values...
-                x0 = mFilterLP.update(xsh);
-                mTurb.setFlowCoefficient(x0);
                 q2 = mTurb.getFlow(c1, c2, Zc1, Zc2);
                 q1 = -q2;
                 p1 = c1 + Zc1 * q1;

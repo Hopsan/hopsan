@@ -1748,6 +1748,8 @@ void GUIContainerObject::enterContainer()
     gpMainWindow->mpUndoWidget->refreshList();
     gpMainWindow->undoAction->setDisabled(this->mUndoDisabled);
     gpMainWindow->redoAction->setDisabled(this->mUndoDisabled);
+
+    this->collectPlotData();
 }
 
 //! @brief Exit a container object and maks its the view represent its parents contents.
@@ -1797,6 +1799,8 @@ void GUIContainerObject::exitContainer()
         //Refresh external port appearance
     //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal
     this->refreshExternalPortsAppearanceAndPosition();
+
+    mpParentContainerObject->collectPlotData();
 }
 
 
@@ -1889,6 +1893,7 @@ void GUIContainerObject::collectPlotData()
 
 QVector<double> GUIContainerObject::getTimeVector(int generation)
 {
+    qDebug() << "getTimeVector()";
     return mTimeVectors.at(generation);
 }
 
