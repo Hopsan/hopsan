@@ -176,6 +176,13 @@ namespace hopsan {
 
             mPrevX0 = x0;
 
+            if((mTime > .08) && (mTime < .081))
+            {
+                std::stringstream ss;
+                ss << "mTime: " << mTime << "       x0: " << x0 << "       p_open - p_close: " << p_open - p_close << "       b1: " << b1 << "       p_open - pref - p_close: " << p_open - pref - p_close;
+                addInfoMessage(ss.str());
+            }
+
             //Write new values to nodes
 
             (*mpND_p1) = p1;
