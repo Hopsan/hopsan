@@ -78,8 +78,6 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
     startPortName = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
     endComponentName = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
     endPortName = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
-    isDashed = (rDomElement.attribute(HMF_CONNECTORDASHEDTAG) == "true");
-    if(isDashed) qDebug() << "Loading dashed connector";
 
     //Read gui specific stuff
     qreal x,y;
@@ -98,6 +96,15 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
     {
         geometryList.append(geometryTag.text());
         geometryTag = geometryTag.nextSiblingElement(HMF_GEOMETRYTAG);
+    }
+    QDomElement styleTag = guiData.firstChildElement(HMF_STYLETAG);
+    if(!styleTag.isNull())
+    {
+        isDashed = (styleTag.text() == "dashed");
+    }
+    else
+    {
+        isDashed = false;
     }
 }
 

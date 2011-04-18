@@ -632,10 +632,7 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
     xmlConnect.setAttribute(HMF_CONNECTORSTARTPORTTAG, getStartPortName());
     xmlConnect.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, getEndComponentName());
     xmlConnect.setAttribute(HMF_CONNECTORENDPORTTAG, getEndPortName());
-    if(mIsDashed)
-        xmlConnect.setAttribute(HMF_CONNECTORDASHEDTAG, "true");
-    else
-        xmlConnect.setAttribute(HMF_CONNECTORDASHEDTAG, "false");
+
 
     //Save gui data to dom
     QDomElement xmlConnectGUI = appendDomElement(xmlConnect, HMF_HOPSANGUITAG);
@@ -654,6 +651,10 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
         if(mGeometries.at(j) == DIAGONAL)
             appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "diagonal");
     }
+    if(mIsDashed)
+        appendDomTextNode(xmlConnectGUI, HMF_STYLETAG, "dashed");
+    else
+        appendDomTextNode(xmlConnectGUI, HMF_STYLETAG, "solid");
 }
 
 
@@ -1070,6 +1071,7 @@ void GUIConnector::select()
 //! @param value Boolean that is true if connector shall be dashed
 void GUIConnector::setDashed(bool value)
 {
+    mpParentContainerObject->mpParentProjectTab->hasChanged();
     mIsDashed=value;
     for(int i=0; i<mpLines.size(); ++i)
     {

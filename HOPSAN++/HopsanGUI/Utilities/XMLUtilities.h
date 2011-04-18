@@ -81,6 +81,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue);
 #define HMF_COORDINATETAG "coordinate"
 #define HMF_GEOMETRIES "geometries"
 #define HMF_GEOMETRYTAG "geometry"
+#define HMF_STYLETAG "style"
 #define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"
