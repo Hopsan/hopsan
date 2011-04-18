@@ -2420,6 +2420,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     size_t n_WritePorts = 0;
     size_t n_PowerPorts = 0;
     size_t n_SystemPorts = 0;
+    size_t n_MultiPorts = 0;
 
     size_t n_Ccomponents = 0;
     size_t n_Qcomponents = 0;
@@ -2446,6 +2447,10 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         {
             n_SystemPorts += 1;
         }
+        else if((*it)->getPortType() > Port::MULTIPORT)
+        {
+            n_MultiPorts += 1;
+        }
 
         if ((*it)->getComponent()->isComponentC())
         {
@@ -2463,6 +2468,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
                 n_SYScomponentQs += 1;
             }
         }
+
     }
 
     //Check the kind of ports in the components subjected for connection
@@ -2484,6 +2490,10 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         if ( pPort1->getPortType() == Port::SYSTEMPORT )
         {
             n_SystemPorts += 1;
+        }
+        if( pPort1->getPortType() > Port::MULTIPORT)
+        {
+            n_MultiPorts += 1;
         }
         if ( pPort1->getComponent()->isComponentC() )
         {
@@ -2541,6 +2551,11 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     }
 
     //Check if there are some problems with the connection
+    if(n_MultiPorts > 1)
+    {
+        gCoreMessageHandler.addErrorMessage("Trying to connect two MultiPorts to each other");
+        return false;
+    }
     if (n_PowerPorts > 2)
     {
         gCoreMessageHandler.addErrorMessage("Trying to connect more than two PowerPorts to same node");

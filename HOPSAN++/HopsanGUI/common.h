@@ -26,14 +26,14 @@
 #define HELPPATH "../HopsanGUI/docs/html/"
 
 //Relese++ defines
-//#define MAINPATH "./"
+//#define MAINPATH "../"
 //#define OBJECTICONPATH ":graphics/objecticons/"
 //#define ICONPATH ":graphics/uiicons/"
 //#define PORTICONPATH ":graphics/porticons/"
 //#define GRAPHICSPATH ":graphics/"
-//#define COMPONENTPATH "componentData/"
-//#define MODELPATH "Models/"
-//#define HELPPATH "Help/"
+//#define COMPONENTPATH "../componentData/"
+//#define MODELPATH "../Models/"
+//#define HELPPATH "../Help/"
 
 //! @todo all of these dont have to be common
 //Enums
