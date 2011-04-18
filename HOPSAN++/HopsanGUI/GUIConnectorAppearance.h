@@ -20,6 +20,7 @@ public:
     //GUIConnectorAppearance();
     GUIConnectorAppearance(QString porttype, graphicsType gfxType);
     void setType(const QString porttype);
+    QString getType();
     void setIsoStyle(graphicsType gfxType);
     void setTypeAndIsoStyle(QString porttype, graphicsType gfxType);
     QPen getPen(QString type, graphicsType gfxType, QString situation);

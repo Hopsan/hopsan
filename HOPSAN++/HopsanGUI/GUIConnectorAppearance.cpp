@@ -36,6 +36,11 @@ void GUIConnectorAppearance::setType(const QString type)
     }
 }
 
+QString GUIConnectorAppearance::getType()
+{
+    return mConnectorType;
+}
+
 void GUIConnectorAppearance::setIsoStyle(graphicsType gfxType)
 {
     mGfxType = gfxType;

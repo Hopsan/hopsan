@@ -1071,6 +1071,9 @@ void GUIConnector::select()
 //! @param value Boolean that is true if connector shall be dashed
 void GUIConnector::setDashed(bool value)
 {
+    if(mpGUIConnectorAppearance->getType() == "Signal")
+        return;
+
     mpParentContainerObject->mpParentProjectTab->hasChanged();
     mIsDashed=value;
     for(int i=0; i<mpLines.size(); ++i)
@@ -1138,7 +1141,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 void GUIConnectorLine::setActive()
 {
         this->setPen(mpConnectorAppearance->getPen("Active"));
-        if(mpParentGUIConnector->mIsDashed)
+        if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getType() != "Signal")
         {
             QPen tempPen = this->pen();
             tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
@@ -1162,7 +1165,7 @@ void GUIConnectorLine::setPassive()
     {
         this->setPen(mpConnectorAppearance->getPen("Primary"));
     }
-    if(mpParentGUIConnector->mIsDashed)
+    if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getType() != "Signal")
     {
         QPen tempPen = this->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
@@ -1178,7 +1181,7 @@ void GUIConnectorLine::setPassive()
 void GUIConnectorLine::setHovered()
 {
     this->setPen(mpConnectorAppearance->getPen("Hover"));
-    if(mpParentGUIConnector->mIsDashed)
+    if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getType() != "Signal")
     {
         QPen tempPen = this->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
