@@ -2295,6 +2295,15 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
+    //Prevent connection between two multiports
+    //! @todo we might want to allow this in the future, right now disconnecting two multiports is also not implemented
+    if ( (pPort1->getPortType() > Port::MULTIPORT) && (pPort2->getPortType() > Port::MULTIPORT) )
+    {
+        gCoreMessageHandler.addErrorMessage("You are not allowed to connect two MultiPorts to each other, (this may be allowed in the future)");
+        return false;
+    }
+
+
     //Prevent connection if porst are already connected to each other
     //! @todo What will happend with multiports
     if (pPort1->isConnectedTo(pPort2))
@@ -2420,7 +2429,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     size_t n_WritePorts = 0;
     size_t n_PowerPorts = 0;
     size_t n_SystemPorts = 0;
-    size_t n_MultiPorts = 0;
+    //size_t n_MultiPorts = 0;
 
     size_t n_Ccomponents = 0;
     size_t n_Qcomponents = 0;
@@ -2447,10 +2456,10 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         {
             n_SystemPorts += 1;
         }
-        else if((*it)->getPortType() > Port::MULTIPORT)
-        {
-            n_MultiPorts += 1;
-        }
+//        else if((*it)->getPortType() > Port::MULTIPORT)
+//        {
+//            n_MultiPorts += 1;
+//        }
 
         if ((*it)->getComponent()->isComponentC())
         {
@@ -2491,10 +2500,10 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         {
             n_SystemPorts += 1;
         }
-        if( pPort1->getPortType() > Port::MULTIPORT)
-        {
-            n_MultiPorts += 1;
-        }
+//        if( pPort1->getPortType() > Port::MULTIPORT)
+//        {
+//            n_MultiPorts += 1;
+//        }
         if ( pPort1->getComponent()->isComponentC() )
         {
             n_Ccomponents += 1;
@@ -2551,11 +2560,11 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     }
 
     //Check if there are some problems with the connection
-    if(n_MultiPorts > 1)
-    {
-        gCoreMessageHandler.addErrorMessage("Trying to connect two MultiPorts to each other");
-        return false;
-    }
+//    if(n_MultiPorts > 1)
+//    {
+//        gCoreMessageHandler.addErrorMessage("Trying to connect two MultiPorts to each other");
+//        return false;
+//    }
     if (n_PowerPorts > 2)
     {
         gCoreMessageHandler.addErrorMessage("Trying to connect more than two PowerPorts to same node");

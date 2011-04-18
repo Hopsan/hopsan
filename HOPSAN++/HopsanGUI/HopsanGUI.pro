@@ -21,8 +21,6 @@ PYTHONQT_PATH = $$selectPath($$(PYTHONQT_PATH), $$PYTHONQT_DEFAULT_PATHS, "pytho
 
 #Set QWT paths, Paths that are earlier in the list will be used if found
 QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0
-QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0
-QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0-rc5
 QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
 
 INCLUDEPATH *= $${PWD}/../HopsanCore
@@ -49,7 +47,7 @@ unix {
     #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
     #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     # TODO: We need to add teh relative paths automatically from the path variables created above
-    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0-rc5/lib\'
+    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0/lib\'
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/PythonQt2.0.1/lib\'
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
 
