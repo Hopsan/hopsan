@@ -362,3 +362,16 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
     green = split[1].toDouble();
     blue = split[2].toDouble();
 }
+
+
+
+void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
+{
+    if(hmfVersion <= 0.2)
+    {
+        if(element.attribute("typename") == "HydraulicPressureSource")
+        {
+            element.setAttribute("typename", "HydraulicPressureSourceC");
+        }
+    }
+}

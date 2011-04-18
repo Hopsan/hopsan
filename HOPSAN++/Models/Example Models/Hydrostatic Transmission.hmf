@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.2" hopsanguiversion="0.2.1" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.0" hopsancoreversion="0">
     <system cqs_type="UNDEFINEDCQSTYPE" name="Hydrostatic Transmission">
         <hopsangui>
-            <pose x="16.5" y="9.5" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
             <viewport x="2500" y="2500.5" zoom="1"/>
             <ports hidden="1"/>
@@ -294,20 +294,20 @@
             </component>
             <textwidget>
                 <hopsangui>
-                    <pose x="2013.884009657906" y="2497.459106363715"/>
-                    <textobject fontcolor="#556b2f" text="This model shows an example of how to &#xa;model a hydrostatic transmission with an&#xa;angular feedback. The system is protected &#xa;by one pressure relief valve on each side.&#xa;Additional oil is supplied to the system from &#xa;the pressure sources through very small&#xa;orifices." font="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0"/>
+                    <pose x="2029" y="2508"/>
+                    <textobject fontcolor="#556b2f" text="This model shows an example of how to &#xa;model a hydrostatic transmission with an&#xa;angular feedback. The system is protected &#xa;by one pressure relief valve on each side.&#xa;Additional oil is supplied to the system from &#xa;the pressure sources through very small&#xa;orifices." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                 </hopsangui>
             </textwidget>
             <boxwidget>
                 <hopsangui>
-                    <pose x="2010.884009657906" y="2497.459106363715"/>
-                    <size width="329" height="144"/>
+                    <pose x="2022" y="2504"/>
+                    <size width="307" height="148"/>
                     <line width="2" style="solidline" color="#556b2f"/>
                 </hopsangui>
             </boxwidget>
         </objects>
         <connections>
-            <connect endport="P3" endcomponent="Motor" dashed="false" startport="P1" startcomponent="Torque Transformer">
+            <connect endport="P3" endcomponent="Motor" startport="P1" startcomponent="Torque Transformer">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2946.6" y="2555.885"/>
@@ -316,9 +316,10 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Motor" dashed="false" startport="P2" startcomponent="Hydraulic Volume with 4 Ports">
+            <connect endport="P1" endcomponent="Motor" startport="P2" startcomponent="Hydraulic Volume with 4 Ports">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2689" y="2450"/>
@@ -329,9 +330,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P2" endcomponent="Hydraulic Volume with 4 Ports_1" dashed="false" startport="P2" startcomponent="Motor">
+            <connect endport="P2" endcomponent="Hydraulic Volume with 4 Ports_1" startport="P2" startcomponent="Motor">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2844.2936" y="2606"/>
@@ -342,9 +344,10 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P4" endcomponent="Hydraulic Volume with 4 Ports_1" dashed="false" startport="P1" startcomponent="Pressure Relief Valve_1">
+            <connect endport="P4" endcomponent="Hydraulic Volume with 4 Ports_1" startport="P1" startcomponent="Pressure Relief Valve_1">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2672.0008" y="2675"/>
@@ -353,9 +356,10 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P2" endcomponent="Pressure Relief Valve_1" dashed="false" startport="P1" startcomponent="Tank C_1">
+            <connect endport="P2" endcomponent="Pressure Relief Valve_1" startport="P1" startcomponent="Tank C_1">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2672" y="2754.5"/>
@@ -364,9 +368,10 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Gain" dashed="false" startport="out" startcomponent="Subtract">
+            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Subtract">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2310.5" y="2396"/>
@@ -375,9 +380,10 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in1" endcomponent="Subtract" dashed="false" startport="out" startcomponent="Step">
+            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2255" y="2396"/>
@@ -386,9 +392,10 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P3" endcomponent="Hydraulic Volume with 4 Ports" dashed="false" startport="P2" startcomponent="Laminar Orifice_1">
+            <connect endport="P3" endcomponent="Hydraulic Volume with 4 Ports" startport="P2" startcomponent="Laminar Orifice_1">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2586" y="2470"/>
@@ -401,9 +408,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P3" endcomponent="Hydraulic Volume with 4 Ports_1" dashed="false" startport="P2" startcomponent="Laminar Orifice">
+            <connect endport="P3" endcomponent="Hydraulic Volume with 4 Ports_1" startport="P2" startcomponent="Laminar Orifice">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2586" y="2680"/>
@@ -416,9 +424,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Hydraulic Volume with 4 Ports" dashed="false" startport="P2" startcomponent="Variable Displacement Pump">
+            <connect endport="P1" endcomponent="Hydraulic Volume with 4 Ports" startport="P2" startcomponent="Variable Displacement Pump">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2458.7064" y="2507"/>
@@ -429,9 +438,10 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Hydraulic Volume with 4 Ports_1" dashed="false" startport="P1" startcomponent="Variable Displacement Pump">
+            <connect endport="P1" endcomponent="Hydraulic Volume with 4 Ports_1" startport="P1" startcomponent="Variable Displacement Pump">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2458.7064" y="2607"/>
@@ -442,24 +452,26 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P3" endcomponent="Motor" dashed="false" startport="P1" startcomponent="Angular Velocity Sensor">
+            <connect endport="P3" endcomponent="Motor" startport="P1" startcomponent="Angular Velocity Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2916" y="2507"/>
+                        <coordinate x="2918" y="2509"/>
                         <coordinate x="2904" y="2556"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in2" endcomponent="Subtract" dashed="false" startport="out" startcomponent="Angular Velocity Sensor">
+            <connect endport="in2" endcomponent="Subtract" startport="out" startcomponent="Angular Velocity Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2916" y="2471"/>
-                        <coordinate x="2916" y="2233"/>
+                        <coordinate x="2918" y="2473"/>
+                        <coordinate x="2918" y="2233"/>
                         <coordinate x="2298" y="2233"/>
                         <coordinate x="2298" y="2383.5"/>
                     </coordinates>
@@ -468,9 +480,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Laminar Orifice" dashed="false" startport="P1" startcomponent="C-type Pressure Source">
+            <connect endport="P1" endcomponent="Laminar Orifice" startport="P1" startcomponent="C-type Pressure Source">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2586" y="2750"/>
@@ -483,9 +496,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Laminar Orifice_1" dashed="false" startport="P1" startcomponent="C-type Pressure Source_1">
+            <connect endport="P1" endcomponent="Laminar Orifice_1" startport="P1" startcomponent="C-type Pressure Source_1">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2586" y="2540"/>
@@ -498,9 +512,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Pressure Relief Valve_2" dashed="false" startport="P4" startcomponent="Hydraulic Volume with 4 Ports">
+            <connect endport="P1" endcomponent="Pressure Relief Valve_2" startport="P4" startcomponent="Hydraulic Volume with 4 Ports">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2664" y="2465"/>
@@ -513,9 +528,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Tank C" dashed="false" startport="P2" startcomponent="Pressure Relief Valve_2">
+            <connect endport="P1" endcomponent="Tank C" startport="P2" startcomponent="Pressure Relief Valve_2">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2663.0008" y="2545"/>
@@ -528,9 +544,10 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Integrator" dashed="false" startport="out" startcomponent="Subtract">
+            <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Subtract">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2310.5" y="2396"/>
@@ -539,9 +556,10 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Gain_1" dashed="false" startport="out" startcomponent="Integrator">
+            <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Integrator">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2376" y="2352"/>
@@ -550,9 +568,10 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="out" endcomponent="Gain" dashed="false" startport="in1" startcomponent="Add">
+            <connect endport="out" endcomponent="Gain" startport="in1" startcomponent="Add">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2417.5" y="2396"/>
@@ -565,9 +584,10 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="First order low pass filter" dashed="false" startport="out" startcomponent="Add">
+            <connect endport="in" endcomponent="First order low pass filter" startport="out" startcomponent="Add">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2442.5" y="2396"/>
@@ -580,9 +600,10 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Variable Displacement Pump" dashed="false" startport="out" startcomponent="First order low pass filter">
+            <connect endport="in" endcomponent="Variable Displacement Pump" startport="out" startcomponent="First order low pass filter">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2524" y="2396"/>
@@ -595,9 +616,10 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in2" endcomponent="Add" dashed="false" startport="out" startcomponent="Gain_1">
+            <connect endport="in2" endcomponent="Add" startport="out" startcomponent="Gain_1">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2417.5" y="2352"/>
@@ -606,6 +628,7 @@
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
         </connections>

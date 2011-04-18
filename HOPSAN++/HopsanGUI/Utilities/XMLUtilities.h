@@ -50,6 +50,8 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 QString makeRgbString(QColor color);
 void parseRgbString(QString rgb, double &red, double &green, double &blue);
 
+void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion);
+
 //Save Load Definitions
 //! @todo clean up this list and give some smarter names
 #define HMF_ROOTTAG "hopsanmodelfile"

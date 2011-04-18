@@ -12,14 +12,12 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
-
 #include "GUIConnector.h"
 #include "GUIPort.h"
-
 #include "Widgets/LibraryWidget.h"
-
 #include "MainWindow.h"
 #include "UndoStack.h"
+#include "Widgets/MessageWidget.h"
 
 #include <QMap>
 
@@ -253,6 +251,11 @@ void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject,
 //    else
     {
         //Use the setParameter method that mapps to System parameter
+        if(!pObject->getParameterNames().contains(rData.parameterName))
+        {
+            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name mismatch. Parameter ignored.");
+            return;
+        }
         pObject->setParameterValue(rData.parameterName, rData.parameterValue);
     }
 }

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.2" hopsanguiversion="0.2.0" hopsancoreversion="0">
-    <system cqs_type="S" name="Hopsan-Exempel 2">
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.0" hopsancoreversion="0">
+    <system cqs_type="UNDEFINEDCQSTYPE" name="Pressure Relief Valve Characteristics">
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2500" zoom="1"/>
+            <viewport x="2500" y="2472.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <scriptfile path=""/>
             <hopsanobjectappearance>
-                <modelobject typename="Subsystem" displayname="Hopsan-Exempel 2">
+                <modelobject typename="Subsystem" displayname="Pressure Relief Valve Characteristics">
                     <icon isopath="subsystemtmp.svg" iconrotation="" userpath=""/>
                 </modelobject>
             </hopsanobjectappearance>
@@ -18,7 +19,7 @@
         <objects>
             <component typename="HydraulicTurbulentOrifice" name="Turbulent Orifice">
                 <parameters>
-                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.67" name="C_q"/>
                     <parameter value="3e-007" name="A"/>
                 </parameters>
                 <startvalues/>
@@ -30,8 +31,8 @@
             <component typename="HydraulicVolume3" name="Hydraulic Volume with 3 Ports">
                 <parameters>
                     <parameter value="0.001" name="V"/>
-                    <parameter value="1e+009" name="Be"/>
-                    <parameter value="0.1" name="a"/>
+                    <parameter value="1e+009" name="Beta_e"/>
+                    <parameter value="0.1" name="alpha"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
@@ -48,11 +49,11 @@
             </component>
             <component typename="HydraulicTankC" name="Tank C_1">
                 <parameters>
-                    <parameter value="100000" name="P"/>
+                    <parameter value="100000" name="p"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
                     <pose x="2692" y="2504" flipped="0" a="0"/>
@@ -61,12 +62,12 @@
             </component>
             <component typename="SignalStep" name="Step">
                 <parameters>
-                    <parameter value="1e-006" name="BaseValue"/>
-                    <parameter value="-7e-007" name="Amplitude"/>
-                    <parameter value="0.5" name="StepTime"/>
+                    <parameter value="1e-006" name="y_0"/>
+                    <parameter value="-7e-007" name="y_A"/>
+                    <parameter value="0.5" name="t_step"/>
                 </parameters>
                 <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
+                    <startvalue portname="out" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
                     <pose x="2558" y="2385" flipped="0" a="0"/>
@@ -75,11 +76,11 @@
             </component>
             <component typename="HydraulicTankC" name="Tank C">
                 <parameters>
-                    <parameter value="100000" name="P"/>
+                    <parameter value="100000" name="p"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
                     <pose x="2511" y="2623" flipped="0" a="0"/>
@@ -88,7 +89,7 @@
             </component>
             <component typename="HydraulicFlowSourceQ" name="Prescribed Source Q">
                 <parameters>
-                    <parameter value="0.0001" name="Flow"/>
+                    <parameter value="0.0001" name="q"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -98,12 +99,12 @@
             </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
-                    <parameter value="2e+006" name="pref"/>
+                    <parameter value="2e+006" name="p_ref"/>
                     <parameter value="0.01" name="tao"/>
-                    <parameter value="1e-008" name="kcs"/>
-                    <parameter value="1e-008" name="kcf"/>
-                    <parameter value="0.001" name="qnom"/>
-                    <parameter value="0" name="ph"/>
+                    <parameter value="1e-008" name="k_c,s"/>
+                    <parameter value="1e-008" name="k_c,f"/>
+                    <parameter value="0.001" name="q_nom"/>
+                    <parameter value="0" name="p_h"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -139,6 +140,7 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Hydraulic Volume with 3 Ports" startport="P1" startcomponent="Prescribed Source Q">
@@ -154,6 +156,7 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Tank C">
@@ -169,6 +172,7 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="P2" endcomponent="Hydraulic Volume with 3 Ports" startport="P2" startcomponent="Turbulent Orifice">
@@ -184,6 +188,7 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Tank C_1" startport="P1" startcomponent="Turbulent Orifice">
@@ -197,6 +202,7 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="A" endcomponent="Turbulent Orifice" startport="out" startcomponent="Step">
@@ -210,6 +216,7 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
         </connections>

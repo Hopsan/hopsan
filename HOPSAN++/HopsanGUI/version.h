@@ -10,8 +10,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define HOPSANGUIVERSION "0.2.1"
-#define HMFVERSION "0.2"
-#define CAFVERSION "0.2"
+#define HOPSANGUIVERSION "0.3.0"
+#define HMFVERSION "0.3"
+#define CAFVERSION "0.3"
 
 #endif // VERSION_H

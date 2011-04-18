@@ -14,6 +14,7 @@
 #include "../loadObjects.h"
 #include "../GUIConnector.h"
 #include "../UndoStack.h"
+#include "../version.h"
 #include "../Widgets/LibraryWidget.h"
 #include "../Widgets/MessageWidget.h"
 #include "../Widgets/ProjectTabWidget.h"
@@ -329,6 +330,17 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 //! @param[in] rDomElement The element to load from
 void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
+    double hmfVersion = rDomElement.parentNode().toElement().attribute("hmfversion").toDouble();
+
+    if(hmfVersion <= 0.2)
+    {
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with Hopsan version 0.2 or older. Full compatibility is not guarnteed.");
+    }
+    else if(hmfVersion != QString(HMFVERSION).toDouble())
+    {
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with an older version of Hopsan, but versions are compatible.");
+    }
+
     //Check if the subsystem is external or internal, and load appropriately
     QString external_path = rDomElement.attribute(HMF_EXTERNALPATHTAG);
     if (external_path.isEmpty())
@@ -380,6 +392,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
+            verifyHmfSubComponentCompatibility(xmlSubObject, hmfVersion);
             GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             if(pObj == NULL)
             {
