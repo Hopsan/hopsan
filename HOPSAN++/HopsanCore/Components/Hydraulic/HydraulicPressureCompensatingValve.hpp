@@ -1,14 +1,14 @@
 //!
-//! @file   HydraulicPressureControlledValve.hpp
+//! @file   HydraulicPressureCompensatingValve.hpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-01-13
 //!
 //! @brief Contains a hydraulic pressure controlled valve with first order dynamics
 //!
-//$Id$
+//$Id: HydraulicPressureCompensatingValve.hpp 2787 2011-04-17 17:20:28Z robbr48 $
 
-#ifndef HYDRAULICPRESSURECONTROLLEDVALVE_HPP_INCLUDED
-#define HYDRAULICPRESSURECONTROLLEDVALVE_HPP_INCLUDED
+#ifndef HYDRAULICPRESSURECOMPENSATINGVALVE_HPP_INCLUDED
+#define HYDRAULICPRESSURECOMPENSATINGVALVE_HPP_INCLUDED
 
 #include <iostream>
 #include <sstream>
@@ -21,7 +21,7 @@ namespace hopsan {
     //! @brief
     //! @ingroup HydraulicComponents
     //!
-    class HydraulicPressureControlledValve : public ComponentQ
+    class HydraulicPressureCompensatingValve : public ComponentQ
     {
     private:
         double x0, x0max, pref, tao, Kcs, Kcf, Cs, Cf, pnom, qnom, ph;
@@ -38,10 +38,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPressureControlledValve("PressureControlledValve");
+            return new HydraulicPressureCompensatingValve("PressureCompensatingValve");
         }
 
-        HydraulicPressureControlledValve(const std::string name) : ComponentQ(name)
+        HydraulicPressureCompensatingValve(const std::string name) : ComponentQ(name)
         {
             pref = 2000000;
             tao = 0.01;
@@ -103,8 +103,7 @@ namespace hopsan {
             double b1, xs, xh, xsh;
             bool cav = false;
 
-            //Get variable values from nodes
-            p1 = (*mpND_p1);
+            p1 = (*mpND_p1);                                        //Get variable values from nodes
             q1 = (*mpND_q1);
             c1 = (*mpND_c1);
             Zc1 = (*mpND_Zc1);
@@ -119,16 +118,16 @@ namespace hopsan {
 
             /* Equations */
 
-            b1 = Cs+Cf*(p1-p2);                                 //Help Variable, equals sqrt(p1-p2)/Kctot
-           xs = (p_open - pref - p_close) / b1;                // Spool position calculation
+            b1 = Cs+Cf*(p1-p2);                                     //Help Variable, equals sqrt(p1-p2)/Kctot
+            xs = x0max - (p_open - pref - p_close) / b1;            // Spool position calculation
             xh = ph/b1;
-            xsh = mHyst.getValue(xs, xh, mPrevX0);              //Hysteresis
-            x0 = mFilterLP.update(xsh);                         //Dynamics
-            mTurb.setFlowCoefficient(x0);                       // Turbulent Flow Calculation
+            xsh = mHyst.getValue(xs, xh, mPrevX0);
+            x0 = mFilterLP.update(xsh);
+            mTurb.setFlowCoefficient(x0);                           // Turbulent Flow Calculation
             q2 = mTurb.getFlow(c1, c2, Zc1, Zc2);
             q1 = -q2;
 
-            p1 = c1 + Zc1 * q1;                                 // Pressure Calulation
+            p1 = c1 + Zc1 * q1;                                     // Pressure Calulation
             p2 = c2 + Zc2 * q2;
             p_open = c_open;
             p_close = c_close;
@@ -136,7 +135,7 @@ namespace hopsan {
             p_open = std::max(0.0, p_open);
             p_close = std::max(0.0, p_close);
 
-            if (p1 < 0.0)                                       // Check for cavitation
+            if (p1 < 0.0)                                           // Check for cavitation
             {
                 c1 = 0.0;
                 Zc1 = 0.0;
@@ -148,7 +147,7 @@ namespace hopsan {
                 Zc2 = 0.0;
                 cav = true;
             }
-            if (cav)                                            //Cavitatiaon, redo calculations with new c and Zc
+            if (cav)                                                //Cavitatiaon, redo calculations with new c and Zc
             {
                 q2 = mTurb.getFlow(c1, c2, Zc1, Zc2);
                 q1 = -q2;
@@ -160,7 +159,7 @@ namespace hopsan {
 
             mPrevX0 = x0;
 
-            (*mpND_p1) = p1;                                    //Write new values to nodes
+            (*mpND_p1) = p1;                                        //Write new values to nodes
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
@@ -170,5 +169,4 @@ namespace hopsan {
     };
 }
 
-#endif // HYDRAULICPRESSURECONTROLLEDVALVE_HPP_INCLUDED
-
+#endif // HYDRAULICPRESSURECOMPENSATINGVALVE_HPP_INCLUDED

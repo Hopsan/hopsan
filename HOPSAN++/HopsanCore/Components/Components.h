@@ -33,6 +33,7 @@
 #include "Hydraulic/HydraulicVariableDisplacementPump.hpp"
 #include "Hydraulic/HydraulicAckumulator.hpp"
 #include "Hydraulic/HydraulicPressureControlledValve.hpp"
+#include "Hydraulic/HydraulicPressureCompensatingValve.hpp"
 #include "Hydraulic/HydraulicPressureSensor.hpp"
 #include "Hydraulic/HydraulicFlowSensor.hpp"
 #include "Hydraulic/HydraulicPowerSensor.hpp"

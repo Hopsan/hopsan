@@ -30,7 +30,7 @@ namespace hopsan {
         double pnom, speednom;
         double pdif, speed, qmax, qmin, lp, rp, wp1, Kcp, taov, tp, tm;
         double a1, a2, b1, b2, b3, y1, y2, u1, u2, ud, vd, yd;
-        double y0;
+        double gamma;
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3;
         Port *mpP1, *mpP2, *mpPREF;
 
@@ -99,25 +99,23 @@ namespace hopsan {
             double Zc1 = (*mpND_Zc1);
             double Zc2 = (*mpND_Zc2);
 
-            double gamma, speed1, lpe, qminl, qmaxl, vmin, vmax;
+            double y0, lpe, qminl, qmaxl, vmin, vmax;
 
             gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
-            speed1 = speed;
-            if (speed1 < .001) { speed1 = .001; }
+            if (speed < .001) { speed = .001; }
             if (p2 < 1.0) { p2 = 1.0; }
-            lpe = lp * sqrt(pnom / p2) * (speednom / speed1);
+            lpe = lp * sqrt(pnom / p2) * (speednom / speed);
             y0 = q2 * (lpe + rp * taov + Zc2 * gamma / wp1);
 
             (*mpND_p1) = p1;
             (*mpND_p2) = p2;
 
-            qmaxl = qmax * (speed1 / speednom);
-            qminl = qmin * (speed1 / speednom);
+            qmaxl = qmax * (speed / speednom);
+            qminl = qmin * (speed / speednom);
 
             vmax = qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tp));
             vmin = -qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tm));
 
-            gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
             double c2e = (Kcp * Zc1 + 1) * gamma * c2 + Kcp * Zc2 * gamma * c1;
             double u = pdif - c2e + c3;
             yd = y0;
@@ -139,14 +137,10 @@ namespace hopsan {
             double Zc2 = (*mpND_Zc2);
             double c3 = (*mpND_c3);
 
-            double speed1, qmaxl, qminl, lpe, gamma, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
+            double qmaxl, qminl, lpe, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
 
-            speed1 = speed;
             if (p2 < 1.0) { p2 = 1.0; }
-            if (speed1 < .001) { speed1 = .001; }
-            qmaxl = qmax * (speed1 / speednom);
-            qminl = qmin * (speed1 / speednom);
-            lpe = lp * sqrt(pnom / p2) * (speednom / speed1);
+            lpe = lp * sqrt(pnom / p2) * (speednom / speed);
             if (c3 < 0.0) { c3 = 0.0; }
             gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
 
@@ -161,9 +155,7 @@ namespace hopsan {
             ymin = qminl * denom;
             vmax = qmaxl * denom * sqrt(fabs(p2 - 1e5) / (pnom * tp));
             vmin = -qmaxl * denom * sqrt(fabs(p2 - 1e5) / (pnom * tm));
-            qp = fltppu(u, y0, wp1, g1, g2, ymin, ymax, vmin, vmax) / denom;
-//            double z = qp / qmaxl;
-//            double vz = v / (qmaxl * denom);
+            qp = fltppu(u, wp1, g1, g2, ymin, ymax, vmin, vmax) / denom;
 
             //Calucluate pressures
             p1 = c1e - Zc1 * gamma * qp;
@@ -191,9 +183,7 @@ namespace hopsan {
 
         //High pass filter times an integration, with separate minimum and maximum values for input and output variables. Converted from old Hopsan.
 
-        double fltppu(double u, double y0, double w01,
-                      double c1, double c2, double ymin, double ymax, double vmin,
-                      double vmax)
+        double fltppu(double u, double w01, double c1, double c2, double ymin, double ymax, double vmin, double vmax)
         {
 
                 /* Local variables */
