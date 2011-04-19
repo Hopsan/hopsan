@@ -38,7 +38,7 @@ public:
     QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 
-    void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
+    //void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();
     QString getTypeCQS();
 

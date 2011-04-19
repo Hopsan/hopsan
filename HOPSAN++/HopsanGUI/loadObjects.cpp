@@ -311,7 +311,7 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
         nameVisibility nameStatus;
         if(rData.textVisible)
         {
-           nameStatus = NAMEVISIBLE;
+            nameStatus = NAMEVISIBLE;
         }
         else
         {

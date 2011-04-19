@@ -181,10 +181,9 @@ void GUISystem::openPropertiesDialog()
 //! @param[in] rDomElement The DOM Element to save to
 void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    //GUIModelObject::saveCoreDataToDomElement(rDomElement);
-    //We dont need to save the type in systems
-    rDomElement.setAttribute(HMF_NAMETAG, getName());
-    rDomElement.setAttribute(HMF_CQSTYPETAG, this->getTypeCQS());
+    GUIModelObject::saveCoreDataToDomElement(rDomElement);
+    //rDomElement.setAttribute(HMF_TYPETAG, getTypeName());     //We dont really need to save the type in systems, but lets do it anyway
+    //rDomElement.setAttribute(HMF_NAMETAG, getName());
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 
     QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
@@ -351,7 +350,6 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //! @todo might need some error checking here incase some fields are missing
         //Now load the core specific data, might need inherited function for this
         this->setName(rDomElement.attribute(HMF_NAMETAG));
-        //this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);

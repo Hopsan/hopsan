@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.0" hopsancoreversion="0">
-    <system cqs_type="UNDEFINEDCQSTYPE" name="Subsystem-test-2">
+    <system typename="Subsystem" name="Subsystem-test-2">
         <hopsangui>
             <pose x="15.5" y="11" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
@@ -17,7 +17,7 @@
         <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters/>
         <objects>
-            <system cqs_type="S" name="ComponentSystem">
+            <system typename="Subsystem" name="ComponentSystem">
                 <hopsangui>
                     <pose x="2444" y="2470" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
