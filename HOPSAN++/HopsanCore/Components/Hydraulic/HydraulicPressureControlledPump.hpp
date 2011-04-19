@@ -30,7 +30,7 @@ namespace hopsan {
         double pnom, speednom;
         double pdif, speed, qmax, qmin, lp, rp, wp1, Kcp, taov, tp, tm;
         double a1, a2, b1, b2, b3, y1, y2, u1, u2, ud, vd, yd;
-        double gamma;
+        double gamma, qminl, qmaxl;
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3;
         Port *mpP1, *mpP2, *mpPREF;
 
@@ -99,7 +99,7 @@ namespace hopsan {
             double Zc1 = (*mpND_Zc1);
             double Zc2 = (*mpND_Zc2);
 
-            double y0, lpe, qminl, qmaxl, vmin, vmax;
+            double y0, lpe, vmin, vmax;
 
             gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
             if (speed < .001) { speed = .001; }
@@ -137,7 +137,7 @@ namespace hopsan {
             double Zc2 = (*mpND_Zc2);
             double c3 = (*mpND_c3);
 
-            double qmaxl, qminl, lpe, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
+            double lpe, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
 
             if (p2 < 1.0) { p2 = 1.0; }
             lpe = lp * sqrt(pnom / p2) * (speednom / speed);

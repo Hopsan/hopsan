@@ -1036,7 +1036,7 @@ void GUIConnector::determineAppearance()
     }
 
     //Add arrow to the connector if it is of signal type
-    if((mpEndPort->getPortType() == "READPORT") || (mpEndPort->getPortType() == "READMULTIPORT") && (mpEndPort->getNodeType() == "NodeSignal"))
+    if(((mpEndPort->getPortType() == "READPORT") || (mpEndPort->getPortType() == "READMULTIPORT")) && (mpEndPort->getNodeType() == "NodeSignal"))
     {
         this->getLastLine()->addEndArrow();
     }
@@ -1279,11 +1279,11 @@ void GUIConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     //----------------------//
 
 
-    if(selectedAction == pMakeDashedAction)         //Make connector dashed
+    if(pMakeDashedAction != 0 && selectedAction == pMakeDashedAction)         //Make connector dashed
     {
         mpParentGUIConnector->setDashed(true);
     }
-    if(selectedAction == pMakeSolidAction)          //Make connector solid
+    if(pMakeSolidAction != 0 && selectedAction == pMakeSolidAction)          //Make connector solid
     {
         mpParentGUIConnector->setDashed(false);
     }

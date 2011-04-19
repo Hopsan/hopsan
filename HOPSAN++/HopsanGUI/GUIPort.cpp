@@ -293,7 +293,7 @@ void GUIPort::addPortGraphicsOverlay(QStringList filepaths)
     if (!filepaths.isEmpty())
     {
         //! @todo check if file exist
-        for(size_t i = 0; i < filepaths.size(); ++i)
+        for(int i = 0; i < filepaths.size(); ++i)
         {
             mvPortGraphicsOverlayPtrs.append(new QGraphicsSvgItem(filepaths.at(i), this));
             mvPortGraphicsOverlayPtrs.back()->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
@@ -332,7 +332,7 @@ void GUIPort::refreshPortOverlayPosition()
     //Refresh the port overlay graphics
     if (!mvPortGraphicsOverlayPtrs.isEmpty())
     {
-        for(size_t i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
+        for(int i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
         {
             transf.reset();
 
@@ -411,7 +411,7 @@ void GUIPort::setPortOverlayScale(qreal scale)
 
     if (!mvPortGraphicsOverlayPtrs.isEmpty())
     {
-        for(size_t i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
+        for(int i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
         {
             mvPortGraphicsOverlayPtrs.at(i)->setScale(mOverlaySetScale * overlayExtraScaleFactor);
         }
