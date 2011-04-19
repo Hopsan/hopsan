@@ -219,5 +219,5 @@ double hopsan::Tan(double x)
 //! @brief Wrapper function, for using Mathematica syntax
 double hopsan::Sqrt(double x)
 {
-    return Sqrt(x);
+    return sqrt(x);
 }
