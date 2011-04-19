@@ -52,7 +52,7 @@ namespace hopsan {
             Kce                    = 0.0000000001;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");     //External port
-            mpOut = addWritePort("out", "NodeSignal");     //Internal pressure output
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);     //Internal pressure output
 
             registerParameter("P_min", "Minimum Internal Pressure", "[Pa]", Pmin);
             registerParameter("V_tot", "Total Volume", "[m^3]", Vtot);

@@ -7,5 +7,6 @@
         <portpose x="0.415966" y="0" a="270" name="PA"/>
         <portpose x="0.5798" y="1" a="90" name="PT"/>
         <portpose x="0" y="0.7" a="0" name="in"/>
+		<portpose x="1" y="0.5" a="0" name="xv"/>
     </modelobject>
 </hopsanobjectappearance>

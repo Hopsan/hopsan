@@ -36,7 +36,8 @@ namespace hopsan {
         double omegah;
         double deltah;
 
-        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_pc1, *mpND_qc1, *mpND_cc1, *mpND_Zcc1, *mpND_pc2, *mpND_qc2, *mpND_cc2, *mpND_Zcc2, *mpND_xvin;
+        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_pc1, *mpND_qc1, *mpND_cc1, *mpND_Zcc1, *mpND_pc2, *mpND_qc2, *mpND_cc2, *mpND_Zcc2;
+        double *mpND_xvin, *mpND_xvout;
 
         SecondOrderFilter filter;
         TurbulentFlowFunction qTurb_pa;
@@ -44,7 +45,7 @@ namespace hopsan {
         TurbulentFlowFunction qTurb_at;
         TurbulentFlowFunction qTurb_bt;
         TurbulentFlowFunction qTurb_cc;
-        Port *mpPP, *mpPC1, *mpPT, *mpPA, *mpPC2, *mpPB, *mpIn;
+        Port *mpPP, *mpPC1, *mpPT, *mpPA, *mpPC2, *mpPB, *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -73,6 +74,7 @@ namespace hopsan {
             mpPC1 = addPowerPort("PC1", "NodeHydraulic");
             mpPC2 = addPowerPort("PC2", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
@@ -121,6 +123,7 @@ namespace hopsan {
             mpND_Zcc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::CHARIMP);
 
             mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             double xvin  = mpIn->readNode(NodeSignal::VALUE);
             double num[3] = {0.0, 0.0, 1.0};
@@ -287,6 +290,7 @@ namespace hopsan {
             (*mpND_qc1) = qc1;
             (*mpND_pc2) = cc2 + qc2*Zcc2;
             (*mpND_qc2) = qc2;
+            (*mpND_xvout) = xv;
         }
     };
 }

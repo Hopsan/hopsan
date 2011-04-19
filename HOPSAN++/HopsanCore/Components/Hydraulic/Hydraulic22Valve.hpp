@@ -34,9 +34,10 @@ namespace hopsan {
         TurbulentFlowFunction qTurb_pa;
         double xv, xpanom, Kcpa, qpa;
 
-        double *mpND_cp, *mpND_Zcp, *mpND_ca, *mpND_Zca, *mpND_xvin, *mpND_pp, *mpND_qp, *mpND_pa, *mpND_qa;
+        double *mpND_cp, *mpND_Zcp, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_pa, *mpND_qa;
+        double *mpND_xvin, *mpND_xvout;
 
-        Port *mpPP, *mpPA, *mpIn;
+        Port *mpPP, *mpPA, *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -57,6 +58,7 @@ namespace hopsan {
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
@@ -81,6 +83,7 @@ namespace hopsan {
             mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
 
             mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
@@ -165,6 +168,7 @@ namespace hopsan {
             (*mpND_qp) = qp;
             (*mpND_pa) = pa;
             (*mpND_qa) = qa;
+            (*mpND_xvout) = xv;
         }
     };
 }
