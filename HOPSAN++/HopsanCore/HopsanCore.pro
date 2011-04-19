@@ -206,4 +206,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicMultiPressureSourceC.hpp \
     Components/Hydraulic/HydraulicVolumeMultiPort.hpp \
     Components/Signal/SignalSum.hpp \
-    Components/Hydraulic/HydraulicPressureCompensatingValve.hpp
+    Components/Hydraulic/HydraulicPressureCompensatingValve.hpp \
+    Components/Hydraulic/HydraulicUndefinedConnectionQ.hpp \
+    Components/Hydraulic/HydraulicUndefinedConnectionC.hpp

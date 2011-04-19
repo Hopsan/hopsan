@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.1.4" hopsancoreversion="0">
+    <system cqs_type="S" name="Variable Pump with Pressure Control">
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2500" y="2489" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="Subsystem" displayname="Variable Pump with Pressure Control">
+                    <icon isopath="subsystemtmp.svg" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice">
+                <parameters>
+                    <parameter value="1e-011" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2595" y="2380" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume">
+                <parameters>
+                    <parameter value="0.0001" name="V"/>
+                    <parameter value="1e+009" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="1e+006"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="1e+006"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2509" y="2381" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_1">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2684" y="2586" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="0" name="BaseValue"/>
+                    <parameter value="1e+007" name="Amplitude"/>
+                    <parameter value="1" name="StepTime"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2205" y="2587" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2440" y="2633" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSource" name="Prescribed Pressure C">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2312" y="2587" flipped="0" a="90"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureControlledPump" name="Variable Pump With Pressure Control">
+                <parameters>
+                    <parameter value="1e+006" name="pdif"/>
+                    <parameter value="125" name="speed"/>
+                    <parameter value="0.00125" name="qmax"/>
+                    <parameter value="0" name="qmin"/>
+                    <parameter value="7e+007" name="lp"/>
+                    <parameter value="1e+009" name="rp"/>
+                    <parameter value="200" name="wp1"/>
+                    <parameter value="1e-012" name="Kcp"/>
+                    <parameter value="0.001" name="taov"/>
+                    <parameter value="0.15" name="tp"/>
+                    <parameter value="0.12" name="tm"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2424" y="2504" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Variable Pump With Pressure Control" startport="P1" startcomponent="Tank C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2440" y="2618.5"/>
+                        <coordinate x="2439.071918492375" y="2565.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume" startport="P2" startcomponent="Variable Pump With Pressure Control">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2439.071918492375" y="2442.5"/>
+                        <coordinate x="2439.071918492375" y="2381"/>
+                        <coordinate x="2484" y="2381"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice" startport="P2" startcomponent="Hydraulic Volume">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2534" y="2381"/>
+                        <coordinate x="2560" y="2380"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Tank C_1" startport="P1" startcomponent="Laminar Orifice">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2630" y="2380"/>
+                        <coordinate x="2684" y="2380"/>
+                        <coordinate x="2684" y="2571.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="PREF" endcomponent="Variable Pump With Pressure Control" startport="P1" startcomponent="Prescribed Pressure C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2324" y="2587"/>
+                        <coordinate x="2358.9885" y="2587"/>
+                        <coordinate x="2358.9885" y="2565.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="In" endcomponent="Prescribed Pressure C" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2225" y="2587"/>
+                        <coordinate x="2280" y="2587"/>
+                        <coordinate x="2280" y="2587"/>
+                        <coordinate x="2300" y="2587"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
