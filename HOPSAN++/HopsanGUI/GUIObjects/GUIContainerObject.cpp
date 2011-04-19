@@ -1113,6 +1113,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
     QList<GUIModelObject *>::iterator it;
     for(it = mSelectedGUIModelObjectsList.begin(); it!=mSelectedGUIModelObjectsList.end(); ++it)
     {
+        qDebug() << "Copying " << (*it)->getName();
         (*it)->saveToDomElement(*copyRoot);
     }
 
@@ -1217,6 +1218,14 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         renameMap.insert(objectElement.attribute("name"), pObj->getName());
         objectElement.setAttribute("name", renameMap.find(objectElement.attribute("name")).value());
         objectElement = objectElement.nextSiblingElement("component");
+    }
+
+        // Paste subsystems
+    QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
+    while (!systemElement.isNull())
+    {
+        loadGUISystemObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
+        systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
     }
 
         //Paste connectors
@@ -1689,7 +1698,7 @@ void GUIContainerObject::clearContents()
     mit=mGUIModelObjectMap.begin();
     while (mit!=mGUIModelObjectMap.end())
     {
-        //! @todo calling deleteMe in this destructor will probably leed to a delete including undo registration which we should avoid in this case, same for widgets bellow
+        //This may lead to a crash if undo stack is not disabled before calling this
         (*mit)->deleteMe();
         mit=mGUIModelObjectMap.begin();
     }
