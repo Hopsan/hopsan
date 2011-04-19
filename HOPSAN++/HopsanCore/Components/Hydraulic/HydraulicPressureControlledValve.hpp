@@ -83,7 +83,7 @@ namespace hopsan {
             mpND_p_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::PRESSURE);
             mpND_c_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::WAVEVARIABLE);
 
-            x0 = 0.00001;
+            x0 = 0.00001;           //Why not 0.0? (probably doesnt matter though)
             mPrevX0 = 0.0;
             Cs = sqrt(pnom)/Kcs;
             Cf = 1/(Kcf * sqrt(pnom));

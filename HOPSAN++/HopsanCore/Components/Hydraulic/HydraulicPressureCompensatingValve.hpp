@@ -83,16 +83,16 @@ namespace hopsan {
             mpND_p_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::PRESSURE);
             mpND_c_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::WAVEVARIABLE);
 
-            x0 = 0.00001;
-            mPrevX0 = 0.0;
+            x0max = qnom/sqrt(pnom);
+            x0 = x0max;
+            mPrevX0 = x0max;
             Cs = sqrt(pnom)/Kcs;
             Cf = 1/(Kcf * sqrt(pnom));
-            x0max = qnom/sqrt(pnom);
 
             double wCutoff = 1 / tao;
             double num [2] = {0.0, 1.0};
             double den [2] = {1.0/wCutoff, 1.0};
-            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0, x0max);
+            mFilterLP.initialize(mTimestep, num, den, x0max, x0max, 0.0, x0max);
         }
 
 
