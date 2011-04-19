@@ -144,7 +144,7 @@ public slots:
     void undo();
     void redo();
     void clearUndo();
-    void disableUndo();
+    void disableUndo(bool dontAskJustDoIt=false);
     void updateUndoStatus();
         //Appearance and settings
     void setGfxType(graphicsType gfxType);

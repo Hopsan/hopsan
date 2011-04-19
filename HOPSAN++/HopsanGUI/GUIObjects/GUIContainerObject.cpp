@@ -1563,9 +1563,9 @@ void GUIContainerObject::forgetContainedConnector(GUIConnector *pConnector)
 
 
 //! @brief Disables the undo function for the current model
-void GUIContainerObject::disableUndo()
+void GUIContainerObject::disableUndo(bool dontAskJustDoIt)
 {
-    if(!mUndoDisabled)
+    if(!mUndoDisabled && !dontAskJustDoIt)
     {
         QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, 0);
         disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);

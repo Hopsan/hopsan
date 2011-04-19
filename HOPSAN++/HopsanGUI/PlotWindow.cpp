@@ -2213,13 +2213,13 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
             {
                 plot()->canvas()->removeEventFilter(this);
                 mpPlotTab->mMarkerPtrs.removeAll(this);
-                this->hide();           //! @todo This will only hide and inactivate the marker. Deleting it seem to make program crash.
+                this->hide();           // This will only hide and inactivate the marker. Deleting it seem to make program crash.
+                this->detach();
                 return true;
             }
         }
         return false;
     }
-
     return false;
 }
 
