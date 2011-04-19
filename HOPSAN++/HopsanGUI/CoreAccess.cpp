@@ -535,7 +535,7 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
     rUnits.clear();
 
     Port* pPort = this->getPortPtr(compname, portname);
-    if (pPort)
+    if (pPort && pPort->getPortType() < Port::MULTIPORT)
     {
         pPort->getNodeDataNamesAndUnits(corenames, coreunits);
         //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
