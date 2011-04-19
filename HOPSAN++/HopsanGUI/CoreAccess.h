@@ -10,7 +10,7 @@
 #ifndef GUIROOTSYSTEM_H
 #define GUIROOTSYSTEM_H
 
-#include "HopsanCore.h"
+#include "HopsanCore.h" //!< @todo this should be in cpp, replace necessary declarations by forward declarations
 #include "common.h"
 
 #include <QString>

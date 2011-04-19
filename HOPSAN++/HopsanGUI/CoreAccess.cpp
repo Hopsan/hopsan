@@ -169,7 +169,7 @@ QString CoreSystemAccess::getPortType(QString componentName, QString portName)
     Port *pPort = this->getPortPtr(componentName, portName);
     if(pPort)
     {
-        return QString(pPort->getPortTypeString().c_str());
+        return QString( portTypeToString(pPort->getPortType()).c_str() );
     }
     else
     {

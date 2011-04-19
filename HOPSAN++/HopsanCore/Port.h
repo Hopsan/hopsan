@@ -22,6 +22,10 @@ namespace hopsan {
     class ConnectionAssistant;
     class MultiPort;
 
+    //It is VERY important the MultiPort enums commes LAST, MULTIPORT is never instasiated but enum MUST be present
+    enum PORTTYPE {UNDEFINEDPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, MULTIPORT, POWERMULTIPORT, READMULTIPORT};
+    std::string DLLIMPORTEXPORT portTypeToString(const PORTTYPE type);
+
     class DLLIMPORTEXPORT Port
     {
         friend class Component;
@@ -30,8 +34,6 @@ namespace hopsan {
         friend class MultiPort;
 
     public:
-        //It is VERY important the MultiPort enums commes LAST
-        enum PORTTYPE {UNDEFINEDPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, MULTIPORT, POWERMULTIPORT, READMULTIPORT};
         enum CONREQ {REQUIRED, NOTREQUIRED};
 
         //Constructors - Destructors
@@ -65,9 +67,11 @@ namespace hopsan {
 
         virtual size_t getNumPorts();
 
-        const std::string &getNodeType();
+        const std::string getNodeType();
         PORTTYPE getPortType();
-        std::string getPortTypeString();
+        virtual PORTTYPE getExternalPortType();
+        virtual PORTTYPE getInternalPortType();
+
         const std::string &getPortName();
         const std::string &getComponentName();
 
@@ -118,6 +122,8 @@ namespace hopsan {
     public:
         //Constructors
         SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        PORTTYPE getExternalPortType();
+        PORTTYPE getInternalPortType();
     };
 
 
@@ -238,7 +244,7 @@ namespace hopsan {
         double readNode(const size_t idx);
     };
 
-    Port* CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, std::string name, Component *portOwner, Port *pParentPort=0);
+    Port* createPort(PORTTYPE porttype, NodeTypeT nodetype, std::string name, Component *portOwner, Port *pParentPort=0);
 }
 
 #endif // PORT_H_INCLUDED

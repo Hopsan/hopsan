@@ -344,7 +344,7 @@ Component *Node::getWritePortComponentPtr()
 {
     for(size_t i=0; i!=mPortPtrs.size(); ++i)
     {
-        if(mPortPtrs.at(i)->getPortType() == Port::WRITEPORT)
+        if(mPortPtrs.at(i)->getPortType() == WRITEPORT)
         {
             return mPortPtrs.at(i)->getComponent();
         }

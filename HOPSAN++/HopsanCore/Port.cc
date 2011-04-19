@@ -19,7 +19,6 @@
 using namespace std;
 using namespace hopsan;
 
-
 //! Port base class constructor
 Port::Port(string node_type, string portname, Component *portOwner, Port *pParentPort)
 {
@@ -54,7 +53,7 @@ Port::~Port()
 
 
 //! Returns the type of node that can be connected to this port
-const string &Port::getNodeType()
+const string Port::getNodeType()
 {
     return mNodeType;
 }
@@ -464,39 +463,21 @@ size_t Port::getNumPorts()
 
 
 //! Get the port type
-Port::PORTTYPE Port::getPortType()
+PORTTYPE Port::getPortType()
 {
     return mPortType;
 }
 
-
-//! @brief Get the port type as a string
-//! @todo this can probably be made some other better way, mayb let port type lie ooutside port class
-string Port::getPortTypeString()
+//! Get the External port type (virtual, should be overloaded in systemports only)
+PORTTYPE Port::getExternalPortType()
 {
-    switch (mPortType)
-    {
-    case POWERPORT :
-        return "POWERPORT";
-        break;
-    case READPORT :
-        return "READPORT";
-        break;
-    case WRITEPORT :
-        return "WRITEPORT";
-        break;
-    case SYSTEMPORT :
-        return "SYSTEMPORT";
-        break;
-    case POWERMULTIPORT:
-        return "POWERMULTIPORT";
-        break;
-    case READMULTIPORT:
-        return "READMULTIPORT";
-        break;
-    default :
-        return "UNDEFINEDPORT";
-    }
+    return getPortType();
+}
+
+//! Get the Internal port type (virtual, should be overloaded in systemports only)
+PORTTYPE Port::getInternalPortType()
+{
+    return getPortType();
 }
 
 
@@ -518,6 +499,42 @@ const string &Port::getComponentName()
 SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = SYSTEMPORT;
+}
+
+//! Get the External port type (virtual, should be overloaded in systemports only)
+PORTTYPE SystemPort::getExternalPortType()
+{
+    std::vector<Port*>::iterator pit;
+    for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
+    {
+        //External ports component parents will belong to the same system as our component parent
+        if ( (*pit)->getComponent()->getSystemParent() == this->getComponent()->getSystemParent() )
+        {
+            //! @todo for now we return the first one we find, usually thi is corect except when you are mixing powerports and readports, powerports should be returned in that case but I dont know how to fix this except going through ALL ports every time
+            return (*pit)->getPortType();
+        }
+    }
+
+    //If no external ports found return our actual type (systemport)
+    return getPortType();
+}
+
+//! Get the Internal port type (virtual, should be overloaded in systemports only)
+PORTTYPE SystemPort::getInternalPortType()
+{
+    std::vector<Port*>::iterator pit;
+    for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
+    {
+        //Internal ports component parents will belong to our component parent
+        if ( (*pit)->getComponent()->getSystemParent() == this->getComponent() )
+        {
+            //! @todo for now we return the first one we find, usually thi is corect except when you are mixing powerports and readports, powerports should be returned in that case but I dont know how to fix this except going through ALL ports every time
+            return (*pit)->getPortType();
+        }
+    }
+
+    //If no internal ports found return our actual type (systemport)
+    return getPortType();
 }
 
 
@@ -711,7 +728,7 @@ PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Comp
 //! Adds a subport to a powermultiport
 Port* PowerMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( CreatePort(Port::POWERPORT, mNodeType, "noname subport", 0, this) );
+    mSubPortsVector.push_back( createPort(POWERPORT, mNodeType, "noname subport", 0, this) );
     return mSubPortsVector.back();
 }
 
@@ -723,37 +740,68 @@ ReadMultiPort::ReadMultiPort(std::string node_type, std::string portname, Compon
 //! Adds a subport to a readmultiport
 Port* ReadMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( CreatePort(Port::READPORT, mNodeType, "noname subport", 0, this) );
+    mSubPortsVector.push_back( createPort(READPORT, mNodeType, "noname subport", 0, this) );
     return mSubPortsVector.back();
 }
 
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
 //!
-Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, string name, Component *portOwner, Port *pParentPort)
+Port* hopsan::createPort(PORTTYPE porttype, NodeTypeT nodetype, string name, Component *portOwner, Port *pParentPort)
 {
-    switch (type)
+    switch (porttype)
     {
-    case Port::POWERPORT :
+    case POWERPORT :
         return new PowerPort(nodetype, name, portOwner, pParentPort);
         break;
-    case Port::WRITEPORT :
+    case WRITEPORT :
         return new WritePort(nodetype, name, portOwner, pParentPort);
         break;
-    case Port::READPORT :
+    case READPORT :
         return new ReadPort(nodetype, name, portOwner, pParentPort);
         break;
-    case Port::SYSTEMPORT :
+    case SYSTEMPORT :
         return new SystemPort(nodetype, name, portOwner, pParentPort);
         break;
-    case Port::POWERMULTIPORT :
+    case POWERMULTIPORT :
         return new PowerMultiPort(nodetype, name, portOwner, pParentPort);
         break;
-    case Port::READMULTIPORT :
+    case READMULTIPORT :
         return new ReadMultiPort(nodetype, name, portOwner, pParentPort);
         break;
     default :
        assert(false); //Should not be able to create any other port type
        return 0;
+    }
+}
+
+//! @brief Get the port type as a string
+std::string hopsan::portTypeToString(const PORTTYPE type)
+{
+    switch (type)
+    {
+    case POWERPORT :
+        return "POWERPORT";
+        break;
+    case READPORT :
+        return "READPORT";
+        break;
+    case WRITEPORT :
+        return "WRITEPORT";
+        break;
+    case SYSTEMPORT :
+        return "SYSTEMPORT";
+        break;
+    case MULTIPORT:
+        return "MULTIPORT";
+        break;
+    case POWERMULTIPORT:
+        return "POWERMULTIPORT";
+        break;
+    case READMULTIPORT:
+        return "READMULTIPORT";
+        break;
+    default :
+        return "UNDEFINEDPORT";
     }
 }
