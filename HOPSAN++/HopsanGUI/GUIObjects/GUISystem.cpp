@@ -120,13 +120,6 @@ QString GUISystem::getTypeName()
     return HOPSANGUISYSTEMTYPENAME;
 }
 
-////! @brief Set the system cqs type
-////! @param[in] typestring A string containgin the CQS type, C Q or S is accepted
-//void GUISystem::setTypeCQS(QString typestring)
-//{
-//    mpCoreSystemAccess->setRootTypeCQS(typestring);
-//}
-
 //! @brief Get the system cqs type
 //! @returns A string containing the CQS type
 QString GUISystem::getTypeCQS()
@@ -350,10 +343,12 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //! @todo might need some error checking here incase some fields are missing
         //Now load the core specific data, might need inherited function for this
         this->setName(rDomElement.attribute(HMF_NAMETAG));
+        QString realName = this->getName();
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
+        this->setDisplayName(realName); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
         this->mNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
         this->mPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
         gpMainWindow->toggleNamesAction->setChecked(!mNamesHidden);

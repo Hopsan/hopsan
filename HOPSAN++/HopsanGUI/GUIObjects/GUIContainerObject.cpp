@@ -1216,7 +1216,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
 
         renameMap.insert(objectElement.attribute("name"), pObj->getName());
-        objectElement.setAttribute("name", renameMap.find(objectElement.attribute("name")).value());
+        //objectElement.setAttribute("name", renameMap.find(objectElement.attribute("name")).value());
         objectElement = objectElement.nextSiblingElement("component");
     }
 
@@ -1224,7 +1224,8 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
     while (!systemElement.isNull())
     {
-        loadGUISystemObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
+        GUIModelObject* pObj = loadGUISystemObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
+        renameMap.insert(systemElement.attribute("name"), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
     }
 
@@ -1232,11 +1233,11 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement connectorElement = copyRoot->firstChildElement("connect");
     while(!connectorElement.isNull())
     {
-            //Replace names of start and end component, since they likely have been changed
-        connectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
-        connectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
+        QDomElement tempConnectorElement = connectorElement.cloneNode(true).toElement();
+        tempConnectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
+        tempConnectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
 
-        loadConnector(connectorElement, this, UNDO);
+        loadConnector(tempConnectorElement, this, UNDO);
 
         GUIConnector *tempConnector = this->findConnector(connectorElement.attribute("startcomponent"), connectorElement.attribute("startport"),
                                                           connectorElement.attribute("endcomponent"), connectorElement.attribute("endport"));
@@ -1275,7 +1276,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         boxElement = boxElement.nextSiblingElement("boxwidget");
     }
 
-        //Select all pasted comonents
+        //Select all pasted components
     QHash<QString, QString>::iterator itn;
     for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
     {
@@ -1776,26 +1777,28 @@ void GUIContainerObject::exitContainer()
 //    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
 //    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
 //    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
-    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
+//    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
 //    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
 //    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
+    this->disconnectMainWindowActions();
 
 //    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
 //    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
-    connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    mpParentContainerObject,     SLOT(toggleNames(bool)));
-    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
-    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
-    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
-    connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignX()));
-    connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignY()));
-    connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateRight()));
-    connect(gpMainWindow->rotateLeftAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateLeft()));
-    connect(gpMainWindow->flipHorizontalAction, SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipHorizontal()));
-    connect(gpMainWindow->flipVerticalAction,   SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipVertical()));
-    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
-    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
-    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
-    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
+//    connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    mpParentContainerObject,     SLOT(toggleNames(bool)));
+//    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
+//    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
+//    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
+//    connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignX()));
+//    connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignY()));
+//    connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateRight()));
+//    connect(gpMainWindow->rotateLeftAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateLeft()));
+//    connect(gpMainWindow->flipHorizontalAction, SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipHorizontal()));
+//    connect(gpMainWindow->flipVerticalAction,   SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipVertical()));
+//    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
+//    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
+//    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
+//    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
+    mpParentContainerObject->connectMainWindowActions();
 
         //Update plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();

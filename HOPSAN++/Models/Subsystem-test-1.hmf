@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.2" hopsanguiversion="0.2.1" hopsancoreversion="0">
-    <system cqs_type="UNDEFINEDCQSTYPE" name="Subsystem-test-1">
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.0" hopsancoreversion="0">
+    <system typename="Subsystem" name="Subsystem-test-1">
         <hopsangui>
-            <pose x="16.5" y="9.5" flipped="0" a="0"/>
+            <pose x="15.5" y="11" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2500.5" zoom="1"/>
+            <viewport x="2500.5" y="2500.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -30,11 +30,11 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
-            <system cqs_type="Q" name="OrificeSystem">
+            <system typename="Subsystem" name="OrificeSystem">
                 <hopsangui>
                     <pose x="2424" y="2508" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2500" y="2500.5" zoom="1"/>
+                    <viewport x="2500.5" y="2500.5" zoom="1"/>
                     <ports hidden="0"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -73,7 +73,7 @@
                     </systemport>
                 </objects>
                 <connections>
-                    <connect endport="P2" endcomponent="Laminar Orifice" dashed="false" startport="ContainerPort" startcomponent="ContainerPort">
+                    <connect endport="P2" endcomponent="Laminar Orifice" startport="ContainerPort" startcomponent="ContainerPort">
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2228" y="2496"/>
@@ -86,9 +86,10 @@
                                 <geometry>horizontal</geometry>
                                 <geometry>vertical</geometry>
                             </geometries>
+                            <style>solid</style>
                         </hopsangui>
                     </connect>
-                    <connect endport="ContainerPort_1" endcomponent="ContainerPort_1" dashed="false" startport="P1" startcomponent="Laminar Orifice">
+                    <connect endport="ContainerPort_1" endcomponent="ContainerPort_1" startport="P1" startcomponent="Laminar Orifice">
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2378" y="2496"/>
@@ -101,6 +102,7 @@
                                 <geometry>horizontal</geometry>
                                 <geometry>vertical</geometry>
                             </geometries>
+                            <style>solid</style>
                         </hopsangui>
                     </connect>
                 </connections>
@@ -118,11 +120,11 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
-            <system cqs_type="S" name="SignalSystem">
+            <system typename="Subsystem" name="SignalSystem">
                 <hopsangui>
                     <pose x="2422" y="2376" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2500" y="2500.5" zoom="1"/>
+                    <viewport x="2500.5" y="2500.5" zoom="1"/>
                     <ports hidden="0"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -185,7 +187,7 @@
                     </systemport>
                 </objects>
                 <connections>
-                    <connect endport="ContainerPort_1" endcomponent="ContainerPort_1" dashed="false" startport="out" startcomponent="Gain">
+                    <connect endport="ContainerPort_1" endcomponent="ContainerPort_1" startport="out" startcomponent="Gain">
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2388.5" y="2394"/>
@@ -198,9 +200,10 @@
                                 <geometry>horizontal</geometry>
                                 <geometry>vertical</geometry>
                             </geometries>
+                            <style>solid</style>
                         </hopsangui>
                     </connect>
-                    <connect endport="in" endcomponent="Gain" dashed="false" startport="out" startcomponent="Add">
+                    <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Add">
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2304.5" y="2394"/>
@@ -213,9 +216,10 @@
                                 <geometry>horizontal</geometry>
                                 <geometry>vertical</geometry>
                             </geometries>
+                            <style>solid</style>
                         </hopsangui>
                     </connect>
-                    <connect endport="in2" endcomponent="Add" dashed="false" startport="out" startcomponent="Constant">
+                    <connect endport="in2" endcomponent="Add" startport="out" startcomponent="Constant">
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2190.5" y="2339"/>
@@ -226,9 +230,10 @@
                                 <geometry>vertical</geometry>
                                 <geometry>horizontal</geometry>
                             </geometries>
+                            <style>solid</style>
                         </hopsangui>
                     </connect>
-                    <connect endport="in1" endcomponent="Add" dashed="false" startport="ContainerPort" startcomponent="ContainerPort">
+                    <connect endport="in1" endcomponent="Add" startport="ContainerPort" startcomponent="ContainerPort">
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2178" y="2394"/>
@@ -241,16 +246,17 @@
                                 <geometry>horizontal</geometry>
                                 <geometry>vertical</geometry>
                             </geometries>
+                            <style>solid</style>
                         </hopsangui>
                     </connect>
                 </connections>
             </system>
         </objects>
         <connections>
-            <connect endport="P1" endcomponent="C-type Tank" dashed="false" startport="ContainerPort_1" startcomponent="OrificeSystem">
+            <connect endport="P1" endcomponent="C-type Tank" startport="ContainerPort_1" startcomponent="OrificeSystem">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2470" y="2508"/>
+                        <coordinate x="2469" y="2508"/>
                         <coordinate x="2478.5" y="2508"/>
                         <coordinate x="2478.5" y="2508"/>
                         <coordinate x="2498.5" y="2508"/>
@@ -260,19 +266,21 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="ContainerPort" endcomponent="OrificeSystem" dashed="false" startport="P1" startcomponent="C-type Pressure Source">
+            <connect endport="ContainerPort" endcomponent="OrificeSystem" startport="P1" startcomponent="C-type Pressure Source">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2277" y="2508"/>
                         <coordinate x="2277" y="2508"/>
-                        <coordinate x="2378" y="2508"/>
+                        <coordinate x="2379" y="2508"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
         </connections>
