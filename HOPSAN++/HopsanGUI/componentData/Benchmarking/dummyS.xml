@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="SignalDummy" displayname="Signal Dummy">
+    <modelobject typename="SignalDummy" displayname="Signal Benchmark Component">
+		<help text="This is a benchmark component of signal type. The time it take to simulate it is proportional to the input signal. Output signal does nothing." picture="turtle.png"/>
         <icon isopath="dummyS.svg" iconrotation="ON" userpath=""/>
         <portpose x="0" y="0.5" a="0" name="in"/>
         <portpose x="1" y="0.5" a="0" name="out"/>
