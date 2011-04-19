@@ -31,3 +31,6 @@ defineReplace(selectPath){
     }
     return($${PATH})
 }
+
+#Make compile output clean
+CONFIG += silent warn_on
