@@ -2,7 +2,7 @@
 <hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.0" hopsancoreversion="0">
     <system cqs_type="UNDEFINEDCQSTYPE" name="Subsystem-test-2">
         <hopsangui>
-            <pose x="0" y="0" flipped="0" a="0"/>
+            <pose x="15.5" y="11" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
             <viewport x="2500" y="2500.5" zoom="1"/>
             <ports hidden="0"/>
@@ -36,9 +36,24 @@
                 <simulationtime stop="10" timestep="0.001" start="0"/>
                 <parameters/>
                 <objects>
+                    <component typename="SignalSineWave" name="Sine Wave">
+                        <parameters>
+                            <parameter value="0" name="t_start"/>
+                            <parameter value="1" name="f"/>
+                            <parameter value="1" name="y_A"/>
+                            <parameter value="0" name="y_offset"/>
+                        </parameters>
+                        <startvalues>
+                            <startvalue portname="out" variable="" value="0"/>
+                        </startvalues>
+                        <hopsangui>
+                            <pose x="2294" y="2643" flipped="0" a="0"/>
+                            <nametext position="0" visible="1"/>
+                        </hopsangui>
+                    </component>
                     <component typename="SignalSource" name="Constant">
                         <parameters>
-                            <parameter value="1" name="y"/>
+                            <parameter value="8" name="y"/>
                         </parameters>
                         <startvalues>
                             <startvalue portname="out" variable="" value="0"/>
@@ -110,6 +125,22 @@
                                 <coordinate x="2284.5" y="2591"/>
                                 <coordinate x="2366" y="2591"/>
                                 <coordinate x="2366" y="2536"/>
+                                <coordinate x="2424.5" y="2536"/>
+                            </coordinates>
+                            <geometries>
+                                <geometry>vertical</geometry>
+                                <geometry>horizontal</geometry>
+                                <geometry>vertical</geometry>
+                            </geometries>
+                            <style>solid</style>
+                        </hopsangui>
+                    </connect>
+                    <connect endport="in" endcomponent="Sum" startport="out" startcomponent="Sine Wave">
+                        <hopsangui>
+                            <coordinates>
+                                <coordinate x="2314" y="2643"/>
+                                <coordinate x="2396" y="2643"/>
+                                <coordinate x="2396" y="2536"/>
                                 <coordinate x="2424.5" y="2536"/>
                             </coordinates>
                             <geometries>

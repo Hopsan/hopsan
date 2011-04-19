@@ -53,7 +53,7 @@ namespace hopsan {
             mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::VALUE, 0);
             std::stringstream ss;
             ss << "nInputs: " << nInputs;
-            addInfoMessage(ss.str());
+            addDebugMessage(ss.str());
         }
 
 
