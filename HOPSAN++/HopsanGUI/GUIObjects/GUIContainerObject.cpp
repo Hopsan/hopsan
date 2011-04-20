@@ -1498,6 +1498,7 @@ void GUIContainerObject::redo()
 //! @see redo()
 void GUIContainerObject::clearUndo()
 {
+    qDebug() << "before mUndoStack->clear(); in GUIContainerObject: " << this->getName();
     mUndoStack->clear();
 }
 
