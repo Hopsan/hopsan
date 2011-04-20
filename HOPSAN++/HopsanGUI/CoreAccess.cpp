@@ -163,17 +163,31 @@ void CoreSystemAccess::stop()
     mpCoreComponentSystem->stop();
 }
 
-QString CoreSystemAccess::getPortType(QString componentName, QString portName)
+QString CoreSystemAccess::getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator)
 {
     //qDebug() << "name for port fetch " << componentName << " " << portName;
+
     Port *pPort = this->getPortPtr(componentName, portName);
     if(pPort)
     {
-        return QString( portTypeToString(pPort->getPortType()).c_str() );
+        switch (portTypeIndicator)
+        {
+        case INTERNALPORTTYPE:
+            return QString::fromStdString( portTypeToString(pPort->getInternalPortType()) );
+            break;
+        case ACTUALPORTTYPE:
+            return QString::fromStdString( portTypeToString(pPort->getPortType()) );
+            break;
+        case EXTERNALPORTTYPE:
+            return QString::fromStdString( portTypeToString(pPort->getExternalPortType()) );
+            break;
+        default:
+            return QString("Invalid  portTypeIndicator specified");
+        }
     }
     else
     {
-        qDebug() <<  "================================= EMPTY porttype: " << componentName << " " << portName << " in: " << this->getRootSystemName();
+        qDebug() <<  "======== ERROR ========= Could not find Port in getPortType: " << componentName << " " << portName << " in: " << this->getRootSystemName();
         return QString(); //Empty
     }
 }

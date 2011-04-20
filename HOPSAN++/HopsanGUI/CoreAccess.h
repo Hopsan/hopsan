@@ -26,6 +26,8 @@ public:
 class CoreSystemAccess
 {
 public:
+    enum PortTypeIndicatorT {INTERNALPORTTYPE, ACTUALPORTTYPE, EXTERNALPORTTYPE};
+
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
     ~CoreSystemAccess();
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
@@ -38,8 +40,6 @@ public:
     double getDesiredTimeStep();
 
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
-    //void setRootTypeCQS(const QString cqs_type);
-    //void setSubSystemTypeCQS(const QString systemName, const QString cqs_type);
     QString getRootSystemTypeCQS();
     QString getSubComponentTypeCQS(QString componentName);
 
@@ -48,7 +48,7 @@ public:
 
     QString renameSubComponent(QString componentName, QString name);
 
-    QString getPortType(QString componentName, QString portName);
+    QString getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator=ACTUALPORTTYPE);
     QString getNodeType(QString componentName, QString portName);
 
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rStartDataValues, QVector<QString> &rUnits);

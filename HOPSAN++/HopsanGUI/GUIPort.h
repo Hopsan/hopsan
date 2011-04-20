@@ -24,11 +24,12 @@ class GUIContainerObject;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 
-
 class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
+    enum PortTypeIndicationT {ACTUALPORTTYPE, INTERNALPORTTYPE};
+
     GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
     ~GUIPort();
     virtual void refreshParentContainerSigSlotConnections();
@@ -49,7 +50,7 @@ public:
     void show();
     void hide();
 
-    virtual QString getPortType();
+    virtual QString getPortType(const PortTypeIndicationT ind=ACTUALPORTTYPE);
     virtual QString getNodeType();
 
     void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits);
@@ -110,7 +111,7 @@ class GroupPort : public GUIPort
 {
 public:
     GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
-    QString getPortType();
+    QString getPortType(const PortTypeIndicationT ind=ACTUALPORTTYPE);
     QString getNodeType();
 };
 

@@ -27,19 +27,19 @@ public:
     QPen getPen(QString situation);
 
 private:
-    QPen mPrimaryPenPowerUser;
-    QPen mActivePenPowerUser;
-    QPen mHoverPenPowerUser;
-    QPen mPrimaryPenSignalUser;
-    QPen mActivePenSignalUser;
-    QPen mHoverPenSignalUser;
-    QPen mPrimaryPenPowerIso;
-    QPen mActivePenPowerIso;
-    QPen mHoverPenPowerIso;
-    QPen mPrimaryPenSignalIso;
-    QPen mActivePenSignalIso;
-    QPen mHoverPenSignalIso;
-    QPen mNonFinishedPen;
+//    QPen mPrimaryPenPowerUser;
+//    QPen mActivePenPowerUser;
+//    QPen mHoverPenPowerUser;
+//    QPen mPrimaryPenSignalUser;
+//    QPen mActivePenSignalUser;
+//    QPen mHoverPenSignalUser;
+//    QPen mPrimaryPenPowerIso;
+//    QPen mActivePenPowerIso;
+//    QPen mHoverPenPowerIso;
+//    QPen mPrimaryPenSignalIso;
+//    QPen mActivePenSignalIso;
+//    QPen mHoverPenSignalIso;
+//    QPen mNonFinishedPen;
 
     QString mConnectorType;
     graphicsType mGfxType;

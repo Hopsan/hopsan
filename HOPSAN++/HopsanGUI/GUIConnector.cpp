@@ -1015,35 +1015,50 @@ bool GUIConnector::isFirstAndLastDiagonal()
 //! @todo right now this only set the type and ending arrows, maybe should handle ALLA appearance update like switching when howering, or maybe have two different update appearance functions (this one only needs to be run once when a conector is created)
 void GUIConnector::determineAppearance()
 {
-    //! @todo problem when connecting outside systemport  with internal powerport to readport, will not know that internal port is powerport and line will be signalline
-    //! @todo need to figure out a new way to handle this
-    if( (mpStartPort->getPortType() == "POWERPORT") || (mpEndPort->getPortType() == "POWERPORT") )
+    QString startPortType = mpStartPort->getPortType();
+    QString endPortType = mpEndPort->getPortType();
+
+    //We need to determine if we want arrows before we replace systemporttypes with internal port types
+    //Add arrow to the connector if it is of signal type
+    if (mpEndPort->getNodeType() == "NodeSignal")
     {
-        mpGUIConnectorAppearance->setType("POWERPORT");
+        if ( (endPortType == "READPORT") || (endPortType == "READMULTIPORT") )
+        {
+            this->getLastLine()->addEndArrow();
+        }
+        else if ( (endPortType == "WRITEPORT") )
+        {
+            //Assumes that the startport was a read port or multiread port
+            mpLines[0]->addStartArrow();
+        }
     }
-    else if( (mpStartPort->getPortType() == "READPORT") || (mpEndPort->getPortType() == "READPORT") )
+
+    //Now replace tpes if systemports to select correct connector graphics
+    if (startPortType == "SYSTEMPORT")
+    {
+        startPortType = mpStartPort->getPortType(GUIPort::INTERNALPORTTYPE);
+    }
+    if (endPortType == "SYSTEMPORT")
+    {
+        endPortType = mpEndPort->getPortType(GUIPort::INTERNALPORTTYPE);
+    }
+
+    //! @todo what about multiport <-> multiport (which is currently not supported)
+    if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") )
+    {
+        mpGUIConnectorAppearance->setType("POWERPORT"); //!< @todo why is connector type described like POWER "PORT" why nopt power connector or signal connector
+    }
+    else if( (startPortType == "READPORT") || (endPortType == "READPORT") )
     {
         mpGUIConnectorAppearance->setType("SIGNALPORT");
     }
-    else if( (mpStartPort->getPortType() == "WRITEPORT") || (mpEndPort->getPortType() == "WRITEPORT") )
+    else if( (startPortType == "WRITEPORT") || (endPortType == "WRITEPORT") )
     {
         mpGUIConnectorAppearance->setType("SIGNALPORT");
     }
     else
     {
-        //! @todo this maight be bad if unknown not handled
         mpGUIConnectorAppearance->setType("UNKNOWN");
-    }
-
-    //Add arrow to the connector if it is of signal type
-    if(((mpEndPort->getPortType() == "READPORT") || (mpEndPort->getPortType() == "READMULTIPORT")) && (mpEndPort->getNodeType() == "NodeSignal"))
-    {
-        this->getLastLine()->addEndArrow();
-    }
-    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
-    {
-        //Assumes that the startport was a read port
-        mpLines[0]->addStartArrow();
     }
 
     //Run this to actually change the pen

@@ -455,9 +455,16 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 
 
 //! Wrapper for the Core getPortTypeString() function
-QString GUIPort::getPortType()
+QString GUIPort::getPortType(const PortTypeIndicationT ind)
 {
-    return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getName());
+    if (ind == ACTUALPORTTYPE)
+    {
+        return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getName());
+    }
+    else /*if (ind == INTERNAL)*/
+    {
+        return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getName(), CoreSystemAccess::INTERNALPORTTYPE);
+    }
 }
 
 
@@ -615,7 +622,7 @@ GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pP
 }
 
 //! Overloaded as groups laks core connection
-QString GroupPort::getPortType()
+QString GroupPort::getPortType(const PortTypeIndicationT /*ind*/)
 {
     //! @todo Return something smart
     return "GropPortType";
