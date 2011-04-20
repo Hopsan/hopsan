@@ -172,9 +172,9 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/restrictors","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/volumes","Hydraulic");
-    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/actuators","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Linear Actuators","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
-    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Pumps & Motors","Hydraulic");
 
     //Create one new project tab, IMPORTANT: must be after Subsystem library has been loaded as we need Subsystem Appearance
     //mpProjectTabs->addNewProjectTab();

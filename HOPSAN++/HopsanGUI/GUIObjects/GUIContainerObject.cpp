@@ -1227,6 +1227,11 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         GUIModelObject* pObj = loadGUISystemObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
         renameMap.insert(systemElement.attribute("name"), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
+
+            //Apply offset to pasted object
+        QPointF oldPos = pObj->pos();
+        pObj->moveBy(xOffset, yOffset);
+        mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
     }
 
         //Paste connectors

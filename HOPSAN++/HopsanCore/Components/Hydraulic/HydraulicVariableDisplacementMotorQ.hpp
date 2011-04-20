@@ -41,8 +41,8 @@ namespace hopsan {
         {
             dp = 0.00005;
             Bm = 0;
-            cim = 0;
-            J = 1;
+            cim = 0.001;
+            J = 0.001;
             eps = 1;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -107,7 +107,7 @@ namespace hopsan {
             c2a = (cim * Zc1 + 1) * gamma * c2 + cim * gamma * Zc2 * c1;
             ct = c1a * dpe - c2a * dpe - c3;
             mIntegrator.setDamping(ble / J * mTimestep);
-            mIntegrator.integrate(ct/J);
+            mIntegrator.integrateWithUndo(ct/J);
             w3 = mIntegrator.valueFirst();
             a3 = mIntegrator.valueSecond();
 
@@ -117,6 +117,42 @@ namespace hopsan {
             p1 = c1a + gamma * Zc1 * q1a;
             p2 = c2a + gamma * Zc2 * q2a;
 
+
+            //Cavitation Check
+            bool cav=false;
+            if (p1 < 0.0)
+            {
+                c1 = 0.0;
+                Zc1 = 0;
+                cav = true;
+            }
+            if (p2 < 0.0)
+            {
+                c2 = 0.0;
+                Zc2 = 0;
+                cav = true;
+            }
+            if(cav)
+            {
+                ble = Bm + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
+                gamma = 1 / (cim * (Zc1 + Zc2) + 1);
+                c1a = (cim * Zc2 + 1) * gamma * c1 + cim * gamma * Zc1 * c2;
+                c2a = (cim * Zc1 + 1) * gamma * c2 + cim * gamma * Zc2 * c1;
+                ct = c1a * dpe - c2a * dpe - c3;
+                mIntegrator.setDamping(ble / J * mTimestep);
+                mIntegrator.redoIntegrate(ct/J);
+                w3 = mIntegrator.valueFirst();
+                a3 = mIntegrator.valueSecond();
+
+                q1a = -dpe * a3;
+                q2a = -q1a;
+                p1 = c1a + gamma * Zc1 * q1a;
+                p2 = c2a + gamma * Zc2 * q2a;
+
+                if(p1<0) p1 = 0;
+                if(p2<0) p2 = 0;
+            }
+
             //Leakage Flow
             q1leak = -cim * (p1 - p2);
             q2leak = -q1leak;
@@ -124,10 +160,6 @@ namespace hopsan {
             //Effective Flow
             q1 = q1a + q1leak;
             q2 = q2a + q2leak;
-
-            //Cavitation Check
-            if (p1 < 0.0) { p1 = 0.0; }
-            if (p2 < 0.0) { p2 = 0.0; }
 
             t3 = c3 + a3 * Zx3;
 

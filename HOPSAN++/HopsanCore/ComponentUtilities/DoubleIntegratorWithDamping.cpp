@@ -52,6 +52,30 @@ void DoubleIntegratorWithDamping::integrate(double u)
 }
 
 
+//! @brief Integrates one step, but saves previous step in case step has to be re-integrated
+void DoubleIntegratorWithDamping::integrateWithUndo(double u)
+{
+    mDelaySYbackup = mDelaySY;
+    mDelayYbackup = mDelayY;
+    mDelayUbackup = mDelayU;
+
+    double tempDelaySY = mDelaySY;
+    mDelaySY = (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(u + mDelayU);
+    mDelayY = mDelayY + mTimeStep/2.0*tempDelaySY;
+    mDelayU = u;
+}
+
+
+//! @brief Re-integrates last step
+//! Last step must have been called with integrateWithUndo() for this to work.
+void DoubleIntegratorWithDamping::redoIntegrate(double u)
+{
+    mDelaySY = (2-mW0)/(2+mW0)*mDelaySYbackup + mTimeStep/(2.0+mW0)*(u + mDelayUbackup);
+    mDelayY = mDelayYbackup + mTimeStep/2.0*mDelaySYbackup;
+    mDelayU = u;
+}
+
+
 //! Returns first primitive from double integration
 double DoubleIntegratorWithDamping::valueFirst()
 {
