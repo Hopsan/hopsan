@@ -3,7 +3,7 @@
     <modelobject typename="MechanicTranslationalMassWithLever" displayname="Lever with Mass">
         <help picture="massleverhelp.svg"/>
 	<icon iconrotation="ON" userpath="masslever_user.svg"/>
-        <portpose x="0.3" y="0.56" a="270" name="P1"/>
-        <portpose x="0.88" y="1" a="270" name="P2"/>
+        <portpose x="0.3" y="0.5487" a="270" name="P1"/>
+        <portpose x="0.8696" y="0.8996" a="270" name="P2"/>
     </modelobject>
 </hopsanobjectappearance>
