@@ -162,8 +162,9 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
 
     mpLibrary->addEmptyLibrary("Mechanic"/*, "", "", ":graphics/splash2.svg"*/);
-    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Transformers","Mechanic");
-    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Mass Loads","Mechanic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sources","Mechanic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Linear Inertias","Mechanic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Rotating Inertias","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Springs & Dampers","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sensors","Mechanic");
 

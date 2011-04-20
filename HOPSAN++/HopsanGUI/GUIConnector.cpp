@@ -357,8 +357,6 @@ void GUIConnector::setEndPort(GUIPort *port)
     mpEndPort = port;
     mpEndPort->addConnection();
     this->connectPortSigSlots(mpEndPort);
-
-
 }
 
 
@@ -370,9 +368,10 @@ void GUIConnector::finishCreation()
         //Figure out whether or not the last line had the right direction, and make necessary corrections
     if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) && (mGeometries.back() == HORIZONTAL)) ||
           ((mpEndPort->getPortDirection() == TOPBOTTOM) && (mGeometries.back() == VERTICAL)) ) ||
-          (mGeometries[mGeometries.size()-2] == DIAGONAL))
+          (mGeometries[mGeometries.size()-2] == DIAGONAL) ||
+          mpEndPort->getPortType() == "READMULTIPORT" || mpEndPort->getPortType() == "POWERMULTIPORT")
     {
-            //Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there.
+            //Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there. It is also possible that we end up here because the end port is a multi port, which mean that we shall not add any offset to it.
         this->removePoint();
         this->scene()->removeItem(mpLines.back());
         delete(mpLines.back());
