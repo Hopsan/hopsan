@@ -35,7 +35,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("f", "Generated force", "[N]", f);
+            registerParameter("F", "Generated force", "[N]", f);
 
             disableStartValue(mpP1, NodeMechanic::FORCE);
         }
@@ -57,6 +57,10 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             (*mpND_c) = (*mpND_signal);
+//            if(mpIn->isConnected())				//Temporary RT solution
+//                (*mpND_c) = (*mpND_signal);
+//            else
+//                (*mpND_c) = f;
             (*mpND_Zx) = 0.0;
         }
     };
