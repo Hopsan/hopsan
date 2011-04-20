@@ -96,7 +96,7 @@ void GUIContainerObject::connectMainWindowActions()
     //connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()), Qt::UniqueConnection);
     connect(gpMainWindow->togglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()), Qt::UniqueConnection);
+    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoEnabled(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
     connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
     connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
@@ -132,7 +132,7 @@ void GUIContainerObject::disconnectMainWindowActions()
 //    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        this,    SLOT(showNames()));
     disconnect(gpMainWindow->toggleNamesAction,     SIGNAL(triggered(bool)),    this,      SLOT(toggleNames(bool)));
     disconnect(gpMainWindow->togglePortsAction,     SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
-    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),        this,    SLOT(disableUndo()));
+    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoEnabled(bool)));
     disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
     disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
@@ -1569,25 +1569,27 @@ void GUIContainerObject::forgetContainedConnector(GUIConnector *pConnector)
 
 
 //! @brief Disables the undo function for the current model
-void GUIContainerObject::disableUndo(bool dontAskJustDoIt)
+void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 {
-    if(!mUndoDisabled && !dontAskJustDoIt)
+    if(!enabled)
     {
-        QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, 0);
-        disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
-        disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
-        disableUndoWarningBox.setWindowIcon(gpMainWindow->windowIcon());
+        bool doIt=true;
+        if (!dontAskJustDoIt)
+        {
+            QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, 0);
+            disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
+            disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
+            disableUndoWarningBox.setWindowIcon(gpMainWindow->windowIcon());
 
-        if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
+            doIt = (disableUndoWarningBox.exec() == QMessageBox::AcceptRole);
+        }
+
+        if (doIt)
         {
             this->clearUndo();
             mUndoDisabled = true;
             gpMainWindow->undoAction->setDisabled(true);
             gpMainWindow->redoAction->setDisabled(true);
-        }
-        else
-        {
-            return;
         }
     }
     else

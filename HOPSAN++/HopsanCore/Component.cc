@@ -2782,7 +2782,9 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         }
         // If BOTH ports will NOT become empty, and if the one becoming empty is a multiport
         //! @todo this check is incomplete becouse it collides with the creapy multiport getConnectedPorts madness
-        else if ( (pPort1->getConnectedPorts().size() > 1) || (pPort2->getConnectedPorts().size() > 1) )
+        else if ( ( pPort1->isMultiPort() || pPort2->isMultiPort() ) &&
+                  ( ( (pPort1->getConnectedPorts().size() > 1) && !pPort1->isMultiPort() ) ||
+                    ( (pPort2->getConnectedPorts().size() > 1) && !pPort2->isMultiPort() ) ) )
         {
             assert( pPort1->isMultiPort() || pPort2->isMultiPort() );
 
@@ -2791,13 +2793,13 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
             if (pPort1->isMultiPort())
             {
                 assert(!pPort2->isMultiPort());
-                assert(pPort2->getConnectedPorts().size() == 1);
+                assert(pPort2->getConnectedPorts().size() > 1);
 
             }
             if (pPort2->isMultiPort())
             {
                 assert(!pPort1->isMultiPort());
-                assert(pPort1->getConnectedPorts().size() == 1);
+                assert(pPort1->getConnectedPorts().size() > 1);
 
             }
             //==========

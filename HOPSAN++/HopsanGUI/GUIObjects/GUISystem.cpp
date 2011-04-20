@@ -41,8 +41,8 @@ GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
 
 GUISystem::~GUISystem()
 {
-    this->disableUndo(true);
-    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";
+    this->setUndoEnabled(false, true); //The last true means DONT ASK
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";
     //First remove all contents
     this->clearContents();
 
