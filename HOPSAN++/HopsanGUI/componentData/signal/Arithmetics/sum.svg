@@ -13,7 +13,7 @@
    height="25.000004"
    id="svg3207"
    sodipodi:version="0.32"
-   inkscape:version="0.48.1 r9760"
+   inkscape:version="0.48.0 r9654"
    version="1.0"
    sodipodi:docname="sum.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -27,16 +27,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.2"
-     inkscape:cx="-4.2146109"
-     inkscape:cy="19.772213"
+     inkscape:zoom="4.2614232"
+     inkscape:cx="-46.094649"
+     inkscape:cy="3.0779424"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="1126"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-width="1280"
+     inkscape:window-height="732"
+     inkscape:window-x="-8"
+     inkscape:window-y="38"
      inkscape:window-maximized="1" />
   <defs
      id="defs3209" />
@@ -66,25 +66,25 @@
        id="path2395"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:11.05590153000000000;stroke-linecap:square;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1"
        sodipodi:type="arc" />
+    <text
+       xml:space="preserve"
+       style="font-size:30px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri"
+       x="-18.335493"
+       y="13.467725"
+       id="text2986"
+       sodipodi:linespacing="125%"
+       transform="translate(513.99099,160.46754)"><tspan
+         sodipodi:role="line"
+         id="tspan2988"
+         x="-18.335493"
+         y="13.467725" /></text>
     <g
-       id="g2997"
-       transform="matrix(4.8725388,0,0,4.8725388,471.33733,154.02206)">
-      <g
-         word-spacing="normal"
-         letter-spacing="normal"
-         font-size-adjust="none"
-         font-stretch="normal"
-         font-weight="normal"
-         font-variant="normal"
-         font-style="normal"
-         stroke-miterlimit="10.433"
-         xml:space="preserve"
-         transform="matrix(0.03571429,0,0,-0.03571429,-6.250001,18.750003)"
-         id="content"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"><path
-           id="path3000"
-           d="m 519.06,381.26 6.03,15.94 h -1.25 c -1.94,-5.18 -7.22,-8.57 -12.95,-10.06 -1.04,-0.25 -5.93,-1.55 -15.49,-1.55 h -30.04 l 25.36,29.74 c 0.35,0.4 0.45,0.55 0.45,0.8 0,0.1 0,0.25 -0.35,0.75 l -23.21,31.73 h 27.29 c 6.68,0 11.21,-0.7 11.66,-0.8 2.69,-0.4 7.03,-1.24 10.96,-3.74 1.25,-0.79 4.63,-3.03 6.32,-7.07 h 1.25 l -6.03,14 h -58.88 c -1.14,0 -1.19,-0.05 -1.34,-0.35 -0.05,-0.15 -0.05,-1.1 -0.05,-1.64 l 26.35,-36.07 -25.8,-30.23 c -0.5,-0.6 -0.5,-0.85 -0.5,-0.9 0,-0.55 0.45,-0.55 1.34,-0.55 z"
-           inkscape:connector-curvature="0"
-           style="fill:#000000;stroke-width:0" /></g>    </g>
+       style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Cambria Math;-inkscape-font-specification:Cambria Math"
+       id="text2990">
+      <path
+         d="m 524.17065,166.62428 3.68457,5.56446 0,0.63379 -4.13574,5.7041 4.86621,0 c 0.62304,0 1.07421,-0.13965 1.35352,-0.41895 0.27929,-0.27929 0.50845,-0.91308 0.6875,-1.90137 l 1.07422,0 -0.23633,4.09278 -10.18359,0 0,-0.52637 4.8125,-6.61719 -4.51172,-6.99316 0,-0.52637 9.92578,0 0,3.74903 -1.00977,0 c -0.29363,-1.15299 -0.5962,-1.90136 -0.90771,-2.24512 -0.31153,-0.34374 -0.76092,-0.51561 -1.34815,-0.51563 z"
+         style="font-family:Cambria Math;-inkscape-font-specification:Cambria Math"
+         id="path2995" />
+    </g>
   </g>
 </svg>

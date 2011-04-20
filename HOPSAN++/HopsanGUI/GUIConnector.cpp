@@ -1021,14 +1021,17 @@ void GUIConnector::determineAppearance()
     //Add arrow to the connector if it is of signal type
     if (mpEndPort->getNodeType() == "NodeSignal")
     {
-        if ( (endPortType == "READPORT") || (endPortType == "READMULTIPORT") )
+        if( !( (endPortType == "READPORT" || endPortType == "READMULTIPORT") && (startPortType == "READPORT" || startPortType == "READMULTIPORT") ) )    //No arrow if connecting two read ports
         {
-            this->getLastLine()->addEndArrow();
-        }
-        else if ( (endPortType == "WRITEPORT") )
-        {
-            //Assumes that the startport was a read port or multiread port
-            mpLines[0]->addStartArrow();
+            if ( (endPortType == "READPORT") || (endPortType == "READMULTIPORT") )
+            {
+                this->getLastLine()->addEndArrow();
+            }
+            else if ( (startPortType == "READPORT") || (startPortType == "READMULTIPORT") )
+            {
+                //Assumes that the startport was a read port or multiread port
+                mpLines[0]->addStartArrow();
+            }
         }
     }
 

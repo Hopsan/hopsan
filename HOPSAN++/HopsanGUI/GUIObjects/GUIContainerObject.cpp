@@ -649,7 +649,7 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 //! @param objectName is the name of the componenet to delete
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
-    qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
+    //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
     this->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
 
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);

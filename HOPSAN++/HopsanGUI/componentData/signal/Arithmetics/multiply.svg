@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +13,7 @@
    height="25.000004"
    id="svg3207"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.0 r9654"
    version="1.0"
    sodipodi:docname="multiply.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -36,16 +37,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="-23.180682"
-     inkscape:cy="-1.8114392"
+     inkscape:zoom="2.0611058"
+     inkscape:cx="-62.120527"
+     inkscape:cy="58.327586"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1268"
-     inkscape:window-height="942"
-     inkscape:window-x="182"
-     inkscape:window-y="74"
+     inkscape:window-width="1280"
+     inkscape:window-height="732"
+     inkscape:window-x="-8"
+     inkscape:window-y="38"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3212">
@@ -65,24 +66,24 @@
      transform="translate(-513.99099,-160.46754)">
     <path
        sodipodi:type="arc"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:11.05589918000000100;stroke-linecap:square;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:11.05589962;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none"
        id="path2395"
        sodipodi:cx="155"
        sodipodi:cy="513.07648"
        sodipodi:rx="63.57143"
        sodipodi:ry="63.57143"
-       d="M 218.57143,513.07648 A 63.57143,63.57143 0 1 1 91.42857,513.07648 A 63.57143,63.57143 0 1 1 218.57143,513.07648 z"
+       d="m 218.57143,513.07648 a 63.57143,63.57143 0 1 1 -127.14286,0 63.57143,63.57143 0 1 1 127.14286,0 z"
        transform="matrix(-0.1808989,0,0,-0.1808989,554.53032,265.78251)" />
     <text
        xml:space="preserve"
-       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="520.50562"
-       y="179.40993"
+       style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Cambria Math;-inkscape-font-specification:Cambria Math"
+       x="520.20679"
+       y="180.29909"
        id="text2384"><tspan
          sodipodi:role="line"
          id="tspan2386"
-         x="520.50562"
-         y="179.40993"
-         style="font-size:18px">X</tspan></text>
+         x="520.20679"
+         y="180.29909"
+         style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Cambria Math;-inkscape-font-specification:Cambria Math">X</tspan></text>
   </g>
 </svg>

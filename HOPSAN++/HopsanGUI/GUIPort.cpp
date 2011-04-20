@@ -537,7 +537,7 @@ void GUIPort::addConnection()
 void GUIPort::removeConnection()
 {
     --mnConnections;
-    qDebug() << "Removing connection, connections = " << mnConnections;
+    //qDebug() << "Removing connection, connections = " << mnConnections;
 }
 
 
