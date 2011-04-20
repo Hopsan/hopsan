@@ -1249,7 +1249,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 
             //Apply offset to connector and register it in undo stack
         tempConnector->moveAllPoints(xOffset, yOffset);
-        tempConnector->drawConnector();
+        tempConnector->drawConnector(true);
         for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
         {
             mUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x()-mPasteOffset, tempConnector->getLine(i)->pos().y()-mPasteOffset),
