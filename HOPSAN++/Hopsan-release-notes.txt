@@ -1,0 +1,40 @@
+Hopsan Release Notes
+
+
+--Known issues--
+
+- Subsystem function is not finished, and not recommended to be used
+- All components are not completely validated
+- Align and rotate functions does not work for text widgets and box widgets
+- Copying text widgets and box widgets only works once; it is not possible to copy a widget that has already been pasted
+
+
+-- Version History --
+
+0.2.2
+- Fixed critical bug that caused a crash when deleting a c-type pressure source
+- Fixed bug that made plot window crash if using auto update with angular velocity
+- Added a "Check For New Versions" option under Help menu, that will open the download page directly
+- Changed windows installer platform from InstallJammer to Inno Setup
+- Modified transmission example model so it is an angular velocity servo instead of an angle servo
+- Changed graphic icons for sensor components
+- New component: Mechanic angular velocity sensor
+- New component: Mechanic torque sensor
+
+0.2.1
+- Fixed issue with component properties dialog being too large for laptop screens
+- Fixed bug with ports being flagged as not connected after cancelling creation of a second connector
+- Fixed crash when trying to add system parameter without name
+- Fixed missing icon for .hmf files
+- Limited number of simulation threads to the number of system cores to avoid locking up the system
+- The "Edit text box" field is now resizable
+- The "View" menu is now alphabetically sorted
+- Added rotate and flip operations to the right-click menu of the components
+- Included time stamps in message widget, and made it more readable
+- Added a reset default value button in component properties dialog
+- Made default values gray in component properties dialog
+- Corrected some component names
+- New component: Q-type tank
+
+0.2.0
+- First beta release
