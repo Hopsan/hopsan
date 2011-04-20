@@ -36,7 +36,7 @@ GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
     this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
-    this->mUndoStack->newPost(); //!< @todo why do we need undostack new post here
+    this->mUndoStack->newPost();
 }
 
 GUISystem::~GUISystem()

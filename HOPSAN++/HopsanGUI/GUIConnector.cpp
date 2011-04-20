@@ -1011,7 +1011,6 @@ bool GUIConnector::isFirstAndLastDiagonal()
 
 
 //! @brief Uppdates the appearance of the connector (setting its type and line endings)
-//! @todo right now this only set the type and ending arrows, maybe should handle ALLA appearance update like switching when howering, or maybe have two different update appearance functions (this one only needs to be run once when a conector is created)
 void GUIConnector::determineAppearance()
 {
     QString startPortType = mpStartPort->getPortType();
