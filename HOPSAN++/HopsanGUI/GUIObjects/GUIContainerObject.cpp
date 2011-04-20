@@ -1244,8 +1244,8 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 
         loadConnector(tempConnectorElement, this, UNDO);
 
-        GUIConnector *tempConnector = this->findConnector(connectorElement.attribute("startcomponent"), connectorElement.attribute("startport"),
-                                                          connectorElement.attribute("endcomponent"), connectorElement.attribute("endport"));
+        GUIConnector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
+                                                          tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
 
             //Apply offset to connector and register it in undo stack
         tempConnector->moveAllPoints(xOffset, yOffset);
