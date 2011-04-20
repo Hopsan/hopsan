@@ -74,8 +74,8 @@ QString GUIModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
     QFileInfo iconUserFileInfo(QDir(mBasePath), mIconUserPath);
     QFileInfo iconISOFileInfo(QDir(mBasePath), mIconIsoPath);
 
-    qDebug() << "Type: " << mTypeName << " iconUser: " << iconUserFileInfo.absoluteFilePath();
-    qDebug() << "Type: " << mTypeName << " iconISO: " << iconISOFileInfo.absoluteFilePath();
+    //qDebug() << "Type: " << mTypeName << " iconUser: " << iconUserFileInfo.absoluteFilePath();
+    //qDebug() << "Type: " << mTypeName << " iconISO: " << iconISOFileInfo.absoluteFilePath();
 
     // We want USERICON and have USERICON
     if ( (gfxType == USERGRAPHICS) && iconUserFileInfo.isFile() )
