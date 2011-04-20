@@ -408,10 +408,18 @@ void Port::setStartValue(const size_t &idx, const double &value, const size_t /*
     if(mpStartNode)
     {
         mpStartNode->setData(idx, value);
-        ////getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(this->getPortName() + mpStartNode->getDataName(idx), value));
-        //getComponent()->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
-        //std::cout << "Overwriting " << this->getPortName() << mpStartNode->getDataName(idx) << " with " << value << endl;
-        //!< @todo Major problem with the two lines abouve at least in multiports, will destroy component memory, also a bit unclear will not default startvalue be replaced EVERY time
+
+        //Overwrite the default start value with new value
+        //! @todo Make sure this works for multiports
+        std::map<std::string, double> tempMap = getComponent()->mDefaultParameters;
+        if(tempMap.find(this->getPortName() + mpStartNode->getDataName(idx)) != tempMap.end())
+        {
+            getComponent()->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
+        }
+        else
+        {
+            //Do something else?!
+        }
     }
     else
     {
