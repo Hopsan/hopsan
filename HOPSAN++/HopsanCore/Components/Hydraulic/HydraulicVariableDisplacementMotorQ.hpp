@@ -51,7 +51,7 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("D_m", "Displacement", "[m^3/rev]", dp);
-            registerParameter("B_m", "Viscous Friction", "[Ns/rad]", Bm);       //! @todo Figure out these units
+            registerParameter("B_m", "Viscous Friction", "[Ns/rad]", Bm);
             registerParameter("C_i,m", "Leakage Coefficient", "[]", cim);
             registerParameter("J_m", "Inerteia Load", "[kgm^2]", J);
             registerParameter("epsilon_m", "Displacement Position", "[-]", eps);
@@ -112,11 +112,10 @@ namespace hopsan {
             a3 = mIntegrator.valueSecond();
 
             //Ideal Flow
-            q1a = -dpe * a3;
+            q1a = -dpe * w3;
             q2a = -q1a;
             p1 = c1a + gamma * Zc1 * q1a;
             p2 = c2a + gamma * Zc2 * q2a;
-
 
             //Cavitation Check
             bool cav=false;
