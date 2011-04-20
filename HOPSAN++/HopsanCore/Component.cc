@@ -2122,7 +2122,7 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
     }
     else
     {
-        unmergeOrUnjoinConnection(pMergeFrom, pMergeTo); //Undo connection
+        splitNodeConnection(pMergeFrom, pMergeTo); //Undo connection
         rpCreatedNode = 0;
         return false;
     }
@@ -2201,7 +2201,22 @@ void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Nod
     }
 }
 
-bool ConnectionAssistant::unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2)
+Port* ConnectionAssistant::findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort)
+{
+    assert(pOtherPort->getPortType() < MULTIPORT); //Make sure other is not a multiport
+    std::vector<Port*> otherConnPorts = pOtherPort->getConnectedPorts();
+    for (size_t i=0; i<otherConnPorts.size(); ++i)
+    {
+        //We assuyme that a port can not be connected multiple times to the same multiport
+        if (otherConnPorts[i]->mpParentPort == pMultiPort)
+        {
+            return otherConnPorts[i];
+        }
+    }
+    return 0;
+}
+
+bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
 {
     Port *pPortToBecomeEmpty=0, *pPortToKeep=0;
 
@@ -2238,7 +2253,7 @@ bool ConnectionAssistant::unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2)
 
         determineWhereToStoreNodeAndStoreIt(pKeepNode); //Relocaate the node if necessary
     }
-    //Else we seems to be unmerging, create anew node for teh "other side" of the broken connection
+    //Else we seems to be unmerging, create a new node for the "other side" of the broken connection
     else
     {
         //! @todo maybe make sure that the ports are really systemports to avoid code misstakes
@@ -2297,7 +2312,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
     //Prevent connection between two multiports
     //! @todo we might want to allow this in the future, right now disconnecting two multiports is also not implemented
-    if ( (pPort1->getPortType() > MULTIPORT) && (pPort2->getPortType() > MULTIPORT) )
+    if ( pPort1->isMultiPort() && pPort2->isMultiPort() )
     {
         gCoreMessageHandler.addErrorMessage("You are not allowed to connect two MultiPorts to each other, (this may be allowed in the future)");
         return false;
@@ -2682,32 +2697,38 @@ void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *&rpSubPort, P
     }
 }
 
-
+//! @brief Prepares port pointers for multiport disconnections,
 void ConnectionAssistant::ifMultiportPrepareForDissconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2)
 {
     //First make usre that multiport pointers are zero if no multiports are beeing connected
     rpMultiPort1=0;
     rpMultiPort2=0;
 
-    //either port 1 or port2 is a multiport, or both are
+    // Port 1 is a multiport, but not port2
     if (rpPort1->getPortType() >= MULTIPORT && rpPort2->getPortType() < MULTIPORT )
     {
         rpMultiPort1 = rpPort1;
-        assert(rpPort2->getConnectedPorts().size() == 1);
-        rpPort1 = rpPort2->getConnectedPorts()[0];
+//        assert(rpPort2->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
+//        rpPort1 = rpPort2->getConnectedPorts()[0];
+        rpPort1 = findMultiportSubportFromOtherPort(rpMultiPort1, rpPort2);
+        assert(rpPort1 != 0);
+
     }
+    // Port 2 is a multiport, but not port1
     else if (rpPort1->getPortType() < MULTIPORT && rpPort2->getPortType() >= MULTIPORT )
     {
         rpMultiPort2 = rpPort2;
-        assert(rpPort1->getConnectedPorts().size() == 1);
-        rpPort2 = rpPort1->getConnectedPorts()[0];
+//        assert(rpPort1->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
+//        rpPort2 = rpPort1->getConnectedPorts()[0];
+        rpPort2 = findMultiportSubportFromOtherPort(rpMultiPort2, rpPort1);
+        assert(rpPort2 != 0);
     }
+    // both ports are multiports
     else if (rpPort1->getPortType() >= MULTIPORT && rpPort2->getPortType() >= MULTIPORT )
     {
         assert("Multiport <-> Multiport disconnection has not been implemented yet Aborting!" == 0);
         //! @todo need to search around to find correct subports
     }
-
 }
 
 
@@ -2746,36 +2767,64 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
     ConnectionAssistant disconnAssistant;
     stringstream ss;
+    bool success = false;
     //! @todo some more advanced error handling (are the ports really connected to each other and such)
 
     if (pPort1->isConnected() && pPort2->isConnected())
     {
 
-        //Check if non of the ports will become empty, excluding multiports
-        if ( ( (pPort1->getConnectedPorts().size() > 1) && (pPort1->getPortType() < MULTIPORT) ) &&
-             ( (pPort2->getConnectedPorts().size() > 1) && (pPort2->getPortType() < MULTIPORT) ) )
+        // If BOTH ports will NOT become empty, and if non of them are multiports
+        if ( ((pPort1->getConnectedPorts().size() > 1) || (pPort2->getConnectedPorts().size() > 1)) &&
+             !pPort1->isMultiPort() && !pPort2->isMultiPort() )
         {
-            disconnAssistant.unmergeOrUnjoinConnection(pPort1, pPort2);
-        }
-        else if ( ( (pPort1->getConnectedPorts().size() > 1) && (pPort1->getPortType() < MULTIPORT) ) ||
-                  ( (pPort2->getConnectedPorts().size() > 1) && (pPort2->getPortType() < MULTIPORT) ) )
-        {
-            //! @todo seems like we can merge this case with the one above
             //! @todo what happens if we dissconnect a multiport from a port with multiple connections (can that even happen)
-            disconnAssistant.unmergeOrUnjoinConnection(pPort1, pPort2);
+            success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
         }
-        //If both ports will become empty, or if one or both is a multiport
+        // If BOTH ports will NOT become empty, and if the one becoming empty is a multiport
+        //! @todo this check is incomplete becouse it collides with the creapy multiport getConnectedPorts madness
+        else if ( (pPort1->getConnectedPorts().size() > 1) || (pPort2->getConnectedPorts().size() > 1) )
+        {
+            assert( pPort1->isMultiPort() || pPort2->isMultiPort() );
+
+            //=========
+            //! @todo these lineas are degugging checks, can mayb be removed later
+            if (pPort1->isMultiPort())
+            {
+                assert(!pPort2->isMultiPort());
+                assert(pPort2->getConnectedPorts().size() == 1);
+
+            }
+            if (pPort2->isMultiPort())
+            {
+                assert(!pPort1->isMultiPort());
+                assert(pPort1->getConnectedPorts().size() == 1);
+
+            }
+            //==========
+
+            //Handle multiports
+            Port* pOriginalPort1=0, *pOriginalPort2=0;
+            disconnAssistant.ifMultiportPrepareForDissconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
+
+            success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
+
+            //Handle multiport connection sucess or failure
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pOriginalPort1, success);
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pOriginalPort2, success);
+
+        }
+        // If both ports will become empty, and if one or both is a multiport
         else
         {
             //Handle multiports
             Port* pOriginalPort1=0, *pOriginalPort2=0;
             disconnAssistant.ifMultiportPrepareForDissconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
 
-            bool sucess = disconnAssistant.deleteNodeConnection(pPort1, pPort2);
+            success = disconnAssistant.deleteNodeConnection(pPort1, pPort2);
 
             //Handle multiport connection sucess or failure
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pOriginalPort1, sucess);
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pOriginalPort2, sucess);
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pOriginalPort1, success);
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pOriginalPort2, success);
         }
 
         disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);
@@ -2795,7 +2844,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     cout << ss.str() << endl;
     gCoreMessageHandler.addDebugMessage(ss.str(), "succesfuldisconnect");
 
-    return true; //! @todo we should try to determine if it is really true
+    return success;
 }
 
 

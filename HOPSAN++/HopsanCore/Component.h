@@ -80,7 +80,7 @@ namespace hopsan {
         bool createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
         bool mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
         bool deleteNodeConnection(Port *pPort1, Port *pPort2);
-        bool unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2);
+        bool splitNodeConnection(Port *pPort1, Port *pPort2);
 
         void determineWhereToStoreNodeAndStoreIt(Node* pNode);
         void clearSysPortNodeTypeIfEmpty(Port *pPort);
@@ -96,6 +96,7 @@ namespace hopsan {
 
     private:
         void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
+        Port* findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort);
     };
 
     class ComponentSystem; //Forward declaration
