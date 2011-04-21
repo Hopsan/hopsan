@@ -80,6 +80,8 @@
 #include "Signal/SignalLP2Filter.hpp"
 #include "Signal/SignalHP1Filter.hpp"
 #include "Signal/SignalHP2Filter.hpp"
+#include "Signal/SignalMin.hpp"
+#include "Signal/SignalMax.hpp"
 #include "Signal/SignalPulse.hpp"
 #include "Signal/SignalSoftStep.hpp"
 #include "Signal/SignalIntegrator.hpp"

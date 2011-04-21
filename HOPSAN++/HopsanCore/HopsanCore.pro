@@ -208,4 +208,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalSum.hpp \
     Components/Hydraulic/HydraulicPressureCompensatingValve.hpp \
     Components/Hydraulic/HydraulicUndefinedConnectionQ.hpp \
-    Components/Hydraulic/HydraulicUndefinedConnectionC.hpp
+    Components/Hydraulic/HydraulicUndefinedConnectionC.hpp \
+    Components/Signal/SignalMax.hpp \
+    Components/Signal/SignalMin.hpp
