@@ -63,10 +63,10 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
         {
             mIconOverlayPaths.append(QString(PORTICONPATH) + "PortOverlayQ.svg");
         }
-        if (porttype == "POWERMULTIPORT")
-        {
-            mIconOverlayPaths.append(QString(PORTICONPATH) + "MultiPortOverlay.svg");
-        }
+    }
+    if (porttype.contains("MULTIPORT"))
+    {
+        mIconOverlayPaths.append(QString(PORTICONPATH) + "MultiPortOverlay.svg");
     }
     mIconPath.append(".svg");
 }
