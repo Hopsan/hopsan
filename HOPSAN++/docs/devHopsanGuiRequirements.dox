@@ -1,5 +1,5 @@
 /*!
-\page devHopsanGuiRequirements Hopsan GUI Dependence libraries
+\page devHopsanGuiRequirements HopsanGUI Dependence libraries
 HopsanGUI depends on some external libraries. Here is a description on how to build and install them.
 
 \section hopsancore Build The Hopsan Core

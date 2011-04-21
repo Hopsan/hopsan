@@ -1,10 +1,10 @@
 /*!
-\page hopsancore-dependence Hopsan Core Dependence Libraries
+\page devHopsanCoreRequirements HopsanCore Dependence Libraries
 HopsanCore depends on one external library for multi threaded simulations. Here is a description on how to build and install it.\n
 If TBB is not found by qmake, then the core will be compiled without multithreading support, this MAY, (but should not) crash HopsanGUI.
 
 \section tbb TBB Intel Thread Building Blocks
-\subsection tbb-linux Build/Install TBB on Ubuntu
+\subsection tbb-ubuntu Build/Install TBB on Ubuntu
 -# sudo aptitude install libtbb-dev
 
 \subsection tbb-windows-mingw Build/Install TBB on Windows using MinGW

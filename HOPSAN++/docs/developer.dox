@@ -3,7 +3,7 @@
 
 -# \subpage devHowtoBuildDocumentation \n
 -# \subpage requirements-qt \n
--# \subpage hopsancore-dependence \n
+-# \subpage devHopsanCoreRequirements \n
 -# \subpage devHopsanGuiRequirements \n
 -# \subpage devHopsanCLIRequirements \n
 -# \subpage devBuildHopsan \n
