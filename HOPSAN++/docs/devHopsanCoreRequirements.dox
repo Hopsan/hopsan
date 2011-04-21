@@ -8,7 +8,7 @@ If TBB is not found by qmake, then the core will be compiled without multithread
 -# sudo aptitude install libtbb-dev
 
 \subsection tbb-windows-mingw Build/Install TBB on Windows using MinGW
--# Download the latest stable releses for windows, for example: "tbb30_20101215oss_src.tgz"
+-# Download the latest stable releses sorce code, for example: "tbb30_20101215oss_src.tgz" from "http://threadingbuildingblocks.org/download.php" stable release.
   -# Unpack the contents to ExternalDependencies\\tbb30_20101215oss (or whatever your version is)
 -# Open a Qt Command Prompt (you can find it in the start menu). Navigate to the tbb directory.
 -# Run "mingw32-make compiler=gcc" to build both release and debug libraries
