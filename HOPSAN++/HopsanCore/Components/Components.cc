@@ -118,6 +118,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
     cfampND_ct->registerCreatorFunction("SignalMin", SignalMin::Creator);
     cfampND_ct->registerCreatorFunction("SignalMax", SignalMax::Creator);
     cfampND_ct->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
+    cfampND_ct->registerCreatorFunction("SignalRoute", SignalRoute::Creator);
     cfampND_ct->registerCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
     cfampND_ct->registerCreatorFunction("SignalIntegrator2", SignalIntegrator2::Creator);
     cfampND_ct->registerCreatorFunction("SignalIntegratorLimited", SignalIntegratorLimited::Creator);
