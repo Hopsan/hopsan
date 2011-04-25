@@ -190,10 +190,9 @@ void ComponentPropertiesDialog::createEditStuff()
 
     //qDebug() << "after parnames";
 
+    cancelButton = new QPushButton(tr("&Cancel"), this);
     okButton = new QPushButton(tr("&Ok"), this);
     okButton->setDefault(true);
-    cancelButton = new QPushButton(tr("&Cancel"), this);
-    cancelButton->setDefault(false);
 
     buttonBox = new QDialogButtonBox(Qt::Vertical, this);
     buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);

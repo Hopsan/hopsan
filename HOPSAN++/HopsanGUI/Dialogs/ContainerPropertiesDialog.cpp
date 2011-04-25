@@ -163,10 +163,9 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpDoneButton = new QPushButton(tr("&Done"), this);
+    mpDoneButton->setDefault(true);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpDoneButton, QDialogButtonBox::ActionRole);
-    mpCancelButton->setAutoDefault(false);
-    mpDoneButton->setAutoDefault(true);
     mpMainLayout->addWidget(mpButtonBox, 0, Qt::AlignHCenter);
 
     //Create connections

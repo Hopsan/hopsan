@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2500.5" zoom="1"/>
+            <viewport x="2475" y="2571.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -73,7 +73,7 @@
                     <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2665" y="2821" flipped="0" a="0"/>
+                    <pose x="2664" y="2821" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -98,7 +98,7 @@
                     <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2650" y="2601" flipped="0" a="0"/>
+                    <pose x="2649.0008" y="2601" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -261,7 +261,7 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2666.9992" y="2751.5" flipped="0" a="0"/>
+                    <pose x="2666" y="2751" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -276,20 +276,20 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2651.9992" y="2518" flipped="0" a="0"/>
+                    <pose x="2651" y="2518" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <textwidget>
                 <hopsangui>
-                    <pose x="2029" y="2508"/>
-                    <textobject fontcolor="#556b2f" text="This model shows an example of how to &#xa;model a hydrostatic transmission with an&#xa;angular feedback. The system is protected &#xa;by one pressure relief valve on each side.&#xa;Additional oil is supplied to the system from &#xa;the pressure sources through very small&#xa;orifices." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <pose x="2030" y="2508"/>
+                    <textobject fontcolor="#556b2f" text="This model shows an example of how to &#xa;model a hydrostatic transmission with an&#xa;angular velocity feedback. The system is &#xa;protected by one pressure relief valve on &#xa;each side. Additional oil is supplied to the &#xa;system from the pressure sources through &#xa;very small orifices." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                 </hopsangui>
             </textwidget>
             <boxwidget>
                 <hopsangui>
-                    <pose x="2022" y="2504"/>
-                    <size width="307" height="148"/>
+                    <pose x="2022" y="2505"/>
+                    <size width="295" height="147"/>
                     <line width="2" style="solidline" color="#556b2f"/>
                 </hopsangui>
             </boxwidget>
@@ -470,7 +470,7 @@
             <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P1" startcomponent="Pressure Relief Valve">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2650" y="2478"/>
+                        <coordinate x="2649.0008" y="2478"/>
                         <coordinate x="2650" y="2426"/>
                     </coordinates>
                     <geometries>
@@ -482,7 +482,7 @@
             <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_1" startport="P1" startcomponent="Pressure Relief Valve_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2665" y="2711.5"/>
+                        <coordinate x="2664.0008" y="2711"/>
                         <coordinate x="2665" y="2667"/>
                     </coordinates>
                     <geometries>
@@ -494,8 +494,8 @@
             <connect endport="P1" endcomponent="Tank C_1" startport="P2" startcomponent="Pressure Relief Valve_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2665" y="2791.5"/>
-                        <coordinate x="2665" y="2806.5"/>
+                        <coordinate x="2664.0008" y="2791"/>
+                        <coordinate x="2664" y="2806.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -506,8 +506,8 @@
             <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Tank C_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2650" y="2586.5"/>
-                        <coordinate x="2650" y="2558"/>
+                        <coordinate x="2649.0008" y="2586.5"/>
+                        <coordinate x="2649.0008" y="2558"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>

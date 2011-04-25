@@ -157,15 +157,15 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     this->updateCustomUnits();
 
-    mpAddValueUnitButton = new QPushButton("Add Custom Value Unit");
-    mpAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit");
-    mpAddFlowUnitButton = new QPushButton("Add Custom Flow Unit");
-    mpAddForceUnitButton = new QPushButton("Add Custom Force Unit");
-    mpAddPositionUnitButton = new QPushButton("Add Custom Position Unit");
-    mpAddVelocityUnitButton = new QPushButton("Add Custom Velocity Unit");
-    mpAddTorqueUnitButton = new QPushButton("Add Custom Torque Unit");
-    mpAddAngleUnitButton = new QPushButton("Add Custom Angle Unit");
-    mpAddAngularVelocityUnitButton = new QPushButton("Add Custom Angular Velocity Unit");
+    mpAddValueUnitButton = new QPushButton("Add Custom Value Unit", this);
+    mpAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit", this);
+    mpAddFlowUnitButton = new QPushButton("Add Custom Flow Unit", this);
+    mpAddForceUnitButton = new QPushButton("Add Custom Force Unit", this);
+    mpAddPositionUnitButton = new QPushButton("Add Custom Position Unit", this);
+    mpAddVelocityUnitButton = new QPushButton("Add Custom Velocity Unit", this);
+    mpAddTorqueUnitButton = new QPushButton("Add Custom Torque Unit", this);
+    mpAddAngleUnitButton = new QPushButton("Add Custom Angle Unit", this);
+    mpAddAngularVelocityUnitButton = new QPushButton("Add Custom Angular Velocity Unit", this);
 
     mpPlottingGroupBox = new QGroupBox(tr("Plotting"));
     mpPlottingLayout = new QGridLayout;
@@ -198,10 +198,10 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpPlottingLayout->addWidget(mpAddAngularVelocityUnitButton, 8, 2);
     mpPlottingGroupBox->setLayout(mpPlottingLayout);
 
-    mpCancelButton = new QPushButton(tr("&Cancel"));
+    mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpCancelButton->setAutoDefault(false);
-    mpOkButton = new QPushButton(tr("&Done"));
-    mpOkButton->setAutoDefault(true);
+    mpOkButton = new QPushButton(tr("&Done"), this);
+    mpOkButton->setDefault(true);
 
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);

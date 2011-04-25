@@ -55,6 +55,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpNew->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     mpNew->setMouseTracking(true);
     mpNew->setStyleSheet(" QPushButton:flat { border: none; background: none; } ");
+    mpNew->setDefault(true);
 
     mpOpen = new QPushButton(this);
     mpOpenIcon = new QIcon(QPixmap(QString(GRAPHICSPATH) + "open.png"));

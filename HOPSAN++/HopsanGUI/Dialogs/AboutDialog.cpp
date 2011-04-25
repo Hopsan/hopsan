@@ -108,7 +108,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pLithFlumesLogotype->setPixmap(bottomimage);
 
     QPushButton *pOkButton = new QPushButton(tr("&Close"));
-    pOkButton->setAutoDefault(true);
+    pOkButton->setDefault(true);
     pOkButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);

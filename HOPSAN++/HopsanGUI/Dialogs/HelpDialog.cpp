@@ -37,7 +37,7 @@ HelpDialog::HelpDialog(MainWindow *parent)
     mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "hopsan-user.html"));
 
     mpOkButton = new QPushButton(tr("&Close"));
-    mpOkButton->setAutoDefault(true);
+    mpOkButton->setDefault(true);
     mpOkButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     connect(mpOkButton, SIGNAL(clicked()), this, SLOT(close()));
 
