@@ -325,11 +325,11 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
     double hmfVersion = rDomElement.parentNode().toElement().attribute("hmfversion").toDouble();
 
-    if(hmfVersion <= 0.2)
+    if(hmfVersion <= 0.2 && hmfVersion != 0.0)
     {
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with Hopsan version 0.2 or older. Full compatibility is not guarnteed.");
     }
-    else if(hmfVersion != QString(HMFVERSION).toDouble())
+    else if(hmfVersion != QString(HMFVERSION).toDouble() && hmfVersion != 0.0)
     {
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with an older version of Hopsan, but versions are compatible.");
     }
@@ -391,26 +391,27 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             if(pObj == NULL)
             {
                 gpMainWindow->mpMessageWidget->printGUIErrorMessage("Model contains components from a library that has not been included.");
-                break;
             }
-            //Load parameter values
-            QDomElement xmlParameters = xmlSubObject.firstChildElement(HMF_PARAMETERS);
-            QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
-            while (!xmlParameter.isNull())
+            else
             {
-                loadParameterValue(xmlParameter, pObj, NOUNDO);
-                xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
-            }
+                //Load parameter values
+                QDomElement xmlParameters = xmlSubObject.firstChildElement(HMF_PARAMETERS);
+                QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+                while (!xmlParameter.isNull())
+                {
+                    loadParameterValue(xmlParameter, pObj, NOUNDO);
+                    xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+                }
 
-            //Load start values
-            QDomElement xmlStartValues = xmlSubObject.firstChildElement(HMF_STARTVALUES);
-            QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
-            while (!xmlStartValue.isNull())
-            {
-                loadStartValue(xmlStartValue, pObj, NOUNDO);
-                xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
+                //Load start values
+                QDomElement xmlStartValues = xmlSubObject.firstChildElement(HMF_STARTVALUES);
+                QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
+                while (!xmlStartValue.isNull())
+                {
+                    loadStartValue(xmlStartValue, pObj, NOUNDO);
+                    xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
+                }
             }
-
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
         qDebug() << "Loading text widgets!";
