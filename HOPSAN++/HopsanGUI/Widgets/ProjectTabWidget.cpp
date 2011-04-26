@@ -592,7 +592,6 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
     if (!hmfRoot.isNull())
     {
-        //! @todo Check version numbers
         //! @todo check if we could load else give error message and dont attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
         pCurrentTab->mpSystem->setModelFileInfo(file); //Remember info about the file from which the data was loaded
