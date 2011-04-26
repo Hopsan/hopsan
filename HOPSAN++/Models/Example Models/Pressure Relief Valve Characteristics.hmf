@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.0" hopsancoreversion="0">
-    <system cqs_type="UNDEFINEDCQSTYPE" name="Pressure Relief Valve Characteristics">
+    <system typename="Subsystem" name="Pressure Relief Valve Characteristics">
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2472.5" zoom="1"/>
+            <viewport x="2500" y="2500" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="Pressure Relief Valve Characteristics">
-                    <icon isopath="subsystemtmp.svg" iconrotation="" userpath=""/>
+                    <icon isopath="../../../../../../../Program Files/Hopsan/Models/Example Models/subsystemtmp.svg" iconrotation="" userpath=""/>
                 </modelobject>
             </hopsanobjectappearance>
         </hopsangui>
@@ -24,11 +24,11 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2619" y="2444" flipped="0" a="0"/>
+                    <pose x="2587" y="2373" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="HydraulicVolume3" name="Hydraulic Volume with 3 Ports">
+            <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
                 <parameters>
                     <parameter value="0.001" name="V"/>
                     <parameter value="1e+009" name="Beta_e"/>
@@ -37,13 +37,9 @@
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="1e+006"/>
-                    <startvalue portname="P2" variable="Flow" value="0"/>
-                    <startvalue portname="P2" variable="Pressure" value="1e+006"/>
-                    <startvalue portname="P3" variable="Flow" value="0"/>
-                    <startvalue portname="P3" variable="Pressure" value="1e+006"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2511" y="2444" flipped="0" a="0"/>
+                    <pose x="2481" y="2373" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -56,7 +52,7 @@
                     <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2692" y="2504" flipped="0" a="0"/>
+                    <pose x="2660" y="2433" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -70,7 +66,7 @@
                     <startvalue portname="out" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2558" y="2385" flipped="0" a="0"/>
+                    <pose x="2526" y="2314" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -83,7 +79,7 @@
                     <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2511" y="2623" flipped="0" a="0"/>
+                    <pose x="2481" y="2552" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -93,7 +89,7 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2423" y="2444" flipped="0" a="0"/>
+                    <pose x="2388" y="2373" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -108,95 +104,37 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2513" y="2532" flipped="0" a="0"/>
+                    <pose x="2483" y="2461" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <textwidget>
                 <hopsangui>
-                    <pose x="2019" y="2409"/>
+                    <pose x="2330" y="2612"/>
                     <textobject fontcolor="#556b2f" text="This example model displays the characteristics&#xa;of a pressure relief valve. Pressure will increase&#xa;in the volume because of the prescribed flow,&#xa;and when pressure reaches the reference&#xa;value the relief valve will open. After .5&#xa;seconds, the orifice size will be reduced to half,&#xa;which will act as a disturbance for the valve." font="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0"/>
+                </hopsangui>
+            </textwidget>
+            <textwidget>
+                <hopsangui>
+                    <pose x="2241" y="2209"/>
+                    <textobject fontcolor="#556b2f" text="Example: Pressure Relief Valve Characteristics" font="Calibri,20,-1,5,75,0,0,0,0,0"/>
                 </hopsangui>
             </textwidget>
             <boxwidget>
                 <hopsangui>
-                    <pose x="2012" y="2406"/>
+                    <pose x="2323" y="2609"/>
                     <size width="355" height="150"/>
                     <line width="2" style="solidline" color="#556b2f"/>
                 </hopsangui>
             </boxwidget>
         </objects>
         <connections>
-            <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P3" startcomponent="Hydraulic Volume with 3 Ports">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2511" y="2459"/>
-                        <coordinate x="2511" y="2473"/>
-                        <coordinate x="2511.0008" y="2473"/>
-                        <coordinate x="2511.0008" y="2492"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Hydraulic Volume with 3 Ports" startport="P1" startcomponent="Prescribed Source Q">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2435" y="2444"/>
-                        <coordinate x="2466.0008" y="2444"/>
-                        <coordinate x="2466.0008" y="2444"/>
-                        <coordinate x="2486" y="2444"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Tank C">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2511" y="2608.5"/>
-                        <coordinate x="2511" y="2583"/>
-                        <coordinate x="2511.0008" y="2583"/>
-                        <coordinate x="2511.0008" y="2572"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Hydraulic Volume with 3 Ports" startport="P2" startcomponent="Turbulent Orifice">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2589" y="2444"/>
-                        <coordinate x="2556.0008" y="2444"/>
-                        <coordinate x="2556.0008" y="2444"/>
-                        <coordinate x="2536" y="2444"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="P1" endcomponent="Tank C_1" startport="P1" startcomponent="Turbulent Orifice">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2649" y="2444"/>
-                        <coordinate x="2692" y="2444"/>
-                        <coordinate x="2692" y="2489.5"/>
+                        <coordinate x="2617" y="2373"/>
+                        <coordinate x="2660" y="2373"/>
+                        <coordinate x="2660" y="2418.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -208,13 +146,61 @@
             <connect endport="A" endcomponent="Turbulent Orifice" startport="out" startcomponent="Step">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2578" y="2385"/>
-                        <coordinate x="2619" y="2385"/>
-                        <coordinate x="2619" y="2429"/>
+                        <coordinate x="2546" y="2314"/>
+                        <coordinate x="2587" y="2314"/>
+                        <coordinate x="2587" y="2358"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P1" startcomponent="Prescribed Source Q">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2400" y="2373"/>
+                        <coordinate x="2481" y="2373"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Turbulent Orifice" startport="P1" startcomponent="Hydraulic Volume Multi Port">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481" y="2373"/>
+                        <coordinate x="2557" y="2373"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481" y="2373"/>
+                        <coordinate x="2481.0008" y="2421"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Tank C" startport="P2" startcomponent="Pressure Relief Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481.0008" y="2501"/>
+                        <coordinate x="2481" y="2537.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
