@@ -411,27 +411,26 @@ void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
         fontcolor.setNamedColor(textobjectTag.attribute("fontcolor"));
 
         QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
-        point.setX(poseTag.attribute("x").toInt());
-        point.setY(poseTag.attribute("y").toInt());
+        QPointF tempPoint;
+        tempPoint.setX(poseTag.attribute("x").toDouble());
+        tempPoint.setY(poseTag.attribute("y").toDouble());
+        point = tempPoint.toPoint();
     }
 }
 
 void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings)
 {
-    qDebug() << "1";
     TextWidgetLoadData data;
     data.readDomElement(rDomElement);
-    qDebug() << "2";
+    qDebug() << "Loading text widget, point = " << data.point;
     pSystem->addTextWidget(data.point, NOUNDO);
     pSystem->mTextWidgetList.last()->setText(data.text);
     pSystem->mTextWidgetList.last()->setTextFont(data.font);
     pSystem->mTextWidgetList.last()->setTextColor(data.fontcolor);
-    qDebug() << "3";
     if(undoSettings == UNDO)
     {
         pSystem->mUndoStack->registerAddedBoxWidget(pSystem->mBoxWidgetList.last());
     }
-    qDebug() << "4";
 }
 
 
@@ -452,8 +451,10 @@ void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
         linecolor.setNamedColor(lineTag.attribute("color"));
 
         QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
-        point.setX(poseTag.attribute("x").toInt());
-        point.setY(poseTag.attribute("y").toInt());
+        QPointF tempPoint;
+        tempPoint.setX(poseTag.attribute("x").toDouble());
+        tempPoint.setY(poseTag.attribute("y").toDouble());
+        point = tempPoint.toPoint();
     }
 }
 
