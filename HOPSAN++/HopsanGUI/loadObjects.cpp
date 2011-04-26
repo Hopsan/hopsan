@@ -422,7 +422,7 @@ void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoS
 {
     TextWidgetLoadData data;
     data.readDomElement(rDomElement);
-    qDebug() << "Loading text widget, point = " << data.point;
+    //qDebug() << "Loading text widget, point = " << data.point;
     pSystem->addTextWidget(data.point, NOUNDO);
     pSystem->mTextWidgetList.last()->setText(data.text);
     pSystem->mTextWidgetList.last()->setTextFont(data.font);

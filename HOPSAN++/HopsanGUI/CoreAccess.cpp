@@ -364,7 +364,7 @@ void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
 
 vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString portName)
 {
-    qDebug() << "getTimeVector, " << componentName << ", " << portName;
+    //qDebug() << "getTimeVector, " << componentName << ", " << portName;
 
     Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
     Port* pPort = 0;

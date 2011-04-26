@@ -1065,7 +1065,7 @@ QString GUIModelObject::getTypeName()
 
 void GUIModelObject::deleteMe()
 {
-    qDebug() << "deleteMe in " << this->getName();
+    //qDebug() << "deleteMe in " << this->getName();
     mpParentContainerObject->deleteGUIModelObject(this->getName());
 }
 
@@ -1090,7 +1090,7 @@ void GUIModelObject::refreshAppearance()
     setGeometry(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
 
     //Resize the selection box
-    qDebug() << "mpSelectionBox->setSize: " << mpIcon->boundingRect().width() << " " << mpIcon->boundingRect().height();
+    //qDebug() << "mpSelectionBox->setSize: " << mpIcon->boundingRect().width() << " " << mpIcon->boundingRect().height();
     mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
 
     this->refreshDisplayName();

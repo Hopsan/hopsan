@@ -530,7 +530,7 @@ portDirection GUIPort::getPortDirection()
 void GUIPort::addConnection()
 {
     ++mnConnections;
-    qDebug() << "Adding connection, connections = " << mnConnections;
+    //qDebug() << "Adding connection, connections = " << mnConnections;
 }
 
 

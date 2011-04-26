@@ -107,8 +107,8 @@ void UndoWidget::refreshList()
     int pos = 0;
     bool found = true;
 
-    qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer();
-    qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer()->getName();
+    //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer();
+    //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer()->getName();
     QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mUndoRoot;
     QDomElement postElement = undoRoot.firstChildElement("post");
     while(found)

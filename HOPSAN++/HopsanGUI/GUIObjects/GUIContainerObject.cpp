@@ -1913,15 +1913,15 @@ void GUIContainerObject::collectPlotData()
 
 QVector<double> GUIContainerObject::getTimeVector(int generation)
 {
-    qDebug() << "getTimeVector()";
+    //qDebug() << "getTimeVector()";
     return mTimeVectors.at(generation);
 }
 
 
 QVector<double> GUIContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
 {
-    qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
-    qDebug() << "Size of data: " << mPlotData.size();
+    //qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
+    //qDebug() << "Size of data: " << mPlotData.size();
     return mPlotData.at(generation).find(componentName).value().find(portName).value().find(dataName).value();
 }
 

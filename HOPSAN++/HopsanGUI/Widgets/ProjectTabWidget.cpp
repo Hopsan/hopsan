@@ -82,7 +82,7 @@ ProjectTab::~ProjectTab()
 //! e.g. a component added or a connection has changed.
 void ProjectTab::hasChanged()
 {
-    qDebug() << "hasChanged()";
+    //qDebug() << "hasChanged()";
     if (mIsSaved)
     {
         QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
