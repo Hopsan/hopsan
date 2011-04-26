@@ -27,7 +27,7 @@ public:
 signals:
 
 public slots:
-    void gotoContainerClosingSubcontainers(int id);
+    void gotoContainerAndCloseSubcontainers(int id);
 
 private:
     void refreshVisible();

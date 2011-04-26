@@ -19,7 +19,7 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
 {
     QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);  //Create the horizontal layout for this GroupBox
     this->mpButtonGroup = new QButtonGroup(this);
-    connect(this->mpButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(gotoContainerClosingSubcontainers(int)));
+    connect(this->mpButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(gotoContainerAndCloseSubcontainers(int)));
 
     pHBoxLayout->setContentsMargins(0,0,0,0); //Make narrow margins
     pHBoxLayout->setSpacing(0);
@@ -47,7 +47,7 @@ void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
 
 //! @brief Backstep to the given container closing all bellow it on the way
 //! @param[in] id The id of the container to go to
-void QuickNavigationWidget::gotoContainerClosingSubcontainers(int id)
+void QuickNavigationWidget::gotoContainerAndCloseSubcontainers(int id)
 {
     //Reverse close subsystems,one at a time
     for (int i=this->mContainerObjectPtrs.size()-1; i>=id; --i)

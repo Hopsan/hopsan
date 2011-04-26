@@ -71,6 +71,9 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 ProjectTab::~ProjectTab()
 {
     //qDebug() << "projectTab destructor";
+    //First make sure that we go to the top level system, we dont want to be inside a subsystem while it is beeing deleted
+    this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
+    //Now delete the root system, all subcontents will be automatically removed by the mpSystem destructor
     delete mpSystem;
 }
 
@@ -254,7 +257,7 @@ void ProjectTab::saveAs()
 //! @brief Slot that tells the current system to collect plot data from core
 void ProjectTab::collectPlotData()
 {
-    this->mpSystem->collectPlotData();
+    this->mpGraphicsView->getContainerPtr()->collectPlotData();
 }
 
 
