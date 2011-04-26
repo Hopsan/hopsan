@@ -16,12 +16,14 @@ Hopsan Release Notes
 - Completely new plot window
 - Plot curves from different generations can be plotted against each other
 - Plot curves can be scaled and moved
-- Plots can be exported to Comma-Separated Values format (.csf)
+- Plots can be exported to Comma-Separated Values format (.csv)
 - Plots can be exported to Matlab script file format (.m)
 - Plot window configurations can be saved to .xml format
+- Added the possibility to give plot variables an alias, which makes it easier to access from python scripts
 - Several curve markers can now be added to the same curve
 - Added a recent model list on welcome dialog
 - Added option to attach a script file to a model file, that will be executed automatically when loading the model
+- Made it possible to make connector lines dashed, for e.g. pilot lines
 - Revised program style sheet
 - Fixed crash when trying to connect same two ports with two connecteors
 - Fixed several bugs in component model code
