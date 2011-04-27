@@ -71,7 +71,6 @@ SOURCES += Port.cc \
     CoreUtilities/HopsanCoreMessageHandler.cc \
     ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     ComponentUtilities/DoubleIntegratorWithDamping.cpp \
-    ComponentUtilities/SecondOrderTransferFunction.cc \
     ComponentUtilities/matrix.cc \
     ComponentUtilities/ludcmp.cc
 HEADERS += win32dll.h \
@@ -168,7 +167,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalOr.hpp \
     Components/Signal/SignalXor.hpp \
     Components/Signal/SignalTime.hpp \
-    ComponentUtilities/SecondOrderTransferFunction.h \
     Components/Signal/SignalDummy.hpp \
     Components/Hydraulic/HydraulicDummyC.hpp \
     Components/Hydraulic/HydraulicDummyQ.hpp \

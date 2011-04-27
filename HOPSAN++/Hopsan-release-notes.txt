@@ -3,8 +3,13 @@ Hopsan Release Notes
 
 --Known issues--
 
+- Some compatibility issues exist between version 0.3.0 and older versions, because some components were discarded. 
+  These will not appear when loading the models. Some parameter names was also changed, these parameters will be reset.
 - All components are not completely validated
 - Align and rotate functions does not work for text widgets and box widgets
+- In Windows Vista and Windows 7, it is strongly advisible to NOT save any files in the program installation directory. 
+  Windows will actually save them in a completely different and hidden folder, so that the saved files will be very difficult to find.
+
 
 
 -- Version History --

@@ -74,5 +74,7 @@
         <file>graphics/uiicons/Hopsan-ShowPlotWindowLists.png</file>
         <file>graphics/uiicons/Hopsan-ExportGfx.png</file>
         <file>graphics/uiicons/Hopsan-ExportPlot.png</file>
+        <file>graphics/uiicons/Hopsan-NewPlot.png</file>
+        <file>graphics/uiicons/Hopsan-ResetTimeVector.png</file>
     </qresource>
 </RCC>
