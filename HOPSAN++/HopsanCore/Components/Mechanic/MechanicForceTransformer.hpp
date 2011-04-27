@@ -49,7 +49,7 @@ namespace hopsan {
             mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
-            (*mpND_f) = f;
+            (*mpND_f) = (*mpND_signal);
             (*mpND_Zx) = 0.0;
         }
 
@@ -62,6 +62,9 @@ namespace hopsan {
 //            else
 //                (*mpND_c) = f;
             (*mpND_Zx) = 0.0;
+            std::stringstream ss;
+            ss << "C: " << (*mpND_c);
+            addInfoMessage(ss.str());
         }
     };
 }
