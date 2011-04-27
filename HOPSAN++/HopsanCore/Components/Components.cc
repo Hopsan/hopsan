@@ -136,6 +136,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
     cfampND_ct->registerCreatorFunction("SignalOr", SignalOr::Creator);
     cfampND_ct->registerCreatorFunction("SignalXor", SignalXor::Creator);
     cfampND_ct->registerCreatorFunction("SignalSum", SignalSum::Creator);
+    cfampND_ct->registerCreatorFunction("SignalSecondOrderTransferFunction", SignalSecondOrderTransferFunction::Creator);
 
     cfampND_ct->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
 

@@ -92,6 +92,7 @@
 #include "Signal/SignalTimeDelay.hpp"
 #include "Signal/SignalFirstOrderFilter.hpp"
 #include "Signal/SignalSecondOrderFilter.hpp"
+#include "Signal/SignalSecondOrderTransferFunction.hpp"
 #include "Signal/SignalHysteresis.hpp"
 #include "Signal/SignalSquare.hpp"
 #include "Signal/SignalTime.hpp"

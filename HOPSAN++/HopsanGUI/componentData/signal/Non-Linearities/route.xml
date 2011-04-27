@@ -3,7 +3,7 @@
     <modelobject typename="SignalRoute" displayname="Route">
         <icon isopath="route.svg" iconrotation="ON" userpath=""/>
         <portpose x="0" y="0.2" a="0" name="in1"/>
-        <portpose x="0" y="0.7" a="0" name="in2"/>
+        <portpose x="0" y="0.675886088916206" a="0" name="in2"/>
         <portpose x="1" y="0.5" a="0" name="out"/>
     </modelobject>
 </hopsanobjectappearance>

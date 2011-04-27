@@ -211,4 +211,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicUndefinedConnectionC.hpp \
     Components/Signal/SignalMax.hpp \
     Components/Signal/SignalMin.hpp \
-    Components/Signal/SignalRoute.hpp
+    Components/Signal/SignalRoute.hpp \
+    Components/Signal/SignalSecondOrderTransferFunction.hpp
