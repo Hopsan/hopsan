@@ -75,6 +75,7 @@ namespace hopsan {
 
             //Initialization
             f1 = (*mpND_f1);
+            f2 = (*mpND_f2);
             x1 = (*mpND_x1);
             v1 = (*mpND_v1);
             x2 = (*mpND_x2);
@@ -87,7 +88,7 @@ namespace hopsan {
             mDen[0] = m;
             mDen[1] = B;
             mDen[2] = k;
-            mFilter.initialize(mTimestep, mNum, mDen, -f1, -v1);
+            mFilter.initialize(mTimestep, mNum, mDen, 0, -v1);
             mInt.initialize(mTimestep, -v1, -x1+mLength);
 
             //Print debug message if velocities do not match
@@ -113,7 +114,15 @@ namespace hopsan {
             mDen[1] = B+Zx1+Zx2;
 
             mFilter.setDen(mDen);
+
             v2 = mFilter.update(c1-c2);
+
+            if(mTime>4.9 && mTime<5.0)
+            {
+                std::stringstream ss;
+                ss << "c1-c2 = " << c1-c2 << ", v2 = " << v2 << ", using mDen[1] = " << mDen[1];
+                addDebugMessage(ss.str());
+            }
 
             x2 = mInt.update(v2);
 
