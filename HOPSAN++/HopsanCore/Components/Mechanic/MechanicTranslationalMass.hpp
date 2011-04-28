@@ -112,18 +112,9 @@ namespace hopsan {
 
             //Mass equations
             mDen[1] = B+Zx1+Zx2;
-
             mFilter.setDen(mDen);
 
             v2 = mFilter.update(c1-c2);
-
-            if(mTime>4.9 && mTime<5.0)
-            {
-                std::stringstream ss;
-                ss << "c1-c2 = " << c1-c2 << ", v2 = " << v2 << ", using mDen[1] = " << mDen[1];
-                addDebugMessage(ss.str());
-            }
-
             x2 = mInt.update(v2);
 
             if(x2<xMin)

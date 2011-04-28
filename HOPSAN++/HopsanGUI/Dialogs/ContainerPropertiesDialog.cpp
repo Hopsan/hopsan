@@ -193,7 +193,10 @@ void ContainerPropertiesDialog::setValues()
         gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
     }
 
-    mpContainerObject->setUndoEnabled(mpDisableUndoCheckBox->isChecked());
+    if(mpContainerObject->mUndoDisabled != mpDisableUndoCheckBox->isChecked())
+    {
+        mpContainerObject->setUndoEnabled(!mpDisableUndoCheckBox->isChecked());
+    }
 
     //Set the icon paths, only update and refresh appearance if a change has occured
     if ( mpContainerObject->getIconPath(ISOGRAPHICS) != mpIsoIconPath->text() )
