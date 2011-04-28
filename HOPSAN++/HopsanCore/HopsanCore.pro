@@ -2,6 +2,7 @@
 # Global project options
 # -------------------------------------------------
 include( ../Common.prf )
+include( HopsanCoreBuild.prf )
 
 TARGET = HopsanCore
 TEMPLATE = lib
@@ -205,3 +206,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalSecondOrderTransferFunction.hpp \
     Components/Hydraulic/HydraulicLossLessTConnector.hpp \
     Components/Hydraulic/HydraulicLossLessConnector.hpp
+
+OTHER_FILES += \
+    HopsanCoreBuild.prf

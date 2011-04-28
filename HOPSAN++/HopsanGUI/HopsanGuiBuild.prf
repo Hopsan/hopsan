@@ -1,0 +1,49 @@
+include( ../Common.prf )
+
+#Helpfunction to fetch correct QWT INCLUDEPATH and LIBS path
+defineReplace(setQWTPathsAndCopyDll){
+    #Assign input arguments
+    externalSrc = $$1
+    dstDir = $$2
+
+    #Set QWT paths, Paths that are earlier in the list will be used if found
+    QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0
+    QWT_PATH = $$selectPath($$externalSrc, $$QWT_PATHS, "qwt")
+
+    #Empty variables to fill in
+    libs =
+    includes =
+    qmake_post_link =
+    files =
+    libDir = $${QWT_PATH}/lib
+
+    #Check newest libfolder path
+    exists($$libDir){
+
+        includes = $$quote(-I$${QWT_PATH}/src)
+
+        lib = qwt
+        dbg_ext =
+
+        #Add debug if debugmode in Windows
+        CONFIG(debug, debug|release) {
+            win32:dbg_ext = d
+        }
+
+        libs = $$quote(-L$${libDir} -l$${lib}$${dbg_ext})
+        win32:files = $${lib}$${dbg_ext}$${DLL_EXT}
+        unix:files = lib$${lib}*$${DLL_EXT}*
+
+        qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
+    }
+
+    message(qmake_post_link $${qmake_post_link})
+
+    !exists($${libDir}){
+        warning(Could not find your compiled qwt dll)
+    }
+
+    message(----------------Includepath is $${includes})
+    message(----------------Libs is $${libs})
+    return($${includes} $${libs} $${qmake_post_link})
+}

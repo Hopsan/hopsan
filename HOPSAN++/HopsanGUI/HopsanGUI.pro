@@ -4,7 +4,8 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
-include( ../Common.prf )
+#include( ../Common.prf )
+include( HopsanGuiBuild.prf )
 
 TARGET = HopsanGUI
 TEMPLATE = app
@@ -15,22 +16,37 @@ QT += core gui webkit
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
+#Set the QWT paths and copy dll/so
+QWT_PATH_INFO = $$setQWTPathsAndCopyDll($$(QWT_PATH), $$DESTDIR)
+!isEmpty(QWT_PATH_INFO) {
+    QMAKE_CXXFLAGS *= $$member(QWT_PATH_INFO,0)
+    QMAKE_LFLAGS *= $$member(QWT_PATH_INFO,1)
+    QMAKE_POST_LINK *= $$member(QWT_PATH_INFO,2)
+
+    #apa = $$member(QWT_PATH_INFO,1)
+    #apa2 = $$split(apa,' ')
+    #message(apa $$apa)
+    #message(apa2 $$apa2)
+
+    #for(a,apa2):message(a $$a)
+}
+
 #Set default pythonqt path if it can be found, or use custom value supplied through env variable
 PYTHONQT_DEFAULT_PATHS = $${PWD}/../ExternalDependencies/PythonQt2.0.1
 PYTHONQT_PATH = $$selectPath($$(PYTHONQT_PATH), $$PYTHONQT_DEFAULT_PATHS, "pythonqt")
 
 #Set QWT paths, Paths that are earlier in the list will be used if found
-QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0
-QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
+#QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0
+#QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
 
 #Set includepath
-INCLUDEPATH *= $${QWT_PATH}/src
+#INCLUDEPATH *= $${QWT_PATH}/src
 INCLUDEPATH *= $${PWD}/../HopsanCore
 INCLUDEPATH *= $${PYTHONQT_PATH}/src \
                $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
 
 #Set libs path
-LIBS *= -L$${QWT_PATH}/lib
+#LIBS *= -L$${QWT_PATH}/lib
 LIBS *= -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
 #PythonQt has same debug extension as Hopsan
 LIBS *= -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
@@ -43,12 +59,12 @@ unix {
     QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
     LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
 
-    LIBS *= -lqwt #Unix build of qwt is default release mode
+    #LIBS *= -lqwt #Unix build of qwt is default release mode
 
     #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
     #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     # TODO: We need to add teh relative paths automatically from the path variables created above
-    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0/lib\'
+    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0/lib\'
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/PythonQt2.0.1/lib\'
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
 
@@ -57,23 +73,26 @@ win32 {
     #DEFINES += STATICCORE
 
     #Select correct qwt to link against
-    CONFIG(debug, debug|release) {
-        LIBS += -lqwtd
-    }
-    CONFIG(release, debug|release) {
-        LIBS += -lqwt
-    }
+    #CONFIG(debug, debug|release) {
+    #    LIBS += -lqwtd
+    #}
+    #CONFIG(release, debug|release) {
+    #    LIBS += -lqwt
+    #}
 
     #Set Python paths
     PYTHON_DEFAULT_PATHS *= c:/Python26
     PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
     INCLUDEPATH += $${PYTHON_PATH}/include
     LIBS += -L$${PYTHON_PATH}/libs
-
-    #Debug output
-    #message(GUI Includepath is $$INCLUDEPATH)
-    #message(GUI Libs is $${LIBS})
 }
+    #Debug output
+    message(GUI Includepath is $$INCLUDEPATH)
+    message(GUI Libs is $${LIBS})
+    message(GUI QMAKE_LFLAGS is $${QMAKE_LFLAGS})
+    message(GUI QMAKE_CXXFLAGS is $${QMAKE_CXXFLAGS})
+    message(GUI QMAKE_POST_LINK $$QMAKE_POST_LINK)
+
 RESOURCES += \  
     Resources.qrc
 
@@ -175,4 +194,5 @@ HEADERS += MainWindow.h \
     Dialogs/HelpDialog.h
 
 OTHER_FILES += \
-    ../hopsandefaults
+    ../hopsandefaults \
+    HopsanGuiBuild.prf
