@@ -210,4 +210,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalMax.hpp \
     Components/Signal/SignalMin.hpp \
     Components/Signal/SignalRoute.hpp \
-    Components/Signal/SignalSecondOrderTransferFunction.hpp
+    Components/Signal/SignalSecondOrderTransferFunction.hpp \
+    Components/Hydraulic/HydraulicLossLessTConnector.hpp \
+    Components/Hydraulic/HydraulicLossLessConnector.hpp

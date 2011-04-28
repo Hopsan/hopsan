@@ -14,16 +14,16 @@
                 </modelobject>
             </hopsanobjectappearance>
         </hopsangui>
-        <simulationtime stop="3" timestep="0.001" start="0"/>
+        <simulationtime stop="5" timestep="0.001" start="0"/>
         <parameters/>
         <objects>
             <component typename="MechanicTranslationalMass" name="Translational Mass">
                 <parameters>
                     <parameter value="100" name="m"/>
-                    <parameter value="0" name="B"/>
+                    <parameter value="10" name="B"/>
                     <parameter value="0" name="k"/>
-                    <parameter value="-1000" name="x_min"/>
-                    <parameter value="1000" name="x_max"/>
+                    <parameter value="0" name="x_min"/>
+                    <parameter value="1" name="x_max"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -49,7 +49,7 @@
                 <parameters>
                     <parameter value="0.001" name="V"/>
                     <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0.15" name="alpha"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
@@ -82,20 +82,6 @@
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="SignalStep" name="Step">
-                <parameters>
-                    <parameter value="0.2" name="y_0"/>
-                    <parameter value="0.5" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
-                </parameters>
-                <startvalues>
-                    <startvalue portname="out" variable="" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2320" y="2525" flipped="0" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
             <component typename="HydraulicTankC" name="Tank C_1">
                 <parameters>
                     <parameter value="100000" name="p"/>
@@ -109,17 +95,31 @@
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="0.2" name="y_0"/>
+                    <parameter value="0.5" name="y_A"/>
+                    <parameter value="1" name="t_step"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2304" y="2525" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
             <component typename="HydraulicCylinderC" name="Cylinder C">
                 <parameters>
                     <parameter value="0.001" name="A_1"/>
                     <parameter value="0.001" name="A_2"/>
                     <parameter value="1" name="s_l"/>
-                    <parameter value="10" name="m_e"/>
+                    <parameter value="100" name="m_e"/>
                     <parameter value="0.0003" name="V_1"/>
                     <parameter value="0.0003" name="V_2"/>
-                    <parameter value="0" name="B_p"/>
+                    <parameter value="100" name="B_p"/>
                     <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="0" name="c_leak"/>
+                    <parameter value="1e-012" name="c_leak"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
@@ -194,7 +194,7 @@
             </component>
             <component typename="SignalGain" name="Gain">
                 <parameters>
-                    <parameter value="0.07" name="k"/>
+                    <parameter value="0.02" name="k"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -207,7 +207,7 @@
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
                     <parameter value="2e+007" name="p_ref"/>
-                    <parameter value="0.1" name="tao"/>
+                    <parameter value="0.5" name="tao"/>
                     <parameter value="1e-008" name="k_c,s"/>
                     <parameter value="1e-008" name="k_c,f"/>
                     <parameter value="0.005" name="q_nom"/>
@@ -215,7 +215,7 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2575" y="2682" flipped="0" a="0"/>
+                    <pose x="2574.9992" y="2682" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -344,18 +344,6 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2340" y="2525"/>
-                        <coordinate x="2375.5" y="2525"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Subtract">
                 <hopsangui>
                     <coordinates>
@@ -392,23 +380,11 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Tank C_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2573" y="2749.5"/>
-                        <coordinate x="2573.0008" y="2722"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2573" y="2602"/>
-                        <coordinate x="2573.0008" y="2642"/>
+                        <coordinate x="2573" y="2642"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -438,6 +414,30 @@
                     <geometries>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2324" y="2525"/>
+                        <coordinate x="2375.5" y="2525"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Tank C_1" startport="P2" startcomponent="Pressure Relief Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2573" y="2722"/>
+                        <coordinate x="2573" y="2749.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
