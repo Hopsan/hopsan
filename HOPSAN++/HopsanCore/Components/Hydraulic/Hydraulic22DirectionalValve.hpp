@@ -11,6 +11,7 @@
 #define pi 3.14159
 
 #include <iostream>
+#include <sstream>
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
@@ -121,8 +122,8 @@ namespace hopsan {
 
             q = qTurb.getFlow(c1, c2, Zc1, Zc2);
 
-            q1 = q;
-            q2 = -q;
+            q1 = -q;
+            q2 = q;
 
             p1 = c1 + q1*Zc1;
             p2 = c2 + q2*Zc2;
