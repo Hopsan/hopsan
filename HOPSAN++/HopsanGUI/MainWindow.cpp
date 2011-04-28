@@ -274,17 +274,6 @@ void MainWindow::show()
 }
 
 
-void MainWindow::makeSurePlotWidgetIsCreated()
-{
-    qDebug() << "Making sure plot widget is created!";
-
-    if(mpPlotWidget == 0)
-    {
-        mpPlotWidget = new PlotWidget(this);
-    }
-}
-
-
 //! @brief Opens the plot widget.
 void MainWindow::openPlotWidget()
 {
@@ -292,7 +281,6 @@ void MainWindow::openPlotWidget()
     {
         if(!mpPlotWidgetDock->isVisible())
         {
-            this->makeSurePlotWidgetIsCreated();
             mpPlotWidgetDock->setWidget(mpPlotWidget);
 
             mpPlotWidgetDock->show();

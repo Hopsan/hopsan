@@ -226,9 +226,6 @@ void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObjec
 //! @param[in] pContainer The Container Object to load into (Must be a system)
 void loadFavoriteVariable(const FavoriteVariableLoadData &rData, GUIContainerObject *pContainer)
 {
-    //! @todo is FAvouriteParameter suposted to be favourite plot varibales or something? rename in such case,
-    //! @todo why do we need to make sure that a plotwidget is created every where
-    gpMainWindow->makeSurePlotWidgetIsCreated();
     dynamic_cast<GUISystem *>(pContainer)->setFavoriteVariable(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
 }
 

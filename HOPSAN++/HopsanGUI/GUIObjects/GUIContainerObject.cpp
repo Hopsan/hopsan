@@ -601,7 +601,6 @@ void GUIContainerObject::removeFavoriteVariableByComponentName(QString component
         if((*it).at(0) == componentName)
         {
             mFavoriteVariables.removeAll((*it));
-            gpMainWindow->makeSurePlotWidgetIsCreated();
             gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
             return;
         }
@@ -1760,7 +1759,6 @@ void GUIContainerObject::enterContainer()
       this->connectMainWindowActions();
 
         //Upddate plot widget and undo widget to new container
-    gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
@@ -1809,7 +1807,6 @@ void GUIContainerObject::exitContainer()
     mpParentContainerObject->connectMainWindowActions();
 
         //Update plot widget and undo widget to new container
-    gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();

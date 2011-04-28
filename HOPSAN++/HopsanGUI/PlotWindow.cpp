@@ -440,7 +440,6 @@ void PlotWindow::saveToXml()
 //! @brief Loads a plot window from XML
 void PlotWindow::loadFromXml()
 {
-    gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->loadFromXml();
 }
 
