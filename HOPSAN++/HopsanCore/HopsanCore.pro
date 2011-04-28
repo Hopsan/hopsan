@@ -21,29 +21,21 @@ win32 {
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
     DEFINES -= UNICODE
 
-    #Set default tbb path alternatives, higher up is prefered
-    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20101215oss
-    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100406oss
-    #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
-    TBB_PATH = $$selectPath($$(TBB_PATH), $$TBB_PATHS, "tbb")
-    exists($${TBB_PATH}) {
-        INCLUDEPATH += $${TBB_PATH}/include/tbb
-
-        CONFIG(debug, debug|release) {
-            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_debug
-            LIBS += -ltbb_debug
-        }
-        CONFIG(release, debug|release) {
-            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_release
-            LIBS += -ltbb
-        }
-        DEFINES += USETBB       #If TBB was found then let build core with TBB support
+    #Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
+    TBB_PATH_INFO = $$setWindowsTBBPathsAndCopyDll($$(TBB_PATH), $$DESTDIR)
+    exists($$member(TBB_PATH_INFO,0)) {
+        INCLUDEPATH *= $$member(TBB_PATH_INFO,0)
+        LIBS *= $$member(TBB_PATH_INFO,1,2)
+        QMAKE_POST_LINK *= $$member(TBB_PATH_INFO,3)
+        DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
+        message(Compiling HopsanCore with TBB support)
     }
 
     #Debug output
-    #message(Includepath is $$INCLUDEPATH)
-    #message(Libs is $${LIBS})
-    #message(Defines is $${DEFINES})
+    message(CORE QMAKE_POST_LINK $${QMAKE_POST_LINK})
+    message(CORE Includepath is $$INCLUDEPATH)
+    message(CORE Libs is $${LIBS})
+    message(CORE Defines is $${DEFINES})
 }
 unix { 
     LIBS += -ltbb

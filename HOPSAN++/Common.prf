@@ -27,10 +27,111 @@ defineReplace(selectPath){
         message(Using custom $${NAME} path $${PATH})
     }
     !exists($${PATH}){
-        message(Warning! The $${NAME} path $${PATH} does not exist)
+        warning(Warning! The $${NAME} path $${PATH} does not exist)
     }
     return($${PATH})
 }
+
+defineReplace(generateCopyDllCommand){
+    fileNames = $$1
+    srcDir = $$2
+    dstDir = $$3
+
+    files =
+    qmake_post_link =
+
+    message(fileNames $$fileNames)
+    message(srcDir $$srcDir)
+    message(dstDir $$dstDir)
+
+    for(file, fileNames){
+        files += $${srcDir}/$${file}
+    }
+    message(files $$files)
+
+    win32 {
+        for(file, files){
+            qmake_post_link += $$quote(cmd /c copy /y \"$$replace(file,/,\\\\)\" \"$$replace(dstDir,/,\\\\)\"$$escape_expand(\n\t))
+        }
+    }
+
+    unix {
+        for(file, files){
+            qmake_post_link += $$quote(cp -f $${file} $${dstDir}$$escape_expand(\n\t))
+        }
+    }
+
+    message(qmake_post_link $${qmake_post_link})
+    return($$qmake_post_link)
+}
+
+#Helpfunction to fetch correct TBB INCLUDEPATH and LIBS path
+defineReplace(setWindowsTBBPathsAndCopyDll){
+    #Assign input arguments
+    externalSrc = $$1
+    dstDir = $$2
+
+    #Set default tbb path alternatives, higher up is prefered
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20110315oss
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20101215oss
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100915oss
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100406oss
+    #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
+    TBB_PATH = $$selectPath($$externalSrc, $$TBB_PATHS, "tbb")
+
+    #Empty variables to fill in
+    libs =
+    includes =
+    qmake_post_link =
+    files =
+    srdDir =
+
+    #Check newest libfolder path
+    exists($${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_release){
+        #message(mingw4.4.0)
+        CONFIG(debug, debug|release) {
+            srcDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_debug
+            libs *= -L$${srcDir} -ltbb_debug
+            files = tbb_debug.dll
+        }
+        CONFIG(release, debug|release) {
+            srcDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_release
+            libs *= -L$${srcDir} -ltbb
+            files = tbb.dll
+        }
+        includes *= $${TBB_PATH}/include/tbb
+        qmake_post_link += $$generateCopyDllCommand($$files, $$srcDir, $$dstDir)
+    }
+
+    #Check old style libfolder path, remove when we force people to upgrade
+    exists($${TBB_PATH}/build/windows_ia32_gcc_mingw_release){
+        #message(mingw)
+        CONFIG(debug, debug|release) {
+            srcDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw_debug
+            libs *= -L$${srcDir} -ltbb_debug
+            files = tbb_debug.dll
+        }
+        CONFIG(release, debug|release) {
+            srcDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw_release
+            libs *= -L$${srcDir} -ltbb
+            files = tbb.dll
+        }
+        includes *= $${TBB_PATH}/include/tbb
+        qmake_post_link += $$generateCopyDllCommand($$files, $$srcDir, $$dstDir)
+    }
+
+    message(qmake_post_link $${qmake_post_link})
+
+    !exists($${srcDir}){
+        warning(Could not find your compiled TBB dll)
+    }
+
+    #message(----------------Includepath is $${includes})
+    #message(----------------Libs is $${libs})
+    return($${includes} $${libs} $${qmake_post_link})
+}
+
+
 
 #Make compile output clean
 CONFIG += silent warn_on

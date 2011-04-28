@@ -23,10 +23,14 @@ PYTHONQT_PATH = $$selectPath($$(PYTHONQT_PATH), $$PYTHONQT_DEFAULT_PATHS, "pytho
 QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0.0
 QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
 
+#Set includepath
+INCLUDEPATH *= $${QWT_PATH}/src
 INCLUDEPATH *= $${PWD}/../HopsanCore
 INCLUDEPATH *= $${PYTHONQT_PATH}/src \
                $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
 
+#Set libs path
+LIBS *= -L$${QWT_PATH}/lib
 LIBS *= -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
 #PythonQt has same debug extension as Hopsan
 LIBS *= -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
@@ -36,13 +40,10 @@ LIBS *= -L$${PYTHONQT_PATH}/lib -lPythonQt$${DEBUG_EXT} \
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
-    #INCLUDEPATH *= /usr/include/qwt-qt4/
-    INCLUDEPATH *= $${QWT_PATH}/src #Need to include this one also couse qwt is strange
     QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
-
-    #LIBS *= -lqwt-qt4
-    LIBS *= -L$${QWT_PATH}/lib -lqwt #Unix build of qwt is default release mode
     LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
+
+    LIBS *= -lqwt #Unix build of qwt is default release mode
 
     #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
     #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
@@ -55,13 +56,7 @@ unix {
 win32 {
     #DEFINES += STATICCORE
 
-#    #Set QWT paths, Paths that are earlier in the list will be used if found
-#    QWT_PATHS *= $${PWD}/../ExternalDependencies/qwt-6.0
-#    QWT_PATH = $$selectPath($$(QWT_PATH), $$QWT_PATHS, "qwt")
-
-    INCLUDEPATH += $${QWT_PATH}/src #Need to include this one also couse qwt is strange
-    LIBS += -L$${QWT_PATH}/lib
-
+    #Select correct qwt to link against
     CONFIG(debug, debug|release) {
         LIBS += -lqwtd
     }
@@ -74,24 +69,6 @@ win32 {
     PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
     INCLUDEPATH += $${PYTHON_PATH}/include
     LIBS += -L$${PYTHON_PATH}/libs
-
-    #Temporary TBB hack, should not do this as gui does not require TBB, only here to get TBB into RUNTIMEPATH
-    #Set default tbb path alternatives, higher up is prefered
-    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20101215oss
-    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100915oss
-    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100406oss
-    #Try environment variable first $$(ENVVARNAME)if it exists, then default paths listed above
-    TBB_PATH = $$selectPath($$(TBB_PATH), $$TBB_PATHS, "tbb")
-    exists($${TBB_PATH}) {
-        CONFIG(debug, debug|release) {
-            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_debug
-            LIBS += -ltbb_debug
-        }
-        CONFIG(release, debug|release) {
-            LIBS += -L$${TBB_PATH}/build/windows_ia32_gcc_mingw_release
-            LIBS += -ltbb
-        }
-    }
 
     #Debug output
     #message(GUI Includepath is $$INCLUDEPATH)
