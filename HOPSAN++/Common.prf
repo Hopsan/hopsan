@@ -58,7 +58,7 @@ defineReplace(generateCopyDllCommand){
     #On win32 we need to replace all slash with backslash (escaped backslashes)
     win32 {
         for(file, files){
-            qmake_post_link += $$quote(cmd /c copy /y \"$$replace(file,/,\\\\)\" \"$$replace(dstDir,/,\\\\)\"$$escape_expand(\n\t))
+            qmake_post_link += $$quote(cmd /c copy /y \"$$replace(file,/,\\\\)\" \"$$replace(dstDir,/,\\\\)\"$$escape_expand(\\n\\t))
         }
     }
 
