@@ -6,7 +6,8 @@
 //! @brief Contains a Hydraulic Cylinder of C type
 //! Written by Petter Krus 9005617
 //! Revised by ??? 910410
-//! Translated to HOPSAN NG by Robert Braun 100120
+//! Translated to C++ by Robert Braun 100120
+//! Revised by Robert Braun 110429
 //!
 //$Id$
 

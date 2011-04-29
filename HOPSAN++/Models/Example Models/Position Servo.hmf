@@ -117,7 +117,7 @@
                     <parameter value="100" name="m_e"/>
                     <parameter value="0.0003" name="V_1"/>
                     <parameter value="0.0003" name="V_2"/>
-                    <parameter value="100" name="B_p"/>
+                    <parameter value="0" name="B_p"/>
                     <parameter value="1e+009" name="Beta_e"/>
                     <parameter value="1e-012" name="c_leak"/>
                 </parameters>
@@ -215,7 +215,7 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2574.9992" y="2682" flipped="0" a="0"/>
+                    <pose x="2574" y="2682" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -384,7 +384,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2573" y="2602"/>
-                        <coordinate x="2573" y="2642"/>
+                        <coordinate x="2572.0008" y="2642"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -433,7 +433,7 @@
             <connect endport="P1" endcomponent="Tank C_1" startport="P2" startcomponent="Pressure Relief Valve">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2573" y="2722"/>
+                        <coordinate x="2572.0008" y="2722"/>
                         <coordinate x="2573" y="2749.5"/>
                     </coordinates>
                     <geometries>

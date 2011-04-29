@@ -93,7 +93,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2643" y="2442.5" flipped="0" a="90"/>
+                    <pose x="2643" y="2442" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -168,7 +168,7 @@
                     <startvalue portname="out" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2657.1" y="2374.998947339261" flipped="0" a="90"/>
+                    <pose x="2657" y="2374" flipped="0" a="90"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -280,7 +280,7 @@
             </textwidget>
             <textwidget>
                 <hopsangui>
-                    <pose x="2677.144793894027" y="2351.768475692921"/>
+                    <pose x="2677" y="2352"/>
                     <textobject fontcolor="#000000" text="1 = no pressure feedback&#xa;2 = static pressure feedback&#xa;3 = dynamic pressure feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
                 </hopsangui>
             </textwidget>
@@ -516,7 +516,7 @@
             <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Route">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2643" y="2462.5"/>
+                        <coordinate x="2643" y="2462"/>
                         <coordinate x="2644" y="2516.5"/>
                     </coordinates>
                     <geometries>
@@ -540,8 +540,8 @@
             <connect endport="in1" endcomponent="Route" startport="out" startcomponent="Routing">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2657.1" y="2387.498947339261"/>
-                        <coordinate x="2657.1" y="2422.5"/>
+                        <coordinate x="2657" y="2386.5"/>
+                        <coordinate x="2657.1" y="2422"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -554,7 +554,7 @@
                     <coordinates>
                         <coordinate x="2565.5" y="2394"/>
                         <coordinate x="2607.09219858156" y="2394"/>
-                        <coordinate x="2634.733353820938" y="2422.5"/>
+                        <coordinate x="2634.733353820938" y="2422"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -569,7 +569,7 @@
                         <coordinate x="2487" y="2384.5"/>
                         <coordinate x="2500" y="2364.539007092199"/>
                         <coordinate x="2612.765957446808" y="2364.539007092199"/>
-                        <coordinate x="2634.733353820938" y="2422.5"/>
+                        <coordinate x="2634.733353820938" y="2422"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -584,7 +584,7 @@
                     <coordinates>
                         <coordinate x="2580" y="2325"/>
                         <coordinate x="2620" y="2325"/>
-                        <coordinate x="2634.733353820938" y="2422.5"/>
+                        <coordinate x="2634.733353820938" y="2422"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
