@@ -52,14 +52,14 @@ class HydraulicCylinderC : public ComponentC
         {
             //Set member attributes
             betae = 1000000000.0;
-            me = 1000.0;
+            me = 100.0;
             V01 = 0.0003;
             V02 = 0.0003;
             A1 = 0.001;
             A2 = 0.001;
             sl = 1.0;
-            cLeak = 0.0;
-            bp = 0.0;
+            cLeak = 0.00000000001;
+            bp = 500.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -163,8 +163,8 @@ class HydraulicCylinderC : public ComponentC
             double p1, q1, p2, q2, f3, x3, v3;
             double Zc1, Zc2, c3, Zx3;
 
-            double V1, V2, qLeak, qi1, qi2, ci, Zxi, p1mean, p2mean;
-            double alpha=0.1;
+            double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
+            double alpha=0.5;
 
             //Read variables from nodes
             p1 = (*mpND_p1);
@@ -185,6 +185,10 @@ class HydraulicCylinderC : public ComponentC
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V01+A2*(sl+x3);
+            V1min = betae*mTimestep*mTimestep*A1*A1/(0.1*me);       //0.1 was called "WFAK" in old Hopsan
+            V2min = betae*mTimestep*mTimestep*A2*A2/(0.1*me);
+            if(V1<V1min) V1 = V1min;
+            if(V2<V2min) V2 = V2min;
 
             //Volume equations
             Zc1 = 3 / 2 * betae/V1*mTimestep/(1-alpha);

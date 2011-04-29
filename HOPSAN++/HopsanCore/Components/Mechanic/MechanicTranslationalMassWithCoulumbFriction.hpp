@@ -46,12 +46,12 @@ namespace hopsan {
         MechanicTranslationalMassWithCoulumbFriction(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            m = 1000.0;
-            b = 0;
+            m = 100.0;
+            b = 10;
             fs = 50;
             fk = 45;
-            xmin = -1000000;
-            xmax = 1000000;
+            xmin = 0;
+            xmax = 1;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");

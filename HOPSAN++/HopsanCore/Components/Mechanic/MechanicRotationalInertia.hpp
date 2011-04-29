@@ -41,7 +41,7 @@ namespace hopsan {
         MechanicRotationalInertia(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            J = 1.0;
+            J = 0.1;
             B = 10;
             k = 0.0;
 

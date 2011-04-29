@@ -39,11 +39,11 @@ namespace hopsan {
         MechanicTranslationalMass(const std::string name) : ComponentQ(name)
         {
             //Set member attributes
-            m = 1.0;
+            m = 100.0;
             B = 10;
             k = 0.0;
-            xMin = -1000.0;
-            xMax = 1000.0;
+            xMin = 0.0;
+            xMax = 1.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
@@ -120,12 +120,16 @@ namespace hopsan {
             if(x2<xMin)
             {
                 x2=xMin;
-                v2=std::min(0.0, v2);
+                v2=std::max(0.0, v2);
+                mInt.initializeValues(v2, xMin);
+                mFilter.initializeValues(c1-c2, v2);
             }
             if(x2>xMax)
             {
                 x2=xMax;
-                v2=std::max(0.0, v2);
+                v2=std::min(0.0, v2);
+                mInt.initializeValues(v2, xMax);
+                mFilter.initializeValues(c1-c2, v2);
             }
 
             v1 = -v2;

@@ -44,7 +44,7 @@ namespace hopsan {
             dp = 0.00005;
             Bm = 0;
             cim = 0;
-            J = 1;
+            J = 0.1;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");

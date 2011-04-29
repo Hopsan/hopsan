@@ -38,9 +38,9 @@ namespace hopsan {
 
         HydraulicFixedDisplacementPump(const std::string name) : ComponentQ(name)
         {
-            n = 125.0;
+            n = 250.0;
             dp = 0.00005;
-            Kcp = 1e-11;
+            Kcp = 0;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");

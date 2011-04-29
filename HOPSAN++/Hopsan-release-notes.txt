@@ -32,6 +32,7 @@ Hopsan Release Notes
 - Revised program style sheet
 - Fixed crash when trying to connect same two ports with two connecteors
 - Fixed several bugs in component model code
+- Remade C-type Cylinder component
 - New component: Pressure Compensating Valve
 - New component: Lever With Mass
 - New component: Rotational Gear With Inertia
