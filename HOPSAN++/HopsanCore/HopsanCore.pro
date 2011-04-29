@@ -71,7 +71,8 @@ SOURCES += Port.cc \
     ComponentUtilities/DoubleIntegratorWithDamping.cpp \
     ComponentUtilities/matrix.cc \
     ComponentUtilities/ludcmp.cc \
-    CoreUtilities/HmfLoader.cc
+    CoreUtilities/HmfLoader.cc \
+    ComponentSystem.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -211,7 +212,9 @@ HEADERS += win32dll.h \
     Components/Signal/SignalSecondOrderTransferFunction.hpp \
     Components/Hydraulic/HydraulicLossLessTConnector.hpp \
     Components/Hydraulic/HydraulicLossLessConnector.hpp \
-    CoreUtilities/HmfLoader.h
+    CoreUtilities/HmfLoader.h \
+    ComponentSystem.h \
+    CoreUtilities/FindUniqueName.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

@@ -14,13 +14,17 @@
 #include <string>
 
 #include "../win32dll.h"
-#include "../ComponentEssentials.h"
+//#include "../ComponentEssentials.h"
 
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
 //#include "rapidxml_print.hpp"
 
+
+
 namespace hopsan {
+    //Forward declaration
+    class ComponentSystem;
 
     class DLLIMPORTEXPORT HmfLoader
     {

@@ -11,8 +11,8 @@
 #define HopsanEssentials_H
 
 #include "Node.h"
-//#include "Port.h"
 #include "Component.h"
+#include "ComponentSystem.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include <iostream>

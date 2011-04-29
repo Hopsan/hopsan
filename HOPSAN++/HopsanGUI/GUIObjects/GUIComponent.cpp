@@ -39,7 +39,7 @@ GUIComponent::~GUIComponent()
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsWidget::mouseDoubleClickEvent(event);
-    std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
+    //std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
     openPropertiesDialog();
 

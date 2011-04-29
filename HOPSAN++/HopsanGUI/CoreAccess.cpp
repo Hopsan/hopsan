@@ -13,6 +13,10 @@
 #include <QString>
 #include <QVector>
 
+//HopsanCore includes
+#include "HopsanCore.h"
+#include "ComponentSystem.h"
+
 using namespace std;
 using namespace hopsan;
 

@@ -15,16 +15,13 @@
 //$Id$
 
 #include <QtGui>
-
-#include "../MainWindow.h"
-#include "SystemParametersWidget.h"
-
 #include <QWidget>
 #include <QDialog>
 
+#include "../MainWindow.h"
+#include "SystemParametersWidget.h"
 #include "ProjectTabWidget.h"
 #include "../GUIObjects/GUISystem.h"
-
 #include "../common.h"
 
 
@@ -110,7 +107,7 @@ void SystemParameterTableWidget::keyPressEvent(QKeyEvent *event)
     QTableWidget::keyPressEvent(event);
     if(event->key() == Qt::Key_Delete)
     {
-        std::cout << "Delete current System Parameter Widget Items" << std::endl;
+        qDebug() << "Delete current System Parameter Widget Items";
         removeSelectedParameters();
     }
 }
@@ -238,7 +235,7 @@ void SystemParameterTableWidget::removeSelectedParameters()
 
         for(int j=0; j<parametersToRemove.size(); ++j)
         {
-            std::cout << "Removing: " << parametersToRemove[j].toStdString() << std::endl;
+            qDebug() << "Removing: " << parametersToRemove[j];
             gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
         }
     }

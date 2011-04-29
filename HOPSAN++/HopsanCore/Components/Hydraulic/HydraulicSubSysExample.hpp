@@ -11,6 +11,7 @@
 #define HYDRAULICSUBSYSEXAMPLE_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentSystem.h"
 #include "../Components.h"
 
 namespace hopsan {

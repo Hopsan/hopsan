@@ -14,6 +14,7 @@
 #include <math.h>
 #include "HopsanEssentials.h"
 #include "Component.h"
+#include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 using namespace std;
