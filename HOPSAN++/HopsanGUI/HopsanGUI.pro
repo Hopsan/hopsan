@@ -53,6 +53,7 @@ unix {
     #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
     #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0/lib\'
     #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/PythonQt2.0.1/lib\'
+    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 }
 win32 {
