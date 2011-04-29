@@ -109,26 +109,26 @@ double SecondOrderFilter::update(double u)
 
     if (mValue > mMax)
     {
-        mDelayU[0] = mMax;
         mDelayU[1] = mMax;
-        mDelayY[0] = mMax;
+        mDelayU[0] = mMax;
         mDelayY[1] = mMax;
-        mValue = mMax;
+        mDelayY[0] = mMax;
+        mValue     = mMax;
     }
     else if (mValue < mMin)
     {
-        mDelayU[0] = mMin;
         mDelayU[1] = mMin;
-        mDelayY[0] = mMin;
+        mDelayU[0] = mMin;
         mDelayY[1] = mMin;
-        mValue = mMin;
+        mDelayY[0] = mMin;
+        mValue     = mMin;
     }
     else
     {
-        mDelayY[1] = mDelayY[0];
-        mDelayY[0] = mValue;
         mDelayU[1] = mDelayU[0];
         mDelayU[0] = u;
+        mDelayY[1] = mDelayY[0];
+        mDelayY[0] = mValue;
     }
 
     return mValue;

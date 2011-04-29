@@ -62,9 +62,10 @@ namespace hopsan {
 //            else
 //                (*mpND_c) = f;
             (*mpND_Zx) = 0.0;
-            std::stringstream ss;
-            ss << "C: " << (*mpND_c);
-            addInfoMessage(ss.str());
+
+//            std::stringstream ss;
+//            ss << "C: " << (*mpND_c);
+//            addInfoMessage(ss.str());
         }
     };
 }

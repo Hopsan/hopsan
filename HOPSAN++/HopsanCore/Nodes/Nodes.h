@@ -56,6 +56,9 @@ namespace hopsan {
             setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
             setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
             setDataCharacteristics(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
+
+//            setData(NodeHydraulic::PRESSURE, 1.0e5);
+//            setData(NodeHydraulic::FLOW, 0.0);
         }
 
         virtual void setSpecialStartValues(Node *pNode)
