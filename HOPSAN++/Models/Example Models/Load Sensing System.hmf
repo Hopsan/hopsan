@@ -18,7 +18,7 @@
         <parameters>
             <parameter value="0.001" name="Cyl_A1"/>
             <parameter value="0.001" name="Cyl_A2"/>
-            <parameter value="100" name="Cyl_Bp"/>
+            <parameter value="1000" name="Cyl_Bp"/>
             <parameter value="0.0003" name="Cyl_V01"/>
             <parameter value="0.0003" name="Cyl_V02"/>
             <parameter value="1e-010" name="Cyl_cLeak"/>
@@ -338,8 +338,8 @@
                     <parameter value="0" name="b"/>
                     <parameter value="100" name="f_s"/>
                     <parameter value="90" name="f_k"/>
-                    <parameter value="-1e+006" name="x_min"/>
-                    <parameter value="1e+006" name="x_max"/>
+                    <parameter value="0" name="x_min"/>
+                    <parameter value="1" name="x_max"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -730,7 +730,7 @@
             </component>
             <component typename="SignalGain" name="Gain_1">
                 <parameters>
-                    <parameter value="0.04" name="k"/>
+                    <parameter value="0.03" name="k"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -754,7 +754,7 @@
             </component>
             <component typename="SignalGain" name="Gain">
                 <parameters>
-                    <parameter value="0.04" name="k"/>
+                    <parameter value="0.05" name="k"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -770,8 +770,8 @@
                     <parameter value="0" name="b"/>
                     <parameter value="30" name="f_s"/>
                     <parameter value="25" name="f_k"/>
-                    <parameter value="-1e+006" name="x_min"/>
-                    <parameter value="1e+006" name="x_max"/>
+                    <parameter value="0" name="x_min"/>
+                    <parameter value="1" name="x_max"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>

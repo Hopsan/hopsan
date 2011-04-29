@@ -60,7 +60,7 @@ class HydraulicCylinderC : public ComponentC
             A2 = 0.001;
             sl = 1.0;
             cLeak = 0.00000000001;
-            bp = 500.0;
+            bp = 1000.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");

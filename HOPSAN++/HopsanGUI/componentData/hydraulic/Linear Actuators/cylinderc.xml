@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
     <modelobject typename="HydraulicCylinderC" displayname="C-type Cylinder">
-		<help picture="cylinderchelp.svg" text="This is a C-type hydraulic linear actuator with dead volumes, viscous friction and internal leakage. End of stroke limitations are modelled as very stiff springs."/>
+		<help picture="cylinderchelp.svg" text="This is a C-type hydraulic linear actuator with dead volumes, viscous friction and internal leakage. End of stroke must be handled by adjacent component, and should be from zero to stroke length."/>
         <icon isopath="cylinderc_iso.svg" iconrotation="ON" userpath="cylinderc_user.svg"/>
         <portpose x="0.0418" y="1" a="90" name="P1"/>
         <portpose x="0.7106" y="1" a="90" name="P2"/>
