@@ -22,7 +22,7 @@ d = $$setQWTPathInfo($$(QWT_PATH), $$DESTDIR)
 isEmpty(d):error('Failed to find QWT libs, have you compiled them and put them in the expected location')
 LIBS *= $$magic_hopsan_libpath
 INCLUDEPATH *= $$magic_hopsan_includepath
-#QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 #--------------------------------------------------------
 
 #--------------------------------------------------------
@@ -31,13 +31,13 @@ d = $$setPythonQtPathInfo($$(PYTHONQT_PATH), $$DESTDIR)
 isEmpty(d):error('Failed to find PythonQt libs, have you compiled them and put them in the expected location')
 LIBS *= $$magic_hopsan_libpath
 INCLUDEPATH *= $$magic_hopsan_includepath
-#QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore
-LIBS *= -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------------
 
 # -------------------------------------------------
@@ -50,9 +50,9 @@ unix {
     #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
     #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     # TODO: We need to add teh relative paths automatically from the path variables created above
-    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
-    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0/lib\'
-    QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/PythonQt2.0.1/lib\'
+    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
+    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0/lib\'
+    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/PythonQt2.0.1/lib\'
 
 }
 win32 {

@@ -6,7 +6,7 @@ include( HopsanCoreBuild.prf )
 TARGET = HopsanCore
 TEMPLATE = lib
 CONFIG += shared
-DESTDIR = $${PWD}/../lib
+DESTDIR = $${PWD}/../bin
 
 QT -= core \
     gui

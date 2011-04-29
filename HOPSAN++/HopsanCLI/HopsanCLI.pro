@@ -21,7 +21,7 @@ CONFIG   -= app_bundle
 
 INCLUDEPATH *= $${PWD}/../ExternalDependencies/tclap-1.2.0/include
 INCLUDEPATH *= $${PWD}/../HopsanCore
-LIBS *= -L$${PWD}/../lib -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 
 # -------------------------------------------------
 # Platform specific additional project options
