@@ -37,7 +37,7 @@ namespace hopsan {
 
         SignalRoute() : ComponentSignal()
         {
-            mpInPort = addReadMultiPort("in1", "NodeSignal", Port::REQUIRED);
+            mpInPort = addReadPort("in1", "NodeSignal", Port::REQUIRED);
             mpMultiInPort = addReadMultiPort("in2", "NodeSignal", Port::NOTREQUIRED);
             mpOutPort = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }

@@ -28,7 +28,7 @@ class HydraulicCylinderC : public ComponentC
 {
 
     private:
-        double A1,A2,sl,cLeak,bp,me,betae,V01,V02, CxLim, ZxLim;;
+        double A1,A2,sl,cLeak,bp,me,betae,V01,V02, CxLim, ZxLim, wfak;
 
         double c1, ci1, cl1, c2, ci2, cl2;  //Members because old value need to be remembered
         double mNum[2];
@@ -51,6 +51,7 @@ class HydraulicCylinderC : public ComponentC
         HydraulicCylinderC(const std::string name) : ComponentC(name)
         {
             //Set member attributes
+            wfak = 0.1;
             betae = 1000000000.0;
             me = 100.0;
             V01 = 0.0003;
@@ -120,8 +121,8 @@ class HydraulicCylinderC : public ComponentC
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V01+A2*(sl+x3);
-            V1min = betae*mTimestep*mTimestep*A1*A1/(0.1*me);       //0.1 was called "WFAK" in old Hopsan
-            V2min = betae*mTimestep*mTimestep*A2*A2/(0.1*me);
+            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
+            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
@@ -232,25 +233,24 @@ class HydraulicCylinderC : public ComponentC
 
         void limitStroke(double &CxLim, double &ZxLim, double x3, double v3, double me, double sl)
         {
-            double alfa = 0.5;
-            double FxLim, ka, kz;
-            double ZxLim0 = 0.1*me/mTimestep;
-            double OldCxLim = CxLim;
+            double FxLim, ZxLim0, NewCxLim, alfa;
+
+            alfa = 0.5;
 
             //Equations
-            ka = 1 / (1 - alfa);
-            kz = ZxLim0/mTimestep;
             if (-x3 > sl)
             {
-                ZxLim = ka * ZxLim0;
-                FxLim = kz * (x3 + sl);
-                CxLim = FxLim + ZxLim*v3;
+                ZxLim0 = wfak*me/mTimestep;
+                ZxLim = ZxLim0/(1 - alfa);
+                FxLim = ZxLim0 * (x3 + sl) / mTimestep;
+                NewCxLim = FxLim + ZxLim*v3;
             }
             else if (-x3 < 0.0)
             {
-                ZxLim = ka*ZxLim0;
-                FxLim = kz*x3;
-                CxLim = FxLim + ZxLim*v3;
+                ZxLim0 = wfak*me/mTimestep;
+                ZxLim = ZxLim0/(1 - alfa);
+                FxLim = ZxLim0*x3/mTimestep;
+                NewCxLim = FxLim + ZxLim*v3;
             }
             else
             {
@@ -259,27 +259,10 @@ class HydraulicCylinderC : public ComponentC
             }
 
             // Filtering of the characteristics
-            CxLim = alfa * OldCxLim + (1 - alfa) * CxLim;
-            CxLim = CxLim;
+            CxLim = alfa * CxLim + (1 - alfa) * NewCxLim;
         }
     };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif
 
