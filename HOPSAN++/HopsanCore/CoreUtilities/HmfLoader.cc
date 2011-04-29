@@ -1,5 +1,5 @@
 //!
-//! @file   FileAccess.cc
+//! @file   HmfLoader.cc
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-03-20
 //!
@@ -10,7 +10,7 @@
 #include <iostream>
 #include <cassert>
 #include <cstring>
-#include "FileAccess.h"
+#include "HmfLoader.h"
 #include "../HopsanEssentials.h"
 
 using namespace std;
@@ -47,13 +47,13 @@ string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string 
 }
 
 
-FileAccess::FileAccess()
+HmfLoader::HmfLoader()
 {
     //Nothing
 }
 
 //! @todo Update this code
-ComponentSystem* FileAccess::loadModel(string filename, double &rStartTime, double &rStopTime)
+ComponentSystem* HmfLoader::loadModel(string filename, double &rStartTime, double &rStopTime)
 {
     cout << "Loading from file: " << filename << endl;
     rapidxml::file<> hmfFile(filename.c_str());
@@ -89,7 +89,7 @@ ComponentSystem* FileAccess::loadModel(string filename, double &rStartTime, doub
 
 //! @brief This function can be used to load subsystem contents from a stream into an existing subsystem
 //! @todo Update this code
-void FileAccess::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
+void HmfLoader::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
 {
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
     assert(pSimtimeNode != 0); //!< @todo smarter error handling
@@ -134,7 +134,7 @@ void FileAccess::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSys
     }
 }
 
-void FileAccess::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
+void HmfLoader::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
 {
     string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
     string displayName =  readStringAttribute(pComponentNode, "displayname", typeName);
@@ -182,7 +182,7 @@ void FileAccess::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSy
     }
 }
 
-void FileAccess::loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem)
+void HmfLoader::loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem)
 {
     string startcomponent = readStringAttribute(pConnectNode, "startcomponent", "ERROR_NOSTARTCOMPNAME_GIVEN");
     string startport = readStringAttribute(pConnectNode, "startport", "ERROR_NOSTARTPORTNAME_GIVEN");

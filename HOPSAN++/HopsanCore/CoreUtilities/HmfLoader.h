@@ -1,5 +1,5 @@
 //!
-//! @file   FileAccess.cc
+//! @file   HmfLoader.cc
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-03-20
 //!
@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef FILEACCESS_H_INCLUDED
-#define FILEACCESS_H_INCLUDED
+#ifndef HMFLOADER_H_INCLUDED
+#define HMFLOADER_H_INCLUDED
 
 
 #include <string>
@@ -22,10 +22,10 @@
 
 namespace hopsan {
 
-    class DLLIMPORTEXPORT FileAccess
+    class DLLIMPORTEXPORT HmfLoader
     {
     public:
-        FileAccess();
+        HmfLoader();
         ComponentSystem* loadModel(std::string filename, double &rStartTime, double &rStopTime);
 
     private:
@@ -36,5 +36,5 @@ namespace hopsan {
     };
 }
 
-#endif // FILEACCESS_INCLUDED
+#endif
 

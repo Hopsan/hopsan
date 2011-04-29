@@ -7,7 +7,6 @@
 //!
 //$Id$
 
-//! @defgroup Nodes Nodes
 //! @class Node
 //! @brief The Node base class
 //! @ingroup Nodes

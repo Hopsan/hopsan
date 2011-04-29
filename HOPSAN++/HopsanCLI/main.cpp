@@ -1,5 +1,5 @@
 #include "HopsanEssentials.h"
-#include "CoreUtilities/FileAccess.h"
+#include "CoreUtilities/HmfLoader.h"
 #include <iostream>
 #include <string>
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         // Get the value parsed by each arg.
         string hmfFilePath = hmfPathOption.getValue();
 
-        FileAccess coreHmfLoader;
+        HmfLoader coreHmfLoader;
 
         double startTime=0, stopTime=2;
         ComponentSystem* pRootSystem = coreHmfLoader.loadModel(hmfFilePath, startTime, stopTime);

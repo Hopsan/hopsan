@@ -7,6 +7,7 @@
 //$Id$
 #include "Nodes.h"
 
+//! @defgroup Nodes Nodes
 //! @defgroup HydraulicNode HydraulicNode
 //! @ingroup Nodes
 //! @defgroup MechanicalNode MechanicalNode
@@ -14,18 +15,17 @@
 //! @defgroup SignalNode SignalNode
 //! @ingroup Nodes
 
-//!
-//! @brief Registers the creator function of all built in nodes
-//! @param [in,out] nfampND_ct A pointer the the node factory in wich to register the nodes
-//!
-
 using namespace hopsan;
 
-DLLIMPORTEXPORT void hopsan::register_nodes(NodeFactory* nfampND_ct)
+//!
+//! @brief Registers the creator function of all built in nodes
+//! @param [in,out] pNodeFactory A pointer the the node factory in wich to register the nodes
+//!
+DLLIMPORTEXPORT void hopsan::register_nodes(NodeFactory* pNodeFactory)
 {
-    nfampND_ct->registerCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
-    nfampND_ct->registerCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
-    nfampND_ct->registerCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
-    nfampND_ct->registerCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
 }
 

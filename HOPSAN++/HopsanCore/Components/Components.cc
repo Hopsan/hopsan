@@ -10,6 +10,8 @@
 #include "signal.h"
 #include "stdlib.h"
 
+//! @defgroup Components Components
+//!
 //! @defgroup HydraulicComponents HydraulicComponents
 //! @ingroup Components
 //!
@@ -18,11 +20,6 @@
 //!
 //! @defgroup SignalComponents SignalComponents
 //! @ingroup Components
-
-//!
-//! @brief Registers the creator function of all built in components
-//! @param [in,out] cfampND_ct A pointer the the component factory in wich to register the components
-//!
 
 using namespace hopsan;
 
@@ -36,8 +33,11 @@ void terminate (int /*param*/)
 }
 //^^^
 
-
-DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
+//!
+//! @brief Registers the creator function of all built in components
+//! @param [in,out] pComponentFactory A pointer the the component factory in wich to register the components
+//!
+DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFactory)
 {
     //vvv Repoint SEGFAULT to the terminate function, could be used to tell component makers info about their fault. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
     void (*prev_fn)(int);
@@ -45,120 +45,120 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfampND_ct)
     //^^^
 
     //Hydraulic components
-    cfampND_ct->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicTurbulentOrifice", HydraulicTurbulentOrifice::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicVolume", HydraulicVolume::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureSourceC", HydraulicPressureSourceC::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicMultiPressureSourceC", HydraulicMultiPressureSourceC::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicFlowSourceQ", HydraulicFlowSourceQ::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureSourceQ", HydraulicPressureSourceQ::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicFixedDisplacementPump", HydraulicFixedDisplacementPump::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
-    cfampND_ct->registerCreatorFunction("Hydraulic22DirectionalValve", Hydraulic22DirectionalValve::Creator);
-    cfampND_ct->registerCreatorFunction("Hydraulic22Valve", Hydraulic22Valve::Creator);
-    cfampND_ct->registerCreatorFunction("Hydraulic32DirectionalValve", Hydraulic32DirectionalValve::Creator);
-    cfampND_ct->registerCreatorFunction("Hydraulic33Valve", Hydraulic33Valve::Creator);
-    cfampND_ct->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
-    cfampND_ct->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
-    cfampND_ct->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicOpenCenterValve", HydraulicOpenCenterValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicAckumulator", HydraulicAckumulator::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureControlledValve", HydraulicPressureControlledValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureCompensatingValve", HydraulicPressureCompensatingValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureSensor", HydraulicPressureSensor::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicFlowSensor", HydraulicFlowSensor::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicCylinderC", HydraulicCylinderC::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicCylinderQ", HydraulicCylinderQ::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicTLMlossless", HydraulicTLMlossless::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureReliefValve", HydraulicPressureReliefValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureReducingValve", HydraulicPressureReducingValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureDropValve", HydraulicPressureDropValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicSubSysExample", HydraulicSubSysExample::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicTankC", HydraulicTankC::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicTankQ", HydraulicTankQ::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicFixedDisplacementMotorQ", HydraulicFixedDisplacementMotorQ::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicVolume4", HydraulicVolume4::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicVolumeMultiPort", HydraulicVolumeMultiPort::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicLosslessConnector", HydraulicLosslessConnector::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicLosslessTConnector", HydraulicLosslessTConnector::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicMachineC", HydraulicMachineC::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicPressureControlledPump", HydraulicPressureControlledPump::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicDummyC", HydraulicDummyC::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicDummyQ", HydraulicDummyQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicTurbulentOrifice", HydraulicTurbulentOrifice::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicVolume", HydraulicVolume::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureSourceC", HydraulicPressureSourceC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicMultiPressureSourceC", HydraulicMultiPressureSourceC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicFlowSourceQ", HydraulicFlowSourceQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureSourceQ", HydraulicPressureSourceQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicFixedDisplacementPump", HydraulicFixedDisplacementPump::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic22DirectionalValve", Hydraulic22DirectionalValve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic22Valve", Hydraulic22Valve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic32DirectionalValve", Hydraulic32DirectionalValve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic33Valve", Hydraulic33Valve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicOpenCenterValve", HydraulicOpenCenterValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicAckumulator", HydraulicAckumulator::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureControlledValve", HydraulicPressureControlledValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureCompensatingValve", HydraulicPressureCompensatingValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureSensor", HydraulicPressureSensor::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicFlowSensor", HydraulicFlowSensor::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicCylinderC", HydraulicCylinderC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicCylinderQ", HydraulicCylinderQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicTLMlossless", HydraulicTLMlossless::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureReliefValve", HydraulicPressureReliefValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureReducingValve", HydraulicPressureReducingValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureDropValve", HydraulicPressureDropValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicSubSysExample", HydraulicSubSysExample::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicTankC", HydraulicTankC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicTankQ", HydraulicTankQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicFixedDisplacementMotorQ", HydraulicFixedDisplacementMotorQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicVolume4", HydraulicVolume4::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicVolumeMultiPort", HydraulicVolumeMultiPort::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicLosslessConnector", HydraulicLosslessConnector::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicLosslessTConnector", HydraulicLosslessTConnector::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicMachineC", HydraulicMachineC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureControlledPump", HydraulicPressureControlledPump::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicDummyC", HydraulicDummyC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicDummyQ", HydraulicDummyQ::Creator);
 
-    cfampND_ct->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
-    cfampND_ct->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
 
 
     //Signal components
-    cfampND_ct->registerCreatorFunction("SignalAbsoluteValue", SignalAbsoluteValue::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSource", SignalSource::Creator);
-    cfampND_ct->registerCreatorFunction("SignalGain", SignalGain::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSink", SignalSink::Creator);
-    cfampND_ct->registerCreatorFunction("SignalStep", SignalStep::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSineWave", SignalSineWave::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSquareWave", SignalSquareWave::Creator);
-    cfampND_ct->registerCreatorFunction("SignalRamp", SignalRamp::Creator);
-    cfampND_ct->registerCreatorFunction("SignalAdd", SignalAdd::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSubtract", SignalSubtract::Creator);
-    cfampND_ct->registerCreatorFunction("SignalMultiply", SignalMultiply::Creator);
-    cfampND_ct->registerCreatorFunction("SignalDivide", SignalDivide::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSaturation", SignalSaturation::Creator);
-    cfampND_ct->registerCreatorFunction("SignalDeadZone", SignalDeadZone::Creator);
-    cfampND_ct->registerCreatorFunction("SignalLP1Filter", SignalLP1Filter::Creator);
-    cfampND_ct->registerCreatorFunction("SignalLP2Filter", SignalLP2Filter::Creator);
-    cfampND_ct->registerCreatorFunction("SignalHP1Filter", SignalHP1Filter::Creator);
-    cfampND_ct->registerCreatorFunction("SignalHP2Filter", SignalHP2Filter::Creator);
-    cfampND_ct->registerCreatorFunction("SignalPulse", SignalPulse::Creator);
-    cfampND_ct->registerCreatorFunction("SignalMin", SignalMin::Creator);
-    cfampND_ct->registerCreatorFunction("SignalMax", SignalMax::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
-    cfampND_ct->registerCreatorFunction("SignalRoute", SignalRoute::Creator);
-    cfampND_ct->registerCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
-    cfampND_ct->registerCreatorFunction("SignalIntegrator2", SignalIntegrator2::Creator);
-    cfampND_ct->registerCreatorFunction("SignalIntegratorLimited", SignalIntegratorLimited::Creator);
-    cfampND_ct->registerCreatorFunction("SignalIntegratorLimited2", SignalIntegratorLimited2::Creator);
-    cfampND_ct->registerCreatorFunction("SignalTimeDelay", SignalTimeDelay::Creator);
-    cfampND_ct->registerCreatorFunction("SignalFirstOrderFilter", SignalFirstOrderFilter::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSecondOrderFilter", SignalSecondOrderFilter::Creator);
-    cfampND_ct->registerCreatorFunction("SignalHysteresis", SignalHysteresis::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSquare", SignalSquare::Creator);
-    cfampND_ct->registerCreatorFunction("SignalTime", SignalTime::Creator);
-    cfampND_ct->registerCreatorFunction("SignalStopSimulation", SignalStopSimulation::Creator);
-    cfampND_ct->registerCreatorFunction("SignalGreaterThan", SignalGreaterThan::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSmallerThan", SignalSmallerThan::Creator);
-    cfampND_ct->registerCreatorFunction("SignalAnd", SignalAnd::Creator);
-    cfampND_ct->registerCreatorFunction("SignalOr", SignalOr::Creator);
-    cfampND_ct->registerCreatorFunction("SignalXor", SignalXor::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSum", SignalSum::Creator);
-    cfampND_ct->registerCreatorFunction("SignalSecondOrderTransferFunction", SignalSecondOrderTransferFunction::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAbsoluteValue", SignalAbsoluteValue::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSource", SignalSource::Creator);
+    pComponentFactory->registerCreatorFunction("SignalGain", SignalGain::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSink", SignalSink::Creator);
+    pComponentFactory->registerCreatorFunction("SignalStep", SignalStep::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSineWave", SignalSineWave::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSquareWave", SignalSquareWave::Creator);
+    pComponentFactory->registerCreatorFunction("SignalRamp", SignalRamp::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAdd", SignalAdd::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSubtract", SignalSubtract::Creator);
+    pComponentFactory->registerCreatorFunction("SignalMultiply", SignalMultiply::Creator);
+    pComponentFactory->registerCreatorFunction("SignalDivide", SignalDivide::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSaturation", SignalSaturation::Creator);
+    pComponentFactory->registerCreatorFunction("SignalDeadZone", SignalDeadZone::Creator);
+    pComponentFactory->registerCreatorFunction("SignalLP1Filter", SignalLP1Filter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalLP2Filter", SignalLP2Filter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalHP1Filter", SignalHP1Filter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalHP2Filter", SignalHP2Filter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalPulse", SignalPulse::Creator);
+    pComponentFactory->registerCreatorFunction("SignalMin", SignalMin::Creator);
+    pComponentFactory->registerCreatorFunction("SignalMax", SignalMax::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
+    pComponentFactory->registerCreatorFunction("SignalRoute", SignalRoute::Creator);
+    pComponentFactory->registerCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
+    pComponentFactory->registerCreatorFunction("SignalIntegrator2", SignalIntegrator2::Creator);
+    pComponentFactory->registerCreatorFunction("SignalIntegratorLimited", SignalIntegratorLimited::Creator);
+    pComponentFactory->registerCreatorFunction("SignalIntegratorLimited2", SignalIntegratorLimited2::Creator);
+    pComponentFactory->registerCreatorFunction("SignalTimeDelay", SignalTimeDelay::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFirstOrderFilter", SignalFirstOrderFilter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSecondOrderFilter", SignalSecondOrderFilter::Creator);
+    pComponentFactory->registerCreatorFunction("SignalHysteresis", SignalHysteresis::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSquare", SignalSquare::Creator);
+    pComponentFactory->registerCreatorFunction("SignalTime", SignalTime::Creator);
+    pComponentFactory->registerCreatorFunction("SignalStopSimulation", SignalStopSimulation::Creator);
+    pComponentFactory->registerCreatorFunction("SignalGreaterThan", SignalGreaterThan::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSmallerThan", SignalSmallerThan::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAnd", SignalAnd::Creator);
+    pComponentFactory->registerCreatorFunction("SignalOr", SignalOr::Creator);
+    pComponentFactory->registerCreatorFunction("SignalXor", SignalXor::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSum", SignalSum::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSecondOrderTransferFunction", SignalSecondOrderTransferFunction::Creator);
 
-    cfampND_ct->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
+    pComponentFactory->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
 
 
     //Mechanical components
-    cfampND_ct->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicVelocityTransformer", MechanicVelocityTransformer::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTorqueTransformer", MechanicTorqueTransformer::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicAngularVelocityTransformer", MechanicAngularVelocityTransformer::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTranslationalMass", MechanicTranslationalMass::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTranslationalMassWithLever", MechanicTranslationalMassWithLever::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTranslationalMassWithCoulumbFriction", MechanicTranslationalMassWithCoulumbFriction::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicRotationalInertiaWithGearRatio", MechanicRotationalInertiaWithGearRatio::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicRotationalInertiaWithSingleGear", MechanicRotationalInertiaWithSingleGear::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicSpeedSensor", MechanicSpeedSensor::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicForceSensor", MechanicForceSensor::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicPositionSensor", MechanicPositionSensor::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicAngleSensor", MechanicAngleSensor::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTranslationalLosslessConnector", MechanicTranslationalLosslessConnector::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicAngularVelocitySensor", MechanicAngularVelocitySensor::Creator);
-    cfampND_ct->registerCreatorFunction("MechanicTorqueSensor", MechanicTorqueSensor::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicVelocityTransformer", MechanicVelocityTransformer::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTorqueTransformer", MechanicTorqueTransformer::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicAngularVelocityTransformer", MechanicAngularVelocityTransformer::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTranslationalMass", MechanicTranslationalMass::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithLever", MechanicTranslationalMassWithLever::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulumbFriction", MechanicTranslationalMassWithCoulumbFriction::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithGearRatio", MechanicRotationalInertiaWithGearRatio::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithSingleGear", MechanicRotationalInertiaWithSingleGear::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicSpeedSensor", MechanicSpeedSensor::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicForceSensor", MechanicForceSensor::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicPositionSensor", MechanicPositionSensor::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicAngleSensor", MechanicAngleSensor::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTranslationalLosslessConnector", MechanicTranslationalLosslessConnector::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicAngularVelocitySensor", MechanicAngularVelocitySensor::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicTorqueSensor", MechanicTorqueSensor::Creator);
 }

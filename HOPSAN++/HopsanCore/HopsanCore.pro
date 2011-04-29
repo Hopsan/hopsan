@@ -13,6 +13,11 @@ QT -= core \
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
+#--------------------------------------------------------
+# Set the rappidxml include path
+INCLUDEPATH *= $${PWD}/../ExternalDependencies/rapidxml-1.13
+#--------------------------------------------------------
+
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
@@ -40,7 +45,7 @@ unix {
 
 #Debug output
 #message(CORE QMAKE_POST_LINK $${QMAKE_POST_LINK})
-#message(CORE Includepath is $$INCLUDEPATH)
+message(CORE Includepath is $$INCLUDEPATH)
 #message(CORE Libs is $${LIBS})
 #message(CORE Defines is $${DEFINES})
 
@@ -52,7 +57,6 @@ SOURCES += Port.cc \
     Component.cc \
     Nodes/Nodes.cc \
     CoreUtilities/LoadExternal.cc \
-    CoreUtilities/FileAccess.cc \
     Components/Components.cc \
     HopsanEssentials.cc \
     ComponentUtilities/ValveHysteresis.cc \
@@ -66,7 +70,8 @@ SOURCES += Port.cc \
     ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     ComponentUtilities/DoubleIntegratorWithDamping.cpp \
     ComponentUtilities/matrix.cc \
-    ComponentUtilities/ludcmp.cc
+    ComponentUtilities/ludcmp.cc \
+    CoreUtilities/HmfLoader.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -74,7 +79,6 @@ HEADERS += win32dll.h \
     Component.h \
     Nodes/Nodes.h \
     CoreUtilities/LoadExternal.h \
-    CoreUtilities/FileAccess.h \
     CoreUtilities/ClassFactory.hpp \
     Components/HydraulicComponentTemplate.hpp \
     Components/Components.h \
@@ -206,7 +210,8 @@ HEADERS += win32dll.h \
     Components/Signal/SignalRoute.hpp \
     Components/Signal/SignalSecondOrderTransferFunction.hpp \
     Components/Hydraulic/HydraulicLossLessTConnector.hpp \
-    Components/Hydraulic/HydraulicLossLessConnector.hpp
+    Components/Hydraulic/HydraulicLossLessConnector.hpp \
+    CoreUtilities/HmfLoader.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

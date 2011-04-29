@@ -7,8 +7,6 @@
 //!
 //$Id$
 
-//! @defgroup Components Components
-
 #include <iostream>
 #include <sstream>
 #include <cassert>
@@ -18,7 +16,6 @@
 #include "stdio.h"
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include "CoreUtilities/FileAccess.h"
 #include "Port.h"
 #include "HopsanEssentials.h"
 
