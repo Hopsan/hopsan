@@ -22,7 +22,7 @@ defineReplace(setQWTPathsAndCopyDll){
 
         includes = $$quote(-I$${QWT_PATH}/src)
 
-        lib = qwt
+        libName = qwt
         dbg_ext =
 
         #Add debug if debugmode in Windows
@@ -30,9 +30,9 @@ defineReplace(setQWTPathsAndCopyDll){
             win32:dbg_ext = d
         }
 
-        libs = $$quote(-L$${libDir} -l$${lib}$${dbg_ext})
-        win32:files = $${lib}$${dbg_ext}$${DLL_EXT}
-        unix:files = lib$${lib}*$${DLL_EXT}*
+        libs = $$quote(-L$${libDir} -l$${libName}$${dbg_ext})
+        win32:files = $${libName}*$${dbg_ext}$${DLL_EXT}
+        unix:files = lib$${libName}*$${DLL_EXT}*
 
         qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
     }

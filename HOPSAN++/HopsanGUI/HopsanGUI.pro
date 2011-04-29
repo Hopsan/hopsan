@@ -20,7 +20,8 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 QWT_PATH_INFO = $$setQWTPathsAndCopyDll($$(QWT_PATH), $$DESTDIR)
 !isEmpty(QWT_PATH_INFO) {
     QMAKE_CXXFLAGS *= $$member(QWT_PATH_INFO,0)
-    QMAKE_LFLAGS *= $$member(QWT_PATH_INFO,1)
+    qwttemplibs = $$member(QWT_PATH_INFO,1)
+    LIBS *= $$split(qwttemplibs, ' ')
     QMAKE_POST_LINK *= $$member(QWT_PATH_INFO,2)
 
     #apa = $$member(QWT_PATH_INFO,1)
