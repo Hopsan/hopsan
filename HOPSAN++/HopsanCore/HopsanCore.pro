@@ -1,7 +1,6 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
-include( ../Common.prf )
 include( HopsanCoreBuild.prf )
 
 TARGET = HopsanCore
@@ -22,26 +21,28 @@ win32 {
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
     DEFINES -= UNICODE
 
-    #Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
-    TBB_PATH_INFO = $$setWindowsTBBPathsAndCopyDll($$(TBB_PATH), $$DESTDIR)
-    exists($$member(TBB_PATH_INFO,0)) {
-        INCLUDEPATH *= $$member(TBB_PATH_INFO,0)
-        LIBS *= $$member(TBB_PATH_INFO,1,2)
-        QMAKE_POST_LINK *= $$member(TBB_PATH_INFO,3)
+    #--------------------------------------------------------
+    # Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
+    d = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
+    !isEmpty(d){
         DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
         message(Compiling HopsanCore with TBB support)
+        LIBS *= $$magic_hopsan_libpath
+        INCLUDEPATH *= $$magic_hopsan_includepath
+        QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
     }
-
-    #Debug output
-    message(CORE QMAKE_POST_LINK $${QMAKE_POST_LINK})
-    message(CORE Includepath is $$INCLUDEPATH)
-    message(CORE Libs is $${LIBS})
-    message(CORE Defines is $${DEFINES})
+    #--------------------------------------------------------
 }
 unix { 
     LIBS += -ltbb
     INCLUDEPATH += /usr/include/tbb/
 }
+
+#Debug output
+#message(CORE QMAKE_POST_LINK $${QMAKE_POST_LINK})
+#message(CORE Includepath is $$INCLUDEPATH)
+#message(CORE Libs is $${LIBS})
+#message(CORE Defines is $${DEFINES})
 
 # -------------------------------------------------
 # Project files

@@ -1,7 +1,7 @@
 include( ../Common.prf )
 
-#Helpfunction to fetch correct TBB INCLUDEPATH and LIBS path
-defineReplace(setWindowsTBBPathsAndCopyDll){
+#Helpfunction to fetch correct TBB INCLUDEPATH and magic_hopsan_libpath path
+defineReplace(setTBBWindowsPathInfo){
     #Assign input arguments
     externalSrc = $$1
     dstDir = $$2
@@ -15,9 +15,9 @@ defineReplace(setWindowsTBBPathsAndCopyDll){
     TBB_PATH = $$selectPath($$externalSrc, $$TBB_PATHS, "tbb")
 
     #Empty variables to fill in
-    libs =
-    includes =
-    qmake_post_link =
+    magic_hopsan_libpath =
+    magic_hopsan_includepath =
+    magic_hopsan_qmake_post_link =
     files =
     libDir =
 
@@ -25,41 +25,49 @@ defineReplace(setWindowsTBBPathsAndCopyDll){
     exists($${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_release){
         CONFIG(debug, debug|release) {
             libDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_debug
-            libs *= -L$${libDir} -ltbb_debug
+            magic_hopsan_libpath *= -L$${libDir} -ltbb_debug
             files = tbb_debug.dll
         }
         CONFIG(release, debug|release) {
             libDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw4.4.0_release
-            libs *= -L$${libDir} -ltbb
+            magic_hopsan_libpath *= -L$${libDir} -ltbb
             files = tbb.dll
         }
-        includes *= $${TBB_PATH}/include/tbb
-        qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
+        magic_hopsan_includepath *= $${TBB_PATH}/include/tbb
+        magic_hopsan_qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
     }
 
     #Check old style libfolder path, remove when we force people to upgrade
     exists($${TBB_PATH}/build/windows_ia32_gcc_mingw_release){
         CONFIG(debug, debug|release) {
             libDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw_debug
-            libs *= -L$${libDir} -ltbb_debug
+            magic_hopsan_libpath *= -L$${libDir} -ltbb_debug
             files = tbb_debug.dll
         }
         CONFIG(release, debug|release) {
             libDir = $${TBB_PATH}/build/windows_ia32_gcc_mingw_release
-            libs *= -L$${libDir} -ltbb
+            magic_hopsan_libpath *= -L$${libDir} -ltbb
             files = tbb.dll
         }
-        includes *= $${TBB_PATH}/include/tbb
-        qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
+        magic_hopsan_includepath *= $${TBB_PATH}/include/tbb
+        magic_hopsan_qmake_post_link += $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
     }
 
-    message(qmake_post_link $${qmake_post_link})
+    #message(magic_hopsan_qmake_post_link $${magic_hopsan_qmake_post_link})
 
     !exists($${libDir}){
         warning(Could not find your compiled TBB dll)
+        magic_hopsan_libpath =
+        magic_hopsan_includepath =
+        magic_hopsan_qmake_post_link =
     }
 
-    #message(----------------Includepath is $${includes})
-    #message(----------------Libs is $${libs})
-    return($${includes} $${libs} $${qmake_post_link})
+    #Export lists to INCLUDEPATH, LIBS and QMAKE_POST_LINK variables
+    export(magic_hopsan_libpath)
+    export(magic_hopsan_includepath)
+    export(magic_hopsan_qmake_post_link)
+
+    #message(----------------Includepath is $${magic_hopsan_includepath})
+    #message(----------------magic_hopsan_libpath is $${magic_hopsan_libpath})
+    return($$magic_hopsan_libpath)
 }

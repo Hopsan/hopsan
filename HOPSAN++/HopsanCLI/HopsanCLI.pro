@@ -35,9 +35,11 @@ unix {
 win32 {
 
 }
-    #Debug output
-    #message(CLI Includepath is $${INCLUDEPATH})
-    #message(CLI Libs2 is $${LIBS})
+
+#Debug output
+#message(CLI Includepath is $${INCLUDEPATH})
+#message(CLI Libs2 is $${LIBS})
+
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------

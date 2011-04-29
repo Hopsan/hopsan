@@ -5,6 +5,7 @@ CONFIG(debug, debug|release) {
   DEBUG_EXT =
 }
 
+#Determine the DLL file extension
 win32:DLL_EXT = .dll
 unix:DLL_EXT = .so
 
@@ -36,6 +37,7 @@ defineReplace(selectPath){
     return($${PATH})
 }
 
+#This function generates the commandline code necessary to copy a certain file or files from src directory to dst directory
 defineReplace(generateCopyDllCommand){
     fileNames = $$1
     srcDir = $$2
@@ -44,28 +46,30 @@ defineReplace(generateCopyDllCommand){
     files =
     qmake_post_link =
 
-    message(fileNames $$fileNames)
-    message(srcDir $$srcDir)
-    message(dstDir $$dstDir)
+    #message(fileNames $$fileNames)
+    #message(srcDir $$srcDir)
+    #message(dstDir $$dstDir)
 
     for(file, fileNames){
         files += $${srcDir}/$${file}
     }
-    message(files $$files)
+    #message(files $$files)
 
+    #On win32 we need to replace all slash with backslash (escaped backslashes)
     win32 {
         for(file, files){
             qmake_post_link += $$quote(cmd /c copy /y \"$$replace(file,/,\\\\)\" \"$$replace(dstDir,/,\\\\)\"$$escape_expand(\n\t))
         }
     }
 
+    #On unix we dont need to replace slashes
     unix {
         for(file, files){
             qmake_post_link += $$quote(cp -f $${file} $${dstDir}$$escape_expand(\\n\\t))
         }
     }
 
-    message(qmake_post_link $${qmake_post_link})
+    #message(qmake_post_link $${qmake_post_link})
     return($$qmake_post_link)
 }
 
