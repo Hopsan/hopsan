@@ -45,7 +45,7 @@ unix {
 
 #Debug output
 #message(CORE QMAKE_POST_LINK $${QMAKE_POST_LINK})
-message(CORE Includepath is $$INCLUDEPATH)
+#message(CORE Includepath is $$INCLUDEPATH)
 #message(CORE Libs is $${LIBS})
 #message(CORE Defines is $${DEFINES})
 
