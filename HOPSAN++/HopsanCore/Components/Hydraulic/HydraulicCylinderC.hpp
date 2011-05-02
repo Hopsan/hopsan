@@ -173,12 +173,16 @@ class HydraulicCylinderC : public ComponentC
             q1 = (*mpND_q1);
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
+            c1 = (*mpND_c1);
+            c2 = (*mpND_c2);
+            Zc1 = (*mpND_Zc1);
+            Zc2 = (*mpND_Zc2);
             f3 = (*mpND_f3);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
 
             //Leakage flow
-            qLeak = cLeak*(p1-p2);
+            qLeak = cLeak*(c1-c2)/(1+cLeak*(Zc1+Zc2));
 
             //Internal flows
             qi1 = v3*A1;
