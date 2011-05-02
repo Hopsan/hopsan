@@ -214,7 +214,8 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicLossLessConnector.hpp \
     CoreUtilities/HmfLoader.h \
     ComponentSystem.h \
-    CoreUtilities/FindUniqueName.h
+    CoreUtilities/FindUniqueName.h \
+    Components/Mechanic/MechanicMultiPortTranslationalMass.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

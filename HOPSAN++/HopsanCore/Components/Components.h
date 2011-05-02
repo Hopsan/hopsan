@@ -125,6 +125,7 @@
 #include "Mechanic/MechanicTranslationalLosslessConnector.hpp"
 #include "Mechanic/MechanicAngularVelocitySensor.hpp"
 #include "Mechanic/MechanicTorqueSensor.hpp"
+#include "Mechanic/MechanicMultiPortTranslationalMass.hpp"
 
 
 
