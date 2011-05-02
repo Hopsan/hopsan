@@ -68,6 +68,11 @@ namespace hopsan {
             q = in;
             p = c + q*Zc;
 
+            if(p<0)
+            {
+                p=0;
+            }
+
             (*mpND_p) = p;
             (*mpND_q) = q;
         }
