@@ -147,6 +147,11 @@ MainWindow::MainWindow(QWidget *parent)
         mpLibrary->addExternalLibrary(gConfig.getUserLibs().at(i));
     }
 
+    if(QDir(gExecPath + QString(COMPONENTPATH) + "Real-time").exists())
+    {
+        mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-time");
+    }
+
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "benchmarking");
 
     //mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-Time");
