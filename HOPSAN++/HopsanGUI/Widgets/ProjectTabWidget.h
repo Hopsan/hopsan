@@ -44,6 +44,7 @@ public slots:
     void loadModel(QAction *action);
     void loadModel(QString modelFileName);
     void tabChanged();
+    void saveCurrentModelToWrappedCode();
 
 signals:
     void checkMessages();

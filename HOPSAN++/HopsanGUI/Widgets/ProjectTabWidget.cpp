@@ -658,3 +658,11 @@ void ProjectTabWidget::tabChanged()
         gpMainWindow->togglePortsAction->setChecked(!getCurrentContainer()->mPortsHidden);
     }
 }
+
+
+
+void ProjectTabWidget::saveCurrentModelToWrappedCode()
+{
+    qDebug() << "Saving to wc";
+    qobject_cast<GUISystem*>(getCurrentContainer())->saveToWrappedCode();
+}

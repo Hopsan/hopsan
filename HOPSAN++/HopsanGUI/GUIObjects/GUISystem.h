@@ -49,6 +49,8 @@ public:
     void loadFromDomElement(QDomElement &rDomElement);
     void setModelFileInfo(QFile &rFile);
 
+    void saveToWrappedCode();
+
     QVector<QString> getParameterNames();
 
     CoreSystemAccess* getCoreSystemAccessPtr();

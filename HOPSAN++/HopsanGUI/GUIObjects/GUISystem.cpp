@@ -507,6 +507,69 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
     }
 }
 
+
+void GUISystem::saveToWrappedCode()
+{
+        //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString filePath;
+    QFileInfo fileInfo;
+    QFile file;
+    filePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Export Project to HopsanRT Wrapper Code"),
+                                            fileDialogSaveDir.currentPath(),
+                                            tr("Text file (*.txt)"));
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    fileInfo.setFile(filePath);
+    file.setFileName(fileInfo.filePath());   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
+        return;
+    }
+    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+
+        //Write initial comment
+    fileStream << "// Code from exported Hopsan model. This can be used in conjunction with HopsanCore by using HopsanWrapper. Subsystems probably don't work.\n\n";
+
+        //Write system initialization
+    fileStream << "initSystem(1e-3);\n\n";
+
+        //Save components
+    GUIModelObjectMapT::iterator it;
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    {
+        fileStream << "addComponent(\"" << it.value()->getName() << "\", \"" << it.value()->getTypeName() << "\");\n";
+    }
+
+    fileStream << "\n";
+
+        //Save connectors
+    for(int i = 0; i != mSubConnectorList.size(); ++i)
+    {
+        fileStream << "connect(\"" << mSubConnectorList[i]->getStartComponentName() << "\", \"" << mSubConnectorList[i]->getStartPortName() <<
+                      "\", \"" << mSubConnectorList[i]->getEndComponentName() << "\", \"" << mSubConnectorList[i]->getEndPortName() << "\");\n";
+    }
+
+    fileStream << "\n";
+
+        //Save parameterse
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    {
+        for(int i=0; i<it.value()->getParameterNames().size(); ++i)
+        {
+            fileStream << "setParameter(\"" << it.value()->getName() << "\", \"" << it.value()->getParameterNames().at(i) <<  "\", \"" << it.value()->getParameterValue(it.value()->getParameterNames().at(i)) << "\");\n";
+        }
+    }
+
+    fileStream << "\n";
+
+        //Initialize components
+    fileStream << "initComponents();";
+
+    file.close();
+}
+
+
 //! @brief Sets the modelfile info from the file representing this system
 //! @param[in] rFile The QFile objects representing the file we want to information about
 void GUISystem::setModelFileInfo(QFile &rFile)

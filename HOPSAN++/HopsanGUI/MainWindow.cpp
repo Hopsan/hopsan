@@ -481,6 +481,11 @@ void MainWindow::createActions()
     togglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
     togglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
 
+    saveToWrappedCode = new QAction(this);
+    saveToWrappedCode->setShortcut(QKeySequence("Ctrl+Shift+Alt+W"));
+    this->addAction(saveToWrappedCode);
+    connect(saveToWrappedCode, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
+
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);
     mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
