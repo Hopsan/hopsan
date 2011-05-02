@@ -327,10 +327,10 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
         parameterDescription << item->getComponentName() << item->getPortName() << item->getDataName() << item->getDataUnit();
         QMenu menu;
 
-        QAction *defineAliasAction;
-        QAction *removeAliasAction;
-        QAction *addToFavoritesAction;
-        QAction *removeFromFavoritesAction;
+        QAction *defineAliasAction = 0;
+        QAction *removeAliasAction = 0;
+        QAction *addToFavoritesAction = 0;
+        QAction *removeFromFavoritesAction = 0;
 
         if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(item->getComponentName(), item->getPortName(), item->getDataName()).isEmpty())
         {

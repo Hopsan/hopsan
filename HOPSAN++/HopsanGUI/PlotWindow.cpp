@@ -1517,8 +1517,8 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QMenu *changeUnitsMenu;
     QMenu *insertMarkerMenu;
 
-    QAction *setRightAxisLogarithmic;
-    QAction *setLeftAxisLogarithmic;
+    QAction *setRightAxisLogarithmic = 0;
+    QAction *setLeftAxisLogarithmic = 0;
 
 
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));

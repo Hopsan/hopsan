@@ -1277,8 +1277,8 @@ void GUIConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
     QMenu menu;
 
-    QAction *pMakeDashedAction;
-    QAction *pMakeSolidAction;
+    QAction *pMakeDashedAction = 0;
+    QAction *pMakeSolidAction = 0;
 
     if(!mpParentGUIConnector->mIsDashed)
     {
