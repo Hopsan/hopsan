@@ -77,7 +77,7 @@ namespace hopsan {
             registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
             registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
             registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
-            registerParameter("x_pa", "Spool Overlap From Port B To T", "[m]", overlap_bt);
+            registerParameter("x_bt", "Spool Overlap From Port B To T", "[m]", overlap_bt);
             registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
             registerParameter("delta_h", "Damping Factor", "[-]", deltah);
         }
