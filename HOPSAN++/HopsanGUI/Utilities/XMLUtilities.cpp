@@ -364,7 +364,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
 }
 
 
-
+//! @todo Add check for separate orifice areas in 4/3 valve
 void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 {
     if(hmfVersion <= 0.2)
