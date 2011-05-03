@@ -137,15 +137,29 @@ namespace hopsan {
                 mIntegrator.setDamping(ble / J * mTimestep);
                 mIntegrator.redoIntegrate(ct/J);
                 w3 = mIntegrator.valueFirst();
-                a3 = mIntegrator.valueSecond();
 
-                q1a = -dpe * a3;
-                q2a = -q1a;
+                q1a = -dpe * w3;
                 p1 = c1a + gamma * Zc1 * q1a;
                 p2 = c2a + gamma * Zc2 * q2a;
 
-                if(p1<0) p1 = 0;
-                if(p2<0) p2 = 0;
+                if(p1<=0)
+                {
+                    p1 = 0;
+                    q1a = std::max(q1a, 0.0);
+                    w3 = std::min(w3, 0.0);
+                }
+                if(p2<=0)
+                {
+                    p2 = 0;
+                    q1a = std::min(q1a, 0.0);
+                    w3 = std::max(w3, 0.0);
+                }
+                if(p1>0 && p2>0)
+                {
+                    a3 = mIntegrator.valueSecond();     //Only change a3 if w3 was not limited due to cavitation
+                }
+                mIntegrator.initializeValues(ct/J, a3, w3);
+                q2a = -q1a;
             }
 
             //Leakage Flow
