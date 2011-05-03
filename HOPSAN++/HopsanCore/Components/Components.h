@@ -25,6 +25,7 @@
 #include "Hydraulic/Hydraulic33Valve.hpp"
 #include "Hydraulic/Hydraulic42Valve.hpp"
 #include "Hydraulic/Hydraulic43Valve.hpp"
+#include "Hydraulic/Hydraulic43ValveNeutralToTank.hpp"
 #include "Hydraulic/Hydraulic43LoadSensingValve.hpp"
 #include "Hydraulic/HydraulicOpenCenterValve.hpp"
 #include "Hydraulic/HydraulicTurbulentOrifice.hpp"

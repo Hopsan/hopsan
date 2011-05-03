@@ -60,6 +60,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("Hydraulic33Valve", Hydraulic33Valve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
+    pComponentFactory->registerCreatorFunction("Hydraulic43ValveNeutralToTank", Hydraulic43ValveNeutralToTank::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicOpenCenterValve", HydraulicOpenCenterValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
