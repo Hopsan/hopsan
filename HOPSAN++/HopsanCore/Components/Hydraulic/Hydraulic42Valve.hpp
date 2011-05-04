@@ -25,12 +25,8 @@ namespace hopsan {
     private:
         double Cq;
         double d;
-        double f;
+        double f_pa, f_bt;
         double xvmax;
-        double overlap_pa;
-        double overlap_pb;
-        double overlap_at;
-        double overlap_bt;
         double omegah;
         double deltah;
 
@@ -52,12 +48,9 @@ namespace hopsan {
         {
             Cq = 0.67;
             d = 0.01;
-            f = 1.0;
+            f_pa = 1.0;
+            f_bt = 1.0;
             xvmax = 0.01;
-            overlap_pa = -1e-6;
-            overlap_pb = -1e-6;
-            overlap_at = -1e-6;
-            overlap_bt = -1e-6;
             omegah = 100.0;
             deltah = 1.0;
 
@@ -70,12 +63,9 @@ namespace hopsan {
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
+            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
+            registerParameter("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", f_bt);
             registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
-            registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
-            registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
-            registerParameter("x_bt", "Spool Overlap From Port B To T", "[m]", overlap_bt);
             registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
             registerParameter("delta_h", "Damping Factor", "[-]", deltah);
         }
@@ -116,7 +106,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare local variables
-            double xv, Kc, qpa, qbt;
+            double xv, Kcpa, Kcbt, qpa, qbt;
             double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb;
             bool cav = false;
 
@@ -136,11 +126,12 @@ namespace hopsan {
             xv = filter.value();
 
             //Determine flow coefficient
-            Kc = Cq*f*pi*d*xv*sqrt(2.0/890.0);
+            Kcpa = Cq*f_pa*pi*d*xv*sqrt(2.0/890.0);
+            Kcbt = Cq*f_bt*pi*d*xv*sqrt(2.0/890.0);
 
             //Calculate flow
-            qTurb_pa.setFlowCoefficient(Kc);
-            qTurb_bt.setFlowCoefficient(Kc);
+            qTurb_pa.setFlowCoefficient(Kcpa);
+            qTurb_bt.setFlowCoefficient(Kcbt);
             qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
             qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
 

@@ -25,7 +25,7 @@ namespace hopsan {
     private:
         double Cq;
         double d;
-        double f;
+        double f_pa, f_at;
         double xvmax;
         double overlap_pa;
         double overlap_at;
@@ -50,7 +50,8 @@ namespace hopsan {
         {
             Cq = 0.67;
             d = 0.01;
-            f = 1.0;
+            f_pa = 1.0;
+            f_at = 1.0;
             xvmax = 0.01;
             overlap_pa = -1e-6;
             overlap_at = -1e-6;
@@ -65,7 +66,8 @@ namespace hopsan {
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
+            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
+            registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
             registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
             registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
             registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
@@ -122,8 +124,8 @@ namespace hopsan {
             xpanom = std::max(xv-overlap_pa,0.0);
             xatnom = std::max(-xv-overlap_at,0.0);
 
-            Kcpa = Cq*f*pi*d*xpanom*sqrt(2.0/890.0);
-            Kcat = Cq*f*pi*d*xatnom*sqrt(2.0/890.0);
+            Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/890.0);
+            Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/890.0);
 
             //With TurbulentFlowFunction:
             qTurb_pa.setFlowCoefficient(Kcpa);

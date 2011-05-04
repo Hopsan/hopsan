@@ -6,7 +6,7 @@
 //! @brief Contains a Hydraulic Hose Component
 //! Written by Petter Krus 910407
 //! Revised 920415
-//! Revised by Robert Braun 110504
+//! Translated to Hopsan NG by Robert Braun 110504
 //$Id$
 
 #ifndef HYDRAULICHOSE_HPP_INCLUDED
@@ -27,13 +27,14 @@ namespace hopsan {
 
     private:
 
-        double BETAE, RHO, VISC, WVISC, D, L;
-        double PI, NTMAX, KAPPA;
+        double betae, rho, visc, wallVisc, d, l;
+        double NTMAX, kappa;
         int NTIME, NTIME1;
-        double RTOT, RL1D, RL2D, RW, A, TL, NT, TN, AREA, AREAC, ZC0, ALFA, DEN, BC0, BC1, AC1, RQ10, RQ20, RQF1D, RQF2D, RQEF1D, RQEF2D, C1F1, C2F1, RQ1, RL1, RQ2, RL2, RL, W1, W2, W3, W4, C1F, C2F, RQF1, RQF2, RQEF1, RQEF2;
+        double Rtot, RL1d, RL2d, Rw, a, TL, NT, TN, area, areaC, Zc0, alfa, den, BC0, BC1, AC1;
+        double RQ10, RQ20, RQF1D, RQF2D, RQEF1D, RQEF2D, C1F1, C2F1, RQ1, RL1, RQ2, RL2, RL;
+        double W1, W2, W3, W4, C1F, C2F, RQF1, RQF2, RQEF1, RQEF2;
         double c1i[1001];       //1001 because 1000 with starting at 1 (stupid Fortran thing)
         double c2i[1001];
-        //double rq(double &RL, double Q, double D, double L, double RHO, double VISC);
         FirstOrderFilter FilterC1F, FilterC2F, FilterC1F1, FilterC2F1;
         double numC1F[2], denC1F[2];
         double numC2F[2], denC2F[2];
@@ -53,28 +54,28 @@ namespace hopsan {
         HydraulicHose(const std::string name) : ComponentC(name)
         {
             //Set member attributes
-            BETAE = 1e9;
-            RHO = 870;
-            VISC = 0.03;
-            WVISC = 0.03;
-            D = 0.03;
-            L = 1;
+            betae = 1e9;
+            rho = 870;
+            visc = 0.03;
+            wallVisc = 0.03;
+            d = 0.03;
+            l = 1;
 
-            PI = 3.1415926;
+            //pi = 3.1415926;
             NTMAX = 1000;
-            KAPPA = 1.25;
+            kappa = 1.25;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("beta_e", "Bulk modulus",              "[Pa]",     BETAE);
-            registerParameter("rho",    "Density",                   "[kg/m^3]", RHO);
-            registerParameter("eta",    "Dynamic oil viscosity",     "[Ns/m^2]", VISC);
-            registerParameter("eta_w",  "Equivalent wall viscosity", "[Ns/m^2]", WVISC);
-            registerParameter("d",      "Line diameter",             "[m]",      D);
-            registerParameter("l",      "Line length",               "[m]",      L);
+            registerParameter("beta_e", "Bulk modulus",              "[Pa]",     betae);
+            registerParameter("rho",    "Density",                   "[kg/m^3]", rho);
+            registerParameter("eta",    "Dynamic oil viscosity",     "[Ns/m^2]", visc);
+            registerParameter("eta_w",  "Equivalent wall viscosity", "[Ns/m^2]", wallVisc);
+            registerParameter("d",      "Line diameter",             "[m]",      d);
+            registerParameter("l",      "Line length",               "[m]",      l);
         }
 
 
@@ -100,55 +101,53 @@ namespace hopsan {
             q2 = (*mpND_q2);
 
                 // Line resistance
-            RTOT = 128*VISC*L/(PI*D*D*D*D);
-            RL1 = RTOT;                         // Added to prevent uninitialized values, but not necessary
-            RL2 = RTOT;
-            RL1D = RTOT;
-            RL2D = RTOT;
-            RW = 128*WVISC*L/(PI*D*D*D*D);
+            Rtot = 128*visc*l/(pi*d*d*d*d);
+            RL1d = Rtot;
+            RL2d = Rtot;
+            Rw = 128*wallVisc*l/(pi*d*d*d*d);
 
                 // Speed of sound in the line
-            A=sqrt(BETAE/RHO);
+            a=sqrt(betae/rho);
 
                 // Characteristic impedance
-            TL = L/A;
+            TL = l/a;
             NT = TL/mTimestep+0.5;
 
             TN = NT*mTimestep;
 
-            AREA = PI*D*D/4;
-            AREAC = AREA*TL/TN;
-            ZC0= RHO*A/AREAC;
+            area = pi*d*d/4;
+            areaC = area*TL/TN;
+            Zc0= rho*a/areaC;
             if(NT < 1) NT = 1;
             TN = NT*mTimestep;
 
-            ALFA  = RTOT/(ZC0*TN);
+            alfa  = Rtot/(Zc0*TN);
 
-            DEN = (2*KAPPA*NT + 1);
-            BC0 = 1/DEN;
-            BC1 = 1/DEN;
-            AC1 = -(2*KAPPA*NT - 1)/DEN;
+            den = (2*kappa*NT + 1);
+            BC0 = 1/den;
+            BC1 = 1/den;
+            AC1 = -(2*kappa*NT - 1)/den;
 
-            Zc1 = ZC0 + BC0*RTOT;
-            Zc2 = ZC0 + BC0*RTOT;
+            Zc1 = Zc0 + BC0*Rtot;
+            Zc2 = Zc0 + BC0*Rtot;
 
             for(size_t i=1; i<NTMAX+1; ++i)
             {
-                c1i[i] = p1 + ZC0*q1;
-                c2i[i] = p2 + ZC0*q2;
+                c1i[i] = p1 + Zc0*q1;
+                c2i[i] = p2 + Zc0*q2;
             }
 
             NTIME=1;
 
-            RQ10 = RTOT*q1;
-            RQ20 = RTOT*q2;
+            RQ10 = Rtot*q1;
+            RQ20 = Rtot*q2;
             RQF1D = RQ10*(1 - BC0);
             RQF2D = RQ20*(1 - BC0);
             RQEF1D = 0.0;
             RQEF2D = 0.0;
 
-            C1F1 = p1 + ZC0*q1;
-            C2F1 = p2 + ZC0*q2;
+            C1F1 = p1 + Zc0*q1;
+            C2F1 = p2 + Zc0*q2;
 
             c1 = p1 - Zc1*q1;
             c2 = p2 - Zc2*q2;
@@ -187,25 +186,25 @@ namespace hopsan {
             if(NTIME1 < 1) NTIME1 = NTIME1 + NTMAX;
 
                 //-------- Line modell -----------
-            RQ1 = rq(RL1,q1,D,L,RHO,VISC);
-            RQ2 = rq(RL2,q2,D,L,RHO,VISC);
-            RL1 = (RL1 + RL1D)/2;
-            RL2 = (RL2 + RL2D)/2;
-            RL1D = RL1;
-            RL2D = RL2;
+            RQ1 = rq(RL1,q1,d,l,rho,visc);
+            RQ2 = rq(RL2,q2,d,l,rho,visc);
+            RL1 = (RL1 + RL1d)/2;
+            RL2 = (RL2 + RL2d)/2;
+            RL1d = RL1;
+            RL2d = RL2;
             RL = (RL1+RL2)/2;
 
-            Zc1 = ZC0 + BC0*RL1;
-            Zc2 = ZC0 + BC0*RL2;
+            Zc1 = Zc0 + BC0*RL1;
+            Zc2 = Zc0 + BC0*RL2;
 
-            c1i[NTIME] = c1 + 2*ZC0*q1;
-            c2i[NTIME] = c2 + 2*ZC0*q2;
+            c1i[NTIME] = c1 + 2*Zc0*q1;
+            c2i[NTIME] = c2 + 2*Zc0*q2;
 
                 // Low pass filtering of transmitted signals
-            W1 = 1/(KAPPA*TN);
-            W2 = W1*exp(RL/(2*ZC0));
-            W3 = RW/(2*ZC0*TN);
-            W4 = W3*exp(RW/(2*ZC0));
+            W1 = 1/(kappa*TN);
+            W2 = W1*exp(RL/(2*Zc0));
+            W3 = Rw/(2*Zc0*TN);
+            W4 = W3*exp(Rw/(2*Zc0));
 
 
             numC1F[0] = 1/W2;
@@ -266,25 +265,25 @@ namespace hopsan {
 
             //! @brief Subroutine for RQ-factorization
             //! Translated from old Hopsan with only syntax changes
-        double rq(double &RL, double Q, double D, double L, double RHO, double VISC)
+        double rq(double &RL, double Q, double D, double L, double rho, double visc)
         {
             double PI = 3.14159;
             double RE,F;
             double RECRIT = 2300;
             double RQ;
 
-            RE = fabs(4*RHO*Q/(PI*D*VISC));
+            RE = fabs(4*rho*Q/(PI*D*visc));
 
             if(RE < RECRIT)
             {
-              RL=128*VISC*L/(PI*D*D*D*D);
+              RL=128*visc*L/(PI*D*D*D*D);
               RQ=RL*Q;
             }
             else
             {
               F = 0.079*pow(RE,-0.25);
-              RL= 1.75*32*RHO*F*L*fabs(Q)/(PI*PI*D*D*D*D*D);
-              RQ = 32*RHO*F*L*fabs(Q)*Q/(PI*PI*D*D*D*D*D);
+              RL= 1.75*32*rho*F*L*fabs(Q)/(PI*PI*D*D*D*D*D);
+              RQ = 32*rho*F*L*fabs(Q)*Q/(PI*PI*D*D*D*D*D);
             }
 
             return RQ;
