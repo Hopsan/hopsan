@@ -223,6 +223,8 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicHose.hpp \
     ../ExternalDependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     ComponentUtilities/ReadDataCurve.h \
+    ComponentUtilities/CSVParser.h \
+    ComponentUtilities/ReadDataCurve.h \
     ComponentUtilities/CSVParser.h
 
 OTHER_FILES += \
