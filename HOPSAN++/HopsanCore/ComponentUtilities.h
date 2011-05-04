@@ -13,6 +13,8 @@
 #include "ComponentUtilities/ludcmp.h"
 #include "ComponentUtilities/matrix.h"
 
+#include "ComponentUtilities/CSVParser.h"
+
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 
 #endif // COMPONENTUTILITIES_H_INCLUDED
