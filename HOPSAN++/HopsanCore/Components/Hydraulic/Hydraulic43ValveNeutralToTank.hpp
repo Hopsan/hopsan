@@ -135,10 +135,10 @@ namespace hopsan {
             xv = filter.value();
 
             //Valve equations
-            xpanom = std::max(-xv-overlap_pa,0.0);
-            xpbnom = std::max(xv-overlap_pb,0.0);
-            xatnom = std::min(xv-overlap_bt+xvmax,xvmax);
-            xbtnom = std::min(-xv-overlap_at+xvmax,xvmax);
+            xpanom = std::max(xv-overlap_pa,0.0);
+            xpbnom = std::max(-xv-overlap_pb,0.0);
+            xatnom = std::min(-xv-overlap_at+xvmax,xvmax);
+            xbtnom = std::min(xv-overlap_bt+xvmax,xvmax);
 
             Kcpa = Cq*f*pi*d*xpanom*sqrt(2.0/890.0);
             Kcpb = Cq*f*pi*d*xpbnom*sqrt(2.0/890.0);
