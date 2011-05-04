@@ -177,7 +177,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Sources & Sinks","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/restrictors","Hydraulic");
-    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/volumes","Hydraulic");
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/volumes & lines","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Linear Actuators","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Pumps & Motors","Hydraulic");
