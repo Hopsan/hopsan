@@ -26,7 +26,7 @@ namespace hopsan {
     private:
         double Cq;
         double d;
-        double f;
+        double f_pa, f_pb, f_at, f_bt, f_cc;
         double xvmax;
         double overlap_pa;
         double overlap_pb;
@@ -57,7 +57,11 @@ namespace hopsan {
         {
             Cq = 0.67;
             d = 0.01;
-            f = 1.0;
+            f_pa = 1.0;
+            f_pb = 1.0;
+            f_at = 1.0;
+            f_bt = 1.0;
+            f_cc = 1.0;
             xvmax = 0.01;
             overlap_pa = -1e-6;
             overlap_pb = -1e-6;
@@ -78,7 +82,11 @@ namespace hopsan {
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
+            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
+            registerParameter("f_pb", "Fraction of spool circumference that is opening P-B", "[-]", f_pb);
+            registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
+            registerParameter("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", f_bt);
+            registerParameter("f_cc", "Fraction of spool circumference that is opening C-C", "[-]", f_cc);
             registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
             registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
             registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
@@ -164,11 +172,11 @@ namespace hopsan {
             xbtnom = std::max(xv-overlap_bt,0.0);
             xccnom = xvmax - std::max(fabs(xv-overlap_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
 
-            Kcpa = Cq*f*pi*d*xpanom*sqrt(2.0/890.0);
-            Kcpb = Cq*f*pi*d*xpbnom*sqrt(2.0/890.0);
-            Kcat = Cq*f*pi*d*xatnom*sqrt(2.0/890.0);
-            Kcbt = Cq*f*pi*d*xbtnom*sqrt(2.0/890.0);
-            Kccc = Cq*f*pi*d*xccnom*sqrt(2.0/890.0);
+            Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/890.0);
+            Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/890.0);
+            Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/890.0);
+            Kcbt = Cq*f_bt*pi*d*xbtnom*sqrt(2.0/890.0);
+            Kccc = Cq*f_cc*pi*d*xccnom*sqrt(2.0/890.0);
 
             //With TurbulentFlowFunction:
             qTurb_pa.setFlowCoefficient(Kcpa);
