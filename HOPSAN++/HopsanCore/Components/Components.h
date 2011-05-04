@@ -59,6 +59,7 @@
 #include "Hydraulic/HydraulicMachineC.hpp"
 #include "Hydraulic/HydraulicShuttleValve.hpp"
 #include "Hydraulic/HydraulicPressureControlledPump.hpp"
+#include "Hydraulic/HydraulicHose.hpp"
 #include "Hydraulic/HydraulicUndefinedConnectionC.hpp"
 #include "Hydraulic/HydraulicUndefinedConnectionQ.hpp"
 

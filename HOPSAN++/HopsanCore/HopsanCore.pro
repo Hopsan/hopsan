@@ -217,7 +217,8 @@ HEADERS += win32dll.h \
     CoreUtilities/FindUniqueName.h \
     Components/Mechanic/MechanicMultiPortTranslationalMass.hpp \
     Components/Hydraulic/Hydraulic43ValveNeutralToTank.hpp \
-    Components/Hydraulic/Hydraulic43ValveNeutralSupplyToTank.hpp
+    Components/Hydraulic/Hydraulic43ValveNeutralSupplyToTank.hpp \
+    Components/Hydraulic/HydraulicHose.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

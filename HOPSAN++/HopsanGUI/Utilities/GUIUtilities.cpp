@@ -175,6 +175,8 @@ QString parseVariableDescription(QString input)
     input.replace("kappa",      QObject::trUtf8("κ"), Qt::CaseInsensitive);
     input.replace("tao",        QObject::trUtf8("τ"), Qt::CaseInsensitive);
     input.replace("omega",      QObject::trUtf8("ω"), Qt::CaseInsensitive);
+    input.replace("eta",        QObject::trUtf8("η"), Qt::CaseInsensitive);
+    input.replace("rho",        QObject::trUtf8("ρ"), Qt::CaseInsensitive);
 
     if(input.count("_") == 1 && !input.contains("^"))
     {
