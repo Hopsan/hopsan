@@ -107,6 +107,7 @@
 #include "Signal/SignalXor.hpp"
 #include "Signal/SignalSum.hpp"
 #include "Signal/SignalDummy.hpp"
+#include "Signal/SignalPower.hpp"
 #include "Signal/SignalUndefinedConnection.hpp"
 
 /* Mechanical Components */
