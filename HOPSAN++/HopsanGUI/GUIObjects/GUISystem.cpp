@@ -552,12 +552,12 @@ void GUISystem::saveToWrappedCode()
 
     fileStream << "\n";
 
-        //Save parameterse
+        //Save parameters
     for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
     {
         for(int i=0; i<it.value()->getParameterNames().size(); ++i)
         {
-            fileStream << "setParameter(\"" << it.value()->getName() << "\", \"" << it.value()->getParameterNames().at(i) <<  "\", \"" << it.value()->getParameterValue(it.value()->getParameterNames().at(i)) << "\");\n";
+            fileStream << "setParameter(\"" << it.value()->getName() << "\", \"" << it.value()->getParameterNames().at(i) <<  "\", " << it.value()->getParameterValue(it.value()->getParameterNames().at(i)) << ");\n";
         }
     }
 
