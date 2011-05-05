@@ -225,7 +225,7 @@ HEADERS += win32dll.h \
     ComponentUtilities/ReadDataCurve.h \
     ComponentUtilities/CSVParser.h \
     ComponentUtilities/ReadDataCurve.h \
-    ComponentUtilities/CSVParser.h
+    ComponentUtilities/CSVParser.h \
     Components/Signal/SignalUndefinedConnection.hpp
 
 OTHER_FILES += \
