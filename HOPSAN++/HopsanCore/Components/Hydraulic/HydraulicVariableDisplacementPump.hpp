@@ -102,11 +102,19 @@ namespace hopsan {
             if (cav)
             {
                 q2 = ( dp*n*eps/(2.0*pi) + Kcp*(c1-c2) ) / ( (Zc1+Zc2)*Kcp+1 );
-                q1 = -q2;
                 p1 = c1 + Zc1 * q1;
                 p2 = c2 + Zc2 * q2;
-                if (p1 < 0.0) { p1 = 0.0; }
-                if (p2 < 0.0) { p2 = 0.0; }
+                if (p1 <= 0.0)
+                {
+                    p1 = 0.0;
+                    q2 = std::min(q2, 0.0);
+                }
+                if (p2 <= 0.0)
+                {
+                    p2 = 0.0;
+                    q2 = std::max(q2, 0.0);
+                }
+                q1 = -q2;
             }
 
             //Write new values to nodes

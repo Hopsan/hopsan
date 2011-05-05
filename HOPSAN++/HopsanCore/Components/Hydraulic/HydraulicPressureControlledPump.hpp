@@ -164,12 +164,23 @@ namespace hopsan {
             //Leakage flow
             ql = Kcp * (p2 - p1);
             q2 = qp - ql;
-            q1 = -q2;
+
 
             //Cavitation check
-            if (p1 < 0.0) { p1 = 0.0; }
-            if (p2 < 0.0) { p2 = 0.0; }
+            if (p1 < 0.0)
+            {
+                p1 = 0.0;
+                q2 = std::min(q2, 0.0);
+            }
+            if (p2 <= 0.0)
+            {
+                p2 = 0.0;
+                q2 = std::max(q2, 0.0);
+            }
             if (c3 < 0.0) { c3 = 0.0; }
+
+            q1 = -q2;
+
 
             //Write new values to nodes
             (*mpND_p1) = p1;
