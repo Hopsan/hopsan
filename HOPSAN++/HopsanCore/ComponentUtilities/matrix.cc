@@ -216,7 +216,7 @@ int read_matrix(Matrix &mx, string &title, FILE *in)
 			*v++ = vin;
 		}
 		if (feof(in)) {
-			printf("\nerror reading %s\n",title);
+                        printf("\nerror reading %s\n",title.c_str());
 			printf("Matrix has %d rows and %d columns\n",
                    mx.rows(),mx.cols());
 			printf("Unexpected EOF reading row %d",j+1);
