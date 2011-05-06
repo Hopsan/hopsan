@@ -100,12 +100,12 @@ namespace hopsan {
             {
                 if (c1 > c2) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
                 else { q2 = 0.0; }
+                q1 = -q2;
+                p1 = c1 + Zc1 * q1;
+                p2 = c2 + Zc2 * q2;
+                if (p1 < 0.0) { p1 = 0.0; }
+                if (p2 < 0.0) { p2 = 0.0; }
             }
-            q1 = -q2;
-            p1 = c1 + Zc1 * q1;
-            p2 = c2 + Zc2 * q2;
-            if (p1 < 0.0) { p1 = 0.0; }
-            if (p2 < 0.0) { p2 = 0.0; }
 
             //Write new values to nodes
             (*mpND_p1) = p1;
