@@ -24,7 +24,8 @@ namespace hopsan {
     private:
         double Cq;
         double d;
-        double f_pa, f_pb, f_at, f_bt;
+        double f_pa, f_pb, f_at, f_bt, f_c;
+        double p_c;
         double xvmax;
         double overlap_pa;
         double overlap_pb;
@@ -54,10 +55,12 @@ namespace hopsan {
         {
             Cq = 0.67;
             d = 0.01;
+            p_c = 0.02;
             f_pa = 1.0;
             f_pb = 1.0;
             f_at = 1.0;
             f_bt = 1.0;
+            f_c = 0.1;
             xvmax = 0.01;
             overlap_pa = -1e-6;
             overlap_pb = -1e-6;
@@ -76,10 +79,12 @@ namespace hopsan {
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
-            registerParameter("f_pb", "Fraction of spool circumference that is opening P-B", "[-]", f_pb);
-            registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
-            registerParameter("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", f_bt);
+            registerParameter("p_c",  "Fraction of displacement when central position is open", "[-]", p_c);
+            registerParameter("f_pa", "Fraction of spool circumference opening P-A", "[-]", f_pa);
+            registerParameter("f_pb", "Fraction of spool circumference opening P-B", "[-]", f_pb);
+            registerParameter("f_at", "Fraction of spool circumference opening A-T", "[-]", f_at);
+            registerParameter("f_bt", "Fraction of spool circumference opening B-T", "[-]", f_bt);
+            registerParameter("f_c",  "Fraction of spool circumference opening at neutral position", "-", f_c);
             registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
             registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
             registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
@@ -123,7 +128,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare local variables
-            double cp, Zcp, ct, Zct, ca, Zca, cb, Zcb, xvin, xv, xpanom, xpbnom, xatnom, xbtnom, Kcpa, Kcpb, Kcat, Kcbt, qpa, qpb, qat, qbt, qp, qa, qb, qt, pa, pb, pt, pp;
+            double cp, Zcp, ct, Zct, ca, Zca, cb, Zcb, xvin, xv, xpanom, xpbnom, xatnom, xbtnom, xcnom, Kcpa, Kcpb, Kcat, Kcbt, Kcc, qpa, qpb, qat, qbt, qp, qa, qb, qt, pa, pb, pt, pp;
             bool cav = false;
 
             //Get variable values from nodes
@@ -143,19 +148,21 @@ namespace hopsan {
             //Valve equations
             xpanom = std::max(xv-overlap_pa,0.0);
             xpbnom = std::max(-xv-overlap_pb,0.0);
-            xatnom = std::min(-xv-overlap_at+xvmax,xvmax);
-            xbtnom = std::min(xv-overlap_bt+xvmax,xvmax);
+            xatnom = std::max(-xv-overlap_at,0.0);
+            xbtnom = std::max(xv-overlap_bt,0.0);
+            xcnom  = std::max(xvmax - fabs(xv)/(p_c*xvmax), 0.0);
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/890.0);
             Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/890.0);
             Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/890.0);
             Kcbt = Cq*f_bt*pi*d*xbtnom*sqrt(2.0/890.0);
+            Kcc  = Cq*f_c*pi*d*xcnom*sqrt(2.0/890.0);
 
             //With TurbulentFlowFunction:
             qTurb_pa.setFlowCoefficient(Kcpa);
             qTurb_pb.setFlowCoefficient(Kcpb);
-            qTurb_at.setFlowCoefficient(Kcat);
-            qTurb_bt.setFlowCoefficient(Kcbt);
+            qTurb_at.setFlowCoefficient(Kcat+Kcc);
+            qTurb_bt.setFlowCoefficient(Kcbt+Kcc);
 
             qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
             qpb = qTurb_pb.getFlow(cp, cb, Zcp, Zcb);
