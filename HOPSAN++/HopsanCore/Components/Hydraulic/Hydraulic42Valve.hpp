@@ -27,6 +27,7 @@ namespace hopsan {
         double d;
         double f_pa, f_bt;
         double xvmax;
+        double rho;
         double omegah;
         double deltah;
 
@@ -51,6 +52,7 @@ namespace hopsan {
             f_pa = 1.0;
             f_bt = 1.0;
             xvmax = 0.01;
+            rho = 890;
             omegah = 100.0;
             deltah = 1.0;
 
@@ -62,6 +64,7 @@ namespace hopsan {
             mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
+            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
             registerParameter("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", f_bt);
@@ -126,8 +129,8 @@ namespace hopsan {
             xv = filter.value();
 
             //Determine flow coefficient
-            Kcpa = Cq*f_pa*pi*d*xv*sqrt(2.0/890.0);
-            Kcbt = Cq*f_bt*pi*d*xv*sqrt(2.0/890.0);
+            Kcpa = Cq*f_pa*pi*d*xv*sqrt(2.0/rho);
+            Kcbt = Cq*f_bt*pi*d*xv*sqrt(2.0/rho);
 
             //Calculate flow
             qTurb_pa.setFlowCoefficient(Kcpa);

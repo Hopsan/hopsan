@@ -27,6 +27,7 @@ namespace hopsan {
         double d;
         double f_pa, f_at;
         double xvmax;
+        double rho;
         double overlap_pa;
         double overlap_at;
         double omegah;
@@ -53,6 +54,7 @@ namespace hopsan {
             f_pa = 1.0;
             f_at = 1.0;
             xvmax = 0.01;
+            rho = 890;
             overlap_pa = -1e-6;
             overlap_at = -1e-6;
             omegah = 100.0;
@@ -65,6 +67,7 @@ namespace hopsan {
             mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
+            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
             registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
@@ -124,8 +127,8 @@ namespace hopsan {
             xpanom = std::max(xv-overlap_pa,0.0);
             xatnom = std::max(-xv-overlap_at,0.0);
 
-            Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/890.0);
-            Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/890.0);
+            Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
+            Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/rho);
 
             //With TurbulentFlowFunction:
             qTurb_pa.setFlowCoefficient(Kcpa);

@@ -28,6 +28,7 @@ namespace hopsan {
         double d;
         double f;
         double xvmax;
+        double rho;
         double omegah;
         double deltah;
 
@@ -50,6 +51,7 @@ namespace hopsan {
             d = 0.01;
             f = 1.0;
             xvmax = 0.01;
+            rho = 890;
             omegah = 100.0;
             deltah = 1.0;
 
@@ -59,6 +61,7 @@ namespace hopsan {
             mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
+            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
             registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
@@ -115,7 +118,7 @@ namespace hopsan {
 
             xnom = std::max(xv,0.0);
 
-            Kc = Cq*f*pi*d*xnom*sqrt(2.0/890.0);
+            Kc = Cq*f*pi*d*xnom*sqrt(2.0/rho);
 
             //With TurbulentFlowFunction:
             qTurb.setFlowCoefficient(Kc);

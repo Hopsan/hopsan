@@ -27,6 +27,7 @@ namespace hopsan {
         double Cq;
         double A;
         double Kc;
+        double rho;
         bool cav;
         TurbulentFlowFunction qTurb;
 
@@ -45,7 +46,8 @@ namespace hopsan {
         {
             Cq = 0.67;
             A = 0.00001;
-            Kc = Cq*A*sqrt(2.0/890.0);
+            Kc = Cq*A*sqrt(2.0/rho);
+            rho = 890;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -53,6 +55,7 @@ namespace hopsan {
 
             registerParameter("C_q", "Flow coefficient", "[-]", Cq);
             registerParameter("A", "Area", "[m^2]", A);
+            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
         }
 
 
@@ -82,7 +85,7 @@ namespace hopsan {
             A = (*mpND_A);
 
             //Orifice equations
-            Kc = Cq*A*sqrt(2.0/890.0);
+            Kc = Cq*A*sqrt(2.0/rho);
             qTurb.setFlowCoefficient(Kc);
             q2 = qTurb.getFlow(c1,c2,Zc1,Zc2);
             q1 = -q2;

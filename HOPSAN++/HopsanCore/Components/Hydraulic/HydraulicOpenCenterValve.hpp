@@ -28,6 +28,7 @@ namespace hopsan {
         double d;
         double f_pa, f_pb, f_at, f_bt, f_cc;
         double xvmax;
+        double rho;
         double overlap_pa;
         double overlap_pb;
         double overlap_at;
@@ -63,6 +64,7 @@ namespace hopsan {
             f_bt = 1.0;
             f_cc = 1.0;
             xvmax = 0.01;
+            rho = 890;
             overlap_pa = -1e-6;
             overlap_pb = -1e-6;
             overlap_at = -1e-6;
@@ -81,6 +83,7 @@ namespace hopsan {
             mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
+            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
             registerParameter("f_pb", "Fraction of spool circumference that is opening P-B", "[-]", f_pb);
@@ -172,11 +175,11 @@ namespace hopsan {
             xbtnom = std::max(xv-overlap_bt,0.0);
             xccnom = xvmax - std::max(fabs(xv-overlap_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
 
-            Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/890.0);
-            Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/890.0);
-            Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/890.0);
-            Kcbt = Cq*f_bt*pi*d*xbtnom*sqrt(2.0/890.0);
-            Kccc = Cq*f_cc*pi*d*xccnom*sqrt(2.0/890.0);
+            Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
+            Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);
+            Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/rho);
+            Kcbt = Cq*f_bt*pi*d*xbtnom*sqrt(2.0/rho);
+            Kccc = Cq*f_cc*pi*d*xccnom*sqrt(2.0/rho);
 
             //With TurbulentFlowFunction:
             qTurb_pa.setFlowCoefficient(Kcpa);
