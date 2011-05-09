@@ -7,7 +7,7 @@ TARGET = myLib
 TEMPLATE = lib
 
 # DESTDIR = ../bin/debug
-LIBS += -L../../bin/release \
+LIBS += -L../../bin \
     -lHopsanCore
 INCLUDEPATH += ../../HopsanCore
 DEFINES += MYLIB_LIBRARY
