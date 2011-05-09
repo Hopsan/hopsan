@@ -1413,6 +1413,37 @@ void GUIContainerObject::groupSelected(QPointF pt)
 }
 
 
+void GUIContainerObject::selectSection(int no, bool append)
+{
+    qDebug() << "selectSection()";
+    if(!append)
+    {
+        deselectAll();
+    }
+    if(mSection.size() < no+1)
+    {
+        return;
+    }
+    for(int i=0; i<mSection.at(no).size(); ++i)
+    {
+        mSection[no][i]->select();
+    }
+}
+
+
+void GUIContainerObject::assignSection(int no)
+{
+    if(!isObjectSelected()) return;
+    while(mSection.size()<no+1)
+    {
+        QList<GUIModelObject *> dummyList;
+        mSection.append(dummyList);
+    }
+    mSection[no].clear();
+    mSection[no].append(mSelectedGUIModelObjectsList);
+}
+
+
 //! @brief Selects all objects and connectors.
 void GUIContainerObject::selectAll()
 {

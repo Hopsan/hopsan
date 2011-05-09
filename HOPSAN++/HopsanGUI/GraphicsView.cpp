@@ -264,7 +264,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     bool doNotForwardEvent = false;
     bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
     //bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);   //Commented because it is not used, to avoid compile warnings
-    //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);       //Commented because it is not used, to avoid compile warnings
+    //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);
+
+    //qDebug() << "shiftPressed = " << shiftPressed;
+    //qDebug() << "event->key() = " << event->key();
 
     if (event->key() == Qt::Key_Delete && !mpContainerObject->mIsRenamingObject)
     {
@@ -282,6 +285,127 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             delete(mpContainerObject->mpTempConnector);
             mpContainerObject->setIsCreatingConnector(false);
         }
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_0)
+    {
+        mpContainerObject->assignSection(0);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_1)
+    {
+        mpContainerObject->assignSection(1);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_2)
+    {
+        mpContainerObject->assignSection(2);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_3)
+    {
+        mpContainerObject->assignSection(3);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_4)
+    {
+        mpContainerObject->assignSection(4);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_5)
+    {
+        mpContainerObject->assignSection(5);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_6)
+    {
+        mpContainerObject->assignSection(6);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_7)
+    {
+        mpContainerObject->assignSection(7);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_8)
+    {
+        mpContainerObject->assignSection(8);
+    }
+    else if (ctrlPressed && event->key() == Qt::Key_9)
+    {
+        mpContainerObject->assignSection(9);
+    }
+//    else if (altPressed && event->key() == Qt::Key_0)
+//    {
+//        mpContainerObject->selectSection(0, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_1)
+//    {
+//        qDebug() << "Boo";
+//        mpContainerObject->selectSection(1, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_2)
+//    {
+//        mpContainerObject->selectSection(2, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_3)
+//    {
+//        mpContainerObject->selectSection(3, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_4)
+//    {
+//        mpContainerObject->selectSection(4, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_5)
+//    {
+//        mpContainerObject->selectSection(5, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_6)
+//    {
+//        mpContainerObject->selectSection(6, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_7)
+//    {
+//        mpContainerObject->selectSection(7, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_8)
+//    {
+//        mpContainerObject->selectSection(8, true);
+//    }
+//    else if (altPressed && event->key() == Qt::Key_9)
+//    {
+//        mpContainerObject->selectSection(9, true);
+//    }
+    else if (event->key() == Qt::Key_0)
+    {
+        mpContainerObject->selectSection(0);
+    }
+    else if (event->key() == Qt::Key_1)
+    {
+        mpContainerObject->selectSection(1);
+    }
+    else if (event->key() == Qt::Key_2)
+    {
+        mpContainerObject->selectSection(2);
+    }
+    else if (event->key() == Qt::Key_3)
+    {
+        mpContainerObject->selectSection(3);
+    }
+    else if (event->key() == Qt::Key_4)
+    {
+        mpContainerObject->selectSection(4);
+    }
+    else if (event->key() == Qt::Key_5)
+    {
+        mpContainerObject->selectSection(5);
+    }
+    else if (event->key() == Qt::Key_6)
+    {
+        mpContainerObject->selectSection(6);
+    }
+    else if (event->key() == Qt::Key_7)
+    {
+        mpContainerObject->selectSection(7);
+    }
+    else if (event->key() == Qt::Key_8)
+    {
+        mpContainerObject->selectSection(8);
+    }
+    else if (event->key() == Qt::Key_9)
+    {
+        mpContainerObject->selectSection(9);
     }
     else if(ctrlPressed && event->key() == Qt::Key_Up)
     {

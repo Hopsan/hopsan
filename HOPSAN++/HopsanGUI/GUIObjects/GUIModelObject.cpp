@@ -1135,7 +1135,6 @@ QVariant GUIModelObjectDisplayName::itemChange(GraphicsItemChange change, const 
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        qDebug() << "ItemSelectedHasChanged";
         if (this->isSelected())
         {
             mpParentGUIModelObject->getParentContainerObject()->deselectSelectedNameText();

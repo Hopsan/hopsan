@@ -93,8 +93,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpStartPort->addConnection();
     mpEndPort->addConnection();
 
-//    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
-//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->getGuiModelObject()->getCenterPos();
     this->setPos(startPos);
 
@@ -1070,7 +1070,7 @@ void GUIConnector::determineAppearance()
 //! @brief Slot that "deactivates" a connector if it is deselected
 void GUIConnector::deselect()
 {
-    qDebug() << "Deselecting connector!";
+    //qDebug() << "Deselecting connector!";
     this->setPassive();
 }
 
@@ -1078,7 +1078,7 @@ void GUIConnector::deselect()
 //! @brief Slot that "activates" a connector if it is selected
 void GUIConnector::select()
 {
-    qDebug() << "Selecting connector!";
+    //qDebug() << "Selecting connector!";
     this->doSelect(true, -1);
 }
 

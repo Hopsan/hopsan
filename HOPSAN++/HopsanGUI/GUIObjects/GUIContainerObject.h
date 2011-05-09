@@ -118,6 +118,9 @@ public:
     QStringList getPlotVariableFromAlias(QString alias);
     QString getPlotAlias(QString componentName, QString portName, QString dataName);
 
+    void selectSection(int no, bool append=false);
+    void assignSection(int no);
+
 
 public slots:
         //Selection
@@ -205,6 +208,7 @@ private:
     double mPasteOffset;
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
     QList< QVector<double> > mTimeVectors;
+    QList< QList<GUIModelObject *> > mSection;
 };
 
 #endif // GUICONTAINEROBJECT_H
