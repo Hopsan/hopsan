@@ -153,7 +153,7 @@ namespace hopsan {
             xpbnom = std::max(-xv-overlap_pb,0.0);
             xatnom = std::max(-xv-overlap_at,0.0);
             xbtnom = std::max(xv-overlap_bt,0.0);
-            xcnom  = std::max(xvmax - fabs(xv)/(p_c*xvmax), 0.0);
+            xcnom  = std::max(xvmax - fabs(xv)/(p_c), 0.0);
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);
