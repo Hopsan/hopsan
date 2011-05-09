@@ -24,7 +24,8 @@ namespace hopsan {
     private:
         double Cq;
         double d;
-        double f_pa, f_pb, f_at, f_bt, f_pt;
+        double p_c;
+        double f_pa, f_pb, f_at, f_bt, f_c;
         double xvmax;
         double rho;
         double overlap_pa;
@@ -56,11 +57,12 @@ namespace hopsan {
         {
             Cq = 0.67;
             d = 0.01;
+            p_c = 0.02;
             f_pa = 1.0;
             f_pb = 1.0;
             f_at = 1.0;
             f_bt = 1.0;
-            f_pt = 0.1;
+            f_c = 0.1;
             xvmax = 0.01;
             rho = 890;
             overlap_pa = -1e-6;
@@ -81,11 +83,12 @@ namespace hopsan {
             registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
             registerParameter("d", "Diameter", "[m]", d);
             registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("f_pa", "Spool Fraction of the Diameter", "[-]", f_pa);
-            registerParameter("f_pb", "Spool Fraction of the Diameter", "[-]", f_pb);
-            registerParameter("f_at", "Spool Fraction of the Diameter", "[-]", f_at);
-            registerParameter("f_bt", "Spool Fraction of the Diameter", "[-]", f_bt);
-            registerParameter("f_pt", "Spool Fraction of the Diameter", "[-]", f_pt);
+            registerParameter("p_c",  "Fraction of displacement when central position is open", "[-]", p_c);
+            registerParameter("f_pa", "Fraction of spool circumference opening P-A", "[-]", f_pa);
+            registerParameter("f_pb", "Fraction of spool circumference opening P-B", "[-]", f_pb);
+            registerParameter("f_at", "Fraction of spool circumference opening A-T", "[-]", f_at);
+            registerParameter("f_bt", "Fraction of spool circumference opening B-T", "[-]", f_bt);
+            registerParameter("f_c",  "Fraction of spool circumference opening at neutral position", "-", f_c);
             registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
             registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
             registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
@@ -129,7 +132,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare local variables
-            double cp, Zcp, ct, Zct, ca, Zca, cb, Zcb, xvin, xv, xpanom, xpbnom, xatnom, xbtnom, xptnom, Kcpa, Kcpb, Kcat, Kcbt, Kcpt, qpa, qpb, qat, qbt, qpt, qp, qa, qb, qt, pa, pb, pt, pp;
+            double cp, Zcp, ct, Zct, ca, Zca, cb, Zcb, xvin, xv, xpanom, xpbnom, xatnom, xbtnom, xcnom, Kcpa, Kcpb, Kcat, Kcbt, Kcc, qpa, qpb, qat, qbt, qpt, qp, qa, qb, qt, pa, pb, pt, pp;
             bool cav = false;
 
             //Get variable values from nodes
@@ -151,33 +154,26 @@ namespace hopsan {
             xpbnom = std::max(-xv-overlap_pb,0.0);
             xatnom = std::max(-xv-overlap_at,0.0);
             xbtnom = std::max(xv-overlap_bt,0.0);
-            xptnom = xvmax-fabs(xv);
+            xcnom  = std::max(xvmax - fabs(xv)/p_c, 0.0);
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);
             Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/rho);
             Kcbt = Cq*f_bt*pi*d*xbtnom*sqrt(2.0/rho);
-            Kcpt = Cq*f_pt*pi*d*xptnom*sqrt(2.0/rho);
+            Kcc  = Cq*f_c*pi*d*xcnom*sqrt(2.0/rho);
 
             //With TurbulentFlowFunction:
             qTurb_pa.setFlowCoefficient(Kcpa);
             qTurb_pb.setFlowCoefficient(Kcpb);
             qTurb_at.setFlowCoefficient(Kcat);
             qTurb_bt.setFlowCoefficient(Kcbt);
-            qTurb_pt.setFlowCoefficient(Kcpt);
+            qTurb_pt.setFlowCoefficient(Kcc);
 
             qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
             qpb = qTurb_pb.getFlow(cp, cb, Zcp, Zcb);
             qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
             qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
             qpt = qTurb_pt.getFlow(cp, ct, Zcp, Zct);
-
-            if(mTime>8 && mTime<8.1)
-            {
-                std::stringstream ss;
-                ss << "qpa = " << qpa << ", qpb = " << qpb << ", qat = " << qat << ", qbt = " << qbt << ", qpt = " << qpt;
-                addDebugMessage(ss.str());
-            }
 
             qp = -qpa-qpb-qpt;
             qa = qpa-qat;
