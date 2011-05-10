@@ -1,14 +1,14 @@
 //!
-//! @file   HydraulicCheckValvePilot.hpp
+//! @file   HydraulicPilotClosableCheckValve.hpp
 //! @author Isak Demir
-//! @date   2011-05-08
+//! @date   2011-05-10
 //!
-//! @brief Contains a Pilot Controlled Hydraulic Checkvalve component
+//! @brief Contains a Pilot Closable Hydraulic Checkvalve component
 //!
-//$Id: HydraulicPilotControlledCheckValve.hpp 2915 2011-05-06 11:21:38Z robbr48 $
+//$Id$
 
-#ifndef HYDRAULICPILOTCONTROLLEDCHECKVALVE_HPP_INCLUDED
-#define HYDRAULICPILOTCONTROLLEDCHECKVALVE_HPP_INCLUDED
+#ifndef HYDRAULICPILOTCLOSABLECHECKVALVE_HPP_INCLUDED
+#define HYDRAULICPILOTCLOSABLECHECKVALVE_HPP_INCLUDED
 
 #include <iostream>
 #include "../../HopsanCore/ComponentEssentials.h"
@@ -21,7 +21,7 @@ namespace hopsan {
     //! @brief
     //! @ingroup HydraulicComponents
     //!
-    class HydraulicPilotControlledCheckValve : public ComponentQ
+    class HydraulicPilotClosableCheckValve : public ComponentQ
     {
     private:
         double mKs;
@@ -37,10 +37,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPilotControlledCheckValve("PilotControlledCheckValve");
+            return new HydraulicPilotClosableCheckValve("PilotClosableCheckValve");
         }
 
-        HydraulicPilotControlledCheckValve(const std::string name) : ComponentQ(name)
+        HydraulicPilotClosableCheckValve(const std::string name) : ComponentQ(name)
         {
             mKs = 0.000000025;
 
@@ -81,7 +81,7 @@ namespace hopsan {
             c_pilot = (*mpND_c_pilot);
 
             //Checkvalve equations
-            if ((c1 + c_pilot) > c2) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
+            if (c1 > (c2 + c_pilot)) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
             else { q2 = 0.0; }
 
             q1 = -q2;

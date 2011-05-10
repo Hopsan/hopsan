@@ -63,8 +63,8 @@
 #include "Hydraulic/HydraulicHose.hpp"
 #include "Hydraulic/HydraulicUndefinedConnectionC.hpp"
 #include "Hydraulic/HydraulicUndefinedConnectionQ.hpp"
-
 #include "Hydraulic/HydraulicPilotControlledCheckValve.hpp"
+#include "Hydraulic/HydraulicPilotClosableCheckValve.hpp"
 
 
 /* Signal Components */
