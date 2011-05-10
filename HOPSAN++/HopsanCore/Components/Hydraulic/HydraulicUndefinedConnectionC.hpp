@@ -36,6 +36,9 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
+            C = 1e5;
+            Z = 1;
+
             registerParameter("C",  "Wave Variable",     "[-]",  C);
             registerParameter("Z",  "Impedance",         "[-]",  Z);
         }

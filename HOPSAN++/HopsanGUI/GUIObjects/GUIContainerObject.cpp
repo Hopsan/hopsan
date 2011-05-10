@@ -1415,7 +1415,6 @@ void GUIContainerObject::groupSelected(QPointF pt)
 
 void GUIContainerObject::selectSection(int no, bool append)
 {
-    qDebug() << "selectSection()";
     if(!append)
     {
         deselectAll();

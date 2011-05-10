@@ -36,6 +36,9 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
+            P = 100000;
+            Q = 0;
+
             registerParameter("P",  "Pressure",     "[-]",  P);
             registerParameter("Q",  "Flow",         "[-]",  Q);
         }

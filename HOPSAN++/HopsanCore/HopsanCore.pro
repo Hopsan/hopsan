@@ -227,7 +227,9 @@ HEADERS += win32dll.h \
     ComponentUtilities/ReadDataCurve.h \
     ComponentUtilities/CSVParser.h \
     Components/Signal/SignalPower.hpp \
-    Components/Signal/SignalUndefinedConnection.hpp
+    Components/Signal/SignalUndefinedConnection.hpp \
+    Components/Hydraulic/HydraulicPilotControlledCheckValve.hpp \
+    Components/Hydraulic/HydraulicCheckValveWithOrifice.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

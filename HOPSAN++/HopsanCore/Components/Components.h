@@ -19,6 +19,7 @@
 #include "Hydraulic/HydraulicPressureSourceQ.hpp"
 #include "Hydraulic/HydraulicFixedDisplacementPump.hpp"
 #include "Hydraulic/HydraulicCheckValve.hpp"
+#include "Hydraulic/HydraulicCheckValveWithOrifice.hpp"
 #include "Hydraulic/Hydraulic22DirectionalValve.hpp"
 #include "Hydraulic/Hydraulic22Valve.hpp"
 #include "Hydraulic/Hydraulic32DirectionalValve.hpp"
@@ -62,6 +63,8 @@
 #include "Hydraulic/HydraulicHose.hpp"
 #include "Hydraulic/HydraulicUndefinedConnectionC.hpp"
 #include "Hydraulic/HydraulicUndefinedConnectionQ.hpp"
+
+#include "Hydraulic/HydraulicPilotControlledCheckValve.hpp"
 
 
 /* Signal Components */
