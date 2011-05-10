@@ -3,7 +3,7 @@
     <modelobject typename="HydraulicCheckValveWithOrifice" displayname="Check Valve With Orifice">
         <help text="Hydraulic check valve with turbulent flow equations. Flow in opposite direction will pass through an orifice. This is a Q-type component."/>
         <icon isopath="checkvalveorifice_iso.svg" iconrotation="ON" userpath="checkvalveorifice_user.svg"/>
-        <portpose x="1" y="0.34022" a="0" name="P1"/>
-        <portpose x="0" y="0.34022" a="180" name="P2"/>
+        <portpose x="1" y="0.75" a="0" name="P1"/>
+        <portpose x="0" y="0.75" a="180" name="P2"/>
     </modelobject>
 </hopsanobjectappearance>
