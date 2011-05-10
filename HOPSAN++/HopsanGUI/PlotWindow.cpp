@@ -218,6 +218,9 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
+    connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpComponentsLabel,  SLOT(setVisible(bool)));
+    connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpPortsLabel,       SLOT(setVisible(bool)));
+    connect(mpShowListsButton,                              SIGNAL(toggled(bool)),                                          mpVariablesLabel,   SLOT(setVisible(bool)));
     connect(mpNewWindowFromTabButton,                       SIGNAL(clicked()),                                              this,               SLOT(createPlotWindowFromTab()));
     connect(mpComponentList,                                SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
     connect(gpMainWindow->mpProjectTabs,                    SIGNAL(currentChanged(int)),                                    this,               SLOT(updateLists()));

@@ -37,10 +37,11 @@ class PlotMarker;
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
-    friend class PlotWidget;
+    friend class PlotWidget;                //! @todo Should plot window really be friend with everything?
     friend class VariableListWidget;
-    friend class PlotTabWidget;     //! @todo Not nice...
-    friend class PlotTab;           //! @todo Not nice at all...
+    friend class PlotTabWidget;
+    friend class PlotTab;
+    friend class PlotCurve;
 public:
     enum PlotWindowItems {ShowAll, ShowOnlyLists, ShowOnlyCurves, ShowOnlyPlot};
 
@@ -52,9 +53,6 @@ public:
 
     //MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
-
-    QToolButton *mpShowListsButton;     //! @todo Should not be public?
-    QToolButton *mpShowCurvesButton;    //! @todo Should not be public?
 
 signals:
     void curveAdded();
@@ -90,6 +88,8 @@ private:
     QToolButton *mpBackgroundColorButton;
     QToolButton *mpNewWindowFromTabButton;
     QToolButton *mpResetXVectorButton;
+    QToolButton *mpShowListsButton;     //! @todo Should not be public?
+    QToolButton *mpShowCurvesButton;    //! @todo Should not be public?
     QMenu *mpExportMenu;
     QAction *mpExportToCsvAction;
     QAction *mpExportToMatlabAction;
