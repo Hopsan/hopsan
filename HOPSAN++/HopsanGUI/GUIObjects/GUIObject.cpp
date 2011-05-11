@@ -53,7 +53,10 @@ void GUIObject::setParentContainerObject(GUIContainerObject *pParentContainer)
         disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
     }
     mpParentContainerObject = pParentContainer;
-    connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()),Qt::UniqueConnection);
+    if(mpParentContainerObject != 0)
+    {
+        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()),Qt::UniqueConnection);
+    }
 }
 
 

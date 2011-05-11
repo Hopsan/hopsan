@@ -35,6 +35,7 @@ class GUIConnector : public QGraphicsWidget
 public:
     GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer, QGraphicsItem *parent = 0);
     GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *pParentContainer, QStringList geometries = QStringList(), QGraphicsItem *parent = 0);
+    void commonConstructorCode();
     ~GUIConnector();
 
     void setParentContainer(GUIContainerObject *pParentContainer);
@@ -87,7 +88,7 @@ public slots:
     void setPassive();
     void setHovered();
     void setUnHovered();
-    void deleteMe();
+    void deleteMe(undoStatus undo=UNDO);
     void deleteMeWithNoUndo();
     void deselect();
     void select();

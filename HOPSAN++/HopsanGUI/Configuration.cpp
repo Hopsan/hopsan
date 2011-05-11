@@ -51,7 +51,7 @@ void Configuration::saveToXml()
 
     QDomElement style = appendDomElement(configRoot, "style");
 
-    QMap<QString, QMap<QString, QMap<QString, QPen> > >::iterator it1;
+    QMap<connectorStyle, QMap<QString, QMap<QString, QPen> > >::iterator it1;
     QMap<QString, QMap<QString, QPen> >::iterator it2;
     QMap<QString, QPen>::iterator it3;
 
@@ -205,21 +205,26 @@ void Configuration::loadFromXml()
                 QString situation = penElement.attribute("situation");
                 QString color = penElement.attribute("color");
                 int width = penElement.attribute("width").toInt();
-                Qt::PenStyle style = Qt::PenStyle(penElement.attribute("style").toInt());
+                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute("style").toInt());
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
-                QPen pen = QPen(QColor(color), width, style, capStyle, Qt::RoundJoin);
+                QPen pen = QPen(QColor(color), width, penstyle, capStyle, Qt::RoundJoin);
 
-                if(!mPenStyles.contains(type))
+                connectorStyle style;
+                if(type=="Power") style = POWERCONNECTOR;
+                if(type=="Signal") style = SIGNALCONNECTOR;
+                if(type=="Undefined") style = UNDEFINEDCONNECTOR;
+
+                if(!mPenStyles.contains(style))
                 {
                     QMap<QString, QMap<QString, QPen> > tempMap;
-                    mPenStyles.insert(type, tempMap);
+                    mPenStyles.insert(style, tempMap);
                 }
-                if(!mPenStyles.find(type).value().contains(gfxType))
+                if(!mPenStyles.find(style).value().contains(gfxType))
                 {
                     QMap<QString, QPen> tempMap;
-                    mPenStyles.find(type).value().insert(gfxType, tempMap);
+                    mPenStyles.find(style).value().insert(gfxType, tempMap);
                 }
-                mPenStyles.find(type).value().find(gfxType).value().insert(situation, pen);
+                mPenStyles.find(style).value().find(gfxType).value().insert(situation, pen);
 
                 penElement = penElement.nextSiblingElement("penstyle");
             }
@@ -348,21 +353,26 @@ void Configuration::loadDefaultsFromXml()
                 QString situation = penElement.attribute("situation");
                 QString color = penElement.attribute("color");
                 int width = penElement.attribute("width").toInt();
-                Qt::PenStyle style = Qt::PenStyle(penElement.attribute("style").toInt());
+                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute("style").toInt());
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
-                QPen pen = QPen(QColor(color), width, style, capStyle);
+                QPen pen = QPen(QColor(color), width, penstyle, capStyle);
 
-                if(!mPenStyles.contains(type))
+                connectorStyle style;
+                if(type=="Power") style = POWERCONNECTOR;
+                if(type=="Signal") style = SIGNALCONNECTOR;
+                if(type=="Undefined") style = UNDEFINEDCONNECTOR;
+
+                if(!mPenStyles.contains(style))
                 {
                     QMap<QString, QMap<QString, QPen> > tempMap;
-                    mPenStyles.insert(type, tempMap);
+                    mPenStyles.insert(style, tempMap);
                 }
-                if(!mPenStyles.find(type).value().contains(gfxType))
+                if(!mPenStyles.find(style).value().contains(gfxType))
                 {
                     QMap<QString, QPen> tempMap;
-                    mPenStyles.find(type).value().insert(gfxType, tempMap);
+                    mPenStyles.find(style).value().insert(gfxType, tempMap);
                 }
-                mPenStyles.find(type).value().find(gfxType).value().insert(situation, pen);
+                mPenStyles.find(style).value().find(gfxType).value().insert(situation, pen);
 
                 penElement = penElement.nextSiblingElement("penstyle");
             }
@@ -554,22 +564,22 @@ QMap<QString, double> Configuration::getCustomUnits(QString key)
 
 
 //! @brief Returns connector pen for specified connector type
-//! @param type Type of connector (Power, Signal, NonFinished)
+//! @param style Style of connector (POWERCONNECTOR, SIGNALCONNECTOR or UNDEFINEDCONNECTOR)
 //! @param gfxType Graphics type (User or Iso)
 //! @param situation Defines when connector is used (Primary, Hovered, Active)
-QPen Configuration::getPen(QString type, graphicsType gfxType, QString situation)
+QPen Configuration::getPen(connectorStyle style, graphicsType gfxType, QString situation)
 {
     QString gfxString;
     if(gfxType == ISOGRAPHICS) { gfxString = "Iso"; }
     else { gfxString = "User"; }
 
-    if(mPenStyles.contains(type))
+    if(mPenStyles.contains(style))
     {
-        if(mPenStyles.find(type).value().contains(gfxString))
+        if(mPenStyles.find(style).value().contains(gfxString))
         {
-            if(mPenStyles.find(type).value().find(gfxString).value().contains(situation))
+            if(mPenStyles.find(style).value().find(gfxString).value().contains(situation))
             {
-                return mPenStyles.find(type).value().find(gfxString).value().find(situation).value();
+                return mPenStyles.find(style).value().find(gfxString).value().find(situation).value();
             }
         }
     }

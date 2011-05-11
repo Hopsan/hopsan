@@ -33,19 +33,7 @@ class UndoStack;
 GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    //qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiModelObject()->getName();
-
-    //! @todo maybe this init stuff should be common for both constructors
-    //Init members
-    mpParentContainerObject = 0;
-    mpStartPort = 0;
-    mpEndPort = 0;
-    mIsConnected = false;
-    mMakingDiagonal = false;
-    mIsDashed = false;
-
-    setFlags(QGraphicsItem::ItemIsFocusable);
-
+    this->commonConstructorCode();
     this->setParentContainer(pParentContainer);
 
     mpParentContainerObject->getContainedScenePtr()->addItem(this);
@@ -60,11 +48,6 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
     this->addPoint(startPos);
     this->addPoint(startPos);
     this->drawConnector();
-
-//    //! @todo need to mov these into a refreshParentcontainer connections function
-//    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-//    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
-//    this->refreshParentContainerSigSlotConnections();
 }
 
 
@@ -77,24 +60,16 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
 GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *pParentContainer, QStringList geometries, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    //! @todo maybe this init stuff should be common for both constructors
-    //Init members
-    mpParentContainerObject = 0;
-    mpStartPort = 0;
-    mpEndPort = 0;
-    mIsConnected = false;
-    mMakingDiagonal = false;
-    mIsDashed = false;
+    this->commonConstructorCode();
 
     this->setParentContainer(pParentContainer);
-    //setFlags(QGraphicsItem::ItemIsFocusable);
+
     mpStartPort = startPort;
     mpEndPort = endPort;
     mpStartPort->addConnection();
     mpEndPort->addConnection();
 
     connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->getGuiModelObject()->getCenterPos();
     this->setPos(startPos);
 
@@ -128,7 +103,6 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mIsConnected = true;
     emit connectionFinished();
     this->setPassive();
-//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
     for(int i=0; i < mPoints.size()-1; ++i)
@@ -159,13 +133,19 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 
     mpStartPort->getGuiModelObject()->rememberConnector(this);
     mpEndPort->getGuiModelObject()->rememberConnector(this);
-
-//        //! @todo need to mov these into a refreshParentcontainer connections function
-//    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-//    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
-//    this->refreshParentContainerSigSlotConnections();
-
     mpParentContainerObject->getContainedScenePtr()->addItem(this);
+}
+
+
+void GUIConnector::commonConstructorCode()
+{
+    //Init members
+    mpParentContainerObject = 0;
+    mpStartPort = 0;
+    mpEndPort = 0;
+    mIsConnected = false;
+    mMakingDiagonal = false;
+    mIsDashed = false;
 }
 
 
@@ -189,12 +169,11 @@ void GUIConnector::disconnectPortSigSlots(GUIPort* pPort)
     {
         sucess1 = disconnect(pPort->getGuiModelObject(), SIGNAL(objectDeleted()), this, SLOT(deleteMeWithNoUndo()));
         sucess2 = disconnect(pPort->getGuiModelObject(), SIGNAL(objectSelected()), this, SLOT(selectIfBothComponentsSelected()));
-        //! @todo something wierd, this second disconnect allways seem to fail
     }
 
     if (!sucess1 || !sucess2)
     {
-        qDebug() << "__________disconnect failed: " << sucess1 << " " << sucess2;
+        qDebug() << "GUIConnector::disconnectPortSigLots(): Disconnect failed: " << sucess1 << " " << sucess2;
     }
 
 }
@@ -213,7 +192,7 @@ void GUIConnector::connectPortSigSlots(GUIPort* pPort)
 
     if (!sucess1 || !sucess2)
     {
-        qDebug() << "__________connect failed: " << sucess1 << " " << sucess2;
+        qDebug() << "GUIConnector::disconnectPortSigLots(): Connect failed: " << sucess1 << " " << sucess2;
     }
 }
 
@@ -979,20 +958,17 @@ void GUIConnector::setUnHovered()
 
 
 //! @brief Asks the parent system to delete the connector
-//! @todo Rename this to something less childish!
-void GUIConnector::deleteMe()
+void GUIConnector::deleteMe(undoStatus undo)
 {
-    qDebug() << "calling remove connector in system: " << mpParentContainerObject->getName();
-    mpParentContainerObject->removeConnector(this, UNDO);
+    mpParentContainerObject->removeConnector(this, undo);
 }
 
 
 //! @brief Asks the parent system to delete the connector, and tells it to not add it to the undo stack
-//! @todo Rename this to something better
-//! @todo Perhaps this function and deleteMe() can be combined to one, wtih UNDO or NOUNDO as input parameter?
+//! This is necessary because slots cannot take UNDO or NOUNDO as arguments in a simple way
 void GUIConnector::deleteMeWithNoUndo()
 {
-    mpParentContainerObject->removeConnector(this, NOUNDO);
+    deleteMe(NOUNDO);
 }
 
 
@@ -1044,22 +1020,21 @@ void GUIConnector::determineAppearance()
         endPortType = mpEndPort->getPortType(GUIPort::INTERNALPORTTYPE);
     }
 
-    //! @todo what about multiport <-> multiport (which is currently not supported)
     if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") )
     {
-        mpGUIConnectorAppearance->setType("POWERPORT"); //!< @todo why is connector type described like POWER "PORT" why nopt power connector or signal connector
+        mpGUIConnectorAppearance->setStyle(POWERCONNECTOR);
     }
     else if( (startPortType == "READPORT") || (endPortType == "READPORT") )
     {
-        mpGUIConnectorAppearance->setType("SIGNALPORT");
+        mpGUIConnectorAppearance->setStyle(SIGNALCONNECTOR);
     }
     else if( (startPortType == "WRITEPORT") || (endPortType == "WRITEPORT") )
     {
-        mpGUIConnectorAppearance->setType("SIGNALPORT");
+        mpGUIConnectorAppearance->setStyle(SIGNALCONNECTOR);
     }
     else
     {
-        mpGUIConnectorAppearance->setType("UNKNOWN");
+        mpGUIConnectorAppearance->setStyle(UNDEFINEDCONNECTOR);
     }
 
     //Run this to actually change the pen
@@ -1087,7 +1062,7 @@ void GUIConnector::select()
 //! @param value Boolean that is true if connector shall be dashed
 void GUIConnector::setDashed(bool value)
 {
-    if(mpGUIConnectorAppearance->getType() == "Signal")
+    if(mpGUIConnectorAppearance->getStyle() == SIGNALCONNECTOR)
         return;
 
     mpParentContainerObject->mpParentProjectTab->hasChanged();
@@ -1157,7 +1132,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 void GUIConnectorLine::setActive()
 {
         this->setPen(mpConnectorAppearance->getPen("Active"));
-        if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getType() != "Signal")
+        if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
         {
             QPen tempPen = this->pen();
             tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
@@ -1181,7 +1156,7 @@ void GUIConnectorLine::setPassive()
     {
         this->setPen(mpConnectorAppearance->getPen("Primary"));
     }
-    if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getType() != "Signal")
+    if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
     {
         QPen tempPen = this->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
@@ -1197,7 +1172,7 @@ void GUIConnectorLine::setPassive()
 void GUIConnectorLine::setHovered()
 {
     this->setPen(mpConnectorAppearance->getPen("Hover"));
-    if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getType() != "Signal")
+    if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
     {
         QPen tempPen = this->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);

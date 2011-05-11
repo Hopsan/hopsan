@@ -80,7 +80,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpDisableUndoCheckBox->setCheckable(true);
     mpDisableUndoCheckBox->setChecked(mpContainerObject->mUndoDisabled);
 
-    //! @todo Make the script path do something
+        //Startup python script file
     mpPyScriptLabel = new QLabel("Script File:", this);
     mpPyScriptPath = new QLineEdit(this);
     mpPyScriptLabel->setFixedWidth(100);

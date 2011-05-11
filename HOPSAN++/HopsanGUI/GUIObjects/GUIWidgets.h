@@ -39,6 +39,8 @@ protected:
 public slots:
     virtual void deleteMe(undoStatus undoSettings=UNDO);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
+    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
 
 protected:
     bool mIsResizing;
@@ -60,6 +62,8 @@ protected:
 
 public slots:
     void deleteMe(undoStatus undoSettings=UNDO);
+    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
+    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
 
 private slots:
     void updateWidgetFromDialog();
@@ -94,6 +98,8 @@ public:
 
 public slots:
     void deleteMe(undoStatus undoSettings=UNDO);
+    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
+    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

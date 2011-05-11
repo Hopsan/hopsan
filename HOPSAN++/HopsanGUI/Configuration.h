@@ -47,7 +47,7 @@ public:
     QStringList getLastSessionModels();
     QString getDefaultUnit(QString key);
     QMap<QString, double> getCustomUnits(QString key);
-    QPen getPen(QString type, graphicsType gfxType, QString situation);
+    QPen getPen(connectorStyle style, graphicsType gfxType, QString situation);
     QPalette getPalette();
     QFont getFont();
     QString getStyleSheet();
@@ -93,7 +93,7 @@ private:
     QFont mFont;
     QString mStyleSheet;
 
-    QMap < QString, QMap< QString, QMap<QString, QPen> > > mPenStyles;
+    QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };
 
 #endif // CONFIGURATION_H

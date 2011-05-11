@@ -45,6 +45,7 @@ enum renameRestrictions {UNRESTRICTED, CORERENAMEONLY};
 enum undoStatus {NOUNDO, UNDO};
 enum saveTarget {EXISTINGFILE, NEWFILE};
 enum simulationMethod {SINGLECORE, MULTICORE};
+enum connectorStyle {POWERCONNECTOR, SIGNALCONNECTOR, UNDEFINEDCONNECTOR};
 
 //Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"

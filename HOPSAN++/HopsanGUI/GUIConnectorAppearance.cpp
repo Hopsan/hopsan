@@ -20,25 +20,14 @@ GUIConnectorAppearance::GUIConnectorAppearance(QString type, graphicsType gfxTyp
 
 //! @brief Set the Connector type
 //! @todo Maybe should use enum or some other non (can be whatever the programer want) type, or make it possible to "register" string keys with predetermined appearce through a ini file or similar
-void GUIConnectorAppearance::setType(const QString type)
+void GUIConnectorAppearance::setStyle(const connectorStyle style)
 {
-    if (type == "POWERPORT")
-    {
-        mConnectorType = "Power";
-    }
-    else if(type == "SIGNALPORT")
-    {
-        mConnectorType = "Signal";
-    }
-    else
-    {
-        mConnectorType = "Undefined";
-    }
+    mConnectorStyle = style;
 }
 
-QString GUIConnectorAppearance::getType()
+connectorStyle GUIConnectorAppearance::getStyle()
 {
-    return mConnectorType;
+    return mConnectorStyle;
 }
 
 void GUIConnectorAppearance::setIsoStyle(graphicsType gfxType)
@@ -48,17 +37,28 @@ void GUIConnectorAppearance::setIsoStyle(graphicsType gfxType)
 
 void GUIConnectorAppearance::setTypeAndIsoStyle(QString porttype, graphicsType gfxType)
 {
-    setType(porttype);
+    if(porttype=="POWERPORT")
+    {
+        setStyle(POWERCONNECTOR);
+    }
+    else if(porttype=="READPORT" || "WRITEPORT")
+    {
+        setStyle(SIGNALCONNECTOR);
+    }
+    else
+    {
+        setStyle(UNDEFINEDCONNECTOR);
+    }
     setIsoStyle(gfxType);
 }
 
 QPen GUIConnectorAppearance::getPen(QString situation)
 {
-    return getPen(mConnectorType, mGfxType, situation);
+    return getPen(mConnectorStyle, mGfxType, situation);
 }
 
 //! Get function for primary pen style
-QPen GUIConnectorAppearance::getPen(QString type, graphicsType gfxType, QString situation)
+QPen GUIConnectorAppearance::getPen(connectorStyle style, graphicsType gfxType, QString situation)
 {
-    return gConfig.getPen(type, gfxType, situation);
+    return gConfig.getPen(style, gfxType, situation);
 }
