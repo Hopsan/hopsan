@@ -53,7 +53,14 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setPalette(gConfig.getPalette());
 
-    resize(1000,800);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
+    int sh = qApp->desktop()->screenGeometry().height();
+    int sw = qApp->desktop()->screenGeometry().width();
+    resize(sw*0.7, sh*0.7);   //Resize plot window to 70% of screen height and width
+    int w = this->size().width();
+    int h = this->size().height();
+    int x = (sw - w)/2;
+    int y = (sh - h)/2;
+    move(x, y);       //Move plot window to center of screen
 
     mpPlotParameterTree = plotParameterTree;
 
@@ -228,6 +235,14 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(mpPortList,                                     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
     connect(mpVariableList,                                 SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
     connect(gpMainWindow->mpOptionsDialog,                  SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
+
+
+        //Hide lists and curve areas by default if screen size is small
+    if(sh*sw <= 800*1280)
+    {
+        mpShowListsButton->toggle();
+        mpShowCurvesButton->toggle();
+    }
 }
 
 
@@ -324,13 +339,6 @@ PlotTabWidget *PlotWindow::getPlotTabWidget()
 PlotTab *PlotWindow::getCurrentPlotTab()
 {
     return qobject_cast<PlotTab *>(mpPlotTabs->currentWidget());
-}
-
-
-//! @brief Slot that imports a curve from a file in GNUPLOT format
-void PlotWindow::importGNUPLOT()
-{
-    //! @todo Re-implement
 }
 
 
@@ -613,13 +621,9 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
 //! @param index Index of tab to close
 void PlotTabWidget::closePlotTab(int index)
 {
-    qDebug() << "Tjipp";
-    PlotTab *tempTab = mpParentPlotWindow->getCurrentPlotTab();
-    qDebug() << "Tjipp 1;";
-    tempTab->close();
-    qDebug() << "Tjipp 2;";
-    delete(tempTab);
-    qDebug() << "Tjipp 3;";
+    PlotTab *pCurrentTab = mpParentPlotWindow->getCurrentPlotTab();
+    pCurrentTab->close();
+    delete(pCurrentTab);
 }
 
 
@@ -641,7 +645,6 @@ PlotTab *PlotTabWidget::getTab(int i)
 //! @brief Slot that updates all necessary things when plot tab changes
 void PlotTabWidget::tabChanged()
 {
-    //! @todo Finish this
     if(count() > 0) { this->show(); }
     else { this->hide(); }
 
@@ -747,27 +750,18 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
     mpZoomerRight->setEnabled(false);
 
-    //! @todo This doesn't work right now. Do we need a wheel zoom?
         //Wheel Zoom
     mpMagnifier = new QwtPlotMagnifier(mpPlot->canvas());
     mpMagnifier->setAxisEnabled(QwtPlot::yLeft, true);
     mpMagnifier->setAxisEnabled(QwtPlot::yRight, true);
     mpMagnifier->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
     mpMagnifier->setWheelFactor(1.1);
-    mpMagnifier->setMouseButton(Qt::LeftButton);
-    mpMagnifier->setEnabled(false);
+    mpMagnifier->setEnabled(true);
 
         //Curve Marker Symbol
     mpMarkerSymbol = new QwtSymbol();
-    //mpMarkerSymbol->setPen(QPen(QColor(Qt::red), 3));
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
     mpMarkerSymbol->setSize(10,10);
-
-//        //Curve Marker Hover Symbol
-//    mpMarkerHoverSymbol = new QwtSymbol();
-//    mpMarkerHoverSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
-//    mpMarkerHoverSymbol->setStyle(QwtSymbol::Ellipse);
-//    mpMarkerHoverSymbol->setSize(10,10);
 
     mpGrid = new QwtPlotGrid;
     mpGrid->enableXMin(true);
@@ -1263,9 +1257,7 @@ void PlotTab::exportToPng()
        this, "Export File Name", QString(),
        "Portable Network Graphics (*.png)");
 
-    //QPicture picture;
-
-    QPixmap pixmap(1024, 768);      //! @todo Resolution should not be hard coded like this
+    QPixmap pixmap(mpPlot->width(), mpPlot->height());
     pixmap.fill();
     QwtPlotRenderer renderer;
     renderer.renderTo(mpPlot, pixmap);

@@ -43,15 +43,12 @@ class PlotWindow : public QMainWindow
     friend class PlotTab;
     friend class PlotCurve;
 public:
-    enum PlotWindowItems {ShowAll, ShowOnlyLists, ShowOnlyCurves, ShowOnlyPlot};
-
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath = QString());
     void setGeneration(int gen);
     PlotTabWidget *getPlotTabWidget();
     PlotTab *getCurrentPlotTab();
 
-    //MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
 
 signals:
@@ -63,7 +60,6 @@ public slots:
     void updatePortList();
     void updateVariableList();
     void addPlotCurveFromBoxes();
-    void importGNUPLOT();
     void close();
     void updatePalette();
     void createPlotWindowFromTab();
@@ -88,8 +84,8 @@ private:
     QToolButton *mpBackgroundColorButton;
     QToolButton *mpNewWindowFromTabButton;
     QToolButton *mpResetXVectorButton;
-    QToolButton *mpShowListsButton;     //! @todo Should not be public?
-    QToolButton *mpShowCurvesButton;    //! @todo Should not be public?
+    QToolButton *mpShowListsButton;
+    QToolButton *mpShowCurvesButton;
     QMenu *mpExportMenu;
     QAction *mpExportToCsvAction;
     QAction *mpExportToMatlabAction;
@@ -150,11 +146,7 @@ private:
 };
 
 
-
-
-
 //! @brief Tab widget for plots in plot window
-//! @todo Not sure if this is needed
 class PlotTabWidget : public QTabWidget
 {
     Q_OBJECT
@@ -174,6 +166,7 @@ private slots:
 class PlotTab : public QWidget
 {
     Q_OBJECT
+    friend class PlotWindow;
     friend class PlotCurve;
     friend class PlotTabWidget;
     friend class PlotMarker;
@@ -195,17 +188,6 @@ public:
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void updateLabels();
     bool isGridVisible();
-
-    bool mHasSpecialXAxis;          //! @todo Should be private
-    QVector<double> mVectorX;       //! @todo Should be private
-    QString mVectorXLabel;          //! @todo Should be private
-
-    QString mVectorXModelPath;      //! @todo Should be private
-    QString mVectorXComponent;      //! @todo Should be private
-    QString mVectorXPortName;       //! @todo Should be private
-    QString mVectorXDataName;       //! @todo Should be private
-    QString mVectorXDataUnit;       //! @todo Should be private
-    int mVectorXGeneration;         //! @todo Should be private
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
@@ -252,6 +234,17 @@ private:
     bool mLeftAxisLogarithmic;
 
     QRubberBand *mpHoverRect;
+
+    bool mHasSpecialXAxis;
+    QVector<double> mVectorX;
+    QString mVectorXLabel;
+
+    QString mVectorXModelPath;
+    QString mVectorXComponent;
+    QString mVectorXPortName;
+    QString mVectorXDataName;
+    QString mVectorXDataUnit;
+    int mVectorXGeneration;
 };
 
 
