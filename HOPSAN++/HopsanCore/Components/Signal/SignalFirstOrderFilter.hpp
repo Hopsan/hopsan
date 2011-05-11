@@ -49,8 +49,8 @@ namespace hopsan {
             registerParameter("k", "Gain", "[-]", k);
             registerParameter("omega_num", "Numerator break frequency", "[rad/s]", wnum);
             registerParameter("omega_den", "Denominator break frequency", "[rad/s]", wden);
-            registerParameter("y_min", "Output Lower limit", "[-]", min);
-            registerParameter("y_max", "Output Upper limit", "[-]", max);
+            registerParameter("y_min", "Lower output limit", "[-]", min);
+            registerParameter("y_max", "Upper output limit", "[-]", max);
         }
 
 

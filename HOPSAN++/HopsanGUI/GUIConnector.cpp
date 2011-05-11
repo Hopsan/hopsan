@@ -1038,7 +1038,7 @@ void GUIConnector::determineAppearance()
     }
 
     //Run this to actually change the pen
-    this->setPassive(); //!< @todo Not sure if setPassive is allways correct, but it is a good guess
+    this->setPassive();
 }
 
 

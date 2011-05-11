@@ -215,7 +215,7 @@ class HydraulicCylinderC : public ComponentC
             //Internal mechanical port
             c3 = A1*ci1 - A2*ci2;// + CxLim;
             Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp;// + ZxLim;
-            //! @todo End of stroke limitation currently turned off, because the piston gets stuck in the end position.
+            //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
 
             //Write to nodes
             (*mpND_c1) = c1;

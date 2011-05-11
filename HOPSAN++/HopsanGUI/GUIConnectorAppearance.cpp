@@ -19,7 +19,6 @@ GUIConnectorAppearance::GUIConnectorAppearance(QString type, graphicsType gfxTyp
 }
 
 //! @brief Set the Connector type
-//! @todo Maybe should use enum or some other non (can be whatever the programer want) type, or make it possible to "register" string keys with predetermined appearce through a ini file or similar
 void GUIConnectorAppearance::setStyle(const connectorStyle style)
 {
     mConnectorStyle = style;

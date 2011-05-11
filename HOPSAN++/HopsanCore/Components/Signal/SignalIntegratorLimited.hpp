@@ -37,11 +37,14 @@ namespace hopsan {
         SignalIntegratorLimited(const std::string name) : ComponentSignal(name)
         {
 
-            mMin = -1.5E+300;   //! @todo Shouldn't these be registered parameters?
+            mMin = -1.5E+300;
             mMax = 1.5E+300;
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+
+            registerParameter("y_min", "Lower output limit", "[-]", mMin);
+            registerParameter("y_max", "Upper output limit", "[-]", mMax);
         }
 
 
@@ -51,10 +54,9 @@ namespace hopsan {
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
-            mPrevU = startY;
             limitValue(startY, mMin, mMax);
-
-            limitValue((*mpND_in), mMin, mMax);
+            mPrevU = startY;
+            mPrevU = startY;
         }
 
 
@@ -64,14 +66,7 @@ namespace hopsan {
             //Bilinear transform is used
             (*mpND_out) = mPrevY + mTimestep/2.0*((*mpND_in) + mPrevU);
 
-            if ((*mpND_out) >= mMax)
-            {
-                (*mpND_out) = mMax;
-            }
-            else if ((*mpND_out) <= mMin)
-            {
-                (*mpND_out) = mMin;
-            }
+            limitValue((*mpND_out), mMin, mMax);
 
             //Update filter:
             mPrevU = (*mpND_in);

@@ -57,6 +57,7 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 #define HMF_ROOTTAG "hopsanmodelfile"
 #define HMF_OBJECTS "objects"
 #define HMF_OBJECTTAG "object"              //Non core Gui Object
+#define HMF_MODELOBJECT "modelobject"
 #define HMF_COMPONENTTAG "component"
 #define HMF_SYSTEMTAG "system"
 #define HMF_SYSTEMPORTTAG "systemport"
@@ -72,6 +73,15 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 #define HMF_BOXWIDGETTAG "boxwidget"
 #define HMF_PORTSTAG "ports"
 #define HMF_NAMESTAG "names"
+#define HMF_ICONTAG "icon"
+
+#define HMF_ISOPATHTAG "isopath"
+#define HMF_USERPATHTAG "userpath"
+#define HMF_ICONROTATIONTAG "iconrotation"
+
+#define HMF_HELPTAG "help"
+#define HMF_HELPTEXTTAG "text"
+#define HMF_HELPPICTURETAG "picture"
 
 #define HMF_NAMETAG "name"
 #define HMF_TYPETAG "typename"
@@ -115,6 +125,8 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
 #define HMF_SIMULATIONTIMETAG "simulationtime"
 #define HMF_SCRIPTFILETAG "scriptfile"
+
+#define HMF_VERSIONTAG "version"
 
 
 #endif // XMLUTILITIES_H

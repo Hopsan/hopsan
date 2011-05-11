@@ -106,13 +106,6 @@ namespace hopsan {
                 Zc2 = 0.0;
                 cav = true;
             }
-            if(p1 < 0.0 && p2 < 0.0)        //! @todo This will not do anything, because the next if will always be ran directly after it anyway...
-            {
-                p1 = 0.0;
-                q1 = 0.0;
-                p2 = 0.0;
-                q2 = 0.0;
-            }
             if(cav)
             {
                 q2 = qTurb.getFlow(c1,c2,Zc1,Zc2);

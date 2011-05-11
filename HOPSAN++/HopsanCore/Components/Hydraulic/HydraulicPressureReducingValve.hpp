@@ -189,7 +189,7 @@ namespace hopsan {
             {
                 xs = ((-c2) + b2*x0/2.0 + pref) / (b1+b2);
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
-                x0 = mFilterLP.value();        //! @todo How is this supposed to work? It is not possible to use the same filter twice in the same timesteps with different input values...
+                x0 = mFilterLP.value();        //! @todo Make the filter actually redo last step if possible; this will create an undesired delay of one iteration
 
                 mTurb.setFlowCoefficient(x0);
                 q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);

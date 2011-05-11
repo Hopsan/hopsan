@@ -48,6 +48,8 @@ namespace hopsan {
 
             registerParameter("omega", "Break frequency", "[rad/s]", mW);
             registerParameter("delta", "Damp coefficient", "[-]", mD);
+            registerParameter("y_min", "Lower output limit", "[-]", mMin);
+            registerParameter("y_max", "Upper output limit", "[-]", mMax);
         }
 
 

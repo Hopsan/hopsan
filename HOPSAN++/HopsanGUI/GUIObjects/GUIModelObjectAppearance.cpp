@@ -258,22 +258,21 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 //! @param rDomElement The DOM element to write to
 void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 {
-    //! @todo not use hardcoded strings here
-    QDomElement xmlObject = appendDomElement(rDomElement, "modelobject");
+    QDomElement xmlObject = appendDomElement(rDomElement, HMF_MODELOBJECT);
     xmlObject.setAttribute(HMF_TYPETAG, mTypeName);
     xmlObject.setAttribute(HMF_DISPLAYNAMETAG, mDisplayName);
-    QDomElement xmlIcon = appendDomElement(xmlObject, "icon");
+    QDomElement xmlIcon = appendDomElement(xmlObject, HMF_ICONTAG);
     this->makeSurePathsRelative(); //We want to save paths relative the basepath, to avoid incompatibility with absolute paths between systems
-    xmlIcon.setAttribute("isopath", mIconIsoPath);
-    xmlIcon.setAttribute("userpath", mIconUserPath);
-    xmlIcon.setAttribute("iconrotation", mIconRotationBehaviour);
+    xmlIcon.setAttribute(HMF_ISOPATHTAG, mIconIsoPath);
+    xmlIcon.setAttribute(HMF_USERPATHTAG, mIconUserPath);
+    xmlIcon.setAttribute(HMF_ICONROTATIONTAG, mIconRotationBehaviour);
     if(!mHelpText.isNull() || !mHelpPicture.isNull())
     {
-        QDomElement xmlHelp = appendDomElement(xmlObject, "help");
+        QDomElement xmlHelp = appendDomElement(xmlObject, HMF_HELPTAG);
         if(!mHelpText.isNull())
-            xmlHelp.setAttribute("text", mHelpText);
+            xmlHelp.setAttribute(HMF_HELPTEXTTAG, mHelpText);
         if(!mHelpPicture.isNull())
-            xmlHelp.setAttribute("picture", mHelpPicture);
+            xmlHelp.setAttribute(HMF_HELPPICTURETAG, mHelpPicture);
     }
 
     PortAppearanceMapT::iterator pit;
@@ -291,7 +290,7 @@ void GUIModelObjectAppearance::saveToXMLFile(QString filename)
     QDomDocument doc;
     QDomElement cafroot = doc.createElement(CAF_ROOTTAG);
     doc.appendChild(cafroot);
-    cafroot.setAttribute("version", CAFVERSION);
+    cafroot.setAttribute(HMF_VERSIONTAG, CAFVERSION);
     this->saveToDomElement(cafroot);
     const int IndentSize = 4;
     QFile xml(filename);

@@ -55,8 +55,8 @@ namespace hopsan {
             registerParameter("delta_num", "Numerator damp coefficient", "[-]", mDnum);
             registerParameter("omega_den", "Denominator break frequency", "[rad/s]", mWden);
             registerParameter("delta_den", "Denominator damp coefficient", "[-]", mDden);
-            registerParameter("y_min", "Output Lower limit", "[-]", mMin);
-            registerParameter("y_max", "Output Upper limit", "[-]", mMax);
+            registerParameter("y_min", "Lower output limit", "[-]", mMin);
+            registerParameter("y_max", "Upper output limit", "[-]", mMax);
         }
 
 

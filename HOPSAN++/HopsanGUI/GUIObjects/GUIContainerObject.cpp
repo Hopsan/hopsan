@@ -9,7 +9,6 @@
 
 #include "GUIContainerObject.h"
 
-//! @todo clean these up, they are nott all needed probably, copied from elsewere
 #include "../MainWindow.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
@@ -21,7 +20,6 @@
 #include "../Widgets/ProjectTabWidget.h"
 #include "../Widgets/MessageWidget.h"
 #include "../Widgets/LibraryWidget.h"
-#include "../Widgets/QuickNavigationWidget.h"
 #include "../Widgets/PlotWidget.h"
 #include "../Widgets/SystemParametersWidget.h"
 #include "../Utilities/GUIUtilities.h"
@@ -92,8 +90,6 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()), Qt::UniqueConnection);
 
-    //connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()), Qt::UniqueConnection);
-    //connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()), Qt::UniqueConnection);
     connect(gpMainWindow->togglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoEnabled(bool)), Qt::UniqueConnection);
@@ -111,9 +107,6 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
     connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()), Qt::UniqueConnection);
     connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()), Qt::UniqueConnection);
-//    connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime())); //! @todo should these be here (start stop ts)?
-//    connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()));
-//    connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()));
 
     //getCurrentContainer()->updateUndoStatus();
 }
@@ -128,8 +121,6 @@ void GUIContainerObject::disconnectMainWindowActions()
     disconnect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()));
     disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()));
 
-//    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        this,    SLOT(hideNames()));
-//    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        this,    SLOT(showNames()));
     disconnect(gpMainWindow->toggleNamesAction,     SIGNAL(triggered(bool)),    this,      SLOT(toggleNames(bool)));
     disconnect(gpMainWindow->togglePortsAction,     SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
     disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoEnabled(bool)));
@@ -147,9 +138,6 @@ void GUIContainerObject::disconnectMainWindowActions()
     disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
     disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
     disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  this,    SLOT(updateStopTime()));
-//    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime())); //! @todo should these be here (start stop ts)?
-//    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  this,    SLOT(updateStopTime()));
-//    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
 }
 
 //! @brief A helpfunction that determines on which edge an external port should be placed based on its internal position
