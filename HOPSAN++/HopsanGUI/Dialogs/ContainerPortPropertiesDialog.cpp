@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QDialogButtonBox>
+#include <QGroupBox>
 
 #include "../GUIObjects/GUIContainerPort.h"
 #include "../GUIObjects/GUIContainerObject.h"
@@ -21,21 +22,18 @@
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
-//! @todo The properties box gets really small and that does not look good, make sure at least some minimum width
 ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(GUIContainerPort *pContainerPort, QWidget *pParentWidget)
     : QDialog(pParentWidget)
 {
     mpContainerPort = pContainerPort;
 
         //Set the name and size of the main window
-    this->setObjectName("PortPropertiesDialog");
-    this->resize(640,480);
-    this->setWindowTitle("PortPropertiesDialog");
+    this->resize(10,10);        //Make very small initially, so it can expand when contents are added
+    this->setWindowTitle("Container Port Properties");
     this->setPalette(gConfig.getPalette());
 
         //This is the main Vertical layout of the dialog
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
-    pMainLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     //Define items in the dialog box
         //Name edit
@@ -59,7 +57,9 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(GUIContainerPort *p
     connect(pCancelButton,         SIGNAL(clicked()), this, SLOT(close()));
     connect(pDoneButton,           SIGNAL(clicked()), this, SLOT(setValues()));
 
-    setLayout(pMainLayout); //Is this really necessary as pMainLayout has this as parent
+    setLayout(pMainLayout);
+
+    this->setMinimumWidth(300);
 }
 
 

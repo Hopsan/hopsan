@@ -427,13 +427,6 @@ void Configuration::loadDefaultsFromXml()
     }
     file.close();
 
-    //! @todo This shall not be hard coded!
-    //mPalette = QPalette(QColor("black"), QColor("blue"), QColor("lightblue"), QColor("darkblue"), QColor("blue"),QColor("text"),QColor("gray"), QColor(244,247,251), QColor(226,231,237));
-
-        //Uncomment these line to use native style
-    //mPalette = gpMainWindow->palette();
-    //mStyleSheet.clear();
-
     return;
 }
 

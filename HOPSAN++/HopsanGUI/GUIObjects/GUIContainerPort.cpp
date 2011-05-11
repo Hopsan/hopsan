@@ -11,6 +11,7 @@
 #include "GUIContainerObject.h"
 #include "../GUIPort.h"
 #include "../Dialogs/ContainerPortPropertiesDialog.h"
+#include "../MainWindow.h"
 
 //! @todo rename GUISystemPort to ContainerPort, rename files also
 GUIContainerPort::GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
@@ -117,9 +118,17 @@ void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
 //! @brief Opens the properties dialog
 void GUIContainerPort::openPropertiesDialog()
 {
-    ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this);
+    ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this, gpMainWindow);
     pDialog->exec();
     delete pDialog;
+}
+
+
+//! @brief Event when double clicking on container port icon.
+void GUIContainerPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsWidget::mouseDoubleClickEvent(event);
+    openPropertiesDialog();
 }
 
 

@@ -29,6 +29,7 @@ protected:
     void createPorts();
     void saveCoreDataToDomElement(QDomElement &rDomElement);
     void openPropertiesDialog();
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     bool mIsSystemPort;
