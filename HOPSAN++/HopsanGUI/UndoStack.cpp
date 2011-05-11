@@ -800,6 +800,7 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 //! @param lineNumber Number of the line that was moved
 void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber)
 {
+    //! @todo This if statement is a very very very ugly hack...
     if(!(getCurrentPost().attribute("type") == "paste"))    //Connectors are modified when undoing paste operations, but this will modify them twice, so don't register it
     {
         QDomElement currentPostElement = getCurrentPost();
@@ -862,7 +863,6 @@ void UndoStack::registerVerticalFlip(QString objectName)
 
 //! @brief Register function for horizontal flip of an object
 //! @param item Pointer to the object
-//! @todo Maybe we should combine this and registerVerticalFlip to one function?
 void UndoStack::registerHorizontalFlip(QString objectName)
 {
     if(mpParentContainerObject->mUndoDisabled)
