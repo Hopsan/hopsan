@@ -722,7 +722,6 @@ void Component::setTypeName(const string typeName)
 Port *Component::getPort(const string portname)
 {
     PortPtrMapT::iterator it;
-    //cout << "get Port:" << portname << endl;
     it = mPortPtrMap.find(portname);
     if (it != mPortPtrMap.end())
     {
@@ -730,8 +729,8 @@ Port *Component::getPort(const string portname)
     }
     else
     {
-        cout << "failed to find port: " << portname << " in component: " << this->mName << endl;
-        gCoreMessageHandler.addDebugMessage("Trying to get port {" + portname + "}, but not found, pointer invalid");
+        //cout << "failed to find port: " << portname << " in component: " << this->mName << endl;
+        gCoreMessageHandler.addDebugMessage("Trying to get port '" + portname + "' in component '" + this->getName() + "', but not found, pointer invalid");
         return 0;
     }
 }

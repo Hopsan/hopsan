@@ -32,12 +32,24 @@ int main(int argc, char *argv[])
         double startTime=0, stopTime=2;
         ComponentSystem* pRootSystem = coreHmfLoader.loadModel(hmfFilePath, startTime, stopTime);
 
+        cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
+        while (HopsanEssentials::getInstance()->checkMessage() > 0)
+        {
+            cout << HopsanEssentials::getInstance()->getMessage().message << endl;
+        }
+
         TicToc initTimer("InitializeTime");
         pRootSystem->initialize(startTime, stopTime);
         initTimer.TocPrint();
         TicToc simuTimer("SimulationTime");
         pRootSystem->simulate(startTime, stopTime);
         simuTimer.TocPrint();
+
+        cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
+        while (HopsanEssentials::getInstance()->checkMessage() > 0)
+        {
+            cout << HopsanEssentials::getInstance()->getMessage().message << endl;
+        }
 
         cout << endl << "HopsanCLI Done!" << endl;
 

@@ -806,14 +806,14 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
 
     if (pComp1 == 0)
     {
-        ss << "Component1: "<< compname1 << " can not be found when atempting connect";
+        ss << "Component1: '"<< compname1 << "' can not be found when atempting connect";
         gCoreMessageHandler.addErrorMessage(ss.str(), "connectwithoutcomponent");
         return false;
     }
 
     if (pComp2 == 0)
     {
-        ss << "Component2: "<< compname2 << " can not be found when atempting connect";
+        ss << "Component2: '"<< compname2 << "' can not be found when atempting connect";
         gCoreMessageHandler.addErrorMessage(ss.str(), "connectwithoutcomponent");
         return false;
     }
@@ -821,7 +821,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     //Check if commponents have specified ports
     if (!pComp1->getPort(portname1, pPort1))
     {
-        ss << "Component: "<< pComp1->getName() << " does not have a port named " << portname1;
+        ss << "Component: '"<< pComp1->getName() << "' does not have a port named '" << portname1 << "'";
         gCoreMessageHandler.addErrorMessage(ss.str(), "portdoesnotexist");
         return false;
     }
@@ -829,7 +829,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     if (!pComp2->getPort(portname2, pPort2)) //Not else if because pPort2 has to be set in getPort
     {
         //raise Exception('type of port does not exist')
-        ss << "Component: "<< pComp2->getName() << " does not have a port named " << portname2;
+        ss << "Component: '"<< pComp2->getName() << "' does not have a port named '" << portname2 << "'";
         gCoreMessageHandler.addErrorMessage(ss.str(), "portdoesnotexist");
         return false;
     }

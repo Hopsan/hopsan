@@ -120,13 +120,13 @@ void HmfLoader::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSyst
     }
 
     //Load connections
-    rapidxml::xml_node<> *pConnections = pSysNode->first_node("conections");
+    rapidxml::xml_node<> *pConnections = pSysNode->first_node("connections");
     if (pConnections)
     {
         rapidxml::xml_node<> *pConnection = pConnections->first_node();
         while (pConnection != 0)
         {
-            if (strcmp(pConnection->name(), "connnect")==0)
+            if (strcmp(pConnection->name(), "connect")==0)
             {
                 loadConnection(pConnection, pSystem);
             }
@@ -138,11 +138,13 @@ void HmfLoader::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSyst
 void HmfLoader::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
 {
     string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
-    string displayName =  readStringAttribute(pComponentNode, "displayname", typeName);
+    string displayName =  readStringAttribute(pComponentNode, "name", typeName);
 
     Component *pComp = HopsanEssentials::getInstance()->CreateComponent(typeName);
     pComp->setName(displayName);
+    //cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
     pSystem->addComponent(pComp);
+    //cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
 
     //Load parameters
     rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");

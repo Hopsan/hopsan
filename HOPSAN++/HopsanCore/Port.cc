@@ -122,6 +122,7 @@ double Port::readNode(const size_t idx, const size_t /*portIdx*/)
         return 0;
     }*/
     //return mpNode->getData(idx);
+    //cout << "readNode: " << mpNode << endl;
     return mpNode->mDataVector[idx];//Test for speed up
 }
 
