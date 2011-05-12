@@ -1,12 +1,14 @@
 #define S_FUNCTION_NAME HopsanSimulink
 #define S_FUNCTION_LEVEL 2
-#define WIN32
 
 #include "simstruc.h"
 #include "..\HopsanCore\HopsanCore.h"
-#include "HopsanWrapper.h"
+#include "..\HopsanCore\CoreUtilities/HmfLoader.h"
+//#include "HopsanWrapper.h"
 
-extern double doTheMult(double, double);
+using namespace hopsan;
+
+ComponentSystem* pComponentSystem; 
 
 static void mdlInitializeSizes(SimStruct *S)
 {
@@ -32,48 +34,14 @@ static void mdlInitializeSizes(SimStruct *S)
     
     ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);
     
-    initSystem(1e-3);
-    addComponent("Source", "SignalSource");
-    addComponent("Subtract", "SignalSubtract");
-    addComponent("Gain", "SignalGain");
-    addComponent("Valve", "Hydraulic43Valve");
-    addComponent("Cylinder", "HydraulicCylinderC");
-    addComponent("Mass", "MechanicTranslationalMass");
-    addComponent("Force", "MechanicForceTransformer");
-    addComponent("Sensor", "MechanicPositionSensor");
-    addComponent("Volume", "HydraulicVolume3");
-    addComponent("Pump", "HydraulicFixedDisplacementPump");
-    addComponent("PRV", "HydraulicPressureReliefValve");
-    addComponent("Tank1", "HydraulicTankC");
-    addComponent("Tank2", "HydraulicTankC");
-    addComponent("Tank3", "HydraulicTankC");
+    std::string hmfFilePath = "Model.hmf";
+    hopsan::HmfLoader coreHmfLoader;
+    double startT = ssGetTStart(S);
+    double stopT = ssGetTFinal(S);
+    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);
+    pComponentSystem->setDesiredTimestep(0.001);
 
-      connect("Source", "out", "Subtract", "in1");
-    connect("Sensor", "out", "Subtract", "in2");
-    connect("Subtract", "out", "Gain", "in");
-    connect("Gain", "out", "Valve", "in");
-    connect("Valve", "PA", "Cylinder", "P1");
-    connect("Valve", "PB", "Cylinder", "P2");
-    connect("Cylinder", "P3", "Mass", "P1");
-    connect("Mass", "P2", "Force", "P1");
-    connect("Mass", "P2", "Sensor", "P1");
-    connect("Volume", "P3", "Valve", "PP");
-    connect("Valve", "PT", "Tank3", "P1");
-    connect("Volume", "P2", "Pump", "P2");
-    connect("Volume", "P1", "PRV", "P1");
-    connect("Pump", "P1", "Tank1", "P1");
-    connect("PRV", "P2", "Tank2", "P1");
-
-    setParameter("Cylinder", "m_e", 1);
-    setParameter("Cylinder", "c_leak", 0.00000001);
-    setParameter("Pump", "n_p", 250);
-    setParameter("Pump", "C_l,p", 0);
-    setParameter("PRV", "p_ref", 20000000);
-    setParameter("Gain", "k", 0.01);
-    setParameter("Mass", "x_min", 0.0);
-    setParameter("Mass", "x_max", 1.0);
-
-    initComponents();
+    pComponentSystem->initialize(startT, stopT);
 }
 
 static void mdlInitializeSampleTimes(SimStruct *S)
@@ -96,9 +64,24 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     double input = (*uPtrs1[0]);
     
     //Equations
-    setParameter("Source", "y", input);
-    simulateOneTimestep(ssGetT(S));
-    double output = getNodeData("Mass", "P2", 2);
+    double output;
+    if(pComponentSystem == 0)
+    {
+      output = -1;
+    }
+    else if(!pComponentSystem->isSimulationOk())
+    {
+      output = -2;
+    }
+    else
+    {
+        pComponentSystem->getComponent("Source")->setParameterValue("y", input);
+        double timestep = pComponentSystem->getDesiredTimeStep();
+        double time = ssGetT(S);
+        pComponentSystem->simulate(time, time+timestep);
+        output = pComponentSystem->getComponent("Mass")->getPort("P2")->getDataVectorPtr()->back().at(2);   //NodeMechanic::POSITION = 2
+    }
+
       
     //Output parameters
     *y1 = output;
