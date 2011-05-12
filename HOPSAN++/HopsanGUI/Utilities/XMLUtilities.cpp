@@ -62,7 +62,7 @@ QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion,
 {
     QDomElement hmfRoot = rDomDocument.createElement(HMF_ROOTTAG);
     rDomDocument.appendChild(hmfRoot);
-    hmfRoot.setAttribute(HMF_VERSIONTAG, hmfVersion);
+    hmfRoot.setAttribute(HMF_HMFVERSIONTAG, hmfVersion);
     hmfRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, hopsanGuiVersion);
     hmfRoot.setAttribute(HMF_HOPSANCOREVERSIONTAG, hopsanCoreVersion);
     return hmfRoot;

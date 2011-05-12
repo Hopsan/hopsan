@@ -290,7 +290,7 @@ void GUIModelObjectAppearance::saveToXMLFile(QString filename)
     QDomDocument doc;
     QDomElement cafroot = doc.createElement(CAF_ROOTTAG);
     doc.appendChild(cafroot);
-    cafroot.setAttribute(HMF_VERSIONTAG, CAFVERSION);
+    cafroot.setAttribute(HMF_CAFVERSIONTAG, CAFVERSION);
     this->saveToDomElement(cafroot);
     const int IndentSize = 4;
     QFile xml(filename);

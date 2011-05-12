@@ -120,13 +120,13 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 #define HMF_USERICONTAG "usericon"
 #define HMF_ICONROTATIONTAG "iconrotation"
 
-#define HMF_VERSIONTAG "hmfversion"
+#define HMF_HMFVERSIONTAG "hmfversion"
 #define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
 #define HMF_SIMULATIONTIMETAG "simulationtime"
 #define HMF_SCRIPTFILETAG "scriptfile"
 
-#define HMF_VERSIONTAG "version"
+#define HMF_CAFVERSIONTAG "version"
 
 
 #endif // XMLUTILITIES_H
