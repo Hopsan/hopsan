@@ -39,12 +39,13 @@ static void mdlInitializeSizes(SimStruct *S)
     hopsan::HmfLoader coreHmfLoader;
     double startT = ssGetTStart(S);
     double stopT = ssGetTFinal(S);
-	std::stringstream ss;
-	ss << "startT: " << startT << ", stopT: " << stopT << endl;
-	ssPrintf(ss.str().c_str());
-    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);
+	pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);
 	pComponentSystem->setDesiredTimestep(0.001);
+	std::stringstream ss;
+	ss << "startT: " << startT << ", stopT: " << stopT << "\n";
+	ssPrintf(ss.str().c_str());
     pComponentSystem->initializeComponentsOnly();
+
 }
 
 static void mdlInitializeSampleTimes(SimStruct *S)

@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.5"
+    ComputedModelVersion    "1.6"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "robbr48"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri May 13 10:20:58 2011"
-  RTWModifiedTimeStamp	  227182847
-  ModelVersionFormat	  "1.%<AutoIncrement:5>"
+  LastModifiedDate	  "Fri May 13 14:16:49 2011"
+  RTWModifiedTimeStamp	  227194677
+  ModelVersionFormat	  "1.%<AutoIncrement:6>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -623,7 +623,7 @@ Model {
   }
   System {
     Name		    "HopsanSimulinkModel"
-    Location		    [713, 582, 1248, 871]
+    Location		    [551, 364, 1086, 653]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -644,7 +644,7 @@ Model {
       SID		      1
       Ports		      [1, 1]
       Position		      [230, 105, 290, 135]
-      FunctionName	      "HopsanSimulin"
+      FunctionName	      "HopsanSimulink"
       EnableBusSupport	      off
     }
     Block {
@@ -654,7 +654,7 @@ Model {
       Ports		      [1]
       Position		      [360, 104, 390, 136]
       Floating		      off
-      Location		      [188, 161, 841, 629]
+      Location		      [188, 161, 841, 930]
       Open		      off
       NumInputPorts	      "1"
       ZoomMode		      "yonly"
