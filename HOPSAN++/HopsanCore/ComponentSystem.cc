@@ -1908,7 +1908,7 @@ void ComponentSystem::loadStartValuesFromSimulation()
 void ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
 {
     cout << "Initializing SubSystem: " << this->mName << endl;
-    mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
+    mStop = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     //preAllocate local logspace
     this->preAllocateLogSpace(startT, stopT, nSamples);
@@ -1963,6 +1963,59 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
         if (mComponentQptrs[q]->isComponentSystem())
         {
             mComponentQptrs[q]->initialize(startT, stopT, nSamples);
+        }
+        else
+        {
+            mComponentQptrs[q]->initialize();
+        }
+    }
+}
+
+
+//! Initializes a system component and all its contained components, also allocates log data memory
+void ComponentSystem::initializeComponentsOnly()
+{
+    adjustTimestep(mTimestep, mComponentSignalptrs);
+    adjustTimestep(mTimestep, mComponentCptrs);
+    adjustTimestep(mTimestep, mComponentQptrs);
+
+    this->sortSignalComponentVector();
+
+    loadStartValues();
+
+    //Init
+    //Signal components
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+    {
+        if (mComponentSignalptrs[s]->isComponentSystem())
+        {
+            mComponentSignalptrs[s]->initializeComponentsOnly();
+        }
+        else
+        {
+            mComponentSignalptrs[s]->initialize();
+        }
+    }
+
+    //C components
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
+    {
+        if (mComponentCptrs[c]->isComponentSystem())
+        {
+            mComponentCptrs[c]->initializeComponentsOnly();
+        }
+        else
+        {
+            mComponentCptrs[c]->initialize();
+        }
+    }
+
+    //Q components
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
+    {
+        if (mComponentQptrs[q]->isComponentSystem())
+        {
+            mComponentQptrs[q]->initializeComponentsOnly();
         }
         else
         {

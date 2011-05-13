@@ -96,6 +96,12 @@ void Component::initialize(const double /*startT*/, const double /*stopT*/, cons
 }
 
 
+void Component::initializeComponentsOnly()
+{
+    assert(false);
+}
+
+
 //! Virtual Function, base version which gives you an error if you try to use it.
 void Component::finalize(const double /*startT*/, const double /*stopT*/)
 {

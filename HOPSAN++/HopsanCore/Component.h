@@ -126,6 +126,7 @@ namespace hopsan {
 
         //Temporarily made public for RT-simulation
         virtual void initialize(); //! @todo Default values are hard set
+        virtual void initializeComponentsOnly();
 
     protected:
         //==========Protected member functions==========
