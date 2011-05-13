@@ -2,7 +2,7 @@
 #define S_FUNCTION_LEVEL 2
 
 #include "simstruc.h"
-#include <math.h>
+#include <sstream>
 #include "..\HopsanCore\HopsanCore.h"
 #include "..\HopsanCore\Nodes\Nodes.h"
 #include "..\HopsanCore\CoreUtilities/HmfLoader.h"
@@ -39,6 +39,9 @@ static void mdlInitializeSizes(SimStruct *S)
     hopsan::HmfLoader coreHmfLoader;
     double startT = ssGetTStart(S);
     double stopT = ssGetTFinal(S);
+	std::stringstream ss;
+	ss << "startT: " << startT << ", stopT: " << stopT << endl;
+	ssPrintf(ss.str().c_str());
     pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);
 	pComponentSystem->setDesiredTimestep(0.001);
     pComponentSystem->initializeComponentsOnly();
