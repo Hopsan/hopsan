@@ -16,8 +16,8 @@
 #include "../win32dll.h"
 //#include "../ComponentEssentials.h"
 
-#include "..\..\ExternalDependencies\rapidxml-1.13\rapidxml.hpp"
-#include "..\..\ExternalDependencies\rapidxml-1.13\rapidxml_utils.hpp"
+#include "../../ExternalDependencies/rapidxml-1.13/rapidxml.hpp"
+#include "../../ExternalDependencies/rapidxml-1.13/rapidxml_utils.hpp"
 //#include "rapidxml_print.hpp"
 
 
