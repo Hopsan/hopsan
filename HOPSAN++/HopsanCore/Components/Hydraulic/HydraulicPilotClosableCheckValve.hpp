@@ -11,8 +11,8 @@
 #define HYDRAULICPILOTCLOSABLECHECKVALVE_HPP_INCLUDED
 
 #include <iostream>
-#include "../../HopsanCore/ComponentEssentials.h"
-#include "../../HopsanCore/ComponentUtilities.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 #include "math.h"
 
 namespace hopsan {
