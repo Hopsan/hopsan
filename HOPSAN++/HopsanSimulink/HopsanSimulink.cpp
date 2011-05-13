@@ -2,9 +2,10 @@
 #define S_FUNCTION_LEVEL 2
 
 #include "simstruc.h"
+#include <math.h>
 #include "..\HopsanCore\HopsanCore.h"
+#include "..\HopsanCore\Nodes\Nodes.h"
 #include "..\HopsanCore\CoreUtilities/HmfLoader.h"
-//#include "HopsanWrapper.h"
 
 using namespace hopsan;
 
@@ -19,16 +20,16 @@ static void mdlInitializeSizes(SimStruct *S)
     }
 
     //Define S-function input signals
-    if (!ssSetNumInputPorts(S, 1)) return;
-    ssSetInputPortWidth(S, 0, DYNAMICALLY_SIZED);
-    ssSetInputPortDirectFeedThrough(S, 0, 1);
-    //ssSetInputPortWidth(S, 1, DYNAMICALLY_SIZED);
-    //ssSetInputPortDirectFeedThrough(S, 1, 1);
+    if (!ssSetNumInputPorts(S, 1)) return;				//Number of input signals
+    ssSetInputPortWidth(S, 0, DYNAMICALLY_SIZED);		//Input signal 0
+    ssSetInputPortDirectFeedThrough(S, 0, 1);			
+	//ssSetInputPortWidth(S, 1, DYNAMICALLY_SIZED);		//Input signal 1
+    //ssSetInputPortDirectFeedThrough(S, 1, 1);			
 
     //Define S-function output signals
-    if (!ssSetNumOutputPorts(S,1)) return;
-    ssSetOutputPortWidth(S, 0, DYNAMICALLY_SIZED);
-    //ssSetOutputPortWidth(S, 1, DYNAMICALLY_SIZED);
+    if (!ssSetNumOutputPorts(S,1)) return;				//Number of output signals
+    ssSetOutputPortWidth(S, 0, DYNAMICALLY_SIZED);		//Output signal 0
+	//ssSetOutputPortWidth(S, 1, DYNAMICALLY_SIZED);		//Output signal 1
 
     ssSetNumSampleTimes(S, 1);
     
@@ -39,9 +40,8 @@ static void mdlInitializeSizes(SimStruct *S)
     double startT = ssGetTStart(S);
     double stopT = ssGetTFinal(S);
     pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);
-    pComponentSystem->setDesiredTimestep(0.001);
-
-    pComponentSystem->initialize(startT, stopT);
+	pComponentSystem->setDesiredTimestep(0.001);
+    pComponentSystem->initializeComponentsOnly();
 }
 
 static void mdlInitializeSampleTimes(SimStruct *S)
@@ -67,11 +67,11 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     double output;
     if(pComponentSystem == 0)
     {
-      output = -1;
+      output = -1;		//Error code -1: Component system failed to load
     }
     else if(!pComponentSystem->isSimulationOk())
     {
-      output = -2;
+      output = -2;		//Error code -2: Simulation not possible due to errors in model
     }
     else
     {
@@ -79,7 +79,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         double timestep = pComponentSystem->getDesiredTimeStep();
         double time = ssGetT(S);
         pComponentSystem->simulate(time, time+timestep);
-        output = pComponentSystem->getComponent("Mass")->getPort("P2")->getDataVectorPtr()->back().at(2);   //NodeMechanic::POSITION = 2
+        output = pComponentSystem->getComponent("Mass")->getPort("P2")->getDataVectorPtr()->back().at(NodeMechanic::POSITION);   //NodeMechanic::POSITION = 2
     }
 
       

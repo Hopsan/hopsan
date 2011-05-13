@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.1"
+    ComputedModelVersion    "1.5"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "robbr48"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu May 12 16:02:04 2011"
-  RTWModifiedTimeStamp	  227116911
-  ModelVersionFormat	  "1.%<AutoIncrement:1>"
+  LastModifiedDate	  "Fri May 13 10:20:58 2011"
+  RTWModifiedTimeStamp	  227182847
+  ModelVersionFormat	  "1.%<AutoIncrement:5>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -110,9 +110,9 @@ Model {
 	  $ObjectID		  2
 	  Version		  "1.10.0"
 	  StartTime		  "0.0"
-	  StopTime		  "10.0"
+	  StopTime		  "2.0"
 	  AbsTol		  "auto"
-	  FixedStep		  "auto"
+	  FixedStep		  "0.001"
 	  InitialStep		  "auto"
 	  MaxNumMinSteps	  "-1"
 	  MaxOrder		  5
@@ -126,8 +126,8 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
-	  Solver		  "ode45"
-	  SolverName		  "ode45"
+	  Solver		  "FixedStepDiscrete"
+	  SolverName		  "FixedStepDiscrete"
 	  SolverJacobianMethodControl "auto"
 	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
@@ -623,7 +623,7 @@ Model {
   }
   System {
     Name		    "HopsanSimulinkModel"
-    Location		    [484, 93, 1020, 382]
+    Location		    [713, 582, 1248, 871]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -637,14 +637,14 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    3
+    SIDHighWatermark	    5
     Block {
       BlockType		      "S-Function"
       Name		      "S-Function"
       SID		      1
       Ports		      [1, 1]
       Position		      [230, 105, 290, 135]
-      FunctionName	      "HopsanSimulink"
+      FunctionName	      "HopsanSimulin"
       EnableBusSupport	      off
     }
     Block {
@@ -654,14 +654,36 @@ Model {
       Ports		      [1]
       Position		      [360, 104, 390, 136]
       Floating		      off
-      Location		      [188, 390, 512, 629]
+      Location		      [188, 161, 841, 629]
       Open		      off
       NumInputPorts	      "1"
+      ZoomMode		      "yonly"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
       }
       DataFormat	      "StructureWithTime"
+      LimitDataPoints	      off
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope2"
+      SID		      5
+      Ports		      [1]
+      Position		      [205, 189, 235, 221]
+      Floating		      off
+      Location		      [139, 641, 925, 1114]
+      Open		      off
+      NumInputPorts	      "1"
+      ZoomMode		      "yonly"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      SaveName		      "ScopeData2"
+      DataFormat	      "StructureWithTime"
+      LimitDataPoints	      off
       SampleTime	      "0"
     }
     Block {
@@ -669,13 +691,23 @@ Model {
       Name		      "Step"
       SID		      3
       Position		      [115, 105, 145, 135]
+      Before		      "0.1"
+      After		      "0.7"
       SampleTime	      "0"
     }
     Line {
       SrcBlock		      "Step"
       SrcPort		      1
-      DstBlock		      "S-Function"
-      DstPort		      1
+      Points		      [30, 0]
+      Branch {
+	DstBlock		"S-Function"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 85]
+	DstBlock		"Scope2"
+	DstPort			1
+      }
     }
     Line {
       SrcBlock		      "S-Function"

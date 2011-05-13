@@ -1,4 +1,4 @@
-1. Choose a compiler in Matlab with the "mex -setup" command
-2. Compile HopsanSimulink.c by writing executing HopsanSimulinkCompile.m in Matlab. This creates a file called HopsanSimulink.mexw32 (or similar, depending on operating system).
+1. Choose a C++ compatible compiler in Matlab with the "mex -setup" command (for example Visual Studio)
+2. Compile HopsanSimulink.c by executing HopsanSimulinkCompile.m in Matlab. This creates a file called HopsanSimulink.mexw32 (or similar, depending on operating system).
 3. Launch Simulink and add a S-Function block. In the properties dialog, type "HopsanSimulink" in the "S-function name" field.
 4. Hopefully everything is working by now!
