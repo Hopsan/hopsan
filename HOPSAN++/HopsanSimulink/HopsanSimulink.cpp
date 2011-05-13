@@ -3,9 +3,9 @@
 
 #include "simstruc.h"
 #include <sstream>
-#include "..\HopsanCore\HopsanCore.h"
-#include "..\HopsanCore\Nodes\Nodes.h"
-#include "..\HopsanCore\CoreUtilities/HmfLoader.h"
+#include "../HopsanCore/HopsanCore.h"
+#include "../HopsanCore/Nodes/Nodes.h"
+#include "../HopsanCore/CoreUtilities/HmfLoader.h"
 
 using namespace hopsan;
 
