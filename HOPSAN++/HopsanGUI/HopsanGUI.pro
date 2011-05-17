@@ -5,7 +5,7 @@
 # Global project options
 # -------------------------------------------------
 include( HopsanGuiBuild.prf )
-include( ../HopsanCore/HopsanCoreBuild.prf )
+#include( ../HopsanCore/HopsanCoreBuild.prf )
 
 TARGET = HopsanGUI
 TEMPLATE = app
