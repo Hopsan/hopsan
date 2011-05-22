@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,7 +14,7 @@
    height="29.99999"
    id="svg2707"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="tank_user.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <metadata
@@ -28,8 +29,8 @@
     </rdf:RDF>
   </metadata>
   <sodipodi:namedview
-     inkscape:window-height="667"
-     inkscape:window-width="934"
+     inkscape:window-height="982"
+     inkscape:window-width="1680"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      guidetolerance="10.0"
@@ -40,12 +41,13 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="false"
-     inkscape:zoom="15.400005"
-     inkscape:cx="9.9999952"
-     inkscape:cy="14.999995"
-     inkscape:window-x="22"
-     inkscape:window-y="29"
-     inkscape:current-layer="svg2707" />
+     inkscape:zoom="5.444724"
+     inkscape:cx="19.751605"
+     inkscape:cy="9.3969064"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:current-layer="svg2707"
+     inkscape:window-maximized="1" />
   <defs
      id="defs2709">
     <inkscape:perspective
@@ -56,28 +58,24 @@
        inkscape:persp3d-origin="9.9999952 : 9.9999968 : 1"
        id="perspective12" />
   </defs>
-  <g
-     id="g2459"
-     transform="translate(0,-2.8953674e-4)">
-    <g
-       id="layer1"
-       transform="translate(-250,-529.50487)">
-      <path
-         style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="path3266-7"
-         d="M 260.00005,530.50487 L 260.00005,558.50515" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="path2718"
-         d="M 269.0001,558.50502 L 251,558.50502" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="path2720"
-         d="M 251,548.14532 L 251,558.50515" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="path2722"
-         d="M 269,548.14532 L 269,558.50515" />
-    </g>
-  </g>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="path3266-7"
+     d="m 9.9999993,0.76269462 0,28.47459038"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="path2718"
+     d="m 19.230773,29.24986 -18.4615472,0"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="path2720"
+     d="m 0.7692258,18.89016 0,10.35983"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="path2722"
+     d="m 19.23067,18.89016 0,10.35983"
+     inkscape:connector-curvature="0" />
 </svg>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +13,7 @@
    height="30"
    id="svg2531"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="volume_user.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -58,7 +59,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8"
-     inkscape:cx="15.385903"
+     inkscape:cx="-4.114097"
      inkscape:cy="14.87173"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -87,13 +88,13 @@
      transform="translate(-342.9616,-494.09647)">
     <path
        sodipodi:type="arc"
-       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#080000;stroke-width:2.19920348999999990;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#080000;stroke-width:1.62642109;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="path2389"
        sodipodi:cx="12.625"
        sodipodi:cy="11.376484"
        sodipodi:rx="30.375"
        sodipodi:ry="13.375"
-       d="M 43,11.376484 A 30.375,13.375 0 1 1 -17.75,11.376484 A 30.375,13.375 0 1 1 43,11.376484 z"
-       transform="matrix(0.7901235,0,0,1.046729,357.98629,497.18837)" />
+       d="m 43,11.376484 a 30.375,13.375 0 1 1 -60.75,0 30.375,13.375 0 1 1 60.75,0 z"
+       transform="matrix(0.79835391,0,0,1.0654206,357.88238,496.97573)" />
   </g>
 </svg>

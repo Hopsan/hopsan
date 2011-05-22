@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +13,7 @@
    height="24.999998"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="flowsource_user.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -37,7 +38,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="-59.408909"
+     inkscape:cx="-25.070748"
      inkscape:cy="29.385063"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -77,14 +78,14 @@
      id="layer1"
      transform="translate(-203.57689,-395.97151)">
     <path
-       transform="matrix(0.1319672,0,0,0.1298387,172.52771,367.35836)"
-       d="M 417.14286,316.64789 A 87.14286,88.571426 0 1 1 242.85714,316.64789 A 87.14286,88.571426 0 1 1 417.14286,316.64789 z"
+       transform="matrix(0.13483606,0,0,0.13266129,171.58099,366.46459)"
+       d="m 417.14286,316.64789 a 87.14286,88.571426 0 1 1 -174.28572,0 87.14286,88.571426 0 1 1 174.28572,0 z"
        sodipodi:ry="88.571426"
        sodipodi:rx="87.14286"
        sodipodi:cy="316.64789"
        sodipodi:cx="330"
        id="path2160"
-       style="font-weight:bold;fill:#ffffff;stroke:#000000;stroke-width:15.27899933000000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+       style="font-weight:bold;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:11.21543503;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:type="arc" />
     <text
        xml:space="preserve"

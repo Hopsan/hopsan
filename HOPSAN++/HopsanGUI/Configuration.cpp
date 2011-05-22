@@ -219,7 +219,7 @@ void Configuration::loadFromXml()
                 QString gfxType = penElement.attribute("gfxtype");
                 QString situation = penElement.attribute("situation");
                 QString color = penElement.attribute("color");
-                int width = penElement.attribute("width").toInt();
+                double width = penElement.attribute("width").toDouble();
                 Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute("style").toInt());
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
                 QPen pen = QPen(QColor(color), width, penstyle, capStyle, Qt::RoundJoin);
@@ -367,7 +367,7 @@ void Configuration::loadDefaultsFromXml()
                 QString gfxType = penElement.attribute("gfxtype");
                 QString situation = penElement.attribute("situation");
                 QString color = penElement.attribute("color");
-                int width = penElement.attribute("width").toInt();
+                double width = penElement.attribute("width").toDouble();
                 Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute("style").toInt());
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
                 QPen pen = QPen(QColor(color), width, penstyle, capStyle);

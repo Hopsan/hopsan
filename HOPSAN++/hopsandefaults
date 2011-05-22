@@ -18,20 +18,20 @@
         <penstyle width="1" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="Iso"/>
         <penstyle width="2" situation="Active" capstyle="32" type="Undefined" style="1" color="#ff0000" gfxtype="Iso"/>
         <penstyle width="2" situation="Hover" capstyle="32" type="Undefined" style="1" color="#8b0000" gfxtype="Iso"/>
-        <penstyle width="2" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="User"/>
-        <penstyle width="3" situation="Active" capstyle="32" type="Undefined" style="1" color="#ff0000" gfxtype="User"/>
-        <penstyle width="3" situation="Hover" capstyle="32" type="Undefined" style="1" color="#8b0000" gfxtype="User"/>
+        <penstyle width="1.5" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="User"/>
+        <penstyle width="2" situation="Active" capstyle="32" type="Undefined" style="1" color="#ff0000" gfxtype="User"/>
+        <penstyle width="2" situation="Hover" capstyle="32" type="Undefined" style="1" color="#8b0000" gfxtype="User"/>
         <penstyle width="2" situation="Active" capstyle="32" type="Power" style="1" color="#ff0000" gfxtype="Iso"/>
         <penstyle width="2" situation="Hover" capstyle="32" type="Power" style="1" color="#8b0000" gfxtype="Iso"/>
         <penstyle width="1" situation="Primary" capstyle="32" type="Power" style="1" color="#000000" gfxtype="Iso"/>
-        <penstyle width="3" situation="Active" capstyle="32" type="Power" style="1" color="#ff0000" gfxtype="User"/>
-        <penstyle width="3" situation="Hover" capstyle="32" type="Power" style="1" color="#8b0000" gfxtype="User"/>
-        <penstyle width="2" situation="Primary" capstyle="32" type="Power" style="1" color="#000000" gfxtype="User"/>
+        <penstyle width="2" situation="Active" capstyle="32" type="Power" style="1" color="#ff0000" gfxtype="User"/>
+        <penstyle width="2" situation="Hover" capstyle="32" type="Power" style="1" color="#8b0000" gfxtype="User"/>
+        <penstyle width="1.5" situation="Primary" capstyle="32" type="Power" style="1" color="#000000" gfxtype="User"/>
         <penstyle width="2" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="Iso"/>
         <penstyle width="2" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="Iso"/>
         <penstyle width="1" situation="Primary" capstyle="16" type="Signal" style="2" color="#0000ff" gfxtype="Iso"/>
-        <penstyle width="2" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="User"/>
-        <penstyle width="2" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="User"/>
+        <penstyle width="1.5" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="User"/>
+        <penstyle width="1.5" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="User"/>
         <penstyle width="1" situation="Primary" capstyle="16" type="Signal" style="2" color="#0000ff" gfxtype="User"/>
         <palette windowText="0,0,0" button="0,0,255" light="173,216,230" dark="0,0,139" mid="0,0,255" text="0,0,0" bright_text="128,128,128" base="244,247,251" window="226,231,237"/>
 		<font family="Calibri" size="9"/>
