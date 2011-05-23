@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2500" zoom="1"/>
+            <viewport x="2500" y="2500.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -91,7 +91,7 @@
                     <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2573" y="2764" flipped="0" a="0"/>
+                    <pose x="2573.0008" y="2764" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -138,13 +138,17 @@
             <component typename="Hydraulic43Valve" name="4/3 Servo Valve">
                 <parameters>
                     <parameter value="0.67" name="C_q"/>
+                    <parameter value="890" name="rho"/>
                     <parameter value="0.01" name="d"/>
-                    <parameter value="1" name="f"/>
+                    <parameter value="1" name="f_pa"/>
+                    <parameter value="1" name="f_pb"/>
+                    <parameter value="1" name="f_at"/>
+                    <parameter value="1" name="f_bt"/>
                     <parameter value="0.01" name="x_v,max"/>
                     <parameter value="-1e-006" name="x_pa"/>
                     <parameter value="-1e-006" name="x_pb"/>
                     <parameter value="-1e-006" name="x_at"/>
-                    <parameter value="-1e-006" name="x_pa"/>
+                    <parameter value="-1e-006" name="x_bt"/>
                     <parameter value="100" name="omega_h"/>
                     <parameter value="1" name="delta_h"/>
                 </parameters>
@@ -215,7 +219,7 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2574" y="2682" flipped="0" a="0"/>
+                    <pose x="2575" y="2682" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -384,7 +388,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2573" y="2602"/>
-                        <coordinate x="2572.0008" y="2642"/>
+                        <coordinate x="2573.0008" y="2642"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -433,8 +437,8 @@
             <connect endport="P1" endcomponent="Tank C_1" startport="P2" startcomponent="Pressure Relief Valve">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2572.0008" y="2722"/>
-                        <coordinate x="2573" y="2749.5"/>
+                        <coordinate x="2573.0008" y="2722"/>
+                        <coordinate x="2573.0008" y="2749.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>

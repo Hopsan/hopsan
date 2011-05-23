@@ -1990,6 +1990,10 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
 //! Initializes a system component and all its contained components, also allocates log data memory
 void ComponentSystem::initializeComponentsOnly()
 {
+    cout << "Initializing SubSystem: " << this->mName << endl;
+    mStop = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
+
+
     adjustTimestep(mTimestep, mComponentSignalptrs);
     adjustTimestep(mTimestep, mComponentCptrs);
     adjustTimestep(mTimestep, mComponentQptrs);
@@ -2002,6 +2006,9 @@ void ComponentSystem::initializeComponentsOnly()
     //Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
+        if (mStop)
+            break;
+
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
             mComponentSignalptrs[s]->initializeComponentsOnly();
@@ -2015,6 +2022,9 @@ void ComponentSystem::initializeComponentsOnly()
     //C components
     for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
+        if (mStop)
+            break;
+
         if (mComponentCptrs[c]->isComponentSystem())
         {
             mComponentCptrs[c]->initializeComponentsOnly();
@@ -2028,6 +2038,9 @@ void ComponentSystem::initializeComponentsOnly()
     //Q components
     for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
+        if (mStop)
+            break;
+
         if (mComponentQptrs[q]->isComponentSystem())
         {
             mComponentQptrs[q]->initializeComponentsOnly();

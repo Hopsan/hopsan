@@ -550,7 +550,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         if((mpContainerObject->mpTempConnector->getNumberOfLines() == 1 && mpContainerObject->mpTempConnector->isMakingDiagonal()) ||  (mpContainerObject->mpTempConnector->getNumberOfLines() == 2 && !mpContainerObject->mpTempConnector->isMakingDiagonal()))
         {
             mpContainerObject->mpTempConnector->getStartPort()->removeConnection();
-            if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected())
+            if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected() && !mpContainerObject->mPortsHidden)
             {
                 mpContainerObject->mpTempConnector->getStartPort()->show();
             }

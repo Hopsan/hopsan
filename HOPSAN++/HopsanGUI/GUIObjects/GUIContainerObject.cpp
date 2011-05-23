@@ -1956,6 +1956,12 @@ QVector<double> GUIContainerObject::getPlotData(int generation, QString componen
 }
 
 
+bool GUIContainerObject::componentHasPlotGeneration(int generation, QString componentName)
+{
+    return mPlotData.at(generation).contains(componentName);
+}
+
+
 QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > GUIContainerObject::getAllPlotData()
 {
     return mPlotData;

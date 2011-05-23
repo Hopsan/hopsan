@@ -1868,7 +1868,8 @@ void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double 
 //! @brief Changes a curve to the previous available gneraetion of its data
 void PlotCurve::setPreviousGeneration()
 {
-    if(mGeneration>0)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
+    //if(mGeneration>0)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
+    if(mGeneration>0 && mpContainerObject->componentHasPlotGeneration(mGeneration-1, mComponentName))
         setGeneration(mGeneration-1);
 }
 

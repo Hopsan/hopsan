@@ -125,6 +125,7 @@ public:
 
     QVector<double> getTimeVector(int generation);
     QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
+    bool componentHasPlotGeneration(int generation, QString componentName);
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > getAllPlotData();
     int getNumberOfPlotGenerations();
     void definePlotAlias(QString componentName, QString portName, QString dataName);
