@@ -1,4 +1,18 @@
+COMPILING WITH SOURCE CODE:
 1. Choose a C++ compatible compiler in Matlab with the "mex -setup" command (for example Visual Studio)
-2. Compile HopsanSimulink.c by executing HopsanSimulinkCompile.m in Matlab. This creates a file called HopsanSimulink.mexw32 (or similar, depending on operating system).
+2. Compile HopsanSimulink.c by executing the first line only (!) HopsanSimulinkCompile.m in Matlab. This creates a file called HopsanSimulink.mexw32 (or similar, depending on operating system).
 3. Launch Simulink and add a S-Function block. In the properties dialog, type "HopsanSimulink" in the "S-function name" field.
 4. Hopefully everything is working by now!
+
+
+COMPILING WITH PRECOMPILED LIBRARY (VISUAL STUDIO):
+1. Compile HopsanCore with Visual C++. 
+2. Move HopsanCore.dll, HopsanCore.lib and HopsanCore.exp to this folder.
+3. Choose Visual Studio as the Matlab compiler with the mex -steup command.
+2. Compile HopsanSimulink.c by executing the first line only (!) HopsanSimulinkCompile.m in Matlab. This creates a file called HopsanSimulink.mexw32 (or similar, depending on operating system).
+3. Launch Simulink and add a S-Function block. In the properties dialog, type "HopsanSimulink" in the "S-function name" field.
+4. Hopefully everything is working by now!
+
+
+COMPILING WITH PRECOMPILED LIBRARY (MINGW):
+Has not been done yet, but should be similar to Visual Studio. Getting Matlab to work with Mingw is however a complicated procedure.

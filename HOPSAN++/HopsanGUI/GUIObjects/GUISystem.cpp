@@ -585,6 +585,268 @@ void GUISystem::saveToWrappedCode()
 }
 
 
+void GUISystem::createSimulinkSourceFiles()
+{
+    QStringList inputComponents;
+    QStringList inputPorts;
+    QStringList outputComponents;
+    QStringList outputPorts;
+
+
+    GUIModelObjectMapT::iterator it;
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    {
+        if(it.value()->getTypeName() == "SignalInputInterface")
+        {
+            inputComponents.append(it.value()->getName());
+            inputPorts.append("out");
+        }
+        else if(it.value()->getTypeName() == "SignalOutputInterface")
+        {
+            outputComponents.append(it.value()->getName());
+            outputPorts.append("in");
+        }
+    }
+
+    int nInputs = inputComponents.size();
+    QString nInputsString;
+    nInputsString.setNum(nInputs);
+
+    int nOutputs = outputComponents.size();
+    QString nOutputsString;
+    nOutputsString.setNum(nOutputs);
+
+        //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString savePath;
+    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
+                                                    fileDialogSaveDir.currentPath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+    qDebug() << "Selected path: " << savePath;
+    QDir saveDir;
+    saveDir.setPath(savePath);
+
+    QString includePath = gExecPath;
+    includePath.chop(4);
+    includePath.append("/HopsanCore");
+    QString relIncludePath = saveDir.relativeFilePath(includePath);
+
+    QFile wrapperFile;
+    wrapperFile.setFileName(savePath + "/HopsanSimulink.cpp");
+    if(!wrapperFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulink.cpp for writing.");
+        return;
+    }
+
+    qDebug() << "wrapperFile.fileName() = " << wrapperFile.fileName();
+
+    QFile compileFile;
+    compileFile.setFileName(savePath + "/HopsanSimulinkCompile.m");
+    if(!compileFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulinkCompile.m for writing.");
+        return;
+    }
+
+
+    QTextStream wrapperStream(&wrapperFile);
+    wrapperStream << "/*-----------------------------------------------------------------------------";
+    wrapperStream << "This source file is part of Hopsan NG\n";
+    wrapperStream << "\n";
+    wrapperStream << "Copyright (c) 2011\n";
+    wrapperStream << "Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,\n";
+    wrapperStream << "Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack\n";
+    wrapperStream << "\n";
+    wrapperStream << "This file is provided \"as is\", with no guarantee or warranty for the\n";
+    wrapperStream << "functionality or reliability of the contents. All contents in this file is\n";
+    wrapperStream << "the original work of the copyright holders at the Division of Fluid and\n";
+    wrapperStream << "Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or\n";
+    wrapperStream << "redistributing any part of this file is prohibited without explicit\n";
+    wrapperStream << "permission from the copyright holders.\n";
+    wrapperStream << "-----------------------------------------------------------------------------*/\n";
+    wrapperStream << "\n";
+    wrapperStream << "#define S_FUNCTION_NAME HopsanSimulink\n";
+    wrapperStream << "#define S_FUNCTION_LEVEL 2\n";
+    wrapperStream << "\n";
+    wrapperStream << "#include \"simstruc.h\"\n";
+    wrapperStream << "#include <sstream>\n";
+    wrapperStream << "#include \"" + relIncludePath + "/HopsanCore.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/Component.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentSystem.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentEssentials.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/HopsanEssentials.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/Node.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/Port.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/Nodes/Nodes.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/AuxiliarySimulationFunctions.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/CSVParser.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Delay.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/DoubleIntegratorWithDamping.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/FirstOrderFilter.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Integrator.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/IntegratorLimited.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ludcmp.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/matrix.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ReadDataCurve.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/SecondOrderFilter.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/SecondOrderTransferFunction.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/TurbulentFlowFunction.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ValveHysteresis.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/HmfLoader.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/ClassFactory.hpp\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/FindUniqueName.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/HopsanCoreMessageHandler.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/LoadExternal.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/Components/Components.h\"\n";
+    wrapperStream << "\n";
+    wrapperStream << "using namespace hopsan;\n";
+    wrapperStream << "\n";
+    wrapperStream << "ComponentSystem* pComponentSystem;\n";
+    wrapperStream << "\n";
+    wrapperStream << "static void mdlInitializeSizes(SimStruct *S)\n";
+    wrapperStream << "{\n";
+    wrapperStream << "    ssSetNumSFcnParams(S, 0);\n";
+    wrapperStream << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))\n";
+    wrapperStream << "    {\n";
+    wrapperStream << "        return;\n";
+    wrapperStream << "    }\n";
+    wrapperStream << "\n";
+    wrapperStream << "    //Define S-function input signals\n";
+    wrapperStream << "    if (!ssSetNumInputPorts(S," << nInputsString << ")) return;				//Number of input signals\n";
+    for(size_t i=0; i<nInputs; ++i)
+    {
+        wrapperStream << "    ssSetInputPortWidth(S, " << i << ", DYNAMICALLY_SIZED);		//Input signal " << i << "\n";
+        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << i << ", 1);\n";
+    }
+    wrapperStream << "\n";
+    wrapperStream << "    //Define S-function output signals\n";
+    wrapperStream << "    if (!ssSetNumOutputPorts(S," + nOutputsString + ")) return;				//Number of output signals\n";
+    for(size_t i=0; i<nOutputs; ++i)
+    {
+        wrapperStream << "    ssSetOutputPortWidth(S, " << i << ", DYNAMICALLY_SIZED);		//Output signal " << i << "\n";
+    }
+    wrapperStream << "\n";
+    wrapperStream << "    ssSetNumSampleTimes(S, 1);\n";
+    wrapperStream << "\n";
+    wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n";
+    wrapperStream << "\n";
+    wrapperStream << "    std::string hmfFilePath = \"" << mModelFileInfo.fileName() << "\";\n";
+    wrapperStream << "    hopsan::HmfLoader coreHmfLoader;\n";
+    wrapperStream << "    double startT = ssGetTStart(S);\n";
+    wrapperStream << "    double stopT = ssGetTFinal(S);\n";
+    wrapperStream << "    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
+    wrapperStream << "    pComponentSystem->setDesiredTimestep(0.001);\n";
+    wrapperStream << "    pComponentSystem->initializeComponentsOnly();\n";
+    wrapperStream << "}\n";
+    wrapperStream << "\n";
+    wrapperStream << "static void mdlInitializeSampleTimes(SimStruct *S)\n";
+    wrapperStream << "{\n";
+    wrapperStream << "    ssSetSampleTime(S, 0, INHERITED_SAMPLE_TIME);\n";
+    wrapperStream << "    ssSetOffsetTime(S, 0, 0.0);\n";
+    wrapperStream << "}\n";
+    wrapperStream << "\n";
+    wrapperStream << "static void mdlOutputs(SimStruct *S, int_T tid)\n";
+    wrapperStream << "{\n";
+    wrapperStream << "    //S-function input signals\n";
+    wrapperStream << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
+    wrapperStream << "\n";
+    wrapperStream << "    //S-function output signals\n";
+    for(size_t i=0; i<nOutputs; ++i)
+    {
+        wrapperStream << "    real_T *y" << i << " = ssGetOutputPortRealSignal(S," << i << ");\n";
+    }
+    wrapperStream << "    int_T width1 = ssGetOutputPortWidth(S,0);\n";
+    wrapperStream << "\n";
+    wrapperStream << "    //Input parameters\n";
+    for(size_t i=0; i<nInputs; ++i)
+    {
+        wrapperStream << "    double input" << i << " = (*uPtrs1[" << i << "]);\n";
+    }
+    wrapperStream << "\n";
+    wrapperStream << "    //Equations\n";
+    for(size_t i=0; i<nOutputs; ++i)
+    {
+        wrapperStream << "    double output" << i << ";\n";
+    }
+    wrapperStream << "    if(pComponentSystem == 0)\n";
+    wrapperStream << "    {\n";
+    wrapperStream << "      output0 = -1;		//Error code -1: Component system failed to load\n";
+    wrapperStream << "    }\n";
+    wrapperStream << "    else if(!pComponentSystem->isSimulationOk())\n";
+    wrapperStream << "    {\n";
+    wrapperStream << "      output0 = -2;		//Error code -2: Simulation not possible due to errors in model\n";
+    wrapperStream << "    }\n";
+    wrapperStream << "    else\n";
+    wrapperStream << "    {\n";
+    for(size_t i=0; i<nInputs; ++i)
+    {
+        wrapperStream << "        pComponentSystem->getComponent(\"" << inputComponents.at(i) << "\")->getPort(\"" << inputPorts.at(i) << "\")->writeNode(0, input" << i << ");\n";
+    }
+    wrapperStream << "        double timestep = pComponentSystem->getDesiredTimeStep();\n";
+    wrapperStream << "        double time = ssGetT(S);\n";
+    wrapperStream << "        pComponentSystem->simulate(time, time+timestep);\n";
+    wrapperStream << "\n";
+    for(size_t i=0; i<nOutputs; ++i)
+    {
+        wrapperStream << "        output" << i << " = pComponentSystem->getComponent(\"" << outputComponents.at(i) << "\")->getPort(\"" << outputPorts.at(i) << "\")->readNode(0);\n";
+    }
+    wrapperStream << "    }\n";
+    wrapperStream << "\n";
+    wrapperStream << "    //Output parameters\n";
+    for(size_t i=0; i<nOutputs; ++i)
+    {
+        wrapperStream << "    *y" << i << " = output" << i << ";\n";
+    }
+    wrapperStream << "}\n";
+    wrapperStream << "\n";
+    wrapperStream << "static void mdlTerminate(SimStruct *S){}\n";
+    wrapperStream << "\n";
+    wrapperStream << "\n";
+    wrapperStream << "/* Simulink/Simulink Coder Interfaces */\n";
+    wrapperStream << "#ifdef MATLAB_MEX_FILE /* Is this file being compiled as a MEX-file? */\n";
+    wrapperStream << "#include \"simulink.c\" /* MEX-file interface mechanism */\n";
+    wrapperStream << "#else\n";
+    wrapperStream << "#include \"cg_sfun.h\" /* Code generation registration function */\n";
+    wrapperStream << "#endif\n";
+    wrapperStream << "\n";
+    wrapperFile.close();
+
+    QTextStream compileStream(&compileFile);
+    compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp " + relIncludePath + "\Component.cc " + relIncludePath + "\ComponentSystem.cc " + relIncludePath + "\HopsanEssentials.cc " + relIncludePath + "\Node.cc " + relIncludePath + "\Port.cc " + relIncludePath + "\Components\Components.cc " + relIncludePath + "\CoreUtilities\HmfLoader.cc " + relIncludePath + "\CoreUtilities\HopsanCoreMessageHandler.cc " + relIncludePath + "\CoreUtilities\LoadExternal.cc " + relIncludePath + "\Nodes\Nodes.cc " + relIncludePath + "\ComponentUtilities\AuxiliarySimulationFunctions.cpp " + relIncludePath + "\ComponentUtilities\Delay.cc " + relIncludePath + "\ComponentUtilities\DoubleIntegratorWithDamping.cpp " + relIncludePath + "\ComponentUtilities\FirstOrderFilter.cc " + relIncludePath + "\ComponentUtilities\Integrator.cc " + relIncludePath + "\ComponentUtilities\IntegratorLimited.cc " + relIncludePath + "\ComponentUtilities\ludcmp.cc " + relIncludePath + "\ComponentUtilities\matrix.cc " + relIncludePath + "\ComponentUtilities\SecondOrderFilter.cc " + relIncludePath + "\ComponentUtilities\SecondOrderTransferFunction.cc " + relIncludePath + "\ComponentUtilities\TurbulentFlowFunction.cc " + relIncludePath + "\ComponentUtilities\ValveHysteresis.cc\n";
+    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -lHopsanCore HopsanSimulink.cpp\n";
+    compileFile.close();
+
+
+    QFile dllFile(gExecPath + "/../binVC/HopsanCore.dll");
+    dllFile.copy(savePath + "/HopsanCore.dll");
+    QFile libFile(gExecPath + "/../binVC/HopsanCore.lib");
+    libFile.copy(savePath + "/HopsanCore.lib");
+    QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
+    expFile.copy(savePath + "/HopsanCore.exp");
+
+
+    //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
+        //Save xml document
+    QDomDocument domDocument;
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMFVERSION, HOPSANGUIVERSION, "0");
+    saveToDomElement(hmfRoot);
+    const int IndentSize = 4;
+    QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
+    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        return;
+    }
+    QTextStream out(&xmlhmf);
+    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+    domDocument.save(out, IndentSize);
+}
+
+
 //! @brief Sets the modelfile info from the file representing this system
 //! @param[in] rFile The QFile objects representing the file we want to information about
 void GUISystem::setModelFileInfo(QFile &rFile)

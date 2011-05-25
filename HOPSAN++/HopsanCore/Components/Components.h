@@ -126,6 +126,8 @@
 #include "Signal/SignalSum.hpp"
 #include "Signal/SignalDummy.hpp"
 #include "Signal/SignalPower.hpp"
+#include "Signal/SignalInputInterface.hpp"
+#include "Signal/SignalOutputInterface.hpp"
 #include "Signal/SignalUndefinedConnection.hpp"
 
 /* Mechanical Components */

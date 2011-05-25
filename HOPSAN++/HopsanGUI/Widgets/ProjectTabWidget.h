@@ -60,6 +60,7 @@ public slots:
     void loadModel(QString modelFileName);
     void tabChanged();
     void saveCurrentModelToWrappedCode();
+    void createSimulinkWrapperFromCurrentModel();
 
 signals:
     void checkMessages();

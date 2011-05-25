@@ -136,14 +136,14 @@ namespace hopsan {
 
 
 
-    Matrix DLLIMPORTEXPORT identity(int size);
-    Matrix DLLIMPORTEXPORT diagonal(double *v, int size);
-    int DLLIMPORTEXPORT read_matrix(Matrix &mx, std::string &title, FILE *in);
-    void DLLIMPORTEXPORT print_vector(double *v, int n);
-    void DLLIMPORTEXPORT copy_matrix(Matrix &dst, Matrix &src);
-    double* DLLIMPORTEXPORT vector(int length);
-    int* DLLIMPORTEXPORT ivector(int length);
-    void DLLIMPORTEXPORT errmsg(char *text);
+    DLLIMPORTEXPORT Matrix identity(int size);
+    DLLIMPORTEXPORT Matrix diagonal(double *v, int size);
+    DLLIMPORTEXPORT int read_matrix(Matrix &mx, std::string &title, FILE *in);
+    DLLIMPORTEXPORT void print_vector(double *v, int n);
+    DLLIMPORTEXPORT void copy_matrix(Matrix &dst, Matrix &src);
+    DLLIMPORTEXPORT double* vector(int length);
+    DLLIMPORTEXPORT int* ivector(int length);
+    DLLIMPORTEXPORT void errmsg(char *text);
 
 }
 

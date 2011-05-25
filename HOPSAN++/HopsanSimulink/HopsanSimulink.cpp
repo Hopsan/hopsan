@@ -19,8 +19,34 @@
 #include "simstruc.h"
 #include <sstream>
 #include "../HopsanCore/HopsanCore.h"
+#include "../HopsanCore/Component.h"
+#include "../HopsanCore/ComponentSystem.h"
+#include "../HopsanCore/ComponentEssentials.h"
+#include "../HopsanCore/ComponentUtilities.h"
+#include "../HopsanCore/HopsanEssentials.h"
+#include "../HopsanCore/Node.h"
+#include "../HopsanCore/Port.h"
 #include "../HopsanCore/Nodes/Nodes.h"
+#include "../HopsanCore/ComponentUtilities/AuxiliarySimulationFunctions.h"
+#include "../HopsanCore/ComponentUtilities/CSVParser.h"
+#include "../HopsanCore/ComponentUtilities/Delay.h"
+#include "../HopsanCore/ComponentUtilities/DoubleIntegratorWithDamping.h"
+#include "../HopsanCore/ComponentUtilities/FirstOrderFilter.h"
+#include "../HopsanCore/ComponentUtilities/Integrator.h"
+#include "../HopsanCore/ComponentUtilities/IntegratorLimited.h"
+#include "../HopsanCore/ComponentUtilities/ludcmp.h"
+#include "../HopsanCore/ComponentUtilities/matrix.h"
+#include "../HopsanCore/ComponentUtilities/ReadDataCurve.h"
+#include "../HopsanCore/ComponentUtilities/SecondOrderFilter.h"
+#include "../HopsanCore/ComponentUtilities/SecondOrderTransferFunction.h"
+#include "../HopsanCore/ComponentUtilities/TurbulentFlowFunction.h"
+#include "../HopsanCore/ComponentUtilities/ValveHysteresis.h"
 #include "../HopsanCore/CoreUtilities/HmfLoader.h"
+#include "../HopsanCore/CoreUtilities/ClassFactory.hpp"
+#include "../HopsanCore/CoreUtilities/FindUniqueName.h"
+#include "../HopsanCore/CoreUtilities/HopsanCoreMessageHandler.h"
+#include "../HopsanCore/CoreUtilities/LoadExternal.h"
+#include "../HopsanCore/Components/Components.h"
 
 using namespace hopsan;
 
@@ -54,11 +80,11 @@ static void mdlInitializeSizes(SimStruct *S)
     hopsan::HmfLoader coreHmfLoader;
     double startT = ssGetTStart(S);
     double stopT = ssGetTFinal(S);
-	pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);
-	pComponentSystem->setDesiredTimestep(0.001);
-	std::stringstream ss;
-	ss << "startT: " << startT << ", stopT: " << stopT << "\n";
-	ssPrintf(ss.str().c_str());
+    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);
+    pComponentSystem->setDesiredTimestep(0.001);
+    std::stringstream ss;
+    ss << "startT: " << startT << ", stopT: " << stopT << "\n";
+    ssPrintf(ss.str().c_str());
     pComponentSystem->initializeComponentsOnly();
 
 }
@@ -77,7 +103,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     //S-function output signals
     real_T *y1 = ssGetOutputPortRealSignal(S,0);
     int_T width1 = ssGetOutputPortWidth(S,0);
-    
     
     //Input parameters
     double input = (*uPtrs1[0]);
@@ -98,8 +123,21 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         double timestep = pComponentSystem->getDesiredTimeStep();
         double time = ssGetT(S);
         pComponentSystem->simulate(time, time+timestep);
-        output = pComponentSystem->getComponent("Mass")->getPort("P2")->getDataVectorPtr()->back().at(NodeMechanic::POSITION);   //NodeMechanic::POSITION = 2
+        
+        std::stringstream ss6;
+        ss6 << "DEBUG5\n";
+        ssPrintf(ss6.str().c_str());
+        
+        output = pComponentSystem->getComponent("Mass")->getPort("P2")->readNode(NodeMechanic::POSITION);     //NodeMechanic::POSITION = 2
+        //output = pComponentSystem->getComponent("Mass")->getPort("P2")->getTimeVectorPtr()->size();
+        //output = *pComponentSystem->getComponent("Mass")->getTimePtr();
+        //output = 6;
+        
+        std::stringstream ss7;
+        ss7 << "DEBUG6\n";
+        ssPrintf(ss7.str().c_str());
     }
+
 
       
     //Output parameters

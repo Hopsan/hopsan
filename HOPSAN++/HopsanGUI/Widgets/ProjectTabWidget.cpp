@@ -678,6 +678,12 @@ void ProjectTabWidget::tabChanged()
 
 void ProjectTabWidget::saveCurrentModelToWrappedCode()
 {
-    qDebug() << "Saving to wc";
     qobject_cast<GUISystem*>(getCurrentContainer())->saveToWrappedCode();
+}
+
+
+
+void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
+{
+    qobject_cast<GUISystem*>(getCurrentContainer())->createSimulinkSourceFiles();
 }

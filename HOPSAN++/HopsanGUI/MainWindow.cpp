@@ -501,10 +501,15 @@ void MainWindow::createActions()
     togglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
     togglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
 
-    saveToWrappedCode = new QAction(this);
-    saveToWrappedCode->setShortcut(QKeySequence("Ctrl+Shift+Alt+W"));
-    this->addAction(saveToWrappedCode);
-    connect(saveToWrappedCode, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
+    saveToWrappedCodeAction = new QAction(this);
+    saveToWrappedCodeAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+W"));
+    this->addAction(saveToWrappedCodeAction);
+    connect(saveToWrappedCodeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
+
+    createSimulinkWrapperAction = new QAction(this);
+    createSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));
+    this->addAction(createSimulinkWrapperAction);
+    connect(createSimulinkWrapperAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);

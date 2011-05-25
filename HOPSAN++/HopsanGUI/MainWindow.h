@@ -136,7 +136,8 @@ public:
     QAction *aboutAction;
     QAction *helpAction;
     QAction *newVersionsAction;
-    QAction *saveToWrappedCode;
+    QAction *saveToWrappedCodeAction;
+    QAction *createSimulinkWrapperAction;
 
     //Set and get methods for simulation parameters in toolbar
     void setStartTimeInToolBar(double startTime);
