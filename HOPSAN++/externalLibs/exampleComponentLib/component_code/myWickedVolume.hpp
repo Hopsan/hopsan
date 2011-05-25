@@ -41,10 +41,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MyWickedVolume("WickedVolume");
+            return new MyWickedVolume();
         }
 
-        MyWickedVolume(const std::string name) : ComponentC(name)
+        MyWickedVolume() : ComponentC()
         {
             //Set member attributes
             mStartPressure = 0.0;

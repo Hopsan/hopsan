@@ -33,10 +33,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MyWickedOrifice("WickedOrifice");
+            return new MyWickedOrifice();
         }
 
-        MyWickedOrifice(const std::string name) : ComponentQ(name)
+        MyWickedOrifice() : ComponentQ()
         {
             mKc = 1.0e-11;
 
