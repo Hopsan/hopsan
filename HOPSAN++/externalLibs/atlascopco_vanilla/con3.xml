@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="con3" displayname="con3">
-        <icon isopath="Pictures/con3.svg" iconrotation="ON" userpath="Pictures/con3.svg"/>
-        <portpose x="0" y="0.5" a="0" name="P1"/>
-        <portpose x="1" y="0.23" a="0" name="P2"/>
-        <portpose x="1" y="0.77" a="0" name="P3"/>
-    </modelobject>
-</hopsanobjectappearance>

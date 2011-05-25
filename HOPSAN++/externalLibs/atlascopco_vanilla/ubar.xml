@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="ubar" displayname="Short TLM">
-        <icon isopath="Pictures/ubar.svg" iconrotation="ON" userpath="Pictures/ubar.svg"/>
-        <portpose x="0" y="0.5" a="0" name="P1"/>
-        <portpose x="1" y="0.5" a="0" name="P2"/>
-    </modelobject>
-</hopsanobjectappearance>
