@@ -26,7 +26,6 @@ namespace hopsan {
     //!
     class MyWickedVolume : public ComponentC
     {
-
     private:
         double mStartPressure;
         double mStartFlow;
