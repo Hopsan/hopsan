@@ -298,6 +298,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(mpContainerObject->getIsCreatingConnector())
         {
             delete(mpContainerObject->mpTempConnector);
+            gpMainWindow->hideHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
             mpContainerObject->setIsCreatingConnector(false);
         }
     }
@@ -558,6 +559,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             mpContainerObject->setIsCreatingConnector(false);
             mpContainerObject->mJustStoppedCreatingConnector = true;
             delete(mpContainerObject->mpTempConnector);
+            gpMainWindow->hideHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
         }
 
         if(mpContainerObject->getIsCreatingConnector())

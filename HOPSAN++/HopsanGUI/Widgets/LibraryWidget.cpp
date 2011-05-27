@@ -144,6 +144,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *tempItem = itemAt(event->pos());
     if(tempItem != 0x0)     //The pointer is zero if there is no item beneath the mouse
     {
+        gpMainWindow->showHelpPopupMessage("Add a component by dragging it to the workspace.");
         if(tempItem != mpHoveredItem)
         {
             tempItem->setForeground(QColor("lightblue"));
@@ -152,6 +153,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
             {
                 mpHoveredItem->setForeground(QColor("white"));
                 mpHoveredItem->setBackgroundColor(QColor("white"));
+                gpMainWindow->hideHelpPopupMessage("Add a component by dragging it to the workspace.");
             }
             mpHoveredItem = tempItem;
         }
@@ -167,6 +169,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
         if(mpHoveredItem != 0x0)
         {
             mpHoveredItem->setBackgroundColor(QColor("white"));
+            gpMainWindow->hideHelpPopupMessage("Add a component by dragging it to the workspace.");
         }
         mpHoveredItem = 0x0;
     }
@@ -182,6 +185,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     {
         tempItem->setBackgroundColor(QColor("white"));
         tempItem->setSelected(false);
+        gpMainWindow->hideHelpPopupMessage("Add a component by dragging it to the workspace.");
     }
     mpParentLibraryWidget->mpComponentNameField->setText("");
 
@@ -594,6 +598,7 @@ void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
     for( ; it != itemlist.end(); ++it )
     {
         (*it)->setBackgroundColor(QColor("white"));
+        gpMainWindow->hideHelpPopupMessage("Add a component by dragging it to the workspace.");
         (*it)->setSelected(false);
     }
     mpComponentNameField->setText("");

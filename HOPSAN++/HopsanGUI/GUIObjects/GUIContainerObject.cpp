@@ -1041,6 +1041,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         deselectAll();
         setIsCreatingConnector(true);
         mpTempConnector->drawConnector();
+        gpMainWindow->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
     }
         //When clicking end port (finish creation of connector)
     else
@@ -1060,6 +1061,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 
         if (success)
         {
+            gpMainWindow->hideHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
             setIsCreatingConnector(false);
             pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);

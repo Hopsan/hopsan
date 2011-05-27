@@ -137,8 +137,38 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
-    mpCentralGridLayout->addWidget(mpProjectTabs,0,0);
+    mpCentralGridLayout->addWidget(mpProjectTabs,0,0,4,4);
 
+    //Initialize the help message popup
+    mpHelpPopup = new QWidget(this);
+    mpHelpPopupIcon = new QLabel();
+    mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
+    mpHelpPopupLabel = new QLabel();
+    mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
+    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
+    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
+    mpHelpPopupGroupBoxLayout->setContentsMargins(4,4,4,4);
+    mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
+    mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
+    mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
+    mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
+    mpHelpPopup->setLayout(mpHelpPopupLayout);
+    mpHelpPopup->setBaseSize(100,30);
+    mpHelpPopup->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,150,150); } QLabel { margin : 0px; } ");
+    mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
+    mpCentralGridLayout->setColumnMinimumWidth(0,5);
+    mpCentralGridLayout->setColumnStretch(0,0);
+    mpCentralGridLayout->setColumnStretch(1,0);
+    mpCentralGridLayout->setColumnStretch(2,0);
+    mpCentralGridLayout->setColumnStretch(3,1);
+    mpCentralGridLayout->setRowMinimumHeight(0,25);
+    mpCentralGridLayout->setRowStretch(0,0);
+    mpCentralGridLayout->setRowStretch(1,0);
+    mpCentralGridLayout->setRowStretch(2,1);
+    mpHelpPopup->hide();
+
+    //Create actions, toolbars and menus
     this->createActions();
     this->createToolbars();
     this->createMenus();
@@ -232,6 +262,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
 
     qDebug() << "lastsessionmodels = " << gConfig.getLastSessionModels();
+
 }
 
 
@@ -335,6 +366,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     //this->saveSettings();
     gConfig.saveToXml();
+}
+
+
+void MainWindow::showHelpPopupMessage(QString message)
+{
+    mpHelpPopupLabel->setText(message);
+    mpHelpPopup->show();
+}
+
+void MainWindow::hideHelpPopupMessage(QString message)
+{
+    if(mpHelpPopupLabel->text() == message)
+        mpHelpPopup->hide();
 }
 
 

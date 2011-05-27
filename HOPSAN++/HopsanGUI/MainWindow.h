@@ -74,6 +74,14 @@ public:
     PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
 
+    //Help popup
+    QWidget *mpHelpPopup;
+    QLabel *mpHelpPopupIcon;
+    QLabel *mpHelpPopupLabel;
+    QHBoxLayout *mpHelpPopupLayout;
+    QGroupBox *mpHelpPopupGroupBox;
+    QHBoxLayout *mpHelpPopupGroupBoxLayout;
+
     //Menubar items
     QMenuBar *menubar;
     QMenu *menuFile;
@@ -147,6 +155,9 @@ public:
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
     void closeEvent(QCloseEvent *event);
+
+    void showHelpPopupMessage(QString message);
+    void hideHelpPopupMessage(QString message);
 
     PyDockWidget *getPythonDock();
 
