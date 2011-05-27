@@ -102,7 +102,7 @@ namespace hopsan {
             c_pilot = (*mpND_c_pilot);
 
             //Checkvalve equations
-            if (c_pilot > ((c1-c2) / phi) + c2 + pf )
+            if ((c1 > (c2 + pf)) || c_pilot > ((c1-c2) / phi) + c2 + pf )
             {
                 q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2);
             }
