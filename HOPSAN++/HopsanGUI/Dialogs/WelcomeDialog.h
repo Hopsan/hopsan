@@ -71,6 +71,7 @@ private:
     QStringList mModelList;
 
     QCheckBox *mpDontShowMe;
+    QCheckBox *mpPopupHelpCheckBox;
 };
 
 #endif // WELCOMEDIALOG_H

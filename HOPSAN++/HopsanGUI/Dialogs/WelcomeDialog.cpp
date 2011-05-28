@@ -125,13 +125,17 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpDontShowMe = new QCheckBox("Always load last session");
     mpDontShowMe->setChecked(!gConfig.getShowWelcomeDialog());
 
+    mpPopupHelpCheckBox = new QCheckBox("Enable popup help messages");
+    mpPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
+
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
     pLayout->addWidget(mpHeading,       0, 0);
     pLayout->addLayout(pButtonLayout,   1, 0);
     pLayout->addWidget(mpActionText,    2, 0);
-    pLayout->addWidget(mpRecentList,     3, 0);
+    pLayout->addWidget(mpRecentList,    3, 0);
     pLayout->addWidget(mpDontShowMe,    4, 0);
+    pLayout->addWidget(mpPopupHelpCheckBox,    5, 0);
     setLayout(pLayout);
 
     QPalette tempPalette;
@@ -215,6 +219,7 @@ void WelcomeDialog::createNewModel()
     gpMainWindow->mpProjectTabs->addNewProjectTab();
     gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
 }
 
@@ -227,6 +232,7 @@ void WelcomeDialog::loadExistingModel()
         gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
     }
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
 }
 
@@ -241,6 +247,7 @@ void WelcomeDialog::loadLastSession()
     }
     gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
 }
 
@@ -249,5 +256,6 @@ void WelcomeDialog::openRecentModel()
 {
     gpMainWindow->mpProjectTabs->loadModel(mModelList.at(mpRecentList->currentIndex().row()));
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
 }

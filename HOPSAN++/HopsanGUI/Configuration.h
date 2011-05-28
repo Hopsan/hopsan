@@ -46,6 +46,7 @@ public:
     void loadDefaultsFromXml();
 
     bool getShowWelcomeDialog();
+    bool getShowPopupHelp();
     bool getUseNativeStyleSheet();
     bool getInvertWheel();
     bool getUseMulticore();
@@ -68,6 +69,7 @@ public:
     QString getStyleSheet();
 
     void setShowWelcomeDialog(bool value);
+    void setShowPopupHelp(bool value);
     void setUseNativeStyleSheet(bool value);
     void setInvertWheel(bool value);
     void setUseMultiCore(bool value);
@@ -88,6 +90,7 @@ public:
 
 private:
     bool mShowWelcomeDialog;
+    bool mShowPopupHelp;
     bool mUseNativeStyleSheet;
     bool mInvertWheel;
     bool mUseMulticore;

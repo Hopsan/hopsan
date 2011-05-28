@@ -56,15 +56,12 @@ CopyStack gCopyStack;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {    
-    qDebug() << gExecPath;
 
-    //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
-    gpMainWindow = this;
-    //std::cout << "Starting Hopsan!";
-
+    //Create globals
+    gpMainWindow = this;    //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
     gConfig = Configuration();
     gCopyStack = CopyStack();
-    mpConfig = &gConfig;
+    mpConfig = &gConfig;        //! @todo Is this pointer variable needed?
 
     //Set the name and size of the main window
     this->setObjectName("MainWindow");
@@ -76,38 +73,33 @@ MainWindow::MainWindow(QWidget *parent)
     int x = (sw - w)/2;
     int y = (sh - h)/2;
     this->move(x, y);       //Move window to center of screen
-    this->setFont(QFont("Comic Sans"));
     this->setWindowTitle("Hopsan");
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
 
+    //Create dialogs
     mpAboutDialog = new AboutDialog(this);
     mpHelpDialog = new HelpDialog(this);
 
-    mpPlotWidget = 0;
-    mpSystemParametersWidget = 0;
-
-    QMetaObject::connectSlotsByName(this);
-
-
-
-    //Create a dock for the MessageWidget
+    //Create the message widget and its dock
     mpMessageDock = new QDockWidget(tr("Messages"), this);
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
     mpMessageDock->setWidget(mpMessageWidget);
     mpMessageDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
-
     mpMessageWidget->checkMessages();
     mpMessageWidget->printGUIInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
+    //Create the Python widget
     mpPyDockWidget = new PyDockWidget(this, this);
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 
+    //Load configuration from settings file
     gConfig.loadFromXml();
 
+    //Update style sheet setting
     if(!gConfig.getUseNativeStyleSheet())
     {
         setStyleSheet(gConfig.getStyleSheet());
@@ -115,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent)
         qApp->setFont(gConfig.getFont());
     }
 
-    //Create a dock for the componentslibrary
+    //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
@@ -125,13 +117,12 @@ MainWindow::MainWindow(QWidget *parent)
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
 
-    //Create a centralwidget for the main window
+    //Create the central widget for the main window
     mpCentralWidget = new QWidget(this);
     mpCentralWidget->setObjectName("centralwidget");
 
-    //Create a grid on the centralwidget
+    //Create the grid layout for the centralwidget
     mpCentralGridLayout = new QGridLayout(mpCentralWidget);
-    qDebug() << mpCentralGridLayout->contentsMargins();
     mpCentralGridLayout->setContentsMargins(4,4,4,4);
 
     //Create the main tab container, need at least one tab
@@ -172,13 +163,12 @@ MainWindow::MainWindow(QWidget *parent)
     mpCentralGridLayout->setRowStretch(1,0);
     mpCentralGridLayout->setRowStretch(2,1);
 
-
     //Create actions, toolbars and menus
     this->createActions();
     this->createToolbars();
     this->createMenus();
 
-    //Set the centralwidget
+    //Set the central widget
     this->setCentralWidget(mpCentralWidget);
 
     //Create the Statusbar
@@ -186,28 +176,19 @@ MainWindow::MainWindow(QWidget *parent)
     mpStatusBar->setObjectName("statusBar");
     this->setStatusBar(mpStatusBar);
 
+    //Create the undo widget and the options dialog
     mpUndoWidget = new UndoWidget(this);
     mpOptionsDialog = new OptionsDialog(this);
 
-            //Load default libraries
+    //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
-
     for(int i=0; i<gConfig.getUserLibs().size(); ++i)
     {
         mpLibrary->addExternalLibrary(gConfig.getUserLibs().at(i));
     }
-
-    if(QDir(gExecPath + QString(COMPONENTPATH) + "Real-time").exists())
-    {
-        mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-time");
-    }
-
+    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-time");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "benchmarking");
-
-    //mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-Time");
-
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Subsystem");
-
     mpLibrary->addEmptyLibrary("Signal"/*, "", "", QString(ICONPATH) + "signal.png"*/);
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Sources & Sinks","Signal");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Arithmetics","Signal");
@@ -215,14 +196,12 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Filters","Signal");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Logic","Signal");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
-
     mpLibrary->addEmptyLibrary("Mechanic"/*, "", "", ":graphics/splash2.svg"*/);
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sources","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Linear Inertias","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Rotating Inertias","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Springs & Dampers","Mechanic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sensors","Mechanic");
-
     mpLibrary->addEmptyLibrary("Hydraulic"/*, "", "", QString(ICONPATH) + "hydraulics.png"*/);
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Sources & Sinks","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
@@ -232,42 +211,38 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
     mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Pumps & Motors","Hydraulic");
 
-    //Create one new project tab, IMPORTANT: must be after Subsystem library has been loaded as we need Subsystem Appearance
-    //mpProjectTabs->addNewProjectTab();
-
-        //Create the plot dock widget and hide it
+    //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
     mpPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpPlotWidgetDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpPlotWidgetDock);
 
-        //Create the system parameters dock widget and hide it
+    //Create the system parameters dock widget and hide it
     mpSystemParametersDock = new QDockWidget(tr("System Parameters"), this);
     mpSystemParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
     addDockWidget(Qt::RightDockWidgetArea, mpSystemParametersDock);
     mpSystemParametersDock->hide();
 
-        //Create the undo dock widget and hide it
+    //Create the undo dock widget and hide it
     mpUndoWidgetDock = new QDockWidget(tr("Undo History"), this);
     mpUndoWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpUndoWidgetDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpUndoWidgetDock);
 
-        //Make dock widgets that share same dock area tabified, instead of stacking them above each other
+    //Make dock widgets that share same dock area tabified, instead of stacking them above each other
     tabifyDockWidget(mpPlotWidgetDock, mpSystemParametersDock);
     tabifyDockWidget(mpSystemParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
-
     tabifyDockWidget(mpPyDockWidget, mpMessageDock);
 
+    //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
     mpSystemParametersWidget->setVisible(false);
 
+    //Connect tab change slot with toolbars and undo widget
+    //! @todo Can't this be done in the creator for ProjectTabWidget?
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
-
-    qDebug() << "lastsessionmodels = " << gConfig.getLastSessionModels();
-
 }
 
 
@@ -323,6 +298,7 @@ void MainWindow::initializeWorkspace()
 
 
 //! @brief Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
+//! @todo This function is supposed to do something, but doesn't do anything?!
 void MainWindow::show()
 {
     QMainWindow::show();
@@ -379,10 +355,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //! @param message String with text so show in message
 void MainWindow::showHelpPopupMessage(QString message)
 {
-    mpHelpPopupLabel->setText(message);
-    mpHelpPopup->show();
-    mpHelpPopupTimer->stop();
-    mpHelpPopupTimer->start(5000);
+    if(gConfig.getShowPopupHelp())
+    {
+        mpHelpPopupLabel->setText(message);
+        mpHelpPopup->show();
+        mpHelpPopupTimer->stop();
+        mpHelpPopupTimer->start(5000);
+    }
 }
 
 
@@ -747,15 +726,9 @@ void MainWindow::openSystemParametersWidget()
 {
     if(!mpSystemParametersDock->isVisible())
     {
-        if(mpSystemParametersWidget == 0)
-        {
-            mpSystemParametersWidget = new SystemParametersWidget(this);
-        }
         mpSystemParametersDock->setWidget(mpSystemParametersWidget);
-
         mpSystemParametersDock->show();
         mpSystemParametersDock->raise();
-
         connect(mpSystemParametersDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updateSystemParametersActionButton(bool)));
     }
     else

@@ -73,6 +73,7 @@ private:
 
     QCheckBox *mpNativeStyleSheetCheckBox;
     QCheckBox *mpShowWelcomeDialogCheckBox;
+    QCheckBox *mpShowPopupHelpCheckBox;
     QCheckBox *mpInvertWheelCheckBox;
     QCheckBox *mpAntiAliasingCheckBox;
     QCheckBox *mpSnappingCheckBox;

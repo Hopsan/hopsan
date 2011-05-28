@@ -289,6 +289,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QVector<double> xVector, QVector
 //! @brief Defines what happens when clicking in the variable list. Used to initiate drag operations.
 void PlotParameterTree::mousePressEvent(QMouseEvent *event)
 {
+    gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
     QTreeWidget::mousePressEvent(event);
 
     if (event->button() == Qt::LeftButton)
@@ -299,7 +300,7 @@ void PlotParameterTree::mousePressEvent(QMouseEvent *event)
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
 {
-
+    gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
     if (!(event->buttons() & Qt::LeftButton))
     {
         return;

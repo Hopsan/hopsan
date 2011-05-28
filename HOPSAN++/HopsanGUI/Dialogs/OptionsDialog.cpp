@@ -83,6 +83,10 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpShowWelcomeDialogCheckBox->setCheckable(true);
     mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
 
+    mpShowPopupHelpCheckBox = new QCheckBox(tr("Show Popup Help Messages"));
+    mpShowPopupHelpCheckBox->setCheckable(true);
+    mpShowPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
+
     mpAntiAliasingCheckBox = new QCheckBox(tr("Use Anti-Aliasing"));
     mpAntiAliasingCheckBox->setCheckable(true);
     mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
@@ -99,11 +103,12 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpInterfaceLayout = new QGridLayout;
     mpInterfaceLayout->addWidget(mpNativeStyleSheetCheckBox,    0, 0);
     mpInterfaceLayout->addWidget(mpShowWelcomeDialogCheckBox,   1, 0);
-    mpInterfaceLayout->addWidget(mpInvertWheelCheckBox,         2, 0);
-    mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        3, 0);
-    mpInterfaceLayout->addWidget(mpSnappingCheckBox,            4, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorLabel,        5, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorButton,       5, 1);
+    mpInterfaceLayout->addWidget(mpShowPopupHelpCheckBox,       2, 0);
+    mpInterfaceLayout->addWidget(mpInvertWheelCheckBox,         3, 0);
+    mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        4, 0);
+    mpInterfaceLayout->addWidget(mpSnappingCheckBox,            5, 0);
+    mpInterfaceLayout->addWidget(mpBackgroundColorLabel,        6, 0);
+    mpInterfaceLayout->addWidget(mpBackgroundColorButton,       7, 1);
     mpInterfaceGroupBox->setLayout(mpInterfaceLayout);
 
         //Simulation Options
@@ -256,6 +261,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 void OptionsDialog::updateValues()
 {
     gConfig.setShowWelcomeDialog(mpShowWelcomeDialogCheckBox->isChecked());
+    gConfig.setShowPopupHelp(mpShowPopupHelpCheckBox->isChecked());
     gConfig.setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
 
     if(gConfig.getUseNativeStyleSheet())
@@ -356,6 +362,7 @@ void OptionsDialog::show()
     mPickedBackgroundColor = gConfig.getBackgroundColor();
 
     mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
+    mpShowPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
     mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
     mpInvertWheelCheckBox->setChecked(gConfig.getInvertWheel());
     mpSnappingCheckBox->setChecked(gConfig.getSnapping());

@@ -2,6 +2,7 @@
 <hopsandefaults>
     <settings>
         <showwelcomedialog>true</showwelcomedialog>
+        <showpopuphelp>true</showpopuphelp>
         <nativestylesheet>false</nativestylesheet>
         <backgroundcolor>#ffffff</backgroundcolor>
         <antialiasing>true</antialiasing>

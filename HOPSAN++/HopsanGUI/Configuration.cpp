@@ -52,6 +52,7 @@ void Configuration::saveToXml()
 
     QDomElement settings = appendDomElement(configRoot,"settings");
     appendDomBooleanNode(settings, "showwelcomedialog", mShowWelcomeDialog);
+    appendDomBooleanNode(settings, "showpopuphelp", mShowPopupHelp);
     appendDomBooleanNode(settings, "nativestylesheet", mUseNativeStyleSheet);
     appendDomTextNode(settings, "backgroundcolor", mBackgroundColor.name());
     appendDomBooleanNode(settings, "antialiasing", mAntiAliasing);
@@ -187,6 +188,8 @@ void Configuration::loadFromXml()
 
             if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
                 mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
+            if(!settingsElement.firstChildElement("showpopuphelp").isNull())
+                mShowPopupHelp = parseDomBooleanNode(settingsElement.firstChildElement("showpopuphelp"));
             if(!settingsElement.firstChildElement("nativestylesheet").isNull())
                 mUseNativeStyleSheet = parseDomBooleanNode(settingsElement.firstChildElement("nativestylesheet"));
             if(!settingsElement.firstChildElement("backgroundcolor").isNull())
@@ -335,6 +338,8 @@ void Configuration::loadDefaultsFromXml()
             QDomElement settingsElement = configRoot.firstChildElement("settings");
             if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
                 mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
+            if(!settingsElement.firstChildElement("showpopuphelp").isNull())
+                mShowPopupHelp = parseDomBooleanNode(settingsElement.firstChildElement("showpopuphelp"));
             if(!settingsElement.firstChildElement("nativestylesheet").isNull())
                 mUseNativeStyleSheet = parseDomBooleanNode(settingsElement.firstChildElement("nativestylesheet"));
             if(!settingsElement.firstChildElement("backgroundcolor").isNull())
@@ -461,6 +466,13 @@ void Configuration::loadDefaultsFromXml()
 bool Configuration::getShowWelcomeDialog()
 {
     return this->mShowWelcomeDialog;
+}
+
+
+//! @brief Returns whether or not the popup help shall be shown
+bool Configuration::getShowPopupHelp()
+{
+    return this->mShowPopupHelp;
 }
 
 
@@ -636,6 +648,12 @@ QString Configuration::getStyleSheet()
 void Configuration::setShowWelcomeDialog(bool value)
 {
     this->mShowWelcomeDialog = value;
+}
+
+
+void Configuration::setShowPopupHelp(bool value)
+{
+    this->mShowPopupHelp = value;
 }
 
 
