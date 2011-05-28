@@ -2,13 +2,13 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
@@ -1061,7 +1061,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 
         if (success)
         {
-            gpMainWindow->hideHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
+            gpMainWindow->mpHelpPopup->hide();
             setIsCreatingConnector(false);
             pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);

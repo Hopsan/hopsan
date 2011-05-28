@@ -2,13 +2,13 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
@@ -73,7 +73,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pAuthorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pAuthorsText = new QLabel();
-    pAuthorsText->setText(QString::fromUtf8("BjÃ¶rn Eriksson, Peter Nordin, Robert Braun\n"));
+    pAuthorsText->setText(QString::fromUtf8("Björn Eriksson, Peter Nordin, Robert Braun\n"));
     pAuthorsText->setWordWrap(true);
     pAuthorsText->setAlignment(Qt::AlignCenter);
 
@@ -113,7 +113,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pContactHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContactText = new QLabel();
-    pContactText->setText(QString::fromUtf8("LinkÃ¶ping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: robert.braun@liu.se"));
+    pContactText->setText(QString::fromUtf8("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: robert.braun@liu.se"));
     pContactText->setWordWrap(true);
     pContactText->setAlignment(Qt::AlignCenter);
 

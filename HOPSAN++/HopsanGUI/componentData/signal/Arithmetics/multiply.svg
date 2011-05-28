@@ -37,16 +37,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.0611058"
-     inkscape:cx="-62.120527"
-     inkscape:cy="58.327586"
+     inkscape:zoom="7.6299988"
+     inkscape:cx="42.169047"
+     inkscape:cy="8.0834649"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="732"
+     inkscape:window-width="1680"
+     inkscape:window-height="982"
      inkscape:window-x="-8"
-     inkscape:window-y="38"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3212">
@@ -66,24 +66,21 @@
      transform="translate(-513.99099,-160.46754)">
     <path
        sodipodi:type="arc"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:11.05589962;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#ffffff;fill-opacity:1;stroke:#0000bb;stroke-width:8.11550139999999940;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none"
        id="path2395"
        sodipodi:cx="155"
        sodipodi:cy="513.07648"
        sodipodi:rx="63.57143"
        sodipodi:ry="63.57143"
        d="m 218.57143,513.07648 a 63.57143,63.57143 0 1 1 -127.14286,0 63.57143,63.57143 0 1 1 127.14286,0 z"
-       transform="matrix(-0.1808989,0,0,-0.1808989,554.53032,265.78251)" />
-    <text
-       xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Cambria Math;-inkscape-font-specification:Cambria Math"
-       x="520.20679"
-       y="180.29909"
-       id="text2384"><tspan
-         sodipodi:role="line"
-         id="tspan2386"
-         x="520.20679"
-         y="180.29909"
-         style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Cambria Math;-inkscape-font-specification:Cambria Math">X</tspan></text>
+       transform="matrix(-0.18483146,0,0,-0.18483146,555.13986,267.80021)" />
+    <g
+       style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000bb;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-opacity:1"
+       id="text3754">
+      <path
+         d="m 531.94019,179.82301 c 0.10155,0.17188 0.16209,0.3086 0.18164,0.41016 0.0195,0.10156 -0.006,0.18164 -0.0762,0.24023 -0.0703,0.0586 -0.18555,0.0977 -0.3457,0.11719 -0.16017,0.0195 -0.37306,0.0293 -0.63867,0.0293 -0.25001,0 -0.44532,-0.006 -0.58594,-0.0176 -0.14063,-0.0117 -0.25196,-0.0332 -0.33398,-0.0644 -0.082,-0.0312 -0.14454,-0.0684 -0.1875,-0.11133 -0.043,-0.043 -0.0801,-0.0996 -0.11133,-0.16992 l -3.375,-6.03516 -3.41016,6.03516 c -0.0391,0.0703 -0.082,0.1289 -0.1289,0.17578 -0.0469,0.0469 -0.11133,0.084 -0.19336,0.11133 -0.082,0.0273 -0.19336,0.0469 -0.33399,0.0586 -0.14062,0.0117 -0.32812,0.0176 -0.5625,0.0176 -0.25781,0 -0.46094,-0.01 -0.60937,-0.0293 -0.14844,-0.0195 -0.25196,-0.0586 -0.31055,-0.11719 -0.0586,-0.0586 -0.0781,-0.13867 -0.0586,-0.24023 0.0195,-0.10156 0.0801,-0.23828 0.18164,-0.41016 l 4.13672,-6.97265 -3.94922,-6.73828 c -0.0937,-0.17186 -0.1543,-0.31054 -0.18164,-0.41602 -0.0273,-0.10545 -0.01,-0.18748 0.0527,-0.24609 0.0625,-0.0586 0.17188,-0.0957 0.32813,-0.11133 0.15625,-0.0156 0.37109,-0.0234 0.64453,-0.0234 0.23437,2e-5 0.42578,0.006 0.57422,0.0176 0.14843,0.0117 0.26562,0.0313 0.35156,0.0586 0.0859,0.0274 0.14843,0.0664 0.1875,0.11719 0.0391,0.0508 0.082,0.10744 0.12891,0.16992 l 3.25781,5.67188 3.23437,-5.67188 c 0.0391,-0.0625 0.0781,-0.11912 0.11719,-0.16992 0.039,-0.0508 0.0957,-0.0898 0.16992,-0.11719 0.0742,-0.0273 0.17773,-0.0469 0.31055,-0.0586 0.1328,-0.0117 0.31249,-0.0176 0.53906,-0.0176 0.24218,2e-5 0.43944,0.01 0.5918,0.0293 0.15233,0.0195 0.26171,0.0566 0.32812,0.11133 0.0664,0.0547 0.0918,0.13478 0.0762,0.24023 -0.0156,0.10548 -0.0703,0.24416 -0.16407,0.41602 l -3.9375,6.6914 z"
+         style="stroke:none;stroke-opacity:1;fill:#0000bb;fill-opacity:1"
+         id="path3759" />
+    </g>
   </g>
 </svg>

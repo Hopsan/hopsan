@@ -2,13 +2,13 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
@@ -147,7 +147,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
     mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
     mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
-    mpHelpPopupGroupBoxLayout->setContentsMargins(4,4,4,4);
+    mpHelpPopupGroupBoxLayout->setContentsMargins(3,3,3,3);
     mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
     mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
     mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
@@ -155,7 +155,12 @@ MainWindow::MainWindow(QWidget *parent)
     mpHelpPopup->setLayout(mpHelpPopupLayout);
     mpHelpPopup->setBaseSize(100,30);
     mpHelpPopup->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,150,150); } QLabel { margin : 0px; } ");
+    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,224,255); } QLabel { margin : 0px; } ");
+    mpHelpPopup->hide();
+    mpHelpPopupTimer = new QTimer(this);
+    connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
+
+    //Set the correct position of the popup message in the central widget
     mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
     mpCentralGridLayout->setColumnMinimumWidth(0,5);
     mpCentralGridLayout->setColumnStretch(0,0);
@@ -166,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpCentralGridLayout->setRowStretch(0,0);
     mpCentralGridLayout->setRowStretch(1,0);
     mpCentralGridLayout->setRowStretch(2,1);
-    mpHelpPopup->hide();
+
 
     //Create actions, toolbars and menus
     this->createActions();
@@ -275,7 +280,7 @@ MainWindow::~MainWindow()
 }
 
 
-//! @brief Initializes the workspace by either opening specified model, loading last session or showing the Welcome dialog
+//! @brief Initializes the workspace by either opening specified model, loading last session or showing the Welcome dialog.
 void MainWindow::initializeWorkspace()
 {
     //File association - ignore everything else and open the specified file if there is a hmf file in the argument list
@@ -369,19 +374,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
+//! @brief Shows the help popup message for 5 seconds with specified message.
+//! Any message already being shown will be replaced. Messages can be hidden in advance by calling mpHelpPopup->hide().
+//! @param message String with text so show in message
 void MainWindow::showHelpPopupMessage(QString message)
 {
     mpHelpPopupLabel->setText(message);
     mpHelpPopup->show();
-}
-
-void MainWindow::hideHelpPopupMessage(QString message)
-{
-    if(mpHelpPopupLabel->text() == message)
-        mpHelpPopup->hide();
+    mpHelpPopupTimer->stop();
+    mpHelpPopupTimer->start(5000);
 }
 
 
+//! @brief Returns a pointer to the python scripting dock widget.
 PyDockWidget *MainWindow::getPythonDock()
 {
     return mpPyDockWidget;

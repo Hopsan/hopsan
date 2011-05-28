@@ -27,16 +27,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.2614232"
-     inkscape:cx="-46.094649"
-     inkscape:cy="3.0779424"
+     inkscape:zoom="15.259998"
+     inkscape:cx="10.412921"
+     inkscape:cy="8.954213"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="732"
+     inkscape:window-width="1680"
+     inkscape:window-height="982"
      inkscape:window-x="-8"
-     inkscape:window-y="38"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <defs
      id="defs3209" />
@@ -57,14 +57,14 @@
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
     <path
-       transform="matrix(-0.1808989,0,0,-0.1808989,554.53032,265.78251)"
-       d="m 218.57143,513.07648 c 0,35.10953 -28.4619,63.57143 -63.57143,63.57143 -35.10953,0 -63.57143,-28.4619 -63.57143,-63.57143 0,-35.10953 28.4619,-63.57143 63.57143,-63.57143 35.10953,0 63.57143,28.4619 63.57143,63.57143 z"
+       transform="matrix(-0.18483146,0,0,-0.18483146,555.13987,267.80022)"
+       d="m 218.57143,513.07648 a 63.57143,63.57143 0 1 1 -127.14286,0 63.57143,63.57143 0 1 1 127.14286,0 z"
        sodipodi:ry="63.57143"
        sodipodi:rx="63.57143"
        sodipodi:cy="513.07648"
        sodipodi:cx="155"
        id="path2395"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:11.05590153000000000;stroke-linecap:square;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#0000bb;stroke-width:8.11550139999999940;stroke-linecap:square;stroke-miterlimit:3;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:type="arc" />
     <text
        xml:space="preserve"
@@ -78,13 +78,16 @@
          id="tspan2988"
          x="-18.335493"
          y="13.467725" /></text>
-    <g
-       style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Cambria Math;-inkscape-font-specification:Cambria Math"
-       id="text2990">
-      <path
-         d="m 524.17065,166.62428 3.68457,5.56446 0,0.63379 -4.13574,5.7041 4.86621,0 c 0.62304,0 1.07421,-0.13965 1.35352,-0.41895 0.27929,-0.27929 0.50845,-0.91308 0.6875,-1.90137 l 1.07422,0 -0.23633,4.09278 -10.18359,0 0,-0.52637 4.8125,-6.61719 -4.51172,-6.99316 0,-0.52637 9.92578,0 0,3.74903 -1.00977,0 c -0.29363,-1.15299 -0.5962,-1.90136 -0.90771,-2.24512 -0.31153,-0.34374 -0.76092,-0.51561 -1.34815,-0.51563 z"
-         style="font-family:Cambria Math;-inkscape-font-specification:Cambria Math"
-         id="path2995" />
-    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000bb;fill-opacity:1;stroke:none;font-family:Sans"
+       x="519.97729"
+       y="180.12575"
+       id="text2987"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2989"
+         x="519.97729"
+         y="180.12575">Σ</tspan></text>
   </g>
 </svg>

@@ -28,7 +28,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.6568542"
-     inkscape:cx="19.097551"
+     inkscape:cx="-8.4796137"
      inkscape:cy="6.440516"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -156,7 +156,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -166,15 +166,15 @@
      id="layer1"
      transform="translate(-245.88209,-394.0839)">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.999735;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#ffffff;fill-opacity:1;stroke:#0000bb;stroke-width:1.50000000000000000;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3623"
-       width="23.000265"
-       height="23.000263"
-       x="246.88196"
-       y="395.08377" />
+       width="23.500002"
+       height="23.5"
+       x="246.6321"
+       y="394.83389" />
     <text
        xml:space="preserve"
-       style="font-size:28px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Cambria Math;-inkscape-font-specification:Cambria Math"
+       style="font-size:28px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:#0000bb;font-family:Cambria Math;-inkscape-font-specification:Cambria Math;stroke-width:1.50000000000000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        x="-68.235802"
        y="-26.19383"
        id="text2839"
@@ -185,7 +185,7 @@
          x="-68.235802"
          y="-26.19383" /></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1.99961722;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#0000bb;stroke-width:1.50000000000000000;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 252.38191,398.94961 12.00038,7.63429 -11.74138,7.63427"
        id="path3855"
        inkscape:connector-curvature="0"
