@@ -27,6 +27,8 @@
 
 #include <map>
 #include <iostream>
+#include <sstream>
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 namespace hopsan {
 
@@ -55,10 +57,17 @@ namespace hopsan {
             //std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
             std::pair<typename FactoryMapT::iterator, bool> rc;
             rc = mFactoryMap.insert(FactoryPairT(idKey, classCreator));
+            std::stringstream ss;
             if (!rc.second)
             {
                 std::cout << "Warning! You are trying to register a Key value that already exist. This registration will be ignored, Key: " << idKey << std::endl;
+                ss << "Failed to register component: " << idKey << ", a component with this name already exists.";
             }
+            else
+            {
+                ss << "Successfully registered component: " << idKey;
+            }
+            gCoreMessageHandler.addDebugMessage(ss.str());
             //std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
             return idKey;
         }
