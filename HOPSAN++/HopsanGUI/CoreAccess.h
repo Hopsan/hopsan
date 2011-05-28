@@ -36,6 +36,13 @@ class ComponentSystem;
 class Port;
 }
 
+
+class CoreLibraryAccess
+{
+public:
+    bool hasComponent(QString componentName);
+};
+
 class CoreMessagesAccess
 {
 public:

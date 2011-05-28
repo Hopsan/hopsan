@@ -36,6 +36,12 @@ using namespace std;
 using namespace hopsan;
 
 
+bool CoreLibraryAccess::hasComponent(QString componentName)
+{
+    return HopsanEssentials::getInstance()->hasComponent(componentName.toStdString());
+}
+
+
 size_t CoreMessagesAccess::getNumberOfMessages()
 {
     return HopsanEssentials::getInstance()->checkMessage();

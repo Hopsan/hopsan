@@ -27,6 +27,7 @@
 
 #include "../common.h"
 #include "HopsanCore.h"
+#include "CoreAccess.h"
 
 #include <QListWidget>
 #include <QStringList>
@@ -129,6 +130,8 @@ private:
 
     QTreeWidget *mpTree;
     QVBoxLayout *mpGrid;
+
+    CoreLibraryAccess *mpCoreAccess;
 };
 
 

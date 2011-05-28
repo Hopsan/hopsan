@@ -28,7 +28,7 @@
 #include <map>
 #include <iostream>
 #include <sstream>
-#include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "HopsanCoreMessageHandler.h"
 
 namespace hopsan {
 
