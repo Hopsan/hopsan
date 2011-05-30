@@ -14,7 +14,7 @@
    height="24.999998"
    id="svg3336"
    inkscape:version="0.48.0 r9654"
-   sodipodi:docname="inputinterface.svg">
+   sodipodi:docname="outputinterface.svg">
   <metadata
      id="metadata13">
     <rdf:RDF>
@@ -23,7 +23,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -41,7 +41,7 @@
      id="namedview11"
      showgrid="false"
      inkscape:zoom="2"
-     inkscape:cx="49.962618"
+     inkscape:cx="-28.037382"
      inkscape:cy="-45.301672"
      inkscape:window-x="0"
      inkscape:window-y="46"
@@ -63,14 +63,14 @@
     </marker>
   </defs>
   <rect
-     style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#008800;stroke-width:1.49999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+     style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#0000cc;stroke-width:1.49999988000000010;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
      id="rect3760"
      width="8.5"
      height="23.5"
      x="0.74999994"
      y="0.74999809" />
   <path
-     style="fill:#008800;fill-opacity:1;stroke:#008800;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     style="fill:#0000cc;fill-opacity:1;stroke:#0000cc;stroke-width:1.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
      d="m 5.6874981,8.9999981 9.2499999,0 0,-7 9,10.4999999 -9,10.5 0,-7 -9.2499999,0 z"
      id="path2984"
      inkscape:connector-curvature="0"

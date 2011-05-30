@@ -151,6 +151,10 @@
 #include "Mechanic/MechanicAngularVelocitySensor.hpp"
 #include "Mechanic/MechanicTorqueSensor.hpp"
 #include "Mechanic/MechanicMultiPortTranslationalMass.hpp"
+#include "Mechanic/MechanicInterfaceC.hpp"
+#include "Mechanic/MechanicInterfaceQ.hpp"
+#include "Mechanic/MechanicRotationalInterfaceC.hpp"
+#include "Mechanic/MechanicRotationalInterfaceQ.hpp"
 
 
 

@@ -31,11 +31,11 @@ win32 {
     # Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)
     d = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
     !isEmpty(d){
-        DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
-        message(Compiling HopsanCore with TBB support)
-        LIBS *= $$magic_hopsan_libpath
-        INCLUDEPATH *= $$magic_hopsan_includepath
-        QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+        #DEFINES *= USETBB       #If TBB was found then lets build core with TBB support
+        #message(Compiling HopsanCore with TBB support)
+        #LIBS *= $$magic_hopsan_libpath
+        #INCLUDEPATH *= $$magic_hopsan_includepath
+        #QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
     }
     #--------------------------------------------------------
 }
@@ -230,7 +230,13 @@ HEADERS += win32dll.h \
     Components/Signal/SignalUndefinedConnection.hpp \
     Components/Hydraulic/HydraulicPilotControlledCheckValve.hpp \
     Components/Hydraulic/HydraulicCheckValveWithOrifice.hpp \
-    Components/Hydraulic/HydraulicPilotClosableCheckValve.hpp
+    Components/Hydraulic/HydraulicPilotClosableCheckValve.hpp \
+    Components/Signal/SignalOutputInterface.hpp \
+    Components/Signal/SignalInputInterface.hpp \
+    Components/Mechanic/MechanicRotationalInterfaceQ.hpp \
+    Components/Mechanic/MechanicRotationalInterfaceC.hpp \
+    Components/Mechanic/MechanicInterfaceQ.hpp \
+    Components/Mechanic/MechanicInterfaceC.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
