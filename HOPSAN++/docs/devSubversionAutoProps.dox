@@ -6,7 +6,7 @@ This means that if you add new files some necessary file properties for thos fil
 \section devSubversionAutoProps-TortoiseSVN Activating auto-props in TortoiseSVN on Windows
 -# Right-click on the to level folder of your working copy. Select TortoiseSVN->Settings
 -# Under General settings you will find "Subversion configuration file:" press the edit button.
--# A text file (the config file) will open in a text editor. Find the line "# enable-auto-props = yes" and uncomment it, also remove teh whitespace.
+-# A text file (the config file) will open in a text editor. Find the line "# enable-auto-props = yes" and uncomment it, also remove the whitespace.
 -# Now add the following at the botom under the "[auto-props]" section \n
 \verbatim
 *.cc = svn:eol-style=native;svn:keywords=Id
@@ -24,5 +24,8 @@ This means that if you add new files some necessary file properties for thos fil
 -# Save the file and you are Done!
 
 \section devSubversionAutoProps-Linux Activating auto-props under Linux
-write this
+-# Locate your subversion client config file, its locations should be ~/.subversion/config
+-# Find the line "# enable-auto-props = yes" and uncomment it, also remove the whitespace. 
+-# Add the lines shown above under the "[auto-props]" section.
+-# Save the file and you are Done!
 */
