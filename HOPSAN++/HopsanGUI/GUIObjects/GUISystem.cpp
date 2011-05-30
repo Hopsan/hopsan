@@ -642,7 +642,14 @@ void GUISystem::createSimulinkSourceFiles()
         return;
     }
 
-    qDebug() << "wrapperFile.fileName() = " << wrapperFile.fileName();
+    QFile portLabelsFile;
+    portLabelsFile.setFileName(savePath + "/HopsanSimulinkPortLabels.m");
+    if(!portLabelsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulinkPortLabels.m for writing.");
+        return;
+    }
+
 
     QFile compileFile;
     compileFile.setFileName(savePath + "/HopsanSimulinkCompile.m");
@@ -652,6 +659,10 @@ void GUISystem::createSimulinkSourceFiles()
         return;
     }
 
+
+    QTextStream portLabelsStream(&portLabelsFile);
+    portLabelsStream << "set_param(gcb,'Mask','on')\n";
+    portLabelsStream << "set_param(gcb,'MaskDisplay','";
 
     QTextStream wrapperStream(&wrapperFile);
     wrapperStream << "/*-----------------------------------------------------------------------------";
@@ -722,6 +733,7 @@ void GUISystem::createSimulinkSourceFiles()
     {
         wrapperStream << "    ssSetInputPortWidth(S, " << i << ", DYNAMICALLY_SIZED);		//Input signal " << i << "\n";
         wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << i << ", 1);\n";
+        portLabelsStream << "port_label(''input''," << i+1 << ",''" << inputComponents.at(i) << "''); ";
     }
     wrapperStream << "\n";
     wrapperStream << "    //Define S-function output signals\n";
@@ -729,6 +741,7 @@ void GUISystem::createSimulinkSourceFiles()
     for(size_t i=0; i<nOutputs; ++i)
     {
         wrapperStream << "    ssSetOutputPortWidth(S, " << i << ", DYNAMICALLY_SIZED);		//Output signal " << i << "\n";
+        portLabelsStream << "port_label(''output''," << i+1 << ",''" << outputComponents.at(i) << "''); ";
     }
     wrapperStream << "\n";
     wrapperStream << "    ssSetNumSampleTimes(S, 1);\n";
@@ -742,6 +755,8 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
     wrapperStream << "    pComponentSystem->setDesiredTimestep(0.001);\n";
     wrapperStream << "    pComponentSystem->initializeComponentsOnly();\n";
+    wrapperStream << "\n";
+    wrapperStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                               //Run the port label script\n";
     wrapperStream << "}\n";
     wrapperStream << "\n";
     wrapperStream << "static void mdlInitializeSampleTimes(SimStruct *S)\n";
@@ -815,6 +830,9 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "#endif\n";
     wrapperStream << "\n";
     wrapperFile.close();
+
+    portLabelsStream << "')";
+    portLabelsFile.close();
 
     QTextStream compileStream(&compileFile);
     compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp " + relIncludePath + "\Component.cc " + relIncludePath + "\ComponentSystem.cc " + relIncludePath + "\HopsanEssentials.cc " + relIncludePath + "\Node.cc " + relIncludePath + "\Port.cc " + relIncludePath + "\Components\Components.cc " + relIncludePath + "\CoreUtilities\HmfLoader.cc " + relIncludePath + "\CoreUtilities\HopsanCoreMessageHandler.cc " + relIncludePath + "\CoreUtilities\LoadExternal.cc " + relIncludePath + "\Nodes\Nodes.cc " + relIncludePath + "\ComponentUtilities\AuxiliarySimulationFunctions.cpp " + relIncludePath + "\ComponentUtilities\Delay.cc " + relIncludePath + "\ComponentUtilities\DoubleIntegratorWithDamping.cpp " + relIncludePath + "\ComponentUtilities\FirstOrderFilter.cc " + relIncludePath + "\ComponentUtilities\Integrator.cc " + relIncludePath + "\ComponentUtilities\IntegratorLimited.cc " + relIncludePath + "\ComponentUtilities\ludcmp.cc " + relIncludePath + "\ComponentUtilities\matrix.cc " + relIncludePath + "\ComponentUtilities\SecondOrderFilter.cc " + relIncludePath + "\ComponentUtilities\SecondOrderTransferFunction.cc " + relIncludePath + "\ComponentUtilities\TurbulentFlowFunction.cc " + relIncludePath + "\ComponentUtilities\ValveHysteresis.cc\n";
