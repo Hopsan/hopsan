@@ -2,21 +2,21 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Bj�rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Link�ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
 /*
  * HopsanGUI
- * Fluid and Mechatronic Systems, Department of Management and Engineering, Link�ping University
- * Main Authors 2009-2010:  Robert Braun, Bj�rn Eriksson, Peter Nordin
+ * Fluid and Mechatronic Systems, Department of Management and Engineering, Linköping University
+ * Main Authors 2009-2010:  Robert Braun, Björn Eriksson, Peter Nordin
  * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
  */
 
@@ -79,8 +79,8 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
 
     connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openComponentPropertiesDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(update()));//Strössel!
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(update()));//Strössel!
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(update()));//StrÃ¶ssel!
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(update()));//StrÃ¶ssel!
 }
 
 
