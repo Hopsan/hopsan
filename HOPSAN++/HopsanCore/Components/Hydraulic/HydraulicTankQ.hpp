@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Hydraulic Tank Component of Q-type
 //!
-//$Id: HydraulicTankQ.hpp 2510 2011-01-26 13:05:20Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICTANKQ_HPP_INCLUDED
 #define HYDRAULICTANKQ_HPP_INCLUDED

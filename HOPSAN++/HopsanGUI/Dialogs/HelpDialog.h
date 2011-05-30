@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for the Help dialog
 //!
-//$Id: HelpDialog.h 2427 2010-12-30 21:14:01Z petno25 $
+//$Id$
 
 #ifndef HELPDIALOG_H
 #define HELPDIALOG_H

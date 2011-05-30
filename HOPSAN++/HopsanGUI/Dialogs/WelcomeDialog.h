@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for the Welcome dialog
 //!
-//$Id: WelcomeDialog.h 2427 2010-12-30 21:14:01Z petno25 $
+//$Id$
 
 #ifndef WELCOMEDIALOG_H
 #define WELCOMEDIALOG_H

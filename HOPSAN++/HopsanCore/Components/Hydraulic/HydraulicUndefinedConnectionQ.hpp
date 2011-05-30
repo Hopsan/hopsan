@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Hydraulic Undefined Connection Component of Q-type
 //!
-//$Id: HydraulicUndefinedConnectionQ.hpp 2510 2011-01-26 13:05:20Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICUNDEFINEDCONNECTIONQ_HPP_INCLUDED
 #define HYDRAULICUNDEFINEDCONNECTIONQ_HPP_INCLUDED

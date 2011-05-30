@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for the options dialog
 //!
-//$Id: OptionsDialog.h 1195 2010-04-01 09:25:58Z robbr48 $
+//$Id$
 
 #ifndef OPTIONSDIALOG_H
 #define OPTIONSDIALOG_H

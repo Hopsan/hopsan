@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a hydraulic pressure controlled valve with first order dynamics
 //!
-//$Id: HydraulicPressureCompensatingValve.hpp 2787 2011-04-17 17:20:28Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICPRESSURECOMPENSATINGVALVE_HPP_INCLUDED
 #define HYDRAULICPRESSURECOMPENSATINGVALVE_HPP_INCLUDED

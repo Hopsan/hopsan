@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a hydraulic pressure drop valve with first order dynamics
 
-//$Id: HydraulicPressureDropValve.hpp 2503 2011-01-24 07:48:09Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICPRESSUREDROPVALVE_HPP_INCLUDED
 #define HYDRAULICPRESSUREDROPVALVE_HPP_INCLUDED

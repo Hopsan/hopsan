@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for the Help dialog
 //!
-//$Id: HelpDialog.cpp 2426 2010-12-30 19:58:15Z petno25 $
+//$Id$
 
 #include "../MainWindow.h"
 #include "HelpDialog.h"

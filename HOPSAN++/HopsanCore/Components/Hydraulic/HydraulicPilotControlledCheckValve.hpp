@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Pilot Controlled Hydraulic Checkvalve component
 //!
-//$Id: HydraulicPilotControlledCheckValve.hpp 2915 2011-05-06 11:21:38Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICPILOTCONTROLLEDCHECKVALVE_HPP_INCLUDED
 #define HYDRAULICPILOTCONTROLLEDCHECKVALVE_HPP_INCLUDED

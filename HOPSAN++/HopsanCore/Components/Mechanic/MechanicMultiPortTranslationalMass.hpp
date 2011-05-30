@@ -13,7 +13,7 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-//$Id: MechanicMultiPortTranslationalMass.hpp 2868 2011-04-29 07:04:13Z robbr48 $
+//$Id$
 
 #ifndef MECHANICMULTIPORTTRANSLATIONALMASS_HPP_INCLUDED
 #define MECHANICMULTIPORTTRANSLATIONALMASS_HPP_INCLUDED

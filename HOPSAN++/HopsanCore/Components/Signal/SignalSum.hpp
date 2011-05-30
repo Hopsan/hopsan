@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a mathematical multiport summator component
 //!
-//$Id: SignalAdd.hpp 2688 2011-04-04 09:41:46Z petno25 $
+//$Id$
 
 #ifndef SIGNALSUM_HPP_INCLUDED
 #define SIGNALSUM_HPP_INCLUDED

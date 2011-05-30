@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a hydraulic pressure relief valve with first order dynamics
 
-//$Id: HydraulicPressureReducingValve.hpp 2503 2011-01-24 07:48:09Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICPRESSUREREDUCINGVALVE_HPP_INCLUDED
 #define HYDRAULICPRESSUREREDUCINGVALVE_HPP_INCLUDED

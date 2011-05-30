@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Signal Gain Component
 //!
-//$Id: SignalGain.hpp 2008 2010-10-26 08:43:52Z robbr48 $
+//$Id$
 
 #ifndef SIGNALDUMMY_HPP_INCLUDED
 #define SIGNALDUMMY_HPP_INCLUDED

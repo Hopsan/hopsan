@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Hydraulic Undefined Connection Component of C-type
 //!
-//$Id: HydraulicUndefinedConnectionC.hpp 2596 2011-02-23 11:43:38Z robbr48 $
+//$Id$
 
 #ifndef HYDRAULICUNDEFINEDCONNECTIONC_HPP_INCLUDED
 #define HYDRAULICUNDEFINEDCONNECTIONC_HPP_INCLUDED

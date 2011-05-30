@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a Hydraulic Multi Port Pressure Source Component of C-type
 //!
-//$Id: HydraulicPressureSourceC.hpp 2614 2011-03-10 14:58:17Z bjoer $
+//$Id$
 
 #ifndef HYDRAULICMULTIPRESSURESOURCEC_HPP_INCLUDED
 #define HYDRAULICMULTIPRESSURESOURCEC_HPP_INCLUDED
