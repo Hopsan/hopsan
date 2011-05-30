@@ -2,20 +2,20 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Bj�rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Link�ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
 //!
 //! @file   Delay.cc
-//! @author Bj�rn Eriksson <bjorn.eriksson@liu.se>
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2009-12-19
 //!
 //! @brief Contains the Core Utility Delay class
@@ -237,7 +237,7 @@ using namespace hopsan;
 ////! @see value(double value)
 ////! @see valueIdx(const int idx)
 ////! @see valueIdx(double value, const int idx)
-//double Delay::valueIdx(const int idx) //! @todo interpolera värden
+//double Delay::valueIdx(const int idx) //! @todo interpolera vÃ¤rden
 //{
 //    update(mValues.front());
 //    if (((size_t)idx < 1) || ((size_t)idx > mValues.size()))
