@@ -236,7 +236,8 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicRotationalInterfaceQ.hpp \
     Components/Mechanic/MechanicRotationalInterfaceC.hpp \
     Components/Mechanic/MechanicInterfaceQ.hpp \
-    Components/Mechanic/MechanicInterfaceC.hpp
+    Components/Mechanic/MechanicInterfaceC.hpp \
+    CoreUtilities/ClassFactoryStatusCheck.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

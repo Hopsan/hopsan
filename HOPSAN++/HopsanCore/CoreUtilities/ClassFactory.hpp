@@ -26,9 +26,8 @@
 #define CLASFACTORY_HPP_INCLUDED
 
 #include <map>
+#include <vector>
 #include <iostream>
-#include <sstream>
-#include "HopsanCoreMessageHandler.h"
 
 namespace hopsan {
 
@@ -39,6 +38,10 @@ namespace hopsan {
     template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
     class ClassFactory
     {
+    public:
+        typedef std::vector< std::pair<_Key, int> > RegStatusVectorT;
+        enum {REGISTEREDOK, ALLREADYREGISTERED, NOTREGISTERED};
+
     protected:
         typedef _Base* (*CreatorFunctionT) (void);
         typedef std::map<_Key, CreatorFunctionT, _Predicator> FactoryMapT;
@@ -46,29 +49,28 @@ namespace hopsan {
 
         //Map where the construction info is stored
         FactoryMapT mFactoryMap;
+        //Error status map
+        RegStatusVectorT mRegStatusVector;
+
 
     public:
-        ClassFactory() {}
-
         //! @brief Used to register creator functions
         _Key registerCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
         {
             //std::cout << "Registering: " << idKey << std::endl;
-            //std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
+            std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
             std::pair<typename FactoryMapT::iterator, bool> rc;
             rc = mFactoryMap.insert(FactoryPairT(idKey, classCreator));
-            std::stringstream ss;
             if (!rc.second)
             {
                 std::cout << "Warning! You are trying to register a Key value that already exist. This registration will be ignored, Key: " << idKey << std::endl;
-                ss << "Failed to register component: " << idKey << ", a component with this name already exists.";
+                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, ALLREADYREGISTERED));
             }
             else
             {
-                ss << "Successfully registered component: " << idKey;
+                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, REGISTEREDOK));
             }
-            gCoreMessageHandler.addDebugMessage(ss.str());
-            //std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
+            std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
             return idKey;
         }
 
@@ -84,7 +86,8 @@ namespace hopsan {
                     return it->second();
                 }
             }
-            std::cout << "Warning key: " << idKey << " not found!" << std::endl;
+            mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NOTREGISTERED));
+            //std::cout << "Warning key: " << idKey << " not found!" << std::endl;
             return NULL;
         }
 
@@ -109,17 +112,32 @@ namespace hopsan {
             if (rc > 0)
             {
                 std::cout << "Sucessfully unregistered: " << idKey << std::endl;
+                //! @todo Do we need a status message here to ??
             }
             else
             {
+                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NOTREGISTERED));
                 std::cout << "Failed to unregister: " << idKey << std::endl;
             }
+        }
+
+        //! @brief Get a copy of the internal error map, it maps key values agains error codes, error codes come from registration or unregistration
+        RegStatusVectorT getRegisterStatusMap()
+        {
+            return mRegStatusVector;
+        }
+
+        //! @brief Clears the internal error status map
+        void clearRegisterStatusMap()
+        {
+            mRegStatusVector.clear();
         }
 
         //! @brief Clear the entire factory map (unregister everything)
         void clearFactory()
         {
             mFactoryMap.clear();
+            mRegStatusVector.clear();
         }
     };
 }

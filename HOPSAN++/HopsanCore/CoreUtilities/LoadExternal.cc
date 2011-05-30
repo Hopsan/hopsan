@@ -25,6 +25,7 @@
 #include "LoadExternal.h"
 #include "../Component.h"
 #include "../Node.h"
+#include "ClassFactoryStatusCheck.hpp"
 #include <iostream>
 
 #ifdef WIN32
@@ -36,18 +37,20 @@
 using namespace std;
 using namespace hopsan;
 
+//! @todo maybe the LoadExternal class is unnecessary, contents are only used in hopsan essentials, could maybe move stuff there
+
 //!LoadExternal Constructor
-LoadExternal::LoadExternal()
-{
-    //ctor
-}
+//LoadExternal::LoadExternal()
+//{
+//    //ctor
+//}
 
 //!This function loads a library with given path
 bool LoadExternal::load(string libpath)
 {
     //typedef void (*register_contents_t)(ComponentFactory::FactoryPairVectorT *factory_vector_ptr);
-    typedef void (*register_contents_t)(ComponentFactory* cfampND_ct, NodeFactory* nfampND_ct);
-
+    typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
+//! @todo Write some message output if DLL/SO fails to load or similar
 #ifdef WIN32
     HINSTANCE lib_ptr;
     lib_ptr = LoadLibrary(libpath.c_str());
@@ -100,12 +103,21 @@ bool LoadExternal::load(string libpath)
 #endif
 
     register_contents(mpComponentFactory, mpNodeFactory);
+
+    //Check for register errors and status
+    checkClassFactoryStatus<ComponentFactory>(mpComponentFactory);
+    checkClassFactoryStatus<NodeFactory>(mpNodeFactory);
+
+    //Clear factory status
+    mpComponentFactory->clearRegisterStatusMap();
+    mpNodeFactory->clearRegisterStatusMap();
+
     return true;
 }
 
 //!This function sets the node and component factory pointers
-void LoadExternal::setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr)
+void LoadExternal::setFactory(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
 {
-    mpComponentFactory = cfactory_ptr;
-    mpNodeFactory = nfactory_ptr;
+    mpComponentFactory = pComponentFactory;
+    mpNodeFactory = pNodeFactory;
 }

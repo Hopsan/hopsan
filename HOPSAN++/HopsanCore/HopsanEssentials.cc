@@ -26,6 +26,7 @@
 #include "Components/Components.h"
 #include "Nodes/Nodes.h"
 #include "version.h"
+#include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include <string>
 
 using namespace std;
@@ -41,6 +42,14 @@ void HopsanEssentials::Initialize()
     //Make sure that internal Nodes and Components register
     register_nodes(mpNodeFactory);
     register_components(mpComponentFactory);
+
+    //Check for register errors and status
+    checkClassFactoryStatus<ComponentFactory>(mpComponentFactory);
+    checkClassFactoryStatus<NodeFactory>(mpNodeFactory);
+
+    //Clear factory status
+    mpComponentFactory->clearRegisterStatusMap();
+    mpNodeFactory->clearRegisterStatusMap();
 
 
     //Do some other stuff
@@ -105,6 +114,11 @@ Component* HopsanEssentials::CreateComponent(const string &rString)
     {
         pComp->setTypeName(rString);
     }
+    else
+    {
+        checkClassFactoryStatus<ComponentFactory>(mpComponentFactory);
+        mpComponentFactory->clearRegisterStatusMap();
+    }
     return pComp;
 }
 
@@ -126,6 +140,11 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
     if (pNode)
     {
         pNode->mNodeType = rNodeType;
+    }
+    else
+    {
+        checkClassFactoryStatus<NodeFactory>(mpNodeFactory);
+        mpNodeFactory->clearRegisterStatusMap();
     }
     return pNode;
 }

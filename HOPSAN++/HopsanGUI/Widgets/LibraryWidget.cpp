@@ -458,6 +458,9 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     }
     //**************************
 
+    //Check any core messages from external lib loading
+    gpMainWindow->mpMessageWidget->checkMessages();
+
     addLibrary(libDir,QString("User defined libraries"));
 }
 
