@@ -1459,14 +1459,12 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
     if ((n_Ccomponents > 1+n_SYScomponentCs) && (n_PowerPorts > 0))
     {
-        cout << "Trying to connect two C-Components to each other" << endl;
-        gCoreMessageHandler.addErrorMessage("Trying to connect two C-Component ports to each other");
+        gCoreMessageHandler.addErrorMessage("You can not connect two C-Component power ports to each other");
         return false;
     }
     if ((n_Qcomponents > 1+n_SYScomponentQs) && (n_PowerPorts > 0))
     {
-        cout << "Trying to connect two Q-Components to each other" << endl;
-        gCoreMessageHandler.addErrorMessage("Trying to connect two Q-Component ports to each other");
+        gCoreMessageHandler.addErrorMessage("You can not connect two Q-Component power ports to each other");
         return false;
     }
 //    if ((pPort1->getPortType() == Port::READPORT) &&  (pPort2->getPortType() == Port::READPORT))
