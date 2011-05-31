@@ -946,7 +946,15 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
     Node *pKeepNode = pMergeTo->getNodePtr();
     Node *pDiscardNode = pMergeFrom->getNodePtr();
 
-    assert(pKeepNode != pDiscardNode);
+    //Check for very rare occurance, (Looping a subsystem, and connecting a out port to a in port hwo are actually directly connected to each other)
+    //assert(pKeepNode != pDiscardNode);
+    if (pKeepNode == pDiscardNode)
+    {
+        //! @todo dont know if this error message is clear, but this should rarely happen
+        gCoreMessageHandler.addErrorMessage("This connection would mean that a node is joined with it self, this does not make any sense and is not allowed");
+        return false;
+    }
+
 
     //set the new node recursively in the other port
     recursivelySetNode(pMergeFrom,0, pKeepNode);
