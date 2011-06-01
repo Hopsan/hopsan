@@ -220,11 +220,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
     //qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
 
-    QVector<GUIPort*> leftEdge;
-    QVector<GUIPort*> rightEdge;
-    QVector<GUIPort*> topEdge;
-    QVector<GUIPort*> bottomEdge;
-
+    QMap<qreal, GUIPort*> leftEdge, rightEdge, topEdge, bottomEdge;
     for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {
         if(moit.value()->type() == GUICONTAINERPORT)
@@ -235,40 +231,40 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
             CONTAINEREDGE edge = findPortEdge(center, moit.value()->getCenterPos());
             //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
-            //MAke sure we dont screw up in the code and forget to rename or create external ports on internal rename or create
+            //Make sure we dont screw up in the code and forget to rename or create external ports on internal rename or create
             assert(this->getPort(moit.value()->getName()) != 0);
 
+            //We insert into maps for automatic sorting based on x or y position as key value
             switch (edge) {
             case RIGHTEDGE:
-                rightEdge.append(this->getPort(moit.value()->getName()));
+                rightEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
                 break;
             case BOTTOMEDGE:
-                bottomEdge.append(this->getPort(moit.value()->getName()));
+                bottomEdge.insertMulti(moit.value()->getCenterPos().x(),this->getPort(moit.value()->getName()));
                 break;
             case LEFTEDGE:
-                leftEdge.append(this->getPort(moit.value()->getName()));
+                leftEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
                 break;
             case TOPEDGE:
-                topEdge.append(this->getPort(moit.value()->getName()));
+                topEdge.insertMulti(moit.value()->getCenterPos().x(), this->getPort(moit.value()->getName()));
                 break;
             }
         }
     }
 
     //Now disperse the port icons evenly along each edge
-    QVector<GUIPort*>::iterator it;
-    qreal disp; //Dispersion factor
+    QMap<qreal, GUIPort*>::iterator it;
+    qreal disp;  //Dispersion factor
     qreal sdisp; //sumofdispersionfactors
 
     //! @todo maybe we should be able to update rotation in all of these also
-    //! @todo need to be sure we sort them in the correct order, that is the port in top left will be first (highest up) among the external ports
-    //! @todo wierd to use createfunction to refresh graphics, but ok for now
+    //! @todo weird to use createfunction to refresh graphics, but ok for now
     disp = 1.0/((qreal)(rightEdge.size()+1));
     sdisp=disp;
     for (it=rightEdge.begin(); it!=rightEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(1.0, sdisp);
-        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        it.value()->updatePositionByFraction(1.0, sdisp);
+        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -276,8 +272,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     sdisp=disp;
     for (it=bottomEdge.begin(); it!=bottomEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(sdisp, 1.0);
-        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        it.value()->updatePositionByFraction(sdisp, 1.0);
+        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -285,8 +281,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     sdisp=disp;
     for (it=leftEdge.begin(); it!=leftEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(0.0, sdisp);
-        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        it.value()->updatePositionByFraction(0.0, sdisp);
+        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -294,8 +290,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     sdisp=disp;
     for (it=topEdge.begin(); it!=topEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(sdisp, 0.0);
-        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        it.value()->updatePositionByFraction(sdisp, 0.0);
+        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 }
