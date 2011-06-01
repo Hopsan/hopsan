@@ -125,9 +125,10 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     QLabel *mpNewsLabel;
 
     mpNewsLabel = new QLabel();
-    mpNewsLabel->setText("Latest News");
+    mpNewsLabel->setText(" Latest News ");
     tempFont = mpNewsLabel->font();
     tempFont.setPixelSize(20);
+    tempFont.setUnderline(true);
     mpNewsLabel->setFont(tempFont);
     mpNewsLabel->setAlignment(Qt::AlignCenter);
 
