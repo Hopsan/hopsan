@@ -604,8 +604,8 @@ QString GUIPort::getGuiModelObjectName()
 void GUIPort::setDisplayName(const QString name)
 {
     this->mName = name;
-    QString label("<p><span style=\"background-color:lightyellow\">");
-    label.append(this->mName).append("</span></p>");
+    QString label("<p><span style=\"background-color:lightyellow\">&#160;&#160;");
+    label.append(this->mName).append("&#160;&#160;</span></p>");
     mpPortLabel->setHtml(label);
 }
 
