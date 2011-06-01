@@ -133,6 +133,10 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 
     QWebView *mpWeb;
     mpWeb = new QWebView(this);
+    mpNewsLabel->hide();
+    mpWeb->hide();
+    connect(mpWeb, SIGNAL(loadFinished(bool)), mpNewsLabel, SLOT(setVisible(bool)));
+    connect(mpWeb, SIGNAL(loadFinished(bool)), mpWeb, SLOT(setVisible(bool)));
     mpWeb->load(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/news"));
     mpWeb->setMaximumHeight(70);
     mpWeb->setMaximumWidth(400);
