@@ -96,7 +96,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mMag = GOLDENRATIO;
     mOverlaySetScale = 1.0;
     mIsMagnified = false;
-    mnConnections = 0;
 
     //Create connections to the parent container object
     this->refreshParentContainerSigSlotConnections();
@@ -115,6 +114,15 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
 GUIPort::~GUIPort()
 {
+    //If any connectors are present they need to be deleated also
+    // We need to use while and access first element every time as Vector will be modified when connector removes itself
+    //! @todo What about Undo, right now these deleations are not registerd
+    while (mConnectedConnectors.size() > 0)
+    {
+        mConnectedConnectors[0]->deleteMeWithNoUndo();
+    }
+    //! @todo Maybe we should use signal and slots instead to handle connector removal on port delete, we are doing that with GuiModelObjects right now
+
     //We dont need to disconnect the permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
     //They should be disconnected automatically when the objects die
 }
@@ -537,25 +545,26 @@ portDirection GUIPort::getPortDirection()
 //}
 
 
-void GUIPort::addConnection()
+void GUIPort::addConnection(GUIConnector *pConnector)
 {
-    ++mnConnections;
+    mConnectedConnectors.append(pConnector);
     //qDebug() << "Adding connection, connections = " << mnConnections;
 }
 
 
-void GUIPort::removeConnection()
+void GUIPort::removeConnection(GUIConnector *pConnector)
 {
-    --mnConnections;
+    int idx = mConnectedConnectors.indexOf(pConnector);
+    mConnectedConnectors.remove(idx);
     //qDebug() << "Removing connection, connections = " << mnConnections;
 }
 
 
-//! @brief Access method for mIsConnected
+//! @brief Ask if the port is connected or not
 //! @return if the port is connected or not
 bool GUIPort::isConnected()
 {
-    return (mnConnections > 0);
+    return (mConnectedConnectors.size() > 0);
 }
 
 

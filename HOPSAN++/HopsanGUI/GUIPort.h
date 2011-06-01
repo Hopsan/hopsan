@@ -36,6 +36,7 @@
 class GUIModelObject;
 class GUISystem;
 class GUIContainerObject;
+class GUIConnector;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 
@@ -73,8 +74,8 @@ public:
 //    void setStartValueDataByNames(QVector<QString> names, QVector<double> values);
     bool setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt);
 
-    void addConnection();
-    void removeConnection();
+    void addConnection(GUIConnector *pConnector);
+    void removeConnection(GUIConnector *pConnector);
     bool isConnected();
 
     GUIModelObject *mpParentGuiModelObject; //!< @todo should be private or protected
@@ -114,7 +115,7 @@ private:
     qreal mMag;
     qreal mOverlaySetScale;
     bool mIsMagnified;
-    size_t mnConnections;
+    QVector<GUIConnector*> mConnectedConnectors;
     GUIPortAppearance *mpPortAppearance;
     QString mName;
     QGraphicsTextItem *mpPortLabel;

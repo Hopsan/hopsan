@@ -81,8 +81,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 
     mpStartPort = startPort;
     mpEndPort = endPort;
-    mpStartPort->addConnection();
-    mpEndPort->addConnection();
+    mpStartPort->addConnection(this);
+    mpEndPort->addConnection(this);
 
     connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->getGuiModelObject()->getCenterPos();
@@ -335,7 +335,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     this->disconnectPortSigSlots(mpStartPort);
     mpStartPort = port;
-    mpStartPort->addConnection();
+    mpStartPort->addConnection(this);
     this->connectPortSigSlots(mpStartPort);
 }
 
@@ -349,7 +349,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 {
     this->disconnectPortSigSlots(mpEndPort);
     mpEndPort = port;
-    mpEndPort->addConnection();
+    mpEndPort->addConnection(this);
     this->connectPortSigSlots(mpEndPort);
 }
 

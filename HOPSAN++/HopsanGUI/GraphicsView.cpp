@@ -297,7 +297,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(mpContainerObject->getIsCreatingConnector())
         {
-            mpContainerObject->mpTempConnector->getStartPort()->removeConnection();
+            mpContainerObject->mpTempConnector->getStartPort()->removeConnection(mpContainerObject->mpTempConnector);
             if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected() && !mpContainerObject->mPortsHidden)
             {
                 mpContainerObject->mpTempConnector->getStartPort()->show();
@@ -557,7 +557,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         if((mpContainerObject->mpTempConnector->getNumberOfLines() == 1 && mpContainerObject->mpTempConnector->isMakingDiagonal()) ||  (mpContainerObject->mpTempConnector->getNumberOfLines() == 2 && !mpContainerObject->mpTempConnector->isMakingDiagonal()))
         {
-            mpContainerObject->mpTempConnector->getStartPort()->removeConnection();
+            mpContainerObject->mpTempConnector->getStartPort()->removeConnection(mpContainerObject->mpTempConnector);
             if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected() && !mpContainerObject->mPortsHidden)
             {
                 mpContainerObject->mpTempConnector->getStartPort()->show();

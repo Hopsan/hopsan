@@ -996,7 +996,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
     //Show the end port if it exists and if it is no longer connected
     if(endPortWasConnected)
     {
-        pConnector->getEndPort()->removeConnection();
+        pConnector->getEndPort()->removeConnection(pConnector);
         if(!pConnector->getEndPort()->isConnected())
         {
             pConnector->getEndPort()->setVisible(!mPortsHidden);
@@ -1004,7 +1004,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
     }
 
     //Show the start port if it is no longer connected
-    pConnector->getStartPort()->removeConnection();
+    pConnector->getStartPort()->removeConnection(pConnector);
     if(!pConnector->getStartPort()->isConnected())
     {
         pConnector->getStartPort()->setVisible(!mPortsHidden);
