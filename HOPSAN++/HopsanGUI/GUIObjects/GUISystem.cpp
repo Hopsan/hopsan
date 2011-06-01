@@ -904,7 +904,7 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "\n";
     wrapperStream << "static void mdlInitializeSampleTimes(SimStruct *S)\n";
     wrapperStream << "{\n";
-    wrapperStream << "    ssSetSampleTime(S, 0, INHERITED_SAMPLE_TIME);\n";
+    wrapperStream << "    ssSetSampleTime(S, 0, 0.001);\n";
     wrapperStream << "    ssSetOffsetTime(S, 0, 0.0);\n";
     wrapperStream << "}\n";
     wrapperStream << "\n";
