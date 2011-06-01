@@ -122,6 +122,23 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpRecentList->setFixedHeight(4+16*mpRecentList->count());
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
 
+    QLabel *mpNewsLabel;
+
+    mpNewsLabel = new QLabel();
+    mpNewsLabel->setText("Latest News");
+    tempFont = mpNewsLabel->font();
+    tempFont.setPixelSize(20);
+    mpNewsLabel->setFont(tempFont);
+    mpNewsLabel->setAlignment(Qt::AlignCenter);
+
+    QWebView *mpWeb;
+    mpWeb = new QWebView(this);
+    mpWeb->load(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/news"));
+    mpWeb->setMaximumHeight(70);
+    mpWeb->setMaximumWidth(400);
+    mpWeb->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    connect(mpWeb, SIGNAL(linkClicked(const QUrl &)), this, SLOT(urlClicked(const QUrl &)));
+
     mpDontShowMe = new QCheckBox("Always load last session");
     mpDontShowMe->setChecked(!gConfig.getShowWelcomeDialog());
 
@@ -130,12 +147,14 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
-    pLayout->addWidget(mpHeading,       0, 0);
-    pLayout->addLayout(pButtonLayout,   1, 0);
-    pLayout->addWidget(mpActionText,    2, 0);
-    pLayout->addWidget(mpRecentList,    3, 0);
-    pLayout->addWidget(mpDontShowMe,    4, 0);
-    pLayout->addWidget(mpPopupHelpCheckBox,    5, 0);
+    pLayout->addWidget(mpHeading,               0, 0);
+    pLayout->addLayout(pButtonLayout,           1, 0);
+    pLayout->addWidget(mpActionText,            2, 0);
+    pLayout->addWidget(mpRecentList,            3, 0);
+    pLayout->addWidget(mpNewsLabel,             4, 0);
+    pLayout->addWidget(mpWeb,                   5, 0);
+    pLayout->addWidget(mpDontShowMe,            6, 0);
+    pLayout->addWidget(mpPopupHelpCheckBox,     7, 0);
     setLayout(pLayout);
 
     QPalette tempPalette;
@@ -258,4 +277,10 @@ void WelcomeDialog::openRecentModel()
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
+}
+
+
+void WelcomeDialog::urlClicked(const QUrl &link)
+{
+    QDesktopServices::openUrl(link);
 }

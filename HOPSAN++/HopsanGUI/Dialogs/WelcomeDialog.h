@@ -48,6 +48,7 @@ private slots:
     void loadExistingModel();
     void loadLastSession();
     void openRecentModel();
+    void urlClicked(const QUrl &link);
 
 private:
     void updateGraphics();
