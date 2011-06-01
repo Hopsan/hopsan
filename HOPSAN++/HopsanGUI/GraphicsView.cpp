@@ -297,9 +297,16 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(mpContainerObject->getIsCreatingConnector())
         {
+            mpContainerObject->mpTempConnector->getStartPort()->removeConnection();
+            if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected() && !mpContainerObject->mPortsHidden)
+            {
+                mpContainerObject->mpTempConnector->getStartPort()->show();
+            }
+            mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
+            mpContainerObject->setIsCreatingConnector(false);
+            mpContainerObject->mJustStoppedCreatingConnector = true;
             delete(mpContainerObject->mpTempConnector);
             gpMainWindow->mpHelpPopup->hide();
-            mpContainerObject->setIsCreatingConnector(false);
         }
     }
     else if (ctrlPressed && event->key() == Qt::Key_0)
