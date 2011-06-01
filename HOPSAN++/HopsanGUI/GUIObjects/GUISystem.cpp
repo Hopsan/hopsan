@@ -587,6 +587,9 @@ void GUISystem::saveToWrappedCode()
 
 void GUISystem::createSimulinkSourceFiles()
 {
+    QMessageBox::information(gpMainWindow, gpMainWindow->tr("Create Simulink Source Files"),
+                             gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console. Visual Studio compiler must be used."));
+
     QStringList inputComponents;
     QStringList inputPorts;
     QStringList outputComponents;

@@ -95,13 +95,16 @@ public:
     QMenu *menuPlot;
     QMenu *recentMenu;
     QMenu *menuHelp;
+    QMenu *menuExport;
+
+    //Buttons
+    QToolButton *mpExportButton;
 
     //Toolbar items
     QToolBar *mpFileToolBar;
     QToolBar *mpEditToolBar;
     QToolBar *mpToolsToolBar;
     QToolBar *mpSimToolBar;
-  //  QToolBar *mpSimulationToolBar; //Seem to not be used...
     QToolBar *mpViewToolBar;
     QLineEdit *mpStartTimeLineEdit;
     QLineEdit *mpTimeStepLineEdit;
@@ -114,6 +117,7 @@ public:
     QAction *openAction;
     QAction *saveAction;
     QAction *saveAsAction;
+    QAction *exportToSimulinkAction;
     QAction *closeAction;
     QAction *undoAction;
     QAction *redoAction;

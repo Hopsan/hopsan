@@ -608,6 +608,8 @@ void MainWindow::createMenus()
     menuFile->addAction(saveAsAction);
     menuFile->addMenu(recentMenu);
     menuFile->addSeparator();
+    menuFile->addMenu(menuExport);
+    menuFile->addSeparator();
     menuFile->addAction(loadLibsAction);
     menuFile->addSeparator();
     menuFile->addAction(propertiesAction);
@@ -663,6 +665,16 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(saveAction);
     mpFileToolBar->addAction(saveAsAction);
     mpFileToolBar->addAction(exportPDFAction);
+    //! @note Action and menu shouldn't be here, but it doesn't work otherwise because the menus are created after the toolbars
+    exportToSimulinkAction = new QAction(tr("Export to Simulink S-function Source Files"), this);
+    menuExport = new QMenu("Export Model");
+    menuExport->addAction(exportToSimulinkAction);
+    mpExportButton = new QToolButton(mpFileToolBar);
+    mpExportButton->setToolTip("Export");
+    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Export.png"));
+    mpExportButton->setMenu(menuExport);
+    mpExportButton->setPopupMode(QToolButton::InstantPopup);
+    mpFileToolBar->addWidget(mpExportButton);
 
     //Edit toolbar, contains clipboard operations, undo/redo and global options
     mpEditToolBar = addToolBar(tr("Edit Toolbar"));
@@ -705,6 +717,8 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(rotateLeftAction);
     mpToolsToolBar->addAction(flipHorizontalAction);
     mpToolsToolBar->addAction(flipVerticalAction);
+
+    connect(exportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 }
 
 
