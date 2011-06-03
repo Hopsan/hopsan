@@ -7,6 +7,7 @@ defineReplace(setTBBWindowsPathInfo){
     dstDir = $$2
 
     #Set default tbb path alternatives, higher up is prefered
+    TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20110427oss
     TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20110315oss
     TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20101215oss
     TBB_PATHS *= $${PWD}/../ExternalDependencies/tbb30_20100915oss
