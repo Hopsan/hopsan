@@ -153,7 +153,6 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
             {
                 mpHoveredItem->setForeground(QColor("white"));
                 mpHoveredItem->setBackgroundColor(QColor("white"));
-                gpMainWindow->mpHelpPopup->hide();
             }
             mpHoveredItem = tempItem;
         }
@@ -169,7 +168,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
         if(mpHoveredItem != 0x0)
         {
             mpHoveredItem->setBackgroundColor(QColor("white"));
-            gpMainWindow->mpHelpPopup->hide();
+
         }
         mpHoveredItem = 0x0;
     }
@@ -185,9 +184,10 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     {
         tempItem->setBackgroundColor(QColor("white"));
         tempItem->setSelected(false);
-        gpMainWindow->mpHelpPopup->hide();
+
     }
     mpParentLibraryWidget->mpComponentNameField->setText("");
+    gpMainWindow->mpHelpPopup->hide();
 
     QListWidgetItem *pItem = this->currentItem();
 
@@ -230,7 +230,6 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpComponentNameField->setText("");
     mpComponentNameField->setFixedHeight(mpComponentNameField->height());
     mpComponentNameField->setScaledContents(true);
-    //mpComponentNameField->hide();
 
     setLayout(mpGrid);
     this->setMouseTracking(true);
@@ -575,10 +574,10 @@ void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
     for( ; it != itemlist.end(); ++it )
     {
         (*it)->setBackgroundColor(QColor("white"));
-        gpMainWindow->mpHelpPopup->hide();
         (*it)->setSelected(false);
     }
     mpComponentNameField->setText("");
+    gpMainWindow->mpHelpPopup->hide();
     QWidget::mouseMoveEvent(event);
 }
 
