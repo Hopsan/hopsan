@@ -40,6 +40,12 @@ GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint pos
     createPorts();
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
+
+    //Component shall be hidden when toggle signals is deactivated, if it is of signal type and has no power ports (= is a sensor)
+    if(this->getTypeCQS() == "S" && !this->hasPowerPorts())
+    {
+        connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+    }
 }
 
 GUIComponent::~GUIComponent()
@@ -49,6 +55,20 @@ GUIComponent::~GUIComponent()
     mpParentContainerObject->getCoreSystemAccessPtr()->removeSubComponent(this->getName(), true);
 }
 
+
+//! @brief Returns whether or not the component has at least one power port
+bool GUIComponent::hasPowerPorts()
+{
+    bool retval = false;
+    for(int i=0; i<mPortListPtrs.size(); ++i)
+    {
+        if(mPortListPtrs.at(i)->getNodeType() != "NodeSignal")
+        {
+            retval = true;
+        }
+    }
+    return retval;
+}
 
 //! Event when double clicking on component icon.
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -164,6 +184,13 @@ int GUIComponent::type() const
 {
     return Type;
 }
+
+
+void GUIComponent::setVisible(bool visible)
+{
+    this->mpIcon->setVisible(visible);
+}
+
 
 //! @brief Save component coredata to XML Dom Element
 //! @param[in] rDomElement The dom element to save to

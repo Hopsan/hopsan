@@ -149,6 +149,11 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpStartPort->getGuiModelObject()->rememberConnector(this);
     mpEndPort->getGuiModelObject()->rememberConnector(this);
     mpParentContainerObject->getContainedScenePtr()->addItem(this);
+
+    if(mpGUIConnectorAppearance->getStyle() == SIGNALCONNECTOR)
+    {
+        connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+    }
 }
 
 
@@ -459,6 +464,11 @@ void GUIConnector::finishCreation()
         //Hide ports; connected ports shall not be visible
     mpStartPort->hide();
     mpEndPort->hide();
+
+    if(mpGUIConnectorAppearance->getStyle() == SIGNALCONNECTOR)
+    {
+        connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+    }
 }
 
 
@@ -1096,6 +1106,14 @@ void GUIConnector::setDashed(bool value)
     }
 }
 
+
+void GUIConnector::setVisible(bool visible)
+{
+    for(int i=0; i<mpLines.size(); ++i)
+    {
+        mpLines.at(i)->setVisible(visible);
+    }
+}
 
 //------------------------------------------------------------------------------------------------------------------------//
 

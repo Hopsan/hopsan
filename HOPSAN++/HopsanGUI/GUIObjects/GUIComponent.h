@@ -44,6 +44,7 @@ public:
     GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
     ~GUIComponent();
 
+    bool hasPowerPorts();
     QVector<QString> getParameterNames();
     QString getParameterUnit(QString name);
     QString getParameterDescription(QString name);
@@ -59,6 +60,9 @@ public:
 
     enum { Type = GUICOMPONENT };
     int type() const;
+
+private slots:
+    virtual void setVisible(bool visible);
 
 protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);

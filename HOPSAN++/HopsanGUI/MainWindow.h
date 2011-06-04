@@ -138,6 +138,7 @@ public:
     QAction *centerViewAction;
     QAction *toggleNamesAction;
     QAction *togglePortsAction;
+    QAction *toggleSignalsAction;
     QAction *showPortsAction;
     QAction *exportPDFAction;
     QAction *alignXAction;

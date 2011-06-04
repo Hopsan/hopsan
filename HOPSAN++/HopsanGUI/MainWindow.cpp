@@ -529,6 +529,13 @@ void MainWindow::createActions()
     togglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
     togglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
 
+    QIcon toggleSignalsIcon;
+    toggleSignalsIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleSignal.png", QSize(), QIcon::Normal, QIcon::On);
+    toggleSignalsAction = new QAction(toggleSignalsIcon, tr("&Show Signal Components"), this);
+    toggleSignalsAction->setText("Show Signal Components");
+    toggleSignalsAction->setCheckable(true);
+    toggleSignalsAction->setChecked(true);      //! @todo Shall depend on gConfig setting
+
     saveToWrappedCodeAction = new QAction(this);
     saveToWrappedCodeAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+W"));
     this->addAction(saveToWrappedCodeAction);
@@ -676,16 +683,6 @@ void MainWindow::createToolbars()
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
     mpFileToolBar->addWidget(mpExportButton);
 
-    //Edit toolbar, contains clipboard operations, undo/redo and global options
-    mpEditToolBar = addToolBar(tr("Edit Toolbar"));
-    mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    mpEditToolBar->addAction(cutAction);
-    mpEditToolBar->addAction(copyAction);
-    mpEditToolBar->addAction(pasteAction);
-    mpEditToolBar->addAction(undoAction);
-    mpEditToolBar->addAction(redoAction);
-    mpEditToolBar->addAction(optionsAction);
-
     //Simulation toolbar, contains tools for simulationg, plotting and model preferences
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
     mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -699,6 +696,18 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(propertiesAction);
     mpSimToolBar->addAction(openSystemParametersAction);
 
+    addToolBarBreak(Qt::TopToolBarArea);
+
+    //Edit toolbar, contains clipboard operations, undo/redo and global options
+    mpEditToolBar = addToolBar(tr("Edit Toolbar"));
+    mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpEditToolBar->addAction(cutAction);
+    mpEditToolBar->addAction(copyAction);
+    mpEditToolBar->addAction(pasteAction);
+    mpEditToolBar->addAction(undoAction);
+    mpEditToolBar->addAction(redoAction);
+    mpEditToolBar->addAction(optionsAction);
+
     //View toolbar, contains all cosmetic and zooming tools
     mpViewToolBar = addToolBar(tr("View Toolbar"));
     mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -708,6 +717,7 @@ void MainWindow::createToolbars()
     mpViewToolBar->addAction(zoomOutAction);
     mpViewToolBar->addAction(toggleNamesAction);
     mpViewToolBar->addAction(togglePortsAction);
+    mpViewToolBar->addAction(toggleSignalsAction);
 
     //Tools toolbar, contains all tools used to modify the model
     mpToolsToolBar = addToolBar(tr("Tools Toolbar"));

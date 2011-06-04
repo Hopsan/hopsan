@@ -109,6 +109,9 @@ public slots:
     void select();
     void setDashed(bool value);
 
+private slots:
+    void setVisible(bool visible);
+
 signals:
     void connectionFinished();
 
