@@ -382,6 +382,7 @@ void GUIPort::refreshPortGraphics(QString cqsType, QString portType, QString nod
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
 void GUIPort::refreshPortGraphics()
 {
+    qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
     //Remove old port graphics overlay
     for(int i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
     {
@@ -412,6 +413,12 @@ void GUIPort::refreshPortGraphics()
         //! @todo check if file exist
         mvPortGraphicsOverlayPtrs.append(new QGraphicsSvgItem(this->mpPortAppearance->mIconOverlayPaths.at(i), this));
         mvPortGraphicsOverlayPtrs.back()->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+    }
+
+    //Make sure connected connectors are refreshed as well
+    for(int i=0; i<mConnectedConnectors.size(); ++i)
+    {
+        mConnectedConnectors.at(i)->drawConnector();
     }
 }
 
