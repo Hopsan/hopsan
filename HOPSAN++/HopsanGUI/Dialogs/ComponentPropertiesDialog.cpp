@@ -227,10 +227,12 @@ void ComponentPropertiesDialog::createEditStuff()
     pHelpGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px; margin-top: 1ex;}"));
     pHelpGroupBox->setLayout(pHelpLayout);
 
-    QHBoxLayout *pNameLayout = new QHBoxLayout();
+    QGridLayout *pNameLayout = new QGridLayout();
     QLabel *pNameLabel = new QLabel("Name: ", this);
-    pNameLayout->addWidget(pNameLabel);
-    pNameLayout->addWidget(mpNameEdit);
+    QLabel *pTypeNameLabel = new QLabel("Type Name: \"" + mpGUIComponent->getTypeName() + "\"", this);
+    pNameLayout->addWidget(pNameLabel,0,0);
+    pNameLayout->addWidget(mpNameEdit,0,1);
+    pNameLayout->addWidget(pTypeNameLabel,1,0,1,2);
 
     QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
