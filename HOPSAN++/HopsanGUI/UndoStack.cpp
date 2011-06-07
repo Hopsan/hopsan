@@ -106,6 +106,7 @@ void UndoStack::undoOneStep()
     QList<QDomElement> deletedConnectorList;
     QList<QDomElement> addedConnectorList;
     QList<QDomElement> addedObjectList;
+    QList<QDomElement> addedcontainerportsList;
     QStringList movedObjects;
     QList<int> addedWidgetList;
     int dx=0, dy=0;
@@ -115,22 +116,32 @@ void UndoStack::undoOneStep()
         didSomething = true;
         if(stuffElement.attribute("what") == "deletedobject")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
             loadGUIModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "deletedcontainerport")
+        {
+            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
+            loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
         }
         else if(stuffElement.attribute("what") == "addedobject")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
             addedObjectList.append(componentElement);
+        }
+        else if(stuffElement.attribute("what") == "addedcontainerport")
+        {
+            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
+            addedcontainerportsList.append(systemPortElement);
         }
         else if(stuffElement.attribute("what") == "deletedconnector")
         {
-            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
             deletedConnectorList.append(connectorElement);
         }
         else if(stuffElement.attribute("what") == "addedconnector")
         {
-            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
             addedConnectorList.append(connectorElement);
         }
         else if(stuffElement.attribute("what") == "rename")
@@ -154,7 +165,7 @@ void UndoStack::undoOneStep()
             parseDomValueNode2(newPosElement, tempX, tempY);
             QPointF newPos = QPointF(tempX, tempY);
             int lineNumber = stuffElement.attribute("linenumber").toDouble();
-            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
             QString startComponent = connectorElement.attribute("startcomponent");
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
@@ -176,7 +187,7 @@ void UndoStack::undoOneStep()
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
             parseDomValueNode2(newPosElement, x_new, y_new);
             parseDomValueNode2(oldPosElement, x, y);
-            QString name = stuffElement.attribute("name");
+            QString name = stuffElement.attribute(HMF_NAMETAG);
             if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -192,7 +203,7 @@ void UndoStack::undoOneStep()
             double dx = stuffElement.attribute("dx").toDouble();
             double dy = stuffElement.attribute("dy").toDouble();
 
-            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
             QString startComponent = connectorElement.attribute("startcomponent");
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
@@ -396,7 +407,19 @@ void UndoStack::undoOneStep()
         //Remove objects after removing connectors, to make sure connectors don't lose their start and end components
     for(it = addedObjectList.begin(); it!=addedObjectList.end(); ++it)
     {
-        QString name = (*it).attribute("name");
+        QString name = (*it).attribute(HMF_NAMETAG);
+        if(!mpParentContainerObject->hasGUIModelObject(name))
+        {
+            this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+            return;
+        }
+        this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
+    }
+
+        //Remove system ports
+    for(it = addedcontainerportsList.begin(); it!=addedcontainerportsList.end(); ++it)
+    {
+        QString name = (*it).attribute(HMF_NAMETAG);
         if(!mpParentContainerObject->hasGUIModelObject(name))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -450,8 +473,19 @@ void UndoStack::redoOneStep()
         didSomething = true;
         if(stuffElement.attribute("what") == "deletedobject")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
-            QString name = componentElement.attribute("name");
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
+            QString name = componentElement.attribute(HMF_NAMETAG);
+            if(!mpParentContainerObject->hasGUIModelObject(name))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
+            this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "deletedcontainerport")
+        {
+            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
+            QString name = systemPortElement.attribute(HMF_NAMETAG);
             if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -461,12 +495,17 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == "addedobject")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
             loadGUIModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "addedcontainerport")
+        {
+            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
+            loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
         }
         else if(stuffElement.attribute("what") == "deletedconnector")
         {
-            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
             QString startComponent = connectorElement.attribute("startcomponent");
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
@@ -480,7 +519,7 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == "addedconnector")
         {
-            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QDomElement connectorElement = stuffElement.firstChildElement(HMF_CONNECTORTAG);
             addedConnectorList.append(connectorElement);
         }
         else if(stuffElement.attribute("what") == "rename")
@@ -506,7 +545,7 @@ void UndoStack::redoOneStep()
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
             parseDomValueNode2(newPosElement, x, y);
             parseDomValueNode2(oldPosElement, x_old, y_old);
-            QString name = stuffElement.attribute("name");
+            QString name = stuffElement.attribute(HMF_NAMETAG);
             if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -697,7 +736,7 @@ void UndoStack::redoOneStep()
 
         int lineNumber = (*it).attribute("linenumber").toDouble();
 
-        QDomElement connectorElement = (*it).firstChildElement("connect");
+        QDomElement connectorElement = (*it).firstChildElement(HMF_CONNECTORTAG);
         QString startComponent = connectorElement.attribute("startcomponent");
         QString startPort = connectorElement.attribute("startport");
         QString endComponent = connectorElement.attribute("endcomponent");
@@ -745,7 +784,14 @@ void UndoStack::registerDeletedObject(GUIModelObject *item)
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "deletedobject");
+    if(item->getTypeName() == "HopsanGUIContainerPort")
+    {
+        stuffElement.setAttribute("what", "deletedcontainerport");
+    }
+    else
+    {
+        stuffElement.setAttribute("what", "deletedobject");
+    }
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -773,7 +819,14 @@ void UndoStack::registerAddedObject(GUIModelObject *item)
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "addedobject");
+    if(item->getTypeName() == "HopsanGUIContainerPort")
+    {
+        stuffElement.setAttribute("what", "addedcontainerport");
+    }
+    else
+    {
+        stuffElement.setAttribute("what", "addedobject");
+    }
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -840,7 +893,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "movedobject");
-    stuffElement.setAttribute("name", objectName);
+    stuffElement.setAttribute(HMF_NAMETAG, objectName);
     appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
     gpMainWindow->mpUndoWidget->refreshList();

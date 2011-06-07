@@ -459,7 +459,7 @@ void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
 
         QDomElement lineTag = guiData.firstChildElement("line");
         linewidth = lineTag.attribute("width").toDouble();
-        linestyle = lineTag.attribute("style");
+        linestyle = lineTag.attribute(HMF_STYLETAG);
         linecolor.setNamedColor(lineTag.attribute("color"));
 
         QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);

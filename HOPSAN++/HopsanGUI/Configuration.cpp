@@ -65,7 +65,7 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->toggleNamesAction->isChecked());
     appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->togglePortsAction->isChecked());
 
-    QDomElement style = appendDomElement(configRoot, "style");
+    QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
     QMap<connectorStyle, QMap<QString, QMap<QString, QPen> > >::iterator it1;
     QMap<QString, QMap<QString, QPen> >::iterator it2;
@@ -83,7 +83,7 @@ void Configuration::saveToXml()
                 tempElement.setAttribute("situation", it3.key());
                 tempElement.setAttribute("color", it3.value().color().name());
                 tempElement.setAttribute("width", it3.value().width());
-                tempElement.setAttribute("style", it3.value().style());
+                tempElement.setAttribute(HMF_STYLETAG, it3.value().style());
                 tempElement.setAttribute("capstyle", it3.value().capStyle());
             }
         }
@@ -214,7 +214,7 @@ void Configuration::loadFromXml()
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
 
 
-            QDomElement styleElement = configRoot.firstChildElement("style");
+            QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
             while(!penElement.isNull())
             {
@@ -223,7 +223,7 @@ void Configuration::loadFromXml()
                 QString situation = penElement.attribute("situation");
                 QString color = penElement.attribute("color");
                 double width = penElement.attribute("width").toDouble();
-                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute("style").toInt());
+                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute(HMF_STYLETAG).toInt());
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
                 QPen pen = QPen(QColor(color), width, penstyle, capStyle, Qt::RoundJoin);
 
@@ -364,7 +364,7 @@ void Configuration::loadDefaultsFromXml()
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
 
                 //Load default GUI style
-            QDomElement styleElement = configRoot.firstChildElement("style");
+            QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
             while(!penElement.isNull())
             {
@@ -373,7 +373,7 @@ void Configuration::loadDefaultsFromXml()
                 QString situation = penElement.attribute("situation");
                 QString color = penElement.attribute("color");
                 double width = penElement.attribute("width").toDouble();
-                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute("style").toInt());
+                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute(HMF_STYLETAG).toInt());
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
                 QPen pen = QPen(QColor(color), width, penstyle, capStyle);
 

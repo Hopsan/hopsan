@@ -654,7 +654,7 @@ void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
         style = "dotline";
     else if(mpRectItem->pen().style() == Qt::DashDotLine)
         style = "dashdotline";
-    xmlLine.setAttribute("style", style);
+    xmlLine.setAttribute(HMF_STYLETAG, style);
     xmlLine.setAttribute("color", mpRectItem->pen().color().name());
 }
 
