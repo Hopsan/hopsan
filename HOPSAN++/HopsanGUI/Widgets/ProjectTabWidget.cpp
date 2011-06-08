@@ -423,7 +423,7 @@ void ProjectTabWidget::addProjectTab(ProjectTab *projectTab, QString tabName)
 }
 
 
-//! @brief  Adds a ProjectTab object (a new tab) to itself.
+//! @brief Adds a ProjectTab object (a new tab) to itself.
 //! @see closeProjectTab(int index)
 void ProjectTabWidget::addNewProjectTab(QString tabName)
 {
@@ -441,7 +441,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 }
 
 
-//! Closes current project.
+//! @brief Closes current project.
 //! @param index defines which project to close.
 //! @return true if closing went ok. false if the user canceled the operation.
 //! @see closeAllProjectTabs()
@@ -529,7 +529,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
 }
 
 
-//! Closes all opened projects.
+//! @brief Closes all opened projects.
 //! @return true if closing went ok. false if the user canceled the operation.
 //! @see closeProjectTab(int index)
 //! @see saveProjectTab()
@@ -550,7 +550,7 @@ bool ProjectTabWidget::closeAllProjectTabs()
 }
 
 
-//! Loads a model from a file and opens it in a new project tab.
+//! @brief Loads a model from a file and opens it in a new project tab.
 //! @see loadModel(QString modelFileName)
 //! @see Model(saveTarget saveAsFlag)
 void ProjectTabWidget::loadModel()
@@ -566,13 +566,15 @@ void ProjectTabWidget::loadModel()
 }
 
 
+//! @brief Help function that loads a model from the text in a QAction object.
+//! Used to facilitate recent models function.
 void ProjectTabWidget::loadModel(QAction *action)
 {
     loadModel(action->text());
 }
 
 
-//! Loads a model from a file and opens it in a new project tab.
+//! @brief Loads a model from a file and opens it in a new project tab.
 //! @param modelFileName is the path to the loaded file
 //! @see loadModel()
 //! @see saveModel(saveTarget saveAsFlag)

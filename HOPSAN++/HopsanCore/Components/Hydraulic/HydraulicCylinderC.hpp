@@ -206,8 +206,8 @@ class HydraulicCylinderC : public ComponentC
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V01+A2*(sl+x3);
-            V1min = betae*mTimestep*mTimestep*A1*A1/(0.1*me);       //0.1 was called "WFAK" in old Hopsan
-            V2min = betae*mTimestep*mTimestep*A2*A2/(0.1*me);
+            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
+            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
@@ -231,6 +231,7 @@ class HydraulicCylinderC : public ComponentC
             c3 = A1*ci1 - A2*ci2;// + CxLim;
             Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp;// + ZxLim;
             //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
+            //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
 
             //Write to nodes
             (*mpND_c1) = c1;

@@ -56,6 +56,7 @@ CopyStack gCopyStack;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {    
+    //! @todo Much of the stuff here has nothing todo with creating a main window. It should probably be moved to InitializeWorkspace, or somewhere else.
 
     //Create globals
     gpMainWindow = this;    //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
@@ -258,6 +259,9 @@ MainWindow::~MainWindow()
 //! @brief Initializes the workspace by either opening specified model, loading last session or showing the Welcome dialog.
 void MainWindow::initializeWorkspace()
 {
+    //Create the plot widget, only once! :)
+    mpPlotWidget = new PlotWidget(this);
+
     //File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
     {
@@ -292,8 +296,6 @@ void MainWindow::initializeWorkspace()
             updateToolBarsToNewTab();       //This will disable the buttons if last session did not contain any models
         }
     }
-
-    mpPlotWidget = new PlotWidget(this);
 }
 
 
