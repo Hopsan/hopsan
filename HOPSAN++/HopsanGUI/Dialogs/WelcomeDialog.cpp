@@ -30,6 +30,8 @@
 #include <QPixmap>
 #include <QColor>
 #include <QWebView>
+#include <QWebFrame>
+#include <QColorGroup>
 
 #include "../common.h"
 #include "../version.h"
@@ -122,7 +124,16 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpRecentList->setFixedHeight(4+16*mpRecentList->count());
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
 
-    QLabel *mpNewsLabel;
+    mpNewVersionButton = new QPushButton("New Version Available!");
+    QPalette tempPalette = mpNewVersionButton->palette();
+    tempPalette.setColor(QPalette::ButtonText, QColor("darkred"));
+    mpNewVersionButton->setPalette(tempPalette);
+    tempFont = mpNewVersionButton->font();
+    tempFont.setPixelSize(14);
+    tempFont.setBold(true);
+    mpNewVersionButton->setFont(tempFont);
+    mpNewVersionButton->hide();
+    connect(mpNewVersionButton, SIGNAL(clicked()), this, SLOT(openDownloadPage()));
 
     mpNewsLabel = new QLabel();
     mpNewsLabel->setText(" Latest News ");
@@ -132,12 +143,11 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpNewsLabel->setFont(tempFont);
     mpNewsLabel->setAlignment(Qt::AlignCenter);
 
-    QWebView *mpWeb;
+
     mpWeb = new QWebView(this);
     mpNewsLabel->hide();
     mpWeb->hide();
-    connect(mpWeb, SIGNAL(loadFinished(bool)), mpNewsLabel, SLOT(setVisible(bool)));
-    connect(mpWeb, SIGNAL(loadFinished(bool)), mpWeb, SLOT(setVisible(bool)));
+    connect(mpWeb, SIGNAL(loadFinished(bool)), this, SLOT(showNews(bool)));
     mpWeb->load(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/news"));
     mpWeb->setMaximumHeight(70);
     mpWeb->setMaximumWidth(400);
@@ -153,16 +163,17 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
     pLayout->addWidget(mpHeading,               0, 0);
-    pLayout->addLayout(pButtonLayout,           1, 0);
-    pLayout->addWidget(mpActionText,            2, 0);
-    pLayout->addWidget(mpRecentList,            3, 0);
-    pLayout->addWidget(mpNewsLabel,             4, 0);
-    pLayout->addWidget(mpWeb,                   5, 0);
-    pLayout->addWidget(mpDontShowMe,            6, 0);
-    pLayout->addWidget(mpPopupHelpCheckBox,     7, 0);
+    pLayout->addWidget(mpNewVersionButton,      1, 0);
+    pLayout->addLayout(pButtonLayout,           2, 0);
+    pLayout->addWidget(mpActionText,            3, 0);
+    pLayout->addWidget(mpRecentList,            4, 0);
+    pLayout->addWidget(mpNewsLabel,             5, 0);
+    pLayout->addWidget(mpWeb,                   6, 0);
+    pLayout->addWidget(mpDontShowMe,            7, 0);
+    pLayout->addWidget(mpPopupHelpCheckBox,     8, 0);
     setLayout(pLayout);
 
-    QPalette tempPalette;
+    tempPalette;
     tempPalette = this->palette();
     tempPalette.setColor(QPalette::Window, QColor(235, 245, 242));
     this->setPalette(tempPalette);
@@ -288,4 +299,27 @@ void WelcomeDialog::openRecentModel()
 void WelcomeDialog::urlClicked(const QUrl &link)
 {
     QDesktopServices::openUrl(link);
+}
+
+
+void WelcomeDialog::openDownloadPage()
+{
+    QDesktopServices::openUrl(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/archive?l=en"));
+}
+
+
+void WelcomeDialog::showNews(bool loadedSuccesfully)
+{
+    qDebug() << mpWeb->page()->currentFrame()->metaData().size();
+    if(mpWeb->page()->currentFrame()->metaData().contains("type", "hopsanngnews"))
+    {
+        mpNewsLabel->setVisible(loadedSuccesfully);
+        mpWeb->setVisible(loadedSuccesfully);
+
+        QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversion").value();
+        double webVersion = webVersionString.toDouble();
+        double thisVersion = QString(HOPSANGUIVERSION).left(3).toDouble();
+        mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
+        mpNewVersionButton->setVisible(webVersion>thisVersion);
+    }
 }

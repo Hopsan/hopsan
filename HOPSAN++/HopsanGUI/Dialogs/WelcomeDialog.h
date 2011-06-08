@@ -29,6 +29,7 @@
 #include <QLabel>
 #include <QCheckBox>
 #include <QListWidget>
+#include <QWebView>
 
 class MainWindow;
 
@@ -48,7 +49,9 @@ private slots:
     void loadExistingModel();
     void loadLastSession();
     void openRecentModel();
+    void showNews(bool loadedSuccesfully);
     void urlClicked(const QUrl &link);
+    void openDownloadPage();
 
 private:
     void updateGraphics();
@@ -73,6 +76,10 @@ private:
 
     QCheckBox *mpDontShowMe;
     QCheckBox *mpPopupHelpCheckBox;
+
+    QPushButton *mpNewVersionButton;
+    QLabel *mpNewsLabel;
+    QWebView *mpWeb;
 };
 
 #endif // WELCOMEDIALOG_H
