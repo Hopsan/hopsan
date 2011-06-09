@@ -192,6 +192,7 @@ QString parseVariableDescription(QString input)
     input.replace("omega",      QObject::trUtf8("ω"), Qt::CaseInsensitive);
     input.replace("eta",        QObject::trUtf8("η"), Qt::CaseInsensitive);
     input.replace("rho",        QObject::trUtf8("ρ"), Qt::CaseInsensitive);
+    input.replace("signa",      QObject::trUtf8("σ"), Qt::CaseInsensitive);
 
     if(input.count("_") == 1 && !input.contains("^"))
     {

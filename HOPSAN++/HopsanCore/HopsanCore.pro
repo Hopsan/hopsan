@@ -74,7 +74,8 @@ SOURCES += Port.cc \
     ComponentUtilities/ludcmp.cc \
     CoreUtilities/HmfLoader.cc \
     ComponentSystem.cc \
-    ../ExternalDependencies/libcsv_parser++-1.0.0/csv_parser.cpp
+    ../ExternalDependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
+    ComponentUtilities/WhiteGaussianNoise.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -237,7 +238,10 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicRotationalInterfaceC.hpp \
     Components/Mechanic/MechanicInterfaceQ.hpp \
     Components/Mechanic/MechanicInterfaceC.hpp \
-    CoreUtilities/ClassFactoryStatusCheck.hpp
+    CoreUtilities/ClassFactoryStatusCheck.hpp \
+    ComponentUtilities/WhiteGaussianNoise.h \
+    Components/Signal/SignalNoiseGenerator.hpp \
+    Components/Signal/SignalAdditiveNoise.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

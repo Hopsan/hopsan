@@ -27,9 +27,8 @@
 #include "ComponentUtilities/ValveHysteresis.h"
 #include "ComponentUtilities/ludcmp.h"
 #include "ComponentUtilities/matrix.h"
-
 #include "ComponentUtilities/CSVParser.h"
-
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
+#include "ComponentUtilities/WhiteGaussianNoise.h"
 
 #endif // COMPONENTUTILITIES_H_INCLUDED

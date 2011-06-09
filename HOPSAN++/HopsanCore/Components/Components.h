@@ -129,6 +129,8 @@
 #include "Signal/SignalInputInterface.hpp"
 #include "Signal/SignalOutputInterface.hpp"
 #include "Signal/SignalUndefinedConnection.hpp"
+#include "Signal/SignalNoiseGenerator.hpp"
+#include "Signal/SignalAdditiveNoise.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
