@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.1">
     <modelobject typename="SignalRamp" displayname="Ramp">
 		<help picture="ramphelp.svg"/>
-        <icon isopath="ramp.svg" iconrotation="ON" userpath=""/>
+        <icon isopath="ramp.svg" iconrotation="OFF" userpath=""/>
         <portpose x="1" y="0.5" a="0" name="out"/>
     </modelobject>
 </hopsanobjectappearance>

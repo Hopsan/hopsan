@@ -93,16 +93,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.88"
-     inkscape:cx="10.049499"
-     inkscape:cy="12.254242"
+     inkscape:zoom="2.1465317"
+     inkscape:cx="91.143622"
+     inkscape:cy="-101.20834"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1680"
      inkscape:window-height="982"
      inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-y="38"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -137,7 +137,7 @@
      id="layer1"
      transform="translate(-211.8125,-380.90625)">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#0000bb;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#ffffff;fill-opacity:1;stroke:#0000bb;stroke-width:1.50000000000000000;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3623"
        width="38.5"
        height="23.5"
@@ -145,7 +145,7 @@
        y="381.65201" />
     <path
        inkscape:connector-curvature="0"
-       style="fill:none;stroke:#0000bb;stroke-width:0.99999994;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#0000bb;stroke-width:0.99999994000000003;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 216.10309,393.40201 31.44952,0"
        id="path2411" />
     <path
@@ -155,7 +155,7 @@
        id="path3207" />
     <path
        inkscape:connector-curvature="0"
-       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#0000bb;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 218.78169,393.37052 20.02519,0 0,-5.54156 8.12342,0"
        id="path3621"
        sodipodi:nodetypes="cccc" />

@@ -27,7 +27,7 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.259998"
+     inkscape:zoom="46.674135"
      inkscape:cx="10.412921"
      inkscape:cy="8.954213"
      inkscape:document-units="px"
@@ -36,7 +36,7 @@
      inkscape:window-width="1680"
      inkscape:window-height="982"
      inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-y="38"
      inkscape:window-maximized="1" />
   <defs
      id="defs3209" />
@@ -58,7 +58,7 @@
      inkscape:label="Layer 1">
     <path
        transform="matrix(-0.18483146,0,0,-0.18483146,555.13987,267.80022)"
-       d="m 218.57143,513.07648 a 63.57143,63.57143 0 1 1 -127.14286,0 63.57143,63.57143 0 1 1 127.14286,0 z"
+       d="m 218.57143,513.07648 c 0,35.10953 -28.4619,63.57143 -63.57143,63.57143 -35.10953,0 -63.57143,-28.4619 -63.57143,-63.57143 0,-35.10953 28.4619,-63.57143 63.57143,-63.57143 35.10953,0 63.57143,28.4619 63.57143,63.57143 z"
        sodipodi:ry="63.57143"
        sodipodi:rx="63.57143"
        sodipodi:cy="513.07648"
@@ -78,16 +78,13 @@
          id="tspan2988"
          x="-18.335493"
          y="13.467725" /></text>
-    <text
-       xml:space="preserve"
+    <g
        style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000bb;fill-opacity:1;stroke:none;font-family:Sans"
-       x="519.97729"
-       y="180.12575"
-       id="text2987"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan2989"
-         x="519.97729"
-         y="180.12575">Σ</tspan></text>
+       id="text2987">
+      <path
+         d="m 531.15894,165.80934 0,1.68945 -7.68555,0 4.88281,5.19532 -4.88281,5.74218 8.08594,0 0,1.68946 -10.13672,0 0,-1.97266 4.67773,-5.45898 -4.67773,-4.98047 0,-1.9043 z"
+         style=""
+         id="path2988" />
+    </g>
   </g>
 </svg>

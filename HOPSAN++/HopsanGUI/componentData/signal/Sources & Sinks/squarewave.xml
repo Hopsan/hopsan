@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.1">
     <modelobject typename="SignalSquareWave" displayname="Square Wave">
 		<help picture="squarewavehelp.svg"/>
-        <icon isopath="squarewave.svg" iconrotation="ON" userpath=""/>
+        <icon isopath="squarewave.svg" iconrotation="OFF" userpath=""/>
         <portpose x="1" y="0.5" a="0" name="out"/>
     </modelobject>
 </hopsanobjectappearance>
