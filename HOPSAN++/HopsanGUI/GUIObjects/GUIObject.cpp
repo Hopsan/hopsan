@@ -142,10 +142,9 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    setFlag(QGraphicsItem::ItemIsMovable, true); //Make the component movable if not
-    setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not
+    setFlag(QGraphicsItem::ItemIsMovable, true); //Make the component movable if not (it is not movable during creation of connector)
+    setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not (it is not selectable during creation of connector)
 
-    QGraphicsWidget::mousePressEvent(event);    //This must be before the code! Otherwise old position will not be stored for this object!
 
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
@@ -160,6 +159,8 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
             mpParentContainerObject->mSelectedGUIWidgetsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIWidgetsList[i]->pos();
         }
     }
+
+    QGraphicsWidget::mousePressEvent(event);
 
         //Objects shall not be selectable while creating a connector
     if(mpParentContainerObject->getIsCreatingConnector())
@@ -231,77 +232,30 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             mpSelectionBox->setPassive();
         }
     }
-//    else if (change == QGraphicsItem::ItemPositionHasChanged)
-//    {
-//        emit componentMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
 
-//            //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
-//        if(mpParentSystem != 0 && mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping && !mpParentSystem->mIsCreatingConnector)
-//        {
-//                //Vertical snap
-//            if( (mpGUIConnectorPtrs.size() == 1) &&
-//                (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-//                !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-//                !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
-//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
-//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) )
-//            {
-//                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
-//                {
-//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
-//                }
-//                else
-//                {
-//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
-//                }
-//            }
-////            else if( (mpGUIConnectorPtrs.size() == 2) &&
-////                     (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-////                     (mpGUIConnectorPtrs.last()->getNumberOfLines() < 4) &&
-////                     ( ( (this->rotation() == 0 || this->rotation() == 180) &&
-////                       (mPortListPtrs.first()->pos().y() == mPortListPtrs.last()->pos().y()) ) ||
-////                       ( (this->rotation() == 90 || this->rotation() == 270) &&
-////                       (mPortListPtrs.first()->pos().x() == mPortListPtrs.last()->pos().x()) ) ) &&
-////                     !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-////                     !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
-////                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
-////                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) &&
-////                     !(mpGUIConnectorPtrs.last()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() == 2) &&
-////                     !(mpGUIConnectorPtrs.last()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() > 1) &&
-////                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) < SNAPDISTANCE) &&
-////                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) > 0.0) )
-////            {
-////                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
-////                {
-////                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
-////                }
-////                else
-////                {
-////                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
-////                }
-////            }
+    QGraphicsWidget::itemChange(change, value);
 
-//                //Horizontal snap
-//            if( (mpGUIConnectorPtrs.size() == 1) &&
-//                (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-//                !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-//                !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 2) &&
-//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) < SNAPDISTANCE) &&
-//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) > 0.0) )
-//            {
-//                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
-//                {
-//                    this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.last().y() - mpGUIConnectorPtrs.first()->mPoints.first().y());
-//                }
-//                else
-//                {
-//                    this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y());
-//                }
-//            }
-//        }
-//    }
+    if (change == QGraphicsItem::ItemPositionHasChanged)
+    {
+        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed())
+        {
+            QPointF diff = this->pos()-mOldPos;
+            if( diff.manhattanLength() < SNAPDISTANCE)
+            {
+                this->setPos(mOldPos);
+            }
+            if(fabs(this->x()-mOldPos.x()) > fabs(this->y()-mOldPos.y()))
+            {
+                this->setPos(this->x(), mOldPos.y());
+            }
+            else
+            {
+                this->setPos(mOldPos.x(), this->y());
+            }
+        }
+    }
 
-    return  QGraphicsWidget::itemChange(change, value);
+    return value;
 }
 
 

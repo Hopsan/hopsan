@@ -135,6 +135,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 
 //! Defines what happens when moving an object in a GraphicsView.
 //! @param event contains information of the drag operation.
+//! @todo This function seems to do nothing. Can it be removed?
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
     event->accept();
@@ -197,7 +198,8 @@ void GraphicsView::dropEvent(QDropEvent *event)
 }
 
 
-//! Updates the viewport, used when something has changed. Also changes to the correct background color if it is not the right one.
+//! @brief Updates the viewport in case something has changed.
+//! Also changes to the correct background color if it is not the correct one.
 void GraphicsView::updateViewPort()
 {
     if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
@@ -221,9 +223,17 @@ void GraphicsView::setContainerPtr(GUIContainerObject *pContainer)
 }
 
 
+//! @brief Returns a pointer to the container object in the graphics view
 GUIContainerObject *GraphicsView::getContainerPtr()
 {
     return this->mpContainerObject;
+}
+
+
+//! @brief Returns whether or not ctrl key is pressed
+bool GraphicsView::isCtrlKeyPressed()
+{
+    return mCtrlKeyPressed;
 }
 
 
@@ -349,47 +359,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         mpContainerObject->assignSection(9);
     }
-//    else if (altPressed && event->key() == Qt::Key_0)
-//    {
-//        mpContainerObject->selectSection(0, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_1)
-//    {
-//        qDebug() << "Boo";
-//        mpContainerObject->selectSection(1, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_2)
-//    {
-//        mpContainerObject->selectSection(2, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_3)
-//    {
-//        mpContainerObject->selectSection(3, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_4)
-//    {
-//        mpContainerObject->selectSection(4, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_5)
-//    {
-//        mpContainerObject->selectSection(5, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_6)
-//    {
-//        mpContainerObject->selectSection(6, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_7)
-//    {
-//        mpContainerObject->selectSection(7, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_8)
-//    {
-//        mpContainerObject->selectSection(8, true);
-//    }
-//    else if (altPressed && event->key() == Qt::Key_9)
-//    {
-//        mpContainerObject->selectSection(9, true);
-//    }
     else if (event->key() == Qt::Key_0)
     {
         mpContainerObject->selectSection(0);
@@ -551,8 +520,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->setDragMode(RubberBandDrag);
     }
 
-    //! @todo what does this stuff do, it forces us to manually manipulate ports in a way that is not clear, the purpose is also unclear
-    //! Answer: This is the code that removes one connector line if right clicking while creating a connector
+    //! Remove one connector line if right clicking while creating a connector
     if (event->button() == Qt::RightButton && mpContainerObject->getIsCreatingConnector())
     {
         if((mpContainerObject->mpTempConnector->getNumberOfLines() == 1 && mpContainerObject->mpTempConnector->isMakingDiagonal()) ||  (mpContainerObject->mpTempConnector->getNumberOfLines() == 2 && !mpContainerObject->mpTempConnector->isMakingDiagonal()))

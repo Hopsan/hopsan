@@ -45,13 +45,14 @@ public:
     void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
     void setContainerPtr(GUIContainerObject *pContainer);
     GUIContainerObject *getContainerPtr();
+    bool isCtrlKeyPressed();
 
     ProjectTab *mpParentProjectTab;
 
     QAction *systemPortAction;
     QMenu *menuInsert;
     qreal mZoomFactor;
-    bool mCtrlKeyPressed;
+
 
 
 signals:
@@ -88,6 +89,7 @@ private:
     void createActions();
     void createMenus();
     QColor mIsoColor;
+    bool mCtrlKeyPressed;
 
     GUIContainerObject *mpContainerObject;
 };
