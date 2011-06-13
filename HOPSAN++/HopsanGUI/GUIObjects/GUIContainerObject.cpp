@@ -1147,7 +1147,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 }
 
 
-//! @brief Creates each item in the copy stack, and places it on its respective position in the position copy stack.
+//! @brief Pastes the contents in the copy stack at the mouse position
 //! @see cutSelected()
 //! @see copySelected()
 void GUIContainerObject::paste(CopyStack *xmlStack)

@@ -155,6 +155,7 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
+    //A HMF file was dropped in the graphics view, so try to open the model
     if(event->mimeData()->hasUrls())
     {
         for(int i=0; i<event->mimeData()->urls().size(); ++i)
@@ -172,8 +173,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
         mpParentProjectTab->hasChanged();
 
         QString text = event->mimeData()->text();
-
-
 
         //Check if dropped item is a plot data string, and attempt to open a plot window if so
         if(event->mimeData()->text().startsWith("HOPSANPLOTDATA"))

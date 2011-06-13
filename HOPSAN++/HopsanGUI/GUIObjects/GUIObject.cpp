@@ -51,6 +51,7 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject 
     this->rotateTo(rot);
     this->setAcceptHoverEvents(true);
     mIsFlipped = false;
+    mOldPos=this->pos();
 }
 
 
@@ -137,14 +138,11 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-
-
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true); //Make the component movable if not (it is not movable during creation of connector)
     setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not (it is not selectable during creation of connector)
-
 
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
