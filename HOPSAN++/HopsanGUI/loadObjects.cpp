@@ -330,7 +330,7 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
             nameStatus = NAMENOTVISIBLE;
         }
 
-        GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
+        GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPointF(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
         pObj->setNameTextPos(rData.nameTextPos);
 
         if (rData.isFlipped)

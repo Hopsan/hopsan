@@ -84,7 +84,7 @@ public slots:
 private:
     QGridLayout *mpLayout;
     PlotParameterTree *mpPlotParameterTree;
-    QPoint dragStartPosition;
+    QPointF dragStartPosition;
 
     QToolBar *mpToolBar;
 

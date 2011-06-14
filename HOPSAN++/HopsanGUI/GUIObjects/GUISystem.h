@@ -43,7 +43,7 @@ class GUISystem : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUISystem( QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    GUISystem( QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
     GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent);
     ~GUISystem();
 

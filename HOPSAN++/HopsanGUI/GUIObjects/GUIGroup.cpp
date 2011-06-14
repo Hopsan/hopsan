@@ -77,7 +77,7 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GUIGroup::GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer)
+GUIGroup::GUIGroup(QPointF position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer)
     :   GUIContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, pParentContainer, pParentContainer)
 {
     qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;

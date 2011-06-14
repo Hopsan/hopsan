@@ -103,7 +103,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void contextMenuEvent(QContextMenuEvent *event);
 
-    QPoint dragStartPosition;
+    QPointF dragStartPosition;
 
 public slots:
     void updateList();

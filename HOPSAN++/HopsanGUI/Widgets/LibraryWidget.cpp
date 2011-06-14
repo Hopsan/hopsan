@@ -26,6 +26,8 @@
 
 #include "LibraryWidget.h"
 #include "../MainWindow.h"
+#include "../Widgets/ProjectTabWidget.h"
+#include "../GUIObjects/GUIContainerObject.h"
 #include "MessageWidget.h"
 #include "../GUIObjects/GUIModelObjectAppearance.h"
 #include "../Configuration.h"
@@ -202,6 +204,9 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     drag->setPixmap(pItem->icon().pixmap(40,40));
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+    //This line is necessary because we want to use default parameters for new components. Drag-copy opereations use same mimedata, but keep the parameters by using a dummy object.
+    gpMainWindow->mpProjectTabs->getCurrentContainer()->resetDummyParameterReservoirComponent();
 }
 
 

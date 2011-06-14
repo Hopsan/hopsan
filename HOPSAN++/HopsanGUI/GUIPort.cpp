@@ -350,7 +350,7 @@ void GUIPort::refreshPortOverlayPosition()
     }
     pt2 =  transf * pt1;
     pt3 = this->boundingRect().center();
-    this->mpPortLabel->setPos(pt3-pt2+QPoint(10, 10)); //! @todo This is little messy, GUIPort::magnify fucks the pos for the label a bit
+    this->mpPortLabel->setPos(pt3-pt2+QPointF(10, 10)); //! @todo This is little messy, GUIPort::magnify fucks the pos for the label a bit
 
     //Refresh the port overlay graphics
     if (!mvPortGraphicsOverlayPtrs.isEmpty())

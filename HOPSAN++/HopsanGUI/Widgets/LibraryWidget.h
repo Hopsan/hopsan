@@ -77,7 +77,7 @@ public slots:
     virtual void highLightItem(QListWidgetItem *item);
 
 private:
-    QPoint dragStartPosition;
+    QPointF dragStartPosition;
     LibraryWidget *mpParentLibraryWidget;
     QListWidgetItem *mpHoveredItem;
 };

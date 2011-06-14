@@ -240,8 +240,12 @@ bool parseDomBooleanNode(QDomElement domElement)
 void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_POSETAG);
-    pose.setAttribute("x",x);
-    pose.setAttribute("y",y);
+    QString xString;
+    xString.setNum(x,'f',20);
+    pose.setAttribute("x",xString);
+    QString yString;
+    yString.setNum(y,'g',20);
+    pose.setAttribute("y",yString);
     pose.setAttribute("a",th);
     pose.setAttribute("flipped", flipped);
 }
@@ -256,8 +260,12 @@ void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y,
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_PORTPOSETAG);
     pose.setAttribute("name",name);
-    pose.setAttribute("x",x);
-    pose.setAttribute("y",y);
+    QString xString;
+    xString.setNum(x,'f',20);
+    pose.setAttribute("x",xString);
+    QString yString;
+    yString.setNum(y,'f',20);
+    pose.setAttribute("y",yString);
     pose.setAttribute("a",th);
 }
 
@@ -268,8 +276,12 @@ void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y,
 void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_COORDINATETAG);
-    pose.setAttribute("x",x);
-    pose.setAttribute("y",y);
+    QString xString;
+    xString.setNum(x,'f',20);
+    pose.setAttribute("x",xString);
+    QString yString;
+    yString.setNum(y,'f',20);
+    pose.setAttribute("y",yString);
 }
 
 //! @brief Special purpose help function for adding a Hopsan specific XML tag containing viewport information

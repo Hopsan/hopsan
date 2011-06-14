@@ -45,7 +45,7 @@ class GUIWidget : public GUIObject
     Q_OBJECT
 
 public:
-    GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
+    GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
     int mWidgetIndex;
 
 protected:
@@ -66,7 +66,7 @@ class GUITextWidget : public GUIWidget
 {
     Q_OBJECT
 public:
-    GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    GUITextWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     void saveToDomElement(QDomElement &rDomElement);
     void setText(QString text);
     void setTextColor(QColor color);
@@ -104,7 +104,7 @@ class GUIBoxWidget : public GUIWidget
 {
     Q_OBJECT
 public:
-    GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    GUIBoxWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     void saveToDomElement(QDomElement &rDomElement);
     void setLineWidth(int value);
     void setLineStyle(Qt::PenStyle style);

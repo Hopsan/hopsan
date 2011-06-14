@@ -56,7 +56,7 @@
 //! @param gfxType Tells whether the initial graphics shall be user or ISO
 //! @param pParentContainer Pointer to the parent container object (leave empty if not a sub container)
 //! @param pParent Pointer to parent object
-GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
+GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
         //Initialize
@@ -82,6 +82,8 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
 
     gpMainWindow->toggleNamesAction->setChecked(true);
     gpMainWindow->togglePortsAction->setChecked(true);
+
+    resetDummyParameterReservoirComponent();
 
     //Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
@@ -476,7 +478,7 @@ void GUIContainerObject::renameExternalPort(const QString oldName, const QString
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -610,7 +612,7 @@ void GUIContainerObject::removeFavoriteVariableByComponentName(QString component
 //! @brief Inserts a new text widget to the container
 //! @param position Initial position of the widget
 //! @param undoSettings Tells whether or not this shall be registered in the undo stack
-void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
+void GUIContainerObject::addTextWidget(QPointF position, undoStatus undoSettings)
 {
     GUITextWidget *tempTextWidget;
     tempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
@@ -628,7 +630,7 @@ void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
 //! @brief Inserts a new box widget to the container
 //! @param position Initial position of the widget
 //! @param undoSettings Tells whether or not this shall be registered in the undo stack
-void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
+void GUIContainerObject::addBoxWidget(QPointF position, undoStatus undoSettings)
 {
     GUIBoxWidget *tempBoxWidget;
     tempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this, mHighestWidgetIndex);
@@ -1556,6 +1558,24 @@ void GUIContainerObject::setScriptFile(QString path)
 QString GUIContainerObject::getScriptFile()
 {
     return mScriptFilePath;
+}
+
+//! @brief Returns a pointer to the parameter reservoir component. Used when drag-copying.
+GUIComponent *GUIContainerObject::getDummyParameterReservoirComponent()
+{
+    return mpDummyParameterReservoirComponent;
+}
+
+//! @brief Sets the pointer for the parameter reservoir component. Used when drag-copying.
+void GUIContainerObject::setDummyParameterReservoirComponent(GUIComponent *component)
+{
+    mpDummyParameterReservoirComponent = component;
+}
+
+//! @brief Clears the pointer for the parameter reservoir component. Used when drag-copying.
+void GUIContainerObject::resetDummyParameterReservoirComponent()
+{
+    mpDummyParameterReservoirComponent = 0;
 }
 
 

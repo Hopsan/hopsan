@@ -109,7 +109,7 @@ public:
     QString text;
     QFont font;
     QColor fontcolor;
-    QPoint point;
+    QPointF point;
 
     void readDomElement(QDomElement &rDomElement);
 };
@@ -119,7 +119,7 @@ class BoxWidgetLoadData
 public:
     QString linestyle;
     QColor linecolor;
-    QPoint point;
+    QPointF point;
     qreal width, height, linewidth;
 
     void readDomElement(QDomElement &rDomElement);

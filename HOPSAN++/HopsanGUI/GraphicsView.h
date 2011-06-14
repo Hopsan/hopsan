@@ -46,6 +46,7 @@ public:
     void setContainerPtr(GUIContainerObject *pContainer);
     GUIContainerObject *getContainerPtr();
     bool isCtrlKeyPressed();
+    bool isLeftMouseButtonPressed();
 
     ProjectTab *mpParentProjectTab;
 
@@ -66,7 +67,7 @@ signals:
     void keyPressCtrlLeft();
     void keyPressCtrlRight();
     void zoomChange(qreal zoomfactor);
-    void systemPortSignal(QPoint position);
+    void systemPortSignal(QPointF position);
 
 public slots:
     void resetZoom();
@@ -81,6 +82,7 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
     virtual void contextMenuEvent ( QContextMenuEvent * event );
@@ -90,6 +92,7 @@ private:
     void createMenus();
     QColor mIsoColor;
     bool mCtrlKeyPressed;
+    bool mLeftMouseButtonPressed;
 
     GUIContainerObject *mpContainerObject;
 };

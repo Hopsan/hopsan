@@ -44,7 +44,7 @@
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
+GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
         : GUIObject(position, rotation, startSelected, pParentContainer, pParent)
 {
         //Initialize variables

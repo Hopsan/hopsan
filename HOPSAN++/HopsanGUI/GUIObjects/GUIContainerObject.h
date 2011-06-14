@@ -26,6 +26,7 @@
 #define GUICONTAINEROBJECT_H
 
 #include "GUIModelObject.h"
+#include "GUIComponent.h"
 #include "GUIWidgets.h"
 #include "../CoreAccess.h"
 
@@ -40,7 +41,7 @@ class GUIContainerObject : public GUIModelObject
     Q_OBJECT
 public:
     enum CONTAINEREDGE {RIGHTEDGE, BOTTOMEDGE, LEFTEDGE, TOPEDGE};
-    GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    GUIContainerObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIContainerObject();
 
     void connectMainWindowActions();
@@ -51,9 +52,9 @@ public:
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
     //Handle GuiModelObjects and GuiWidgets
-    void addTextWidget(QPoint position, undoStatus undoSettings=UNDO);
-    void addBoxWidget(QPoint position, undoStatus undoSettings=UNDO);
-    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
+    void addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
+    void addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
+    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
@@ -95,6 +96,10 @@ public:
 
     void setScriptFile(QString path);
     QString getScriptFile();
+
+    GUIComponent *getDummyParameterReservoirComponent();
+    void setDummyParameterReservoirComponent(GUIComponent *component);
+    void resetDummyParameterReservoirComponent();
 
     //SHOULD BE PROTECTED
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
@@ -225,6 +230,8 @@ private:
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
     QList< QVector<double> > mTimeVectors;
     QList< QList<GUIModelObject *> > mSection;
+
+    GUIComponent *mpDummyParameterReservoirComponent;
 };
 
 #endif // GUICONTAINEROBJECT_H

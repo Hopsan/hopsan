@@ -32,7 +32,7 @@
 
 
 //! @todo should not pSystem and pParent be teh same ?
-GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
+GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     //Initi variables
@@ -89,7 +89,7 @@ QPointF GUIObject::getCenterPos()
 
 void GUIObject::setCenterPos(QPointF pos)
 {
-    this->setPos(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0);
+    this->setPos(QPointF(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0));
 }
 
 void GUIObject::saveToDomElement(QDomElement &/*rDomElement*/){}  //! @todo nothing for now
@@ -233,9 +233,10 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 
     QGraphicsWidget::itemChange(change, value);
 
+    // Move component only horizontal, vertical or snap to original position if Ctrl is pressed
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed())
+        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed() && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isLeftMouseButtonPressed())
         {
             QPointF diff = this->pos()-mOldPos;
             if( diff.manhattanLength() < SNAPDISTANCE)

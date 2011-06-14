@@ -37,7 +37,7 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../Widgets/PyDockWidget.h"
 
-GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+GUISystem::GUISystem(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
@@ -46,7 +46,7 @@ GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppear
 
 //Root system specific constructor
 GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
-    : GUIContainerObject(QPoint(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, pParent)
+    : GUIContainerObject(QPointF(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, pParent)
 {
     this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;

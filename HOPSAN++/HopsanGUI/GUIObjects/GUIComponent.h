@@ -41,7 +41,7 @@ class GUIComponent : public GUIModelObject
     Q_OBJECT
 
 public:
-    GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
     ~GUIComponent();
 
     bool hasPowerPorts();

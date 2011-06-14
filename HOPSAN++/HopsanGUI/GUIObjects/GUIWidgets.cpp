@@ -47,7 +47,7 @@
 using namespace std;
 
 
-GUIWidget::GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
+GUIWidget::GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
     : GUIObject(pos, rot, startSelected, pSystem, pParent)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -123,7 +123,7 @@ void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //! @param startSelected Initial selection status of text widget
 //! @param pSystem Pointer to the GUI System where text widget is located
 //! @param pParent Pointer to parent object (not required)
-GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+GUITextWidget::GUITextWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : GUIWidget(pos, rot, startSelected, pSystem, pParent)
 {
     this->mHmfTagName = HMF_TEXTWIDGETTAG;
@@ -315,7 +315,7 @@ void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
 //! @param startSelected Initial selection status of box widget
 //! @param pSystem Pointer to the GUI System where box widget is located
 //! @param pParent Pointer to parent object (not required)
-GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+GUIBoxWidget::GUIBoxWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : GUIWidget(pos, rot, startSelected, pSystem, pParent)
 {
     this->mHmfTagName = HMF_BOXWIDGETTAG;

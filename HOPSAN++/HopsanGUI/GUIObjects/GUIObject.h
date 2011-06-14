@@ -43,7 +43,7 @@ class GUIObject : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    GUIObject(QPointF pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     //virtual ~GUIObject();
 
     virtual void setParentContainerObject(GUIContainerObject *pParentContainer);

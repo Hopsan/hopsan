@@ -31,7 +31,7 @@
 #include "../Widgets/ProjectTabWidget.h"
 #include "../GraphicsView.h";
 
-GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     //Set the hmf save tag name
@@ -49,6 +49,15 @@ GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint pos
     if(this->getTypeCQS() == "S" && !this->hasPowerPorts())
     {
         connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+    }
+
+    if(mpParentContainerObject->getDummyParameterReservoirComponent() != 0 && mpParentContainerObject->getDummyParameterReservoirComponent()->getTypeName() == this->getTypeName())
+    {
+        for(size_t i=0; i<getParameterNames().size(); ++i)
+        {
+            setParameterValue(getParameterNames().at(i), mpParentContainerObject->getDummyParameterReservoirComponent()->getParameterValueTxt(getParameterNames().at(i)));
+        }
+        mpParentContainerObject->resetDummyParameterReservoirComponent();
     }
 }
 
@@ -82,6 +91,8 @@ void GUIComponent::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         QMimeData *mimeData = new QMimeData;
         mimeData->setText(this->getTypeName());
+
+        mpParentContainerObject->setDummyParameterReservoirComponent(this);
 
         QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->mpGraphicsView);
         drag->setMimeData(mimeData);

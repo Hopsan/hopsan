@@ -39,7 +39,7 @@ class GUIModelObject : public GUIObject
     Q_OBJECT
 
 public:
-    GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    GUIModelObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIModelObject();
 
     virtual void setParentContainerObject(GUIContainerObject *pParentContainer);

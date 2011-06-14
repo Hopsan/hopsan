@@ -53,6 +53,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     mpContainerObject = mpParentProjectTab->mpSystem;
 
     mCtrlKeyPressed = false;
+    mLeftMouseButtonPressed = false;
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
@@ -189,8 +190,8 @@ void GraphicsView::dropEvent(QDropEvent *event)
         if(pAppearanceData != 0)
         {
             event->accept();
-            QPoint position = event->pos();
-            mpContainerObject->addGUIModelObject(pAppearanceData, this->mapToScene(position).toPoint());
+            QPointF position = event->pos();
+            mpContainerObject->addGUIModelObject(pAppearanceData, this->mapToScene(position.toPoint()).toPoint());
             this->setFocus();
         }
     }
@@ -233,6 +234,11 @@ GUIContainerObject *GraphicsView::getContainerPtr()
 bool GraphicsView::isCtrlKeyPressed()
 {
     return mCtrlKeyPressed;
+}
+
+bool GraphicsView::isLeftMouseButtonPressed()
+{
+    return mLeftMouseButtonPressed;
 }
 
 
@@ -503,6 +509,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    mLeftMouseButtonPressed = true;
+
     mpContainerObject->mJustStoppedCreatingConnector = false;
 
         //No rubber band during connecting:
@@ -549,6 +557,13 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         mpContainerObject->mpTempConnector->addPoint(this->mapToScene(event->pos()));
     }
     QGraphicsView::mousePressEvent(event);
+}
+
+
+void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
+{
+    mLeftMouseButtonPressed = false;
+    QGraphicsView::mouseReleaseEvent(event);
 }
 
 
