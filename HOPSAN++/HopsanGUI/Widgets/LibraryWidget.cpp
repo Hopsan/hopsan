@@ -2,20 +2,20 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
 //!
 //! @file   LibraryWidget.cpp
-//! @author BjÃ¶rn Eriksson <bjorn.eriksson@liu.se>
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-02-05
 //!
 //! @brief Contains classes for Library Widgets
@@ -50,6 +50,39 @@ using namespace hopsan;
 //!
 
 #include <QtGui>
+
+
+LibraryComponent::LibraryComponent(GUIModelObjectAppearance *pAppearanceData)
+{
+    mpAppearanceData = pAppearanceData;
+}
+
+
+QIcon LibraryComponent::getIcon(graphicsType gfxType)
+{
+    QIcon icon;
+    QString iconPath = mpAppearanceData->getFullAvailableIconPath(gfxType);
+    QFile iconFile(iconPath);
+    if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
+    {
+        iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
+    }
+    icon.addFile(iconPath,QSize(55,55));
+    return icon;
+}
+
+
+QString LibraryComponent::getName()
+{
+    return mpAppearanceData->getNonEmptyName();
+}
+
+
+QString LibraryComponent::getTypeName()
+{
+    return mpAppearanceData->getTypeName();
+}
+
 
 //! Constructor
 LibraryContentItem::LibraryContentItem(GUIModelObjectAppearance *pAppearanceData, QListWidget *pParent)
@@ -256,6 +289,44 @@ QSize LibraryWidget::sizeHint() const
 }
 
 
+void LibraryWidget::update()
+{
+    int view = 0;       //Make a member of this
+    switch (view)
+    {
+      case 0:
+        {
+            //Do stuff 0
+            QMap<QString, QMap< QString, QMap<QString, LibraryComponent> > >::iterator itMaj;
+            QMap< QString, QMap<QString, LibraryComponent> >::iterator itMin;
+            QMap<QString, LibraryComponent>::iterator itC;
+            for(itMaj = mLibraryContents.begin(); itMaj != mLibraryContents.end(); ++itMaj)
+            {
+                //Insert tree widget item for major library
+                for(itMin = itMaj.value().begin(); itMin != itMaj.value().end(); ++itMin)
+                {
+                    //Insert tree widget item for minor library
+                    for(itC = itMin.value().begin(); itC != itMin.value().end(); ++itC)
+                    {
+                        //Insert tree widget item for components
+                    }
+                }
+            }
+        }
+        break;
+
+      case 1:
+        {
+            //Do stuff 1
+        }
+        break;
+
+      default:
+        //Should not be here
+        break;
+    }
+}
+
 //! Adds an empty library to the library widget.
 //! @param libraryName is the name of the new library.
 //! @param parentLibraryName is the name of an eventually parent library.
@@ -325,7 +396,17 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
     //Add the library to the tree
-    addEmptyLibrary(libName,parentLib,libDir);
+    addEmptyLibrary(libName,parentLib,libDir);  //! @todo Remove!
+
+    //! @note New!
+    QMap<QString, QMap<QString, LibraryComponent> > emptyParentLibraryMap;
+    QMap<QString, LibraryComponent> emptyLibraryMap;
+    if(!mLibraryContents.contains(parentLib))       //Insert the parent library if it does not already exist (maybe wrap this in a function)
+    {
+        mLibraryContents.insert(parentLib, emptyParentLibraryMap);
+    }
+    mLibraryContents.find(parentLib).value().insert(libName, emptyLibraryMap);
+    //! @note End of new!
 
     //Create a QStringList object that contains name filters
     QStringList filters;
@@ -399,14 +480,20 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         if (success)
         {
             //Create library content item
-            LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);
+            LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);   //! @todo Remove!
             //Add the component to the library
-            addLibraryContentItem(libName, parentLib, libcomp);
+            addLibraryContentItem(libName, parentLib, libcomp); //! @todo Remove!
+
+            //! @note New!
+            //mLibraryContents.find(libName).value()->insert(pAppearanceData->getNonEmptyName(), LibraryComponent(pAppearanceData));
         }
 
         //Close file
         file.close();
     }
+
+    //! @note New!
+    //update();
 }
 
 
@@ -541,7 +628,7 @@ GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType
 }
 
 //! @brief This function retrieves the appearance data given a display name
-//! @todo This is a temporary hack
+//! @todo This will mean trouble if two components have the same display name
 GUIModelObjectAppearance *LibraryWidget::getAppearanceDataByDisplayName(QString displayName)
 {
     return getAppearanceData(mName2TypeMap.value(displayName));

@@ -2,20 +2,20 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
 //!
 //! @file   LibraryWidget.h
-//! @author BjÃ¶rn Eriksson <bjorn.eriksson@liu.se>
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-02-05
 //!
 //! @brief Contains classes for Library Widgets
@@ -39,6 +39,20 @@
 
 class GUIModelObjectAppearance;
 class LibraryContentItem;
+
+
+class LibraryComponent
+{
+public:
+    LibraryComponent(GUIModelObjectAppearance *pAppearanceData);
+    QIcon getIcon(graphicsType gfxType);
+    QString getName();
+    QString getTypeName();
+
+private:
+    GUIModelObjectAppearance *mpAppearanceData;
+};
+
 
 class LibraryContentItem : public QListWidgetItem
 {
@@ -96,6 +110,7 @@ class LibraryWidget : public QWidget
 public:
     //Member functions
     LibraryWidget(MainWindow *parent = 0);
+    void update();
     void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString(), QString libraryPath=QString(), QString iconPath=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
     void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
@@ -120,6 +135,9 @@ private slots:
 private:
     //Member variables
     //MainWindow *mpParentMainWindow;
+
+    //QStrings represent major library, minor library and component name. For example "Hydraulics", "Pumps & Motors", "Fixed Pump".
+    QMap<QString, QMap< QString, QMap<QString, LibraryComponent> > > mLibraryContents;
 
     QHash<QString, LibraryContent*> mLibraryContentPtrsMap;
     QMultiMap<QString, LibraryContentItem*> mLibraryContentItemPtrsMap;
