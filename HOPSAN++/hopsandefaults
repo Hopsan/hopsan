@@ -105,6 +105,8 @@
             </stylesheet>
     </style>
     <units>
+        <defaultunit unit="V" name="Voltage"/>
+        <defaultunit unit="A" name="Current"/>
         <defaultunit unit="rad" name="Angle"/>
         <defaultunit unit="rad/s" name="Angular Velocity"/>
         <defaultunit unit="m^3/s" name="Flow"/>
@@ -114,6 +116,8 @@
         <defaultunit unit="Nm" name="Torque"/>
         <defaultunit unit="-" name="Value"/>
         <defaultunit unit="m/s" name="Velocity"/>
+        <customunit unit="V" scale="1" name="Voltage"/>
+        <customunit unit="A" scale="1" name="Current"/>
         <customunit unit="deg" scale="57.296" name="Angle"/>
         <customunit unit="rad" scale="1" name="Angle"/>
         <customunit unit="deg/s" scale="57.296" name="Angular Velocity"/>
