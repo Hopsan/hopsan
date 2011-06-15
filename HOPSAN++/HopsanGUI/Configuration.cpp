@@ -441,6 +441,8 @@ void Configuration::loadDefaultsFromXml()
             mCustomUnits.insert("Angle", QMap<QString, double>());
             mCustomUnits.insert("Angular Velocity", QMap<QString, double>());
             mCustomUnits.insert("Value", QMap<QString, double>());
+            mCustomUnits.insert("Voltage", QMap<QString, double>());
+            mCustomUnits.insert("Current", QMap<QString, double>());
             QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
             while (!customUnitElement.isNull())
             {
