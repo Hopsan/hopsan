@@ -2,13 +2,13 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
@@ -68,7 +68,7 @@ namespace hopsan {
             setDataCharacteristics(FLOW, "Flow", "m^3/s");
             setDataCharacteristics(PRESSURE, "Pressure", "Pa");
             setDataCharacteristics(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
-            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", Node::NOPLOT);
             setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
             setDataCharacteristics(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
 
@@ -107,8 +107,8 @@ namespace hopsan {
             setDataCharacteristics(VELOCITY, "Velocity", "m/s");
             setDataCharacteristics(FORCE, "Force", "N");
             setDataCharacteristics(POSITION, "Position", "m");
-            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
-            setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "N", Node::NOPLOT);
+            setDataCharacteristics(CHARIMP, "CharImp", "N s/m", Node::NOPLOT);
         }
 
         virtual void setSpecialStartValues(Node *pNode)
@@ -123,7 +123,6 @@ namespace hopsan {
             }
         }
     };
-
 
     //!
     //! @class NodeMechanicRotational
@@ -142,7 +141,7 @@ namespace hopsan {
             setDataCharacteristics(ANGULARVELOCITY, "Angular Velocity", "rad/s");
             setDataCharacteristics(TORQUE, "Torque", "Nm");
             setDataCharacteristics(ANGLE, "Angle", "rad");
-            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Nm", Node::NOPLOT);
             setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
         }
 
@@ -153,6 +152,41 @@ namespace hopsan {
                 if(WAVEVARIABLE==i)
                 {
                     pNode->setData(i, mDataVector[TORQUE]);
+                }
+                //! todo Maybe also write CHARIMP?
+            }
+        }
+    };
+
+
+
+    //!
+    //! @class NodeElectric
+    //! @brief An electric node
+    //! @ingroup ElectricNode
+    //!
+    class NodeElectric :public Node
+    {
+    public:
+        enum {VOLTAGE, CURRENT, WAVEVARIABLE, CHARIMP, DATALENGTH};
+        static Node* CreatorFunction() {return new NodeElectric;}
+
+    private:
+        NodeElectric() : Node(DATALENGTH)
+        {
+            setDataCharacteristics(VOLTAGE, "Voltage", "V");
+            setDataCharacteristics(CURRENT, "Current", "A");
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "V", Node::NOPLOT);
+            setDataCharacteristics(CHARIMP, "CharImp", "V/A", Node::NOPLOT);
+        }
+
+        virtual void setSpecialStartValues(Node *pNode)
+        {
+            for(size_t i=0; i<mDataNames.size(); ++i)
+            {
+                if(WAVEVARIABLE==i)
+                {
+                    pNode->setData(i, mDataVector[VOLTAGE]);
                 }
                 //! todo Maybe also write CHARIMP?
             }
