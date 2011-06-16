@@ -231,7 +231,7 @@ void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentNam
     rNames.resize(stdNames.size());
     rValues.resize(stdValues.size());
     rUnits.resize(stdUnits.size());
-    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+    for(int i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
     {
         rNames[i] = QString::fromStdString(stdNames[i]);
         rValues[i] = stdValues[i];
@@ -252,7 +252,7 @@ void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentNam
     rNames.resize(stdNames.size());
     rValuesTxt.resize(stdValuesTxt.size());
     rUnits.resize(stdUnits.size());
-    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+    for(int i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
     {
         rNames[i] = QString::fromStdString(stdNames[i]);
         rValuesTxt[i] = QString::fromStdString(stdValuesTxt[i]);

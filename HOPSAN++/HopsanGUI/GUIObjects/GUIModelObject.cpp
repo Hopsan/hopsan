@@ -480,7 +480,7 @@ void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //        //Store old positions for all components, in case more than one is selected
 //    if(event->button() == Qt::LeftButton)
 //    {
-//        for(size_t i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
+//        for(int i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
 //        {
 //            mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
 //        }

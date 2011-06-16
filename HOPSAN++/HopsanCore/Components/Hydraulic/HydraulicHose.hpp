@@ -146,7 +146,7 @@ namespace hopsan {
             Zc1 = Zc0 + BC0*Rtot;
             Zc2 = Zc0 + BC0*Rtot;
 
-            for(size_t i=1; i<NTMAX+1; ++i)
+            for(int i=1; i<NTMAX+1; ++i)
             {
                 c1i[i] = p1 + Zc0*q1;
                 c2i[i] = p2 + Zc0*q2;

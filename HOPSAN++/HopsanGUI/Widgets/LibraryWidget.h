@@ -2,20 +2,20 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
 //!
 //! @file   LibraryWidget.h
-//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @author BjÃ¶rn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-02-05
 //!
 //! @brief Contains classes for Library Widgets
@@ -36,9 +36,150 @@
 #include <QLabel>
 #include <QListWidgetItem>
 #include <QStringList>
+#include <QVector>
+#include <QToolButton>
 
 class GUIModelObjectAppearance;
-class LibraryContentItem;
+class LibraryListWidgetItem;
+
+class LibraryComponent;
+
+
+
+
+//class LibraryListWidgetItem : public QListWidgetItem
+//{
+//public:
+//    LibraryListWidgetItem(GUIModelObjectAppearance *pAppearanceData, QListWidget *parent = 0);
+//    LibraryListWidgetItem(const QListWidgetItem &other);
+//    GUIModelObjectAppearance *getAppearanceData();
+//    QString getTypeName();
+
+////public slots:
+//    void selectIcon(graphicsType gfxType=USERGRAPHICS);
+
+//private:
+//    GUIModelObjectAppearance *mpAppearanceData;
+
+//};
+
+//class LibraryListWidget : public QListWidget
+//{
+//    Q_OBJECT
+
+//public:
+//    LibraryListWidget(LibraryListWidget *pParentLibraryListWidget, QString mapKey, LibraryWidget *pParentLibraryWidget, QTreeWidgetItem *pParentTreeWidgetItem);
+//    bool mIsUserLib;
+//    QTreeWidgetItem *mpParentTreeWidgetItem;
+//    QString mMapKey;
+
+//protected:
+//    virtual void mousePressEvent(QMouseEvent *event);
+//    virtual void mouseMoveEvent(QMouseEvent *event);
+
+//public slots:
+//    virtual void highLightItem(QListWidgetItem *item);
+
+//private:
+//    QPointF dragStartPosition;
+//    LibraryWidget *mpParentLibraryWidget;
+//    QListWidgetItem *mpHoveredItem;
+//};
+
+
+class MainWindow;
+class LibraryContentsTree;
+class LibraryListWidget;
+
+class LibraryWidget : public QWidget
+{
+    Q_OBJECT
+
+    friend class LibraryListWidget;
+    friend class LibraryTreeWidget;
+    friend class MainWindow;
+
+public:
+    //Member functions
+    LibraryWidget(MainWindow *parent = 0);
+    void update();
+    void loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
+    void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
+    void loadLibrary(QString libDir, bool external = false);
+    void loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree=0);
+
+    GUIModelObjectAppearance *getAppearanceData(QString componentType);
+    GUIModelObjectAppearance *getAppearanceDataByDisplayName(QString displayName);
+    QSize sizeHint() const;
+
+    graphicsType mGfxType;
+
+public slots:
+    void loadUserDefinedLibrary(QString libDir = QString());
+    void setGfxType(graphicsType gfxType);
+    void setListView();
+    void setDualView();
+
+private slots:
+    void showLib(QTreeWidgetItem * item, int column);
+    void initializeDrag(QListWidgetItem* item);
+    void initializeDrag(QTreeWidgetItem* item, int dummy);
+
+private:
+    LibraryContentsTree *mpContentsTree;
+
+    QTreeWidget *mpTree;
+    QLabel *mpComponentNameField;
+    LibraryListWidget *mpList;
+    QToolButton *mpTreeViewButton;
+    QToolButton *mpDualViewButton;
+    QGridLayout *mpGrid;
+    int mViewMode;
+    CoreLibraryAccess *mpCoreAccess;
+    QMap<QListWidgetItem *, LibraryComponent *> mListItemToContentsMap;
+    QMap<QTreeWidgetItem *, LibraryComponent *> mTreeItemToContentsMap;
+};
+
+
+class LibraryListWidget : public QListWidget
+{
+    Q_OBJECT
+public:
+    LibraryListWidget(LibraryWidget *parent);
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *event);
+private:
+    LibraryWidget *mpLibraryWidget;
+};
+
+//class LibraryTreeWidget : public QTreeWidget
+//{
+//public:
+//    LibraryTreeWidget(LibraryWidget *parent = 0);
+//    LibraryWidget *mpParentLibraryWidget;
+
+//protected:
+//    virtual void contextMenuEvent(QContextMenuEvent *);
+//};
+
+
+
+//! @note New classes
+
+class LibraryContentsTree
+{
+public:
+    LibraryContentsTree(QString name = QString());
+    bool isEmpty();
+    LibraryContentsTree *addChild(QString name);
+    bool hasChild(QString name);
+    LibraryContentsTree *findChild(QString name);
+    LibraryComponent *addComponent(GUIModelObjectAppearance *pAppearanceData);
+    LibraryComponent *findComponent(QString typeName);
+    QString mName;
+    QVector<LibraryContentsTree *> mChildNodesPtrs;
+    QVector<LibraryComponent *> mComponentPtrs;
+};
 
 
 class LibraryComponent
@@ -48,119 +189,10 @@ public:
     QIcon getIcon(graphicsType gfxType);
     QString getName();
     QString getTypeName();
-
-private:
-    GUIModelObjectAppearance *mpAppearanceData;
-};
-
-
-class LibraryContentItem : public QListWidgetItem
-{
-public:
-    LibraryContentItem(GUIModelObjectAppearance *pAppearanceData, QListWidget *parent = 0);
-    LibraryContentItem(const QListWidgetItem &other);
     GUIModelObjectAppearance *getAppearanceData();
-    QString getTypeName();
-
-//public slots:
-    void selectIcon(graphicsType gfxType=USERGRAPHICS);
 
 private:
     GUIModelObjectAppearance *mpAppearanceData;
-
-};
-
-//Forward declaration
-class LibraryWidget;
-
-class LibraryContent : public QListWidget
-{
-    Q_OBJECT
-
-public:
-    LibraryContent(LibraryContent *pParentLibraryContent, QString mapKey, LibraryWidget *pParentLibraryWidget, QTreeWidgetItem *pParentTreeWidgetItem);
-    bool mIsUserLib;
-    QTreeWidgetItem *mpParentTreeWidgetItem;
-    QString mMapKey;
-
-protected:
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
-
-public slots:
-    virtual void highLightItem(QListWidgetItem *item);
-
-private:
-    QPointF dragStartPosition;
-    LibraryWidget *mpParentLibraryWidget;
-    QListWidgetItem *mpHoveredItem;
-};
-
-
-class MainWindow;
-
-class LibraryWidget : public QWidget
-{
-    Q_OBJECT
-
-    friend class LibraryContent;
-    friend class LibraryTreeWidget;
-    friend class MainWindow;
-
-public:
-    //Member functions
-    LibraryWidget(MainWindow *parent = 0);
-    void update();
-    void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString(), QString libraryPath=QString(), QString iconPath=QString());
-    void addLibrary(QString libDir, QString parentLib=QString());
-    void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
-    void addExternalLibrary(QString libDir);
-    GUIModelObjectAppearance *getAppearanceData(QString componentType);
-    GUIModelObjectAppearance *getAppearanceDataByDisplayName(QString displayName);
-    QSize sizeHint() const;
-
-    graphicsType mGfxType;
-
-protected:
-    virtual void mouseMoveEvent(QMouseEvent *event);
-
-public slots:
-    void addLibrary();
-    void setGfxType(graphicsType gfxType);
-
-private slots:
-    void showLib(QTreeWidgetItem * item, int column);
-    void hideAllLib();
-
-private:
-    //Member variables
-    //MainWindow *mpParentMainWindow;
-
-    //QStrings represent major library, minor library and component name. For example "Hydraulics", "Pumps & Motors", "Fixed Pump".
-    QMap<QString, QMap< QString, QMap<QString, LibraryComponent> > > mLibraryContents;
-
-    QHash<QString, LibraryContent*> mLibraryContentPtrsMap;
-    QMultiMap<QString, LibraryContentItem*> mLibraryContentItemPtrsMap;
-
-    QHash<QString, QString> mName2TypeMap; //!< @todo This is a temporary hack
-
-    QLabel *mpComponentNameField;
-
-    QTreeWidget *mpTree;
-    QVBoxLayout *mpGrid;
-
-    CoreLibraryAccess *mpCoreAccess;
-};
-
-
-class LibraryTreeWidget : public QTreeWidget
-{
-public:
-    LibraryTreeWidget(LibraryWidget *parent = 0);
-    LibraryWidget *mpParentLibraryWidget;
-
-protected:
-    virtual void contextMenuEvent(QContextMenuEvent *);
 };
 
 #endif // LIBRARYWIDGET_H

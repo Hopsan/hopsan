@@ -78,7 +78,7 @@ namespace hopsan {
 
         virtual void setSpecialStartValues(Node *pNode)
         {
-            for(size_t i=0; i<mDataNames.size(); ++i)
+            for(int i=0; i<mDataNames.size(); ++i)
             {
                 if(WAVEVARIABLE==i)
                 {
@@ -113,7 +113,7 @@ namespace hopsan {
 
         virtual void setSpecialStartValues(Node *pNode)
         {
-            for(size_t i=0; i<mDataNames.size(); ++i)
+            for(int i=0; i<mDataNames.size(); ++i)
             {
                 if(WAVEVARIABLE==i)
                 {
@@ -147,7 +147,7 @@ namespace hopsan {
 
         virtual void setSpecialStartValues(Node *pNode)
         {
-            for(size_t i=0; i<mDataNames.size(); ++i)
+            for(int i=0; i<mDataNames.size(); ++i)
             {
                 if(WAVEVARIABLE==i)
                 {
@@ -182,7 +182,7 @@ namespace hopsan {
 
         virtual void setSpecialStartValues(Node *pNode)
         {
-            for(size_t i=0; i<mDataNames.size(); ++i)
+            for(int i=0; i<mDataNames.size(); ++i)
             {
                 if(WAVEVARIABLE==i)
                 {

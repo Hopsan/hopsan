@@ -914,20 +914,20 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
     wrapperStream << "\n";
     wrapperStream << "    //S-function output signals\n";
-    for(size_t i=0; i<nTotalOutputs; ++i)
+    for(int i=0; i<nTotalOutputs; ++i)
     {
         wrapperStream << "    real_T *y" << i << " = ssGetOutputPortRealSignal(S," << i << ");\n";
     }
     wrapperStream << "    int_T width1 = ssGetOutputPortWidth(S,0);\n";
     wrapperStream << "\n";
     wrapperStream << "    //Input parameters\n";
-    for(size_t i=0; i<nTotalInputs; ++i)
+    for(int i=0; i<nTotalInputs; ++i)
     {
         wrapperStream << "    double input" << i << " = (*uPtrs1[" << i << "]);\n";
     }
     wrapperStream << "\n";
     wrapperStream << "    //Equations\n";
-    for(size_t i=0; i<nTotalOutputs; ++i)
+    for(int i=0; i<nTotalOutputs; ++i)
     {
         wrapperStream << "    double output" << i << ";\n";
     }
@@ -943,35 +943,35 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "    else\n";
     wrapperStream << "    {\n";
     tot = 0;
-    for(size_t i=0; i<nMechanicQ; ++i)
+    for(int i=0; i<nMechanicQ; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
     }
     tot+=nMechanicQ*2;
-    for(size_t i=0; i<nMechanicC; ++i)
+    for(int i=0; i<nMechanicC; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
     }
     tot+=nMechanicC*2;
-    for(size_t i=0; i<nMechanicRotationalQ; ++i)
+    for(int i=0; i<nMechanicRotationalQ; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
     }
     tot+=nMechanicRotationalQ*2;
-    for(size_t i=0; i<nMechanicRotationalC; ++i)
+    for(int i=0; i<nMechanicRotationalC; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
         wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
     }
     tot+=nMechanicRotationalC*2;
-    for(size_t i=0; i<nInputs; ++i)
+    for(int i=0; i<nInputs; ++i)
     {
         j = tot+i;
         wrapperStream << "        pComponentSystem->getComponent(\"" << inputComponents.at(i) << "\")->getPort(\"" << inputPorts.at(i) << "\")->writeNode(0, input" << i << ");\n";
@@ -981,35 +981,35 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "        pComponentSystem->simulate(time, time+timestep);\n";
     wrapperStream << "\n";
     tot = 0;
-    for(size_t i=0; i<nMechanicQ; ++i)
+    for(int i=0; i<nMechanicQ; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(3);\n";
         wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(4);\n";
     }
     tot+=nMechanicQ*2;
-    for(size_t i=0; i<nMechanicC; ++i)
+    for(int i=0; i<nMechanicC; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(2);\n";
         wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(0);\n";
     }
     tot+=nMechanicC*2;
-    for(size_t i=0; i<nMechanicRotationalQ; ++i)
+    for(int i=0; i<nMechanicRotationalQ; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(3);\n";
         wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(4);\n";
     }
     tot+=nMechanicRotationalQ*2;
-    for(size_t i=0; i<nMechanicRotationalC; ++i)
+    for(int i=0; i<nMechanicRotationalC; ++i)
     {
         j = tot+i*2;
         wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(2);\n";
         wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(0);\n";
     }
     tot+=nMechanicRotationalC*2;
-    for(size_t i=0; i<nOutputs; ++i)
+    for(int i=0; i<nOutputs; ++i)
     {
         j = tot+i;
         wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << outputComponents.at(i) << "\")->getPort(\"" << outputPorts.at(i) << "\")->readNode(0);\n";
@@ -1017,7 +1017,7 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "    }\n";
     wrapperStream << "\n";
     wrapperStream << "    //Output parameters\n";
-    for(size_t i=0; i<nTotalOutputs; ++i)
+    for(int i=0; i<nTotalOutputs; ++i)
     {
         wrapperStream << "    *y" << i << " = output" << i << ";\n";
     }

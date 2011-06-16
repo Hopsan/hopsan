@@ -144,7 +144,7 @@ namespace hopsan {
             }
 
             v1 = (*mvpN_v1[0]);
-            for(size_t i=0; i<mNumPorts1; ++i)
+            for(int i=0; i<mNumPorts1; ++i)
             {
                 if(v1 != (*mvpN_v1[i]))
                 {
@@ -156,7 +156,7 @@ namespace hopsan {
             }
 
             v2 = (*mvpN_v2[0]);
-            for(size_t i=0; i<mNumPorts2; ++i)
+            for(int i=0; i<mNumPorts2; ++i)
             {
                 if(v2 != (*mvpN_v2[i]))
                 {

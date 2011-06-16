@@ -2071,7 +2071,7 @@ public:
     }
     void operator() () const
     {
-        for(size_t i=0; i<vectorQ.size(); ++i)
+        for(int i=0; i<vectorQ.size(); ++i)
         {
             vectorQ[i]->simulate(mStartTime, mStopTime);
         }
@@ -2092,7 +2092,7 @@ public:
     }
     void operator() () const
     {
-        for(size_t i=0; i<vectorC.size(); ++i)
+        for(int i=0; i<vectorC.size(); ++i)
         {
             vectorC[i]->simulate(mStartTime, mStopTime);
         }
@@ -2161,7 +2161,7 @@ public:
             ++(*mpBarrier_s);
             while(*mpLock_s){}
 
-            for(size_t i=0; i<mVectorS.size(); ++i)
+            for(int i=0; i<mVectorS.size(); ++i)
             {
                 mVectorS[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2172,7 +2172,7 @@ public:
             ++(*mpBarrier_c);
             while(*mpLock_c){}
 
-            for(size_t i=0; i<mVectorC.size(); ++i)
+            for(int i=0; i<mVectorC.size(); ++i)
             {
                 mVectorC[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2183,7 +2183,7 @@ public:
             ++(*mpBarrier_q);
             while(*mpLock_q){}
 
-            for(size_t i=0; i<mVectorQ.size(); ++i)
+            for(int i=0; i<mVectorQ.size(); ++i)
             {
                 mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2194,7 +2194,7 @@ public:
             ++(*mpBarrier_n);
             while(*mpLock_n){}
 
-            for(size_t i=0; i<mVectorN.size(); ++i)
+            for(int i=0; i<mVectorN.size(); ++i)
             {
                 mVectorN[i]->logData(mTime);
             }
@@ -2286,7 +2286,7 @@ public:
             *mpLock_s = false;                      //Unlock signal component code
             *mpLock_q = true;                       //Lock Q-type component code (must be done in advance to prevent lockup
 
-            for(size_t i=0; i<mVectorS.size(); ++i)
+            for(int i=0; i<mVectorS.size(); ++i)
             {
                 mVectorS[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2298,7 +2298,7 @@ public:
             *mpLock_c = false;
             *mpLock_n = true;
 
-            for(size_t i=0; i<mVectorC.size(); ++i)
+            for(int i=0; i<mVectorC.size(); ++i)
             {
                 mVectorC[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2311,7 +2311,7 @@ public:
             *mpLock_q = false;
             *mpLock_s = true;
 
-            for(size_t i=0; i<mVectorQ.size(); ++i)
+            for(int i=0; i<mVectorQ.size(); ++i)
             {
                 mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2323,7 +2323,7 @@ public:
             *mpLock_n = false;
             *mpLock_c = true;
 
-            for(size_t i=0; i<mVectorN.size(); ++i)
+            for(int i=0; i<mVectorN.size(); ++i)
             {
                 mVectorN[i]->logData(mTime);
             }
@@ -2374,14 +2374,14 @@ void ComponentSystem::simulateMultiThreadedOld(const double startT, const double
     }
 
         //Simulate C and Q components one time step on single core and meassure the required time
-    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+    for(int c=0; c<mComponentCptrs.size(); ++c)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
         mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
     }
-    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+    for(int q=0; q<mComponentQptrs.size(); ++q)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
         mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
@@ -2493,7 +2493,7 @@ void ComponentSystem::simulateMultiThreadedOld(const double startT, const double
         {
             c->run(taskC(splitCVector[coreNumber], mTime, mTime+mTimestep));
         }
-        for(size_t i=0; i<splitCVector[nCores-1].size(); ++i)       //Keep one of the vectors in current thread, to reduce overhead costs
+        for(int i=0; i<splitCVector[nCores-1].size(); ++i)       //Keep one of the vectors in current thread, to reduce overhead costs
         {
             splitCVector[nCores-1][i]->simulate(mTime, mTime+mTimestep);
         }
@@ -2504,7 +2504,7 @@ void ComponentSystem::simulateMultiThreadedOld(const double startT, const double
         {
             q->run(taskQ(splitQVector[coreNumber], mTime, mTime+mTimestep));
         }
-        for(size_t i=0; i<splitQVector[nCores-1].size(); ++i)       //Keep one of the vectors in current thread, to reduce overhead costs
+        for(int i=0; i<splitQVector[nCores-1].size(); ++i)       //Keep one of the vectors in current thread, to reduce overhead costs
         {
             splitQVector[nCores-1][i]->simulate(mTime, mTime+mTimestep);
         }
@@ -2527,14 +2527,14 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     tbb::tick_count measurement_start = tbb::tick_count::now();
 
         //Simulate S, C and Q components one time step on single core and meassure the required time
-    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+    for(int c=0; c<mComponentCptrs.size(); ++c)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
         mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
     }
-    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+    for(int q=0; q<mComponentQptrs.size(); ++q)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
         mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
@@ -2608,7 +2608,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         //Create vector used for time measurement (DEBUG)
     vector<double> timeVector;                                                                              //DEBUG
     timeVector.resize(nCores);                                                                              //DEBUG
-    for(size_t i=0; i<nCores; ++i)                                                                          //DEBUG
+    for(int i=0; i<nCores; ++i)                                                                          //DEBUG
     {                                                                                                       //DEBUG
         timeVector[i] = 0;                                                                                  //DEBUG
     }                                                                                                       //DEBUG
@@ -2619,7 +2619,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     size_t cCompNum=0;
     while(true)
     {
-        for(size_t coreNumber=0; coreNumber<nCores; ++coreNumber)
+        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
             if(cCompNum == mComponentCptrs.size())
                 break;
@@ -2631,7 +2631,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             break;
     }
 
-    for(size_t i=0; i<nCores; ++i)                                                                                              //DEBUG
+    for(int i=0; i<nCores; ++i)                                                                                              //DEBUG
     {                                                                                                                           //DEBUG
         stringstream ss;                                                                                                        //DEBUG
         ss << timeVector[i]*1000;                                                                                               //DEBUG
@@ -2645,7 +2645,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     size_t qCompNum=0;
     while(true)
     {
-        for(size_t coreNumber=0; coreNumber<nCores; ++coreNumber)
+        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
             if(qCompNum == mComponentQptrs.size())
                 break;
@@ -2657,7 +2657,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             break;
     }
 
-    for(size_t i=0; i<nCores; ++i)                                                                                              //DEBUG
+    for(int i=0; i<nCores; ++i)                                                                                              //DEBUG
     {                                                                                                                           //DEBUG
         stringstream ss;                                                                                                        //DEBUG
         ss << timeVector[i]*1000;                                                                                               //DEBUG
@@ -2667,13 +2667,13 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
         //Distribute node pointers equally over vectors (no sorting necessary)
     vector< vector<Node*> > splitNodeVector;
-    for(size_t c=0; c<nCores; ++c)
+    for(int c=0; c<nCores; ++c)
     {
         vector<Node*> tempVector;
         splitNodeVector.push_back(tempVector);
     }
     size_t currentCore = 0;
-    for(size_t n=0; n<mSubNodePtrs.size(); ++n)
+    for(int n=0; n<mSubNodePtrs.size(); ++n)
     {
         splitNodeVector.at(currentCore).push_back(mSubNodePtrs.at(n));
         ++currentCore;
@@ -2719,7 +2719,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         //Execute simulation
     //coreTasks->run(taskSimMaster(splitSVector[0], splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nCores, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
     coreTasks->run(taskSimMaster(mComponentSignalptrs, splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nCores, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
-    for(size_t coreNumber=1; coreNumber < nCores; ++coreNumber)
+    for(int coreNumber=1; coreNumber < nCores; ++coreNumber)
     {
         coreTasks->run(taskSimSlave(dummySignalVector, splitCVector[coreNumber], splitQVector[coreNumber], splitNodeVector[coreNumber], mTime, mTimestep, stopTsafe, nCores, coreNumber, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
     }

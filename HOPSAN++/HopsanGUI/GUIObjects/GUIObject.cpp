@@ -243,13 +243,13 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             {
                 this->setPos(mOldPos);
             }
-            if(fabs(this->x()-mOldPos.x()) > fabs(this->y()-mOldPos.y()))
+            else if(fabs(x()-mOldPos.x()) > fabs(y()-mOldPos.y()))
             {
-                this->setPos(this->x(), mOldPos.y());
+                this->setPos(x(), mOldPos.y());
             }
             else
             {
-                this->setPos(mOldPos.x(), this->y());
+                this->setPos(mOldPos.x(), y());
             }
         }
     }

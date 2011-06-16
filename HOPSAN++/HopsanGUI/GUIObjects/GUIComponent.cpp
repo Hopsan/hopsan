@@ -53,7 +53,7 @@ GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF po
 
     if(mpParentContainerObject->getDummyParameterReservoirComponent() != 0 && mpParentContainerObject->getDummyParameterReservoirComponent()->getTypeName() == this->getTypeName())
     {
-        for(size_t i=0; i<getParameterNames().size(); ++i)
+        for(int i=0; i<getParameterNames().size(); ++i)
         {
             setParameterValue(getParameterNames().at(i), mpParentContainerObject->getDummyParameterReservoirComponent()->getParameterValueTxt(getParameterNames().at(i)));
         }

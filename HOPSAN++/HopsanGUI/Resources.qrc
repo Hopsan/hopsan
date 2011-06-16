@@ -77,5 +77,7 @@
         <file>graphics/uiicons/Hopsan-NewPlot.png</file>
         <file>graphics/uiicons/Hopsan-ResetTimeVector.png</file>
         <file>graphics/uiicons/Hopsan-Info.png</file>
+        <file>graphics/uiicons/Hopsan-LibraryDualView.png</file>
+        <file>graphics/uiicons/Hopsan-LibraryTreeView.png</file>
     </qresource>
 </RCC>

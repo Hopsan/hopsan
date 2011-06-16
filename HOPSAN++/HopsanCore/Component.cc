@@ -969,7 +969,7 @@ ComponentSignal::ComponentSignal(string name) : Component(name)
 Component::~Component()
 {
     //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted component.
-    for(size_t i = 0; i < mParameters.size(); ++i)
+    for(int i = 0; i < mParameters.size(); ++i)
     {
         mpSystemParent->getSystemParameters().unMapParameter(mParameters[i].getValuePtr());
     }

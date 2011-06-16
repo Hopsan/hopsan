@@ -56,7 +56,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             (*mpND_p1) = (*mpND_c1)+(*mpND_Zc1);
-            for(size_t i=0; i<(*mpND_in); ++i)
+            for(int i=0; i<(*mpND_in); ++i)
             {
                 (*mpND_p1) = (*mpND_p1) * i;
             }
