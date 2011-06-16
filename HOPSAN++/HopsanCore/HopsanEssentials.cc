@@ -150,9 +150,27 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
 }
 
 
-HopsanCoreMessage HopsanEssentials::getMessage()
+void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std::string &rTag)
 {
-    return mpMessageHandler->getMessage();
+    HopsanCoreMessage msg = mpMessageHandler->getMessage();
+    rMessage = msg.message;
+    rTag = msg.tag;
+
+    switch (msg.type)
+    {
+    case HopsanCoreMessage::ERROR:
+        rType = "error";
+        break;
+    case HopsanCoreMessage::WARNING:
+        rType = "warning";
+        break;
+    case HopsanCoreMessage::INFO:
+        rType = "info";
+        break;
+    case HopsanCoreMessage::DEBUG:
+        rType = "debug";
+        break;
+    }
 }
 
 

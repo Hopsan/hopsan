@@ -47,7 +47,7 @@ class CoreMessagesAccess
 {
 public:
     size_t getNumberOfMessages();
-    void getMessage(QString &message, QString &type, QString &tag);
+    void getMessage(QString &rMessage, QString &rType, QString &rTag);
 };
 
 class CoreSystemAccess
@@ -58,7 +58,7 @@ public:
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
     ~CoreSystemAccess();
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
-    void deleteRootSystemPtr(); //!< @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the ore object
+    void deleteRootSystemPtr(); //!< @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
 
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);

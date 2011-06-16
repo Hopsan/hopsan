@@ -31,7 +31,7 @@
 
 namespace hopsan {
 
-    class DLLIMPORTEXPORT HopsanCoreMessage
+    class HopsanCoreMessage
     {
     public:
         enum MessageTypes {INFO, WARNING, ERROR, DEBUG};

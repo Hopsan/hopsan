@@ -232,9 +232,9 @@ size_t MessageWidget::tagCount(QString tag)
 //! @brief Obtains messages from core and prints them in the message widget
 void MessageWidget::printCoreMessages()
 {
-    size_t nmsg = mpCoreAccess->getNumberOfMessages();
+    int nmsg = mpCoreAccess->getNumberOfMessages();
 
-    for (size_t idx=0; idx < nmsg; ++idx)
+    for (int idx=0; idx < nmsg; ++idx)
     {
         QString message, type, tag;
         mpCoreAccess->getMessage(message, type, tag);

@@ -68,7 +68,7 @@ extern "C" {
 
         Node* createNode(const NodeTypeT &rNodeType);
 
-        HopsanCoreMessage getMessage();
+        void getMessage(std::string &rMessage, std::string &rType, std::string &rTag);
         size_t checkMessage();
 
         bool loadExternalComponent(const std::string path);
