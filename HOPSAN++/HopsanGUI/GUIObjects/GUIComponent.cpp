@@ -29,7 +29,7 @@
 #include "../Dialogs/ComponentPropertiesDialog.h"
 #include "../GUIPort.h"
 #include "../Widgets/ProjectTabWidget.h"
-#include "../GraphicsView.h";
+#include "../GraphicsView.h"
 
 GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
