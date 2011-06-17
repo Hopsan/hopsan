@@ -121,16 +121,6 @@ double CoreSystemAccess::getDesiredTimeStep()
     return mpCoreComponentSystem->getDesiredTimeStep();
 }
 
-//void CoreSystemAccess::setRootTypeCQS(const QString cqs_type)
-//{
-//    qDebug () << "setting cqs to: " << cqs_type;
-//    mpCoreComponentSystem->setTypeCQS(cqs_type.toStdString());
-//}
-
-//void CoreSystemAccess::setSubSystemTypeCQS(QString systemName, const QString cqs_type)
-//{
-//    mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->setTypeCQS(cqs_type.toStdString());
-//}
 
 QString CoreSystemAccess::getRootSystemTypeCQS()
 {

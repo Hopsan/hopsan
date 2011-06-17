@@ -1226,7 +1226,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
     while (!systemElement.isNull())
     {
-        GUIModelObject* pObj = loadGUISystemObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
+        GUIModelObject* pObj = loadGUIModelObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
         renameMap.insert(systemElement.attribute("name"), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
 

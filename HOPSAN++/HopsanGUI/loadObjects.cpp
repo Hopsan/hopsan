@@ -37,62 +37,25 @@
 #include <QMap>
 
 
-//! @brief Reads the ModelObject load data from an XML DOM element
-//! @param[in] rDomElement The DOM element to read from
-void ModelObjectLoadData::readDomElement(QDomElement &rDomElement)
+//! @brief Loads a Connector from the supplied load data
+//! @param[in] rDomElement The DOM element to load from
+//! @param[in] pContainer The Container Object to load into
+//! @param[in] undoSettings Wheter or not to register undo for the operation
+void loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, undoStatus undoSettings)
 {
-    //Read core specific data
-    type = rDomElement.attribute(HMF_TYPETAG);
-    name = rDomElement.attribute(HMF_NAMETAG);
+    // -----First read from DOM element-----
+    QString startComponentName, endComponentName, startPortName, endPortName;
+    bool isDashed;
+    QVector<QPointF> pointVector;
+    QStringList geometryList;
 
-    //Read gui specific data
-    readGuiDataFromDomElement(rDomElement);
-}
-
-//! @brief Reads the GUI specific ModelObject load data from an XML DOM element
-//! @param[in] rDomElement The DOM element to read from
-void ModelObjectLoadData::readGuiDataFromDomElement(QDomElement &rDomElement)
-{
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
-    nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
-    textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
-    portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
-    namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
-}
-
-//! @brief Reads the System load data from an XML DOM element
-//! @param[in] rDomElement The DOM element to read from
-void SystemLoadData::readDomElement(QDomElement &rDomElement)
-{
-    //Read default ModelObjectStuff, core adn gui data
-    ModelObjectLoadData::readDomElement(rDomElement);
-
-    //Overwrite the typename with the gui specific one for systems, or set the type if it is missing (which is should be)
-    //! @todo or maybe core should contain system typename for systems
-    type = HOPSANGUISYSTEMTYPENAME;
-
-    //Read system specific corea nd gui data
-    externalfilepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
-
-    //Save the domElement to read embeded system
-    if (externalfilepath.isEmpty())
-    {
-        embededSystemDomElement = rDomElement;
-    }
-}
-
-//! @brief Reads the Connector load data from an XML DOM element
-//! @param[in] rDomElement The DOM element to read from
-void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
-{
-    //Read core specific stuff
+    // Read core specific stuff
     startComponentName = rDomElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG);
     startPortName = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
     endComponentName = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
     endPortName = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
 
-    //Read gui specific stuff
+    // Read gui specific stuff
     qreal x,y;
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     QDomElement guiCoordinates = guiData.firstChildElement(HMF_COORDINATES);
@@ -119,97 +82,26 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
     {
         isDashed = false;
     }
-}
 
-//! @brief Reads the Parameter load data from an XML DOM element
-//! @param[in] rDomElement The DOM element to read from
-void ParameterLoadData::readDomElement(QDomElement &rDomElement)
-{
-    parameterName = rDomElement.attribute(HMF_NAMETAG);
-    parameterValue = rDomElement.attribute(HMF_VALUETAG);
-}
+    // -----Now establish the connection-----
 
-//! @brief Reads the StartValue load data from an XML DOM element
-//! @param[in] rDomElement The DOM element to read from
-void StartValueLoadData::readDomElement(QDomElement &rDomElement)
-{
-    portName = rDomElement.attribute("portname");
-    variable = rDomElement.attribute("variable");
-    startValue = rDomElement.attribute("value");
-}
-
-
-//! @brief Loads a System Object from the supplied load data
-//! @param[in] rData The SystemLoadData to load from
-//! @param[in] pLibrary a pointer to the library widget which holds appearance data
-//! @param[in] pContainer The Container Object to load into
-//! @param[in] undoSettings Wheter or not to register undo for the operation
-GUIModelObject* loadGUISystemObject(SystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings)
-{
-    //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
-    //Load the system the normal way (and add it)
-    GUIModelObject* pSys = loadGUIModelObject(rData, pLibrary, pContainer, undoSettings);
-
-    //Check if we should load a embeded or external system
-    if (rData.externalfilepath.isEmpty())
-    {
-        //Load embeded system
-        pSys->getAppearanceData()->setBasePath(pContainer->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
-        pSys->loadFromDomElement(rData.embededSystemDomElement);
-    }
-    else
-    {
-        //Now read the external file to change appearance and populate the system
-        //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
-        QString path = pContainer->mModelFileInfo.absolutePath() + "/" + rData.externalfilepath;
-        QFile file(path);
-        if (!(file.exists()))
-        {
-            qDebug() << "file: " << path << " does not exist";
-        }
-        QDomDocument domDocument;
-        QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-        QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
-        //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
-        pSys->setModelFileInfo(file);
-        pSys->loadFromDomElement(externalSystemRoot);
-        //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
-
-        //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
-        if (!rData.name.isEmpty())
-        {
-            pSys->setName(rData.name);
-        }
-
-    }
-
-    return pSys;
-}
-
-
-//! @brief Loads a Connector from the supplied load data
-//! @param[in] rData The ConnectorLoadData to load from
-//! @param[in] pContainer The Container Object to load into
-//! @param[in] undoSettings Wheter or not to register undo for the operation
-void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pContainer, undoStatus undoSettings)
-{
-    //qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pSystem->getCoreSystemAccessPtr()->getRootSystemName();
-    bool success = pContainer->getCoreSystemAccessPtr()->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
+    //qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pContainer->getCoreSystemAccessPtr()->getRootSystemName();
+    bool success = pContainer->getCoreSystemAccessPtr()->connect(startComponentName, startPortName, endComponentName, endPortName);
     if (success)
     {
         //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
         //! @todo Need some error handling here to avoid crash if components or ports do not exist
-        GUIPort *startPort = pContainer->getGUIModelObject(rData.startComponentName)->getPort(rData.startPortName);
-        GUIPort *endPort = pContainer->getGUIModelObject(rData.endComponentName)->getPort(rData.endPortName);
+        GUIPort *startPort = pContainer->getGUIModelObject(startComponentName)->getPort(startPortName);
+        GUIPort *endPort = pContainer->getGUIModelObject(endComponentName)->getPort(endPortName);
 
-        GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pContainer, rData.geometryList);
+        GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, pointVector, pContainer, geometryList);
         pContainer->getContainedScenePtr()->addItem(pTempConnector);
 
         //Hide connected ports
         startPort->hide();
         endPort->hide();
 
-        pTempConnector->setDashed(rData.isDashed);
+        pTempConnector->setDashed(isDashed);
 
         QObject::connect(startPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
         QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
@@ -227,63 +119,44 @@ void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pContaine
     }
 }
 
-//! @brief Loads a SystemParameter from the supplied load data
-//! @param[in] rData The SystemParameterLoadData to load from
-//! @param[in] pContainer The Container Object to load into
-void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObject* pContainer)
-{
-    pContainer->getCoreSystemAccessPtr()->setSystemParameter(rData.name, rData.value);
-}
 
-
-//! @brief Loads a FavouriteParameter from the supplied load data
-//! @param[in] rData The FavoriteVariableLoadData to load from
-//! @param[in] pContainer The Container Object to load into (Must be a system)
-void loadFavoriteVariable(const FavoriteVariableLoadData &rData, GUIContainerObject *pContainer)
-{
-    dynamic_cast<GUISystem *>(pContainer)->setFavoriteVariable(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
-}
-
-void loadPlotAlias(const PlotAliasLoadData &rData, GUIContainerObject *pContainer)
-{
-    pContainer->definePlotAlias(rData.alias, rData.componentName, rData.portName, rData.dataName);
-}
-
-
-//! @brief xml version
-void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
-{
-//    bool isDbl;
-//    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
-//    double value = rData.parameterValue.toDouble(&isDbl);
-//    if(isDbl)
-//    {
-//        pObject->setParameterValue(rData.parameterName, value);
-//    }
-//    else
-    {
-        //Use the setParameter method that mapps to System parameter
-        if(!pObject->getParameterNames().contains(rData.parameterName))
-        {
-            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name mismatch. Parameter ignored.");
-            return;
-        }
-        pObject->setParameterValue(rData.parameterName, rData.parameterValue);
-    }
-}
 
 //! @brief xml version
 void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
 {
-    ParameterLoadData data;
-    data.readDomElement(rDomElement);
-    loadParameterValue(data, pObject, undoSettings);
+    QString parameterName;
+    QString parameterValue;
+
+    parameterName = rDomElement.attribute(HMF_NAMETAG);
+    parameterValue = rDomElement.attribute(HMF_VALUETAG);
+
+    //    bool isDbl;
+    //    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
+    //    double value = rData.parameterValue.toDouble(&isDbl);
+    //    if(isDbl)
+    //    {
+    //        pObject->setParameterValue(rData.parameterName, value);
+    //    }
+    //    else
+    {
+        //Use the setParameter method that mapps to System parameter
+        if(!pObject->getParameterNames().contains(parameterName))
+        {
+            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name mismatch. Parameter ignored.");
+            return;
+        }
+        pObject->setParameterValue(parameterName, parameterValue);
+    }
 }
 
 
 //! @brief xml version
-void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
+void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
 {
+    QString portName = rDomElement.attribute("portname");
+    QString variable = rDomElement.attribute("variable");
+    QString startValue = rDomElement.attribute("value");
+
 //    bool isDbl;
 //    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
 //    double value = rData.startValue.toDouble(&isDbl);
@@ -294,16 +167,8 @@ void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, un
 //    else
     {
         //Use the setStartValue method that mapps to System parameter
-        pObject->setStartValue(rData.portName, rData.variable, rData.startValue);
+        pObject->setStartValue(portName, variable, startValue);
     }
-}
-
-//! @brief xml version
-void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
-{
-    StartValueLoadData data;
-    data.readDomElement(rDomElement);
-    loadStartValue(data, pObject, undoSettings);
 }
 
 
@@ -312,16 +177,32 @@ void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatu
 //! @param[in] pLibrary a pointer to the library widget which holds appearance data
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Wheter or not to register undo for the operation
-GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings)
 {
-    GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(rData.type);
+    //Read core specific data
+    QString type = rDomElement.attribute(HMF_TYPETAG);
+    QString name = rDomElement.attribute(HMF_NAMETAG);
+
+    //Read gui specific data
+    qreal posX, posY, rotation;
+    bool isFlipped;
+    QMap<QString, double> defaultParameterMap;
+
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
+    int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
+    int textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
+    bool portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
+    bool namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
+
+    GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type);
     if (pAppearanceData != 0)
     {
         GUIModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
-        appearanceData.setName(rData.name);
+        appearanceData.setName(name);
 
         nameVisibility nameStatus;
-        if(rData.textVisible)
+        if(textVisible)
         {
             nameStatus = NAMEVISIBLE;
         }
@@ -330,18 +211,73 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
             nameStatus = NAMENOTVISIBLE;
         }
 
-        GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPointF(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
-        pObj->setNameTextPos(rData.nameTextPos);
+        GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPointF(posX, posY), 0, DESELECTED, nameStatus, undoSettings);
+        pObj->setNameTextPos(nameTextPos);
 
-        if (rData.isFlipped)
+        if (isFlipped)
         {
             pObj->flipHorizontal(undoSettings);
         }
-        while(pObj->rotation() != rData.rotation)
+        while(pObj->rotation() != rotation)
         {
             pObj->rotate90cw(undoSettings);
         }
+
+
+        if (rDomElement.tagName() == HMF_SYSTEMTAG)
+        {
+            QString externalfilepath;
+            QDomElement embededSystemDomElement;
+
+            //Overwrite the typename with the gui specific one for systems, or set the type if it is missing (which is should be)
+            //! @todo or maybe core should contain system typename for systems
+            //type = HOPSANGUISYSTEMTYPENAME;
+
+            //Read system specific corea and gui data
+            externalfilepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
+
+            //Save the domElement to read embeded system
+            if (externalfilepath.isEmpty())
+            {
+                embededSystemDomElement = rDomElement;
+            }
+
+            //Check if we should load a embeded or external system
+            if (externalfilepath.isEmpty())
+            {
+                //Load embeded system
+                pObj->getAppearanceData()->setBasePath(pContainer->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
+                pObj->loadFromDomElement(embededSystemDomElement);
+            }
+            else
+            {
+                //Now read the external file to change appearance and populate the system
+                //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
+                QString path = pContainer->mModelFileInfo.absolutePath() + "/" + externalfilepath;
+                QFile file(path);
+                if (!(file.exists()))
+                {
+                    qDebug() << "file: " << path << " does not exist";
+                }
+                QDomDocument domDocument;
+                QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+                QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
+                //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
+                pObj->setModelFileInfo(file);
+                pObj->loadFromDomElement(externalSystemRoot);
+                //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
+
+                //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
+                if (!name.isEmpty())
+                {
+                    pObj->setName(name);
+                }
+
+            }
+        }
+
         return pObj;
+
     }
     else
     {
@@ -352,66 +288,61 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
 }
 
 
-//! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
-{
-    ModelObjectLoadData data;
-    data.readDomElement(rDomElement);
-    return loadGUIModelObject(data, pLibrary, pSystem, undoSettings);
-}
 
-GUIModelObject* loadGUISystemObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
-{
-    SystemLoadData data;
-    data.readDomElement(rDomElement);
-    return loadGUISystemObject(data, pLibrary, pSystem, undoSettings);
-}
 
 //! @brief Loads a containerport object from a xml dom element
-GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
+GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings)
 {
-    ModelObjectLoadData data;
-    data.readDomElement(rDomElement);
-    data.type = HOPSANGUICONTAINERPORTTYPENAME; //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
-    return loadGUIModelObject(data, pLibrary, pSystem, undoSettings); //We use the loadGUIModelObject function as it does what is needed
+    //! @todo this does not feel right should try to avoid it maybe
+    rDomElement.setAttribute(HMF_TYPETAG, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
+    return loadGUIModelObject(rDomElement, pLibrary, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
 }
 
-//! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoStatus undoSettings)
+//! @brief Loads a SystemParameter from the supplied load data
+//! @param[in] rDomElement The SystemParameter DOM element to load from
+//! @param[in] pContainer The Container Object to load into
+void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pContainer)
 {
-    ConnectorLoadData data;
-    data.readDomElement(rDomElement);
-    loadConnector(data, pSystem, undoSettings);
-}
+    QString name = rDomElement.attribute("name");
+    double value = rDomElement.attribute("value").toDouble();
 
-//! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
-{
-    SystemParameterLoadData data;
-    data.readDomElement(rDomElement);
-    loadSystemParameter(data, pSystem);
-}
-
-
-void loadFavoriteVariable(QDomElement &rDomElement, GUIContainerObject* pSystem)
-{
-    FavoriteVariableLoadData data;
-    data.readDomElement(rDomElement);
-    loadFavoriteVariable(data, pSystem);
-}
-
-
-void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pSystem)
-{
-    PlotAliasLoadData data;
-    data.readDomElement(rDomElement);
-    loadPlotAlias(data, pSystem);
+    pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value);
 
 }
 
-
-void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
+//! @brief Loads a FavouriteParameter from the supplied load data
+//! @param[in] rDomElement The FavoriteVariableLoadData DOM element to load from
+//! @param[in] pContainer The Container Object to load into (Must be a system)
+void loadFavoriteVariable(QDomElement &rDomElement, GUIContainerObject* pContainer)
 {
+    QString componentName = rDomElement.attribute("componentname");
+    QString portName = rDomElement.attribute("portname");
+    QString dataName = rDomElement.attribute("dataname");
+    QString dataUnit = rDomElement.attribute("dataunit");
+
+    dynamic_cast<GUISystem *>(pContainer)->setFavoriteVariable(componentName, portName, dataName, dataUnit);
+}
+
+
+void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pContainer)
+{
+    QString alias = rDomElement.attribute("alias");
+    QString componentName = rDomElement.attribute("component");
+    QString portName = rDomElement.attribute("port");
+    QString dataName = rDomElement.attribute("data");
+
+    pContainer->definePlotAlias(alias, componentName, portName, dataName);
+}
+
+
+
+void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings)
+{
+    QString text;
+    QFont font;
+    QColor fontcolor;
+    QPointF point;
+
     //Read gui specific stuff
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
 
@@ -428,26 +359,29 @@ void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
         tempPoint.setY(poseTag.attribute("y").toDouble());
         point = tempPoint.toPoint();
     }
-}
 
-void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings)
-{
-    TextWidgetLoadData data;
-    data.readDomElement(rDomElement);
     //qDebug() << "Loading text widget, point = " << data.point;
-    pSystem->addTextWidget(data.point, NOUNDO);
-    pSystem->mTextWidgetList.last()->setText(data.text);
-    pSystem->mTextWidgetList.last()->setTextFont(data.font);
-    pSystem->mTextWidgetList.last()->setTextColor(data.fontcolor);
+    pContainer->addTextWidget(point, NOUNDO);
+    pContainer->mTextWidgetList.last()->setText(text);
+    pContainer->mTextWidgetList.last()->setTextFont(font);
+    pContainer->mTextWidgetList.last()->setTextColor(fontcolor);
     if(undoSettings == UNDO)
     {
-        pSystem->mUndoStack->registerAddedBoxWidget(pSystem->mBoxWidgetList.last());
+        pContainer->mUndoStack->registerAddedBoxWidget(pContainer->mBoxWidgetList.last());
     }
 }
 
 
-void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
+
+
+//! @brief Convenience function for loading a box widget from a dom element
+void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings)
 {
+    QString linestyle;
+    QColor linecolor;
+    QPointF point;
+    qreal width, height, linewidth;
+
     //Read gui specific stuff
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
 
@@ -468,59 +402,26 @@ void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
         tempPoint.setY(poseTag.attribute("y").toDouble());
         point = tempPoint.toPoint();
     }
-}
 
+    pContainer->addBoxWidget(point, NOUNDO);
+    pContainer->mBoxWidgetList.last()->setSize(width, height);
+    pContainer->mBoxWidgetList.last()->setLineWidth(linewidth);
 
-void SystemParameterLoadData::readDomElement(QDomElement &rDomElement)
-{
-    name = rDomElement.attribute("name");
-    value = rDomElement.attribute("value").toDouble();
-}
+    if(linestyle == "solidline")
+        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::SolidLine);
+    if(linestyle == "dashline")
+        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::DashLine);
+    if(linestyle == "dotline")
+        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::DotLine);
+    if(linestyle == "dashdotline")
+        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
 
-
-void FavoriteVariableLoadData::readDomElement(QDomElement &rDomElement)
-{
-    componentName = rDomElement.attribute("componentname");
-    portName = rDomElement.attribute("portname"),
-    dataName = rDomElement.attribute("dataname");
-    dataUnit = rDomElement.attribute("dataunit");
-}
-
-
-void PlotAliasLoadData::readDomElement(QDomElement &rDomElement)
-{
-    alias = rDomElement.attribute("alias");
-    componentName = rDomElement.attribute("component");
-    portName = rDomElement.attribute("port"),
-    dataName = rDomElement.attribute("data");
-}
-
-
-//! @brief Convenience function for loading a box widget from a dom element
-void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings)
-{
-    BoxWidgetLoadData data;
-    data.readDomElement(rDomElement);
-
-    pSystem->addBoxWidget(data.point, NOUNDO);
-    pSystem->mBoxWidgetList.last()->setSize(data.width, data.height);
-    pSystem->mBoxWidgetList.last()->setLineWidth(data.linewidth);
-
-    if(data.linestyle == "solidline")
-        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::SolidLine);
-    if(data.linestyle == "dashline")
-        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashLine);
-    if(data.linestyle == "dotline")
-        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DotLine);
-    if(data.linestyle == "dashdotline")
-        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
-
-    pSystem->mBoxWidgetList.last()->setLineColor(data.linecolor);
-    pSystem->mBoxWidgetList.last()->setSelected(true);
-    pSystem->mBoxWidgetList.last()->setSelected(false);     //For some reason this is needed
+    pContainer->mBoxWidgetList.last()->setLineColor(linecolor);
+    pContainer->mBoxWidgetList.last()->setSelected(true);
+    pContainer->mBoxWidgetList.last()->setSelected(false);     //For some reason this is needed
 
     if(undoSettings == UNDO)
     {
-        pSystem->mUndoStack->registerAddedBoxWidget(pSystem->mBoxWidgetList.last());
+        pContainer->mUndoStack->registerAddedBoxWidget(pContainer->mBoxWidgetList.last());
     }
 }

@@ -94,7 +94,6 @@ void GUISystem::commonConstructorCode()
         qDebug() << "creating ROOT access system";
         mpCoreSystemAccess = new CoreSystemAccess();
         this->setName("RootSystem");
-        //mpCoreSystemAccess->setRootTypeCQS("S");
         //qDebug() << "the core root system name: " << mpCoreSystemAccess->getRootSystemName();
     }
     else
@@ -450,7 +449,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
-            loadGUISystemObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 

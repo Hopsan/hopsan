@@ -657,6 +657,7 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
 //! @param componentType Type name of the component
 GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
 {
+    //! @todo need error handling here, if we can not find component type we should not crash, should return 0 ptr or something and at some point (probably not here) giva a error message
     return mpContentsTree->findComponent(componentType)->getAppearanceData();
 }
 
