@@ -157,6 +157,10 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
             if(!tree->mChildNodesPtrs.at(i)->isEmpty())
             {
                 tempItem = new QTreeWidgetItem();
+                QFont tempFont = tempItem->font(0);
+                tempFont.setBold(true);
+                tempItem->setFont(0,tempFont);
+                tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
                 mpTree->addTopLevelItem(tempItem);
                 loadTreeView(tree->mChildNodesPtrs.at(i), tempItem);
@@ -180,6 +184,10 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
             if(!tree->mChildNodesPtrs.at(i)->isEmpty())
             {
                 tempItem = new QTreeWidgetItem();
+                QFont tempFont = tempItem->font(0);
+                tempFont.setBold(true);
+                tempItem->setFont(0,tempFont);
+                tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
                 parentItem->addChild(tempItem);
                 loadTreeView(tree->mChildNodesPtrs.at(i), tempItem);
@@ -219,6 +227,10 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
             if(!tree->mChildNodesPtrs.at(i)->isEmpty())
             {
                 tempItem = new QTreeWidgetItem();
+                QFont tempFont = tempItem->font(0);
+                tempFont.setBold(true);
+                tempItem->setFont(0,tempFont);
+                tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
                 mpTree->addTopLevelItem(tempItem);
                 loadDualView(tree->mChildNodesPtrs.at(i), tempItem);
@@ -233,6 +245,10 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
             if(!tree->mChildNodesPtrs.at(i)->isEmpty())
             {
                 tempItem = new QTreeWidgetItem();
+                QFont tempFont = tempItem->font(0);
+                tempFont.setBold(true);
+                tempItem->setFont(0,tempFont);
+                tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
                 parentItem->addChild(tempItem);
                 loadDualView(tree->mChildNodesPtrs.at(i), tempItem);
