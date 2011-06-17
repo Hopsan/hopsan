@@ -96,8 +96,8 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     setLayout(mpGrid);
     this->setMouseTracking(true);
 
-    this->setListView();    //! @todo Should not be hard coded, load from config
-    this->setGfxType(USERGRAPHICS);
+    mViewMode = gConfig.getLibraryStyle();
+    this->setGfxType(USERGRAPHICS);     //Also updates the widget
 }
 
 
@@ -544,6 +544,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
 //! @brief Slot that sets view mode to single tree and redraws the library
 void LibraryWidget::setListView()
 {
+    gConfig.setLibraryStyle(0);
     mViewMode=0;
     update();
 }
@@ -552,6 +553,7 @@ void LibraryWidget::setListView()
 //! @brief Slot that sets view mode to dual mode and redraws the library
 void LibraryWidget::setDualView()
 {
+    gConfig.setLibraryStyle(1);
     mViewMode=1;
     update();
 }

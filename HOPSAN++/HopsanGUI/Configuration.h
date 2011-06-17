@@ -45,6 +45,7 @@ public:
     void loadFromXml();
     void loadDefaultsFromXml();
 
+    int getLibraryStyle();
     bool getShowWelcomeDialog();
     bool getShowPopupHelp();
     bool getUseNativeStyleSheet();
@@ -68,6 +69,7 @@ public:
     QFont getFont();
     QString getStyleSheet();
 
+    void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
     void setShowPopupHelp(bool value);
     void setUseNativeStyleSheet(bool value);
@@ -89,6 +91,7 @@ public:
     void addCustomUnit(QString dataname, QString unitname, double scale);
 
 private:
+    int mLibraryStyle;
     bool mShowWelcomeDialog;
     bool mShowPopupHelp;
     bool mUseNativeStyleSheet;

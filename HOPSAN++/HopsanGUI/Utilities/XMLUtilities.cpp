@@ -126,6 +126,17 @@ void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, 
     }
 }
 
+//! @brief Function for adding Dom elements containing one text node (based on an integer value)
+//! @param[in] rDomElement The DOM Element to add to
+//! @param[in] element_name The name of the new DOM element
+//! @param[in] val The double value
+void appendDomIntegerNode(QDomElement &rDomElement, const QString element_name, const int val)
+{
+    QString tmp_string;
+    tmp_string.setNum(val);
+    appendDomTextNode(rDomElement, element_name, tmp_string);
+}
+
 //! @brief Function for adding Dom elements containing one text node (based on a double value)
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element
@@ -222,6 +233,15 @@ qreal parseDomValueNode(QDomElement domElement)
 {
     return domElement.text().toDouble();
 }
+
+//! @brief Function that parses one DOM elements containing one text node (based on an integer value)
+//! @param[in] domElement The DOM Element to parse
+//! @returns The extracted value
+int parseDomIntegerNode(QDomElement domElement)
+{
+    return domElement.text().toInt();
+}
+
 
 //! @brief Function that parses one DOM elements containing one text node (based on a boolean value)
 //! @param[in] domElement The DOM Element to parse

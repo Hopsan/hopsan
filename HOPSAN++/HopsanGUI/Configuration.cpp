@@ -51,6 +51,7 @@ void Configuration::saveToXml()
     domDocument.appendChild(configRoot);
 
     QDomElement settings = appendDomElement(configRoot,"settings");
+    appendDomIntegerNode(settings, "librarystyle", mLibraryStyle);
     appendDomBooleanNode(settings, "showwelcomedialog", mShowWelcomeDialog);
     appendDomBooleanNode(settings, "showpopuphelp", mShowPopupHelp);
     appendDomBooleanNode(settings, "nativestylesheet", mUseNativeStyleSheet);
@@ -186,6 +187,8 @@ void Configuration::loadFromXml()
         {
             QDomElement settingsElement = configRoot.firstChildElement("settings");
 
+            if(!settingsElement.firstChildElement("librarystyle").isNull())
+                mLibraryStyle = parseDomIntegerNode(settingsElement.firstChildElement("librarystyle"));
             if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
                 mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
             if(!settingsElement.firstChildElement("showpopuphelp").isNull())
@@ -336,6 +339,8 @@ void Configuration::loadDefaultsFromXml()
         {
                 //Load default user settings
             QDomElement settingsElement = configRoot.firstChildElement("settings");
+            if(!settingsElement.firstChildElement("librarystyle").isNull())
+                mLibraryStyle = parseDomIntegerNode(settingsElement.firstChildElement("librarystyle"));
             if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
                 mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
             if(!settingsElement.firstChildElement("showpopuphelp").isNull())
@@ -462,6 +467,12 @@ void Configuration::loadDefaultsFromXml()
     return;
 }
 
+
+//! @brief Returns which library style to use
+int Configuration::getLibraryStyle()
+{
+    return this->mLibraryStyle;
+}
 
 
 //! @brief Returns whether or not the welcome dialog shall be shown
@@ -642,6 +653,14 @@ QString Configuration::getStyleSheet()
         return QString();
     else
         return mStyleSheet;
+}
+
+
+//! @brief Set function for library style option
+//! @param value Desired setting
+void Configuration::setLibraryStyle(int value)
+{
+    this->mLibraryStyle = value;
 }
 
 

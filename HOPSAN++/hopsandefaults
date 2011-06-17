@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsandefaults>
     <settings>
+        <librarystyle>0</librarystyle>
         <showwelcomedialog>true</showwelcomedialog>
         <showpopuphelp>true</showpopuphelp>
         <nativestylesheet>false</nativestylesheet>

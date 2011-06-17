@@ -38,6 +38,8 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
 void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value);
 
+void appendDomIntegerNode(QDomElement &rDomElement, const QString element_name, const int val);
+
 void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val);
 void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b);
 void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
@@ -47,6 +49,8 @@ bool parseDomBooleanNode(QDomElement domElement);
 qreal parseDomValueNode(QDomElement domElement);
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
+
+int parseDomIntegerNode(QDomElement);
 
 //Attribute help functions
 void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped);
