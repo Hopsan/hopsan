@@ -41,6 +41,7 @@ class CoreLibraryAccess
 {
 public:
     bool hasComponent(QString componentName);
+    bool loadComponent(QString fileName);
 };
 
 class CoreMessagesAccess

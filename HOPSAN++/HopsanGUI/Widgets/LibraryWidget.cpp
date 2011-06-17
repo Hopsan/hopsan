@@ -19,6 +19,7 @@
 //! @date   2010-02-05
 //!
 //! @brief Contains classes for Library Widgets
+//! Revised 2011-06-17 by Robert Braun
 //!
 //$Id$
 
@@ -36,31 +37,17 @@
 using namespace std;
 using namespace hopsan;
 
-//! @class LibraryContentItem
-//! @brief The LibraryContentItem contains the typename and icon to show in the library when selecting component or other guiobjects
-//!
-//! The LibraryContentItem only contains the typename and icon to show in the library when selecting component or other guiobjects.
-//! The actual appearance of the GUIObject after drag and drop is stored in a Map in the LibraryWidget
-//!
+//! @todo Make "External Libraries" a reserved word
 
-//! @class LibraryWidget
-//! @brief The LibraryWidget class is a class which store and display component libraries and other GUIObjects.
-//!
-//! This class is a widget that can be be included in the main window. It contains among other things a Map with appearance data for all loaded components and other GUIObjects.
-//!
+// Forward declarations
+class LibraryComponent;
 
-#include <QtGui>
-
-
-//! Constructor.
-//! @param parent defines a parent to the new instanced object.
+//! @brief Constructor for the library widget
+//! @param parent Pointer to the parent (main window)
 LibraryWidget::LibraryWidget(MainWindow *parent)
         :   QWidget(parent)
 {
-    //mpParentMainWindow = parent;
-
     mpCoreAccess = new CoreLibraryAccess();
-
     mpContentsTree = new LibraryContentsTree();
 
     //mpTree = new LibraryTreeWidget(this);
@@ -80,21 +67,31 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 
     mpTreeViewButton = new QToolButton();
     mpTreeViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryTreeView.png"));
+    mpTreeViewButton->setIconSize(QSize(24,24));
     mpTreeViewButton->setToolTip(tr("Single List View"));
     mpDualViewButton = new QToolButton();
     mpDualViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryDualView.png"));
+    mpDualViewButton->setIconSize(QSize(24,24));
     mpDualViewButton->setToolTip(tr("Dual List View"));
+    mpLoadExternalButton = new QToolButton();
+    mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadExternalButton->setIconSize(QSize(24,24));
+    mpLoadExternalButton->setToolTip(tr("Load External Library"));
 
     connect(mpTreeViewButton, SIGNAL(clicked()), this, SLOT(setListView()));
     connect(mpDualViewButton, SIGNAL(clicked()), this, SLOT(setDualView()));
+    connect(mpLoadExternalButton, SIGNAL(clicked()), this, SLOT(addExternalLibrary()));
 
     mpGrid = new QGridLayout(this);
-    mpGrid->addWidget(mpTree,               0,0,1,3);
-    mpGrid->addWidget(mpComponentNameField, 1,0,1,3);
-    mpGrid->addWidget(mpList,               2,0,1,3);
+    mpGrid->addWidget(mpTree,               0,0,1,5);
+    mpGrid->addWidget(mpComponentNameField, 1,0,1,5);
+    mpGrid->addWidget(mpList,               2,0,1,5);
     mpGrid->addWidget(mpTreeViewButton,     3,0,1,1);
     mpGrid->addWidget(mpDualViewButton,     3,1,1,1);
+    mpGrid->addWidget(mpLoadExternalButton, 3,2,1,1);
     mpGrid->setContentsMargins(4,4,4,4);
+    mpGrid->setHorizontalSpacing(0);
+
 
     setLayout(mpGrid);
     this->setMouseTracking(true);
@@ -104,17 +101,17 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 }
 
 
-
-//! @brief Reimplementation of QWidget::sizeHint(), used to reduce the size of the library widget when docked
+//! @brief Reimplementation of QWidget::sizeHint()
+//! Used to reduce the size of the library widget when docked.
 QSize LibraryWidget::sizeHint() const
 {
     QSize size = QWidget::sizeHint();
-    //Set very small width. A minimum apperantly stops at resonable size.
-    size.rwidth() = 210; //pixels
+    size.rwidth() = 210;            //Set very small width. A minimum apperantly stops at resonable size.
     return size;
 }
 
 
+//! @brief Refreshes the contents in the library widget
 void LibraryWidget::update()
 {
     mpTree->clear();
@@ -140,15 +137,18 @@ void LibraryWidget::update()
 }
 
 
-class LibraryComponent;
-
+//! @brief Recursive function that reads data from a contents node and draws it in single tree view mode
+//! @param tree Library contents tree node to load data from
+//! @param parentItem Tree widget item to append the data to
 void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem)
 {
     mpList->hide();
 
+    mTreeItemToContentsTreeMap.insert(parentItem, tree);
+
     QTreeWidgetItem *tempItem;
 
-    //Recursively call child nodes
+        //Recursively call child nodes
     if(parentItem == 0)
     {
         //Load child libraries
@@ -201,10 +201,14 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
 }
 
 
+//! @brief Recursive function that reads data from a contents node and draws it with dual view mode
+//! @param tree Library contents tree node to load data from
+//! @param parentItem Tree widget item to append the data to
 void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem)
 {
     QTreeWidgetItem *tempItem;
 
+    mTreeItemToContentsTreeMap.insert(parentItem, tree);
 
     //Recursively call child nodes
     if(parentItem == 0)
@@ -242,6 +246,9 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
 }
 
 
+//! @brief Slot that loads components from a tree widget item to the icon box in dual view mode
+//! @param item Tree widget item to load from
+//! @param column Not used (required to be there because signal-slot must match parameters)
 void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 {
     //Find the node in the contents tree
@@ -294,16 +301,21 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 }
 
 
+//! @brief Initializes drag operation to workspace from a list widget item
+//! @param item List widget item
 void LibraryWidget::initializeDrag(QListWidgetItem *item)
 {
-    if(!mListItemToContentsMap.contains(item)) return;
+    if(!mListItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 
+    //Fetch type name and icon from component in the contents tree
     QString typeName = mListItemToContentsMap.find(item).value()->getTypeName();
     QIcon icon = mListItemToContentsMap.find(item).value()->getIcon(mGfxType);
 
+    //Create the mimedata (text with type name)
     QMimeData *mimeData = new QMimeData;
     mimeData->setText(typeName);
 
+    //Initiate the drag operation
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(icon.pixmap(40,40));
@@ -312,16 +324,22 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
 }
 
 
+//! @brief Initializes drag operation to workspace from a tree widget item
+//! @param item Tree widget item
+//! @param dummy Does nothing (must be there due to signal-slot parameter mataching)
 void LibraryWidget::initializeDrag(QTreeWidgetItem *item, int dummy)
 {
-    if(!mTreeItemToContentsMap.contains(item)) return;
+    if(!mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 
+    //Fetch type name and icon from component in the contents tree
     QString typeName = mTreeItemToContentsMap.find(item).value()->getTypeName();
     QIcon icon = mTreeItemToContentsMap.find(item).value()->getIcon(mGfxType);
 
+    //Create the mimedata (text with type name)
     QMimeData *mimeData = new QMimeData;
     mimeData->setText(typeName);
 
+    //Initiate the drag operation
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(icon.pixmap(40,40));
@@ -330,78 +348,47 @@ void LibraryWidget::initializeDrag(QTreeWidgetItem *item, int dummy)
 }
 
 
-
-
-//! @brief Adds a library to the library widget.
-//! @param libDir is the library directory.
-//! @param parentLib is the name of a possible parent library.
-//! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
-//! @see addLibrary()
-//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
+//! @brief Loads a component library from specified directory
+//! First loads DLL files, then XML. DLL files are not necessary if component is already loaded.
+//! @param libDir Directory to check
+//! @param external Used to indicate that the library is external (places contents under "External Libraries")
 void LibraryWidget::loadLibrary(QString libDir, bool external)
 {
-    if (libDir.isEmpty() == true)       //! @todo Do we need this check?
+    if (libDir.isEmpty() == true)       // Don't add empty folders to the library
         return;
-
-    //Get the name for the library to be set in the tree
-
-    if(external)
-        return;     //! @todo Fix so that this works too!
-//    if(external)
-//    {
-////        //*****Core Interaction*****
-
-////            // Load all .dll or .so files in specified folder
-////        HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-////        QDir libDirObject(libDir + "/");
-////        QStringList filters;
-////        #ifdef WIN32
-////            filters << "*.dll";
-////        #else
-////            filters << "*.so";
-////        #endif
-
-////        libDirObject.setNameFilters(filters);
-////        QStringList libList = libDirObject.entryList();
-////        for (int i = 0; i < libList.size(); ++i)
-////        {
-////            QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
-////            qDebug() << "Trying to load: " << filename << " in Core";
-////            pHopsanCore->loadExternalComponent(filename.toStdString());
-////        }
-////        //**************************
-
-////        //Check any core messages from external lib loading
-////        gpMainWindow->mpMessageWidget->checkMessages();
-
-////        addLibrary(libDir,QString("User defined libraries"));
-//    }
-
-
 
     //Create a QDir object that contains the info about the library directory
     QDir libDirObject(libDir);
-    //QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
-    libDirObject.setFilter(QDir::AllDirs);
-    QStringList subDirList = libDirObject.entryList();
-    subDirList.removeAll(".");
-    subDirList.removeAll("..");
-    subDirList.removeAll(".svn");
-    for(int i=0; i<subDirList.size(); ++i)
+    if(external)
     {
-        loadLibraryFolder(libDir+"/"+subDirList.at(i), mpContentsTree);
+        LibraryContentsTree *pExternalTree;
+        if(!mpContentsTree->findChild("External Libraries"))
+            pExternalTree = mpContentsTree->addChild("External Libraries");
+        else
+            pExternalTree = mpContentsTree->findChild("External Libraries");
+        loadLibraryFolder(libDir, pExternalTree);
+    }
+    else
+    {
+        libDirObject.setFilter(QDir::AllDirs);
+        QStringList subDirList = libDirObject.entryList();
+        subDirList.removeAll(".");
+        subDirList.removeAll("..");
+        subDirList.removeAll(".svn");
+        for(int i=0; i<subDirList.size(); ++i)
+        {
+            loadLibraryFolder(libDir+"/"+subDirList.at(i), mpContentsTree);
+        }
     }
 
-    update();
+    update();       //Redraw the library
 }
 
 
-//! Let the user to point out a library and adds it to the library widget.
-//! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
-//! @see addLibrary(QString libDir, QString parentLib)
-//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
-void LibraryWidget::loadUserDefinedLibrary(QString libDir)
+//! @brief Adds a new external library to Hopsan
+//! @param libDir Directory to add (empty = user selection)
+void LibraryWidget::addExternalLibrary(QString libDir)
 {
     QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
 
@@ -412,42 +399,59 @@ void LibraryWidget::loadUserDefinedLibrary(QString libDir)
                                                    QFileDialog::ShowDirsOnly
                                                    | QFileDialog::DontResolveSymlinks);
     }
-    if(!gConfig.hasUserLib(libDir))
+    if(!gConfig.hasUserLib(libDir))     //Check so that path does not already exist
     {
-        gConfig.addUserLib(libDir);
-        loadLibrary(libDir, true);
+        gConfig.addUserLib(libDir);     //Register new library in configuration
+        loadExternalLibrary(libDir);    //Load the library
     }
     else
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Library " + libDir + " is already loaded!");
     }
+
+
 }
 
+
+//! @brief Wrapper function that loads an external library
+//! @param libDir Directory to the library
+//! @todo Why do we need this?
+void LibraryWidget::loadExternalLibrary(QString libDir)
+{
+    loadLibrary(libDir, true);
+}
+
+
+//! @brief Recursive function that searches through subdirectories and adds components to the library contents tree
+//! @param libDir Current directory
+//! @param pParentTree Current contents tree node
 void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree)
 {
     QDir libDirObject(libDir);
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
-    if(pParentTree == 0)        // Create the actual tree (This one shall not be a node)
+
+        // Load DLL or SO files
+    QStringList filters;
+    #ifdef WIN32
+        filters << "*.dll";
+    #else
+        filters << "*.so";
+    #endif
+    libDirObject.setNameFilters(filters);
+    QStringList libList = libDirObject.entryList();
+    for (int i = 0; i < libList.size(); ++i)
     {
-        delete(mpContentsTree);         //Clear the tree and recreate it
-        mpContentsTree = new LibraryContentsTree();
-
-        //Append subnodes recursively
-        libDirObject.setFilter(QDir::AllDirs);
-        QStringList subDirList = libDirObject.entryList();
-        subDirList.removeAll(".");
-        subDirList.removeAll("..");
-        subDirList.removeAll(".svn");
-        for(int i=0; i<subDirList.size(); ++i)
-        {
-            loadLibraryFolder(libDir+"/"+subDirList.at(i), mpContentsTree);
-        }
-        return;
+        QString filename = libDir + "/" + libList.at(i);
+        qDebug() << "Trying to load: " << filename << " in Core";
+        mpCoreAccess->loadComponent(filename);
     }
+    gpMainWindow->mpMessageWidget->checkMessages();
 
-    //Create the node
-    LibraryContentsTree *pTree = pParentTree->addChild(libName);
+
+        // Load XML files and recursively load subfolders
+    LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
+    pTree->mLibDir = libDir;
 
     //Append subnodes recursively
     libDirObject.setFilter(QDir::AllDirs);
@@ -461,15 +465,14 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     }
 
     //Append components
-    QStringList filters;
     filters << "*.xml";                     //Create the name filter
     libDirObject.setFilter(QDir::NoFilter);
     libDirObject.setNameFilters(filters);   //Set the name filter
 
-    QStringList libList = libDirObject.entryList();    //Create a list with all name of the files in dir libDir
+    libList  = libDirObject.entryList();    //Create a list with all name of the files in dir libDir
     for (int i = 0; i < libList.size(); ++i)        //Iterate over the file names
     {
-        QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
+        QString filename = libDir + "/" + libList.at(i);
         QFile file(filename);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
         {
@@ -496,7 +499,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
             {
                 //Read appearance data from the caf xml file, begin with the first
                 QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement("modelobject"); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
-                pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
+                pAppearanceData->setBasePath(libDir + "/");
                 pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
             }
         }
@@ -538,6 +541,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
 }
 
 
+//! @brief Slot that sets view mode to single tree and redraws the library
 void LibraryWidget::setListView()
 {
     mViewMode=0;
@@ -545,6 +549,7 @@ void LibraryWidget::setListView()
 }
 
 
+//! @brief Slot that sets view mode to dual mode and redraws the library
 void LibraryWidget::setDualView()
 {
     mViewMode=1;
@@ -552,7 +557,55 @@ void LibraryWidget::setDualView()
 }
 
 
+void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    //Lookup and error checks
+    QTreeWidgetItem *pItem = mpTree->itemAt(mpTree->mapFromParent(event->pos()));
+    if(pItem == 0) return;
+    if(!mTreeItemToContentsTreeMap.contains(pItem)) return;
+    LibraryContentsTree *pTree = mTreeItemToContentsTreeMap.find(pItem).value();
+    if(pTree == 0) return;
 
+    QMenu menu;
+
+    QAction *pOpenContainingFolder;
+    if(pTree->mName != "External Libraries")
+    {
+        pOpenContainingFolder = menu.addAction("Open Containing Folder");
+    }
+
+    QAction *pUnloadLibraryFolder;
+    if(pItem->parent() != 0 && pItem->parent()->text(0) == "External Libraries")
+    {
+        pUnloadLibraryFolder = menu.addAction("Unload External Library");
+    }
+
+
+    //-- User interaction --//
+    QAction *pSelectedAction = menu.exec(mapToGlobal(event->pos()));
+    //----------------------//
+
+
+    if(pSelectedAction == pOpenContainingFolder)
+    {
+        QString path = QDir::toNativeSeparators(pTree->mLibDir);
+        QDesktopServices::openUrl(QUrl("file:///" + path));
+    }
+
+    if(pSelectedAction == pUnloadLibraryFolder)
+    {
+        gConfig.removeUserLib(pTree->mLibDir);
+        mpContentsTree->findChild("External Libraries")->removeChild(pTree->mName);
+        update();
+    }
+
+    QWidget::contextMenuEvent(event);
+}
+
+
+//! @brief Constructor for library list widget
+//! This is the box with icons which is used in dual view mode
+//! @param parent Pointer to parent (library widget)
 LibraryListWidget::LibraryListWidget(LibraryWidget *parent)
     : QListWidget(parent)
 {
@@ -561,10 +614,13 @@ LibraryListWidget::LibraryListWidget(LibraryWidget *parent)
     setSelectionRectVisible(false);
 }
 
+
+//! @brief Reimplementation of mouse move event
+//! Used to update the component name display field while hovering the icons.
+//! @param event Contains information about the event
 void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QListWidgetItem *tempItem = itemAt(event->pos());
-
     if(tempItem != 0)
     {
         QString componentName;
@@ -575,134 +631,47 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
         mpLibraryWidget->mpComponentNameField->setFont(QFont(mpLibraryWidget->mpComponentNameField->font().family(), min(10.0, .9*mpLibraryWidget->width()/(0.615*componentName.size()))));
         mpLibraryWidget->mpComponentNameField->setText(componentName);
     }
-
     QListWidget::mouseMoveEvent(event);
 }
 
 
-class LibraryComponent;
-
-//! @brief This function retrieves the appearance data given the TypeName
+//! @brief Retrieves the appearance data for a given type name.
+//! @param componentType Type name of the component
 GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
 {
     return mpContentsTree->findComponent(componentType)->getAppearanceData();
 }
 
-//! @brief This function retrieves the appearance data given a display name
-//! @todo This will mean trouble if two components have the same display name
-GUIModelObjectAppearance *LibraryWidget::getAppearanceDataByDisplayName(QString displayName)
-{
-    return 0;//return getAppearanceData(mName2TypeMap.value(displayName));
-}
 
-
+//! @brief Selects graphics type to be used in library (iso or user).
 void LibraryWidget::setGfxType(graphicsType gfxType)
 {
     mGfxType = gfxType;
-    update();
+    update();       //Redraw the library
 }
 
 
-//void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
-//{
-//    //! @todo maybe try to do this in some not so cpu needing way (setting white backround for all objects VERY often when mouse move)
-//    QList<LibraryContentItem*> itemlist =  mLibraryContentItemPtrsMap.values();
-//    QList<LibraryContentItem*>::iterator it = itemlist.begin();
-//    for( ; it != itemlist.end(); ++it )
-//    {
-//        (*it)->setBackgroundColor(QColor("white"));
-//        (*it)->setSelected(false);
-//    }
-//    mpComponentNameField->setText("");
-//    gpMainWindow->mpHelpPopup->hide();
-//    QWidget::mouseMoveEvent(event);
-//}
-
-
-
-
-
-//LibraryTreeWidget::LibraryTreeWidget(LibraryWidget *parent)
-//        : QTreeWidget(parent)
-//{
-//    mpParentLibraryWidget = parent;
-//}
-
-
-
-//void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
-//{
-//    QTreeWidget::contextMenuEvent(event);
-
-
-//    QMenu menu;
-
-//    QAction *loadAction;
-//    QAction *unloadAction = new QAction(this);
-//    loadAction = menu.addAction(QString("Load External Library"));
-
-
-//        //! @todo This is an ugly check to make sure the right clicked object is a library with contents
-//    if( (this->currentItem() != 0) && (this->currentItem()->parent() != 0) )
-//    {
-//        // This will check if the library is a user library (which can be removed)
-//        if(mpParentLibraryWidget->mLibraryContentPtrsMap.find(QString(this->currentItem()->parent()->text(0) + this->currentItem()->text(0))).value()->mIsUserLib)
-//        {
-//            unloadAction = menu.addAction(QString("Unload Library \"" + this->currentItem()->text(0) + "\""));
-//        }
-//    }
-
-
-//    QCursor *cursor;
-//    QAction *selectedAction = menu.exec(cursor->pos());
-
-//    if ((selectedAction == unloadAction) && (unloadAction != 0))
-//    {
-//        QMessageBox::StandardButton reply;
-//        reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));
-//        qDebug() << "Trying to remove " << this->currentItem()->text(0);
-////        for(int i=0; i<mpParentLibraryWidget->mpParentMainWindow->mUserLibs.size(); ++i)
-////        {
-////            if(mpParentLibraryWidget->mpParentMainWindow->mUserLibs.at(i).endsWith("/"+this->currentItem()->text(0)))
-////            {
-////                qDebug() << "Removing at " << i;
-////                mpParentLibraryWidget->mpParentMainWindow->mUserLibs.removeAt(i);
-////                --i;
-////            }
-////        }
-//        gConfig.removeUserLib(this->currentItem()->toolTip(0));
-//    }
-//    else if (selectedAction == loadAction)
-//    {
-//        this->mpParentLibraryWidget->addLibrary();
-//    }
-//}
-
-
-
+//! @brief Constructor for a library contents tree node.
+//! @param name Name of the node (empty for top node, which is never displayed)
 LibraryContentsTree::LibraryContentsTree(QString name)
 {
     mName = name;
 }
 
+
+//! @brief Returns whether or not a tree node is empty (contains no child nodes and no components)
 bool LibraryContentsTree::isEmpty()
 {
     return (mChildNodesPtrs.isEmpty() && mComponentPtrs.isEmpty());
 }
 
-bool LibraryContentsTree::hasChild(QString name)
-{
-    for(int i=0; i<mChildNodesPtrs.size(); ++i)
-    {
-        if(mChildNodesPtrs.at(i)->mName == name)
-            return true;
-    }
-    return false;
-}
 
+//! @brief Adds a new child node to a node.
+//! @param name Name of new child node
+//! @returns Pointer to the new child node
 LibraryContentsTree *LibraryContentsTree::addChild(QString name)
 {
-    if(!hasChild(name))
+    if(!findChild(name))
     {
         LibraryContentsTree *pNewChild = new LibraryContentsTree(name);
         mChildNodesPtrs.append(pNewChild);
@@ -711,26 +680,37 @@ LibraryContentsTree *LibraryContentsTree::addChild(QString name)
     return 0;
 }
 
-
-//! @todo This is not good, because several tree nodes should be able to have the same name
-LibraryContentsTree *LibraryContentsTree::findChild(QString name)
+//! @brief Removes specified child node from the node
+//! @param name Name of node to remove
+bool LibraryContentsTree::removeChild(QString name)
 {
-    if(mName == name)
-        return this;
-
-    LibraryContentsTree *retval;
     for(int i=0; i<mChildNodesPtrs.size(); ++i)
     {
-        retval = mChildNodesPtrs.at(i)->findChild(name);
-        if(retval != 0)
+        if(mChildNodesPtrs.at(i)->mName == name)
         {
-            return retval;
+            mChildNodesPtrs.remove(i);
+            return true;
         }
+    }
+    return false;       //Not found
+}
+
+//! @brief Returns a pointer to sub node with specified name, or zero if it does not exist.
+//! @param name Name to look for
+LibraryContentsTree *LibraryContentsTree::findChild(QString name)
+{
+    for(int i=0; i<mChildNodesPtrs.size(); ++i)
+    {
+        if(mChildNodesPtrs.at(i)->mName == name)
+            return mChildNodesPtrs.at(i);
     }
     return 0;
 }
 
 
+//! @brief Adds a new component to a node from an appearance data object.
+//! @param pAppearanceData Appearance data object to use
+//! @returns Pointer to the new component
 LibraryComponent *LibraryContentsTree::addComponent(GUIModelObjectAppearance *pAppearanceData)
 {
     LibraryComponent *pNewComponent = new LibraryComponent(pAppearanceData);
@@ -739,9 +719,11 @@ LibraryComponent *LibraryContentsTree::addComponent(GUIModelObjectAppearance *pA
 }
 
 
+//! @brief Recursively searches the tree to find component with specified typename.
+//! @param typeName Type name to look for
+//! @returns Pointer to the component, or zero if not found.
 LibraryComponent *LibraryContentsTree::findComponent(QString typeName)
 {
-    LibraryContentsTree *retval;
     for(int i=0; i<mComponentPtrs.size(); ++i)
     {
         if(mComponentPtrs.at(i)->getTypeName() == typeName)
@@ -756,38 +738,57 @@ LibraryComponent *LibraryContentsTree::findComponent(QString typeName)
     return 0;
 }
 
+
+//! @brief Constructor for library component class
+//! @param pAppearanceData Pointere to appearance data object that is used
 LibraryComponent::LibraryComponent(GUIModelObjectAppearance *pAppearanceData)
 {
     mpAppearanceData = pAppearanceData;
-}
 
-
-QIcon LibraryComponent::getIcon(graphicsType gfxType)
-{
-    QIcon icon;
-    QString iconPath = mpAppearanceData->getFullAvailableIconPath(gfxType);
+    //Load and store component icon
+    QString iconPath = mpAppearanceData->getFullAvailableIconPath(USERGRAPHICS);
     QFile iconFile(iconPath);
     if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
     {
         iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
-    icon.addFile(iconPath,QSize(55,55));
-    return icon;
+    mUserIcon.addFile(iconPath,QSize(55,55));
+    iconPath = mpAppearanceData->getFullAvailableIconPath(ISOGRAPHICS);
+    iconFile.setFileName(iconPath);
+    if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
+    {
+        iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
+    }
+    mIsoIcon.addFile(iconPath,QSize(55,55));
 }
 
 
+//! @brief Returns the component's icon.
+//! @param graphicsType Graphics type to use (iso or user)
+QIcon LibraryComponent::getIcon(graphicsType gfxType)
+{
+    if(gfxType == USERGRAPHICS)
+        return mUserIcon;
+    else
+        return mIsoIcon;
+}
+
+
+//! @brief Returns the name of the component.
 QString LibraryComponent::getName()
 {
     return mpAppearanceData->getNonEmptyName();
 }
 
 
+//! @brief Returns the type name of the component.
 QString LibraryComponent::getTypeName()
 {
     return mpAppearanceData->getTypeName();
 }
 
 
+//! @brief Returns a pointer to the appearance data object used by component.
 GUIModelObjectAppearance *LibraryComponent::getAppearanceData()
 {
     return mpAppearanceData;

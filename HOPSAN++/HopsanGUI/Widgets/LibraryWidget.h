@@ -96,8 +96,6 @@ class LibraryWidget : public QWidget
     Q_OBJECT
 
     friend class LibraryListWidget;
-    friend class LibraryTreeWidget;
-    friend class MainWindow;
 
 public:
     //Member functions
@@ -106,19 +104,22 @@ public:
     void loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
     void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
     void loadLibrary(QString libDir, bool external = false);
+    void loadExternalLibrary(QString libDir);
     void loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree=0);
 
     GUIModelObjectAppearance *getAppearanceData(QString componentType);
-    GUIModelObjectAppearance *getAppearanceDataByDisplayName(QString displayName);
     QSize sizeHint() const;
 
     graphicsType mGfxType;
 
 public slots:
-    void loadUserDefinedLibrary(QString libDir = QString());
+    void addExternalLibrary(QString libDir = QString());
     void setGfxType(graphicsType gfxType);
     void setListView();
     void setDualView();
+
+protected:
+    virtual void contextMenuEvent(QContextMenuEvent *event);
 
 private slots:
     void showLib(QTreeWidgetItem * item, int column);
@@ -133,11 +134,13 @@ private:
     LibraryListWidget *mpList;
     QToolButton *mpTreeViewButton;
     QToolButton *mpDualViewButton;
+    QToolButton *mpLoadExternalButton;
     QGridLayout *mpGrid;
     int mViewMode;
     CoreLibraryAccess *mpCoreAccess;
     QMap<QListWidgetItem *, LibraryComponent *> mListItemToContentsMap;
     QMap<QTreeWidgetItem *, LibraryComponent *> mTreeItemToContentsMap;
+    QMap<QTreeWidgetItem *, LibraryContentsTree *> mTreeItemToContentsTreeMap;
 };
 
 
@@ -152,17 +155,6 @@ private:
     LibraryWidget *mpLibraryWidget;
 };
 
-//class LibraryTreeWidget : public QTreeWidget
-//{
-//public:
-//    LibraryTreeWidget(LibraryWidget *parent = 0);
-//    LibraryWidget *mpParentLibraryWidget;
-
-//protected:
-//    virtual void contextMenuEvent(QContextMenuEvent *);
-//};
-
-
 
 //! @note New classes
 
@@ -172,11 +164,13 @@ public:
     LibraryContentsTree(QString name = QString());
     bool isEmpty();
     LibraryContentsTree *addChild(QString name);
-    bool hasChild(QString name);
+    bool removeChild(QString name);
     LibraryContentsTree *findChild(QString name);
     LibraryComponent *addComponent(GUIModelObjectAppearance *pAppearanceData);
     LibraryComponent *findComponent(QString typeName);
+
     QString mName;
+    QString mLibDir;
     QVector<LibraryContentsTree *> mChildNodesPtrs;
     QVector<LibraryComponent *> mComponentPtrs;
 };
@@ -193,6 +187,8 @@ public:
 
 private:
     GUIModelObjectAppearance *mpAppearanceData;
+    QIcon mUserIcon;
+    QIcon mIsoIcon;
 };
 
 #endif // LIBRARYWIDGET_H

@@ -187,38 +187,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->loadLibrary(componentPath);
     for(int i=0; i<gConfig.getUserLibs().size(); ++i)
     {
-        mpLibrary->loadUserDefinedLibrary(gConfig.getUserLibs().at(i));
+        mpLibrary->loadExternalLibrary(gConfig.getUserLibs().at(i));
     }
-
-    //mpLibrary->addEmptyLibrary("User defined libraries");
-    //for(int i=0; i<gConfig.getUserLibs().size(); ++i)
-    //{
-//        mpLibrary->addExternalLibrary(gConfig.getUserLibs().at(i));
-//    }
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Real-time");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "benchmarking");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "Subsystem");
-//    mpLibrary->addEmptyLibrary("Signal"/*, "", "", QString(ICONPATH) + "signal.png"*/);
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Sources & Sinks","Signal");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Arithmetics","Signal");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Non-Linearities","Signal");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Filters","Signal");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Logic","Signal");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
-//    mpLibrary->addEmptyLibrary("Mechanic"/*, "", "", ":graphics/splash2.svg"*/);
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sources","Mechanic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Linear Inertias","Mechanic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Rotating Inertias","Mechanic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Springs & Dampers","Mechanic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "mechanic/Sensors","Mechanic");
-//    mpLibrary->addEmptyLibrary("Hydraulic"/*, "", "", QString(ICONPATH) + "hydraulics.png"*/);
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Sources & Sinks","Hydraulic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/restrictors","Hydraulic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Volumes & Lines","Hydraulic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Linear Actuators","Hydraulic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
-//    mpLibrary->addLibrary(gExecPath + QString(COMPONENTPATH) + "hydraulic/Pumps & Motors","Hydraulic");
 
     //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
@@ -459,7 +429,7 @@ void MainWindow::createActions()
 
     loadLibsAction = new QAction(this);
     loadLibsAction->setText("Load Libraries");
-    connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(loadUserDefinedLibrary()));
+    connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addExternalLibrary()));
 
     propertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
     propertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");

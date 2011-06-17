@@ -100,7 +100,6 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mpLayout->addWidget(mpShowInfoMessagesButton,1,3,1,1);
     mpLayout->addWidget(mpShowDebugMessagesButton,1,4,1,1);
     mpLayout->addWidget(mpGroupByTagCheckBox, 1,5,1,1);
-
     mpLayout->setContentsMargins(4,4,4,4);
 
     this->setLayout(mpLayout);

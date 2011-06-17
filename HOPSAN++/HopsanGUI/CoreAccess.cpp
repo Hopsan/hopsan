@@ -42,6 +42,12 @@ bool CoreLibraryAccess::hasComponent(QString componentName)
 }
 
 
+bool CoreLibraryAccess::loadComponent(QString fileName)
+{
+    return HopsanEssentials::getInstance()->loadExternalComponent(fileName.toStdString());
+}
+
+
 size_t CoreMessagesAccess::getNumberOfMessages()
 {
     return HopsanEssentials::getInstance()->checkMessage();
