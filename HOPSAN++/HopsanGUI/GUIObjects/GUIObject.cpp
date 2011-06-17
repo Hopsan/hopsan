@@ -145,12 +145,12 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not (it is not selectable during creation of connector)
 
         //Store old positions for all components, in case more than one is selected
+    mOldPos = this->pos();  //Make sure current objects oldpos is changed (it may not be selected before being clicked)
     if(event->button() == Qt::LeftButton)
     {
         for(int i = 0; i < mpParentContainerObject->mSelectedGUIModelObjectsList.size(); ++i)
         {
             mpParentContainerObject->mSelectedGUIModelObjectsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIModelObjectsList[i]->pos();
-
         }
         for(int i = 0; i < mpParentContainerObject->mSelectedGUIWidgetsList.size(); ++i)
         {
