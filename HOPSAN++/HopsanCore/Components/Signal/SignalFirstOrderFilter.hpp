@@ -47,10 +47,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalFirstOrderFilter("Filter");
+            return new SignalFirstOrderFilter();
         }
 
-        SignalFirstOrderFilter(const std::string name) : ComponentSignal(name)
+        SignalFirstOrderFilter() : ComponentSignal()
         {
             k = 1;
             min = -1.5E+300;

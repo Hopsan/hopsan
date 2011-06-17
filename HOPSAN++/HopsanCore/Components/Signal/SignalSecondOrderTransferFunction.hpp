@@ -47,10 +47,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSecondOrderTransferFunction("TransferFunction");
+            return new SignalSecondOrderTransferFunction();
         }
 
-        SignalSecondOrderTransferFunction(const std::string name) : ComponentSignal(name)
+        SignalSecondOrderTransferFunction() : ComponentSignal()
         {
 
             a1 = 1;
@@ -63,9 +63,9 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("a_1", "First numinator coefficient", "[-]", a1);
-            registerParameter("a_2", "Second denominator coefficient", "[-]", a2);
-            registerParameter("a_3", "Third denominator coefficient", "[-]", a3);
+            registerParameter("a_1", "First numerator coefficient", "[-]", a1);
+            registerParameter("a_2", "Second numerator coefficient", "[-]", a2);
+            registerParameter("a_3", "Third numerator coefficient", "[-]", a3);
             registerParameter("b_1", "First denominator coefficient", "[-]", b1);
             registerParameter("b_2", "Second denominator coefficient", "[-]", b2);
             registerParameter("b_3", "Third denominator coefficient", "[-]", b3);
