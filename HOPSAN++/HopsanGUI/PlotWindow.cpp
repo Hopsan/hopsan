@@ -637,9 +637,9 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
 //! @param index Index of tab to close
 void PlotTabWidget::closePlotTab(int index)
 {
-    PlotTab *pCurrentTab = mpParentPlotWindow->getCurrentPlotTab();
-    pCurrentTab->close();
-    delete(pCurrentTab);
+    PlotTab *theTab = getTab(i);
+    theTab->close();
+    delete(theTab);
 }
 
 
