@@ -1201,7 +1201,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     double yOffset = newCenter.y() - oldCenter.y();
 
         //Paste components
-    QDomElement objectElement = copyRoot->firstChildElement("component");
+    QDomElement objectElement = copyRoot->firstChildElement("component"); //!< @todo not hardcoded
     while(!objectElement.isNull())
     {
         GUIModelObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
@@ -1235,6 +1235,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     }
 
         // Paste subsystems
+    //! @todo maybe this subsystem loop can be merged with components above somehow. Basically the same code is used now after some cleanup, That way we could  have one loop for guimodelobjects, one for connector and after some cleanup one for widgets
     QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
     while (!systemElement.isNull())
     {
