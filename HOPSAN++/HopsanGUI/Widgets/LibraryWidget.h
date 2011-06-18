@@ -120,6 +120,7 @@ public slots:
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
     void showLib(QTreeWidgetItem * item, int column);

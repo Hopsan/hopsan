@@ -337,6 +337,8 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
     drag->setPixmap(icon.pixmap(40,40));
     drag->setHotSpot(QPoint(20, 20));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+    gpMainWindow->mpHelpPopup->hide();
 }
 
 
@@ -621,6 +623,14 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 }
 
 
+void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    gpMainWindow->mpHelpPopup->hide();
+
+    QWidget::mouseMoveEvent(event);
+}
+
+
 //! @brief Constructor for library list widget
 //! This is the box with icons which is used in dual view mode
 //! @param parent Pointer to parent (library widget)
@@ -641,6 +651,8 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *tempItem = itemAt(event->pos());
     if(tempItem != 0)
     {
+        gpMainWindow->showHelpPopupMessage("Add a component by dragging it to the workspace.");
+
         QString componentName;
         componentName = mpLibraryWidget->mListItemToContentsMap.find(tempItem).value()->getName();
 
@@ -657,8 +669,10 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
 //! @param componentType Type name of the component
 GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
 {
-    //! @todo need error handling here, if we can not find component type we should not crash, should return 0 ptr or something and at some point (probably not here) giva a error message
-    return mpContentsTree->findComponent(componentType)->getAppearanceData();
+    if(!mpContentsTree->findComponent(componentType))
+        return 0;
+    else
+        return mpContentsTree->findComponent(componentType)->getAppearanceData();
 }
 
 
