@@ -1035,6 +1035,8 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
 
     //Refresh the graphics view
     mpParentProjectTab->mpGraphicsView->updateViewPort();
+
+    emit connectorRemoved();
 }
 
 

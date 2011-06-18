@@ -637,7 +637,7 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
 //! @param index Index of tab to close
 void PlotTabWidget::closePlotTab(int index)
 {
-    PlotTab *theTab = getTab(i);
+    PlotTab *theTab = getTab(index);
     theTab->close();
     delete(theTab);
 }
@@ -1725,6 +1725,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
     connect(mpContainerObject->getGUIModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
     connect(mpContainerObject->getGUIModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
+    connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));
 }
 
 
@@ -2024,6 +2025,15 @@ void PlotCurve::removeMe()
     mpParentPlotTab->removeCurve(this);
 }
 
+
+//! @brief Slot that checks that the plotted port is still connected, and removes the curve if not
+void PlotCurve::removeIfNotConnected()
+{
+    if(!mpContainerObject->getGUIModelObject(mComponentName)->getPort(mPortName)->isConnected())
+    {
+        removeMe();
+    }
+}
 
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()

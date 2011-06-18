@@ -298,6 +298,7 @@ public slots:
     void updateToNewGeneration();
     void updatePlotInfoBox();
     void removeMe();
+    void removeIfNotConnected();
     void setPreviousGeneration();
     void setNextGeneration();
     void setAutoUpdate(bool value);

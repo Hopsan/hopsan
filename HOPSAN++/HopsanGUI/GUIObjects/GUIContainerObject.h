@@ -199,6 +199,7 @@ signals:
     void deleteSelected();
     void setAllGfxType(graphicsType);
     void componentChanged();
+    void connectorRemoved();
     void rotateSelectedObjectsRight();
     void rotateSelectedObjectsLeft();
     void flipSelectedObjectsHorizontal();
