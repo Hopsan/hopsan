@@ -130,15 +130,19 @@ void Port::loadStartValuesFromSimulation()
 //! @return The data value
 double Port::readNode(const size_t idx, const size_t /*portIdx*/)
 {
-    //! @todo ummm??, if this is a readport node and it is not connected then noone will ever read
-    //! @todo maybe use dummy nodes with 0 in for not connected ports
-    /*if((this->getPortType() == Port::READPORT) && (!this->isConnected()))      //Signal nodes don't have to be connected
+    //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
+    if(mIsConnected)
     {
+        std::stringstream ss;
+        ss << "Attempted to call readNode() for non-connected port \"" << this->getPortName() << "\".";
+        mpComponent->addErrorMessage(ss.str());
+        mpComponent->getSystemParent()->stop();     //Read attempt from non-connected port; abort simulation and give error message
         return 0;
-    }*/
-    //return mpNode->getData(idx);
-    //cout << "readNode: " << mpNode << endl;
-    return mpNode->mDataVector[idx];//Test for speed up
+    }
+    else
+    {
+        return mpNode->mDataVector[idx];
+    }
 }
 
 
@@ -147,13 +151,11 @@ double Port::readNode(const size_t idx, const size_t /*portIdx*/)
 //! @param [in] value The value of the data to read
 void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/)
 {
-    //! @todo ummm??, if this is a writeport and it is not connected then noone will ever write. Should the check may be done?
-    /*if((this->getPortType() == Port::WRITEPORT) && (!this->isConnected()))     //Signal nodes don't have to be connected
+    //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
+    if(mIsConnected)
     {
-        return;
-    }*/
-    mpNode->mDataVector[idx] = value;//Test for speed up
-    //mpNode->setData(idx, value);
+        mpNode->mDataVector[idx] = value;       //Write to node if there is a node to write to
+    }
 }
 
 
