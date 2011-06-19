@@ -1017,17 +1017,20 @@ void GUIConnector::determineAppearance()
     QString startPortType = mpStartPort->getPortType();
     QString endPortType = mpEndPort->getPortType();
 
+    qDebug() << "startPortType = " << startPortType;
+    qDebug() << "endPortType = " << endPortType;
+
     //We need to determine if we want arrows before we replace systemporttypes with internal port types
     //Add arrow to the connector if it is of signal type
     if (mpEndPort->getNodeType() == "NodeSignal")
     {
         if( !( (endPortType == "READPORT" || endPortType == "READMULTIPORT") && (startPortType == "READPORT" || startPortType == "READMULTIPORT") ) )    //No arrow if connecting two read ports
         {
-            if ( (endPortType == "READPORT") || (endPortType == "READMULTIPORT") )
+            if ( (endPortType == "READPORT") || (endPortType == "READMULTIPORT") || (startPortType == "WRITEPORT" && endPortType == "SYSTEMPORT"))
             {
                 this->getLastLine()->addEndArrow();
             }
-            else if ( (startPortType == "READPORT") || (startPortType == "READMULTIPORT") )
+            else if ( (startPortType == "READPORT") || (startPortType == "READMULTIPORT") || (startPortType == "SYSTEMPORT" && endPortType == "WRITEPORT"))
             {
                 //Assumes that the startport was a read port or multiread port
                 mpLines[0]->addStartArrow();
