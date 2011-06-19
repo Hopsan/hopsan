@@ -123,8 +123,6 @@ namespace hopsan {
         Node* mpNode;
 
         bool mConnectionRequired;
-        bool mIsConnected;
-
 
     };
 

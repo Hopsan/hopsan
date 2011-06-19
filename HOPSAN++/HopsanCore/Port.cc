@@ -131,7 +131,7 @@ void Port::loadStartValuesFromSimulation()
 double Port::readNode(const size_t idx, const size_t /*portIdx*/)
 {
     //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
-    if(mIsConnected)
+    if(!isConnected())
     {
         std::stringstream ss;
         ss << "Attempted to call readNode() for non-connected port \"" << this->getPortName() << "\".";
@@ -152,7 +152,7 @@ double Port::readNode(const size_t idx, const size_t /*portIdx*/)
 void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/)
 {
     //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
-    if(mIsConnected)
+    if(isConnected())
     {
         mpNode->mDataVector[idx] = value;       //Write to node if there is a node to write to
     }
