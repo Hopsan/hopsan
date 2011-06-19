@@ -39,7 +39,7 @@ namespace hopsan {
 
     private:
         SecondOrderFilter mFilter;
-        double a1, a2, a3, b1, b2, b3;
+        double a0, a1, a2, b0, b1, b2;
 
         double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
@@ -53,22 +53,22 @@ namespace hopsan {
         SignalSecondOrderTransferFunction() : ComponentSignal()
         {
 
+            a0 = 1;
             a1 = 1;
             a2 = 1;
-            a3 = 1;
+            b0 = 1;
             b1 = 1;
             b2 = 1;
-            b3 = 1;
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("a_1", "First numerator coefficient", "[-]", a1);
-            registerParameter("a_2", "Second numerator coefficient", "[-]", a2);
-            registerParameter("a_3", "Third numerator coefficient", "[-]", a3);
-            registerParameter("b_1", "First denominator coefficient", "[-]", b1);
-            registerParameter("b_2", "Second denominator coefficient", "[-]", b2);
-            registerParameter("b_3", "Third denominator coefficient", "[-]", b3);
+            registerParameter("a_0", "First numerator coefficient", "[-]", a0);
+            registerParameter("a_1", "Second numerator coefficient", "[-]", a1);
+            registerParameter("a_2", "Third numerator coefficient", "[-]", a2);
+            registerParameter("b_0", "First denominator coefficient", "[-]", b0);
+            registerParameter("b_1", "Second denominator coefficient", "[-]", b1);
+            registerParameter("b_2", "Third denominator coefficient", "[-]", b2);
         }
 
 
@@ -80,12 +80,12 @@ namespace hopsan {
             double num[3];
             double den[3];
 
-            num[0] = a1;
-            num[1] = a2;
-            num[2] = a3;
-            den[0] = b1;
-            den[1] = b2;
-            den[2] = b3;
+            num[0] = a0;
+            num[1] = a1;
+            num[2] = a2;
+            den[0] = b0;
+            den[1] = b1;
+            den[2] = b2;
 
             mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in));
 
