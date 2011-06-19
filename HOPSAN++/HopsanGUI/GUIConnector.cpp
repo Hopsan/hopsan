@@ -1048,11 +1048,11 @@ void GUIConnector::determineAppearance()
         endPortType = mpEndPort->getPortType(GUIPort::INTERNALPORTTYPE);
     }
 
-    if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") )
+    if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") || (startPortType == "POWERMULTIPORT") || (endPortType == "POWERMULTIPORT") )
     {
         mpGUIConnectorAppearance->setStyle(POWERCONNECTOR);
     }
-    else if( (startPortType == "READPORT") || (endPortType == "READPORT") )
+    else if( (startPortType == "READPORT") || (endPortType == "READPORT") || (startPortType == "READMULTIPORT") || (endPortType == "READMULTIPORT") )
     {
         mpGUIConnectorAppearance->setStyle(SIGNALCONNECTOR);
     }
