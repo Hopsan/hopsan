@@ -157,6 +157,7 @@
 #include "Mechanic/MechanicInterfaceQ.hpp"
 #include "Mechanic/MechanicRotationalInterfaceC.hpp"
 #include "Mechanic/MechanicRotationalInterfaceQ.hpp"
+#include "Mechanic/MechanicRackAndPinion.hpp"
 
 
 

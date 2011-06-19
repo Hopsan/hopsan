@@ -241,7 +241,8 @@ HEADERS += win32dll.h \
     CoreUtilities/ClassFactoryStatusCheck.hpp \
     ComponentUtilities/WhiteGaussianNoise.h \
     Components/Signal/SignalNoiseGenerator.hpp \
-    Components/Signal/SignalAdditiveNoise.hpp
+    Components/Signal/SignalAdditiveNoise.hpp \
+    Components/Mechanic/MechanicRackAndPinion.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
