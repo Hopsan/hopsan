@@ -30,6 +30,7 @@
 #include "GUIConnector.h"
 #include "loadObjects.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUISystem.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/UndoWidget.h"
 
@@ -107,6 +108,7 @@ void UndoStack::undoOneStep()
     QList<QDomElement> addedConnectorList;
     QList<QDomElement> addedObjectList;
     QList<QDomElement> addedcontainerportsList;
+    QList<QDomElement> addedsubsystemsList;
     QStringList movedObjects;
     QList<int> addedWidgetList;
     int dx=0, dy=0;
@@ -124,6 +126,11 @@ void UndoStack::undoOneStep()
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
             loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
         }
+        else if(stuffElement.attribute("what") == "deletedsubsystem")
+        {
+            QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            loadGUIModelObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
+        }
         else if(stuffElement.attribute("what") == "addedobject")
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
@@ -133,6 +140,11 @@ void UndoStack::undoOneStep()
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
             addedcontainerportsList.append(systemPortElement);
+        }
+        else if(stuffElement.attribute("what") == "addedsubsystem")
+        {
+            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            addedsubsystemsList.append(systemElement);
         }
         else if(stuffElement.attribute("what") == "deletedconnector")
         {
@@ -428,6 +440,28 @@ void UndoStack::undoOneStep()
         this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
     }
 
+        //Remove subsystems
+    for(it = addedsubsystemsList.begin(); it!=addedsubsystemsList.end(); ++it)
+    {
+        QString name = (*it).attribute(HMF_NAMETAG);
+        GUISystem *pItem = qobject_cast<GUISystem *>(mpParentContainerObject->getGUIModelObject(name));
+
+        //Update information about Subsystem in dom thread, in case it has changed since registered
+        QDomElement whatElement = (*it).parentNode().toElement();
+        QDomElement parentElement = (*it).parentNode().parentNode().toElement();
+        QDomElement stuffElement = appendDomElement(parentElement, "stuff");
+        stuffElement.setAttribute("what", "addedsubsystem");
+        pItem->saveToDomElement(stuffElement);
+        parentElement.removeChild(whatElement);
+
+        if(!mpParentContainerObject->hasGUIModelObject(name))
+        {
+            this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+            return;
+        }
+        this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
+    }
+
         //Move all connectors that are connected between two components that has moved (must be done after components have been moved)
     QList<GUIConnector *>::iterator itc;
     for(itc=mpParentContainerObject->mSubConnectorList.begin(); itc!=mpParentContainerObject->mSubConnectorList.end(); ++itc)
@@ -493,6 +527,17 @@ void UndoStack::redoOneStep()
             }
             this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
         }
+        else if(stuffElement.attribute("what") == "deletedsubsystem")
+        {
+            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            QString name = systemElement.attribute(HMF_NAMETAG);
+            if(!mpParentContainerObject->hasGUIModelObject(name))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
+            this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
+        }
         else if(stuffElement.attribute("what") == "addedobject")
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
@@ -502,6 +547,11 @@ void UndoStack::redoOneStep()
         {
             QDomElement systemPortElement = stuffElement.firstChildElement(HMF_SYSTEMPORTTAG);
             loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "addedsubsystem")
+        {
+            QDomElement systemElement = stuffElement.firstChildElement(HMF_SYSTEMTAG);
+            loadGUIModelObject(systemElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
         }
         else if(stuffElement.attribute("what") == "deletedconnector")
         {
@@ -788,6 +838,10 @@ void UndoStack::registerDeletedObject(GUIModelObject *item)
     {
         stuffElement.setAttribute("what", "deletedcontainerport");
     }
+    else if(item->getTypeName() == "Subsystem")
+    {
+        stuffElement.setAttribute("what", "deletedsubsystem");
+    }
     else
     {
         stuffElement.setAttribute("what", "deletedobject");
@@ -819,15 +873,24 @@ void UndoStack::registerAddedObject(GUIModelObject *item)
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    if(item->getTypeName() == "HopsanGUIContainerPort")
+    if(item->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
     {
         stuffElement.setAttribute("what", "addedcontainerport");
+    }
+    else if(item->getTypeName() == HOPSANGUISYSTEMTYPENAME)
+    {
+        stuffElement.setAttribute("what", "addedsubsystem");
     }
     else
     {
         stuffElement.setAttribute("what", "addedobject");
     }
     item->saveToDomElement(stuffElement);
+
+    qDebug() << "Before!";
+    qDebug() << mDomDocument.toString();
+    qDebug() << "After!";
+
     gpMainWindow->mpUndoWidget->refreshList();
 }
 

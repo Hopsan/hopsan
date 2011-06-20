@@ -1654,15 +1654,21 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
         {
             this->clearUndo();
             mUndoDisabled = true;
-            gpMainWindow->undoAction->setDisabled(true);
-            gpMainWindow->redoAction->setDisabled(true);
+            if(gpMainWindow->mpProjectTabs->getCurrentContainer() == this)      //Only modify main window actions if this is current container
+            {
+                gpMainWindow->undoAction->setDisabled(true);
+                gpMainWindow->redoAction->setDisabled(true);
+            }
         }
     }
     else
     {
         mUndoDisabled = false;
-        gpMainWindow->undoAction->setDisabled(false);
-        gpMainWindow->redoAction->setDisabled(false);
+        if(gpMainWindow->mpProjectTabs->getCurrentContainer() == this)      //Only modify main window actions if this is current container
+        {
+            gpMainWindow->undoAction->setDisabled(false);
+            gpMainWindow->redoAction->setDisabled(false);
+        }
     }
 }
 

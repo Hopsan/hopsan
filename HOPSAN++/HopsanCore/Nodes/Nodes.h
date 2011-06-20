@@ -98,7 +98,7 @@ namespace hopsan {
     class NodeMechanic :public Node
     {
     public:
-        enum {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, DATALENGTH};
+        enum {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, DATALENGTH, EQMASS};
         static Node* CreatorFunction() {return new NodeMechanic;}
 
     private:
@@ -109,6 +109,7 @@ namespace hopsan {
             setDataCharacteristics(POSITION, "Position", "m");
             setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "N", Node::NOPLOT);
             setDataCharacteristics(CHARIMP, "CharImp", "N s/m", Node::NOPLOT);
+            setDataCharacteristics(EQMASS, "Equivalent Mass", "kg");
         }
 
         virtual void setSpecialStartValues(Node *pNode)
@@ -132,7 +133,7 @@ namespace hopsan {
     class NodeMechanicRotational :public Node
     {
     public:
-        enum {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, DATALENGTH};
+        enum {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, EQINERTIA, DATALENGTH};
         static Node* CreatorFunction() {return new NodeMechanicRotational;}
 
     private:
@@ -143,6 +144,7 @@ namespace hopsan {
             setDataCharacteristics(ANGLE, "Angle", "rad");
             setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Nm", Node::NOPLOT);
             setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
+            setDataCharacteristics(EQINERTIA, "Equivalent Inertia", "kgm^2");
         }
 
         virtual void setSpecialStartValues(Node *pNode)
