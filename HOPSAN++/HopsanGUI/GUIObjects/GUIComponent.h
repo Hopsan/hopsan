@@ -44,12 +44,13 @@ public:
     GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
     ~GUIComponent();
 
+    void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     bool hasPowerPorts();
     QVector<QString> getParameterNames();
     QString getParameterUnit(QString name);
     QString getParameterDescription(QString name);
-    double getParameterValue(QString name);
-    QString getParameterValueTxt(QString name);
+    QString getParameterValue(QString name);
+//    QString getParameterValueTxt(QString name);
     bool setParameterValue(QString name, QString sysParName);
     QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);

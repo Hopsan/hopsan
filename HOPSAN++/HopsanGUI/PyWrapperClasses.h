@@ -122,7 +122,9 @@ class PyGUIObjectClassWrapper : public QObject
 public slots:
     double getParameter(GUIModelObject* o, const QString& parName)
     {
-        return o->getParameterValue(parName);
+        QString strParValue = o->getParameterValue(parName);
+
+        return strParValue.toDouble(); //! @todo This is not good if parameter is not double
     }
 
     void setParameter(GUIModelObject* o, const QString& parName, const double& value)
@@ -225,7 +227,8 @@ public slots:
     {
         if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasGUIModelObject(compName))
         {
-            return o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getParameterValue(parName);
+            QString strParValue = o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getParameterValue(parName);
+            return strParValue.toDouble(); //! @todo Not good if parameter not double
         }
         assert(false);
         return 0;

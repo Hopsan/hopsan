@@ -330,39 +330,11 @@ bool CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
 }
 
 
-bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, double value)
+bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString value)
 {
-    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
+    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value.toStdString());
 }
 
-bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString valueTxt)
-{
-    bool success = false;
-    bool isDbl;
-    //Check if the parameter is convertible to a double, if so assume that it is just a plain value that should be used
-    double valueDbl = valueTxt.toDouble(&isDbl);
-
-    if(!isDbl)     //Should be set/mapped to a system parameter
-    {
-        if(hasSystemParameter(valueTxt))
-        {
-            success = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), valueTxt.toStdString());
-        }
-        else    //User has written something illegal
-        {
-            //! @todo Make something better, like showing a warning box, if parameter is not ok. Maybe check all parameters before setting any of them.
-            MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
-            messageWidget->printGUIInfoMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(parameterName).append(QString("', putz. Try again!")));
-            qDebug() << "Inte okej!";
-        }
-    }
-    else
-    {
-        //The parameter is just a simple double with no mapping to System parameter
-        success = setParameter(componentName, parameterName, valueDbl);
-    }
-    return success;
-}
 
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
 {
@@ -461,45 +433,58 @@ QString CoreSystemAccess::createSubSystem(QString name)
     return QString::fromStdString(pTempComponentSystem->getName());
 }
 
+void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+{
+    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    for(size_t i=0; i<parameterNames.size(); ++i)
+    {
+        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
+        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
+        qUnits.push_back(QString::fromStdString(units[i]));
+        qTypes.push_back(QString::fromStdString(types[i]));
+    }
+}
+
 QVector<QString> CoreSystemAccess::getParameterNames(QString componentName)
 {
-    QVector<QString> names;
-    //*****Core Interaction*****
-    //First check if subcomponent can be found
-    //! @todo this is temporary hack to avoid trying to find ourselfs when access through GUIsystem
-    if (mpCoreComponentSystem->haveSubComponent(componentName.toStdString()))
+    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits;
+    for(size_t i=0; i<parameterNames.size(); ++i)
     {
-        vector<string> core_names = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterNames();
-        vector<string>::iterator nit;
-        //Copy and cast to qt datatypes
-        for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
-        {
-            names.push_back(QString::fromStdString(*nit));
-        }
-        //**************************
+        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
+        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
+        qUnits.push_back(QString::fromStdString(units[i]));
     }
-
-    return names;
+    return qParameterNames;
 }
 
 QString CoreSystemAccess::getParameterUnit(QString componentName, QString parameterName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterUnit(parameterName.toStdString()));
+    return QString("");
 }
 
 QString CoreSystemAccess::getParameterDescription(QString componentName, QString parameterName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterDescription(parameterName.toStdString()));
+    return QString("");
 }
 
-double CoreSystemAccess::getParameterValue(QString componentName, QString parameterName)
+QString CoreSystemAccess::getParameterValue(QString componentName, QString parameterName)
 {
-    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
-}
-
-QString CoreSystemAccess::getParameterValueTxt(QString componentName, QString parameterName)
-{
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValueTxt(parameterName.toStdString()));
+    QString parameterValue = "";
+    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    for(size_t i=0; i<parameterNames.size(); ++i)
+    {
+        if(parameterNames[i] == parameterName.toStdString())
+        {
+            parameterValue = QString::fromStdString(parameterValues[i]);
+        }
+    }
+    return parameterValue;
 }
 
 double CoreSystemAccess::getDefaultParameterValue(QString componentName, QString parameterName)
@@ -644,44 +629,71 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
 
 
 
-bool CoreSystemAccess::setSystemParameter(QString name, double value)
+bool CoreSystemAccess::setSystemParameter(QString name, QString value)
 {
+    bool success = false;
     //Makes sure name is not a number and not empty
     bool isDbl;
     name.toDouble(&isDbl);
     if(isDbl || name.isEmpty())
     {
-        return false;
+        success += false;
     }
     else
     {
-        return mpCoreComponentSystem->getSystemParameters().add(name.toStdString(), value);
+        if(!(success += mpCoreComponentSystem->getSystemParameters().setParameterValue(name.toStdString(), value.toStdString())))
+        {
+            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString());
+        }
     }
+    return success;
 }
 
 
-double CoreSystemAccess::getSystemParameter(QString name)
+QString CoreSystemAccess::getSystemParameter(QString name)
 {
-    double value;
-    mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), value);
-    return value;
+    std::string value;
+    //mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), value);
+    return QString::fromStdString(value);
 }
 
 
 bool CoreSystemAccess::hasSystemParameter(QString name)
 {
-    double dummy;
-    return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), dummy);
+    std::string dummy;
+    return true;//mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), dummy);
 }
 
 
 void CoreSystemAccess::removeSystemParameter(QString name)
 {
-    mpCoreComponentSystem->getSystemParameters().erase(name.toStdString());
+    mpCoreComponentSystem->getSystemParameters().deleteParameter(name.toStdString());
 }
 
 
-QMap<std::string, double> CoreSystemAccess::getSystemParametersMap()
+QMap<std::string, std::string> CoreSystemAccess::getSystemParametersMap()
 {
-    return QMap<std::string, double>(mpCoreComponentSystem->getSystemParameters().getSystemParameterMap());
+    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    mpCoreComponentSystem->getSystemParameters().getParameters(parameterNames, parameterValues, descriptions, units, types);
+    QMap<std::string, std::string> tmpMap;
+    for(size_t i=0; i < parameterNames.size(); ++i)
+    {
+        tmpMap.insert(parameterNames[i], parameterValues[i]);
+    }
+    return tmpMap;//QMap<std::string, std::string>()(mpCoreComponentSystem->getSystemParameters().getSystemParameterMap());
+}
+
+
+void CoreSystemAccess::getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+{
+    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    mpCoreComponentSystem->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    for(size_t i=0; i<parameterNames.size(); ++i)
+    {
+        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
+        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
+        qUnits.push_back(QString::fromStdString(units[i]));
+        qTypes.push_back(QString::fromStdString(types[i]));
+    }
 }

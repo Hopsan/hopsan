@@ -205,14 +205,25 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
         favoriteElement.setAttribute("dataunit", (*itf).at(3));
     }
 
-    QMap<std::string, double>::iterator it;
-    QMap<std::string, double> parMap = mpCoreSystemAccess->getSystemParametersMap();
-    for(it = parMap.begin(); it != parMap.end(); ++it)
+    QVector<QString> parameterNames, parameterValues, descriptions, units, types;
+    mpCoreSystemAccess->getSystemParameters(parameterNames, parameterValues, descriptions, units, types);
+    for(size_t i=0; i<parameterNames.size(); ++i)
     {
         QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
-        mappedElement.setAttribute("name", QString(it.key().c_str()));
-        mappedElement.setAttribute("value", it.value());
+        mappedElement.setAttribute("name", parameterNames[i]);
+        mappedElement.setAttribute("value", parameterValues[i]);
+        mappedElement.setAttribute("type", types[i]);
     }
+
+
+//    QMap<std::string, std::string>::iterator it;
+//    QMap<std::string, std::string> parMap = mpCoreSystemAccess->getSystemParametersMap();
+//    for(it = parMap.begin(); it != parMap.end(); ++it)
+//    {
+//        QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
+//        mappedElement.setAttribute("name", QString(it.key().c_str()));
+//        mappedElement.setAttribute("value", QString(it.value().c_str()));
+//    }
 
     QMap<QString, QStringList>::iterator ita;
     for(ita=mPlotAliasMap.begin(); ita!=mPlotAliasMap.end(); ++ita)

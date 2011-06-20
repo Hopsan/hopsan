@@ -43,256 +43,259 @@ using namespace std;
 using namespace hopsan;
 
 
+//<<<<<<< .mine
+//=======
 
-//! @brief Adds a new System parameter to the system or change the vaÃ¶lue of an existing one
-//!
-//! A parameter is added but has no ponters to values.
-//! Or if there exist a parameter with this name the value is changed and the ponters are unchanged.
-//! The parameter is then mapped to one or more doubles with the mapParameter method.
-//! @param[in] sysParName is the name of the new System parameter.
-//! @param[in] value is the value of the System parameter.
-//! @see mapParameter(std::string sysParName, double *mappedValue)
-//! @return true if a it went OK, false otherwise
-bool SystemParameters::add(std::string sysParName, double value)
-{
-    //This is a QD for handling negative values...
-    if(sysParName.at(0) == '-')
-        return false;
-    //This is a QD for handling negative values...
-
-    if(mSystemParameters.count(sysParName) > 0)
-    //sysParName is already present, change its value
-    {
-        mSystemParameters[sysParName].first = value;
-        update(sysParName);
-
-        //This is a QD for handling negative values...
-        std::ostringstream oss;
-        oss << "-" << sysParName;
-        std::string negSysParName = oss.str();
-        mSystemParameters[negSysParName].first = -value;
-        update(negSysParName);
-        //This is a QD for handling negative values...
-    }
-    else
-    //sysParName is not present, create a new one
-    {
-        SystemParameter sysPar;
-        sysPar.first = value;
-        mSystemParameters[sysParName] = sysPar;
-
-        //This is a QD for handling negative values...
-        std::ostringstream oss;
-        oss << "-" << sysParName;
-        std::string negSysParName = oss.str();
-        SystemParameter negSysPar;
-        negSysPar.first = -value;
-        mSystemParameters[negSysParName] = negSysPar;
-        //This is a QD for handling negative values...
-    }
-    return true;
-}
-
-//! @brief Read the value of System parameter
-//!
-//! @param[in] sysParName is the name of the new System parameter.
-//! @param[out] value is the value of the System parameter.
-//! @return true if a post with sysParName exsited, false otherwise
-bool SystemParameters::getValue(std::string sysParName, double &value)
-{
-//std::map<std::string, SystemParameter>::iterator it;
-//for(it = mSystemParameters.begin(); it != mSystemParameters.end(); ++it)
+////! @brief Adds a new System parameter to the system or change the vaÃ¶lue of an existing one
+////!
+////! A parameter is added but has no ponters to values.
+////! Or if there exist a parameter with this name the value is changed and the ponters are unchanged.
+////! The parameter is then mapped to one or more doubles with the mapParameter method.
+////! @param[in] sysParName is the name of the new System parameter.
+////! @param[in] value is the value of the System parameter.
+////! @see mapParameter(std::string sysParName, double *mappedValue)
+////! @return true if a it went OK, false otherwise
+//bool SystemParameters::add(std::string sysParName, double value)
 //{
-//    std::cout << it->first << mSystemParameters.count(sysParName) << std::endl;
+//    //This is a QD for handling negative values...
+//    if(sysParName.at(0) == '-')
+//        return false;
+//    //This is a QD for handling negative values...
+
+//    if(mSystemParameters.count(sysParName) > 0)
+//    //sysParName is already present, change its value
+//    {
+//        mSystemParameters[sysParName].first = value;
+//        update(sysParName);
+
+//        //This is a QD for handling negative values...
+//        std::ostringstream oss;
+//        oss << "-" << sysParName;
+//        std::string negSysParName = oss.str();
+//        mSystemParameters[negSysParName].first = -value;
+//        update(negSysParName);
+//        //This is a QD for handling negative values...
+//    }
+//    else
+//    //sysParName is not present, create a new one
+//    {
+//        SystemParameter sysPar;
+//        sysPar.first = value;
+//        mSystemParameters[sysParName] = sysPar;
+
+//        //This is a QD for handling negative values...
+//        std::ostringstream oss;
+//        oss << "-" << sysParName;
+//        std::string negSysParName = oss.str();
+//        SystemParameter negSysPar;
+//        negSysPar.first = -value;
+//        mSystemParameters[negSysParName] = negSysPar;
+//        //This is a QD for handling negative values...
+//    }
+//    return true;
 //}
-    if(mSystemParameters.count(sysParName))
-    {
-        value = mSystemParameters[sysParName].first;
-        return true;
-    }
-    else
-        return false;
-}
 
-//! @brief Get a map with System parameter names as keys and their values as values
-//!
-//! @return a map with keys: System parameter names, values: System parameter values
-std::map<std::string, double> SystemParameters::getSystemParameterMap()
-{
-    std::map<std::string, double> sysPar;
-    std::map<std::string, SystemParameter>::iterator map_it;
-    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-    {
-        //Create a new map with only the name and value (no pointers)
-        //This is a QD for handling negative values...
-        //Do not count if it start with '-' because then there is this special hack!
-        if(map_it->first.at(0) != '-')
-        //This is a QD for handling negative values...
-        {
-            sysPar[map_it->first] = map_it->second.first;
-        }
-    }
-    return sysPar;
-}
+////! @brief Read the value of System parameter
+////!
+////! @param[in] sysParName is the name of the new System parameter.
+////! @param[out] value is the value of the System parameter.
+////! @return true if a post with sysParName exsited, false otherwise
+//bool SystemParameters::getValue(std::string sysParName, double &value)
+//{
+////std::map<std::string, SystemParameter>::iterator it;
+////for(it = mSystemParameters.begin(); it != mSystemParameters.end(); ++it)
+////{
+////    std::cout << it->first << mSystemParameters.count(sysParName) << std::endl;
+////}
+//    if(mSystemParameters.count(sysParName))
+//    {
+//        value = mSystemParameters[sysParName].first;
+//        return true;
+//    }
+//    else
+//        return false;
+//}
 
-//! @brief Finds out if a double has a reference in the System parameters
-//!
-//! @param[in] mappedValue is a pointer to a double.
-//! @return the name of the System parameter which is mapped to the input, an empty std::string if its not.
-std::string SystemParameters::findOccurrence(double *mappedValue)
-{
-    std::string sysParName ="";
-    std::list<double*>::iterator list_it;
-    std::map<std::string, SystemParameter>::iterator map_it;
-    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-    {
-        //Go through all pointers to see if mappedValue are present somewhere
-        for(list_it = map_it->second.second.begin(); list_it != map_it->second.second.end(); ++list_it)
-        {
-            if(*list_it == mappedValue)
-            {
-                sysParName = map_it->first;
-            }
-        }
-    }
-    return sysParName;
-}
+////! @brief Get a map with System parameter names as keys and their values as values
+////!
+////! @return a map with keys: System parameter names, values: System parameter values
+//std::map<std::string, double> SystemParameters::getSystemParameterMap()
+//{
+//    std::map<std::string, double> sysPar;
+//    std::map<std::string, SystemParameter>::iterator map_it;
+//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+//    {
+//        //Create a new map with only the name and value (no pointers)
+//        //This is a QD for handling negative values...
+//        //Do not count if it start with '-' because then there is this special hack!
+//        if(map_it->first.at(0) != '-')
+//        //This is a QD for handling negative values...
+//        {
+//            sysPar[map_it->first] = map_it->second.first;
+//        }
+//    }
+//    return sysPar;
+//}
 
-//! @brief Delete a System parameter
-//!
-//! @param[in] sysParName the System parameter to be deleted.
-void SystemParameters::erase(std::string sysParName)
-{
-    mSystemParameters.erase(sysParName);
+////! @brief Finds out if a double has a reference in the System parameters
+////!
+////! @param[in] mappedValue is a pointer to a double.
+////! @return the name of the System parameter which is mapped to the input, an empty std::string if its not.
+//std::string SystemParameters::findOccurrence(double *mappedValue)
+//{
+//    std::string sysParName ="";
+//    std::list<double*>::iterator list_it;
+//    std::map<std::string, SystemParameter>::iterator map_it;
+//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+//    {
+//        //Go through all pointers to see if mappedValue are present somewhere
+//        for(list_it = map_it->second.second.begin(); list_it != map_it->second.second.end(); ++list_it)
+//        {
+//            if(*list_it == mappedValue)
+//            {
+//                sysParName = map_it->first;
+//            }
+//        }
+//    }
+//    return sysParName;
+//}
 
-    //This is a QD for handling negative values...
-    std::ostringstream oss;
-    oss << "-" << sysParName;
-    std::string negSysParName = oss.str();
-    mSystemParameters.erase(negSysParName);
-    //This is a QD for handling negative values...
-}
+////! @brief Delete a System parameter
+////!
+////! @param[in] sysParName the System parameter to be deleted.
+//void SystemParameters::erase(std::string sysParName)
+//{
+//    mSystemParameters.erase(sysParName);
 
-//! @brief Maps a double to a System parameter
-//!
-//! After this method has been ran the SystemParameter object have a pointer
-//! stored to the double and can write the System parameter value to it directly
-//! without the knoledge of the "double owner".
-//! If the sysParName does not exist in the SystemParameters nothing will happen.
-//!
-//! @param[in] sysParName is the name of the System parameter which should point to the double.
-//! @param[in] mappedValue is a pointer to a double.
-//! @return true if a it went OK, false otherwise
-//! @see unMapParameter(std::string sysParName, double *mappedValue)
-bool SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
-{
-    bool success = false;
-    //If mappedValue is in the map somwhere else it is removed first
-    unMapParameter(mappedValue);
+//    //This is a QD for handling negative values...
+//    std::ostringstream oss;
+//    oss << "-" << sysParName;
+//    std::string negSysParName = oss.str();
+//    mSystemParameters.erase(negSysParName);
+//    //This is a QD for handling negative values...
+//}
 
-    std::map<std::string, SystemParameter>::iterator it;
-    it = mSystemParameters.find(sysParName);
-    //If the sysParName exists in the mappedValue is added, if not nothing happens
-    if(it != mSystemParameters.end())
-    {
-        it->second.second.push_back(mappedValue);
-        //the System parameter value is written to the mappedValue
-        *mappedValue = it->second.first;
-        success = true;
-    }
-    return success;
-}
+////! @brief Maps a double to a System parameter
+////!
+////! After this method has been ran the SystemParameter object have a pointer
+////! stored to the double and can write the System parameter value to it directly
+////! without the knoledge of the "double owner".
+////! If the sysParName does not exist in the SystemParameters nothing will happen.
+////!
+////! @param[in] sysParName is the name of the System parameter which should point to the double.
+////! @param[in] mappedValue is a pointer to a double.
+////! @return true if a it went OK, false otherwise
+////! @see unMapParameter(std::string sysParName, double *mappedValue)
+//bool SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
+//{
+//    bool success = false;
+//    //If mappedValue is in the map somwhere else it is removed first
+//    unMapParameter(mappedValue);
 
-//! @brief Unmaps a double from a System parameter
-//!
-//! This method removes the pointer to the mappedValue from the SystemParameters.
-//! After this is ran the double is free from the SystemParameters
-//!
-//! @param[in] sysParName is the name of the System parameter which should point to the double.
-//! @param[in] mappedValue is a pointer to a double.
-//! @see MapParameter(std::string sysParName, double *mappedValue)
-void SystemParameters::unMapParameter(std::string sysParName, double *mappedValue)
-{
-    std::list<double*>::iterator list_it, remove_it;
-    bool found = false;
-    //Go through all mapped values for the System parameter sysParName
-    for(list_it = mSystemParameters[sysParName].second.begin(); list_it !=mSystemParameters[sysParName].second.end(); ++list_it)
-    {
-        //If it is found it is saved to be removed
-        if(*list_it == mappedValue)
-        {
-            remove_it = list_it;
-            found = true;
-        }
-    }
-    if((mSystemParameters.count(sysParName)) && found)
-    {
-        //remove the occurance of the mappedValue
-        mSystemParameters[sysParName].second.erase(remove_it);
-    }
-}
+//    std::map<std::string, SystemParameter>::iterator it;
+//    it = mSystemParameters.find(sysParName);
+//    //If the sysParName exists in the mappedValue is added, if not nothing happens
+//    if(it != mSystemParameters.end())
+//    {
+//        it->second.second.push_back(mappedValue);
+//        //the System parameter value is written to the mappedValue
+//        *mappedValue = it->second.first;
+//        success = true;
+//    }
+//    return success;
+//}
 
-//! @brief Unmaps a double from a System parameter
-//!
-//! This method removes the pointer to the mappedValue from the SystemParameters.
-//! After this is ran the double is free from the SystemParameters
-//!
-//! @param[in] mappedValue is a pointer to a double.
-//! @see MapParameter(std::string sysParName, double *mappedValue)
-void SystemParameters::unMapParameter(double *mappedValue)
-{
-    std::map<std::string, SystemParameter>::iterator map_it;
-    //Go through all mapped values for all the System parameters
-    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-    {
-        //remove the pointer for the mappedValue in System parameters
-        unMapParameter(map_it->first, mappedValue);
-    }
-}
+////! @brief Unmaps a double from a System parameter
+////!
+////! This method removes the pointer to the mappedValue from the SystemParameters.
+////! After this is ran the double is free from the SystemParameters
+////!
+////! @param[in] sysParName is the name of the System parameter which should point to the double.
+////! @param[in] mappedValue is a pointer to a double.
+////! @see MapParameter(std::string sysParName, double *mappedValue)
+//void SystemParameters::unMapParameter(std::string sysParName, double *mappedValue)
+//{
+//    std::list<double*>::iterator list_it, remove_it;
+//    bool found = false;
+//    //Go through all mapped values for the System parameter sysParName
+//    for(list_it = mSystemParameters[sysParName].second.begin(); list_it !=mSystemParameters[sysParName].second.end(); ++list_it)
+//    {
+//        //If it is found it is saved to be removed
+//        if(*list_it == mappedValue)
+//        {
+//            remove_it = list_it;
+//            found = true;
+//        }
+//    }
+//    if((mSystemParameters.count(sysParName)) && found)
+//    {
+//        //remove the occurance of the mappedValue
+//        mSystemParameters[sysParName].second.erase(remove_it);
+//    }
+//}
 
-//! @brief Write the all System parameters values to the doubles that they points to.
-void SystemParameters::update()
-{
-    std::map<std::string, SystemParameter>::iterator map_it;
-    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-    {
-        //Write the System parameter value to all pointer addresses
-        update(map_it->first);
-    }
-}
+////! @brief Unmaps a double from a System parameter
+////!
+////! This method removes the pointer to the mappedValue from the SystemParameters.
+////! After this is ran the double is free from the SystemParameters
+////!
+////! @param[in] mappedValue is a pointer to a double.
+////! @see MapParameter(std::string sysParName, double *mappedValue)
+//void SystemParameters::unMapParameter(double *mappedValue)
+//{
+//    std::map<std::string, SystemParameter>::iterator map_it;
+//    //Go through all mapped values for all the System parameters
+//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+//    {
+//        //remove the pointer for the mappedValue in System parameters
+//        unMapParameter(map_it->first, mappedValue);
+//    }
+//}
 
-//! @brief Write the System parameter value to the doubles that sysParName points to.
-//!
-//! @param[in] sysParName the System parameter to update
-//! @return true if a it went OK, false otherwise
-bool SystemParameters::update(std::string sysParName)
-{
-    bool success = false;
-    std::list<double*>::iterator list_it;
-    if(mSystemParameters.count(sysParName) > 0)
-    {
-        for(list_it = mSystemParameters[sysParName].second.begin(); list_it != mSystemParameters[sysParName].second.end(); ++list_it)
-        {
-            //Write the System parameter value to all pointer addresses for sysParName
-            *(*list_it) = mSystemParameters[sysParName].first;
-        }
-        success = true;
-    }
-    return success;
-}
+////! @brief Write the all System parameters values to the doubles that they points to.
+//void SystemParameters::update()
+//{
+//    std::map<std::string, SystemParameter>::iterator map_it;
+//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+//    {
+//        //Write the System parameter value to all pointer addresses
+//        update(map_it->first);
+//    }
+//}
 
-
-//! @brief Get a reference to the System parameters
-//!
-//! Use this method to manipulate the System parameters, e.g. getSystemParameters().add("myNewSysPar", 42.0);
-//!
-//! @returns A reference to the System parameters
-SystemParameters &ComponentSystem::getSystemParameters()
-{
-    return this->mSystemParameters;
-}
+////! @brief Write the System parameter value to the doubles that sysParName points to.
+////!
+////! @param[in] sysParName the System parameter to update
+////! @return true if a it went OK, false otherwise
+//bool SystemParameters::update(std::string sysParName)
+//{
+//    bool success = false;
+//    std::list<double*>::iterator list_it;
+//    if(mSystemParameters.count(sysParName) > 0)
+//    {
+//        for(list_it = mSystemParameters[sysParName].second.begin(); list_it != mSystemParameters[sysParName].second.end(); ++list_it)
+//        {
+//            //Write the System parameter value to all pointer addresses for sysParName
+//            *(*list_it) = mSystemParameters[sysParName].first;
+//        }
+//        success = true;
+//    }
+//    return success;
+//}
 
 
+////! @brief Get a reference to the System parameters
+////!
+////! Use this method to manipulate the System parameters, e.g. getSystemParameters().add("myNewSysPar", 42.0);
+////!
+////! @returns A reference to the System parameters
+//SystemParameters &ComponentSystem::getSystemParameters()
+//{
+//    return this->mSystemParameters;
+//}
+
+
+//>>>>>>> .r2999
 void ComponentSystem::addComponents(vector<Component*> components)
 {
     std::vector<Component *>::iterator itx;
@@ -1943,11 +1946,13 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     loadStartValues();
 
     //Init
+    updateParameters();
     //Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
         if (mStop)
             break;
+        mComponentSignalptrs[s]->updateParameters();
 
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
@@ -1964,6 +1969,7 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     {
         if (mStop)
             break;
+        mComponentCptrs[c]->updateParameters();
 
         if (mComponentCptrs[c]->isComponentSystem())
         {
@@ -1980,6 +1986,7 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     {
         if (mStop)
             break;
+        mComponentQptrs[q]->updateParameters();
 
         if (mComponentQptrs[q]->isComponentSystem())
         {
@@ -2057,6 +2064,7 @@ void ComponentSystem::initializeComponentsOnly()
         }
     }
 }
+
 
 
 #ifdef USETBB

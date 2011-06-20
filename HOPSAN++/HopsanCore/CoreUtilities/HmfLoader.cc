@@ -171,7 +171,7 @@ void HmfLoader::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSys
             if (strcmp(pParam->name(), "parameter")==0)
             {
                 string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
-                double val = readDoubleAttribute(pParam, "value", 0);
+                string val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
 
                 pComp->setParameterValue(paramName, val);
             }

@@ -159,6 +159,13 @@ namespace hopsan {
             (*mpND_f2) = f2;
             (*mpND_x2) = x2;
             (*mpND_v2) = v2;
+
+            if((mTime>.5) && (mTime<.5001))
+            {
+                std::stringstream ss;
+                ss << "mTime: " << mTime << "     c1-c2: " << c1-c2 << "    v2: " << v2 << std::endl;
+                addInfoMessage(ss.str());
+            }
         }
     };
 }

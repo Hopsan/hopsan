@@ -53,12 +53,12 @@ class SystemParameterTableWidget : public QTableWidget
 public:
     SystemParameterTableWidget(int rows, int columns, QWidget *parent=0);
 
-    double getParameter(QString name);
+    QString getParameter(QString name);
     bool hasParameter(QString name);
 
 public slots:
     void setParameter(QString name, QString valueTxt, bool doUpdate=true);
-    void setParameter(QString name, double value, bool doUpdate=true);
+//    void setParameter(QString name, double value, bool doUpdate=true);
     void setParameters();
     void changeParameter(QTableWidgetItem *item);
 

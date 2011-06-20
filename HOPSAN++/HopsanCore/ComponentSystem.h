@@ -30,33 +30,6 @@
 
 namespace hopsan {
 
-    //! @class SystemParameters
-    //! @brief Adds a new system parameter
-    //!
-    //! This class is used in ComponentSystems to contain "system global" parameters
-    class DLLIMPORTEXPORT SystemParameters
-    {
-    public:
-        bool add(std::string sysParName, double value);
-        bool getValue(std::string sysParName, double &value);
-        std::map<std::string, double> getSystemParameterMap();
-        std::string findOccurrence(double *mappedValue);
-        void erase(std::string sysParName);
-        bool mapParameter(std::string sysParName, double *mappedValue);
-        void unMapParameter(std::string sysParName, double *mappedValue);
-        void unMapParameter(double *mappedValue);
-        void update();
-        bool update(std::string sysParName);
-
-    protected:
-
-    private:
-        typedef std::list<double*> DblPointerList;
-        typedef std::pair<double, DblPointerList> SystemParameter;
-
-        std::map<std::string, SystemParameter> mSystemParameters;
-    };
-
 
     class ConnectionAssistant
     {
@@ -143,7 +116,7 @@ namespace hopsan {
         void stop();
 
         //System parameters
-        SystemParameters &getSystemParameters();
+        Parameters &getSystemParameters();
 
     private:
         //==========Private functions==========
@@ -185,7 +158,7 @@ namespace hopsan {
 
         bool mStop;
 
-        SystemParameters mSystemParameters;
+//Finns i Component        Parameters *mSystemParameters;
     };
 }
 

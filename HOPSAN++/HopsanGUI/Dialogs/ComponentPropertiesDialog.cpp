@@ -90,30 +90,18 @@ void ComponentPropertiesDialog::createEditStuff()
 
     QGridLayout *parameterLayout = new QGridLayout();
 
-    QVector<QString> parnames = mpGUIComponent->getParameterNames();
-    QVector<QString>::iterator pit;
-    size_t n = 0;
-    for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
+    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
+    mpGUIComponent->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+    for(size_t i=0; i<qParameterNames.size(); ++i)
     {
-        QString valueTxt = mpGUIComponent->getParameterValueTxt(*pit);
-        bool ok;
-        valueTxt.toDouble(&ok);
-        if((!ok) && !(mpGUIComponent->getParentContainerObject()->getCoreSystemAccessPtr()->hasSystemParameter(valueTxt)))
-        {
-            gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Global parameter no longer exists, replacing with last used value."));
-        }
-
-        mvParameterLayout.push_back(new ParameterLayout(*pit,
-                                                        mpGUIComponent->getParameterDescription(*pit),
-                                                        valueTxt,
-                                                        mpGUIComponent->getParameterUnit(*pit),
+        mvParameterLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
+                                                        qParameterValues[i],
+                                                        qUnits[i],
                                                         mpGUIComponent));
-
-        parameterLayout->addLayout(mvParameterLayout.back(), n, 0);
-        ++n;
+        parameterLayout->addLayout(mvParameterLayout.back(), i, 0);
     }
 
-        //Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
+    //Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
     int descriptionSize=30;
     int nameSize = 10;
     for(int i=0; i<mvParameterLayout.size(); ++i)
@@ -325,7 +313,7 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
         QString valueTxt = mvParameterLayout[i]->getDataValueTxt();
 
         //Get the old value to se if it changed
-        QString oldValueTxt = mpGUIComponent->getParameterValueTxt(mvParameterLayout[i]->getDataName());
+        QString oldValueTxt = mpGUIComponent->getParameterValue(mvParameterLayout[i]->getDataName());
         //Parameter has changed, add to undo stack
         if(oldValueTxt != valueTxt)
         {
@@ -506,12 +494,12 @@ void ParameterLayout::showListOfSystemParameters()
 
     QMenu menu;
 
-    QMap<std::string, double> SystemMap = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
-    QMap<std::string, double>::iterator it;
+    QMap<std::string, std::string> SystemMap = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    QMap<std::string, std::string>::iterator it;
     for(it=SystemMap.begin(); it!=SystemMap.end(); ++it)
     {
-        QString valueString;
-        valueString.setNum(it.value());
+//        QString valueString;
+//        valueString.setNum(it.value());
         QAction *tempAction = menu.addAction(QString(it.key().c_str()));
         tempAction->setIconVisibleInMenu(false);
     }

@@ -304,7 +304,7 @@ GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget*
 void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pContainer)
 {
     QString name = rDomElement.attribute("name");
-    double value = rDomElement.attribute("value").toDouble();
+    QString value = rDomElement.attribute("value");
 
     pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value);
 

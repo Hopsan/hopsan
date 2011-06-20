@@ -144,16 +144,16 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
         mpSystemParametersLayout = new QGridLayout(this);
 
-        QMap<std::string, double>::iterator it;
-        QMap<std::string, double> tempMap;
+        QMap<std::string, std::string>::iterator it;
+        QMap<std::string, std::string> tempMap;
         tempMap = mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap();
         int row = 0;
         for(it=tempMap.begin(); it!=tempMap.end(); ++it)
         {
             QLabel *pParameterLabel = new QLabel(QString(it.key().c_str()), this);
             pParameterLabel->setMinimumWidth(100);
-            QString numStr;
-            numStr.setNum(it.value());
+            QString numStr = QString(it.value().c_str());
+//            numStr.setNum(it.value());
             QLineEdit *pParameterLineEdit = new QLineEdit(numStr, this);
             pParameterLineEdit->setValidator(new QDoubleValidator(this));
             mpSystemParametersLayout->addWidget(pParameterLabel, row, 0);
@@ -234,7 +234,7 @@ void ContainerPropertiesDialog::setValues()
 
     for(int i=0; i<mSystemParameterLabels.size(); ++i)
     {
-        mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mSystemParameterLabels.at(i)->text(), mSystemParameterLineEdits.at(i)->text().toDouble());
+        mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mSystemParameterLabels.at(i)->text(), mSystemParameterLineEdits.at(i)->text());
     }
 
     this->done(0);

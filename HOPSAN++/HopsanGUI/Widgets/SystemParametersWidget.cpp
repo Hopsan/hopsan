@@ -140,7 +140,7 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem *item)
 
 //        QString apa = item->text();
 //        double ko = getParameter(parName);
-        if(item->text() != QString::number(getParameter(parName)))
+        if(item->text() != getParameter(parName))
         {
             gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
         }
@@ -151,7 +151,7 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem *item)
 }
 
 
-double SystemParameterTableWidget::getParameter(QString name)
+QString SystemParameterTableWidget::getParameter(QString name)
 {
     return gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameter(name);
 }
@@ -163,25 +163,25 @@ bool SystemParameterTableWidget::hasParameter(QString name)
 }
 
 
-//! Slot that adds a System parameter value
-//! @param name Lookup name for the System parameter
-//! @param value Value of the System parameter
-void SystemParameterTableWidget::setParameter(QString name, double value, bool doUpdate)
-{
-    //Error check
-    if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, value)))
-    {
-        QMessageBox::critical(0, "Hopsan GUI",
-                              QString("'%1' is an invalid name for a system parameter.")
-                              .arg(name));
-        return;
-    }
-    if(doUpdate)
-    {
-        update();
-    }
-    emit modifiedSystemParameter();
-}
+////! Slot that adds a System parameter value
+////! @param name Lookup name for the System parameter
+////! @param value Value of the System parameter
+//void SystemParameterTableWidget::setParameter(QString name, QString value, bool doUpdate)
+//{
+//    //Error check
+//    if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, value)))
+//    {
+//        QMessageBox::critical(0, "Hopsan GUI",
+//                              QString("'%1' is an invalid name for a system parameter.")
+//                              .arg(name));
+//        return;
+//    }
+//    if(doUpdate)
+//    {
+//        update();
+//    }
+//    emit modifiedSystemParameter();
+//}
 
 
 //! Slot that adds a System parameter value
@@ -197,7 +197,7 @@ void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, bo
         QMessageBox::critical(0, "Hopsan GUI",
                               QString("'%1' is not a valid number.")
                               .arg(valueTxt));
-        QString oldValue = QString::number(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameter(name));
+        QString oldValue = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameter(name);
         QList<QTableWidgetItem *> items = selectedItems();
         //Error if size() > 1, but it should not be! :)
         for(int i = 0; i<items.size(); ++i)
@@ -207,7 +207,20 @@ void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, bo
     }
     else
     {
-        setParameter(name, value, doUpdate);
+//        setParameter(name, valueTxt, doUpdate);
+        //Error check
+        if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt)))
+        {
+            QMessageBox::critical(0, "Hopsan GUI",
+                                  QString("'%1' is an invalid name for a system parameter.")
+                                  .arg(name));
+            return;
+        }
+        if(doUpdate)
+        {
+            update();
+        }
+        emit modifiedSystemParameter();
     }
 }
 
@@ -219,7 +232,7 @@ void SystemParameterTableWidget::setParameters()
     for(int i=0; i<rowCount(); ++i)
     {
         QString name = item(i, 0)->text();
-        double value = item(i, 1)->text().toDouble();
+        QString value = item(i, 1)->text();
         setParameter(name, value);
     }
     //    }
@@ -292,8 +305,7 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 void SystemParameterTableWidget::addParameter()
 {
-    bool ok;    
-    setParameter(mpNameBox->text(), mpValueBox->text().toDouble(&ok));
+    setParameter(mpNameBox->text(), mpValueBox->text());
     gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
 }
 
@@ -301,8 +313,8 @@ void SystemParameterTableWidget::addParameter()
 //! Updates the parameter table from the contents list
 void SystemParameterTableWidget::update()
 {
-    QMap<std::string, double>::iterator it;
-    QMap<std::string, double> tempMap;
+    QMap<std::string, std::string>::iterator it;
+    QMap<std::string, std::string> tempMap;
     tempMap.clear();
     clear();
     if(gpMainWindow->mpProjectTabs->count()>0)
@@ -331,11 +343,11 @@ void SystemParameterTableWidget::update()
 
         for(it=tempMap.begin(); it!=tempMap.end(); ++it)
         {
-            QString valueString;
-            valueString.setNum(it.value());
+//            QString valueString;
+//            valueString.setNum(it.value());
             insertRow(rowCount());
             QTableWidgetItem *nameItem = new QTableWidgetItem(QString(it.key().c_str()));
-            QTableWidgetItem *valueItem = new QTableWidgetItem(valueString);
+            QTableWidgetItem *valueItem = new QTableWidgetItem(it.value().c_str());
             nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
             valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
             setItem(rowCount()-1, 0, nameItem);

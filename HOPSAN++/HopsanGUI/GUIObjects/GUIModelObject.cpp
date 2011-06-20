@@ -352,7 +352,7 @@ GUIPort *GUIModelObject::getPort(QString name)
 
 //! @brief Virtual function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
-double GUIModelObject::getParameterValue(QString /*name*/)
+QString GUIModelObject::getParameterValue(QString /*name*/)
 {
     //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -360,14 +360,14 @@ double GUIModelObject::getParameterValue(QString /*name*/)
 }
 
 
-//! @brief Virtual function that returns the specified parameter value
-//! @param name Name of the parameter to return value from
-QString GUIModelObject::getParameterValueTxt(QString /*name*/)
-{
-    //cout << "This function should only be available in GUIComponent" << endl;
-    assert(false);
-    return "";
-}
+////! @brief Virtual function that returns the specified parameter value
+////! @param name Name of the parameter to return value from
+//QString GUIModelObject::getParameterValueTxt(QString /*name*/)
+//{
+//    //cout << "This function should only be available in GUIComponent" << endl;
+//    assert(false);
+//    return "";
+//}
 
 
 //! @brief Virtual function that returns a vector with the names of the parameteres in the object

@@ -61,7 +61,7 @@ Port::~Port()
         mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
         for(int i = 0; i < dataNames.size(); ++i)
         {
-            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
+//FIXA            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
         }
     }
 }
@@ -219,6 +219,22 @@ vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
 }
 
 
+void Port::createStartNode(NodeTypeT nodeType)
+{
+    mpStartNode = HopsanEssentials::getInstance()->createNode(nodeType);
+
+    vector<string> dataNames, units;
+    mpStartNode->getDataNamesAndUnits(dataNames, units);
+
+    for(size_t i = 0; i < dataNames.size(); ++i)
+    {
+        stringstream ss;
+        ss << getPortName() << ", " << dataNames[i];
+        getComponent()->registerParameter(ss.str(), "Start value", units[i], *(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(dataNames[i]))));
+    }
+}
+
+
 //! Calls the save log data function of the connected node (if any)
 void Port::saveLogData(string filename, const size_t /*portIdx*/)
 {
@@ -338,7 +354,7 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
             //Check if the nodeDataPtr is in the System parameters
-            std::string valueTxt = getComponent()->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
+            std::string valueTxt;//FIXA = getComponent()->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
             if(!(valueTxt.empty()))
             {
                 //The nodeDataPrt is connected to a System parameter, read out this name
@@ -369,7 +385,7 @@ bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
         {
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
-            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(nodeDataPtr);
+            //FIXAgetComponent()->getSystemParent()->getSystemParameters().unMapParameter(nodeDataPtr);
         }
         //Write the value to the start value node
         success = mpStartNode->setDataValuesByNames(names, values);
@@ -395,11 +411,11 @@ bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::
         values.resize(sysParNames.size());
         for(int i = 0; i < sysParNames.size(); ++i)
         {
-            getComponent()->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i]);
+            //FIXAgetComponent()->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i]);
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
             //Map the node data to the System parameter
-            success = getComponent()->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
+            //FIXAsuccess = getComponent()->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
         }
         success *= mpStartNode->setDataValuesByNames(names, values);
     }
@@ -576,7 +592,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
     mPortType = POWERPORT;
     if(getComponent()->isComponentC())
     {
-        mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
+        createStartNode(mNodeType);
 
         // Skipp this if parent port is set, that is if we are a subport in a multiport
         if (mpParentPort == 0)
@@ -609,7 +625,7 @@ void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/)
 WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = WRITEPORT;
-    mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
+    createStartNode(mNodeType);
 
     //Copy start value to default parameters map in component
     std::vector<std::string> names, data;
@@ -753,7 +769,7 @@ PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Comp
     mPortType = POWERMULTIPORT;
     if(getComponent()->isComponentC())
     {
-        mpStartNode = HopsanEssentials::getInstance()->createNode(mNodeType);
+        createStartNode(mNodeType);
     }
 }
 

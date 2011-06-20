@@ -36,50 +36,232 @@ using namespace std;
 using namespace hopsan;
 
 //Constructor
-CompParameter::CompParameter(const string name, const string description, const string unit, double &rValue)
+Parameter::Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr, Parameters* parentParameters)
 {
-    mName = name;
+    mParameterName = parameterName;
+    mParameterValue = parameterValue;
     mDescription = description;
     mUnit = unit;
-    mpValue = &rValue;
-};
-
-
-string CompParameter::getName()
-{
-    return mName;
-}
-
-string CompParameter::getDesc()
-{
-    return mDescription;
-}
-
-
-string CompParameter::getUnit()
-{
-    return mUnit;
+    std::string tmp = type;
+    if((type=="double") || (type=="integer") || (type=="bool") || (type=="string"))
+    {
+        mType = type;
+    }
+    else
+    {
+        assert(false);
+    }
+    mpData = dataPtr;
+    mpParentParameters = parentParameters;
+    evaluate();
 }
 
 
-double CompParameter::getValue()
+void Parameter::getParameter(std::string &parameterName, std::string &parameterValue, std::string &description, std::string &unit, std::string &type)
 {
-    return *mpValue;
+    parameterName = mParameterName;
+    parameterValue = mParameterValue;
+    description = mDescription;
+    unit = mUnit;
+    type = mType;
 }
 
 
-double *CompParameter::getValuePtr()
+void Parameter::setParameterValue(const std::string value)
 {
-    return mpValue;
+    mParameterValue = value;
+    evaluate();
 }
 
 
-void CompParameter::setValue(const double value)
+std::string Parameter::getType()
 {
-    *mpValue = value;
+    return mType;
 }
 
 
+std::string Parameter::evaluate()
+{
+    std::string evaluatedParameterValue;
+    if(!(mpParentParameters->evaluateParameter(mParameterValue, evaluatedParameterValue, mType)))
+    {
+        evaluatedParameterValue = mParameterValue;
+    }
+    if(mpData)
+    {
+        if(mType=="double")
+        {
+            double tmpParameterValue;
+            istringstream is(evaluatedParameterValue);
+            if(is >> tmpParameterValue)
+            {
+                double* apa = static_cast<double*> (mpData);
+                *apa = tmpParameterValue;
+            }
+            else
+            {
+                assert(false);
+            }
+        }
+        else if(mType=="integer")
+        {
+            int tmpParameterValue;
+            istringstream is(evaluatedParameterValue);
+            if(is >> tmpParameterValue)
+            {
+                int* apa = static_cast<int*> (mpData);
+                *apa = tmpParameterValue;
+            }
+            else
+            {
+                assert(false);
+            }
+        }
+        else if(mType=="bool")
+        {
+            bool tmpParameterValue;
+            istringstream is(evaluatedParameterValue);
+            if(is >> tmpParameterValue)
+            {
+                bool* apa = static_cast<bool*> (mpData);
+                *apa = tmpParameterValue;
+            }
+            else
+            {
+                assert(false);
+            }
+        }
+        else if(mType=="string")
+        {
+            string* apa = static_cast<string*> (mpData);
+            *apa = evaluatedParameterValue;
+        }
+    }
+
+    return evaluatedParameterValue;
+}
+
+
+Parameters::Parameters(Component* parentComponent)
+{
+    mParentComponent = parentComponent;
+}
+
+
+bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr)
+{
+    bool success = true;
+    //Type not decided, to be done here
+    if(type.empty())
+    {
+        istringstream is(parameterValue);
+        double tmpDouble;
+        if(is >> tmpDouble)
+        {
+            type = "double";
+        }
+
+    }
+    Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, dataPtr, this);
+    mParameters.push_back(newParameter);
+
+    return success;
+}
+
+
+void Parameters::deleteParameter(std::string parameterName)
+{
+    std::string name, value, description, unit, type;
+
+    std::vector<Parameter*>::iterator parIt;
+    for(parIt = mParameters.begin(); (parIt != mParameters.end()) && (!mParameters.empty()); ++parIt)
+    {
+        (*parIt)->getParameter(name, value, description, unit, type);
+        if(parameterName == name)
+        {
+            mParameters.erase(parIt);
+            delete (*parIt);
+            ++parIt;
+        }
+    }
+}
+
+
+void Parameters::getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues, std::vector<std::string> &descriptions, std::vector<std::string> &units, vector<std::string> &types)
+{
+    parameterNames.resize(mParameters.size());
+    parameterValues.resize(mParameters.size());
+    descriptions.resize(mParameters.size());
+    units.resize(mParameters.size());
+    types.resize(mParameters.size());
+    for(size_t i = 0; i < mParameters.size(); ++i)
+    {
+        mParameters[i]->getParameter(parameterNames[i], parameterValues[i], descriptions[i], units[i], types[i]);
+    }
+}
+
+
+bool Parameters::setParameterValue(const std::string name, const std::string value)
+{
+    bool success = false;
+    std::string parameterName, parameterValue, description, unit, type;
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        mParameters[i]->getParameter(parameterName, parameterValue, description, unit, type);
+        if(name == parameterName)
+        {
+            mParameters[i]->setParameterValue(value);
+            success = true;
+        }
+    }
+    return success;
+}
+
+
+bool Parameters::evaluateParameter(const std::string parameterName, std::string &evaluatedParameterValue, const std::string type)
+{
+    bool success = false;
+    std::string parameterName2, parameterValue2, description2, unit2, type2;
+    for(size_t i = 0; i < mParameters.size(); ++i)
+    {
+        mParameters[i]->getParameter(parameterName2, parameterValue2, description2, unit2, type2);
+        if((parameterName == parameterName2) && (mParameters[i]->getType() == type))
+        {
+            evaluatedParameterValue = mParameters[i]->evaluate();
+            success = true;
+        }
+    }
+    if(!success)
+    {
+        if(mParentComponent)
+        {
+            if(mParentComponent->getSystemParent())
+            {
+                success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(parameterName, parameterValue2, type);
+                evaluatedParameterValue = parameterValue2;
+            }
+        }
+    }
+    return success;
+}
+
+
+void Parameters::evaluateParameters()
+{
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        mParameters[i]->evaluate();
+    }
+}
+
+
+void Parameters::update()
+{
+    for(size_t i = 0; i < mParameters.size(); ++i)
+    {
+        mParameters[i]->evaluate();
+    }
+}
 
 
 
@@ -99,6 +281,8 @@ Component::Component(string name)
     mpSystemParent = 0;
     mModelHierarchyDepth = 0;
 
+    mParameters = new Parameters(this);
+
     //registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
@@ -114,6 +298,24 @@ void Component::initialize(const double /*startT*/, const double /*stopT*/, cons
 void Component::initializeComponentsOnly()
 {
     assert(false);
+}
+
+
+void Component::getParameters(vector<string> &parameterNames, vector<string> &parameterValues, vector<string> &descriptions, vector<string> &units, vector<string> &types)
+{
+    mParameters->getParameters(parameterNames, parameterValues, descriptions, units, types);
+}
+
+
+bool Component::setParameterValue(const std::string name, const std::string value)
+{
+    return mParameters->setParameterValue(name, value);
+}
+
+
+void Component::updateParameters()
+{
+    mParameters->evaluateParameters();
 }
 
 
@@ -298,227 +500,21 @@ void Component::stopSimulation()
 //! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
-    //! @todo handle trying to add multiple comppar with same name
-
-    std::stringstream ss;
-    ss << getName() << "::registerParameter";
-    addLogMess(ss.str());
-
-    CompParameter new_comppar(name, description, unit, rValue);
-    mParameters.push_back(new_comppar); //Copy parameters into storage
-    mDefaultParameters.insert(std::pair<std::string, double>(description+name, rValue));
-}
-
-
-void Component::listParametersConsole()
-{
-    cout <<"-----------------------------------------------" << endl << getName() << ":" << endl;
-    for (size_t i=0; i<mParameters.size(); ++i)
+    stringstream ss;
+    if(ss << rValue)
     {
-        cout << "Parameter " << i << ": " << mParameters[i].getName() << " = " << mParameters[i].getValue() << " " << mParameters[i].getUnit() << " " << mParameters[i].getDesc() << endl;
+        mParameters->addParameter(name, ss.str(), description, unit, "double", &rValue);
     }
-    cout <<"-----------------------------------------------" << endl;
-}
-
-
-//! @brief Get the value of a parameter
-//! @param[in] name is the name of the wanted parameter
-//! @returns the value of the parameter
-double Component::getParameterValue(const string name)
-{
-    for (size_t i=0; i<mParameters.size(); ++i)
+    else
     {
-        if (mParameters[i].getName() == name)
-        {
-            return mParameters[i].getValue();
-        }
+        assert(false);
     }
-    cout << "No such parameter (return 0): " << name << endl;
-    //! @todo We should create a debug warning to user if this happens (not only in this function)
-    //! @todo maybe break out find parameter function (maybe even use something else then vector for storage)
-    return 0.0;
 }
 
 
 double Component::getDefaultParameterValue(const string name)
 {
     return mDefaultParameters.find(name)->second;
-}
-
-
-//! @brief Get a pointer to a parameter
-//!
-//! This method is useful with mapping and unmapping to System parameters
-//!
-//! @param[in] name is the name of the wanted parameter
-//! @returns a pointer to the parameter, a null ponter if not present
-double *Component::getParameterValuePtr(const string name)
-{
-    for (size_t i=0; i<mParameters.size(); ++i)
-    {
-        if (mParameters[i].getName() == name)
-        {
-            return mParameters[i].getValuePtr();
-        }
-    }
-    cout << "No such parameter (return 0): " << name << endl;
-    return 0;
-}
-
-
-//! @brief Get the value of a parameter in string format
-//!
-//! If the parameter is mapped by a System parameter the name of the System parameter is given instead of the value
-//!
-//! @param[in] name is the name of the wanted parameter
-//! @returns the value of the parameter in string format, an empty string if name is not present as a parameter
-std::string Component::getParameterValueTxt(const string name)
-{
-    std::string paramTxt="";
-    for (size_t i=0; i<mParameters.size(); ++i)
-    {
-        //The parameter is present
-        if (mParameters[i].getName() == name)
-        {
-            //Check if the parameter is mapped ba a System parameter, then set the system parameter name to paramTxt
-            paramTxt = mpSystemParent->getSystemParameters().findOccurrence(mParameters[i].getValuePtr());
-            //The parameter is not mapped to a system parameter
-            if(paramTxt.empty())
-            {
-                //Read out the parameter value to the string
-                double value = getParameterValue(name);
-                std::ostringstream oss;
-                oss << value;
-                paramTxt = oss.str();
-            }
-        }
-    }
-//    cout << "No such parameter (return 0): " << name << endl;
-    //! @todo We should create a debug warning to user if this happens (not only in this function)
-    //! @todo maybe break out find parameter function (maybe even use something else then vector for storage)
-    return paramTxt;
-}
-
-
-//! @brief Get the parameters of the component, typically "k" in the case of a spring coeff.
-//! @returns a vector of the parameters
-const vector<string> Component::getParameterNames()
-{
-    vector<string> names;
-    for (size_t i=0; i<mParameters.size(); ++i)
-    {
-        names.push_back(mParameters[i].getName());
-    }
-    return names;
-}
-
-
-//! @brief Get the unit of the parameter, typically "N/m" in the case of a spring coeff.
-//! @param[in] name is the name of the wanted parameter
-//! @returns the unit of the parameter
-const string Component::getParameterUnit(const string name)
-{
-    for (size_t i=0; i<mParameters.size(); ++i)
-    {
-        if (mParameters[i].getName() == name)
-        {
-            return mParameters[i].getUnit();
-        }
-    }
-    cout << "No such parameter (return empty): " << name << endl;
-    return string();
-}
-
-
-//! @brief Get the description of the parameter, typically "Spring coeff." in the case of a spring coeff.
-//! @param[in] name is the name of the wanted parameter
-//! @returns the description of the parameter
-const string Component::getParameterDescription(const string name)
-{
-    for (size_t i=0; i<mParameters.size(); ++i)
-    {
-        if (mParameters[i].getName() == name)
-        {
-            return mParameters[i].getDesc();
-        }
-    }
-    cout << "No such parameter (return empty): " << name << endl;
-    return string();
-}
-
-
-//! @brief Access method for the parameter vector
-//! @returns the parameter vector
-vector<CompParameter> Component::getParameterVector()
-{
-    return mParameters;
-}
-
-
-//! @brief Access method for the parameters
-//! @returns a map with parameter names and values
-map<string, double> Component::getParameterMap()
-{
-    map<string, double> parameterMap;
-    for (size_t i=0; i<mParameters.size(); ++i)
-    {
-        parameterMap.insert(pair<string, double>(mParameters[i].getName(), mParameters[i].getValue()));
-    }
-    return parameterMap;
-}
-
-
-//! @brief Sets a parameter to a value
-//! @param name Name of the parameter
-//! @param value Value to asign the parameter with
-//! @return true if it went OK, false otherwise
-bool Component::setParameterValue(const string name, const double value)
-{
-    bool success = false;
-    for (size_t i=0; i<mParameters.size(); ++i)
-    {
-        if (name == mParameters[i].getName())
-        {
-            mParameters[i].setValue(value);
-            //Unmap the parameter if it is pointed from the System parameters
-            mpSystemParent->getSystemParameters().unMapParameter(mParameters.at(i).mpValue);
-            success = true;
-        }
-    }
-    if (!success)
-    {
-        //! @todo Maybe some error handling
-        cout << "No such parameter (does nothing): " << name << endl;
-    }
-    return success;
-}
-
-
-//! @brief Sets a parameter value using a key to a system parameter
-//! @param parName Name of the parameter
-//! @param sysParName Name name of the system parameter
-//! @return true if it went OK, false otherwise
-bool Component::setParameterValue(const std::string parName, const std::string sysParName)
-{
-    bool success = false;
-    //Map it to the system parameter
-    success = getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
-    return success;
-}
-
-//! @todo Maby not have this function, solve in some other nicer way
-vector<Port*> Component::getPortPtrVector()
-{
-    vector<Port*> vec;
-    vec.clear();
-    PortPtrMapT::iterator ports_it;
-
-    //Copy every port pointer
-    for (ports_it = mPortPtrMap.begin(); ports_it != mPortPtrMap.end(); ++ports_it)
-    {
-        vec.push_back(ports_it->second);
-    }
-    return vec;
 }
 
 
@@ -595,7 +591,6 @@ Port* Component::addPort(const string portname, PORTTYPE porttype, const NodeTyp
     {
         gCoreMessageHandler.addDebugMessage("Automatically changed name of added port from: {" + portname + "} to {" + newname + "}");
     }
-
     return new_port;
 }
 
@@ -738,6 +733,21 @@ void Component::setSystemParent(ComponentSystem *pComponentSystem)
 void Component::setTypeName(const string typeName)
 {
     mTypeName = typeName;
+}
+
+//! @todo Maby not have this function, solve in some other nicer way
+vector<Port*> Component::getPortPtrVector()
+{
+    vector<Port*> vec;
+    vec.clear();
+    PortPtrMapT::iterator ports_it;
+
+    //Copy every port pointer
+    for (ports_it = mPortPtrMap.begin(); ports_it != mPortPtrMap.end(); ++ports_it)
+    {
+        vec.push_back(ports_it->second);
+    }
+    return vec;
 }
 
 Port *Component::getPort(const string portname)
@@ -950,7 +960,14 @@ void ComponentSystem::determineCQSType()
 
 ComponentSystem *Component::getSystemParent()
 {
-    return mpSystemParent;
+    if(mpSystemParent)
+    {
+        return mpSystemParent;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 size_t Component::getModelHierarchyDepth()
@@ -969,10 +986,10 @@ ComponentSignal::ComponentSignal(string name) : Component(name)
 Component::~Component()
 {
     //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted component.
-    for(int i = 0; i < mParameters.size(); ++i)
-    {
-        mpSystemParent->getSystemParameters().unMapParameter(mParameters[i].getValuePtr());
-    }
+//    for(size_t i = 0; i < mParameters.size(); ++i)
+//    {
+//        mpSystemParent->getSystemParameters().unMapParameter(mParameters[i].getValuePtr());
+//    }
 
     //Delete any ports that have been added to the component
     PortPtrMapT::iterator ppmit;
@@ -980,6 +997,8 @@ Component::~Component()
     {
         delete (*ppmit).second;
     }
+
+    delete mParameters;
 }
 
 
@@ -1041,4 +1060,10 @@ double ComponentSystem::getDesiredTimeStep()
 void ComponentSystem::stop()
 {
     mStop = true;
+}
+
+
+Parameters &ComponentSystem::getSystemParameters()
+{
+    return *mParameters;
 }

@@ -118,6 +118,8 @@ namespace hopsan {
         void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
         virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 
+        void createStartNode(NodeTypeT nodeType);
+
     private:
         std::string mPortName;
         Node* mpNode;

@@ -69,8 +69,8 @@ public:
     virtual QVector<QString> getParameterNames();
     virtual QString getParameterUnit(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual QString getParameterDescription(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
-    virtual double getParameterValue(QString name);
-    virtual QString getParameterValueTxt(QString name);
+    virtual QString getParameterValue(QString name);
+//    virtual QString getParameterValueTxt(QString name);
     virtual bool setParameterValue(QString name, QString valueTxt);
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);

@@ -55,7 +55,7 @@ GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF po
     {
         for(int i=0; i<getParameterNames().size(); ++i)
         {
-            setParameterValue(getParameterNames().at(i), mpParentContainerObject->getDummyParameterReservoirComponent()->getParameterValueTxt(getParameterNames().at(i)));
+            setParameterValue(getParameterNames().at(i), mpParentContainerObject->getDummyParameterReservoirComponent()->getParameterValue(getParameterNames().at(i)));
         }
         mpParentContainerObject->resetDummyParameterReservoirComponent();
     }
@@ -129,6 +129,12 @@ QString GUIComponent::getTypeCQS()
 }
 
 
+void GUIComponent::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+{
+    mpParentContainerObject->getCoreSystemAccessPtr()->getParameters(this->getName(), qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+}
+
+
 //! @brief Get a vector with the names of the available parameters
 QVector<QString> GUIComponent::getParameterNames()
 {
@@ -145,15 +151,15 @@ QString GUIComponent::getParameterDescription(QString name)
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterDescription(this->getName(), name);
 }
 
-double GUIComponent::getParameterValue(QString name)
+QString GUIComponent::getParameterValue(QString name)
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), name);
 }
 
-QString GUIComponent::getParameterValueTxt(QString name)
-{
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), name);
-}
+//QString GUIComponent::getParameterValueTxt(QString name)
+//{
+//    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), name);
+//}
 
 //! @brief Set a parameter value to be mapped to a System parameter
 bool GUIComponent::setParameterValue(QString name, QString sysParName)
@@ -237,13 +243,14 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     //Save parameters (also core related)
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
     //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
-    QVector<QString> parameterNames = mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
+    QVector<QString> parameterNames, parameterValues, descriptions, units, types;
+    getParameters(parameterNames, parameterValues, descriptions, units, types);
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
         QDomElement xmlParam = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
         xmlParam.setAttribute(HMF_NAMETAG, *pit);
-        xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), (*pit)));
+        xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {
             xmlParam.setAttribute(HMF_SYSTEMPARAMETERTAG, this->getSystemParameterKey(*pit));

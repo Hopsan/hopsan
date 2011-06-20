@@ -34,34 +34,49 @@
 
 namespace hopsan {
 
-    class DLLIMPORTEXPORT CompParameter
-    {
-        friend class Component;
+class Component;
+class Parameters;
 
-    public:
-        //! @todo getting strings can (maybe, dont really know) be speed up by returning const references instead of copying strings
-        std::string getName();
-        std::string getDesc();
-        std::string getUnit();
+class Parameter
+{
+public:
+    Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr=0, Parameters* parentParameters=0);
+    void setParameterValue(const std::string value);
+    void getParameter(std::string &parameterName, std::string &parameterValue, std::string &description, std::string &unit, std::string &type);
+    std::string getType();
+    std::string evaluate();
 
-        double getValue();
-        double *getValuePtr();
-
-    private:
-        CompParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
-
-        void setValue(const double value);
-        //void setMappedValue(std::string key);
-
-        std::string mName;
-        std::string mDescription;
-        std::string mUnit;
-        double* mpValue;
-        std::string mMapKey;
-    };
+protected:
+    std::string mParameterName;
+    std::string mParameterValue;
+    std::string mDescription;
+    std::string mUnit;
+    std::string mType;
+    void* mpData;
+    Parameters* mpParentParameters;
+};
 
 
-    class ComponentSystem; //Forward declaration
+class DLLIMPORTEXPORT Parameters
+{
+public:
+    Parameters(Component* parentComponent);
+    bool addParameter(std::string parameterName, std::string parameterValue, std::string description="", std::string unit="", std::string type="", void* dataPtr=0);
+    void deleteParameter(std::string parameterName);
+    void getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues, std::vector<std::string> &descriptions, std::vector<std::string> &units, std::vector<std::string> &types);
+    bool setParameterValue(const std::string name, const std::string value);
+    bool evaluateParameter(const std::string parameterName, std::string &evaluatedParameterValue, const std::string type);
+    void evaluateParameters();
+    void update();
+
+protected:
+    std::vector<Parameter*> mParameters;
+    Component* mParentComponent;
+};
+
+
+class ComponentSystem; //Forward declaration
+
     class HopsanEssentials;
 
     class DLLIMPORTEXPORT Component
@@ -91,20 +106,13 @@ namespace hopsan {
         std::string getTypeCQSString();
 
         //Parameters
-        void listParametersConsole();
-        const std::vector<std::string> getParameterNames();
-        const std::string getParameterUnit(const std::string name);
-        const std::string getParameterDescription(const std::string name);
-        double getParameterValue(const std::string name);
+        void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
+        void getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues,
+                           std::vector<std::string> &descriptions, std::vector<std::string> &units, std::vector<std::string> &types);
+        bool setParameterValue(const std::string name, const std::string value);
+        void updateParameters();
+
         double getDefaultParameterValue(const std::string name);
-        double *getParameterValuePtr(const std::string name);
-        std::string getParameterValueTxt(const std::string name);
-        bool setParameterValue(const std::string name, const double value);
-        bool setParameterValue(const std::string parName, const std::string sysParName);
-
-        std::vector<CompParameter> getParameterVector();
-        std::map<std::string, double> getParameterMap();
-
         //Start values
         double getStartValue(Port* pPort, const size_t idx);
         void setStartValue(Port* pPort, const size_t &idx, const double &value);
@@ -118,7 +126,8 @@ namespace hopsan {
         ComponentSystem *getSystemParent();
         size_t getModelHierarchyDepth();
 
-        std::map<std::string, double> mDefaultParameters; //!< @todo should not be public
+        //!< @todo should not be public
+        std::map<std::string, double> mDefaultParameters; //map<Name, Value>
 
         // Component type identification
         bool isComponentC();
@@ -157,9 +166,6 @@ namespace hopsan {
         //Stop a running simulation
         void stopSimulation();
 
-        //Parameter functions
-        void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
-
         //Port functions
         Port* addPort(const std::string portname, PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
         Port* addPowerMultiPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
@@ -189,6 +195,8 @@ namespace hopsan {
 
         size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
 
+        ComponentSystem* mpSystemParent;
+
     private:
         typedef std::map<std::string, Port*> PortPtrMapT;
         typedef std::pair<std::string, Port*> PortPtrPairT;
@@ -200,9 +208,8 @@ namespace hopsan {
         //Private member variables
         std::string mName;
         std::string mTypeName;
-        std::vector<CompParameter> mParameters;
+        Parameters *mParameters;
         std::vector<double*> mDummyNDptrs; //This vector is used by components to store dummy NodeData pointers that are created for non connected optional ports
-        ComponentSystem* mpSystemParent;
         PortPtrMapT mPortPtrMap;
         double mMeasuredTime;
     };

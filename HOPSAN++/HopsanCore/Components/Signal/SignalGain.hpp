@@ -26,6 +26,8 @@
 #define SIGNALGAIN_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
+#include <algorithm>
 
 namespace hopsan {
 
@@ -42,6 +44,10 @@ namespace hopsan {
 
         double *mpND_in, *mpND_out;
 
+        string mDataCurveFileName;
+
+        CSVParser *myDataCurve;
+
     public:
         static Component *Creator()
         {
@@ -56,11 +62,19 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("k", "Gain value", "[-]", mGain);
+   //         registerParameter("", "Data Curve", "", mDataCurveFileName);
+
+            myDataCurve = new CSVParser();
         }
 
 
         void initialize()
         {
+            stringstream ss;
+//            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
+            ss << mGain << "  " << myDataCurve->interpolate(mGain);
+            addInfoMessage(ss.str());
+
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
