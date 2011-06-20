@@ -210,7 +210,7 @@ void ContainerPropertiesDialog::setValues()
 
     if(mpContainerObject->mUndoDisabled != mpDisableUndoCheckBox->isChecked())
     {
-        mpContainerObject->setUndoEnabled(!mpDisableUndoCheckBox->isChecked());
+        mpContainerObject->setUndoEnabled(mpDisableUndoCheckBox->isChecked());
     }
 
     //Set the icon paths, only update and refresh appearance if a change has occured

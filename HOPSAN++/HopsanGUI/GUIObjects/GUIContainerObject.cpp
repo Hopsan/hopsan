@@ -1637,7 +1637,7 @@ void GUIContainerObject::forgetContainedConnector(GUIConnector *pConnector)
 //! @brief Disables the undo function for the current model
 void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 {
-    if(!enabled)
+    if(enabled)
     {
         bool doIt=true;
         if (!dontAskJustDoIt)
@@ -1670,6 +1670,9 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
             gpMainWindow->redoAction->setDisabled(false);
         }
     }
+
+    if(gpMainWindow->disableUndoAction->isChecked() != mUndoDisabled)
+        gpMainWindow->disableUndoAction->setChecked(mUndoDisabled);
 }
 
 
