@@ -1203,7 +1203,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     double yOffset = newCenter.y() - oldCenter.y();
 
         //Paste components
-    QDomElement objectElement = copyRoot->firstChildElement("component"); //!< @todo not hardcoded
+    QDomElement objectElement = copyRoot->firstChildElement(HMF_COMPONENTTAG);
     while(!objectElement.isNull())
     {
         GUIModelObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
@@ -1231,8 +1231,8 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         pObj->moveBy(xOffset, yOffset);
         mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
 
-        renameMap.insert(objectElement.attribute("name"), pObj->getName());
-        //objectElement.setAttribute("name", renameMap.find(objectElement.attribute("name")).value());
+        renameMap.insert(objectElement.attribute(HMF_NAMETAG), pObj->getName());
+        //objectElement.setAttribute("name", renameMap.find(objectElement.attribute(HMF_NAMETAG)).value());
         objectElement = objectElement.nextSiblingElement("component");
     }
 
@@ -1242,7 +1242,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     while (!systemElement.isNull())
     {
         GUIModelObject* pObj = loadGUIModelObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
-        renameMap.insert(systemElement.attribute("name"), pObj->getName());
+        renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
 
             //Apply offset to pasted object
@@ -1251,8 +1251,22 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
     }
 
+        // Paste container ports
+    QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
+    while (!systemPortElement.isNull())
+    {
+        GUIModelObject* pObj = loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, this, UNDO);
+        renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
+        systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
+
+            //Apply offset to pasted object
+        QPointF oldPos = pObj->pos();
+        pObj->moveBy(xOffset, yOffset);
+        mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+    }
+
         //Paste connectors
-    QDomElement connectorElement = copyRoot->firstChildElement("connect");
+    QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
     while(!connectorElement.isNull())
     {
         QDomElement tempConnectorElement = connectorElement.cloneNode(true).toElement();

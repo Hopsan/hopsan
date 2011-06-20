@@ -303,7 +303,7 @@ GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget*
 //! @param[in] pContainer The Container Object to load into
 void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pContainer)
 {
-    QString name = rDomElement.attribute("name");
+    QString name = rDomElement.attribute(HMF_NAMETAG);
     QString value = rDomElement.attribute("value");
 
     pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value);

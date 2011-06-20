@@ -352,7 +352,7 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, b
 //! @param[out] rTheta The orientaion (angle)
 void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta)
 {
-    rName = domElement.attribute("name");
+    rName = domElement.attribute(HMF_NAMETAG);
     bool dummy;
     parsePoseTag(domElement, rX, rY, rTheta, dummy);
 }

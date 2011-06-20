@@ -276,14 +276,14 @@ void Configuration::loadFromXml()
             QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
             while (!defaultUnitElement.isNull())
             {
-                mDefaultUnits.insert(defaultUnitElement.attribute("name"),
+                mDefaultUnits.insert(defaultUnitElement.attribute(HMF_NAMETAG),
                                      defaultUnitElement.attribute("unit"));
                 defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
             }
             QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
             while (!customUnitElement.isNull())
             {
-                QString physicalQuantity = customUnitElement.attribute("name");
+                QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
                 QString unitName = customUnitElement.attribute("unit");
                 double unitScale = customUnitElement.attribute("scale").toDouble();
 
@@ -433,7 +433,7 @@ void Configuration::loadDefaultsFromXml()
             QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
             while (!defaultUnitElement.isNull())
             {
-                mDefaultUnits.insert(defaultUnitElement.attribute("name"),
+                mDefaultUnits.insert(defaultUnitElement.attribute(HMF_NAMETAG),
                                      defaultUnitElement.attribute("unit"));
                 defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
             }
@@ -451,7 +451,7 @@ void Configuration::loadDefaultsFromXml()
             QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
             while (!customUnitElement.isNull())
             {
-                QString physicalQuantity = customUnitElement.attribute("name");
+                QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
                 QString unitName = customUnitElement.attribute("unit");
                 double unitScale = customUnitElement.attribute("scale").toDouble();
                 if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
