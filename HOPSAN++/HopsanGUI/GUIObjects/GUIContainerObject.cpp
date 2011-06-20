@@ -1593,13 +1593,13 @@ QString GUIContainerObject::getScriptFile()
 }
 
 //! @brief Returns a pointer to the parameter reservoir component. Used when drag-copying.
-GUIComponent *GUIContainerObject::getDummyParameterReservoirComponent()
+GUIModelObject *GUIContainerObject::getDummyParameterReservoirComponent()
 {
     return mpDummyParameterReservoirComponent;
 }
 
 //! @brief Sets the pointer for the parameter reservoir component. Used when drag-copying.
-void GUIContainerObject::setDummyParameterReservoirComponent(GUIComponent *component)
+void GUIContainerObject::setDummyParameterReservoirComponent(GUIModelObject *component)
 {
     mpDummyParameterReservoirComponent = component;
 }

@@ -97,8 +97,8 @@ public:
     void setScriptFile(QString path);
     QString getScriptFile();
 
-    GUIComponent *getDummyParameterReservoirComponent();
-    void setDummyParameterReservoirComponent(GUIComponent *component);
+    GUIModelObject *getDummyParameterReservoirComponent();
+    void setDummyParameterReservoirComponent(GUIModelObject *component);
     void resetDummyParameterReservoirComponent();
 
     //SHOULD BE PROTECTED
@@ -232,7 +232,7 @@ private:
     QList< QVector<double> > mTimeVectors;
     QList< QList<GUIModelObject *> > mSection;
 
-    GUIComponent *mpDummyParameterReservoirComponent;
+    GUIModelObject *mpDummyParameterReservoirComponent;
 };
 
 #endif // GUICONTAINEROBJECT_H

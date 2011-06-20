@@ -495,6 +495,25 @@ void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //}
 
 
+void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    GUIObject::mousePressEvent(event);
+
+    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed())
+    {
+        QMimeData *mimeData = new QMimeData;
+        mimeData->setText(this->getTypeName());
+
+        mpParentContainerObject->setDummyParameterReservoirComponent(this);
+
+        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->mpGraphicsView);
+        drag->setMimeData(mimeData);
+        drag->setPixmap(QIcon(QPixmap(this->mGUIModelObjectAppearance.getIconPath())).pixmap(40,40));
+        drag->setHotSpot(QPoint(20, 20));
+        drag->exec(Qt::CopyAction | Qt::MoveAction);
+    }
+}
+
 //! @brief Defines what happens if a mouse key is released while hovering an object
 void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {

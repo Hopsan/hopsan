@@ -83,25 +83,6 @@ bool GUIComponent::hasPowerPorts()
     return retval;
 }
 
-void GUIComponent::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    GUIModelObject::mousePressEvent(event);
-
-    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed())
-    {
-        QMimeData *mimeData = new QMimeData;
-        mimeData->setText(this->getTypeName());
-
-        mpParentContainerObject->setDummyParameterReservoirComponent(this);
-
-        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->mpGraphicsView);
-        drag->setMimeData(mimeData);
-        drag->setPixmap(QIcon(QPixmap(this->mGUIModelObjectAppearance.getIconPath())).pixmap(40,40));
-        drag->setHotSpot(QPoint(20, 20));
-        drag->exec(Qt::CopyAction | Qt::MoveAction);
-    }
-}
-
 
 //! Event when double clicking on component icon.
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
