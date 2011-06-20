@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="RotationalMechanicPortC.svg">
+   sodipodi:docname="ElectricPortQ.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -24,6 +24,13 @@
        inkscape:vp_z="744.09448 : 526.18109 : 1"
        inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
        id="perspective10" />
+    <inkscape:perspective
+       id="perspective2823"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -32,16 +39,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="35.399999"
-     inkscape:cx="1.7493929"
-     inkscape:cy="5.5637423"
+     inkscape:zoom="35.4"
+     inkscape:cx="1.3790447"
+     inkscape:cy="6.7235762"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="550"
-     inkscape:window-height="481"
-     inkscape:window-x="1324"
-     inkscape:window-y="58"
+     inkscape:window-width="748"
+     inkscape:window-height="772"
+     inkscape:window-x="2015"
+     inkscape:window-y="113"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
@@ -60,17 +67,15 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-356.39287,-588.82649)">
-    <path
-       sodipodi:type="arc"
-       style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:0.27916721000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="path3619"
-       sodipodi:cx="7.1075969"
-       sodipodi:cy="7.2771893"
-       sodipodi:rx="2.6520884"
-       sodipodi:ry="2.6520884"
-       d="m 9.7596853,7.2771893 c 0,1.4647079 -1.1873804,2.6520884 -2.6520884,2.6520884 -1.464708,0 -2.6520884,-1.1873805 -2.6520884,-2.6520884 0,-1.464708 1.1873804,-2.6520884 2.6520884,-2.6520884 1.464708,0 2.6520884,1.1873804 2.6520884,2.6520884 z"
-       transform="matrix(1.7910414,0,0,1.7910414,348.66287,580.79274)" />
+    <rect
+       style="fill:#ffff00;stroke:#000000;stroke-width:0.50000000000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
+       id="rect2815"
+       width="9.5"
+       height="9.5"
+       x="356.64288"
+       y="589.07648" />
     <g
+       transform="translate(0.23771984,0.02351283)"
        style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        id="text2814">
       <path
