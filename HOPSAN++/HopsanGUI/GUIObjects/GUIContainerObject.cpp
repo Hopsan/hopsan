@@ -741,14 +741,17 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
 
         for(int i=0; i<mPlotData.size(); ++i)
         {
-            QMap< QString, QMap<QString, QMap<QString, QVector<double> > > > generation;
-            generation = mPlotData.at(i);
-            QMap< QString, QMap<QString, QVector<double> > > oldPlotData;
-            oldPlotData = mPlotData.at(i).find(oldName).value();
-            generation.insert(newName, oldPlotData);
-            generation.remove(oldName);
-            mPlotData.removeAt(i);
-            mPlotData.insert(i, generation);
+            if(mPlotData.at(i).contains(oldName))
+            {
+                QMap< QString, QMap<QString, QMap<QString, QVector<double> > > > generation;
+                generation = mPlotData.at(i);
+                QMap< QString, QMap<QString, QVector<double> > > oldPlotData;
+                oldPlotData = mPlotData.at(i).find(oldName).value();
+                generation.insert(newName, oldPlotData);
+                generation.remove(oldName);
+                mPlotData.removeAt(i);
+                mPlotData.insert(i, generation);
+            }
         }
 
         if (undoSettings == UNDO)
