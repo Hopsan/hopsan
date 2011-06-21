@@ -116,6 +116,41 @@ double hopsan::dxOnNegative(double x)
 }
 
 
+//! @brief Returns y1 or y2 depending on the value of x.
+//! @param x input value
+//! @param y1 if x is positive
+//! @param y2 otherwise
+//! @returns Limited derivative of x
+double hopsan::ifPositive(double x, double y1, double y2)
+{
+    if (x >= 0) { return y1; }
+    if (x < 0) { return y2; }
+}
+
+
+//! @brief Derivative of IfPositive with respect to y1.
+//! @param x input value
+//! @param y1 dummy
+//! @param y2 dummy
+//! @returns Limited derivative of x
+double hopsan::dtIfPositive(double x, double y1, double y2)
+{
+    if (x >= 0) { return 1.; }
+    if (x < 0) { return 0.; }
+}
+
+//! @brief Derivative of IfPositive with respect to y1.
+//! @param x input value
+//! @param y1 dummy
+//! @param y2 dummy
+//! @returns Limited derivative of x
+double hopsan::dfIfPositive(double x, double y1, double y2)
+{
+    if (x >= 0) { return 1.; }
+    if (x < 0) { return 0.; }
+}
+
+
 double hopsan::signedSquareL(double x, double x0)
 {
     return (-sqrt(x0) + sqrt(x0 + fabs(x))) * hopsan::sign(x);

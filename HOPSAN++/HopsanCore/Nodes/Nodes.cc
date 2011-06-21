@@ -25,6 +25,8 @@
 //! @defgroup Nodes Nodes
 //! @defgroup HydraulicNode HydraulicNode
 //! @ingroup Nodes
+//! @defgroup PneumaticNode PneumaticNode
+//! @ingroup Nodes
 //! @defgroup MechanicalNode MechanicalNode
 //! @ingroup Nodes
 //! @defgroup SignalNode SignalNode
@@ -42,6 +44,7 @@ DLLIMPORTEXPORT void hopsan::register_nodes(NodeFactory* pNodeFactory)
 {
     pNodeFactory->registerCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodePneumatic", NodeHydraulic::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeElectric", NodeElectric::CreatorFunction);

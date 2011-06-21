@@ -90,6 +90,46 @@ namespace hopsan {
         }
     };
 
+
+    //!
+    //! @class NodePneumatic
+    //! @brief A pneumatic node
+    //! @ingroup PneumaticNode
+    //!
+    class NodePneumatic :public Node
+    {
+    public:
+        enum {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
+        static Node* CreatorFunction() {return new NodePneumatic;}
+
+    private:
+        NodePneumatic() : Node(DATALENGTH)
+        {
+            setDataCharacteristics(MASSFLOW, "MassFlow", "kg/s");
+            setDataCharacteristics(PRESSURE, "Pressure", "Pa");
+            setDataCharacteristics(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
+            setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", Node::NOPLOT);
+            setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
+            setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "J/s", Node::NOPLOT);
+
+//            setData(NodeENERGYFLOW::PRESSURE, 1.0e5);
+//            setData(NodeENERGYFLOW::FLOW, 0.0);
+        }
+
+        virtual void setSpecialStartValues(Node *pNode)
+        {
+            for(size_t i=0; i<mDataNames.size(); ++i)
+            {
+                if(WAVEVARIABLE==i)
+                {
+                    pNode->setData(i, mDataVector[PRESSURE]);
+                    std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
+                }
+                //! todo Maybe also write CHARIMP?
+            }
+        }
+    };
+
     //!
     //! @class NodeMechanic
     //! @brief A mechanic node

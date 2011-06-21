@@ -46,7 +46,7 @@ namespace hopsan {
 
         string mDataCurveFileName;
 
-        CSVParser *myDataCurve;
+        //CSVParser *myDataCurve;
 
     public:
         static Component *Creator()
@@ -64,16 +64,16 @@ namespace hopsan {
             registerParameter("k", "Gain value", "[-]", mGain);
    //         registerParameter("", "Data Curve", "", mDataCurveFileName);
 
-            myDataCurve = new CSVParser();
+            //myDataCurve = new CSVParser();
         }
 
 
         void initialize()
         {
-            stringstream ss;
-//            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
-            ss << mGain << "  " << myDataCurve->interpolate(mGain);
-            addInfoMessage(ss.str());
+//            stringstream ss;
+////            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
+//            ss << mGain << "  " << myDataCurve->interpolate(mGain);
+//            addInfoMessage(ss.str());
 
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);

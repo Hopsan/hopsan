@@ -40,6 +40,9 @@ extern "C" {
     double DLLIMPORTEXPORT dxOnPositive(double x);
     double DLLIMPORTEXPORT onNegative(double x);
     double DLLIMPORTEXPORT dxOnNegative(double x);
+    double DLLIMPORTEXPORT ifPositive(double x, double y1, double y2);
+    double DLLIMPORTEXPORT dtIfPositive(double x, double y1, double y2);
+    double DLLIMPORTEXPORT dfIfPositive(double x, double y1, double y2);
     double DLLIMPORTEXPORT signedSquareL(double x, double x0);
     double DLLIMPORTEXPORT dxSignedSquareL(double x, double x0);
     double DLLIMPORTEXPORT squareAbsL(double x, double x0);

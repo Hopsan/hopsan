@@ -61,6 +61,10 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
         {
             mIconPath.append("HydraulicPort");
         }
+        else if (nodetype == "NodeElectric")
+        {
+            mIconPath.append("ElectricPort");
+        }
         else
         {
             //SystemPort is a blank port (that is why we use it here)
@@ -84,5 +88,7 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
         mIconOverlayPaths.append(QString(PORTICONPATH) + "MultiPortOverlay.svg");
     }
     mIconPath.append(".svg");
+
+    qDebug() << "mIconPath = " << mIconPath;
 }
 
