@@ -28,6 +28,7 @@
 #include "GUIModelObject.h"
 #include "GUIComponent.h"
 #include "GUIWidgets.h"
+#include "../CopyStack.h"
 #include "../CoreAccess.h"
 
 //Forward Declarations
@@ -54,6 +55,7 @@ public:
     //Handle GuiModelObjects and GuiWidgets
     void addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
     void addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
+    GUIModelObject *addGUIModelObject(QString typeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
@@ -80,6 +82,8 @@ public:
     bool isObjectSelected();
     bool isConnectorSelected();
 
+    CopyStack *getDragCopyStackPtr();
+
     //These (overloaded versions) are used in containerPropertiesDialog by systems
     //virtual void setTypeCQS(QString /*typestring*/){assert(false);}
     virtual size_t getNumberOfLogSamples(){assert(false);}
@@ -96,10 +100,6 @@ public:
 
     void setScriptFile(QString path);
     QString getScriptFile();
-
-    GUIModelObject *getDummyParameterReservoirComponent();
-    void setDummyParameterReservoirComponent(GUIModelObject *component);
-    void resetDummyParameterReservoirComponent();
 
     //SHOULD BE PROTECTED
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
@@ -232,7 +232,7 @@ private:
     QList< QVector<double> > mTimeVectors;
     QList< QList<GUIModelObject *> > mSection;
 
-    GUIModelObject *mpDummyParameterReservoirComponent;
+    CopyStack *mpDragCopyStack;
 };
 
 #endif // GUICONTAINEROBJECT_H

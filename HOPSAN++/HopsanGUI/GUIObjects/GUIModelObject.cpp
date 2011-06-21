@@ -501,10 +501,12 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed())
     {
-        QMimeData *mimeData = new QMimeData;
-        mimeData->setText(this->getTypeName());
+        mpParentContainerObject->deselectAll();
+        this->select();
+        mpParentContainerObject->copySelected(mpParentContainerObject->getDragCopyStackPtr());
 
-        mpParentContainerObject->setDummyParameterReservoirComponent(this);
+        QMimeData *mimeData = new QMimeData;
+        mimeData->setText("HOPSANDRAGCOPY");
 
         QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->mpGraphicsView);
         drag->setMimeData(mimeData);

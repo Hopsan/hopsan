@@ -50,15 +50,6 @@ GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF po
     {
         connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
     }
-
-    if(mpParentContainerObject->getDummyParameterReservoirComponent() != 0 && mpParentContainerObject->getDummyParameterReservoirComponent()->getTypeName() == this->getTypeName())
-    {
-        for(int i=0; i<getParameterNames().size(); ++i)
-        {
-            setParameterValue(getParameterNames().at(i), mpParentContainerObject->getDummyParameterReservoirComponent()->getParameterValue(getParameterNames().at(i)));
-        }
-        mpParentContainerObject->resetDummyParameterReservoirComponent();
-    }
 }
 
 GUIComponent::~GUIComponent()

@@ -887,10 +887,6 @@ void UndoStack::registerAddedObject(GUIModelObject *item)
     }
     item->saveToDomElement(stuffElement);
 
-    qDebug() << "Before!";
-    qDebug() << mDomDocument.toString();
-    qDebug() << "After!";
-
     gpMainWindow->mpUndoWidget->refreshList();
 }
 

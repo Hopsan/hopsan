@@ -192,8 +192,8 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     int textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
-    bool portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
-    bool namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
+    //bool portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
+    //bool namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
 
     GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type);
     if (pAppearanceData != 0)

@@ -170,30 +170,37 @@ void GraphicsView::dropEvent(QDropEvent *event)
     }
     if (event->mimeData()->hasText())
     {
-        mpContainerObject->mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
-
         QString text = event->mimeData()->text();
 
+        //Dropped item is a drag copy operation
+        if(text == "HOPSANDRAGCOPY")
+        {
+            //These booleans must be reset here, because they are not automatically reset when dropping things.
+            //It doesn't really matter if it will be incorrect, because keeping the ctrl key pressed after a drop
+            //and attempting to do more ctrl-stuff does not make any sense anyway.
+            mCtrlKeyPressed = false;
+            mLeftMouseButtonPressed = false;
+
+            //Paste the drag copy component
+            mpContainerObject->paste(mpContainerObject->getDragCopyStackPtr());
+            return;
+        }
+
         //Check if dropped item is a plot data string, and attempt to open a plot window if so
-        if(event->mimeData()->text().startsWith("HOPSANPLOTDATA"))
+        else if(text.startsWith("HOPSANPLOTDATA"))
         {
             gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(text.section("\"", 1, 1), text.section("\"", 3, 3), text.section("\"", 5, 5), ""/*text.section("\"", 7, 7)*/);
             return;
         }
 
-        //Dropped item is not a plot data string, so assume it is a component
-        GUIModelObjectAppearance* pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(text);
-        //! @todo Send in typename into add bellow instead of appearance data
 
-        //Check if appearnaceData OK otherwihse do not add (usefull if you drag some crap text into the window)
-        if(pAppearanceData != 0)
-        {
-            event->accept();
-            QPointF position = event->pos();
-            mpContainerObject->addGUIModelObject(pAppearanceData, this->mapToScene(position.toPoint()).toPoint());
-            this->setFocus();
-        }
+        //Dropped item is not a plot data string, so assume it is a component typename
+        mpContainerObject->mUndoStack->newPost();
+        event->accept();
+        QPointF position = event->pos();
+        mpContainerObject->addGUIModelObject(text, this->mapToScene(position.toPoint()).toPoint());
+        this->setFocus();
     }
 }
 

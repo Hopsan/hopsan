@@ -83,7 +83,7 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
     gpMainWindow->toggleNamesAction->setChecked(true);
     gpMainWindow->togglePortsAction->setChecked(true);
 
-    resetDummyParameterReservoirComponent();
+    mpDragCopyStack = new CopyStack();
 
     //Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
@@ -472,19 +472,30 @@ void GUIContainerObject::renameExternalPort(const QString oldName, const QString
 }
 
 
+//! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
+//! @todo Remove the other function and use only the typename version if possible
+GUIModelObject* GUIContainerObject::addGUIModelObject(QString typeName, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+{
+    GUIModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typeName);
+    if(!pAppearanceData)    //Not an existing component
+        return 0;       //No error message here, it depends on from where this function is called
+    else
+        return addGUIModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
+}
+
+
 //! @brief Creates and adds a GuiModel Object to the current container
 //! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *pAppearanceData, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
     emit deselectAllGUIConnectors();
 
-    //qDebug()  << "Adding GUIModelObject, typename: " << componentTypeName << " displayname: " << pAppearanceData->getName() << " systemname: " << this->getName();
     QString componentTypeName = pAppearanceData->getTypeName();
     if (componentTypeName == HOPSANGUISYSTEMTYPENAME)
     {
@@ -876,8 +887,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
         }
 
         //Create the "transit port"
-        GUIModelObjectAppearance *portApp = gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUICONTAINERPORTTYPENAME);
-        GUIModelObject *pTransPort = this->addGUIModelObject(portApp, portpos.toPoint(),0);
+        GUIModelObject *pTransPort = this->addGUIModelObject(HOPSANGUICONTAINERPORTTYPENAME, portpos.toPoint(),0);
 
         //Make previous parent container forget about the connector
         transitConnectors[i]->getParentContainer()->forgetContainedConnector(transitConnectors[i]);
@@ -1112,15 +1122,15 @@ void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 //! @see paste()
 void GUIContainerObject::copySelected(CopyStack *xmlStack)
 {
-    gCopyStack.clear();
-
     QDomElement *copyRoot;
     if(xmlStack == 0)
     {
+        gCopyStack.clear();
         copyRoot = gCopyStack.getCopyRoot();
     }
     else
     {
+        xmlStack->clear();
         copyRoot = xmlStack->getCopyRoot();
     }
 
@@ -1172,7 +1182,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 void GUIContainerObject::paste(CopyStack *xmlStack)
 {
 
-    gpMainWindow->mpMessageWidget->printGUIDebugMessage(gCopyStack.getXML());
+    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(gCopyStack.getXML());
 
     mUndoStack->newPost("paste");
     mpParentProjectTab->hasChanged();
@@ -1201,6 +1211,8 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 
     QCursor cursor;
     QPointF newCenter = mpParentProjectTab->mpGraphicsView->mapToScene(mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
+
+    qDebug() << "Pasting at " << newCenter;
 
     double xOffset = newCenter.x() - oldCenter.x();
     double yOffset = newCenter.y() - oldCenter.y();
@@ -1286,7 +1298,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         tempConnector->drawConnector(true);
         for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
         {
-            mUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x()-mPasteOffset, tempConnector->getLine(i)->pos().y()-mPasteOffset),
+            mUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
                                                   tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
         }
 
@@ -1432,8 +1444,7 @@ void GUIContainerObject::groupSelected(QPointF pt)
     }
 
     //Create a new group at the location of the specified
-    GUIModelObjectAppearance* pAppdata = gpMainWindow->mpLibrary->getAppearanceData("HopsanGUIGroup");
-    GUIModelObject* pObj =  this->addGUIModelObject(pAppdata, pt.toPoint(),0);
+    GUIModelObject* pObj =  this->addGUIModelObject(HOPSANGUIGROUPTYPENAME, pt.toPoint(),0);
     GUIContainerObject* pContainer =  qobject_cast<GUIContainerObject*>(pObj);
 
     //If dyncast sucessfull (it should allways be) then let new group take ownership of objects
@@ -1581,6 +1592,13 @@ bool GUIContainerObject::isConnectorSelected()
 }
 
 
+//! @brief Returns a pointer to the drag-copy copy stack
+CopyStack *GUIContainerObject::getDragCopyStackPtr()
+{
+    return mpDragCopyStack;
+}
+
+
 void GUIContainerObject::setScriptFile(QString path)
 {
     mScriptFilePath = path;
@@ -1590,24 +1608,6 @@ void GUIContainerObject::setScriptFile(QString path)
 QString GUIContainerObject::getScriptFile()
 {
     return mScriptFilePath;
-}
-
-//! @brief Returns a pointer to the parameter reservoir component. Used when drag-copying.
-GUIModelObject *GUIContainerObject::getDummyParameterReservoirComponent()
-{
-    return mpDummyParameterReservoirComponent;
-}
-
-//! @brief Sets the pointer for the parameter reservoir component. Used when drag-copying.
-void GUIContainerObject::setDummyParameterReservoirComponent(GUIModelObject *component)
-{
-    mpDummyParameterReservoirComponent = component;
-}
-
-//! @brief Clears the pointer for the parameter reservoir component. Used when drag-copying.
-void GUIContainerObject::resetDummyParameterReservoirComponent()
-{
-    mpDummyParameterReservoirComponent = 0;
 }
 
 
