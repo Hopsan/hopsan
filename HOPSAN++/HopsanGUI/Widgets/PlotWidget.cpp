@@ -171,7 +171,6 @@ void PlotParameterTree::updateList()
                     for(int i = 0; i!=parameterNames.size(); ++i)
                     {
                         parameterUnits[i] = gConfig.getDefaultUnit(parameterNames[i]);
-                        //parameterUnits[i] = "-";
                         tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
                         tempComponentItem->addChild(tempPlotParameterItem);
                         QStringList parameterDescription;

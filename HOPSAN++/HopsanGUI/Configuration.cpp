@@ -104,7 +104,7 @@ void Configuration::saveToXml()
             appendDomTextNode(models, "lastsessionmodel", mLastSessionModels.at(i));
         }
     }
-    for(int i = 0; i<mRecentModels.size(); ++i)
+    for(int i = mRecentModels.size()-1; i>-1; --i)
     {
         if(mRecentModels.at(i) != "")
             appendDomTextNode(models, "recentmodel", mRecentModels.at(i));
