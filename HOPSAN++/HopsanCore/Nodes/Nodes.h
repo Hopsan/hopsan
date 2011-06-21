@@ -149,7 +149,7 @@ namespace hopsan {
             setDataCharacteristics(POSITION, "Position", "m");
             setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "N", Node::NOPLOT);
             setDataCharacteristics(CHARIMP, "CharImp", "N s/m", Node::NOPLOT);
-            setDataCharacteristics(EQMASS, "EquivalentMass", "kg");
+            setDataCharacteristics(EQMASS, "EquivalentMass", "kg", Node::NOPLOT);
         }
 
         virtual void setSpecialStartValues(Node *pNode)
