@@ -37,7 +37,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
     if (!rDomDocument.setContent(&rFile, false, &errorStr, &errorLine, &errorColumn))
     {
         QMessageBox::information(0, "Hopsan GUI",
-                                 QString("Parse error at line %1, column %2:\n%3")
+                                 QString(rFile.fileName() + ": Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
                                  .arg(errorStr));

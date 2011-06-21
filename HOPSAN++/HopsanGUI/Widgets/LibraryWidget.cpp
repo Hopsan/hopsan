@@ -483,6 +483,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     }
 
     //Append components
+    filters.clear();
     filters << "*.xml";                     //Create the name filter
     libDirObject.setFilter(QDir::NoFilter);
     libDirObject.setNameFilters(filters);   //Set the name filter
@@ -524,7 +525,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
         else
         {
             QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData in %4"),
-                                     tr("Parse error at line %1, column %2:\n%3")
+                                     QString(file.fileName() + "Parse error at line %1, column %2:\n%3")
                                      .arg(errorLine)
                                      .arg(errorColumn)
                                      .arg(errorStr)

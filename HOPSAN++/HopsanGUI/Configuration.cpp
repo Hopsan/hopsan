@@ -169,7 +169,7 @@ void Configuration::loadFromXml()
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
-                                 gpMainWindow->tr("Parse error at line %1, column %2:\n%3")
+                                 gpMainWindow->tr("hopsanconfig.xml: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
                                  .arg(errorStr));
@@ -321,7 +321,7 @@ void Configuration::loadDefaultsFromXml()
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
-                                 gpMainWindow->tr("Parse error at line %1, column %2:\n%3")
+                                 gpMainWindow->tr("hopsandefaults: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
                                  .arg(errorStr));
