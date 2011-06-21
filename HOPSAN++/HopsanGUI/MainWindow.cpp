@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("Hopsan");
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
+    this->setMouseTracking(true);
 
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
@@ -345,6 +346,13 @@ void MainWindow::showHelpPopupMessage(QString message)
 }
 
 
+//! @brief Hides the help popup message
+void MainWindow::hideHelpPopupMessage()
+{
+    mpHelpPopup->hide();
+}
+
+
 //! @brief Returns a pointer to the python scripting dock widget.
 PyDockWidget *MainWindow::getPythonDock()
 {
@@ -404,6 +412,8 @@ void MainWindow::createActions()
     openSystemParametersAction->setShortcut(tr("Ctrl+Shift+y"));
     openSystemParametersAction->setCheckable(true);
     connect(openSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
+    connect(openSystemParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
@@ -420,12 +430,14 @@ void MainWindow::createActions()
     simulateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Simulate"), this);
     simulateAction->setToolTip(tr("Simulate Current Project (Ctrl+Shift+S)"));
     simulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
+    connect(simulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     plotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
     plotAction->setCheckable(true);
-    connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
     plotAction->setShortcut(QKeySequence("Ctrl+Shift+p"));
+    connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
+    connect(plotAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     loadLibsAction = new QAction(this);
     loadLibsAction->setText("Load Libraries");
@@ -434,6 +446,7 @@ void MainWindow::createActions()
     propertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
     propertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");
     propertiesAction->setShortcut(QKeySequence("Ctrl+Shift+m"));
+    connect(propertiesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     optionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
     optionsAction->setToolTip("Options (Ctrl+Shift+O)");
@@ -666,6 +679,7 @@ void MainWindow::createToolbars()
     //Simulation toolbar, contains tools for simulationg, plotting and model preferences
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
     mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpSimToolBar->setAttribute(Qt::WA_MouseTracking);
     mpSimToolBar->addWidget(mpStartTimeLineEdit);
     mpSimToolBar->addWidget(mpTimeLabelDeliminator1);
     mpSimToolBar->addWidget(mpTimeStepLineEdit);
@@ -777,6 +791,29 @@ void MainWindow::updateSystemParametersActionButton(bool)
 }
 
 
+void MainWindow::showToolBarHelpPopup()
+{
+    QCursor cursor;
+    QAction *pHoveredAction = mpSimToolBar->actionAt(mpSimToolBar->mapFromGlobal(cursor.pos()));
+    if(pHoveredAction == simulateAction)
+    {
+        showHelpPopupMessage("Starts a new simlation of current model.");
+    }
+    else if(pHoveredAction == plotAction)
+    {
+        showHelpPopupMessage("Opens the list with all available plot variables from current model.");
+    }
+    else if(pHoveredAction == openSystemParametersAction)
+    {
+        showHelpPopupMessage("Opens the list of system parameters.");
+    }
+    else if(pHoveredAction == propertiesAction)
+    {
+        showHelpPopupMessage("Opens a dialog with settings for the current model.");
+    }
+}
+
+
 //! @brief Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
@@ -855,6 +892,13 @@ void MainWindow::updateRecentList()
     }
 }
 
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    hideHelpPopupMessage();
+
+    QMainWindow::mouseMoveEvent(event);
+}
 
 //! @brief Sets a new startvalue.
 //! @param startTime is the new value

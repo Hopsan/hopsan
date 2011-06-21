@@ -74,15 +74,6 @@ public:
     PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
 
-    //Help popup
-    QWidget *mpHelpPopup;
-    QLabel *mpHelpPopupIcon;
-    QLabel *mpHelpPopupLabel;
-    QHBoxLayout *mpHelpPopupLayout;
-    QGroupBox *mpHelpPopupGroupBox;
-    QHBoxLayout *mpHelpPopupGroupBoxLayout;
-    QTimer *mpHelpPopupTimer;
-
     //Menubar items
     QMenuBar *menubar;
     QMenu *menuFile;
@@ -163,6 +154,7 @@ public:
     void closeEvent(QCloseEvent *event);
 
     void showHelpPopupMessage(QString message);
+    void hideHelpPopupMessage();
 
     PyDockWidget *getPythonDock();
 
@@ -175,6 +167,9 @@ public slots:
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
 
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *);
+
 private slots:
     void openPlotWidget();
     void openUndoWidget();
@@ -183,6 +178,7 @@ private slots:
     void openArchiveURL();
     void updatePlotActionButton(bool);
     void updateSystemParametersActionButton(bool);
+    void showToolBarHelpPopup();
 
 private:
     //Dock area widgets
@@ -199,6 +195,15 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
+
+    //Help popup
+    QWidget *mpHelpPopup;
+    QLabel *mpHelpPopupIcon;
+    QLabel *mpHelpPopupLabel;
+    QHBoxLayout *mpHelpPopupLayout;
+    QGroupBox *mpHelpPopupGroupBox;
+    QHBoxLayout *mpHelpPopupGroupBoxLayout;
+    QTimer *mpHelpPopupTimer;
 };
 
 #endif // MAINWINDOW_H

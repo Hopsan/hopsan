@@ -338,7 +338,7 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
     drag->setHotSpot(QPoint(20, 20));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
 
-    gpMainWindow->mpHelpPopup->hide();
+    gpMainWindow->hideHelpPopupMessage();
 }
 
 
@@ -625,7 +625,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
 void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    gpMainWindow->mpHelpPopup->hide();
+    gpMainWindow->hideHelpPopupMessage();
 
     QWidget::mouseMoveEvent(event);
 }

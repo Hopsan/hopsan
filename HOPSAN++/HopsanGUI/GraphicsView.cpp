@@ -328,7 +328,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpContainerObject->setIsCreatingConnector(false);
             mpContainerObject->mJustStoppedCreatingConnector = true;
             delete(mpContainerObject->mpTempConnector);
-            gpMainWindow->mpHelpPopup->hide();
+            gpMainWindow->hideHelpPopupMessage();
         }
     }
     else if (ctrlPressed && event->key() == Qt::Key_0)
@@ -548,7 +548,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             mpContainerObject->setIsCreatingConnector(false);
             mpContainerObject->mJustStoppedCreatingConnector = true;
             delete(mpContainerObject->mpTempConnector);
-            gpMainWindow->mpHelpPopup->hide();
+            gpMainWindow->hideHelpPopupMessage();
         }
 
         if(mpContainerObject->getIsCreatingConnector())

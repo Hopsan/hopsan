@@ -1086,7 +1086,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 
         if (success)
         {
-            gpMainWindow->mpHelpPopup->hide();
+            gpMainWindow->hideHelpPopupMessage();
             setIsCreatingConnector(false);
             pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
