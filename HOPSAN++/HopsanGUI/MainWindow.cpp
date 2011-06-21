@@ -646,7 +646,7 @@ void MainWindow::createToolbars()
 {
     //File toolbar, contains all file handling stuff (open, save etc)
     mpFileToolBar = addToolBar(tr("File Toolbar"));
-    mpFileToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpFileToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpFileToolBar->addAction(newAction);
     mpFileToolBar->addAction(openAction);
     mpFileToolBar->addAction(saveAction);
@@ -676,11 +676,12 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(propertiesAction);
     mpSimToolBar->addAction(openSystemParametersAction);
 
-    addToolBarBreak(Qt::TopToolBarArea);
+    //addToolBarBreak(Qt::TopToolBarArea);
 
     //Edit toolbar, contains clipboard operations, undo/redo and global options
-    mpEditToolBar = addToolBar(tr("Edit Toolbar"));
-    mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpEditToolBar = new QToolBar(tr("Edit Toolbar"));
+    addToolBar(Qt::LeftToolBarArea, mpEditToolBar);
+    mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpEditToolBar->addAction(cutAction);
     mpEditToolBar->addAction(copyAction);
     mpEditToolBar->addAction(pasteAction);
@@ -689,8 +690,9 @@ void MainWindow::createToolbars()
     mpEditToolBar->addAction(optionsAction);
 
     //View toolbar, contains all cosmetic and zooming tools
-    mpViewToolBar = addToolBar(tr("View Toolbar"));
-    mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpViewToolBar = new QToolBar(tr("View Toolbar"));
+    addToolBar(Qt::LeftToolBarArea, mpViewToolBar);
+    mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpViewToolBar->addAction(centerViewAction);
     mpViewToolBar->addAction(resetZoomAction);
     mpViewToolBar->addAction(zoomInAction);
@@ -700,7 +702,8 @@ void MainWindow::createToolbars()
     mpViewToolBar->addAction(toggleSignalsAction);
 
     //Tools toolbar, contains all tools used to modify the model
-    mpToolsToolBar = addToolBar(tr("Tools Toolbar"));
+    mpToolsToolBar = new QToolBar(tr("Tools Toolbar"));
+    addToolBar(Qt::LeftToolBarArea, mpToolsToolBar);
     mpToolsToolBar->addAction(alignXAction);
     mpToolsToolBar->addAction(alignYAction);
     mpToolsToolBar->addAction(rotateRightAction);
