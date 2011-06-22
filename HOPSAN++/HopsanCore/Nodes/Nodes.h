@@ -184,7 +184,7 @@ namespace hopsan {
             setDataCharacteristics(ANGLE, "Angle", "rad");
             setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Nm", Node::NOPLOT);
             setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
-            setDataCharacteristics(EQINERTIA, "Equivalent Inertia", "kgm^2");
+            setDataCharacteristics(EQINERTIA, "Equivalent Inertia", "kgm^2", Node::NOPLOT);
         }
 
         virtual void setSpecialStartValues(Node *pNode)
