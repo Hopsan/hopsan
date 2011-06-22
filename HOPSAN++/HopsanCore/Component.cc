@@ -32,6 +32,10 @@
 #include "HopsanEssentials.h"
 #include "CoreUtilities/FindUniqueName.h"
 
+#ifdef USETBB
+#include "mutex.h"
+#endif
+
 using namespace std;
 using namespace hopsan;
 
@@ -1038,32 +1042,4 @@ ComponentQ::ComponentQ(string name) : Component(name)
 {
     mTypeCQS = Component::Q;
     mIsComponentQ = true;
-}
-
-
-//Constructor
-ComponentSystem::ComponentSystem(string name) : Component(name)
-{
-    mTypeName = "ComponentSystem";
-    mIsComponentSystem = true;
-    mDesiredTimestep = 0.001;
-}
-
-double ComponentSystem::getDesiredTimeStep()
-{
-    return mDesiredTimestep;
-}
-
-
-//! Sets a bool which is looked at in initialization and simulation loops.
-//! This method can be used by users e.g. GUIs to stop an started initializatiion/simulation process
-void ComponentSystem::stop()
-{
-    mStop = true;
-}
-
-
-Parameters &ComponentSystem::getSystemParameters()
-{
-    return *mParameters;
 }

@@ -104,7 +104,12 @@ namespace hopsan {
         void initialize(const double startT, const double stopT, const size_t nSamples=2048);
         void initializeComponentsOnly();
         void simulateMultiThreadedOld(const double startT, const double stopT);
-        void simulateMultiThreaded(const double startT, const double stopT, const size_t nThreads = 0);
+        void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0);
+        #ifdef USETBB
+        void simulateOneStepAndMeasureTime();
+        void sortComponentVectorsByMeasuredTime();
+        int getNumberOfThreads(size_t nDesiredThreads);
+        #endif
         void simulate(const double startT, const double stopT);
         void finalize(const double startT, const double stopT);
 
@@ -156,8 +161,7 @@ namespace hopsan {
         std::vector<Node*> mSubNodePtrs;
         //NodeFactory mpNodeFactory;
 
-        bool mStop;
-
+        bool volatile mStop;
 //Finns i Component        Parameters *mSystemParameters;
     };
 }
