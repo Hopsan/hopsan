@@ -33,7 +33,6 @@
 #include "HopsanEssentials.h"
 
 #ifdef USETBB
-#define DEBUGTBB
 #include "mutex.h"
 #include "atomic.h"
 #include "tick_count.h"
@@ -2112,6 +2111,43 @@ void ComponentSystem::initializeComponentsOnly()
 
 #ifdef USETBB
 
+
+//! @brief Class for barrier locks in multi-threaded simulations.
+class BarrierLock
+{
+public:
+    //! @brief Constructor.
+    //! @note Number of threads must be correct! Wrong value will result in either deadlocks or threads or non-synchronized threads.
+    //! @param nThreads Number of threads to by synchronized.
+    BarrierLock(size_t nThreads)
+    {
+        mnThreads=nThreads;
+        mCounter = 0;
+        mLock = true;
+    }
+
+    //! @brief Locks the barrier.
+    inline void lock() { mCounter=0; mLock=true; }
+
+    //! @brief Unlocks the barrier.
+    inline void unlock() { mLock=false; }
+
+    //! @brief Returns whether or not the barrier is locked.
+    inline bool isLocked() { return mLock; }
+
+    //! @brief Increments barrier counter by one.
+    inline void increment() { ++mCounter; }
+
+    //! @brief Returns whether or not all threads have incremented the barrier.
+    inline bool allArrived() { return (mCounter == (mnThreads-1)); }      //One less due to master thread
+
+private:
+    int mnThreads;
+    tbb::atomic<size_t> mCounter;
+    tbb::atomic<bool> mLock;
+};
+
+
 //! @brief Class for slave simlation threads, which must be syncronized from a master simulation thread
 class taskSimSlave
 {
@@ -2124,21 +2160,15 @@ public:
     //! @param startTime Start time of simulation
     //! @param timeStep Step time of simulation
     //! @param stopTime Stop Time of simulation
-    //! @param nCores Number of threads used in simulation
-    //! @param coreN Number of this thread
-    //! @param *pBarrier_s Pointer to barrier before executing signal components (atomic)
-    //! @param *pBarrier_c Pointer to barrier before executing C-type components (atomic)
-    //! @param *pBarrier_q Pointer to barrier before executing Q-type components (atomic)
-    //! @param *pBarrier_n Pointer to barrier before executing node logging (atomic)
-    //! @param *pLock_s Pointer to lock boolean used before executing signal components (atomic)
-    //! @param *pLock_c Pointer to lock boolean used before executing C-type components (atomic)
-    //! @param *pLock_q Pointer to lock boolean used before executing Q-type components (atomic)
-    //! @param *pLock_n Pointer to lock boolean used before executing node logging (atomic)
-
+    //! @param nThreads Number of threads used in simulation
+    //! @param threadID Number of this thread
+    //! @param *pBarrier_S Pointer to barrier before signal components
+    //! @param *pBarrier_C Pointer to barrier before C-type components
+    //! @param *pBarrier_Q Pointer to barrier before Q-type components
+    //! @param *pBarrier_N Pointer to barrier before node logging
     taskSimSlave(vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector,
-                 double startTime, double timeStep, double stopTime, size_t nCores, size_t coreN,
-                 tbb::atomic<size_t> *pBarrier_s, tbb::atomic<size_t> *pBarrier_c, tbb::atomic<size_t> *pBarrier_q, tbb::atomic<size_t> *pBarrier_n,
-                 tbb::atomic<bool> *pLock_s, tbb::atomic<bool> *pLock_c, tbb::atomic<bool> *pLock_q, tbb::atomic<bool> *pLock_n)
+                 double startTime, double timeStep, double stopTime, size_t nThreads, size_t threadID,
+                 BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
         mVectorS = sVector;
         mVectorC = cVector;
@@ -2147,16 +2177,12 @@ public:
         mTime = startTime;
         mStopTime = stopTime;
         mTimeStep = timeStep;
-        mnCores = nCores;
-        mCoreN = coreN;
-        mpBarrier_s = pBarrier_s;
-        mpBarrier_c = pBarrier_c;
-        mpBarrier_q = pBarrier_q;
-        mpBarrier_n = pBarrier_n;
-        mpLock_s = pLock_s;
-        mpLock_c = pLock_c;
-        mpLock_q = pLock_q;
-        mpLock_n = pLock_n;
+        mnThreads = nThreads;
+        mThreadID = threadID;
+        mpBarrier_S = pBarrier_S;
+        mpBarrier_C = pBarrier_C;
+        mpBarrier_Q = pBarrier_Q;
+        mpBarrier_N = pBarrier_N;
     }
 
     //! @brief Executable code for slave simulation thread
@@ -2167,8 +2193,8 @@ public:
 
             //! Signal Components !//
 
-            ++(*mpBarrier_s);
-            while(*mpLock_s){}
+            mpBarrier_S->increment();
+            while(mpBarrier_S->isLocked()){}                         //Wait at S barrier
 
             for(int i=0; i<mVectorS.size(); ++i)
             {
@@ -2178,8 +2204,8 @@ public:
 
             //! C Components !//
 
-            ++(*mpBarrier_c);
-            while(*mpLock_c){}
+            mpBarrier_C->increment();
+            while(mpBarrier_C->isLocked()){}                         //Wait at C barrier
 
             for(int i=0; i<mVectorC.size(); ++i)
             {
@@ -2189,8 +2215,8 @@ public:
 
             //! Q Components !//
 
-            ++(*mpBarrier_q);
-            while(*mpLock_q){}
+            mpBarrier_Q->increment();
+            while(mpBarrier_Q->isLocked()){}                         //Wait at Q barrier
 
             for(int i=0; i<mVectorQ.size(); ++i)
             {
@@ -2200,8 +2226,8 @@ public:
 
             //! Log Nodes !//
 
-            ++(*mpBarrier_n);
-            while(*mpLock_n){}
+            mpBarrier_N->increment();
+            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
 
             for(int i=0; i<mVectorN.size(); ++i)
             {
@@ -2220,16 +2246,12 @@ private:
     double mTimeStep;
     double mTime;
     double *mpSimTime;
-    size_t mnCores;
-    size_t mCoreN;
-    tbb::atomic<size_t> *mpBarrier_s;
-    tbb::atomic<size_t> *mpBarrier_c;
-    tbb::atomic<size_t> *mpBarrier_q;
-    tbb::atomic<size_t> *mpBarrier_n;
-    tbb::atomic<bool> *mpLock_s;
-    tbb::atomic<bool> *mpLock_c;
-    tbb::atomic<bool> *mpLock_q;
-    tbb::atomic<bool> *mpLock_n;
+    size_t mnThreads;
+    size_t mThreadID;
+    BarrierLock *mpBarrier_S;
+    BarrierLock *mpBarrier_C;
+    BarrierLock *mpBarrier_Q;
+    BarrierLock *mpBarrier_N;
 };
 
 
@@ -2247,20 +2269,15 @@ public:
     //! @param startTime Start time of simulation
     //! @param timeStep Step time of simulation
     //! @param stopTime Stop Time of simulation
-    //! @param nCores Number of threads used in simulation
-    //! @param coreN Number of this thread
-    //! @param *pBarrier_s Pointer to barrier before executing signal components (atomic)
-    //! @param *pBarrier_c Pointer to barrier before executing C-type components (atomic)
-    //! @param *pBarrier_q Pointer to barrier before executing Q-type components (atomic)
-    //! @param *pBarrier_n Pointer to barrier before executing node logging (atomic)
-    //! @param *pLock_s Pointer to lock boolean used before executing signal components (atomic)
-    //! @param *pLock_c Pointer to lock boolean used before executing C-type components (atomic)
-    //! @param *pLock_q Pointer to lock boolean used before executing Q-type components (atomic)
-    //! @param *pLock_n Pointer to lock boolean used before executing node logging (atomic)
+    //! @param nThreads Number of threads used in simulation
+    //! @param threadID Number of this thread
+    //! @param *pBarrier_S Pointer to barrier before signal components
+    //! @param *pBarrier_C Pointer to barrier before C-type components
+    //! @param *pBarrier_Q Pointer to barrier before Q-type components
+    //! @param *pBarrier_N Pointer to barrier before node logging
     taskSimMaster(vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector, double *pSimTime,
-                  double startTime, double timeStep, double stopTime, size_t nCores, size_t coreN,
-                  tbb::atomic<size_t> *pBarrier_s, tbb::atomic<size_t> *pBarrier_c, tbb::atomic<size_t> *pBarrier_q, tbb::atomic<size_t> *pBarrier_n,
-                  tbb::atomic<bool> *pLock_s, tbb::atomic<bool> *pLock_c, tbb::atomic<bool> *pLock_q, tbb::atomic<bool> *pLock_n)
+                  double startTime, double timeStep, double stopTime, size_t nThreads, size_t threadID,
+                  BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
         mVectorS = sVector;
         mVectorC = cVector;
@@ -2270,16 +2287,12 @@ public:
         mTime = startTime;
         mStopTime = stopTime;
         mTimeStep = timeStep;
-        mnCores = nCores;
-        mCoreN = coreN;
-        mpBarrier_s = pBarrier_s;
-        mpBarrier_c = pBarrier_c;
-        mpBarrier_q = pBarrier_q;
-        mpBarrier_n = pBarrier_n;
-        mpLock_s = pLock_s;
-        mpLock_c = pLock_c;
-        mpLock_q = pLock_q;
-        mpLock_n = pLock_n;
+        mnThreads = nThreads;
+        mThreadID = threadID;
+        mpBarrier_S = pBarrier_S;
+        mpBarrier_C = pBarrier_C;
+        mpBarrier_Q = pBarrier_Q;
+        mpBarrier_N = pBarrier_N;
     }
 
     //! @brief Executable code for master simulation thread
@@ -2290,10 +2303,10 @@ public:
 
             //! Signal Components !//
 
-            while(*mpBarrier_s < mnCores-1) {}      //Wait for all other threads to reach signal component code
-            *mpBarrier_s = 0;                       //Reset signal component barrier
-            *mpLock_s = false;                      //Unlock signal component code
-            *mpLock_q = true;                       //Lock Q-type component code (must be done in advance to prevent lockup
+            while(!mpBarrier_S->allArrived()) {}    //Wait for all other threads to arrive at signal barrier
+            mpBarrier_C->lock();                    //Lock next barrier (must be done before unlocking this one, to prevnet deadlocks)
+            mpBarrier_S->unlock();                  //Unlock signal barrier
+
 
             for(int i=0; i<mVectorS.size(); ++i)
             {
@@ -2302,10 +2315,9 @@ public:
 
             //! C Components !//
 
-            while(*mpBarrier_c < mnCores-1) {}
-            *mpBarrier_c = 0;
-            *mpLock_c = false;
-            *mpLock_n = true;
+            while(!mpBarrier_C->allArrived()) {}    //C barrier
+            mpBarrier_Q->lock();
+            mpBarrier_C->unlock();
 
             for(int i=0; i<mVectorC.size(); ++i)
             {
@@ -2315,10 +2327,9 @@ public:
 
             //! Q Components !//
 
-            while(*mpBarrier_q < mnCores-1) {}
-            *mpBarrier_q = 0;
-            *mpLock_q = false;
-            *mpLock_s = true;
+            while(!mpBarrier_Q->allArrived()) {}    //Q barrier
+            mpBarrier_N->lock();
+            mpBarrier_Q->unlock();
 
             for(int i=0; i<mVectorQ.size(); ++i)
             {
@@ -2327,10 +2338,9 @@ public:
 
             //! Log Nodes !//
 
-            while(*mpBarrier_n < mnCores-1) {}
-            *mpBarrier_n = 0;
-            *mpLock_n = false;
-            *mpLock_c = true;
+            while(!mpBarrier_N->allArrived()) {}    //N barrier
+            mpBarrier_S->lock();
+            mpBarrier_N->unlock();
 
             for(int i=0; i<mVectorN.size(); ++i)
             {
@@ -2351,16 +2361,12 @@ private:
     double mTimeStep;
     double mTime;
     double *mpSimTime;
-    size_t mnCores;
-    size_t mCoreN;
-    tbb::atomic<size_t> *mpBarrier_s;
-    tbb::atomic<size_t> *mpBarrier_c;
-    tbb::atomic<size_t> *mpBarrier_q;
-    tbb::atomic<size_t> *mpBarrier_n;
-    tbb::atomic<bool> *mpLock_s;
-    tbb::atomic<bool> *mpLock_c;
-    tbb::atomic<bool> *mpLock_q;
-    tbb::atomic<bool> *mpLock_n;
+    size_t mnThreads;
+    size_t mThreadID;
+    BarrierLock *mpBarrier_S;
+    BarrierLock *mpBarrier_C;
+    BarrierLock *mpBarrier_Q;
+    BarrierLock *mpBarrier_N;
 };
 
 
@@ -2377,13 +2383,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     logAllNodes(mTime);                                         //Log the first time step
 
-    #ifdef DEBUGTBB
-    tbb::tick_count measurement_start = tbb::tick_count::now();
-    #endif
-
     size_t nThreads = getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
     simulateAndMeasureTime(5);                                  //Measure time
-    sortComponentVectorsByMeasuredTime();                       //Sort vectors
+    sortComponentVectorsByMeasuredTime();                       //Sort component vectors
 
     vector< vector<Component*> > splitCVector;                  //Create split vectors
     vector< vector<Component*> > splitQVector;
@@ -2395,40 +2397,24 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     distributeSignalcomponents(splitSignalVector, nThreads);    //"Distribute" signal components
     distributeNodePointers(splitNodeVector, nThreads);          //Distribute node pointers
 
-    #ifdef DEBUGTBB
-    tbb::tick_count measurement_end = tbb::tick_count::now();
-    stringstream ss;
-    ss << (double)((measurement_end-measurement_start).seconds());                                                                                               //DEBUG
-    gCoreMessageHandler.addDebugMessage("Measurement time = " + ss.str() + " ms");
-    #endif
-
-
     tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
     simTasks = new tbb::task_group;
 
-    static tbb::atomic<size_t> barrier_s;                       //Create barrier counters
-    static tbb::atomic<size_t> barrier_c;
-    static tbb::atomic<size_t> barrier_q;
-    static tbb::atomic<size_t> barrier_n;
-    barrier_s = 0;                                              //Initialize barrier counters (0 = locked)
-    barrier_c = 0;
-    barrier_q = 0;
-    barrier_n = 0;
-
-    static tbb::atomic<bool> lock_s;                            //Create barrier locks
-    static tbb::atomic<bool> lock_c;
-    static tbb::atomic<bool> lock_q;
-    static tbb::atomic<bool> lock_n;
-    lock_s = true;                                              //Initialize barrier locks (true = locked)
-    lock_c = true;
-    lock_q = true;
-    lock_n = true;
+    BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
+    BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
+    BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
+    BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
 
     //Execute simulation
-    simTasks->run(taskSimMaster(splitSignalVector[0], splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nThreads, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
+    simTasks->run(taskSimMaster(splitSignalVector[0], splitCVector[0], splitQVector[0],             //Create master thread
+                                splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nThreads, 0,
+                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+
     for(int t=1; t < nThreads; ++t)
     {
-        simTasks->run(taskSimSlave(splitSignalVector[t], splitCVector[t], splitQVector[t], splitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
+        simTasks->run(taskSimSlave(splitSignalVector[t], splitCVector[t], splitQVector[t],          //Create slave threads
+                                   splitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t,
+                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
     }
     simTasks->wait();                                           //Wait for all tasks to finish
     delete(simTasks);                                           //Delete the tasks
@@ -2552,14 +2538,12 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
 //! @param nThreads Number of simulation threads
 void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplitCVector, size_t nThreads)
 {
-    #ifdef DEBUGTBB
     vector<double> timeVector;
     timeVector.resize(nThreads);
     for(int i=0; i<nThreads; ++i)
     {
         timeVector[i] = 0;
     }
-    #endif
 
     rSplitCVector.resize(nThreads);
     size_t cCompNum=0;
@@ -2570,23 +2554,19 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
             if(cCompNum == mComponentCptrs.size())
                 break;
             rSplitCVector[thread].push_back(mComponentCptrs[cCompNum]);
-            #ifdef DEBUGTBB
             timeVector[thread] += mComponentCptrs[cCompNum]->getMeasuredTime();
-            #endif
             ++cCompNum;
         }
         if(cCompNum == mComponentCptrs.size())
             break;
     }
 
-    #ifdef DEBUGTBB
     for(int i=0; i<nThreads; ++i)
     {
         stringstream ss;
         ss << timeVector[i]*1000;
         gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
     }
-    #endif
 }
 
 
@@ -2595,14 +2575,12 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
 //! @param nThreads Number of simulation threads
 void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplitQVector, size_t nThreads)
 {
-    #ifdef DEBUGTBB
     vector<double> timeVector;
     timeVector.resize(nThreads);
     for(int i=0; i<nThreads; ++i)
     {
         timeVector[i] = 0;
     }
-    #endif
 
     rSplitQVector.resize(nThreads);
     size_t qCompNum=0;
@@ -2613,23 +2591,19 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
             if(qCompNum == mComponentQptrs.size())
                 break;
             rSplitQVector[thread].push_back(mComponentQptrs[qCompNum]);
-            #ifdef DEBUGTBB
             timeVector[thread] += mComponentQptrs[qCompNum]->getMeasuredTime();
-            #endif
             ++qCompNum;
         }
         if(qCompNum == mComponentQptrs.size())
             break;
     }
 
-    #ifdef DEBUGTBB
     for(int i=0; i<nThreads; ++i)
     {
         stringstream ss;
         ss << timeVector[i]*1000;
         gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
     }
-    #endif
 }
 
 

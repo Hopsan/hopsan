@@ -1017,9 +1017,6 @@ void GUIConnector::determineAppearance()
     QString startPortType = mpStartPort->getPortType();
     QString endPortType = mpEndPort->getPortType();
 
-    qDebug() << "startPortType = " << startPortType;
-    qDebug() << "endPortType = " << endPortType;
-
     //We need to determine if we want arrows before we replace systemporttypes with internal port types
     //Add arrow to the connector if it is of signal type
     if (mpEndPort->getNodeType() == "NodeSignal")
