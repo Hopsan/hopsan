@@ -30,7 +30,6 @@
 
 namespace hopsan {
 
-    //Verified with AMESim 2011-03-21
     //!
     //! @brief
     //! @ingroup MechanicalComponents
