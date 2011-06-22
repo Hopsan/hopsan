@@ -41,10 +41,11 @@ class Parameter
 {
 public:
     Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr=0, Parameters* parentParameters=0);
-    void setParameterValue(const std::string value);
+    bool setParameterValue(const std::string value);
     void getParameter(std::string &parameterName, std::string &parameterValue, std::string &description, std::string &unit, std::string &type);
     std::string getType();
-    std::string evaluate();
+    bool evaluate(std::string &result);
+    bool evaluate();
 
 protected:
     std::string mParameterName;

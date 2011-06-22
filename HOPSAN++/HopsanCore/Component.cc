@@ -71,10 +71,10 @@ void Parameter::getParameter(std::string &parameterName, std::string &parameterV
 }
 
 
-void Parameter::setParameterValue(const std::string value)
+bool Parameter::setParameterValue(const std::string value)
 {
     mParameterValue = value;
-    evaluate();
+    return evaluate();
 }
 
 
@@ -84,8 +84,16 @@ std::string Parameter::getType()
 }
 
 
-std::string Parameter::evaluate()
+bool Parameter::evaluate()
 {
+    std::string dummy;
+    return evaluate(dummy);
+}
+
+
+bool Parameter::evaluate(std::string &result)
+{
+    bool success = true;
     std::string evaluatedParameterValue;
     if(!(mpParentParameters->evaluateParameter(mParameterValue, evaluatedParameterValue, mType)))
     {
@@ -104,7 +112,7 @@ std::string Parameter::evaluate()
             }
             else
             {
-                assert(false);
+                success = false;
             }
         }
         else if(mType=="integer")
@@ -118,7 +126,7 @@ std::string Parameter::evaluate()
             }
             else
             {
-                assert(false);
+                success = false;
             }
         }
         else if(mType=="bool")
@@ -132,7 +140,7 @@ std::string Parameter::evaluate()
             }
             else
             {
-                assert(false);
+                success = false;
             }
         }
         else if(mType=="string")
@@ -140,9 +148,14 @@ std::string Parameter::evaluate()
             string* apa = static_cast<string*> (mpData);
             *apa = evaluatedParameterValue;
         }
+        else
+        {
+            success = false;
+        }
     }
 
-    return evaluatedParameterValue;
+    result = evaluatedParameterValue;
+    return success;
 }
 
 
@@ -214,8 +227,7 @@ bool Parameters::setParameterValue(const std::string name, const std::string val
         mParameters[i]->getParameter(parameterName, parameterValue, description, unit, type);
         if(name == parameterName)
         {
-            mParameters[i]->setParameterValue(value);
-            success = true;
+            success = mParameters[i]->setParameterValue(value);
         }
     }
     return success;
@@ -231,8 +243,7 @@ bool Parameters::evaluateParameter(const std::string parameterName, std::string 
         mParameters[i]->getParameter(parameterName2, parameterValue2, description2, unit2, type2);
         if((parameterName == parameterName2) && (mParameters[i]->getType() == type))
         {
-            evaluatedParameterValue = mParameters[i]->evaluate();
-            success = true;
+            success = mParameters[i]->evaluate(evaluatedParameterValue);
         }
     }
     if(!success)
