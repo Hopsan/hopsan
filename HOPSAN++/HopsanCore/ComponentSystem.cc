@@ -1651,7 +1651,9 @@ bool ComponentSystem::disconnect(string compname1, string portname1, string comp
     return false;
 }
 
-//! Disconnects two ports and remove node if no one is using it any more
+//! @brief Disconnects two ports and remove node if no one is using it any more.
+//! @param pPort1 Pointer to first port
+//! @param pPort2 Pointer to second port
 //! @todo whay about system ports they are somewaht speciall
 bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
@@ -1742,7 +1744,8 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 }
 
 
-
+//! @brief Sets the desired time step in a component system.
+//! @brief param timestep New desired time step
 void ComponentSystem::setDesiredTimestep(const double timestep)
 {
     mDesiredTimestep = timestep;
@@ -1781,6 +1784,9 @@ void ComponentSystem::setDesiredTimestep(const double timestep)
 //}
 
 
+//! @brief Sets the time step in a component system.
+//! Also propagates it to all contained components and systems.
+//! @brief param timestep New time step
 void ComponentSystem::setTimestep(const double timestep)
 {
     mTimestep = timestep;
@@ -1961,7 +1967,11 @@ void ComponentSystem::loadStartValuesFromSimulation()
 }
 
 
-//! Initializes a system component and all its contained components, also allocates log data memory
+//! @brief Initializes a system and all its contained components before a simulation.
+//! Also allocates log data memory.
+//! @param startT Start time of simlation
+//! @param stopT Stop time of simlation
+//! @param nSamples Number of log samples
 void ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
 {
     cout << "Initializing SubSystem: " << this->mName << endl;
@@ -2033,7 +2043,8 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
 }
 
 
-//! Initializes a system component and all its contained components, also allocates log data memory
+//! @brief Does all initialization except log space allocation.
+//! Used in export functions to other environment. For some reason this is necessary.
 //! @todo Find a better solution
 void ComponentSystem::initializeComponentsOnly()
 {
@@ -2353,7 +2364,10 @@ private:
 };
 
 
-
+//! @brief Simulate function for multi-threaded simulations.
+//! @param startT Start time of simulation
+//! @param stopT Stop time of simulation
+//! @param nDesiredThreads Desired amount of simulation threads
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads)
 {
     mStop = false;
@@ -2368,7 +2382,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     #endif
 
     size_t nThreads = getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
-    simulateOneStepAndMeasureTime();                            //Measure time
+    simulateAndMeasureTime(5);                                  //Measure time
     sortComponentVectorsByMeasuredTime();                       //Sort vectors
 
     vector< vector<Component*> > splitCVector;                  //Create split vectors
@@ -2421,32 +2435,45 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 }
 
 
-void ComponentSystem::simulateOneStepAndMeasureTime()
+//! @brief Helper function that simulates all components and measure their average time requirements.
+//! @param steps How many steps to simulate
+void ComponentSystem::simulateAndMeasureTime(size_t steps)
 {
-            //Simulate S, C and Q components one time step on single core and meassure the required time
-        for(int s=0; s<mComponentSignalptrs.size(); ++s)
-        {
-            mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);      //No reason to measure time for signal components
-        }
-        for(int c=0; c<mComponentCptrs.size(); ++c)
+        //Simulate S, C and Q components one time step on single core and meassure the required time
+    for(int s=0; s<mComponentSignalptrs.size(); ++s)
+    {
+        mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);      //No reason to measure time for signal components
+    }
+    for(int c=0; c<mComponentCptrs.size(); ++c)
+    {
+        double tTot = 0;
+        for(size_t t=0; t<steps; ++t)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
             tbb::tick_count comp_end = tbb::tick_count::now();
-            mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+            tTot += double((comp_end-comp_start).seconds());
         }
-        for(int q=0; q<mComponentQptrs.size(); ++q)
+        mComponentCptrs[c]->setMeasuredTime(tTot/steps);
+    }
+    for(int q=0; q<mComponentQptrs.size(); ++q)
+    {
+        double tTot = 0;
+        for(size_t t=0; t<steps; ++t)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
             tbb::tick_count comp_end = tbb::tick_count::now();
-            mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+            tTot += double((comp_end-comp_start).seconds());
         }
+        mComponentQptrs[q]->setMeasuredTime(tTot/steps);
+    }
 
-        mTime += mTimestep; //Increase time (since one time step has passed)
+    mTime += steps*mTimestep; //Increase time
 }
 
 
+//! @brief Helper function that sorts C- and Q- component vectors by simulation time for each component.
 void ComponentSystem::sortComponentVectorsByMeasuredTime()
 {
         //Sort the components from longest to shortest time requirement (this is a bubblesort, we should probably use something faster...)
@@ -2486,6 +2513,9 @@ void ComponentSystem::sortComponentVectorsByMeasuredTime()
 }
 
 
+//! @brief Helper function that decides how many thread to use.
+//! User specifies desired amount, but it is limited by how many cores the processor has.
+//! @param nDesiredThreads How many threads the user wants
 int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
 {
         //Obtain number of processor cores from environment variable, or use user specified value if not zero
@@ -2642,6 +2672,8 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
 
 #else
     //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
+//! @brief Simulate function that overrides multi-threaded simulation call with a single-threaded call.
+//! In case multi-threaded support is not available.
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/)
 {
     this->simulate(startT, stopT);
@@ -2649,6 +2681,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 #endif
 
 
+//! @brief Simulate function for single-threaded simulations.
+//! @param startT Start time of simulation
+//! @param stopT Stop time of simulation
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
     mStop = false;
@@ -2685,7 +2720,9 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 }
 
 
-//! Finalizes a system component and all its contained components
+//! @brief Finalizes a system component and all its contained components after a simulation.
+//! @param startT Start time of simulation
+//! @param stopT Stop time of simulation
 void ComponentSystem::finalize(const double startT, const double stopT)
 {
     //! @todo take the final simulation step is suitable here

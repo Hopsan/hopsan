@@ -110,7 +110,7 @@ namespace hopsan {
         void simulateMultiThreadedOld(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0);
         #ifdef USETBB
-        void simulateOneStepAndMeasureTime();
+        void simulateAndMeasureTime(size_t steps = 1);
         void sortComponentVectorsByMeasuredTime();
         int getNumberOfThreads(size_t nDesiredThreads);
         void distributeCcomponents(std::vector< std::vector<Component*> > &rSplitCVector, size_t nThreads);
