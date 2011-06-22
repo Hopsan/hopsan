@@ -33,11 +33,11 @@
 #include "HopsanEssentials.h"
 
 #ifdef USETBB
-#include "tbb.h"
-//#include "tick_count.h"
-//#include "blocked_range.h"
-//#include "parallel_for.h"
-//#include "mutex.h"
+#define DEBUGTBB
+#include "mutex.h"
+#include "atomic.h"
+#include "tick_count.h"
+#include "task_group.h"
 #endif
 
 using namespace std;
@@ -2358,103 +2358,28 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 {
     mStop = false;
     mTime = startT;
-    double stopTsafe = stopT - mTimestep/2.0; //Minus half a timestep is here to ensure that no numerical issues occure
+    double stopTsafe = stopT - mTimestep/2.0;                   //Calculate the "actual" stop time
+                                                                //Minus half a timestep is here to ensure that no numerical issues occur
 
-    logAllNodes(mTime);
+    logAllNodes(mTime);                                         //Log the first time step
 
     #ifdef DEBUGTBB
     tbb::tick_count measurement_start = tbb::tick_count::now();
     #endif
 
-    simulateOneStepAndMeasureTime();        //Measure time
-    sortComponentVectorsByMeasuredTime();   //Sort vectors
-    size_t nThreads = getNumberOfThreads(nDesiredThreads);
+    size_t nThreads = getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
+    simulateOneStepAndMeasureTime();                            //Measure time
+    sortComponentVectorsByMeasuredTime();                       //Sort vectors
 
-    #ifdef DEBUGTBB
-        //Create vector used for time measurement (DEBUG)
-    vector<double> timeVector;
-    timeVector.resize(nThreads);
-    for(int i=0; i<nThreads; ++i)
-    {
-        timeVector[i] = 0;
-    }
-    #endif
-
-        //Attempt to distribute C component equally over vectors (one for each core)
-    vector< vector<Component*> > splitCVector;
-    splitCVector.resize(nThreads);
-    size_t cCompNum=0;
-    while(true)
-    {
-        for(int coreNumber=0; coreNumber<nThreads; ++coreNumber)
-        {
-            if(cCompNum == mComponentCptrs.size())
-                break;
-            splitCVector[coreNumber].push_back(mComponentCptrs[cCompNum]);
-            #ifdef DEBUGTBB
-            timeVector[coreNumber] += mComponentCptrs[cCompNum]->getMeasuredTime();
-            #endif
-            ++cCompNum;
-        }
-        if(cCompNum == mComponentCptrs.size())
-            break;
-    }
-
-    #ifdef DEBUGTBB
-    for(int i=0; i<nThreads; ++i)
-    {
-        stringstream ss;
-        ss << timeVector[i]*1000;
-        gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
-        timeVector[i] = 0;
-    }
-    #endif
-
-        //Attempt to distribute Q component equally over vectors (one for each core)
+    vector< vector<Component*> > splitCVector;                  //Create split vectors
     vector< vector<Component*> > splitQVector;
-    splitQVector.resize(nThreads);
-    size_t qCompNum=0;
-    while(true)
-    {
-        for(int coreNumber=0; coreNumber<nThreads; ++coreNumber)
-        {
-            if(qCompNum == mComponentQptrs.size())
-                break;
-            splitQVector[coreNumber].push_back(mComponentQptrs[qCompNum]);
-            #ifdef DEBUGTBB
-            timeVector[coreNumber] += mComponentQptrs[qCompNum]->getMeasuredTime();
-            #endif
-            ++qCompNum;
-        }
-        if(qCompNum == mComponentQptrs.size())
-            break;
-    }
-
-    #ifdef DEBUGTBB
-    for(int i=0; i<nThreads; ++i)
-    {
-        stringstream ss;
-        ss << timeVector[i]*1000;
-        gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
-        timeVector[i] = 0;
-    }
-    #endif
-
-        //Distribute node pointers equally over vectors (no sorting necessary)
+    vector< vector<Component*> > splitSignalVector;
     vector< vector<Node*> > splitNodeVector;
-    for(int c=0; c<nThreads; ++c)
-    {
-        vector<Node*> tempVector;
-        splitNodeVector.push_back(tempVector);
-    }
-    size_t currentCore = 0;
-    for(int n=0; n<mSubNodePtrs.size(); ++n)
-    {
-        splitNodeVector.at(currentCore).push_back(mSubNodePtrs.at(n));
-        ++currentCore;
-        if(currentCore>nThreads-1)
-            currentCore = 0;
-    }
+
+    distributeCcomponents(splitCVector, nThreads);              //Distribute Q-type components
+    distributeQcomponents(splitQVector, nThreads);              //Distribute C-type components
+    distributeSignalcomponents(splitSignalVector, nThreads);    //"Distribute" signal components
+    distributeNodePointers(splitNodeVector, nThreads);          //Distribute node pointers
 
     #ifdef DEBUGTBB
     tbb::tick_count measurement_end = tbb::tick_count::now();
@@ -2464,49 +2389,45 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     #endif
 
 
-        //Initialize TBB routines for parallel  simulation
-    tbb::task_group *simTasks;
+    tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
     simTasks = new tbb::task_group;
 
-        //Initialize barriers
-    static tbb::atomic<size_t> barrier_s;
+    static tbb::atomic<size_t> barrier_s;                       //Create barrier counters
     static tbb::atomic<size_t> barrier_c;
     static tbb::atomic<size_t> barrier_q;
     static tbb::atomic<size_t> barrier_n;
-    barrier_s = 0;
+    barrier_s = 0;                                              //Initialize barrier counters (0 = locked)
     barrier_c = 0;
     barrier_q = 0;
     barrier_n = 0;
 
-        //Initialize locks
-    static tbb::atomic<bool> lock_s;
+    static tbb::atomic<bool> lock_s;                            //Create barrier locks
     static tbb::atomic<bool> lock_c;
     static tbb::atomic<bool> lock_q;
     static tbb::atomic<bool> lock_n;
-    lock_s = true;      //Lock the locks initially, to make sure nothing goes wrong
+    lock_s = true;                                              //Initialize barrier locks (true = locked)
     lock_c = true;
     lock_q = true;
     lock_n = true;
 
-        //! @todo Make a better solution to this; we must decide if it shall be possible or not to simulate without sorting the signal components
-    std::vector<Component*> dummySignalVector;   //This is used because signal components shall be simulated single-threaded (to make sure they are simulated in correct order).
-
-        //Execute simulation
-    //simTasks->run(taskSimMaster(splitSVector[0], splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nThreads, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
-    simTasks->run(taskSimMaster(mComponentSignalptrs, splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nThreads, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
+    //Execute simulation
+    simTasks->run(taskSimMaster(splitSignalVector[0], splitCVector[0], splitQVector[0], splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nThreads, 0, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
     for(int t=1; t < nThreads; ++t)
     {
-        simTasks->run(taskSimSlave(dummySignalVector, splitCVector[t], splitQVector[t], splitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
+        simTasks->run(taskSimSlave(splitSignalVector[t], splitCVector[t], splitQVector[t], splitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
     }
-    simTasks->wait();
-
-    delete(simTasks);
+    simTasks->wait();                                           //Wait for all tasks to finish
+    delete(simTasks);                                           //Delete the tasks
 }
 
 
 void ComponentSystem::simulateOneStepAndMeasureTime()
 {
             //Simulate S, C and Q components one time step on single core and meassure the required time
+        for(int s=0; s<mComponentSignalptrs.size(); ++s)
+        {
+            mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);      //No reason to measure time for signal components
+        }
         for(int c=0; c<mComponentCptrs.size(); ++c)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
@@ -2522,7 +2443,7 @@ void ComponentSystem::simulateOneStepAndMeasureTime()
             mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
         }
 
-        mTime += mTimestep; //First time step is finished!
+        mTime += mTimestep; //Increase time (since one time step has passed)
 }
 
 
@@ -2594,6 +2515,130 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
 
     return nThreads;
 }
+
+
+//! @brief Helper function that distributes C componente equally over one vector per thread
+//! @param rSplitCVector Reference to vector with vectors of components (one vector per thread)
+//! @param nThreads Number of simulation threads
+void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplitCVector, size_t nThreads)
+{
+    #ifdef DEBUGTBB
+    vector<double> timeVector;
+    timeVector.resize(nThreads);
+    for(int i=0; i<nThreads; ++i)
+    {
+        timeVector[i] = 0;
+    }
+    #endif
+
+    rSplitCVector.resize(nThreads);
+    size_t cCompNum=0;
+    while(true)
+    {
+        for(int thread=0; thread<nThreads; ++thread)
+        {
+            if(cCompNum == mComponentCptrs.size())
+                break;
+            rSplitCVector[thread].push_back(mComponentCptrs[cCompNum]);
+            #ifdef DEBUGTBB
+            timeVector[thread] += mComponentCptrs[cCompNum]->getMeasuredTime();
+            #endif
+            ++cCompNum;
+        }
+        if(cCompNum == mComponentCptrs.size())
+            break;
+    }
+
+    #ifdef DEBUGTBB
+    for(int i=0; i<nThreads; ++i)
+    {
+        stringstream ss;
+        ss << timeVector[i]*1000;
+        gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
+    }
+    #endif
+}
+
+
+//! @brief Helper function that distributes Q componente equally over one vector per thread
+//! @param rSplitQVector Reference to vector with vectors of components (one vector per thread)
+//! @param nThreads Number of simulation threads
+void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplitQVector, size_t nThreads)
+{
+    #ifdef DEBUGTBB
+    vector<double> timeVector;
+    timeVector.resize(nThreads);
+    for(int i=0; i<nThreads; ++i)
+    {
+        timeVector[i] = 0;
+    }
+    #endif
+
+    rSplitQVector.resize(nThreads);
+    size_t qCompNum=0;
+    while(true)
+    {
+        for(int thread=0; thread<nThreads; ++thread)
+        {
+            if(qCompNum == mComponentQptrs.size())
+                break;
+            rSplitQVector[thread].push_back(mComponentQptrs[qCompNum]);
+            #ifdef DEBUGTBB
+            timeVector[thread] += mComponentQptrs[qCompNum]->getMeasuredTime();
+            #endif
+            ++qCompNum;
+        }
+        if(qCompNum == mComponentQptrs.size())
+            break;
+    }
+
+    #ifdef DEBUGTBB
+    for(int i=0; i<nThreads; ++i)
+    {
+        stringstream ss;
+        ss << timeVector[i]*1000;
+        gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
+    }
+    #endif
+}
+
+
+//! @brief Helper function that distributes signal components over one vector per thread.
+//! Not equallly though, only first thread actually get any components.
+//! @param rSplitSignalVector Reference to vector with vectors of components (one vector per thread)
+//! @param nThreads Number of simulation threads
+void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &rSplitSignalVector, size_t nThreads)
+{
+    rSplitSignalVector.resize(nThreads);
+    rSplitSignalVector[0] = mComponentSignalptrs;
+    vector<Component*> dummySignalVector;
+    for(int thread=1; thread<nThreads; ++thread)
+    {
+        rSplitSignalVector[thread] = dummySignalVector;
+    }
+}
+
+
+//! @brief Helper function that distributes node pointers equally over one vector per thread
+//! @param rSplitNodeVector Reference to vector with vectors of node pointers (one vector per thread)
+//! @param nThreads Number of simulation threads
+void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNodeVector, size_t nThreads)
+{
+    for(int c=0; c<nThreads; ++c)
+    {
+        vector<Node*> tempVector;
+        rSplitNodeVector.push_back(tempVector);
+    }
+    size_t thread = 0;
+    for(int n=0; n<mSubNodePtrs.size(); ++n)
+    {
+        rSplitNodeVector.at(thread).push_back(mSubNodePtrs.at(n));
+        ++thread;
+        if(thread>nThreads-1)
+            thread = 0;
+    }
+}
+
 
 #else
     //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
