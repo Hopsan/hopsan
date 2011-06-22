@@ -28,6 +28,10 @@
 #include "Component.h"
 #include <list>
 
+namespace tbb {
+    class mutex;
+}
+
 namespace hopsan {
 
 
@@ -119,6 +123,10 @@ namespace hopsan {
 
         //Stop a running init or simulation
         void stop();
+
+        #ifdef USETBB
+        tbb::mutex *mpStopMutex;
+        #endif
 
         //System parameters
         Parameters &getSystemParameters();

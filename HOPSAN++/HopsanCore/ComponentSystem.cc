@@ -34,10 +34,10 @@
 
 #ifdef USETBB
 #include "tbb.h"
-#include "tick_count.h"
-#include "blocked_range.h"
-#include "parallel_for.h"
-#include "mutex.h"
+//#include "tick_count.h"
+//#include "blocked_range.h"
+//#include "parallel_for.h"
+//#include "mutex.h"
 #endif
 
 using namespace std;
@@ -51,6 +51,9 @@ ComponentSystem::ComponentSystem(string name) : Component(name)
     mTypeName = "ComponentSystem";
     mIsComponentSystem = true;
     mDesiredTimestep = 0.001;
+    #ifdef USETBB
+    mpStopMutex = new tbb::mutex();
+    #endif
 }
 
 double ComponentSystem::getDesiredTimeStep()

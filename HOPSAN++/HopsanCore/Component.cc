@@ -497,7 +497,13 @@ const string &Component::getTypeName()
 //! Typically used inside components simulateOneTimestep method
 void Component::stopSimulation()
 {
+    #ifdef USETBB
+    mpSystemParent->mpStopMutex->lock();
+    #endif
     this->getSystemParent()->stop();
+    #ifdef USETBB
+    mpSystemParent->mpStopMutex->unlock();
+    #endif
 }
 
 
