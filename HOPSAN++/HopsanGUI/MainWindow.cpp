@@ -631,6 +631,10 @@ void MainWindow::createMenus()
     menuEdit->addAction(pasteAction);
 
     //The View menu shall be alphabetically sorted!
+    menuView->addAction(toggleNamesAction);
+    menuView->addAction(togglePortsAction);
+    menuView->addAction(toggleSignalsAction);
+    menuView->addSeparator();
     menuView->addAction(mpLibDock->toggleViewAction());
     menuView->addAction(mpEditToolBar->toggleViewAction());
     menuView->addAction(mpFileToolBar->toggleViewAction());
@@ -639,6 +643,7 @@ void MainWindow::createMenus()
     menuView->addAction(mpSimToolBar->toggleViewAction());
 
     menuTools->addAction(optionsAction);
+    menuTools->addAction(openSystemParametersAction);
 
     menuSimulation->addAction(plotAction);
 
