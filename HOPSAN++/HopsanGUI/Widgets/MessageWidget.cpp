@@ -232,7 +232,7 @@ size_t MessageWidget::tagCount(QString tag)
 void MessageWidget::printCoreMessages()
 {
     int nmsg = mpCoreAccess->getNumberOfMessages();
-    nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
+    //nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
 
     for (int idx=0; idx < nmsg; ++idx)
     {
