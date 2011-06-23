@@ -40,11 +40,11 @@ class Parameters;
 class Parameter
 {
 public:
-    Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr=0, Parameters* parentParameters=0);
-    bool setParameterValue(const std::string value);
-    void getParameter(std::string &parameterName, std::string &parameterValue, std::string &description, std::string &unit, std::string &type);
+    Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* pDataPtr=0, Parameters* parentParameters=0);
+    bool setParameterValue(const std::string value, Parameter **pNeedEvaluation=0);
+    void getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription, std::string &rUnit, std::string &rType);
     std::string getType();
-    bool evaluate(std::string &result);
+    bool evaluate(std::string &rResult);
     bool evaluate();
 
 protected:
@@ -64,15 +64,15 @@ public:
     Parameters(Component* parentComponent);
     bool addParameter(std::string parameterName, std::string parameterValue, std::string description="", std::string unit="", std::string type="", void* dataPtr=0);
     void deleteParameter(std::string parameterName);
-    void getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues, std::vector<std::string> &descriptions, std::vector<std::string> &units, std::vector<std::string> &types);
+    void getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions, std::vector<std::string> &rUnits, std::vector<std::string> &rTypes);
     bool setParameterValue(const std::string name, const std::string value);
-    bool evaluateParameter(const std::string parameterName, std::string &evaluatedParameterValue, const std::string type);
-    void evaluateParameters();
-    void update();
+    bool evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type);
+    bool evaluateParameters();
 
 protected:
     std::vector<Parameter*> mParameters;
     Component* mParentComponent;
+    std::vector<Parameter*> mParametersNeedEvaluation; //! @todo Use this vector to ensure parameters are valid at simulation time e.g. if a used system parameter is deleted before simulation
 };
 
 

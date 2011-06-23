@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <cassert>
+#include <algorithm>
 #include "Component.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -39,8 +40,22 @@
 using namespace std;
 using namespace hopsan;
 
-//Constructor
-Parameter::Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr, Parameters* parentParameters)
+//! @class Parameter
+//! @brief The Parameter class implements the parameter used in the container class Parameters
+//!
+//! The parameter is implemented with a name, a value string and a data pointer that can be of various types.
+//! Both Compontents and Systems use the same paramter implementation. In the case of a system parameter the
+//! data pointer is 0.
+
+//! @brief Constructor
+//! @param [in] parameterName The desired parameter name, e.g. m
+//! @param [in] parameterValue The value of the parameter, always a string
+//! @param [in] description The description of the parameter e.g. Mass
+//! @param [in] unit The physical unit of the parameter e.g. kg
+//! @param [in] type The type of the parameter e.g. double
+//! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
+//! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
+Parameter::Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* pDataPtr, Parameters* pParentParameters)
 {
     mParameterName = parameterName;
     mParameterValue = parameterValue;
@@ -55,35 +70,68 @@ Parameter::Parameter(std::string parameterName, std::string parameterValue, std:
     {
         assert(false);
     }
-    mpData = dataPtr;
-    mpParentParameters = parentParameters;
+    mpData = pDataPtr;
+    mpParentParameters = pParentParameters;
     evaluate();
 }
 
 
-void Parameter::getParameter(std::string &parameterName, std::string &parameterValue, std::string &description, std::string &unit, std::string &type)
+//! @brief Read out the properties of the parameter
+//! @param [out] rParameterName The parameter name, e.g. m
+//! @param [out] rParameterValue The value of the parameter, e.g. 13
+//! @param [out] rDescription The description of the parameter e.g. Mass
+//! @param [out] rUnit The physical unit of the parameter e.g. kg
+//! @param [out] rType The type of the parameter e.g. double
+//!
+//! This function is used by Parameters
+void Parameter::getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription, std::string &rUnit, std::string &rType)
 {
-    parameterName = mParameterName;
-    parameterValue = mParameterValue;
-    description = mDescription;
-    unit = mUnit;
-    type = mType;
+    rParameterName = mParameterName;
+    rParameterValue = mParameterValue;
+    rDescription = mDescription;
+    rUnit = mUnit;
+    rType = mType;
 }
 
 
-bool Parameter::setParameterValue(const std::string value)
+//! @brief Set the parameter value for an exsisting parameter
+//! @param [in] value The new value for the parameter
+//! @param [out] pNeedEvaluation Tell is the parameter needs evaluation, e.g. is a system parameter or an expression
+//! @return true if success, otherwise false
+//!
+//! This function is used by Parameters
+bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEvaluation)
 {
+    bool success;
     mParameterValue = value;
-    return evaluate();
+    std::string evalResult = value;
+    success = evaluate(evalResult);
+    if(value != evalResult)
+    {
+        *pNeedEvaluation = this;
+    }
+    else
+    {
+        *pNeedEvaluation = 0;
+    }
+    return success;
 }
 
 
+//! @brief Returns the type of the parameter
+//! @return The type of the parameter
 std::string Parameter::getType()
 {
     return mType;
 }
 
 
+//! @brief Evaluate the parameter
+//! @return true if success, otherwise false
+//!
+//! This function is used by Parameters. The point with run this function is
+//! to write the right value to the mData pointer.
+//! @see evaluate(std::string &result)
 bool Parameter::evaluate()
 {
     std::string dummy;
@@ -91,7 +139,13 @@ bool Parameter::evaluate()
 }
 
 
-bool Parameter::evaluate(std::string &result)
+//! @brief Evaluate the parameter
+//! @param [out] rResult The result of the evaluation
+//! @return true if success, otherwise false
+//!
+//! This function is used by Parameters
+//! @see evaluate()
+bool Parameter::evaluate(std::string &rResult)
 {
     bool success = true;
     std::string evaluatedParameterValue;
@@ -154,17 +208,32 @@ bool Parameter::evaluate(std::string &result)
         }
     }
 
-    result = evaluatedParameterValue;
+    rResult = evaluatedParameterValue;
     return success;
 }
 
+//! @class Parameters
+//! @brief The Parameters class implements the parameters used in both Componenets and ComponentSystems
+//!
 
-Parameters::Parameters(Component* parentComponent)
+
+//! @brief Constructor
+//!
+//! @param pParentComponent A pointer to the Component that contains the Parameters
+Parameters::Parameters(Component* pParentComponent)
 {
-    mParentComponent = parentComponent;
+    mParentComponent = pParentComponent;
 }
 
 
+//! @brief Add a new parameter
+//! @param [in] parameterName The desired parameter name, e.g. m
+//! @param [in] parameterValue The value of the parameter, always a string
+//! @param [in] description The description of the parameter e.g. Mass, default: ""
+//! @param [in] unit The physical unit of the parameter e.g. kg, default: "0""
+//! @param [in] type The type of the parameter e.g. double, default: ""
+//! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
+//! @return true if success, otherwise false
 bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr)
 {
     bool success = true;
@@ -186,6 +255,9 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
 }
 
 
+//! @brief Deletes a parameter
+//!
+//! @param parameterName The name of the paramter to delete
 void Parameters::deleteParameter(std::string parameterName)
 {
     std::string name, value, description, unit, type;
@@ -204,37 +276,78 @@ void Parameters::deleteParameter(std::string parameterName)
 }
 
 
-void Parameters::getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues, std::vector<std::string> &descriptions, std::vector<std::string> &units, vector<std::string> &types)
+//! @brief Read out all parameters
+//! @param [out] rParameterNames The parameter names
+//! @param [out] rParameterValues The value of the parameters
+//! @param [out] rDescriptions The description of the parameters
+//! @param [out] rUnits The physical unit of the parameters
+//! @param [out] rTypes The type of the parameters
+void Parameters::getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions, std::vector<std::string> &rUnits, vector<std::string> &rTypes)
 {
-    parameterNames.resize(mParameters.size());
-    parameterValues.resize(mParameters.size());
-    descriptions.resize(mParameters.size());
-    units.resize(mParameters.size());
-    types.resize(mParameters.size());
+    rParameterNames.resize(mParameters.size());
+    rParameterValues.resize(mParameters.size());
+    rDescriptions.resize(mParameters.size());
+    rUnits.resize(mParameters.size());
+    rTypes.resize(mParameters.size());
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
-        mParameters[i]->getParameter(parameterNames[i], parameterValues[i], descriptions[i], units[i], types[i]);
+        mParameters[i]->getParameter(rParameterNames[i], rParameterValues[i], rDescriptions[i], rUnits[i], rTypes[i]);
     }
 }
 
 
+//! @brief Set the parameter value for an exsisting parameter
+//! @param [in] name The name of the parameter to be set
+//! @param [in] value The new value for the parameter
+//! @return true if success, otherwise false
 bool Parameters::setParameterValue(const std::string name, const std::string value)
 {
     bool success = false;
     std::string parameterName, parameterValue, description, unit, type;
-    for(size_t i=0; i<mParameters.size(); ++i)
+    for(size_t i=0; i<mParameters.size(); ++i) //Find the parameter among the excisting parameters
     {
         mParameters[i]->getParameter(parameterName, parameterValue, description, unit, type);
-        if(name == parameterName)
+        if(name == parameterName) //Found!
         {
-            success = mParameters[i]->setParameterValue(value);
+            Parameter *needEvaluation=0;
+            success = mParameters[i]->setParameterValue(value, &needEvaluation); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
+            if(needEvaluation)
+            {
+                if(mParametersNeedEvaluation.end() == find(mParametersNeedEvaluation.begin(), mParametersNeedEvaluation.end(), needEvaluation))
+                {
+                    mParametersNeedEvaluation.push_back(needEvaluation); //The parameter needs evaluation and is not already stored
+                }
+            }
+            else //mParameters[i] don't need evaluation, this loop erases it from mParametersNeedEvaluation
+            {
+                std::vector<Parameter*>::iterator parIt = mParametersNeedEvaluation.begin();
+                while( parIt != mParametersNeedEvaluation.end() )
+                {
+                    if(*parIt == mParameters[i])
+                    {
+                        parIt = mParametersNeedEvaluation.erase(parIt);
+                    }
+                    else
+                    {
+                        (*parIt)->getParameter(parameterName, parameterValue, description, unit, type);
+                        cout << parameterName << endl;
+                        ++parIt;
+                    }
+                }
+
+            }
         }
     }
     return success;
 }
 
 
-bool Parameters::evaluateParameter(const std::string parameterName, std::string &evaluatedParameterValue, const std::string type)
+//! @brief Evaluate a specific parameter
+//! @param [in] parameterName The name of the parameter to be evaluated
+//! @param [out] rEvaluatedParameterValue The result of the evaluation
+//! @param [in] type The type of how the parameter should be interpreted
+//! @return true if success, otherwise false
+bool Parameters::evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type)
 {
     bool success = false;
     std::string parameterName2, parameterValue2, description2, unit2, type2;
@@ -243,7 +356,7 @@ bool Parameters::evaluateParameter(const std::string parameterName, std::string 
         mParameters[i]->getParameter(parameterName2, parameterValue2, description2, unit2, type2);
         if((parameterName == parameterName2) && (mParameters[i]->getType() == type))
         {
-            success = mParameters[i]->evaluate(evaluatedParameterValue);
+            success = mParameters[i]->evaluate(rEvaluatedParameterValue);
         }
     }
     if(!success)
@@ -253,7 +366,7 @@ bool Parameters::evaluateParameter(const std::string parameterName, std::string 
             if(mParentComponent->getSystemParent())
             {
                 success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(parameterName, parameterValue2, type);
-                evaluatedParameterValue = parameterValue2;
+                rEvaluatedParameterValue = parameterValue2;
             }
         }
     }
@@ -261,23 +374,17 @@ bool Parameters::evaluateParameter(const std::string parameterName, std::string 
 }
 
 
-void Parameters::evaluateParameters()
+//! @brief Evaluate all parameters
+//! @return true if success, otherwise false
+bool Parameters::evaluateParameters()
 {
+    bool success = true;
     for(size_t i=0; i<mParameters.size(); ++i)
     {
-        mParameters[i]->evaluate();
+        success *= mParameters[i]->evaluate();
     }
+    return success;
 }
-
-
-void Parameters::update()
-{
-    for(size_t i = 0; i < mParameters.size(); ++i)
-    {
-        mParameters[i]->evaluate();
-    }
-}
-
 
 
 //Constructor
@@ -519,6 +626,7 @@ void Component::stopSimulation()
 
 
 //! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
     stringstream ss;
