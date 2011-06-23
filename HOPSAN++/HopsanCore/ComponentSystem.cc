@@ -528,7 +528,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
 
 //! @brief Sorts the signal component vector
 //! Components are sorted so that they are always simulated after the components they receive signals from. Algebraic loops can be detected, in that case this function does nothing.
-void ComponentSystem::sortSignalComponentVector()
+void ComponentSystem::sortSignalComponentVector(std::vector<Component*> &rOldSignalVector)
 {
     std::vector<Component*> newSignalVector;
 
@@ -537,7 +537,7 @@ void ComponentSystem::sortSignalComponentVector()
     {
         didSomething = false;
         std::vector<Component*>::iterator it;
-        for(it=mComponentSignalptrs.begin(); it!=mComponentSignalptrs.end(); ++it)  //Loop through the unsorted signal component vector
+        for(it=rOldSignalVector.begin(); it!=rOldSignalVector.end(); ++it)  //Loop through the unsorted signal component vector
         {
             if(!componentVectorContains(newSignalVector, (*it)))    //Ignore components that are already added to the new vector
             {
@@ -564,9 +564,9 @@ void ComponentSystem::sortSignalComponentVector()
         }
     }
 
-    if(newSignalVector.size() == mComponentSignalptrs.size())   //All components moved to new vector = success!
+    if(newSignalVector.size() == rOldSignalVector.size())   //All components moved to new vector = success!
     {
-        mComponentSignalptrs = newSignalVector;
+        rOldSignalVector = newSignalVector;
         stringstream ss;
         std::vector<Component*>::iterator it;
         for(it=newSignalVector.begin(); it!=newSignalVector.end(); ++it)
@@ -1983,7 +1983,7 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     adjustTimestep(mTimestep, mComponentCptrs);
     adjustTimestep(mTimestep, mComponentQptrs);
 
-    this->sortSignalComponentVector();
+    this->sortSignalComponentVector(mComponentSignalptrs);
 
     loadStartValues();
 
@@ -2054,7 +2054,7 @@ void ComponentSystem::initializeComponentsOnly()
     adjustTimestep(mTimestep, mComponentCptrs);
     adjustTimestep(mTimestep, mComponentQptrs);
 
-    this->sortSignalComponentVector();
+    this->sortSignalComponentVector(mComponentSignalptrs);
 
     loadStartValues();
 
@@ -2383,6 +2383,10 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     logAllNodes(mTime);                                         //Log the first time step
 
+    //! @DEBUG
+    tbb::tick_count measurement_start = tbb::tick_count::now();
+    //! END DEBUG
+
     size_t nThreads = getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
     simulateAndMeasureTime(5);                                  //Measure time
     sortComponentVectorsByMeasuredTime();                       //Sort component vectors
@@ -2396,6 +2400,13 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     distributeQcomponents(splitQVector, nThreads);              //Distribute C-type components
     distributeSignalcomponents(splitSignalVector, nThreads);    //"Distribute" signal components
     distributeNodePointers(splitNodeVector, nThreads);          //Distribute node pointers
+
+    //! DEBUG
+    tbb::tick_count measurement_end = tbb::tick_count::now();
+    stringstream ss;
+    ss << (double)((measurement_end-measurement_start).seconds());
+    gCoreMessageHandler.addDebugMessage("Measurement time = " + ss.str() + " ms");
+    //! END DEBUG
 
     tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
     simTasks = new tbb::task_group;
@@ -2608,17 +2619,95 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
 
 
 //! @brief Helper function that distributes signal components over one vector per thread.
-//! Not equallly though, only first thread actually get any components.
 //! @param rSplitSignalVector Reference to vector with vectors of components (one vector per thread)
 //! @param nThreads Number of simulation threads
 void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &rSplitSignalVector, size_t nThreads)
 {
-    rSplitSignalVector.resize(nThreads);
-    rSplitSignalVector[0] = mComponentSignalptrs;
-    vector<Component*> dummySignalVector;
-    for(int thread=1; thread<nThreads; ++thread)
+        // First we want to divide the components into groups, depending on who they are connected to.
+
+    std::map<Component *, size_t> groupMap;     //Maps each component to a group number
+    size_t curMax = 0;                          //Highest used group number
+
+    //Loop through all signal components
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
     {
-        rSplitSignalVector[thread] = dummySignalVector;
+        //Loop through all ports in each signal component
+        for(size_t p=0; p<mComponentSignalptrs[s]->getPortPtrVector().size(); ++p)
+        {
+            //Loop through all connected ports to each port in each signal component
+            for(size_t c=0; c<mComponentSignalptrs[s]->getPortPtrVector()[p]->getConnectedPorts().size(); ++c)
+            {
+                //Compare group number between current signal component and each connected component
+                Component *A = mComponentSignalptrs[s];
+                Component *B = mComponentSignalptrs[s]->getPortPtrVector()[p]->getConnectedPorts()[c]->getComponent();
+                if(!groupMap.count(A) && !groupMap.count(B))        //Neither component has a number, so give current component a new number
+                {
+                    groupMap.insert(std::pair<Component *, size_t>(A, curMax));
+                    ++curMax;
+                }
+                else if(!groupMap.count(A) && groupMap.count(B))    //Connected port has a number, so give current component same number
+                {
+                    groupMap.insert(std::pair<Component *, size_t>(A, groupMap.find(B)->second));
+                }
+                else if(groupMap.count(A) && groupMap.count(B))     //Both component have numbers, so merge current components group with the other one
+                {
+                    //Merge A's value with B's
+                    size_t Aval = groupMap.find(A)->second;
+                    size_t BVal = groupMap.find(B)->second;
+                    std::map<Component *, size_t>::iterator it;
+                    for(it=groupMap.begin(); it!=groupMap.end(); ++it)
+                    {
+                        if((*it).second == Aval)
+                        {
+                            (*it).second = BVal;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+        // Now we assign each component to a simulation thread vector. We keep grouped components together.
+
+    rSplitSignalVector.resize(nThreads);
+    size_t i=0;                                             //Group number
+    size_t currentVector=0;                                 //The vector to which we are currently adding components
+    bool increasing=true;                                   //Are we increasing or decreasing vector number?
+    size_t nAddedComponents=0;                              //Total amount of added components
+    bool didSomething=false;                                //Did we do something for current i?
+    while(nAddedComponents < groupMap.size())               //Loop while there are still components to add
+    {
+        std::map<Component *, size_t>::iterator it;
+        for(it=groupMap.begin(); it!=groupMap.end(); ++it)
+        {
+            if((*it).second == i)                           //Add all components with group number i to current vector
+            {
+                rSplitSignalVector[currentVector].push_back((*it).first);
+                ++nAddedComponents;
+                didSomething=true;
+            }
+        }
+
+        //Increase or decrease current vector number
+        if(didSomething)                                    //Only change vector if something was done
+        {
+            if(rSplitSignalVector.size() != 1)              //Error fix, in case there is only one thread
+            {
+                if(currentVector == rSplitSignalVector.size()-1) increasing=false;
+                if(currentVector == 0) increasing=true;
+                if(increasing) ++currentVector;
+                else --currentVector;
+            }
+            didSomething=false;
+        }
+        ++i;
+    }
+
+        // Finally we sort each component vector, so that signal components are simlated in correct order:
+
+    for(size_t i=0; i<rSplitSignalVector.size(); ++i)
+    {
+        sortSignalComponentVector(rSplitSignalVector[i]);
     }
 }
 

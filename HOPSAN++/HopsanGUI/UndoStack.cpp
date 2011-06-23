@@ -493,7 +493,7 @@ void UndoStack::undoOneStep()
 //! @see undoOneStep()
 void UndoStack::redoOneStep()
 {
-    gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString(2));
+    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString(2));
 
     bool didSomething = false;
     ++mCurrentStackPosition;
@@ -681,7 +681,7 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == "addedboxwidget")
         {
             QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
-            gpMainWindow->mpMessageWidget->printGUIDebugMessage(boxElement.toDocument().toString());
+            //gpMainWindow->mpMessageWidget->printGUIDebugMessage(boxElement.toDocument().toString());
             loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
             mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
             mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
@@ -1116,7 +1116,7 @@ void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, 
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
     gpMainWindow->mpUndoWidget->refreshList();
 
-    gpMainWindow->mpMessageWidget->printGUIDebugMessage( mDomDocument.toString(4));
+    //gpMainWindow->mpMessageWidget->printGUIDebugMessage( mDomDocument.toString(4));
 }
 
 
