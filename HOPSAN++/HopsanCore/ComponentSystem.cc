@@ -569,9 +569,9 @@ void ComponentSystem::sortSignalComponentVector(std::vector<Component*> &rOldSig
         rOldSignalVector = newSignalVector;
         stringstream ss;
         std::vector<Component*>::iterator it;
-        for(it=newSignalVector.begin(); it!=newSignalVector.end(); ++it)
-            ss << (*it)->getName() << "\n";                                                                                               //DEBUG
-        gCoreMessageHandler.addDebugMessage("Sorted signal components:\n" + ss.str());
+//        for(it=newSignalVector.begin(); it!=newSignalVector.end(); ++it)
+//            ss << (*it)->getName() << "\n";                                                                                               //DEBUG
+//        gCoreMessageHandler.addDebugMessage("Sorted signal components:\n" + ss.str());
     }
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
     {
@@ -2383,10 +2383,6 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     logAllNodes(mTime);                                         //Log the first time step
 
-    //! @DEBUG
-    tbb::tick_count measurement_start = tbb::tick_count::now();
-    //! END DEBUG
-
     size_t nThreads = getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
     simulateAndMeasureTime(5);                                  //Measure time
     sortComponentVectorsByMeasuredTime();                       //Sort component vectors
@@ -2400,13 +2396,6 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     distributeQcomponents(splitQVector, nThreads);              //Distribute C-type components
     distributeSignalcomponents(splitSignalVector, nThreads);    //"Distribute" signal components
     distributeNodePointers(splitNodeVector, nThreads);          //Distribute node pointers
-
-    //! DEBUG
-    tbb::tick_count measurement_end = tbb::tick_count::now();
-    stringstream ss;
-    ss << (double)((measurement_end-measurement_start).seconds());
-    gCoreMessageHandler.addDebugMessage("Measurement time = " + ss.str() + " ms");
-    //! END DEBUG
 
     tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
     simTasks = new tbb::task_group;
@@ -2439,7 +2428,15 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
         //Simulate S, C and Q components one time step on single core and meassure the required time
     for(int s=0; s<mComponentSignalptrs.size(); ++s)
     {
-        mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);      //No reason to measure time for signal components
+        double tTot = 0;
+        for(size_t t=0; t<steps; ++t)
+        {
+            tbb::tick_count comp_start = tbb::tick_count::now();
+            mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
+            tbb::tick_count comp_end = tbb::tick_count::now();
+            tTot += double((comp_end-comp_start).seconds());
+        }
+        mComponentSignalptrs[s]->setMeasuredTime(tTot/steps);
     }
     for(int c=0; c<mComponentCptrs.size(); ++c)
     {
@@ -2471,9 +2468,10 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
 
 
 //! @brief Helper function that sorts C- and Q- component vectors by simulation time for each component.
+//! @todo This function uses bubblesort. Maybe change to something faster.
 void ComponentSystem::sortComponentVectorsByMeasuredTime()
 {
-        //Sort the components from longest to shortest time requirement (this is a bubblesort, we should probably use something faster...)
+        //Sort the components from longest to shortest time requirement
     size_t i, j;
     bool flag = true;
     Component *tempC;
@@ -2623,7 +2621,9 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
 //! @param nThreads Number of simulation threads
 void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &rSplitSignalVector, size_t nThreads)
 {
-        // First we want to divide the components into groups, depending on who they are connected to.
+
+        //First we want to divide the components into groups,
+        //depending on who they are connected to.
 
     std::map<Component *, size_t> groupMap;     //Maps each component to a group number
     size_t curMax = 0;                          //Highest used group number
@@ -2667,14 +2667,21 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
         }
     }
 
-        // Now we assign each component to a simulation thread vector. We keep grouped components together.
+
+        //Now we assign each component to a simulation thread vector.
+        //We keep grouped components together, and always fill thread
+        //with least measured time first.
 
     rSplitSignalVector.resize(nThreads);
     size_t i=0;                                             //Group number
     size_t currentVector=0;                                 //The vector to which we are currently adding components
-    bool increasing=true;                                   //Are we increasing or decreasing vector number?
     size_t nAddedComponents=0;                              //Total amount of added components
-    bool didSomething=false;                                //Did we do something for current i?
+    std::vector<double> vectorTime;                           //Contains total measured time in each vector
+    for(size_t i=0; i<rSplitSignalVector.size(); ++i)
+    {
+        vectorTime.push_back(0.0);
+    }
+
     while(nAddedComponents < groupMap.size())               //Loop while there are still components to add
     {
         std::map<Component *, size_t>::iterator it;
@@ -2683,27 +2690,32 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
             if((*it).second == i)                           //Add all components with group number i to current vector
             {
                 rSplitSignalVector[currentVector].push_back((*it).first);
+                vectorTime[currentVector] += (*it).first->getMeasuredTime();
                 ++nAddedComponents;
-                didSomething=true;
             }
         }
 
-        //Increase or decrease current vector number
-        if(didSomething)                                    //Only change vector if something was done
+        //Find vector with smallest amount of data, to use next loop
+        for(size_t i=0; i<vectorTime.size(); ++i)
         {
-            if(rSplitSignalVector.size() != 1)              //Error fix, in case there is only one thread
-            {
-                if(currentVector == rSplitSignalVector.size()-1) increasing=false;
-                if(currentVector == 0) increasing=true;
-                if(increasing) ++currentVector;
-                else --currentVector;
-            }
-            didSomething=false;
+            if(vectorTime[i] < vectorTime[currentVector])
+                currentVector = i;
         }
         ++i;
     }
 
-        // Finally we sort each component vector, so that signal components are simlated in correct order:
+    // DEBUG
+    for(size_t i=0; i<vectorTime.size(); ++i)
+    {
+        std::stringstream ss;
+        ss << 1000*vectorTime[i];
+        gCoreMessageHandler.addDebugMessage("Creating S-type thread vector, measured time = " + ss.str() + " ms", "svector");
+    }
+    // END DEBUG
+
+
+        //Finally we sort each component vector, so that
+        //signal components are simlated in correct order:
 
     for(size_t i=0; i<rSplitSignalVector.size(); ++i)
     {
