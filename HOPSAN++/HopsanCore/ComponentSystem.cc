@@ -2212,6 +2212,15 @@ public:
                 mVectorC[i]->simulate(mTime, mTime+mTimeStep);
             }
 
+            //! Log Nodes !//
+
+            mpBarrier_N->increment();
+            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
+
+            for(int i=0; i<mVectorN.size(); ++i)
+            {
+                mVectorN[i]->logData(mTime);
+            }
 
             //! Q Components !//
 
@@ -2224,15 +2233,7 @@ public:
             }
 
 
-            //! Log Nodes !//
 
-            mpBarrier_N->increment();
-            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
-
-            for(int i=0; i<mVectorN.size(); ++i)
-            {
-                mVectorN[i]->logData(mTime);
-            }
 
             mTime += mTimeStep;
         }
@@ -2316,7 +2317,7 @@ public:
             //! C Components !//
 
             while(!mpBarrier_C->allArrived()) {}    //C barrier
-            mpBarrier_Q->lock();
+            mpBarrier_N->lock();
             mpBarrier_C->unlock();
 
             for(int i=0; i<mVectorC.size(); ++i)
@@ -2324,27 +2325,26 @@ public:
                 mVectorC[i]->simulate(mTime, mTime+mTimeStep);
             }
 
-
-            //! Q Components !//
-
-            while(!mpBarrier_Q->allArrived()) {}    //Q barrier
-            mpBarrier_N->lock();
-            mpBarrier_Q->unlock();
-
-            for(int i=0; i<mVectorQ.size(); ++i)
-            {
-                mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
-            }
-
             //! Log Nodes !//
 
             while(!mpBarrier_N->allArrived()) {}    //N barrier
-            mpBarrier_S->lock();
+            mpBarrier_Q->lock();
             mpBarrier_N->unlock();
 
             for(int i=0; i<mVectorN.size(); ++i)
             {
                 mVectorN[i]->logData(mTime);
+            }
+
+            //! Q Components !//
+
+            while(!mpBarrier_Q->allArrived()) {}    //Q barrier
+            mpBarrier_S->lock();
+            mpBarrier_Q->unlock();
+
+            for(int i=0; i<mVectorQ.size(); ++i)
+            {
+                mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
             }
 
             *mpSimTime = mTime;     //Update time in component system, so that progress bar can use it
@@ -2426,44 +2426,58 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 void ComponentSystem::simulateAndMeasureTime(size_t steps)
 {
         //Simulate S, C and Q components one time step on single core and meassure the required time
+    double time = 0;
+
+    //Reset all measured times first
     for(int s=0; s<mComponentSignalptrs.size(); ++s)
+        mComponentSignalptrs[s]->setMeasuredTime(0);
+    for(int c=0; c<mComponentCptrs.size(); ++c)
+        mComponentCptrs[c]->setMeasuredTime(0);
+    for(int q=0; q<mComponentQptrs.size(); ++q)
+        mComponentQptrs[q]->setMeasuredTime(0);
+
+    //Measure time for each component during specified amount of steps
+    for(size_t t=0; t<steps; ++t)
     {
-        double tTot = 0;
-        for(size_t t=0; t<steps; ++t)
+        for(int s=0; s<mComponentSignalptrs.size(); ++s)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
             tbb::tick_count comp_end = tbb::tick_count::now();
-            tTot += double((comp_end-comp_start).seconds());
+            time += double((comp_end-comp_start).seconds());
+            mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()+time);
         }
-        mComponentSignalptrs[s]->setMeasuredTime(tTot/steps);
-    }
-    for(int c=0; c<mComponentCptrs.size(); ++c)
-    {
-        double tTot = 0;
-        for(size_t t=0; t<steps; ++t)
+
+
+        for(int c=0; c<mComponentCptrs.size(); ++c)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
             tbb::tick_count comp_end = tbb::tick_count::now();
-            tTot += double((comp_end-comp_start).seconds());
+            time += double((comp_end-comp_start).seconds());
+            mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()+time);
         }
-        mComponentCptrs[c]->setMeasuredTime(tTot/steps);
-    }
-    for(int q=0; q<mComponentQptrs.size(); ++q)
-    {
-        double tTot = 0;
-        for(size_t t=0; t<steps; ++t)
+
+        for(int q=0; q<mComponentQptrs.size(); ++q)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
             tbb::tick_count comp_end = tbb::tick_count::now();
-            tTot += double((comp_end-comp_start).seconds());
+            time += double((comp_end-comp_start).seconds());
+            mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()+time);
         }
-        mComponentQptrs[q]->setMeasuredTime(tTot/steps);
+
+        logAllNodes(mTime);
+        mTime += mTimestep;
     }
 
-    mTime += steps*mTimestep; //Increase time
+    //Divide measured times with number of steps, to get the average
+    for(int s=0; s<mComponentSignalptrs.size(); ++s)
+        mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()/steps);
+    for(int c=0; c<mComponentCptrs.size(); ++c)
+        mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()/steps);
+    for(int q=0; q<mComponentQptrs.size(); ++q)
+        mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()/steps);
 }
 
 

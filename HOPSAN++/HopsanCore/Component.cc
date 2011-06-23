@@ -812,14 +812,14 @@ void Component::setTimestep(const double timestep)
 //! @see getMeasuredTime()
 void Component::setMeasuredTime(double time)
 {
-        mMeasuredTime = time;
+    mMeasuredTime = time;
 }
 
 
 //! Returns the measured time variable for the component. This is used to measure time requirements when sorting components for multicore purposes.
 double Component::getMeasuredTime()
 {
-        return mMeasuredTime;
+    return mMeasuredTime;
 }
 
 
