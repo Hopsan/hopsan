@@ -94,6 +94,41 @@ void Parameter::getParameter(std::string &rParameterName, std::string &rParamete
 }
 
 
+bool Parameter::setParameter(std::string parameterValue, std::string description, std::string unit, std::string type, Parameter **pNeedEvaluation, bool force)
+{
+    bool success;
+    std::string oldValue = mParameterValue;
+    std::string oldDescription = mDescription;
+    std::string oldUnit = mUnit;
+    std::string oldType = mType;
+    if(!description.empty())
+    {
+        mDescription = description;
+    }
+    if(!unit.empty())
+    {
+        mUnit = unit;
+    }
+    if(!type.empty())
+    {
+        mType = type;
+    }
+    success = setParameterValue(parameterValue, pNeedEvaluation);
+    if((force) && !(success))
+    {
+        *pNeedEvaluation = this;
+        mParameterValue = parameterValue;
+    }
+    else if(!success)
+    {
+        mParameterValue = oldValue;
+        mDescription = oldDescription;
+        mUnit = oldUnit;
+        mType = oldType;
+    }
+    return success;
+}
+
 //! @brief Set the parameter value for an exsisting parameter
 //! @param [in] value The new value for the parameter
 //! @param [out] pNeedEvaluation Tell is the parameter needs evaluation, e.g. is a system parameter or an expression
@@ -102,17 +137,25 @@ void Parameter::getParameter(std::string &rParameterName, std::string &rParamete
 //! This function is used by Parameters
 bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEvaluation)
 {
-    bool success;
-    mParameterValue = value;
-    std::string evalResult = value;
-    success = evaluate(evalResult);
-    if(value != evalResult)
+    bool success=false;
+    if(!(mParameterName==value))
     {
-        *pNeedEvaluation = this;
-    }
-    else
-    {
-        *pNeedEvaluation = 0;
+        std::string oldValue = mParameterValue;
+        mParameterValue = value;
+        std::string evalResult = value;
+        success = evaluate(evalResult);
+        if(!success)
+        {
+            mParameterValue = oldValue;
+        }
+        if(value != evalResult)
+        {
+            *pNeedEvaluation = this;
+        }
+        else
+        {
+            *pNeedEvaluation = 0;
+        }
     }
     return success;
 }
@@ -296,21 +339,17 @@ void Parameters::getParameters(std::vector<std::string> &rParameterNames, std::v
 }
 
 
-//! @brief Set the parameter value for an exsisting parameter
-//! @param [in] name The name of the parameter to be set
-//! @param [in] value The new value for the parameter
-//! @return true if success, otherwise false
-bool Parameters::setParameterValue(const std::string name, const std::string value)
+bool Parameters::setParameter(std::string name, std::string value, std::string description, std::string unit, std::string type, bool force)
 {
     bool success = false;
-    std::string parameterName, parameterValue, description, unit, type;
+    std::string parameterName, parameterValue, parameterDescription, parameterUnit, parameterType;
     for(size_t i=0; i<mParameters.size(); ++i) //Find the parameter among the excisting parameters
     {
-        mParameters[i]->getParameter(parameterName, parameterValue, description, unit, type);
+        mParameters[i]->getParameter(parameterName, parameterValue, parameterDescription, parameterUnit, parameterType);
         if(name == parameterName) //Found!
         {
             Parameter *needEvaluation=0;
-            success = mParameters[i]->setParameterValue(value, &needEvaluation); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
+            success = mParameters[i]->setParameter(value, description, unit, type, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
             if(needEvaluation)
             {
                 if(mParametersNeedEvaluation.end() == find(mParametersNeedEvaluation.begin(), mParametersNeedEvaluation.end(), needEvaluation))
@@ -329,8 +368,8 @@ bool Parameters::setParameterValue(const std::string name, const std::string val
                     }
                     else
                     {
-                        (*parIt)->getParameter(parameterName, parameterValue, description, unit, type);
-                        cout << parameterName << endl;
+                        (*parIt)->getParameter(parameterName, parameterValue, parameterDescription, parameterUnit, parameterType);//debug
+                        cout << parameterName << endl;//debug
                         ++parIt;
                     }
                 }
@@ -339,6 +378,15 @@ bool Parameters::setParameterValue(const std::string name, const std::string val
         }
     }
     return success;
+}
+
+//! @brief Set the parameter value for an exsisting parameter
+//! @param [in] name The name of the parameter to be set
+//! @param [in] value The new value for the parameter
+//! @return true if success, otherwise false
+bool Parameters::setParameterValue(const std::string name, const std::string value, bool force)
+{
+    return setParameter(name, value, "", "", "", force);
 }
 
 
@@ -387,6 +435,32 @@ bool Parameters::evaluateParameters()
 }
 
 
+//! @brief Check all parameters that need evaluation are able to be evaluated
+//! @param [out] errParName Tell which parameter that can't be evaluated is not successful
+//! @return true if success, otherwise false
+//!
+//! Check all parameters that need evaluation are able to be evaluated. The function will
+//! stop as soon as one parameter turns out to be faulty. So in the case of many bad parameters
+//! only the name of the first one is returned.
+bool Parameters::checkParameters(std::string &errParName)
+{
+    bool success = true;
+    std::vector<Parameter*>::iterator parIt;
+    for(parIt = mParametersNeedEvaluation.begin(); (parIt != mParametersNeedEvaluation.end()) && (!mParametersNeedEvaluation.empty()); ++parIt)
+    {
+        success *= (*parIt)->evaluate();
+        if(!(success))
+        {
+            std::string parameterName, parameterValue, description, unit, type;
+            (*parIt)->getParameter(parameterName, parameterValue, description, unit, type);
+            errParName = parameterName;
+            break;
+        }
+    }
+    return success;
+}
+
+
 //Constructor
 Component::Component(string name)
 {
@@ -429,15 +503,21 @@ void Component::getParameters(vector<string> &parameterNames, vector<string> &pa
 }
 
 
-bool Component::setParameterValue(const std::string name, const std::string value)
+bool Component::setParameterValue(const std::string name, const std::string value, bool force)
 {
-    return mParameters->setParameterValue(name, value);
+    return mParameters->setParameterValue(name, value, force);
 }
 
 
 void Component::updateParameters()
 {
     mParameters->evaluateParameters();
+}
+
+
+bool Component::checkParameters(std::string &errParName)
+{
+    return mParameters->checkParameters(errParName);
 }
 
 

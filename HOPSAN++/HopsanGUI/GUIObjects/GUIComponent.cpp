@@ -134,9 +134,9 @@ QString GUIComponent::getParameterValue(QString name)
 //}
 
 //! @brief Set a parameter value to be mapped to a System parameter
-bool GUIComponent::setParameterValue(QString name, QString sysParName)
+bool GUIComponent::setParameterValue(QString name, QString sysParName, bool force)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, sysParName);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, sysParName, force);
 }
 
 //! @brief Set a start value to be mapped to a System parameter

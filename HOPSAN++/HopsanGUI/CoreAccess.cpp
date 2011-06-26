@@ -330,9 +330,9 @@ bool CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
 }
 
 
-bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString value)
+bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString value, bool force)
 {
-    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value.toStdString());
+    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value.toStdString(), force);
 }
 
 
@@ -629,21 +629,21 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
 
 
 
-bool CoreSystemAccess::setSystemParameter(QString name, QString value)
+bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString description, QString unit, QString type)
 {
-    bool success = false;
-    //Makes sure name is not a number and not empty
-    bool isDbl;
-    name.toDouble(&isDbl);
-    if(isDbl || name.isEmpty())
+    bool success = true;
+//    //Makes sure name is not a number and not empty
+//    bool isDbl;
+//    name.toDouble(&isDbl);
+//    if(isDbl || name.isEmpty())
+//    {
+//        success *= false;
+//    }
+//    else
     {
-        success += false;
-    }
-    else
-    {
-        if(!(success += mpCoreComponentSystem->getSystemParameters().setParameterValue(name.toStdString(), value.toStdString())))
+        if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString())))
         {
-            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString());
+            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString());
         }
     }
     return success;
@@ -671,6 +671,7 @@ void CoreSystemAccess::removeSystemParameter(QString name)
 }
 
 
+//! @todo delete this methode and use getParmeters instead!
 QMap<std::string, std::string> CoreSystemAccess::getSystemParametersMap()
 {
     std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;

@@ -91,7 +91,7 @@ public:
     QString getParameterValue(QString componentName, QString parameterName);
 //    QString getParameterValueTxt(QString componentName, QString parameterName);
     double getDefaultParameterValue(QString componentName, QString parameterName);
-    bool setParameter(QString componentName, QString parameterName, QString value); //!< @todo maybe call this set parameter value
+    bool setParameter(QString componentName, QString parameterName, QString value, bool force=0); //!< @todo maybe call this set parameter value
  //   bool setParameter(QString componentName, QString parameterName, QString sysParName);
 
     QString createComponent(QString type, QString name="");
@@ -113,7 +113,7 @@ public:
     QString reserveUniqueName(QString desiredName);
     void unReserveUniqueName(QString name);
 
-    bool setSystemParameter(QString name, QString value);
+    bool setSystemParameter(QString name, QString value, QString description="", QString unit="", QString type="");
     QString getSystemParameter(QString name);
     bool hasSystemParameter(QString name);
     void removeSystemParameter(QString name);

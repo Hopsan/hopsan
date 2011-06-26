@@ -35,6 +35,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QMenu>
+#include <QComboBox>
 
 
     //Forward Declarations
@@ -44,6 +45,23 @@ class GUIConnector;
 class MainWindow;
 class GUISystem;
 class GUIModelObject;
+class SystemParameterTableWidget;
+
+
+class TypeComboBox : public QComboBox
+{
+    Q_OBJECT
+
+public:
+    TypeComboBox(size_t row, size_t column, SystemParameterTableWidget *parent);
+
+public slots:
+    void typeHasChanged(QString newType);
+
+protected:
+    size_t mRow, mColumn;
+    SystemParameterTableWidget *mParent;
+};
 
 
 class SystemParameterTableWidget : public QTableWidget
@@ -57,10 +75,10 @@ public:
     bool hasParameter(QString name);
 
 public slots:
-    void setParameter(QString name, QString valueTxt, bool doUpdate=true);
+    void setParameter(QString name, QString valueTxt, QString descriptionTxt="", QString unitTxt="", QString typeTxt="", bool doUpdate=true);
 //    void setParameter(QString name, double value, bool doUpdate=true);
     void setParameters();
-    void changeParameter(QTableWidgetItem *item);
+    void changeParameter(QTableWidgetItem *item=0);
 
 //private slots:
     void openComponentPropertiesDialog();
@@ -75,10 +93,14 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
+ //   QComboBox *createTypeComboBox();
+
     QLabel *mpNameLabel;
     QLineEdit *mpNameBox;
     QLabel *mpValueLabel;
     QLineEdit *mpValueBox;
+    QLabel *mpTypeLabel;
+    QComboBox *mpTypeBox;
     QPushButton *mpAddInDialogButton;
     QPushButton *mpDoneInDialogButton;
 };

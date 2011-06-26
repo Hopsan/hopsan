@@ -44,12 +44,14 @@ protected slots:
     void okPressed();
 
 protected:
+    bool setValuesToSystem(QVector<ParameterLayout *> &vParLayout);
     void setParametersAndStartValues();
 
 private:
     GUIComponent *mpGUIComponent;
 
     void createEditStuff();
+    bool interpretedAsStartValue(QString &parameterDescription);
 
     QLabel *label;
     QLineEdit *lineEdit;
@@ -57,7 +59,7 @@ private:
     QLineEdit *mpNameEdit;
 
     QVector<ParameterLayout *> mvParameterLayout;
-    QVector<QVector<ParameterLayout *> > mvStartValueLayout;
+    QVector<ParameterLayout *> mvStartValueLayout;
 
     QDialogButtonBox *buttonBox;
     QPushButton *okButton;

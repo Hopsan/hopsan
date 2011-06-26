@@ -71,7 +71,7 @@ public:
     virtual QString getParameterDescription(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual QString getParameterValue(QString name);
 //    virtual QString getParameterValueTxt(QString name);
-    virtual bool setParameterValue(QString name, QString valueTxt);
+    virtual bool setParameterValue(QString name, QString valueTxt, bool force=0);
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
     //Load and save methods

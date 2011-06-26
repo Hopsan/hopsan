@@ -229,8 +229,8 @@ void Port::createStartNode(NodeTypeT nodeType)
     for(size_t i = 0; i < dataNames.size(); ++i)
     {
         stringstream ss;
-        ss << getPortName() << ", " << dataNames[i];
-        getComponent()->registerParameter(ss.str(), "Start value", units[i], *(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(dataNames[i]))));
+        ss << "startvalue:" << "Port " << getPortName();
+        getComponent()->registerParameter(dataNames[i], ss.str(), units[i], *(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(dataNames[i]))));
     }
 }
 

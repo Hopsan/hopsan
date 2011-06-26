@@ -51,7 +51,7 @@ public:
     QString getParameterDescription(QString name);
     QString getParameterValue(QString name);
 //    QString getParameterValueTxt(QString name);
-    bool setParameterValue(QString name, QString sysParName);
+    bool setParameterValue(QString name, QString sysParName, bool force=0);
     QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 

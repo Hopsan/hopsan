@@ -38,15 +38,15 @@
 
 using namespace hopsan;
 
-
-//vvv The function to be run at SEGFAULT, see below. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
-void terminate (int /*param*/)
-{
-    std::cout << "Terminating program because of SEGFAULT, putz..." << std::endl;
-    exit(1);
-    //Maybe have a global message tracker to write ino in on whats going on that could be used to ptint here?!
-}
-//^^^
+////Uncomment this and the Repoint SEGFAULT thing below to catch segfaults
+////vvv The function to be run at SEGFAULT, see below. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
+//void terminate (int /*param*/)
+//{
+//    std::cout << "Terminating program because of SEGFAULT, putz..." << std::endl;
+//    exit(1);
+//    //Maybe have a global message tracker to write ino in on whats going on that could be used to ptint here?!
+//}
+////^^^
 
 //!
 //! @brief Registers the creator function of all built in components
@@ -54,10 +54,10 @@ void terminate (int /*param*/)
 //!
 DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFactory)
 {
-    //vvv Repoint SEGFAULT to the terminate function, could be used to tell component makers info about their fault. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
-    void (*prev_fn)(int);
-    prev_fn = signal (SIGSEGV,terminate);
-    //^^^
+//    //vvv Repoint SEGFAULT to the terminate function, could be used to tell component makers info about their fault. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
+//    void (*prev_fn)(int);
+//    prev_fn = signal (SIGSEGV,terminate);
+//    //^^^
 
     //Hydraulic components
     pComponentFactory->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);

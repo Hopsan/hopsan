@@ -1909,6 +1909,22 @@ bool ComponentSystem::isSimulationOk()
                     return false;
                 }
             }
+
+            //Check parameters in subcomponents
+            std::string errParName;
+            if(!(pComp->checkParameters(errParName)))
+            {
+                gCoreMessageHandler.addErrorMessage("The parameter " + errParName + " in system " + getName() + " and component " + pComp->getName() + " can not be evaluated, a system parameter has maybe been deleted or re-typed.");
+                return false;
+            }
+        }
+
+        //Check parameters in system
+        std::string errParName;
+        if(!(checkParameters(errParName)))
+        {
+            gCoreMessageHandler.addErrorMessage("The system parameter " + errParName + " in system " + getName() + " can not be evaluated, it maybe depend on a deleted system parameter.");
+            return false;
         }
 
         //Recures testing into subsystems

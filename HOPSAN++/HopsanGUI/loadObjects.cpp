@@ -126,9 +126,11 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 {
     QString parameterName;
     QString parameterValue;
+    QString parameterType;
 
     parameterName = rDomElement.attribute(HMF_NAMETAG);
     parameterValue = rDomElement.attribute(HMF_VALUETAG);
+    parameterType = rDomElement.attribute(HMF_TYPETAG);
 
     //    bool isDbl;
     //    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
@@ -142,10 +144,10 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
         //Use the setParameter method that mapps to System parameter
         if(!pObject->getParameterNames().contains(parameterName))
         {
-            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name mismatch. Parameter ignored.");
+            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.");
             return;
         }
-        pObject->setParameterValue(parameterName, parameterValue);
+        pObject->setParameterValue(parameterName, parameterValue, true);
     }
 }
 
@@ -186,7 +188,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
     //Read gui specific data
     qreal posX, posY, rotation;
     bool isFlipped;
-    QMap<QString, double> defaultParameterMap;
+//    QMap<QString, double> defaultParameterMap;
 
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
@@ -304,9 +306,10 @@ GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget*
 void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pContainer)
 {
     QString name = rDomElement.attribute(HMF_NAMETAG);
-    QString value = rDomElement.attribute("value");
+    QString value = rDomElement.attribute(HMF_VALUETAG);
+    QString type = rDomElement.attribute(HMF_TYPETAG);
 
-    pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value);
+    pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value, "", "", type);
 
 }
 

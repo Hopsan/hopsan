@@ -60,6 +60,27 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(GUIComponent *pGUIComponent
 }
 
 
+//! @brief Check if the parameter is a start value
+//! @param [in,out] parameterDescription The description of the parameter/startvalue
+//! @returns true if it is a startvalue, otherwise false
+//!
+//! This method is used to determine whether or not a parameter should be interpretted
+//! as a start value by the GUI. In HOPSANcore there is no difference between parameters
+//! and start values. The start values are registred and stored in the same container.
+//! But, a start value is taged by "startvalue:" in the description.
+bool ComponentPropertiesDialog::interpretedAsStartValue(QString &parameterDescription)
+{
+    QString startValueString = "startvalue:";
+    bool res=false;
+    if(parameterDescription.contains(startValueString, Qt::CaseInsensitive))
+    {
+        parameterDescription.remove(startValueString, Qt::CaseInsensitive);
+        res = true;
+    }
+    return res;
+}
+
+
 //! @brief Creates the contents in the parameter dialog
 void ComponentPropertiesDialog::createEditStuff()
 {
@@ -68,9 +89,9 @@ void ComponentPropertiesDialog::createEditStuff()
     QFont fontH1;
     fontH1.setBold(true);
 
-    QFont fontH2;
-    fontH2.setBold(true);
-    fontH2.setItalic(true);
+//    QFont fontH2;
+//    fontH2.setBold(true);
+//    fontH2.setItalic(true);
 
     QLabel *pHelpPicture = new QLabel();
     QPixmap helpPixMap;
@@ -87,109 +108,65 @@ void ComponentPropertiesDialog::createEditStuff()
     pHelpText->setWordWrap(true);
     QLabel *pParameterLabel = new QLabel("Parameters", this);
     pParameterLabel->setFont(fontH1);
+    QLabel *pStartValueLabel = new QLabel("Start Values", this);
+    pStartValueLabel->setFont(fontH1);
 
     QGridLayout *parameterLayout = new QGridLayout();
+    QGridLayout *startValueLayout = new QGridLayout();
 
     QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
     mpGUIComponent->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+    size_t nParam=0;
+    size_t nStV=0;
     for(size_t i=0; i<qParameterNames.size(); ++i)
     {
-        mvParameterLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
-                                                        qParameterValues[i],
-                                                        qUnits[i],
-                                                        mpGUIComponent));
-        parameterLayout->addLayout(mvParameterLayout.back(), i, 0);
+        if(interpretedAsStartValue(qDescriptions[i]))
+        {
+            mvStartValueLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
+                                                             qParameterValues[i],
+                                                             qUnits[i],
+                                                             mpGUIComponent));
+            startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
+            ++nParam;
+        }
+        else
+        {
+            mvParameterLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
+                                                            qParameterValues[i],
+                                                            qUnits[i],
+                                                            mpGUIComponent));
+            parameterLayout->addLayout(mvParameterLayout.back(), nStV, 0);
+            ++nStV;
+        }
     }
 
     //Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
     int descriptionSize=30;
     int nameSize = 10;
+    //Paramters
     for(int i=0; i<mvParameterLayout.size(); ++i)
     {
         descriptionSize = std::max(descriptionSize, mvParameterLayout.at(i)->mDescriptionNameLabel.width());
         nameSize = std::max(nameSize, mvParameterLayout.at(i)->mDataNameLabel.width());
     }
+    //Start values
+    for(int i=0; i<mvStartValueLayout.size(); ++i)
+    {
+        descriptionSize = std::max(descriptionSize, mvStartValueLayout.at(i)->mDescriptionNameLabel.width());
+        nameSize = std::max(nameSize, mvStartValueLayout.at(i)->mDataNameLabel.width());
+    }
+    //Paramters
     for(int i=0; i<mvParameterLayout.size(); ++i)
     {
         mvParameterLayout.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
         mvParameterLayout.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
     }
-
-
-    QGridLayout *startValueLayout = new QGridLayout();
-    size_t sr=0;
-    QLabel *pStartValueLabel = new QLabel("Start Values", this);
-    pStartValueLabel->setFont(fontH1);
-
-    QList<GUIPort*> ports = mpGUIComponent->getPortListPtrs();
-    QList<GUIPort*>::iterator portIt;
-    double j=0;
-    QVector<QVector<QString> > startDataNamesStr, startDataUnitsStr;
-    QVector<QVector<double> > startDataValuesDbl;
-    QVector<QVector<QString> > startDataValuesTxt;
-    startDataNamesStr.resize(ports.size());
-    startDataValuesDbl.resize(ports.size());
-    startDataValuesTxt.resize(ports.size());
-    startDataUnitsStr.resize(ports.size());
-    mvStartValueLayout.resize(ports.size());
-    for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
+    //Start values
+    for(int i=0; i<mvStartValueLayout.size(); ++i)
     {
-        (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesTxt[j], startDataUnitsStr[j]);
-        if(!(startDataNamesStr[j].isEmpty()))
-        {
-//            QString portName("Port, ");
-            QString portName;
-            portName.append((*portIt)->getName());
-//            QLabel *portLabelName = new QLabel(portName, this);
-//            portLabelName->setFont(fontH2);
-//            startValueLayout->addWidget(portLabelName, sr, 0);
-//            ++sr;
-
-            //mvStartValueLayout[j].resize(startDataNamesStr[j].size());
-            for(int i=0; i < startDataNamesStr[j].size(); ++i)
-            {
-                if(!startDataNamesStr[j][i].isEmpty())
-                {
-
-//                    mvStartValueLayout[j][i]= new ParameterLayout(startDataNamesStr[j][i],
-//                                                                  portName,
-//                                                                  startDataValuesTxt[j][i],
-//                                                                  "["+startDataUnitsStr[j][i]+"]",
-//                                                                  mpGUIComponent);
-
-                    mvStartValueLayout[j].append(new ParameterLayout(startDataNamesStr[j][i],
-                                                                  portName,
-                                                                  startDataValuesTxt[j][i],
-                                                                  "["+startDataUnitsStr[j][i]+"]",
-                                                                  mpGUIComponent));
-
-                      startValueLayout->addLayout(mvStartValueLayout[j].last(), sr, 0);
-                }
-                ++sr;
-            }
-            ++j;
-        }     
+        mvStartValueLayout.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+        mvStartValueLayout.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
     }
-
-    descriptionSize=30;
-    nameSize = 10;
-    for(int j=0; j<mvStartValueLayout.size(); ++j)
-    {
-        for(int i=0; i<mvStartValueLayout.at(j).size(); ++i)
-        {
-            descriptionSize = std::max(descriptionSize, mvStartValueLayout.at(j).at(i)->mDescriptionNameLabel.width());
-            nameSize = std::max(nameSize, mvStartValueLayout.at(j).at(i)->mDataNameLabel.width());
-        }
-    }
-    for(int j=0; j<mvStartValueLayout.size(); ++j)
-    {
-        for(int i=0; i<mvStartValueLayout.at(j).size(); ++i)
-        {
-            mvStartValueLayout.at(j).at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
-            mvStartValueLayout.at(j).at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
-        }
-    }
-
 
     //qDebug() << "after parnames";
 
@@ -248,7 +225,7 @@ void ComponentPropertiesDialog::createEditStuff()
     {
         pParameterLabel->hide();
     }
-    if(!(mvStartValueLayout[0].isEmpty()))
+    if(!(mvStartValueLayout.isEmpty()))
     {
         mainLayout->addWidget(pStartValueLabel,lr, 0);
         ++lr;
@@ -302,19 +279,42 @@ void ComponentPropertiesDialog::okPressed()
 
 
 //! @brief Sets the parameters and start values in the core component. Read the values from the dialog and write them into the core component.
+//! @see setParametersAndStartValues(QVector<ParameterLayout *> vParLayout)
 void ComponentPropertiesDialog::setParametersAndStartValues()
 {
-    //! @todo Maybe only use strings as value to parameters and start values and interpret it in core, this opens up for aritmetric expressions as well
+    if(setValuesToSystem(mvParameterLayout) && setValuesToSystem(mvStartValueLayout))
+    {
+        std::cout << "Parameters and start values updated." << std::endl;
+        this->close();
+    }
+}
+
+
+//! @brief A convinience function that writes the data from a Qt layout to HOPSANcore
+//! @see setParametersAndStartValues()
+bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vParLayout)
+{
+    bool success = true;
 
     //Parameters
     bool addedUndoPost = false;
-    for (int i=0 ; i < mvParameterLayout.size(); ++i )
+    for (int i=0 ; i < vParLayout.size(); ++i )
     {
-        QString valueTxt = mvParameterLayout[i]->getDataValueTxt();
+        QString valueTxt = vParLayout[i]->getDataValueTxt();
 
         //Get the old value to se if it changed
-        QString oldValueTxt = mpGUIComponent->getParameterValue(mvParameterLayout[i]->getDataName());
-        //Parameter has changed, add to undo stack
+        QString oldValueTxt = mpGUIComponent->getParameterValue(vParLayout[i]->getDataName());
+
+        //Parameter has changed, add to undo stack and set the parameter
+        if(!mpGUIComponent->setParameterValue(vParLayout[i]->getDataName(), valueTxt)) //This is done as a check as well.
+        {
+            QMessageBox::critical(0, "Hopsan GUI",
+                                  QString("'%1' is an invalid value for parameter '%2'.")
+                                  .arg(valueTxt)
+                                  .arg(vParLayout[i]->getDataName()));
+            vParLayout[i]->setDataValueTxt(oldValueTxt);
+            success = false;
+        }
         if(oldValueTxt != valueTxt)
         {
             if(!addedUndoPost)
@@ -322,66 +322,15 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
                 this->mpGUIComponent->getParentContainerObject()->mUndoStack->newPost("changedparameters");
                 addedUndoPost = true;
             }
+
             this->mpGUIComponent->getParentContainerObject()->mUndoStack->registerChangedParameter(mpGUIComponent->getName(),
-                                                                                                mvParameterLayout[i]->getDataName(),
-                                                                                                oldValueTxt,
-                                                                                                valueTxt);
+                                                                                                   vParLayout[i]->getDataName(),
+                                                                                                   oldValueTxt,
+                                                                                                   valueTxt);
             mpGUIComponent->getParentContainerObject()->mpParentProjectTab->hasChanged();
         }
-        //Set the parameter
-        if(!mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), valueTxt))
-        {
-            QMessageBox::critical(0, "Hopsan GUI",
-                                  QString("'%1' is an invalid value for parameter '%2'.")
-                                  .arg(valueTxt)
-                                  .arg(mvParameterLayout[i]->getDataName()));
-            mvParameterLayout[i]->setDataValueTxt(oldValueTxt);
-            return;
-        }
     }
-
-    //StartValues
-//    QList<GUIPort*> ports = mpGUIComponent->getPortListPtrs();
-//    QList<GUIPort*>::iterator portIt;
-    for(int j = 0; j < mvStartValueLayout.size(); ++j)
-//        for(portIt=ports.begin(); portIt!=ports.end(); ++portIt)
-    {
-        for(int i=0; i < mvStartValueLayout[j].size(); ++i)
-        {
-            QString valueTxt = mvStartValueLayout[j][i]->getDataValueTxt();
-
-            //Get the old value to se if it changed
-            QString oldValueTxt = mpGUIComponent->getStartValueTxt(mvStartValueLayout[j][i]->getDescriptionName(), mvStartValueLayout[j][i]->getDataName());
-            //Parameter has changed, add to undo stack
-            if(oldValueTxt != valueTxt)
-            {
-                if(!addedUndoPost)
-                {
-                    this->mpGUIComponent->getParentContainerObject()->mUndoStack->newPost("changedparameters");
-                    addedUndoPost = true;
-                }
-                this->mpGUIComponent->getParentContainerObject()->mUndoStack->registerChangedStartValue(mpGUIComponent->getName(),
-                                                                                                     mvStartValueLayout[j][i]->getDescriptionName(),
-                                                                                                     mvStartValueLayout[j][i]->getDataName(),
-                                                                                                     oldValueTxt,
-                                                                                                     valueTxt);
-                mpGUIComponent->getParentContainerObject()->mpParentProjectTab->hasChanged();
-            }
-            //Set the start value
-            if(!mpGUIComponent->setStartValue(mvStartValueLayout[j][i]->getDescriptionName(), mvStartValueLayout[j][i]->getDataName(), valueTxt))
-            {
-                QMessageBox::critical(0, "Hopsan GUI",
-                                      QString("'%1' is an invalid value for start value '%2'.")
-                                      .arg(valueTxt)
-                                      .arg(mvStartValueLayout[j][i]->getDataName()));
-                mvStartValueLayout[j][i]->setDataValueTxt(oldValueTxt);
-                return;
-            }
-        }
-    }
-
-    std::cout << "Parameters and start values updated." << std::endl;
-    this->close();
+    return success;
 }
 
 

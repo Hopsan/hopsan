@@ -382,7 +382,7 @@ QVector<QString> GUIModelObject::getParameterNames()
 //! @brief Virtual function that sets specified parameter to specified system parameter
 //! @param name Name of parameter
 //! @param valueTxt System parameter
-bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/)
+bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, bool /*force*/)
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);

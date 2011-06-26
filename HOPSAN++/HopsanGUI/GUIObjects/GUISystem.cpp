@@ -210,9 +210,9 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     for(size_t i=0; i<parameterNames.size(); ++i)
     {
         QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
-        mappedElement.setAttribute("name", parameterNames[i]);
-        mappedElement.setAttribute("value", parameterValues[i]);
-        mappedElement.setAttribute("type", types[i]);
+        mappedElement.setAttribute(HMF_NAMETAG, parameterNames[i]);
+        mappedElement.setAttribute(HMF_VALUETAG, parameterValues[i]);
+        mappedElement.setAttribute(HMF_TYPETAG, types[i]);
     }
 
 

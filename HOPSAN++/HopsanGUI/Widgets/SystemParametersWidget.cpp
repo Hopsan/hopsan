@@ -40,6 +40,28 @@
 #include "../common.h"
 
 
+TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget *parent)
+    : QComboBox(parent)
+{
+    mRow = row;
+    mColumn = column;
+    mParent = parent;
+    addItem("double");
+    addItem("integer");
+    addItem("bool");
+    addItem("string");
+    connect(this, SIGNAL(currentIndexChanged(QString)), this, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
+}
+
+
+void TypeComboBox::typeHasChanged(QString /*newType*/)
+{
+    qDebug() << "aksJLKJAFLKJDFLkjsdlfkj   ";
+    mParent->setCurrentCell(mRow, mColumn);
+    mParent->changeParameter();
+}
+
+
 //! Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
 SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
@@ -112,8 +134,6 @@ SystemParameterTableWidget::SystemParameterTableWidget(int rows, int columns, QW
     horizontalHeader()->hide();
 
     update();
-
-    connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
 }
 
 
@@ -129,24 +149,31 @@ void SystemParameterTableWidget::keyPressEvent(QKeyEvent *event)
 
 
 //! @brief Used for parameter changes done directly in the label
-void SystemParameterTableWidget::changeParameter(QTableWidgetItem *item)
+void SystemParameterTableWidget::changeParameter(QTableWidgetItem */*item*/)
 {
     //Filter out value labels
-    if(item->column() == 1)
+//    if(item->column() == 1)
     {
-        QTableWidgetItem *neighborItem = this->item(item->row(), item->column()-1);
-        QString parName = neighborItem->text();
-        QString parValue = item->text();
+        QTableWidgetItem *nameItem = this->item(currentRow(), 0);
+        QTableWidgetItem *valueItem = this->item(currentRow(), 1);
+        QString parName = nameItem->text();
+        QString parValue = valueItem->text();
+
+        QString typeName;
+        if(QComboBox *typeBox = qobject_cast<QComboBox *>(this->cellWidget(currentRow(), 2)))
+        {
+            typeName = typeBox->currentText();
+        }
 
 //        QString apa = item->text();
 //        double ko = getParameter(parName);
-        if(item->text() != getParameter(parName))
+        if(parValue != getParameter(parName))
         {
             gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
         }
 
         //Do not do update, then crash due to the rebuild of the QTableWidgetItems
-        setParameter(parName, parValue, false);
+        setParameter(parName, parValue, "", "", typeName, false);
     }
 }
 
@@ -187,29 +214,29 @@ bool SystemParameterTableWidget::hasParameter(QString name)
 //! Slot that adds a System parameter value
 //! @param name Lookup name for the System parameter
 //! @param value Value of the System parameter
-void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, bool doUpdate)
+void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, QString descriptionTxt, QString unitTxt, QString typeTxt, bool doUpdate)
 {
-    //Error check
-    bool isDbl;
-    double value = valueTxt.toDouble((&isDbl));
-    if(!(isDbl))
-    {
-        QMessageBox::critical(0, "Hopsan GUI",
-                              QString("'%1' is not a valid number.")
-                              .arg(valueTxt));
-        QString oldValue = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameter(name);
-        QList<QTableWidgetItem *> items = selectedItems();
-        //Error if size() > 1, but it should not be! :)
-        for(int i = 0; i<items.size(); ++i)
-        {
-            items[i]->setText(oldValue);
-        }
-    }
-    else
+//    //Error check
+//    bool isDbl;
+//    double value = valueTxt.toDouble((&isDbl));
+//    if(!(isDbl))
+//    {
+//        QMessageBox::critical(0, "Hopsan GUI",
+//                              QString("'%1' is not a valid number.")
+//                              .arg(valueTxt));
+//        QString oldValue = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameter(name);
+//        QList<QTableWidgetItem *> items = selectedItems();
+//        //Error if size() > 1, but it should not be! :)
+//        for(int i = 0; i<items.size(); ++i)
+//        {
+//            items[i]->setText(oldValue);
+//        }
+//    }
+//    else
     {
 //        setParameter(name, valueTxt, doUpdate);
         //Error check
-        if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt)))
+        if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt, descriptionTxt, unitTxt, typeTxt)))
         {
             QMessageBox::critical(0, "Hopsan GUI",
                                   QString("'%1' is an invalid name for a system parameter.")
@@ -282,6 +309,8 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
     mpValueLabel = new QLabel("Value: ", this);
     mpValueBox = new QLineEdit(this);
     mpValueBox->setValidator(new QDoubleValidator(this));
+    mpTypeLabel = new QLabel("Type: ", this);
+    mpTypeBox = new TypeComboBox(0, 0, this);
     mpAddInDialogButton = new QPushButton("Set", this);
     mpDoneInDialogButton = new QPushButton("Done", this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -293,7 +322,9 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
     pDialogLayout->addWidget(mpNameBox,0,1);
     pDialogLayout->addWidget(mpValueLabel,1,0);
     pDialogLayout->addWidget(mpValueBox,1,1);
-    pDialogLayout->addWidget(pButtonBox,2,0,1,2);
+    pDialogLayout->addWidget(mpTypeLabel,2,0);
+    pDialogLayout->addWidget(mpTypeBox,2,1);
+    pDialogLayout->addWidget(pButtonBox,3,0,1,2);
     pAddComponentPropertiesDialog->setLayout(pDialogLayout);
     pAddComponentPropertiesDialog->show();
 
@@ -302,10 +333,23 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
 }
 
 
+//QComboBox *SystemParameterTableWidget::createTypeComboBox()
+//{
+//    QComboBox *box = new QComboBox(this);
+//    box->addItem("double");
+//    box->addItem("integer");
+//    box->addItem("bool");
+//    box->addItem("string");
+//    connect(box, SIGNAL(currentIndexChanged(QString)), this, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
+//    return box;
+//}
+
+
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 void SystemParameterTableWidget::addParameter()
 {
-    setParameter(mpNameBox->text(), mpValueBox->text());
+    qDebug() << mpTypeBox->currentText();
+    setParameter(mpNameBox->text(), mpValueBox->text(), "", "", mpTypeBox->currentText());
     gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
 }
 
@@ -313,16 +357,17 @@ void SystemParameterTableWidget::addParameter()
 //! Updates the parameter table from the contents list
 void SystemParameterTableWidget::update()
 {
-    QMap<std::string, std::string>::iterator it;
-    QMap<std::string, std::string> tempMap;
-    tempMap.clear();
+    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
+
     clear();
     if(gpMainWindow->mpProjectTabs->count()>0)
     {
-        tempMap = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParametersMap();
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
     }
-    if(tempMap.isEmpty())
+    if(qParameterNames.isEmpty())
     {
+        disconnect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
+
         setColumnCount(1);
         setRowCount(1);
         verticalHeader()->hide();
@@ -337,21 +382,34 @@ void SystemParameterTableWidget::update()
     else
     {
         setRowCount(0);
-        setColumnCount(2);
+        setColumnCount(3);
         setColumnWidth(0, 120);
         verticalHeader()->show();
 
-        for(it=tempMap.begin(); it!=tempMap.end(); ++it)
+        for(int i=0; i<qParameterNames.size(); ++i)
         {
 //            QString valueString;
 //            valueString.setNum(it.value());
             insertRow(rowCount());
-            QTableWidgetItem *nameItem = new QTableWidgetItem(QString(it.key().c_str()));
-            QTableWidgetItem *valueItem = new QTableWidgetItem(it.value().c_str());
+            QTableWidgetItem *nameItem = new QTableWidgetItem(qParameterNames[i]);
+            QTableWidgetItem *valueItem = new QTableWidgetItem(qParameterValues[i]);
             nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
             valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
             setItem(rowCount()-1, 0, nameItem);
             setItem(rowCount()-1, 1, valueItem);
+            TypeComboBox *typeBox = new TypeComboBox(rowCount()-1, 2, this);
+
+            for(int j=0; j<typeBox->count(); ++j)
+            {
+                if(qTypes[i] == typeBox->itemText(j))
+                {
+                    typeBox->setCurrentIndex(j);
+                    break;
+                }
+            }
+
+            setCellWidget(rowCount()-1, 2, typeBox);
         }
+        connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)), Qt::UniqueConnection);
     }
 }

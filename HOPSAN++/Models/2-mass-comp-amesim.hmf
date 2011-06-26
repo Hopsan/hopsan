@@ -76,7 +76,7 @@
             </component>
             <component typename="MechanicVelocityTransformer" name="VelocityTransformer">
                 <parameters>
-                    <parameter value="0" name="Speed"/>
+                    <parameter value="0" name="v"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -86,7 +86,7 @@
             </component>
             <component typename="MechanicForceTransformer" name="ForceTransformer">
                 <parameters>
-                    <parameter value="0" name="Force"/>
+                    <parameter value="0" name="F"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="v0"/>
