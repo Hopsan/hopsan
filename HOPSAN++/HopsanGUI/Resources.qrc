@@ -79,5 +79,13 @@
         <file>graphics/uiicons/Hopsan-Info.png</file>
         <file>graphics/uiicons/Hopsan-LibraryDualView.png</file>
         <file>graphics/uiicons/Hopsan-LibraryTreeView.png</file>
+        <file>graphics/uifonts/calibri.ttf</file>
+        <file>graphics/uifonts/calibrib.ttf</file>
+        <file>graphics/uifonts/calibrii.ttf</file>
+        <file>graphics/uifonts/calibriz.ttf</file>
+        <file>graphics/uifonts/consola.ttf</file>
+        <file>graphics/uifonts/consolab.ttf</file>
+        <file>graphics/uifonts/consolai.ttf</file>
+        <file>graphics/uifonts/consolaz.ttf</file>
     </qresource>
 </RCC>

@@ -34,11 +34,15 @@
 MainWindow* gpMainWindow = 0;
 QString gExecPath;
 
+void loadApplicationFonts();
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
     gExecPath = qApp->applicationDirPath().append('/');
+
+    loadApplicationFonts();
 
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     QSplashScreen splash(pixmap);
@@ -54,4 +58,33 @@ int main(int argc, char *argv[])
     //splash.finish(&mainwindow);
 
     return a.exec();
+}
+
+
+//! @todo Not sure if this shall be here or in main window, it has nothing to do with a main window and must be loaded before main window is loaded.
+//! @todo This error checking may slow down startup, and it is probably never needed. Remove when this functionality is tested and verified.
+void loadApplicationFonts()
+{
+    QFontDatabase fontDatabase;
+    bool error=false;
+    int i;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibri.ttf");
+    if(i == -1) error=true;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrib.ttf");
+    if(i == -1) error=true;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrii.ttf");
+    if(i == -1) error=true;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibriz.ttf");
+    if(i == -1) error=true;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consola.ttf");
+    if(i == -1) error=true;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolab.ttf");
+    if(i == -1) error=true;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolai.ttf");
+    if(i == -1) error=true;
+    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolaz.ttf");
+    if(i == -1) error=true;
+
+    if(error)
+        qDebug() << "Error loading fonts!";
 }

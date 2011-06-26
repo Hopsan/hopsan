@@ -23,6 +23,7 @@
 //$Id$
 
 #include <QDebug>
+#include <QFontDatabase>
 #include "MainWindow.h"
 #include "version.h"
 #include "common.h"
@@ -106,8 +107,8 @@ MainWindow::MainWindow(QWidget *parent)
     {
         setStyleSheet(gConfig.getStyleSheet());
         setPalette(gConfig.getPalette());
-        qApp->setFont(gConfig.getFont());
     }
+    qApp->setFont(gConfig.getFont());
 
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);
