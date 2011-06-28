@@ -102,6 +102,7 @@ private:
     QToolButton *mpShowListsButton;
     QToolButton *mpShowCurvesButton;
     QMenu *mpExportMenu;
+    QAction *mpExportToXmlAction;
     QAction *mpExportToCsvAction;
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
@@ -203,6 +204,7 @@ public:
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void updateLabels();
     bool isGridVisible();
+    void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
@@ -217,12 +219,17 @@ public slots:
     void enableGrid(bool value);
     void setBackgroundColor();
     void resetXVector();
+    void exportToXml();
     void exportToCsv();
     void exportToMatlab();
     void exportToGnuplot();
     void exportToPdf();
     void exportToPng();
     void insertMarker(PlotCurve *pCurve, QPoint pos);
+
+private slots:
+    QString updateXmlOutputTextInDialog();
+    void saveToXml();
 
 private:
     QwtPlot *mpPlot;
@@ -260,6 +267,13 @@ private:
     QString mVectorXDataName;
     QString mVectorXDataUnit;
     int mVectorXGeneration;
+
+    //Stuff used in export to xml dialog
+    QDialog *mpExportXmlDialog;
+    QSpinBox *mpXmlIndentationSpinBox;
+    QCheckBox *mpIncludeTimeCheckBox;
+    QCheckBox *mpIncludeDescriptionsCheckBox;
+    QTextEdit *mpXmlOutputTextBox;
 };
 
 

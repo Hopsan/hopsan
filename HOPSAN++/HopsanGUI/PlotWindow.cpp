@@ -103,11 +103,13 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
     mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
 
+    mpExportToXmlAction = new QAction("Export to Extensible Markup Language File (.xml)", mpToolBar);
     mpExportToCsvAction = new QAction("Export to Comma-Separeted Values File (.csv)", mpToolBar);
     mpExportToMatlabAction = new QAction("Export to Matlab Script File (.m)", mpToolBar);
     mpExportToGnuplotAction = new QAction("Export to gnuplot data file(.dat)", mpToolBar);
 
     mpExportMenu = new QMenu(mpToolBar);
+    mpExportMenu->addAction(mpExportToXmlAction);
     mpExportMenu->addAction(mpExportToCsvAction);
     mpExportMenu->addAction(mpExportToMatlabAction);
     mpExportMenu->addAction(mpExportToGnuplotAction);
@@ -671,7 +673,8 @@ void PlotTabWidget::tabChanged()
         disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(clicked()),      getTab(i),  SLOT(setBackgroundColor()));
         disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
         disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(clicked()),      getTab(i),  SLOT(resetXVector()));
-        disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
+        disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToXml()));
+        disconnect(mpParentPlotWindow->mpExportToXmlAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
         disconnect(mpParentPlotWindow->mpExportToMatlabAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToMatlab()));
         disconnect(mpParentPlotWindow->mpExportToGnuplotAction,     SIGNAL(triggered()),    getTab(i),  SLOT(exportToGnuplot()));
         disconnect(mpParentPlotWindow->mpExportPdfAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPdf()));
@@ -690,6 +693,7 @@ void PlotTabWidget::tabChanged()
         connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(clicked()),      getCurrentTab(),    SLOT(setBackgroundColor()));
         connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
         connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(clicked()),      getCurrentTab(),    SLOT(resetXVector()));
+        connect(mpParentPlotWindow->mpExportToXmlAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToXml()));
         connect(mpParentPlotWindow->mpExportToCsvAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToCsv()));
         connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
         connect(mpParentPlotWindow->mpExportToGnuplotAction,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGnuplot()));
@@ -1074,6 +1078,62 @@ void PlotTab::resetXVector()
 }
 
 
+//! @brief Slot that opens a dialog from where user can export current plot tab to a XML file
+void PlotTab::exportToXml()
+{
+
+        //Open a dialog where text and font can be selected
+    mpExportXmlDialog = new QDialog(gpMainWindow);
+    mpExportXmlDialog->setWindowTitle("Export Plot Tab To XML");
+
+    QLabel *pXmlIndentationLabel = new QLabel("Indentation: ");
+
+    mpXmlIndentationSpinBox = new QSpinBox(this);
+    mpXmlIndentationSpinBox->setRange(0,100);
+    mpXmlIndentationSpinBox->setValue(2);
+
+    mpIncludeTimeCheckBox = new QCheckBox("Include date && time");
+    mpIncludeTimeCheckBox->setChecked(true);
+
+    mpIncludeDescriptionsCheckBox = new QCheckBox("Include variable descriptions");
+    mpIncludeDescriptionsCheckBox->setChecked(true);
+
+    QLabel *pOutputLabel = new QLabel("Output data:");
+
+    mpXmlOutputTextBox = new QTextEdit();
+    mpXmlOutputTextBox->toHtml();
+    mpXmlOutputTextBox->setReadOnly(true);
+    mpXmlOutputTextBox->setMinimumSize(700, 210);
+
+    QPushButton *pDoneInDialogButton = new QPushButton("Export");
+    QPushButton *pCancelInDialogButton = new QPushButton("Cancel");
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pButtonBox->addButton(pDoneInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pCancelInDialogButton, QDialogButtonBox::ActionRole);
+
+    QGridLayout *pDialogLayout = new QGridLayout();
+    pDialogLayout->addWidget(pXmlIndentationLabel,          0, 0);
+    pDialogLayout->addWidget(mpXmlIndentationSpinBox,       0, 1);
+    pDialogLayout->addWidget(mpIncludeTimeCheckBox,         2, 0, 1, 2);
+    pDialogLayout->addWidget(mpIncludeDescriptionsCheckBox, 3, 0, 1, 2);
+    pDialogLayout->addWidget(pOutputLabel,                  4, 0, 1, 2);
+    pDialogLayout->addWidget(mpXmlOutputTextBox,            5, 0, 1, 4);
+    pDialogLayout->addWidget(pButtonBox,                    6, 2, 1, 2);
+
+    mpExportXmlDialog->setLayout(pDialogLayout);
+
+    connect(mpXmlIndentationSpinBox,        SIGNAL(valueChanged(int)),  this,               SLOT(updateXmlOutputTextInDialog()));
+    connect(mpIncludeTimeCheckBox,          SIGNAL(toggled(bool)),      this,               SLOT(updateXmlOutputTextInDialog()));
+    connect(mpIncludeDescriptionsCheckBox,  SIGNAL(toggled(bool)),      this,               SLOT(updateXmlOutputTextInDialog()));
+    connect(pDoneInDialogButton,            SIGNAL(clicked()),          this,               SLOT(saveToXml()));
+    connect(pCancelInDialogButton,          SIGNAL(clicked()),          mpExportXmlDialog,  SLOT(close()));
+
+    updateXmlOutputTextInDialog();
+    mpExportXmlDialog->open();
+}
+
+
+//! @brief Slot that exports plot tab to a specified comma-separated value file (.csv)
 void PlotTab::exportToCsv()
 {
         //Open file dialog and initialize the file stream
@@ -1126,6 +1186,7 @@ void PlotTab::exportToCsv()
 }
 
 
+//! @brief Slot that exports plot tab to a specified matlab script file (.m)
 void PlotTab::exportToMatlab()
 {
         //Open file dialog and initialize the file stream
@@ -1195,6 +1256,7 @@ void PlotTab::exportToMatlab()
 }
 
 
+//! @brief Slot that exports plot tab to specified gnuplot file  (.dat)
 void PlotTab::exportToGnuplot()
 {
         //Open file dialog and initialize the file stream
@@ -1248,7 +1310,7 @@ void PlotTab::exportToGnuplot()
 }
 
 
-    //! @brief Slot that exports current plot tab to .pdf
+//! @brief Slot that exports plot tab as vector graphics to specified .pdf file
 void PlotTab::exportToPdf()
 {
      QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", QString(), "Portable Document Format (*.pdf)");
@@ -1267,6 +1329,7 @@ void PlotTab::exportToPdf()
 }
 
 
+//! @brief Slot that exports plot tab as bitmap to specified .png file
 void PlotTab::exportToPng()
 {
     QString fileName = QFileDialog::getSaveFileName(
@@ -1415,6 +1478,153 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 
     mpPlot->canvas()->installEventFilter(tempMarker);
     mpPlot->canvas()->setMouseTracking(true);
+}
+
+
+//! @brief Saves the current tab to a DOM element (XML)
+//! @param rDomElement Reference to the dom element to save to
+//! @param dateTime Tells whether or not date and time should be included
+//! @param descriptions Tells whether or not variable descriptions shall be included
+void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions)
+{
+    if(dateTime)
+    {
+        QDateTime datetime;
+        rDomElement.setAttribute("datetime", datetime.currentDateTime().toString(Qt::ISODate));
+    }
+
+        //Cycle plot curves and write data tags
+    for(int j=0; j<mPlotCurvePtrs[0]->getTimeVector().size(); ++j)
+    {
+        QDomElement dataTag = appendDomElement(rDomElement, "data");
+
+        if(mHasSpecialXAxis)        //Special x-axis, replace time with x-data
+        {
+            dataTag.setAttribute(mVectorXDataName, mVectorX[j]);
+        }
+        else                        //X-axis = time
+        {
+            dataTag.setAttribute("time", mPlotCurvePtrs[0]->getTimeVector()[j]);
+        }
+
+        //Write variable tags for each variable
+        for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+        {
+            QString numTemp;
+            numTemp.setNum(i);
+            QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[i]->getDataName()+numTemp);
+            QString valueString;
+            valueString.setNum(mPlotCurvePtrs[i]->getDataVector()[j]);
+            QDomText value = varTag.ownerDocument().createTextNode(valueString);
+            varTag.appendChild(value);
+
+            if(descriptions)
+            {
+                varTag.setAttribute("component", mPlotCurvePtrs[i]->getComponentName());
+                varTag.setAttribute("port", mPlotCurvePtrs[i]->getPortName());
+                varTag.setAttribute("type", mPlotCurvePtrs[i]->getDataName());
+                varTag.setAttribute("unit", mPlotCurvePtrs[i]->getDataUnit());
+            }
+        }
+    }
+}
+
+
+//! @brief Private slot that updates the xml preview field in the export to xml dialog
+QString PlotTab::updateXmlOutputTextInDialog()
+{
+    QDomDocument domDocument;
+    QDomElement element = domDocument.createElement("hopsanplotdata");
+    domDocument.appendChild(element);
+    this->saveToDomElement(element, mpIncludeTimeCheckBox->isChecked(), mpIncludeDescriptionsCheckBox->isChecked());
+    QString output = domDocument.toString(mpXmlIndentationSpinBox->value());
+
+    QStringList lines = output.split("\n");
+
+    //We want the first 10 lines and the last 2 from the xml output
+    QString display;
+    for(int i=0; i<10; ++i)
+    {
+        display.append(lines[i]);
+        display.append("\n");
+    }
+    for(size_t k=0; k<mpXmlIndentationSpinBox->value(); ++k) display.append(" ");
+    display.append("...\n");
+    display.append(lines[lines.size()-2]);
+    display.append(lines[lines.size()-1]);
+
+    display.replace(" ", "&nbsp;");
+    display.replace(">", "!!!GT!!!");
+    display.replace("<", "<font color=\"saddlebrown\">&lt;");
+    display.replace("!!!GT!!!","</font><font color=\"saddlebrown\">&gt;</font>");
+    display.replace("\n", "<br>\n");
+    display.replace("&lt;?xml", "&lt;?xml</font>");
+    display.replace("&lt;data", "&lt;data</font>");
+
+    display.replace("0&nbsp;", "0</font>&nbsp;");
+    display.replace("1&nbsp;", "1</font>&nbsp;");
+    display.replace("2&nbsp;", "2</font>&nbsp;");
+    display.replace("3&nbsp;", "3</font>&nbsp;");
+    display.replace("4&nbsp;", "4</font>&nbsp;");
+    display.replace("5&nbsp;", "5</font>&nbsp;");
+    display.replace("6&nbsp;", "6</font>&nbsp;");
+    display.replace("7&nbsp;", "7</font>&nbsp;");
+    display.replace("8&nbsp;", "8</font>&nbsp;");
+    display.replace("9&nbsp;", "9</font>&nbsp;");
+
+    display.replace("&lt;hopsanplotdata", "&lt;hopsanplotdata</font>");
+    display.replace("&nbsp;version=", "&nbsp;version=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("&nbsp;encoding=", "&nbsp;encoding=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("&nbsp;component=", "&nbsp;component=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("&nbsp;port=", "&nbsp;port=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("&nbsp;type=", "&nbsp;type=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("&nbsp;unit=", "&nbsp;unit=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("&nbsp;time=", "&nbsp;time=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("&nbsp;datetime=", "&nbsp;datetime=<font face=\"Consolas\" color=\"darkred\">");
+    display.replace("\"&nbsp;", "\"</font>&nbsp;");
+
+    display.replace("&nbsp;", "<font face=\"Consolas\">&nbsp;</font>");
+    display.replace("</font></font>", "</font>");
+
+    qDebug() << display;
+    mpXmlOutputTextBox->setText(display);
+
+    return output;
+}
+
+
+//! @brief Private slot that opens a file dialog and saves the current tab to a specified XML file
+//! @note Don't call this directly, call exportToXml() first and it will subsequently call this slot
+void PlotTab::saveToXml()
+{
+        //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString filePath;
+    QFileInfo fileInfo;
+    QFile file;
+    filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To XML File"),
+                                            fileDialogSaveDir.currentPath(),
+                                            tr("Extensible Markup Language (*.xml)"));
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    fileInfo.setFile(filePath);
+    file.setFileName(fileInfo.filePath());   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
+        return;
+    }
+
+    QDomDocument domDocument;
+    QDomElement element = domDocument.createElement("hopsanplotdata");
+    domDocument.appendChild(element);
+    this->saveToDomElement(element, mpIncludeTimeCheckBox->isChecked(), mpIncludeDescriptionsCheckBox->isChecked());
+    appendRootXMLProcessingInstruction(domDocument);
+
+    QTextStream fileStream(&file);
+    domDocument.save(fileStream, mpXmlIndentationSpinBox->value());
+    file.close();
+
+    mpExportXmlDialog->close();
 }
 
 
