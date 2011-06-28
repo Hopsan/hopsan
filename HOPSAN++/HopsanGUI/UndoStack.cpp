@@ -830,7 +830,7 @@ void UndoStack::redoOneStep()
 //! @param item Pointer to the component about to be deleted
 void UndoStack::registerDeletedObject(GUIModelObject *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -855,7 +855,7 @@ void UndoStack::registerDeletedObject(GUIModelObject *item)
 //! @param item Pointer to the connector about to be deleted
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -869,7 +869,7 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 //! @param itemName Name of the added object
 void UndoStack::registerAddedObject(GUIModelObject *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -895,7 +895,7 @@ void UndoStack::registerAddedObject(GUIModelObject *item)
 //! @param item Pointer to the added connector
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -910,7 +910,7 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
 //! @param newName New object name
 void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -947,7 +947,7 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUICon
 //! @param objectName Name of the object
 void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -963,7 +963,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 //! @param item Pointer to the object
 void UndoStack::registerRotatedObject(QString objectName, double angle)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -978,7 +978,7 @@ void UndoStack::registerRotatedObject(QString objectName, double angle)
 //! @param item Pointer to the object
 void UndoStack::registerVerticalFlip(QString objectName)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -992,7 +992,7 @@ void UndoStack::registerVerticalFlip(QString objectName)
 //! @param item Pointer to the object
 void UndoStack::registerHorizontalFlip(QString objectName)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1009,7 +1009,7 @@ void UndoStack::registerHorizontalFlip(QString objectName)
 //! @param newValueTxt Text string with new parameter value
 void UndoStack::registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1030,7 +1030,7 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
 //! @param newValueTxt Text string with new start value
 void UndoStack::registerChangedStartValue(QString objectName, QString portName, QString parameterName, QString oldValueTxt, QString newValueTxt)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1050,7 +1050,7 @@ void UndoStack::registerChangedStartValue(QString objectName, QString portName, 
 //! @param isVisible Boolean that tells whether the object has become visible (true) or invisible (false)
 void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1065,7 +1065,7 @@ void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
 //! @param item Pointer to the box widget item
 void UndoStack::registerAddedBoxWidget(GUIBoxWidget *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1080,7 +1080,7 @@ void UndoStack::registerAddedBoxWidget(GUIBoxWidget *item)
 //! @param item Pointer to box widget about to be deleted
 void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1102,7 +1102,7 @@ void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
 //! @param newPos New position of the box widget
 void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1130,7 +1130,7 @@ void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, 
 //! @param lineColor New line color
 void UndoStack::registerModifiedBoxWidgetStyle(int index, int oldLineWidth, Qt::PenStyle oldLineStyle, QColor oldLineColor, int lineWidth, Qt::PenStyle lineStyle, QColor lineColor)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1167,7 +1167,7 @@ void UndoStack::registerModifiedBoxWidgetStyle(int index, int oldLineWidth, Qt::
 //! @param item Pointer to the new text widget
 void UndoStack::registerAddedTextWidget(GUITextWidget *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1182,7 +1182,7 @@ void UndoStack::registerAddedTextWidget(GUITextWidget *item)
 //! @param item Pointer to the text widget about to be deleted
 void UndoStack::registerDeletedTextWidget(GUITextWidget *item)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1203,7 +1203,7 @@ void UndoStack::registerDeletedTextWidget(GUITextWidget *item)
 //! @param color New text color
 void UndoStack::registerModifiedTextWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -1225,7 +1225,7 @@ void UndoStack::registerModifiedTextWidget(int index, QString oldText, QFont old
 //! @param newPos New Position
 void UndoStack::registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos)
 {
-    if(mpParentContainerObject->mUndoDisabled)
+    if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");

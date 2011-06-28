@@ -445,7 +445,7 @@ void PlotWindow::saveToXml()
             curveElement.setAttribute("axis",       mpPlotTabs->getTab(i)->getCurves().at(j)->getAxisY());
             curveElement.setAttribute("width",      mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().width());
             curveElement.setAttribute("color",      makeRgbString(mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().color()));
-            curveElement.setAttribute("model",      mpPlotTabs->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->mModelFileInfo.filePath());
+            curveElement.setAttribute("model",      mpPlotTabs->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
         }
     }
 
@@ -1006,7 +1006,7 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
 
     rescaleToCurves();
 
-    mVectorXModelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->mModelFileInfo.filePath();
+    mVectorXModelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
     mVectorXComponent = componentName;
     mVectorXPortName = portName;
     mVectorXDataName = dataName;
@@ -1869,7 +1869,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     {
         for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
         {
-            if(gpMainWindow->mpProjectTabs->getTab(i)->mpSystem->mModelFileInfo.filePath() == modelPath)
+            if(gpMainWindow->mpProjectTabs->getTab(i)->mpSystem->getModelFileInfo().filePath() == modelPath)
             {
                 mpContainerObject = gpMainWindow->mpProjectTabs->getContainer(i);
                 break;
@@ -1878,7 +1878,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     }
     assert(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
 
-    mpContainerObject->nPlotCurves++;
+    mpContainerObject->incrementOpenPlotCurves();;
     mGeneration = generation;
     mComponentName = componentName;
     mPortName = portName;
@@ -1943,7 +1943,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 //! Deletes the info box and its dock widgets before the curve is removed.
 PlotCurve::~PlotCurve()
 {
-    mpContainerObject->nPlotCurves--;
+    mpContainerObject->decrementOpenPlotCurves();
     mpPlotInfoDockWidget->hide();
     delete(mpPlotInfoBox);
     delete(mpPlotInfoDockWidget);

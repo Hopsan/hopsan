@@ -124,7 +124,7 @@ void UndoWidget::refreshList()
 
     //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer();
     //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer()->getName();
-    QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mUndoRoot;
+    QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mUndoRoot;
     QDomElement postElement = undoRoot.firstChildElement("post");
     while(found)
     {
@@ -140,7 +140,7 @@ void UndoWidget::refreshList()
                     item = new QTableWidgetItem();
                     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                     item->setText(translateTag(postElement.attribute("type")));
-                    if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
+                    if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                     {
                         item->setBackgroundColor(activeColor);
                     }
@@ -152,7 +152,7 @@ void UndoWidget::refreshList()
                     {
                         item->setBackgroundColor(oddColor);
                     }
-                    if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
+                    if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                     {
                         item->setForeground(QColor("gray"));
                     }
@@ -167,7 +167,7 @@ void UndoWidget::refreshList()
                         item = new QTableWidgetItem();
                         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                         item->setText(translateTag(stuffElement.attribute("what")));
-                        if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
+                        if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                         {
                             item->setBackgroundColor(activeColor);
                         }
@@ -179,7 +179,7 @@ void UndoWidget::refreshList()
                         {
                             item->setBackgroundColor(oddColor);
                         }
-                        if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
+                        if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                         {
                             item->setForeground(QColor("gray"));
                         }

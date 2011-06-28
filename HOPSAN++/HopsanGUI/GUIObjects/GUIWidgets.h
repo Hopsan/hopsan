@@ -46,6 +46,7 @@ class GUIWidget : public GUIObject
 
 public:
     GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
+    void setOldPos();
     int mWidgetIndex;
 
 protected:

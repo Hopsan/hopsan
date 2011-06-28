@@ -52,6 +52,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     mpParentProjectTab = parent;
     mpContainerObject = mpParentProjectTab->mpSystem;
 
+    mIgnoreNextContextMenuEvent = false;
     mCtrlKeyPressed = false;
     mLeftMouseButtonPressed = false;
     this->setDragMode(RubberBandDrag);
@@ -98,7 +99,7 @@ void GraphicsView::createActions()
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!mpContainerObject->getIsCreatingConnector() && !mpContainerObject->mJustStoppedCreatingConnector)
+    if(!mpContainerObject->getIsCreatingConnector() && !mIgnoreNextContextMenuEvent)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
         {
@@ -116,21 +117,18 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 
             if(selectedAction == addTextAction)
             {
-                mpContainerObject->mUndoStack->newPost();
+                mpContainerObject->getUndoStackPtr()->newPost();
                 this->mpContainerObject->addTextWidget(this->mapToScene(event->pos()).toPoint());
             }
 
             if(selectedAction == addBoxAction)
             {
-                mpContainerObject->mUndoStack->newPost();
+                mpContainerObject->getUndoStackPtr()->newPost();
                 this->mpContainerObject->addBoxWidget(this->mapToScene(event->pos()).toPoint());
             }
         }
-
-
-
-        mpContainerObject->mJustStoppedCreatingConnector = true;
     }
+    mIgnoreNextContextMenuEvent = false;
 }
 
 
@@ -196,7 +194,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
 
         //Dropped item is not a plot data string, so assume it is a component typename
-        mpContainerObject->mUndoStack->newPost();
+        mpContainerObject->getUndoStackPtr()->newPost();
         event->accept();
         QPointF position = event->pos();
         mpContainerObject->addGUIModelObject(text, this->mapToScene(position.toPoint()).toPoint());
@@ -306,11 +304,11 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     //qDebug() << "shiftPressed = " << shiftPressed;
     //qDebug() << "event->key() = " << event->key();
 
-    if (event->key() == Qt::Key_Delete && !mpContainerObject->mIsRenamingObject)
+    if (event->key() == Qt::Key_Delete)
     {
         if(mpContainerObject->isObjectSelected() || mpContainerObject->isConnectorSelected())
         {
-            mpContainerObject->mUndoStack->newPost();
+            mpContainerObject->getUndoStackPtr()->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressDelete();
@@ -326,7 +324,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             }
             mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
             mpContainerObject->setIsCreatingConnector(false);
-            mpContainerObject->mJustStoppedCreatingConnector = true;
             delete(mpContainerObject->mpTempConnector);
             gpMainWindow->hideHelpPopupMessage();
         }
@@ -415,7 +412,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(mpContainerObject->isObjectSelected())
         {
-            mpContainerObject->mUndoStack->newPost();
+            mpContainerObject->getUndoStackPtr()->newPost();
         }
         emit keyPressCtrlUp();
         doNotForwardEvent = true;
@@ -424,32 +421,32 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(mpContainerObject->isObjectSelected())
         {
-            mpContainerObject->mUndoStack->newPost();
+            mpContainerObject->getUndoStackPtr()->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlDown();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed && event->key() == Qt::Key_Left && !mpContainerObject->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_Left)
     {
         if(mpContainerObject->isObjectSelected())
         {
-            mpContainerObject->mUndoStack->newPost();
+            mpContainerObject->getUndoStackPtr()->newPost();
         }
         emit keyPressCtrlLeft();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed && event->key() == Qt::Key_Right && !mpContainerObject->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_Right)
     {
         if(mpContainerObject->isObjectSelected())
         {
-            mpContainerObject->mUndoStack->newPost();
+            mpContainerObject->getUndoStackPtr()->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlRight();
         doNotForwardEvent = true;
     }
-    else if (ctrlPressed && event->key() == Qt::Key_A && !mpContainerObject->mIsRenamingObject)
+    else if (ctrlPressed && event->key() == Qt::Key_A)
     {
         mpContainerObject->selectAll();
     }
@@ -518,8 +515,6 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     mLeftMouseButtonPressed = true;
 
-    mpContainerObject->mJustStoppedCreatingConnector = false;
-
         //No rubber band during connecting:
     if (mpContainerObject->getIsCreatingConnector())
     {
@@ -546,7 +541,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             }
             mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
             mpContainerObject->setIsCreatingConnector(false);
-            mpContainerObject->mJustStoppedCreatingConnector = true;
+            mIgnoreNextContextMenuEvent = true;
             delete(mpContainerObject->mpTempConnector);
             gpMainWindow->hideHelpPopupMessage();
         }
@@ -563,6 +558,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         mpContainerObject->mpTempConnector->addPoint(this->mapToScene(event->pos()));
     }
+
     QGraphicsView::mousePressEvent(event);
 }
 

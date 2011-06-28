@@ -148,13 +148,9 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     mOldPos = this->pos();  //Make sure current objects oldpos is changed (it may not be selected before being clicked)
     if(event->button() == Qt::LeftButton)
     {
-        for(int i = 0; i < mpParentContainerObject->mSelectedGUIModelObjectsList.size(); ++i)
+        for(int i = 0; i < mpParentContainerObject->getSelectedGUIWidgetPtrs().size(); ++i)
         {
-            mpParentContainerObject->mSelectedGUIModelObjectsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIModelObjectsList[i]->pos();
-        }
-        for(int i = 0; i < mpParentContainerObject->mSelectedGUIWidgetsList.size(); ++i)
-        {
-            mpParentContainerObject->mSelectedGUIWidgetsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIWidgetsList[i]->pos();
+            mpParentContainerObject->getSelectedGUIWidgetPtrs()[i]->setOldPos();
         }
     }
 
@@ -285,7 +281,7 @@ void GUIObject::rotate90cw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), 90);
+        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), 90);
     }
 
     emit objectMoved();
@@ -306,7 +302,7 @@ void GUIObject::rotate90ccw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), -90);    //! @todo This will register a clockwise rotation, which will be bad...
+        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), -90);    //! @todo This will register a clockwise rotation, which will be bad...
     }
 
     emit objectMoved();

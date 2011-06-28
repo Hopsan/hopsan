@@ -93,7 +93,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         //Undo checkbox
     mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), this);
     mpDisableUndoCheckBox->setCheckable(true);
-    mpDisableUndoCheckBox->setChecked(mpContainerObject->mUndoDisabled);
+    mpDisableUndoCheckBox->setChecked(!mpContainerObject->isUndoEnabled());
 
         //Startup python script file
     mpPyScriptLabel = new QLabel("Script File:", this);
@@ -208,7 +208,7 @@ void ContainerPropertiesDialog::setValues()
         gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
     }
 
-    if(mpContainerObject->mUndoDisabled != mpDisableUndoCheckBox->isChecked())
+    if(mpContainerObject->isUndoEnabled() == mpDisableUndoCheckBox->isChecked())
     {
         mpContainerObject->setUndoEnabled(mpDisableUndoCheckBox->isChecked());
     }

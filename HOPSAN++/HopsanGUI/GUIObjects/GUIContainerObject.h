@@ -53,8 +53,9 @@ public:
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
     //Handle GuiModelObjects and GuiWidgets
-    void addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
-    void addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
+    GUITextWidget *addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
+    GUIBoxWidget *addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
+    void removeWidget(GUIWidget *pWidget, undoStatus undoSettings=UNDO);
     GUIModelObject *addGUIModelObject(QString typeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
@@ -62,6 +63,12 @@ public:
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool hasGUIModelObject(QString name);
     void takeOwnershipOf(QList<GUIModelObject*> &rModeObjectlist, QList<GUIWidget*> &rWidgetList);
+    void rememberSelectedWidget(GUIWidget *widget);
+    void forgetSelectedWidget(GUIWidget *widget);
+    QList<GUIWidget *> getSelectedGUIWidgetPtrs();
+    void rememverSelectedGUIModelObject(GUIModelObject *object);
+    void forgetSelectedGUIModelObject(GUIModelObject *object);
+    QList<GUIModelObject *> getSelectedGUIModelObjectPtrs();
 
     //Handle connectors
     GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
@@ -82,6 +89,11 @@ public:
     bool isObjectSelected();
     bool isConnectorSelected();
 
+    void incrementOpenPlotCurves();
+    void decrementOpenPlotCurves();
+    bool hasOpenPlotCurves();
+
+    UndoStack *getUndoStackPtr();
     CopyStack *getDragCopyStackPtr();
 
     //These (overloaded versions) are used in containerPropertiesDialog by systems
@@ -89,31 +101,22 @@ public:
     virtual size_t getNumberOfLogSamples(){assert(false);}
     virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
 
-    //Public member variable
-    //!< @todo make this private later
-    QFileInfo mModelFileInfo; //!< @todo should not be public
-    UndoStack *mUndoStack;
-    ProjectTab *mpParentProjectTab;
 
-    QList<GUIConnector *> mSelectedSubConnectorsList;
-    QList<GUIConnector *> mSubConnectorList;
-
+    void setModelFile(QString path);
+    QFileInfo getModelFileInfo();
     void setScriptFile(QString path);
     QString getScriptFile();
 
+    QStringList getGUIModelObjectNames();
+
+
+
+    //Public member variable
+    ProjectTab *mpParentProjectTab;
+
     //SHOULD BE PROTECTED
-    typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
-    GUIModelObjectMapT mGUIModelObjectMap;
-    QList<GUITextWidget *> mTextWidgetList; //! @todo we should really have one common list for all guiwidgets, or maybe only have the guiwidget map bellow
-    QList<GUIBoxWidget *> mBoxWidgetList;
-    QList<GUIModelObject *> mSelectedGUIModelObjectsList;
-    QList<GUIWidget *> mSelectedGUIWidgetsList;
-
-    bool mUndoDisabled;
-    bool mIsRenamingObject;
-    bool mJustStoppedCreatingConnector;
-
-    int nPlotCurves;
+    QList<GUIConnector *> mSelectedSubConnectorsList;
+    QList<GUIConnector *> mSubConnectorList;
 
     GUIModelObject *mpTempGUIModelObject;
     GUIConnector *mpTempConnector;
@@ -126,7 +129,7 @@ public:
     void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
     void removeFavoriteVariableByComponentName(QString componentName);
 
-    QList<QStringList> mFavoriteVariables;     //! @todo Should be private!
+    QList<QStringList> mFavoriteVariables;
 
     QVector<double> getTimeVector(int generation);
     QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
@@ -169,6 +172,7 @@ public slots:
     void redo();
     void clearUndo();
     void setUndoEnabled(bool enabled, bool dontAskJustDoIt=false);
+    bool isUndoEnabled();
     void updateUndoStatus();
         //Appearance and settings
     void setGfxType(graphicsType gfxType);
@@ -218,8 +222,24 @@ protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
+    QFileInfo mModelFileInfo;
     QString mScriptFilePath;
     QMap<QString, QStringList> mPlotAliasMap;
+
+    typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
+    GUIModelObjectMapT mGUIModelObjectMap;
+
+    UndoStack *mpUndoStack;
+
+    QList<GUITextWidget *> mTextWidgetList; //! @todo we should really have one common list for all guiwidgets, or maybe only have the guiwidget map bellow
+    QList<GUIBoxWidget *> mBoxWidgetList;
+    QList<GUIModelObject *> mSelectedGUIModelObjectsList;
+    QList<GUIWidget *> mSelectedGUIWidgetsList;
+
+    bool mUndoDisabled;
+
+    int nPlotCurves;
+
 
 protected slots:
 

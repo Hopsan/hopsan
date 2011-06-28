@@ -51,7 +51,7 @@ GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
     this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
-    this->mUndoStack->newPost();
+    this->mpUndoStack->newPost();
 }
 
 GUISystem::~GUISystem()
@@ -300,7 +300,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     {
         //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
         //If it would be, the load function will fail
-        xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->mModelFileInfo.absolutePath()) );
+        xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
 
         //Save the name that we have set for this subsystem, this name will overwrite the defualt one in the external file
         xmlSubsystem.setAttribute( HMF_NAMETAG, this->getName());
@@ -505,7 +505,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
         //Deselect all components
         this->deselectAll();
-        this->mUndoStack->clear();
+        this->mpUndoStack->clear();
         //Only do this for the root system
         //! @todo maybe can do this for subsystems to (even if we dont see them right now)
         if (this->mpParentContainerObject == 0)

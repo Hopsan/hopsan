@@ -61,7 +61,6 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
 {
         //Initialize
     setIsCreatingConnector(false);
-    mIsRenamingObject = false;
     mPortsHidden = !gpMainWindow->togglePortsAction->isChecked();
     mNamesHidden = !gpMainWindow->toggleNamesAction->isChecked();
     mUndoDisabled = false;
@@ -77,8 +76,8 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
     mpScene = new QGraphicsScene(this);
 
     //Create the undastack
-    mUndoStack = new UndoStack(this);
-    mUndoStack->clear();
+    mpUndoStack = new UndoStack(this);
+    mpUndoStack->clear();
 
     gpMainWindow->toggleNamesAction->setChecked(true);
     gpMainWindow->togglePortsAction->setChecked(true);
@@ -561,7 +560,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
 
     if(undoSettings == UNDO)
     {
-        mUndoStack->registerAddedObject(mpTempGUIModelObject);
+        mpUndoStack->registerAddedObject(mpTempGUIModelObject);
     }
 
 
@@ -623,36 +622,61 @@ void GUIContainerObject::removeFavoriteVariableByComponentName(QString component
 //! @brief Inserts a new text widget to the container
 //! @param position Initial position of the widget
 //! @param undoSettings Tells whether or not this shall be registered in the undo stack
-void GUIContainerObject::addTextWidget(QPointF position, undoStatus undoSettings)
+GUITextWidget *GUIContainerObject::addTextWidget(QPointF position, undoStatus undoSettings)
 {
-    GUITextWidget *tempTextWidget;
-    tempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
-    mTextWidgetList.append(tempTextWidget);
-    mWidgetMap.insert(mHighestWidgetIndex, tempTextWidget);
+    GUITextWidget *pTempTextWidget;
+    pTempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
+    mTextWidgetList.append(pTempTextWidget);
+    mWidgetMap.insert(mHighestWidgetIndex, pTempTextWidget);
     ++mHighestWidgetIndex;
     if(undoSettings == UNDO)
     {
-        mUndoStack->registerAddedTextWidget(tempTextWidget);
+        mpUndoStack->registerAddedTextWidget(pTempTextWidget);
     }
     mpParentProjectTab->hasChanged();
+
+    return pTempTextWidget;
 }
 
 
 //! @brief Inserts a new box widget to the container
 //! @param position Initial position of the widget
 //! @param undoSettings Tells whether or not this shall be registered in the undo stack
-void GUIContainerObject::addBoxWidget(QPointF position, undoStatus undoSettings)
+GUIBoxWidget *GUIContainerObject::addBoxWidget(QPointF position, undoStatus undoSettings)
 {
-    GUIBoxWidget *tempBoxWidget;
-    tempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this, mHighestWidgetIndex);
-    mBoxWidgetList.append(tempBoxWidget);
-    mWidgetMap.insert(mHighestWidgetIndex, tempBoxWidget);
+    GUIBoxWidget *pTempBoxWidget;
+    pTempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this, mHighestWidgetIndex);
+    mBoxWidgetList.append(pTempBoxWidget);
+    mWidgetMap.insert(mHighestWidgetIndex, pTempBoxWidget);
     ++mHighestWidgetIndex;
     if(undoSettings == UNDO)
     {
-        mUndoStack->registerAddedBoxWidget(tempBoxWidget);
+        mpUndoStack->registerAddedBoxWidget(pTempBoxWidget);
     }
     mpParentProjectTab->hasChanged();
+
+    return pTempBoxWidget;
+}
+
+
+void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSettings)
+{
+    if(undoSettings == UNDO && mTextWidgetList.contains(qobject_cast<GUITextWidget *>(pWidget)))
+    {
+        mpUndoStack->newPost();
+        mpUndoStack->registerDeletedTextWidget(qobject_cast<GUITextWidget *>(pWidget));
+    }
+    else if(undoSettings == UNDO && mBoxWidgetList.contains(qobject_cast<GUIBoxWidget *>(pWidget)))
+    {
+        mpUndoStack->newPost();
+        mpUndoStack->registerDeletedBoxWidget(qobject_cast<GUIBoxWidget *>(pWidget));
+    }
+
+    mTextWidgetList.removeAll(qobject_cast<GUITextWidget *>(pWidget));
+    mBoxWidgetList.removeAll(qobject_cast<GUIBoxWidget *>(pWidget));
+    mSelectedGUIWidgetsList.removeAll(pWidget);
+    mWidgetMap.remove(pWidget->mWidgetIndex);
+    delete(pWidget);
 }
 
 
@@ -676,7 +700,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     if (undoSettings == UNDO && !mUndoDisabled)
     {
         //Register removal of model object in undo stack
-        this->mUndoStack->registerDeletedObject(it.value());
+        this->mpUndoStack->registerDeletedObject(it.value());
         //emit componentChanged(); //!< @todo Why do we need to emit this signal after regestering in undostack
         //qDebug() << "Emitting!";
     }
@@ -767,8 +791,8 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
 
         if (undoSettings == UNDO)
         {
-            mUndoStack->newPost();
-            mUndoStack->registerRenameObject(oldName, modNewName);
+            mpUndoStack->newPost();
+            mpUndoStack->registerRenameObject(oldName, modNewName);
             emit componentChanged();
         }
     }
@@ -919,6 +943,48 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
 }
 
 
+//! @brief Notifies container object that a gui widget has been selected
+void GUIContainerObject::rememberSelectedWidget(GUIWidget *widget)
+{
+    mSelectedGUIWidgetsList.append(widget);
+}
+
+
+//! @brief Notifies container object that a gui widget is no longer selected
+void GUIContainerObject::forgetSelectedWidget(GUIWidget *widget)
+{
+    mSelectedGUIWidgetsList.removeAll(widget);
+}
+
+
+//! @brief Returns a list with pointers to the selected GUI widgets
+QList<GUIWidget *> GUIContainerObject::getSelectedGUIWidgetPtrs()
+{
+    return mSelectedGUIWidgetsList;
+}
+
+
+//! @brief Notifies container object that a gui model object has been selected
+void GUIContainerObject::rememverSelectedGUIModelObject(GUIModelObject *object)
+{
+    mSelectedGUIModelObjectsList.append(object);
+}
+
+
+//! @brief Notifies container object that a gui model object is no longer selected
+void GUIContainerObject::forgetSelectedGUIModelObject(GUIModelObject *object)
+{
+    mSelectedGUIModelObjectsList.removeAll(object);
+}
+
+
+//! @brief Returns a list with pointers to the selected GUI model objects
+QList<GUIModelObject *> GUIContainerObject::getSelectedGUIModelObjectPtrs()
+{
+    return mSelectedGUIModelObjectsList;
+}
+
+
 //! @brief Returns a pointer to the component with specified name.
 GUIModelObject *GUIContainerObject::getGUIModelObject(QString name)
 {
@@ -995,7 +1061,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
 
     if(undoSettings == UNDO)
     {
-        mUndoStack->registerDeletedConnector(pConnector);
+        mpUndoStack->registerDeletedConnector(pConnector);
     }
 
     for(int i = 0; i < mSubConnectorList.size(); ++i)
@@ -1095,8 +1161,8 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 
             if(undoSettings == UNDO)
             {
-                mUndoStack->newPost();
-                mUndoStack->registerAddedConnector(mpTempConnector);
+                mpUndoStack->newPost();
+                mpUndoStack->registerAddedConnector(mpTempConnector);
             }
             mpParentProjectTab->hasChanged();
         }
@@ -1111,7 +1177,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 {
     this->copySelected(xmlStack);
-    this->mUndoStack->newPost("cut");
+    this->mpUndoStack->newPost("cut");
     emit deleteSelected();
     mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
@@ -1184,7 +1250,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 
     //gpMainWindow->mpMessageWidget->printGUIDebugMessage(gCopyStack.getXML());
 
-    mUndoStack->newPost("paste");
+    mpUndoStack->newPost("paste");
     mpParentProjectTab->hasChanged();
 
     QDomElement *copyRoot;
@@ -1244,7 +1310,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();
         pObj->moveBy(xOffset, yOffset);
-        mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+        mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
 
         renameMap.insert(objectElement.attribute(HMF_NAMETAG), pObj->getName());
         //objectElement.setAttribute("name", renameMap.find(objectElement.attribute(HMF_NAMETAG)).value());
@@ -1263,7 +1329,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();
         pObj->moveBy(xOffset, yOffset);
-        mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+        mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
     }
 
         // Paste container ports
@@ -1277,7 +1343,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();
         pObj->moveBy(xOffset, yOffset);
-        mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+        mpUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
     }
 
         //Paste connectors
@@ -1298,7 +1364,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         tempConnector->drawConnector(true);
         for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
         {
-            mUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
+            mpUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
                                                   tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
         }
 
@@ -1312,7 +1378,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         loadTextWidget(textElement, this, NOUNDO);
         mTextWidgetList.last()->setSelected(true);
         mTextWidgetList.last()->moveBy(xOffset, yOffset);
-        mUndoStack->registerAddedTextWidget(mTextWidgetList.last());
+        mpUndoStack->registerAddedTextWidget(mTextWidgetList.last());
         textElement = textElement.nextSiblingElement("textwidget");
     }
 
@@ -1323,7 +1389,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         loadBoxWidget(boxElement, this, NOUNDO);
         mBoxWidgetList.last()->setSelected(true);
         mBoxWidgetList.last()->moveBy(xOffset, yOffset);
-        mUndoStack->registerAddedBoxWidget(mBoxWidgetList.last());
+        mpUndoStack->registerAddedBoxWidget(mBoxWidgetList.last());
         boxElement = boxElement.nextSiblingElement("boxwidget");
     }
 
@@ -1343,13 +1409,13 @@ void GUIContainerObject::alignX()
 {
     if(mSelectedGUIModelObjectsList.size() > 1)
     {
-        mUndoStack->newPost("alignx");
+        mpUndoStack->newPost("alignx");
         for(int i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.last()->getCenterPos().x(), mSelectedGUIModelObjectsList.at(i)->getCenterPos().y()));
             QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
-            mUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
+            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
             for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().size(); ++j)
             {
                 mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().at(j)->drawConnector(true);
@@ -1365,13 +1431,13 @@ void GUIContainerObject::alignY()
 {
     if(mSelectedGUIModelObjectsList.size() > 1)
     {
-        mUndoStack->newPost("aligny");
+        mpUndoStack->newPost("aligny");
         for(int i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
         {
             QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.at(i)->getCenterPos().x(), mSelectedGUIModelObjectsList.last()->getCenterPos().y()));
             QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
-            mUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
+            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
             for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().size(); ++j)
             {
                 mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().at(j)->drawConnector(true);
@@ -1509,8 +1575,7 @@ void GUIContainerObject::deselectAll()
 //! @see showNames()
 void GUIContainerObject::hideNames()
 {
-    mUndoStack->newPost("hideallnames");
-    mIsRenamingObject = false;
+    mpUndoStack->newPost("hideallnames");
     emit deselectAllNameText();
     emit hideAllNameText();
 }
@@ -1520,7 +1585,7 @@ void GUIContainerObject::hideNames()
 //! @see hideNames()
 void GUIContainerObject::showNames()
 {
-    mUndoStack->newPost("showallnames");
+    mpUndoStack->newPost("showallnames");
     emit showAllNameText();
 }
 
@@ -1556,7 +1621,7 @@ void GUIContainerObject::hidePorts(bool doIt)
 //! @see clearUndo()
 void GUIContainerObject::undo()
 {
-    mUndoStack->undoOneStep();
+    mpUndoStack->undoOneStep();
 }
 
 
@@ -1565,7 +1630,7 @@ void GUIContainerObject::undo()
 //! @see clearUndo()
 void GUIContainerObject::redo()
 {
-    mUndoStack->redoOneStep();
+    mpUndoStack->redoOneStep();
 }
 
 //! @brief Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
@@ -1574,7 +1639,7 @@ void GUIContainerObject::redo()
 void GUIContainerObject::clearUndo()
 {
     qDebug() << "before mUndoStack->clear(); in GUIContainerObject: " << this->getName();
-    mUndoStack->clear();
+    mpUndoStack->clear();
 }
 
 
@@ -1592,6 +1657,33 @@ bool GUIContainerObject::isConnectorSelected()
 }
 
 
+//! @brief Tells the container object that one more plot curve is opened
+void GUIContainerObject::incrementOpenPlotCurves()
+{
+    ++nPlotCurves;
+}
+
+
+//! @brief Tells the container object that one less plot curve is opened
+void GUIContainerObject::decrementOpenPlotCurves()
+{
+    --nPlotCurves;
+}
+
+//! @brief Tells whether or not the container object has at least one plot curve opened in a plot window
+bool GUIContainerObject::hasOpenPlotCurves()
+{
+    return (nPlotCurves > 0);
+}
+
+
+//! @brief Returns a pointer to the undo stack
+UndoStack *GUIContainerObject::getUndoStackPtr()
+{
+    return mpUndoStack;
+}
+
+
 //! @brief Returns a pointer to the drag-copy copy stack
 CopyStack *GUIContainerObject::getDragCopyStackPtr()
 {
@@ -1599,17 +1691,45 @@ CopyStack *GUIContainerObject::getDragCopyStackPtr()
 }
 
 
+//! @brief Specifies model file for the container object
+void GUIContainerObject::setModelFile(QString path)
+{
+    mModelFileInfo.setFile(path);
+}
+
+
+//! @brief Returns a copy of the model file info of the container object
+QFileInfo GUIContainerObject::getModelFileInfo()
+{
+    return mModelFileInfo;
+}
+
+
+//! @brief Specifies a script file to be executed when model is loaded
+//! @todo Shall we have this?
 void GUIContainerObject::setScriptFile(QString path)
 {
     mScriptFilePath = path;
 }
 
 
+//! @brief Returns path to the script file
 QString GUIContainerObject::getScriptFile()
 {
     return mScriptFilePath;
 }
 
+
+QStringList GUIContainerObject::getGUIModelObjectNames()
+{
+    QStringList retval;
+    GUIContainerObject::GUIModelObjectMapT::iterator it;
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    {
+        retval.append(it.value()->getName());
+    }
+    return retval;
+}
 
 //! @brief Returns the path to the icon with iso graphics.
 //! @todo should we return full path or relative
@@ -1690,6 +1810,13 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 
     if(gpMainWindow->disableUndoAction->isChecked() != mUndoDisabled)
         gpMainWindow->disableUndoAction->setChecked(mUndoDisabled);
+}
+
+
+//! @brief Tells whether or not undo/redo is enabled
+bool GUIContainerObject::isUndoEnabled()
+{
+    return !mUndoDisabled;
 }
 
 
@@ -1902,8 +2029,8 @@ void GUIContainerObject::exitContainer()
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
-    gpMainWindow->undoAction->setDisabled(mpParentContainerObject->mUndoDisabled);
-    gpMainWindow->redoAction->setDisabled(mpParentContainerObject->mUndoDisabled);
+    gpMainWindow->undoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
+    gpMainWindow->redoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
 
         //Refresh external port appearance
     //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal
@@ -1918,7 +2045,7 @@ void GUIContainerObject::rotateRight()
 {
     if(this->isObjectSelected())
     {
-        mUndoStack->newPost();
+        mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
     }
     emit rotateSelectedObjectsRight();
@@ -1930,7 +2057,7 @@ void GUIContainerObject::rotateLeft()
 {
     if(this->isObjectSelected())
     {
-        mUndoStack->newPost();
+        mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
     }
     emit rotateSelectedObjectsLeft();
@@ -1941,7 +2068,7 @@ void GUIContainerObject::flipHorizontal()
 {
     if(this->isObjectSelected())
     {
-        mUndoStack->newPost();
+        mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
     }
     emit flipSelectedObjectsHorizontal();
@@ -1952,7 +2079,7 @@ void GUIContainerObject::flipVertical()
 {
     if(this->isObjectSelected())
     {
-        mUndoStack->newPost();
+        mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
     }
     emit flipSelectedObjectsVertical();

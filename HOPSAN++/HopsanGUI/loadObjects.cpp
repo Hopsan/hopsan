@@ -110,7 +110,7 @@ void loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
 
         if(undoSettings == UNDO)
         {
-            pContainer->mUndoStack->registerAddedConnector(pTempConnector);
+            pContainer->getUndoStackPtr()->registerAddedConnector(pTempConnector);
         }
     }
     else
@@ -255,7 +255,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
             {
                 //Now read the external file to change appearance and populate the system
                 //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
-                QString path = pContainer->mModelFileInfo.absolutePath() + "/" + externalfilepath;
+                QString path = pContainer->getModelFileInfo().absolutePath() + "/" + externalfilepath;
                 QFile file(path);
                 if (!(file.exists()))
                 {
@@ -364,13 +364,13 @@ void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, un
     }
 
     //qDebug() << "Loading text widget, point = " << data.point;
-    pContainer->addTextWidget(point, NOUNDO);
-    pContainer->mTextWidgetList.last()->setText(text);
-    pContainer->mTextWidgetList.last()->setTextFont(font);
-    pContainer->mTextWidgetList.last()->setTextColor(fontcolor);
+    GUITextWidget *pWidget = pContainer->addTextWidget(point, NOUNDO);
+    pWidget->setText(text);
+    pWidget->setTextFont(font);
+    pWidget->setTextColor(fontcolor);
     if(undoSettings == UNDO)
     {
-        pContainer->mUndoStack->registerAddedBoxWidget(pContainer->mBoxWidgetList.last());
+        pContainer->getUndoStackPtr()->registerAddedTextWidget(pWidget);
     }
 }
 
@@ -388,7 +388,7 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, und
     //Read gui specific stuff
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
 
-    if(!guiData.isNull())
+    if(!guiData.isNull())   //! @todo What if it is null?!
     {
         QDomElement sizeTag = guiData.firstChildElement("size");
         width = sizeTag.attribute("width").toDouble();
@@ -406,25 +406,25 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, und
         point = tempPoint.toPoint();
     }
 
-    pContainer->addBoxWidget(point, NOUNDO);
-    pContainer->mBoxWidgetList.last()->setSize(width, height);
-    pContainer->mBoxWidgetList.last()->setLineWidth(linewidth);
+    GUIBoxWidget *pWidget = pContainer->addBoxWidget(point, NOUNDO);
+    pWidget->setSize(width, height);
+    pWidget->setLineWidth(linewidth);
 
     if(linestyle == "solidline")
-        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::SolidLine);
+        pWidget->setLineStyle(Qt::SolidLine);
     if(linestyle == "dashline")
-        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::DashLine);
+        pWidget->setLineStyle(Qt::DashLine);
     if(linestyle == "dotline")
-        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::DotLine);
+        pWidget->setLineStyle(Qt::DotLine);
     if(linestyle == "dashdotline")
-        pContainer->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
+        pWidget->setLineStyle(Qt::DashDotLine);
 
-    pContainer->mBoxWidgetList.last()->setLineColor(linecolor);
-    pContainer->mBoxWidgetList.last()->setSelected(true);
-    pContainer->mBoxWidgetList.last()->setSelected(false);     //For some reason this is needed
+    pWidget->setLineColor(linecolor);
+    pWidget->setSelected(true);
+    pWidget->setSelected(false);     //For some reason this is needed
 
     if(undoSettings == UNDO)
     {
-        pContainer->mUndoStack->registerAddedBoxWidget(pContainer->mBoxWidgetList.last());
+        pContainer->getUndoStackPtr()->registerAddedBoxWidget(pWidget);
     }
 }

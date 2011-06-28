@@ -319,11 +319,11 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
         {
             if(!addedUndoPost)
             {
-                this->mpGUIComponent->getParentContainerObject()->mUndoStack->newPost("changedparameters");
+                this->mpGUIComponent->getParentContainerObject()->getUndoStackPtr()->newPost("changedparameters");
                 addedUndoPost = true;
             }
 
-            this->mpGUIComponent->getParentContainerObject()->mUndoStack->registerChangedParameter(mpGUIComponent->getName(),
+            this->mpGUIComponent->getParentContainerObject()->getUndoStackPtr()->registerChangedParameter(mpGUIComponent->getName(),
                                                                                                    vParLayout[i]->getDataName(),
                                                                                                    oldValueTxt,
                                                                                                    valueTxt);

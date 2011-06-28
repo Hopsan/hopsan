@@ -58,17 +58,22 @@ GUIWidget::GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIC
 }
 
 
+void GUIWidget::setOldPos()
+{
+    mOldPos = this->pos();
+}
+
 QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if(change == QGraphicsItem::ItemSelectedHasChanged)
     {
         if(this->isSelected())
         {
-            mpParentContainerObject->mSelectedGUIWidgetsList.append(this);
+            mpParentContainerObject->rememberSelectedWidget(this);
         }
         else
         {
-            mpParentContainerObject->mSelectedGUIWidgetsList.removeAll(this);
+            mpParentContainerObject->forgetSelectedWidget(this);
         }
     }
 
@@ -88,28 +93,29 @@ void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
         //Loop through all selected widgets and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    for(it = mpParentContainerObject->mSelectedGUIWidgetsList.begin(); it != mpParentContainerObject->mSelectedGUIWidgetsList.end(); ++it)
+    QList<GUIWidget *> selectedWidgets = mpParentContainerObject->getSelectedGUIWidgetPtrs();
+    for(int i=0; i<selectedWidgets.size(); ++i)
     {
-        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton) && !(*it)->mIsResizing)
+        if((selectedWidgets[i]->mOldPos != selectedWidgets[i]->pos()) && (event->button() == Qt::LeftButton) && !selectedWidgets[i]->mIsResizing)
         {
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                if(mpParentContainerObject->mSelectedGUIWidgetsList.size() > 1)
+                if(mpParentContainerObject->getSelectedGUIWidgetPtrs().size() > 1)
                 {
-                    mpParentContainerObject->mUndoStack->newPost("movedmultiplewidgets");
+                    mpParentContainerObject->getUndoStackPtr()->newPost("movedmultiplewidgets");
                 }
                 else
                 {
-                    mpParentContainerObject->mUndoStack->newPost();
+                    mpParentContainerObject->getUndoStackPtr()->newPost();
                 }
                 mpParentContainerObject->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }
 
-            mpParentContainerObject->mUndoStack->registerMovedWidget((*it), (*it)->mOldPos, (*it)->pos());
+            mpParentContainerObject->getUndoStackPtr()->registerMovedWidget(selectedWidgets[i], selectedWidgets[i]->mOldPos, selectedWidgets[i]->pos());
         }
-        (*it)->mIsResizing = false;
+        selectedWidgets[i]->mIsResizing = false;
     }
 
     GUIObject::mouseReleaseEvent(event);
@@ -196,23 +202,15 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! @brief Slot that removes text widget from all lists and then deletes it
 void GUITextWidget::deleteMe(undoStatus undoSettings)
 {
-    if(undoSettings == UNDO)
-    {
-        mpParentContainerObject->mUndoStack->newPost();
-        mpParentContainerObject->mUndoStack->registerDeletedTextWidget(this);
-    }
-    mpParentContainerObject->mTextWidgetList.removeAll(this);
-    mpParentContainerObject->mSelectedGUIWidgetsList.removeAll(this);
-    mpParentContainerObject->mWidgetMap.remove(this->mWidgetIndex);
-    delete(this);
+    mpParentContainerObject->removeWidget(this, undoSettings);
 }
 
 
 //! @brief Private function that updates the text widget from the selected values in the text edit dialog
 void GUITextWidget::updateWidgetFromDialog()
 {
-    mpParentContainerObject->mUndoStack->newPost();
-    mpParentContainerObject->mUndoStack->registerModifiedTextWidget(mWidgetIndex, mpTextItem->toPlainText(), mpTextItem->font(), mpTextItem->defaultTextColor(), mpTextBox->toPlainText(), mSelectedFont, mSelectedColor);
+    mpParentContainerObject->getUndoStackPtr()->newPost();
+    mpParentContainerObject->getUndoStackPtr()->registerModifiedTextWidget(mWidgetIndex, mpTextItem->toPlainText(), mpTextItem->font(), mpTextItem->defaultTextColor(), mpTextBox->toPlainText(), mSelectedFont, mSelectedColor);
 
     mpTextItem->setPlainText(mpTextBox->toPlainText());
     mpTextItem->setFont(mSelectedFont);
@@ -349,15 +347,7 @@ GUIBoxWidget::GUIBoxWidget(QPointF pos, qreal rot, selectionStatus startSelected
 //! @brief Slot that removes text widget from all lists and then deletes it
 void GUIBoxWidget::deleteMe(undoStatus undoSettings)
 {
-    if(undoSettings == UNDO)
-    {
-        mpParentContainerObject->mUndoStack->newPost();
-        mpParentContainerObject->mUndoStack->registerDeletedBoxWidget(this);
-    }
-    mpParentContainerObject->mBoxWidgetList.removeAll(this);
-    mpParentContainerObject->mSelectedGUIWidgetsList.removeAll(this);
-    mpParentContainerObject->mWidgetMap.remove(this->mWidgetIndex);
-    delete(this);
+    mpParentContainerObject->removeWidget(this, undoSettings);
 }
 
 
@@ -468,8 +458,8 @@ void GUIBoxWidget::updateWidgetFromDialog()
     else
         selectedStyle = Qt::SolidLine;      //This shall never happen, but will supress a warning message
 
-    mpParentContainerObject->mUndoStack->newPost();
-    mpParentContainerObject->mUndoStack->registerModifiedBoxWidgetStyle(mWidgetIndex, mpRectItem->pen().width(), mpRectItem->pen().style(), mpRectItem->pen().color(),
+    mpParentContainerObject->getUndoStackPtr()->newPost();
+    mpParentContainerObject->getUndoStackPtr()->registerModifiedBoxWidgetStyle(mWidgetIndex, mpRectItem->pen().width(), mpRectItem->pen().style(), mpRectItem->pen().color(),
                                                                         mpWidthBoxInDialog->value(), selectedStyle, mSelectedColor);
 
     QPen tempPen = mpRectItem->pen();
@@ -614,8 +604,8 @@ void GUIBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     GUIWidget::mouseReleaseEvent(event);
     if(mWidthBeforeResize != mpRectItem->rect().width() || mHeightBeforeResize != mpRectItem->rect().height())
     {
-        mpParentContainerObject->mUndoStack->newPost();
-        mpParentContainerObject->mUndoStack->registerResizedBoxWidget( mWidgetIndex, mWidthBeforeResize, mHeightBeforeResize, mpRectItem->rect().width(), mpRectItem->rect().height(), mPosBeforeResize, this->pos());
+        mpParentContainerObject->getUndoStackPtr()->newPost();
+        mpParentContainerObject->getUndoStackPtr()->registerResizedBoxWidget( mWidgetIndex, mWidthBeforeResize, mHeightBeforeResize, mpRectItem->rect().width(), mpRectItem->rect().height(), mPosBeforeResize, this->pos());
         mWidthBeforeResize = mpRectItem->rect().width();
         mHeightBeforeResize = mpRectItem->rect().height();
         mPosBeforeResize = this->pos();

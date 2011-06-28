@@ -282,7 +282,7 @@ void ProjectTab::collectPlotData()
 //! @see loadModel()
 void ProjectTab::saveModel(saveTarget saveAsFlag)
 {
-    if((mpSystem->mModelFileInfo.filePath().isEmpty()) || (saveAsFlag == NEWFILE))
+    if((mpSystem->getModelFileInfo().filePath().isEmpty()) || (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
         QString modelFilePath;
@@ -294,20 +294,20 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         {
             return;
         }
-        mpSystem->mModelFileInfo.setFile(modelFilePath);
+        mpSystem->setModelFile(modelFilePath);
     }
 
-    QFile file(mpSystem->mModelFileInfo.filePath());   //Create a QFile object
+    QFile file(mpSystem->getModelFileInfo().filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         return;
     }
 
         //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    mpSystem->setName(mpSystem->mModelFileInfo.baseName());
+    mpSystem->setName(mpSystem->getModelFileInfo().baseName());
 
         //Update the basepath for relative appearance data info
-    mpSystem->setAppearanceDataBasePath(mpSystem->mModelFileInfo.absolutePath());
+    mpSystem->setAppearanceDataBasePath(mpSystem->getModelFileInfo().absolutePath());
 
         //Save xml document
     QDomDocument domDocument;
@@ -319,7 +319,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
         //Save to file
     const int IndentSize = 4;
-    QFile xmlhmf(mpSystem->mModelFileInfo.filePath());
+    QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         return;
@@ -329,7 +329,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     domDocument.save(out, IndentSize);
 
         //Set the tab name to the model name, efectively removing *, also mark the tab as saved
-    QString tabName = mpSystem->mModelFileInfo.baseName();
+    QString tabName = mpSystem->getModelFileInfo().baseName();
     mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
     this->setSaved(true);
 }
@@ -480,7 +480,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     }
 
 
-    if (getTab(index)->mpSystem->nPlotCurves > 0)
+    if (getTab(index)->mpSystem->hasOpenPlotCurves())
     {
         QMessageBox msgBox;
         msgBox.setWindowIcon(gpMainWindow->windowIcon());
@@ -520,7 +520,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
     getContainer(index)->disconnectMainWindowActions();
 
-    getCurrentContainer()->mUndoDisabled = true;    //This is necessary to prevent each component from registering it being deleted in the undo stack
+    getCurrentContainer()->setUndoEnabled(false, true);  //This is necessary to prevent each component from registering it being deleted in the undo stack
 
     //Delete project tab
     delete widget(index);
@@ -540,7 +540,7 @@ bool ProjectTabWidget::closeAllProjectTabs()
     while(count() > 0)
     {
         setCurrentIndex(count()-1);
-        gConfig.addLastSessionModel(getCurrentTopLevelSystem()->mModelFileInfo.filePath());
+        gConfig.addLastSessionModel(getCurrentTopLevelSystem()->getModelFileInfo().filePath());
         if (!closeProjectTab(count()-1))
         {
             return false;
@@ -593,7 +593,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     //Make sure file not already open
     for(int t=0; t!=this->count(); ++t)
     {
-        if(this->getContainer(t)->mModelFileInfo.filePath() == fileInfo.filePath())
+        if(this->getContainer(t)->getModelFileInfo().filePath() == fileInfo.filePath())
         {
             QMessageBox::StandardButton reply;
             reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));
@@ -615,7 +615,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
         //! @todo check if we could load else give error message and dont attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
         pCurrentTab->mpSystem->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-        pCurrentTab->mpSystem->setAppearanceDataBasePath(pCurrentTab->mpSystem->mModelFileInfo.absolutePath());
+        pCurrentTab->mpSystem->setAppearanceDataBasePath(pCurrentTab->mpSystem->getModelFileInfo().absolutePath());
         pCurrentTab->mpSystem->loadFromDomElement(systemElement);
     }
     else

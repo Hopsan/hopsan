@@ -93,6 +93,7 @@ private:
     QColor mIsoColor;
     bool mCtrlKeyPressed;
     bool mLeftMouseButtonPressed;
+    bool mIgnoreNextContextMenuEvent;
 
     GUIContainerObject *mpContainerObject;
 };

@@ -1231,9 +1231,9 @@ void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((this->pos() != mOldPos) && (event->button() == Qt::LeftButton))
     {
-        mpParentGUIConnector->mpParentContainerObject->mUndoStack->newPost();
+        mpParentGUIConnector->mpParentContainerObject->getUndoStackPtr()->newPost();
         mpParentGUIConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
-        mpParentGUIConnector->mpParentContainerObject->mUndoStack->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
+        mpParentGUIConnector->mpParentContainerObject->getUndoStackPtr()->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
     }
     QGraphicsLineItem::mouseReleaseEvent(event);
 }

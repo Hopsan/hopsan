@@ -523,7 +523,8 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
         //Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    for(it = mpParentContainerObject->mSelectedGUIModelObjectsList.begin(); it != mpParentContainerObject->mSelectedGUIModelObjectsList.end(); ++it)
+    QList<GUIModelObject *> selectedObjects = mpParentContainerObject->getSelectedGUIModelObjectPtrs();
+    for(it = selectedObjects.begin(); it != selectedObjects.end(); ++it)
     {
         if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
         {
@@ -531,18 +532,18 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                if(mpParentContainerObject->mSelectedGUIModelObjectsList.size() > 1)
+                if(mpParentContainerObject->getSelectedGUIModelObjectPtrs().size() > 1)
                 {
-                    mpParentContainerObject->mUndoStack->newPost("movedmultiple");
+                    mpParentContainerObject->getUndoStackPtr()->newPost("movedmultiple");
                 }
                 else
                 {
-                    mpParentContainerObject->mUndoStack->newPost();
+                    mpParentContainerObject->getUndoStackPtr()->newPost();
                 }
                 mpParentContainerObject->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }
-            mpParentContainerObject->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+            mpParentContainerObject->getUndoStackPtr()->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
         }
     }
 
@@ -587,27 +588,27 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
     }
     else if (selectedAction == rotateRightAction)
     {
-        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->getUndoStackPtr()->newPost();
         this->rotate90cw();
     }
     else if (selectedAction == rotateLeftAction)
     {
-        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->getUndoStackPtr()->newPost();
         this->rotate90ccw();
     }
     else if (selectedAction == flipVerticalAction)
     {
-        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->getUndoStackPtr()->newPost();
         this->flipVertical();
     }
     else if (selectedAction == flipHorizontalAction)
     {
-        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->getUndoStackPtr()->newPost();
         this->flipHorizontal();
     }
     else if (selectedAction == showNameAction)
     {
-        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->getUndoStackPtr()->newPost();
         if(mpNameText->isVisible())
         {
             this->hideName();
@@ -644,13 +645,13 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
     {
         if(this->isSelected())
         {
-            mpParentContainerObject->mSelectedGUIModelObjectsList.append(this);
+            mpParentContainerObject->rememverSelectedGUIModelObject(this);
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
         else
         {
-            mpParentContainerObject->mSelectedGUIModelObjectsList.removeAll(this);
+            mpParentContainerObject->forgetSelectedGUIModelObject(this);
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
@@ -663,7 +664,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if(mpParentContainerObject != 0 && gConfig.getSnapping() &&
-           !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->mSelectedGUIModelObjectsList.size() == 1)
+           !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->getSelectedGUIModelObjectPtrs().size() == 1)
         {
                 //Vertical snap
             if( (mGUIConnectorPtrs.size() == 1) &&
@@ -818,7 +819,7 @@ void GUIModelObject::rotate90cw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), 90);
+        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), 90);
     }
 
     emit objectMoved();
@@ -876,7 +877,7 @@ void GUIModelObject::rotate90ccw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName(), -90);
+        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), -90);
     }
 
     emit objectMoved();
@@ -912,7 +913,7 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
     this->rotate90cw(NOUNDO);
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerVerticalFlip(this->getName());
+        mpParentContainerObject->getUndoStackPtr()->registerVerticalFlip(this->getName());
     }
 }
 
@@ -1014,7 +1015,7 @@ void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerHorizontalFlip(this->getName());
+        mpParentContainerObject->getUndoStackPtr()->registerHorizontalFlip(this->getName());
     }
 }
 
@@ -1048,7 +1049,7 @@ void GUIModelObject::hideName(undoStatus undoSettings)
     mpNameText->setVisible(false);
     if(undoSettings == UNDO && previousStatus == true)
     {
-        mpParentContainerObject->mUndoStack->registerNameVisibilityChange(this->getName(), false);
+        mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), false);
     }
 }
 
@@ -1060,7 +1061,7 @@ void GUIModelObject::showName(undoStatus undoSettings)
     mpNameText->setVisible(true);
     if(undoSettings == UNDO && previousStatus == false)
     {
-        mpParentContainerObject->mUndoStack->registerNameVisibilityChange(this->getName(), true);
+        mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), true);
     }
 }
 

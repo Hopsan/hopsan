@@ -140,18 +140,19 @@ void PlotParameterTree::updateList()
 
     QVector<double> time;
     bool timeVectorRetained = false;
-    GUIContainerObject::GUIModelObjectMapT::iterator it;
-    for(it = mpCurrentContainer->mGUIModelObjectMap.begin(); it!=mpCurrentContainer->mGUIModelObjectMap.end(); ++it)
+    QStringList names = mpCurrentContainer->getGUIModelObjectNames();
+    for(int i=0; i<names.size(); ++i)
     {
+        GUIModelObject *pComponent = mpCurrentContainer->getGUIModelObject(names[i]);
         tempComponentItem = new QTreeWidgetItem();
-        tempComponentItem->setText(0, it.value()->getName());
+        tempComponentItem->setText(0, pComponent->getName());
         QFont tempFont;
         tempFont = tempComponentItem->font(0);
         tempFont.setBold(true);
         tempComponentItem->setFont(0, tempFont);
         this->addTopLevelItem(tempComponentItem);
 
-        QList<GUIPort*> portListPtrs = it.value()->getPortListPtrs();
+        QList<GUIPort*> portListPtrs = pComponent->getPortListPtrs();
         QList<GUIPort*>::iterator itp;
         for(itp = portListPtrs.begin(); itp !=portListPtrs.end(); ++itp)
         {
@@ -171,7 +172,7 @@ void PlotParameterTree::updateList()
                     for(int i = 0; i!=parameterNames.size(); ++i)
                     {
                         parameterUnits[i] = gConfig.getDefaultUnit(parameterNames[i]);
-                        tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
+                        tempPlotParameterItem = new PlotParameterItem(pComponent->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
                         tempComponentItem->addChild(tempPlotParameterItem);
                         QStringList parameterDescription;
                         parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
@@ -498,7 +499,7 @@ void PlotWidget::loadFromXml()
             int i;
             for(i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
             {
-                if(gpMainWindow->mpProjectTabs->getTab(i)->mpSystem->mModelFileInfo.filePath() == modelName)
+                if(gpMainWindow->mpProjectTabs->getSystem(i)->getModelFileInfo().filePath() == modelName)
                 {
                     foundModel = true;
                     break;
