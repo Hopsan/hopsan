@@ -100,9 +100,9 @@ namespace hopsan {
             mNum[0] = 0.0;
             mNum[1] = 1.0;
             mNum[2] = 0.0;
-            mDen[0] = m;
+            mDen[0] = k;
             mDen[1] = B;
-            mDen[2] = k;
+            mDen[2] = m;
             mFilter.initialize(mTimestep, mNum, mDen, 0, -v1);
             mInt.initialize(mTimestep, -v1, -x1+mLength);
 
@@ -128,7 +128,9 @@ namespace hopsan {
             //Mass equations
             mDen[1] = B+Zx1+Zx2;
             mFilter.setDen(mDen);
-
+//std::stringstream ss;
+//ss << "c1-c2: " << c1-c2 << "   v2: " << v2;
+//addDebugMessage(ss.str());
             v2 = mFilter.update(c1-c2);
             x2 = mInt.update(v2);
 
