@@ -107,9 +107,9 @@ namespace hopsan {
             mNum[0] = 0.0;
             mNum[1] = 1.0;
             mNum[2] = 0.0;
-            mDen[0] = m;
+            mDen[0] = k;
             mDen[1] = B;
-            mDen[2] = k;
+            mDen[2] = m;
             mFilter.initialize(mTimestep, mNum, mDen, -f1/w, -v1*w);
             mInt.initialize(mTimestep, -v1*w, -x1*w);
 

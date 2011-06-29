@@ -92,9 +92,9 @@ namespace hopsan {
             num[0] = 0.0;
             num[1] = 1.0;
             num[2] = 0.0;
-            den[0] = J;
+            den[0] = k;
             den[1] = B;
-            den[2] = k;
+            den[2] = J;
             mFilter.initialize(mTimestep, num, den, -t1, -w1);
             mInt.initialize(mTimestep, -w1, -a1);
         }
