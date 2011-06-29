@@ -132,15 +132,15 @@ namespace hopsan {
             posnum[0] = 0.0;
             posnum[1] = 0.0;
             posnum[2] = 1.0;
-            posden[0] = mMass;
+            posden[0] = mKl;
             posden[1] = mBl+Zx1+Zx2;
-            posden[2] = mKl;
+            posden[2] = mMass;
             velnum[0] = 0.0;
             velnum[1] = 1.0;
             velnum[2] = 0.0;
-            velden[0] = 0.0;
+            velden[0] = 1.0;
             velden[1] = mTao;
-            velden[2] = 1.0;
+            velden[2] = 0.0;
 
             mPositionFilter.initialize(mTimestep, posnum, posden, cx2, x2, 0.0, mStroke);
             mVelocityFilter.initialize(mTimestep, velnum, velden, x2, v2);
