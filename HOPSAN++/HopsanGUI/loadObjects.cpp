@@ -106,7 +106,7 @@ void loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
         QObject::connect(startPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
         QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
-        pContainer->mSubConnectorList.append(pTempConnector);
+        pContainer->rememberSubConnector(pTempConnector);
 
         if(undoSettings == UNDO)
         {

@@ -157,7 +157,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWidget::mousePressEvent(event);
 
         //Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject->getIsCreatingConnector())
+    if(mpParentContainerObject->isCreatingConnector())
     {
         setFlag(QGraphicsItem::ItemIsMovable, false); //Make the component not movable during connection
         setFlag(QGraphicsItem::ItemIsSelectable, false); //Make the component not selactable during connection
@@ -172,7 +172,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
         //Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject->getIsCreatingConnector())
+    if(mpParentContainerObject->isCreatingConnector())
     {
         this->setSelected(false);
         this->setActive(false);

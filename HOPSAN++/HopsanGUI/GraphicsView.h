@@ -47,6 +47,7 @@ public:
     GUIContainerObject *getContainerPtr();
     bool isCtrlKeyPressed();
     bool isLeftMouseButtonPressed();
+    void setIgnoreNextContextMenuEvent();
 
     ProjectTab *mpParentProjectTab;
 

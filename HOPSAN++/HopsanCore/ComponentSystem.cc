@@ -2159,7 +2159,7 @@ public:
 
 private:
     int mnThreads;
-    tbb::atomic<size_t> mCounter;
+    tbb::atomic<int> mCounter;
     tbb::atomic<bool> mLock;
 };
 
@@ -2212,7 +2212,7 @@ public:
             mpBarrier_S->increment();
             while(mpBarrier_S->isLocked()){}                         //Wait at S barrier
 
-            for(int i=0; i<mVectorS.size(); ++i)
+            for(size_t i=0; i<mVectorS.size(); ++i)
             {
                 mVectorS[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2223,7 +2223,7 @@ public:
             mpBarrier_C->increment();
             while(mpBarrier_C->isLocked()){}                         //Wait at C barrier
 
-            for(int i=0; i<mVectorC.size(); ++i)
+            for(size_t i=0; i<mVectorC.size(); ++i)
             {
                 mVectorC[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2233,7 +2233,7 @@ public:
             mpBarrier_N->increment();
             while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
 
-            for(int i=0; i<mVectorN.size(); ++i)
+            for(size_t i=0; i<mVectorN.size(); ++i)
             {
                 mVectorN[i]->logData(mTime);
             }
@@ -2243,7 +2243,7 @@ public:
             mpBarrier_Q->increment();
             while(mpBarrier_Q->isLocked()){}                         //Wait at Q barrier
 
-            for(int i=0; i<mVectorQ.size(); ++i)
+            for(size_t i=0; i<mVectorQ.size(); ++i)
             {
                 mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2325,7 +2325,7 @@ public:
             mpBarrier_S->unlock();                  //Unlock signal barrier
 
 
-            for(int i=0; i<mVectorS.size(); ++i)
+            for(size_t i=0; i<mVectorS.size(); ++i)
             {
                 mVectorS[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2336,7 +2336,7 @@ public:
             mpBarrier_N->lock();
             mpBarrier_C->unlock();
 
-            for(int i=0; i<mVectorC.size(); ++i)
+            for(size_t i=0; i<mVectorC.size(); ++i)
             {
                 mVectorC[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2347,7 +2347,7 @@ public:
             mpBarrier_Q->lock();
             mpBarrier_N->unlock();
 
-            for(int i=0; i<mVectorN.size(); ++i)
+            for(size_t i=0; i<mVectorN.size(); ++i)
             {
                 mVectorN[i]->logData(mTime);
             }
@@ -2358,7 +2358,7 @@ public:
             mpBarrier_S->lock();
             mpBarrier_Q->unlock();
 
-            for(int i=0; i<mVectorQ.size(); ++i)
+            for(size_t i=0; i<mVectorQ.size(); ++i)
             {
                 mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
             }
@@ -2426,7 +2426,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
                                 splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nThreads, 0,
                                 pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
 
-    for(int t=1; t < nThreads; ++t)
+    for(size_t t=1; t < nThreads; ++t)
     {
         simTasks->run(taskSimSlave(splitSignalVector[t], splitCVector[t], splitQVector[t],          //Create slave threads
                                    splitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t,
@@ -2445,17 +2445,17 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
     double time = 0;
 
     //Reset all measured times first
-    for(int s=0; s<mComponentSignalptrs.size(); ++s)
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         mComponentSignalptrs[s]->setMeasuredTime(0);
-    for(int c=0; c<mComponentCptrs.size(); ++c)
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
         mComponentCptrs[c]->setMeasuredTime(0);
-    for(int q=0; q<mComponentQptrs.size(); ++q)
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
         mComponentQptrs[q]->setMeasuredTime(0);
 
     //Measure time for each component during specified amount of steps
     for(size_t t=0; t<steps; ++t)
     {
-        for(int s=0; s<mComponentSignalptrs.size(); ++s)
+        for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
@@ -2465,7 +2465,7 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
         }
 
 
-        for(int c=0; c<mComponentCptrs.size(); ++c)
+        for(size_t c=0; c<mComponentCptrs.size(); ++c)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
@@ -2474,7 +2474,7 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
             mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()+time);
         }
 
-        for(int q=0; q<mComponentQptrs.size(); ++q)
+        for(size_t q=0; q<mComponentQptrs.size(); ++q)
         {
             tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
@@ -2488,11 +2488,11 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
     }
 
     //Divide measured times with number of steps, to get the average
-    for(int s=0; s<mComponentSignalptrs.size(); ++s)
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()/steps);
-    for(int c=0; c<mComponentCptrs.size(); ++c)
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
         mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()/steps);
-    for(int q=0; q<mComponentQptrs.size(); ++q)
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
         mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()/steps);
 }
 
@@ -2579,7 +2579,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
 {
     vector<double> timeVector;
     timeVector.resize(nThreads);
-    for(int i=0; i<nThreads; ++i)
+    for(size_t i=0; i<nThreads; ++i)
     {
         timeVector[i] = 0;
     }
@@ -2588,7 +2588,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
     size_t cCompNum=0;
     while(true)
     {
-        for(int thread=0; thread<nThreads; ++thread)
+        for(size_t thread=0; thread<nThreads; ++thread)
         {
             if(cCompNum == mComponentCptrs.size())
                 break;
@@ -2600,7 +2600,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
             break;
     }
 
-    for(int i=0; i<nThreads; ++i)
+    for(size_t i=0; i<nThreads; ++i)
     {
         stringstream ss;
         ss << timeVector[i]*1000;
@@ -2616,7 +2616,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
 {
     vector<double> timeVector;
     timeVector.resize(nThreads);
-    for(int i=0; i<nThreads; ++i)
+    for(size_t i=0; i<nThreads; ++i)
     {
         timeVector[i] = 0;
     }
@@ -2625,7 +2625,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
     size_t qCompNum=0;
     while(true)
     {
-        for(int thread=0; thread<nThreads; ++thread)
+        for(size_t thread=0; thread<nThreads; ++thread)
         {
             if(qCompNum == mComponentQptrs.size())
                 break;
@@ -2637,7 +2637,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
             break;
     }
 
-    for(int i=0; i<nThreads; ++i)
+    for(size_t i=0; i<nThreads; ++i)
     {
         stringstream ss;
         ss << timeVector[i]*1000;
@@ -2707,7 +2707,7 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
     size_t currentVector=0;                                 //The vector to which we are currently adding components
     size_t nAddedComponents=0;                              //Total amount of added components
     std::vector<double> vectorTime;                           //Contains total measured time in each vector
-    for(size_t i=0; i<rSplitSignalVector.size(); ++i)
+    for(size_t j=0; j<rSplitSignalVector.size(); ++j)
     {
         vectorTime.push_back(0.0);
     }
@@ -2726,10 +2726,10 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
         }
 
         //Find vector with smallest amount of data, to use next loop
-        for(size_t i=0; i<vectorTime.size(); ++i)
+        for(size_t j=0; j<vectorTime.size(); ++j)
         {
-            if(vectorTime[i] < vectorTime[currentVector])
-                currentVector = i;
+            if(vectorTime[j] < vectorTime[currentVector])
+                currentVector = j;
         }
         ++i;
     }
@@ -2759,13 +2759,13 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
 //! @param nThreads Number of simulation threads
 void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNodeVector, size_t nThreads)
 {
-    for(int c=0; c<nThreads; ++c)
+    for(size_t c=0; c<nThreads; ++c)
     {
         vector<Node*> tempVector;
         rSplitNodeVector.push_back(tempVector);
     }
     size_t thread = 0;
-    for(int n=0; n<mSubNodePtrs.size(); ++n)
+    for(size_t n=0; n<mSubNodePtrs.size(); ++n)
     {
         rSplitNodeVector.at(thread).push_back(mSubNodePtrs.at(n));
         ++thread;

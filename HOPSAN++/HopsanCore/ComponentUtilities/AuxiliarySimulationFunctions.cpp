@@ -124,7 +124,7 @@ double hopsan::dxOnNegative(double x)
 double hopsan::ifPositive(double x, double y1, double y2)
 {
     if (x >= 0) { return y1; }
-    if (x < 0) { return y2; }
+    else { return y2; }
 }
 
 
@@ -136,7 +136,7 @@ double hopsan::ifPositive(double x, double y1, double y2)
 double hopsan::dtIfPositive(double x, double y1, double y2)
 {
     if (x >= 0) { return 1.; }
-    if (x < 0) { return 0.; }
+    else { return 0.; }
 }
 
 //! @brief Derivative of IfPositive with respect to y1.
@@ -147,7 +147,7 @@ double hopsan::dtIfPositive(double x, double y1, double y2)
 double hopsan::dfIfPositive(double x, double y1, double y2)
 {
     if (x >= 0) { return 1.; }
-    if (x < 0) { return 0.; }
+    else { return 0.; }
 }
 
 

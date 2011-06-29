@@ -173,7 +173,6 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     pLayout->addWidget(mpPopupHelpCheckBox,     8, 0);
     setLayout(pLayout);
 
-    tempPalette;
     tempPalette = this->palette();
     tempPalette.setColor(QPalette::Window, QColor(235, 245, 242));
     this->setPalette(tempPalette);

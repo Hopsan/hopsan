@@ -105,7 +105,7 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
         mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.clear();
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().clear();
         connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
         connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
     }
@@ -177,7 +177,7 @@ void PlotParameterTree::updateList()
                         QStringList parameterDescription;
                         parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
                         mAvailableParameters.append(parameterDescription);
-                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.contains(parameterDescription))
+                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(parameterDescription))
                         {
                             tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
                         }
@@ -188,12 +188,12 @@ void PlotParameterTree::updateList()
     }
 
         //Append favorite plot variables to tree if they still exist
-    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.size(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().size(); ++i)
     {
-        QString componentName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(0);
-        QString portName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(1);
-        QString dataName = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(2);
-        QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i).at(3);
+        QString componentName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(0);
+        QString portName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(1);
+        QString dataName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(2);
+        QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(3);
 
         if(!componentName.isEmpty())
         {
@@ -201,16 +201,16 @@ void PlotParameterTree::updateList()
             tempPlotParameterItem->setText(0, tempPlotParameterItem->text(0).prepend(" " + componentName + ", "));
             tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
             this->addTopLevelItem(tempPlotParameterItem);
-            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i)));
+            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)));
         }
     }
 
         //Remove no longer existing favorite variables
-    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.size(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().size(); ++i)
     {
-        if(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.at(i)))
+        if(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)))
         {
-           // gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mFavoriteVariables.at(i));
+           // gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getFavoriteVariables().at(i));
         }
     }
 
@@ -359,7 +359,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
         }
 
 
-        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.contains(parameterDescription))
+        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(parameterDescription))
         {
             addToFavoritesAction = menu.addAction(QString("Add Favorite Variable"));
         }
@@ -392,7 +392,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 
         if(selectedAction == removeFromFavoritesAction)
         {
-           gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteVariables.removeAll(parameterDescription);
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().removeAll(parameterDescription);
            this->updateList();
         }
     }

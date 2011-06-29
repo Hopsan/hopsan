@@ -664,7 +664,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if(mpParentContainerObject != 0 && gConfig.getSnapping() &&
-           !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->getSelectedGUIModelObjectPtrs().size() == 1)
+           !mpParentContainerObject->isCreatingConnector() && mpParentContainerObject->getSelectedGUIModelObjectPtrs().size() == 1)
         {
                 //Vertical snap
             if( (mGUIConnectorPtrs.size() == 1) &&

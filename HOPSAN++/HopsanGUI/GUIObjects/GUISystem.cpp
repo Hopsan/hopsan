@@ -207,7 +207,7 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 
     QVector<QString> parameterNames, parameterValues, descriptions, units, types;
     mpCoreSystemAccess->getSystemParameters(parameterNames, parameterValues, descriptions, units, types);
-    for(size_t i=0; i<parameterNames.size(); ++i)
+    for(int i=0; i<parameterNames.size(); ++i)
     {
         QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
         mappedElement.setAttribute(HMF_NAMETAG, parameterNames[i]);
@@ -794,7 +794,7 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "\n";
     wrapperStream << "    //Define S-function input signals\n";
     wrapperStream << "    if (!ssSetNumInputPorts(S," << nTotalInputsString << ")) return;				//Number of input signals\n";
-    size_t i,j;
+    int i,j;
     size_t tot=0;
     for(i=0; i<nMechanicQ; ++i)
     {

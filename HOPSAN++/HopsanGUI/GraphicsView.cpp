@@ -99,9 +99,9 @@ void GraphicsView::createActions()
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!mpContainerObject->getIsCreatingConnector() && !mIgnoreNextContextMenuEvent)
+    if(!mpContainerObject->isCreatingConnector() && !mIgnoreNextContextMenuEvent)
     {
-        if (QGraphicsItem *item = itemAt(event->pos()))
+        if (itemAt(event->pos()))
         {
             QGraphicsView::contextMenuEvent(event);
         }
@@ -207,11 +207,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Also changes to the correct background color if it is not the correct one.
 void GraphicsView::updateViewPort()
 {
-    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
+    if( (mpParentProjectTab->mpSystem->getGfxType() == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
     {
         this->setBackgroundBrush(gConfig.getBackgroundColor());
     }
-    else if( (mpParentProjectTab->mpSystem->mGfxType == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
+    else if( (mpParentProjectTab->mpSystem->getGfxType() == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
     {
         this->setBackgroundBrush(mIsoColor);
     }
@@ -244,6 +244,12 @@ bool GraphicsView::isCtrlKeyPressed()
 bool GraphicsView::isLeftMouseButtonPressed()
 {
     return mLeftMouseButtonPressed;
+}
+
+
+void GraphicsView::setIgnoreNextContextMenuEvent()
+{
+    mIgnoreNextContextMenuEvent = true;
 }
 
 
@@ -315,18 +321,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_Escape)
     {
-        if(mpContainerObject->getIsCreatingConnector())
-        {
-            mpContainerObject->mpTempConnector->getStartPort()->removeConnection(mpContainerObject->mpTempConnector);
-            if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected() && !mpContainerObject->mPortsHidden)
-            {
-                mpContainerObject->mpTempConnector->getStartPort()->show();
-            }
-            mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
-            mpContainerObject->setIsCreatingConnector(false);
-            delete(mpContainerObject->mpTempConnector);
-            gpMainWindow->hideHelpPopupMessage();
-        }
+        mpContainerObject->cancelCreatingConnector();
     }
     else if (ctrlPressed && event->key() == Qt::Key_0)
     {
@@ -452,11 +447,9 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (ctrlPressed)
     {
-        if (mpContainerObject->getIsCreatingConnector() && !mpContainerObject->mpTempConnector->isMakingDiagonal())
+        if(mpContainerObject->isCreatingConnector())
         {
-            mpContainerObject->mpTempConnector->makeDiagonal(true);
-            mpContainerObject->mpTempConnector->drawConnector();
-            this->updateViewPort();
+            mpContainerObject->makeConnectorDiagonal(true);
         }
         else
         {
@@ -477,11 +470,9 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
-    if(event->key() == Qt::Key_Control && mpContainerObject->getIsCreatingConnector())
+    if(event->key() == Qt::Key_Control)
     {
-        mpContainerObject->mpTempConnector->makeDiagonal(false);
-        mpContainerObject->mpTempConnector->drawConnector();
-        this->updateViewPort();
+        mpContainerObject->makeConnectorDiagonal(false);
     }
 
     if(event->key() == Qt::Key_Control)
@@ -500,10 +491,9 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     //this->updateViewPort();     //Refresh the viewport
         //If creating connector, the end port shall be updated to the mouse position.
-    if (mpContainerObject->getIsCreatingConnector())
+    if (mpContainerObject->isCreatingConnector())
     {
-        mpContainerObject->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-        mpContainerObject->mpTempConnector->drawConnector();
+        mpContainerObject->updateTempConnector(mapToScene(event->pos()));
     }
     QGraphicsView::mouseMoveEvent(event);
 }
@@ -516,7 +506,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     mLeftMouseButtonPressed = true;
 
         //No rubber band during connecting:
-    if (mpContainerObject->getIsCreatingConnector())
+    if (mpContainerObject->isCreatingConnector())
     {
         this->setDragMode(NoDrag);
     }
@@ -530,33 +520,13 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
 
     //! Remove one connector line if right clicking while creating a connector
-    if (event->button() == Qt::RightButton && mpContainerObject->getIsCreatingConnector())
+    if (event->button() == Qt::RightButton && mpContainerObject->isCreatingConnector())
     {
-        if((mpContainerObject->mpTempConnector->getNumberOfLines() == 1 && mpContainerObject->mpTempConnector->isMakingDiagonal()) ||  (mpContainerObject->mpTempConnector->getNumberOfLines() == 2 && !mpContainerObject->mpTempConnector->isMakingDiagonal()))
-        {
-            mpContainerObject->mpTempConnector->getStartPort()->removeConnection(mpContainerObject->mpTempConnector);
-            if(!mpContainerObject->mpTempConnector->getStartPort()->isConnected() && !mpContainerObject->mPortsHidden)
-            {
-                mpContainerObject->mpTempConnector->getStartPort()->show();
-            }
-            mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
-            mpContainerObject->setIsCreatingConnector(false);
-            mIgnoreNextContextMenuEvent = true;
-            delete(mpContainerObject->mpTempConnector);
-            gpMainWindow->hideHelpPopupMessage();
-        }
-
-        if(mpContainerObject->getIsCreatingConnector())
-        {
-            mpContainerObject->mpTempConnector->removePoint(true);
-            mpContainerObject->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-            mpContainerObject->mpTempConnector->drawConnector();
-            this->updateViewPort();
-        }
+        mpContainerObject->removeOneConnectorLine(mapToScene(event->pos()));
     }
-    else if  ((event->button() == Qt::LeftButton) && (mpContainerObject->getIsCreatingConnector()))
+    else if  ((event->button() == Qt::LeftButton) && (mpContainerObject->isCreatingConnector()))
     {
-        mpContainerObject->mpTempConnector->addPoint(this->mapToScene(event->pos()));
+        mpContainerObject->addOneConnectorLine(this->mapToScene(event->pos()));
     }
 
     QGraphicsView::mousePressEvent(event);

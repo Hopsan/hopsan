@@ -666,9 +666,9 @@ void ProjectTabWidget::tabChanged()
         getCurrentContainer()->updateUndoStatus();
         getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
 
-        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->mpSystem->mGfxType)
+        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->mpSystem->getGfxType())
         {
-            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->mpSystem->mGfxType);
+            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->mpSystem->getGfxType());
         }
 
         gpMainWindow->toggleNamesAction->setChecked(!getCurrentContainer()->mNamesHidden);

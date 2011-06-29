@@ -118,7 +118,7 @@ void ComponentPropertiesDialog::createEditStuff()
     mpGUIComponent->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
     size_t nParam=0;
     size_t nStV=0;
-    for(size_t i=0; i<qParameterNames.size(); ++i)
+    for(int i=0; i<qParameterNames.size(); ++i)
     {
         if(interpretedAsStartValue(qDescriptions[i]))
         {

@@ -88,7 +88,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         //Graphics checkboxes
     mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"), this);
     mpIsoCheckBox->setCheckable(true);
-    mpIsoCheckBox->setChecked(mpContainerObject->mGfxType);
+    mpIsoCheckBox->setChecked(mpContainerObject->getGfxType());
 
         //Undo checkbox
     mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), this);
@@ -197,12 +197,12 @@ void ContainerPropertiesDialog::setValues()
 {
     this->mpContainerObject->setName(this->mpNameEdit->text());
 
-    if(mpIsoCheckBox->isChecked() && mpContainerObject->mGfxType != ISOGRAPHICS)
+    if(mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != ISOGRAPHICS)
     {
         this->mpContainerObject->setGfxType(ISOGRAPHICS);
         gpMainWindow->mpLibrary->setGfxType(ISOGRAPHICS);
     }
-    else if(!mpIsoCheckBox->isChecked() && mpContainerObject->mGfxType != USERGRAPHICS)
+    else if(!mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != USERGRAPHICS)
     {
         this->mpContainerObject->setGfxType(USERGRAPHICS);
         gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);

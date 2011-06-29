@@ -167,7 +167,7 @@ int Node::getDataIdFromName(const string name)
 //! @param [in,out] rUnits This vector will contain the units
 void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
 {
-    for(int i=0; i<mDataNames.size(); ++i)
+    for(size_t i=0; i<mDataNames.size(); ++i)
     {
         if(mPlotBehaviour[i] == Node::PLOT)
         {
@@ -182,7 +182,7 @@ void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double
 bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
 {
     bool success = true;
-    for(int i=0; i<names.size(); ++i)
+    for(size_t i=0; i<names.size(); ++i)
     {
         this->setData(this->getDataIdFromName(names[i]),values[i]);
         //! @todo introduce setDataSafe and similar at many places in code
@@ -197,7 +197,7 @@ bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values
 void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 {
     std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
-    for(int i=0; i<mDataNames.size(); ++i)
+    for(size_t i=0; i<mDataNames.size(); ++i)
     {
         std::cout << "mPlotBehaviour.size(): " << mPlotBehaviour.size() << std::endl;
         if(mPlotBehaviour[i] == Node::PLOT)
@@ -216,7 +216,7 @@ void Node::copyNodeVariables(Node *pNode)
     //this ska kopiera sina varabler till rNode
     if(pNode->getNodeType()==this->getNodeType())
     {
-        for(int i=0; i<mDataNames.size(); ++i)
+        for(size_t i=0; i<mDataNames.size(); ++i)
         {
             cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
             if(mPlotBehaviour[i] == Node::PLOT)
@@ -356,7 +356,7 @@ void Node::logData(const double time)
 //! If connection is ok, any node can only have one write port. If no write port exists, a null pointer is returned.
 Component *Node::getWritePortComponentPtr()
 {
-    for(int i=0; i!=mPortPtrs.size(); ++i)
+    for(size_t i=0; i!=mPortPtrs.size(); ++i)
     {
         if(mPortPtrs.at(i)->getPortType() == WRITEPORT)
         {

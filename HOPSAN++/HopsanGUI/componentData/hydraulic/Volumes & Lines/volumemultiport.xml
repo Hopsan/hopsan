@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
     <modelobject typename="HydraulicVolumeMultiPort" displayname="Hydraulic Volume Multi Port">
-        <icon isopath="volume_iso.svg" iconrotation="ON" userpath="volume_user.svg"/>
+        <icon isopath="volumemulti_iso.svg" iconrotation="ON" userpath="volume_user.svg"/>
         <portpose x="0.5" y="0.5" a="0" name="P1"/>
     </modelobject>
 </hopsanobjectappearance>

@@ -59,7 +59,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
     this->setPos(startPos);
     this->updateStartPoint(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance("Undefined", mpParentContainerObject->mGfxType);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance("Undefined", mpParentContainerObject->getGfxType());
     this->addPoint(startPos);
     this->addPoint(startPos);
     this->drawConnector();
@@ -88,7 +88,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     QPointF startPos = getStartPort()->getGuiModelObject()->getCenterPos();
     this->setPos(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentContainerObject->mGfxType);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentContainerObject->getGfxType());
 
     mPoints = points;
 
@@ -862,10 +862,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
     {
         if(lineSelected)
         {
-            if(!mpParentContainerObject->mSelectedSubConnectorsList.contains(this))
-            {
-                mpParentContainerObject->mSelectedSubConnectorsList.append(this);
-            }
+            mpParentContainerObject->rememberSelectedSubConnector(this);
             connect(mpParentContainerObject, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             disconnect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
@@ -895,7 +892,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             if(noneSelected)
             {
                 this->setPassive();
-                mpParentContainerObject->mSelectedSubConnectorsList.removeOne(this);
+                mpParentContainerObject->forgetSelectedSubConnector(this);
                 disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
                 connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
                 disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
@@ -985,7 +982,7 @@ void GUIConnector::setUnHovered()
 //! @brief Asks the parent system to delete the connector
 void GUIConnector::deleteMe(undoStatus undo)
 {
-    mpParentContainerObject->removeConnector(this, undo);
+    mpParentContainerObject->removeSubConnector(this, undo);
 }
 
 

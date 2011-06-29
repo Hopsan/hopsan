@@ -59,7 +59,7 @@ Port::~Port()
         //! dataNames and dataUnits are here just to decide the number of elements in the start node.
         std::vector<std::string> dataNames, dataUnits;
         mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
-        for(int i = 0; i < dataNames.size(); ++i)
+        for(size_t i = 0; i < dataNames.size(); ++i)
         {
 //FIXA            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
         }
@@ -349,7 +349,7 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
         std::vector<double> values;
         getStartValueDataNamesValuesAndUnits(rNames, values, rUnits);
         rValuesTxt.resize(values.size());
-        for(int i = 0; i < rNames.size(); ++i)
+        for(size_t i = 0; i < rNames.size(); ++i)
         {
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
@@ -381,7 +381,7 @@ bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
     if(mpStartNode)
     {
         //Remove references from the System parameters if any
-        for(int i = 0; i < names.size(); ++i)
+        for(size_t i = 0; i < names.size(); ++i)
         {
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
@@ -409,7 +409,7 @@ bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::
         success = true;
         std::vector<double> values;
         values.resize(sysParNames.size());
-        for(int i = 0; i < sysParNames.size(); ++i)
+        for(size_t i = 0; i < sysParNames.size(); ++i)
         {
             //FIXAgetComponent()->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i]);
             //Get a pointer to the actual node data
@@ -600,7 +600,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
             //Copy all start values to default parameters map in component
             std::vector<std::string> names, data;
             mpStartNode->getDataNamesAndUnits(names, data);
-            for(int i=0; i<names.size(); ++i)
+            for(size_t i=0; i<names.size(); ++i)
             {
                 getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(portname + mpStartNode->getDataName(i), mpStartNode->getData(i)));
                 std::cout << "Writing " << portname << mpStartNode->getDataName(i) << " with " << mpStartNode->getData(i) << endl;

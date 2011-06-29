@@ -39,44 +39,61 @@ class QGraphicsScene;
 
 class GUIContainerObject : public GUIModelObject
 {
+    friend class UndoStack;     //! @todo Not sure about this, but the alternative would be to have lots and lots of access functions only used by undo stack...
     Q_OBJECT
 public:
     enum CONTAINEREDGE {RIGHTEDGE, BOTTOMEDGE, LEFTEDGE, TOPEDGE};
     GUIContainerObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIContainerObject();
 
+    ProjectTab *mpParentProjectTab;
+
+    //Signal/slot connection methods
     void connectMainWindowActions();
     void disconnectMainWindowActions();
 
-    //Scene and Core access
+    //Scene and core access methods
     QGraphicsScene *getContainedScenePtr();
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
-    //Handle GuiModelObjects and GuiWidgets
-    GUITextWidget *addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
-    GUIBoxWidget *addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
-    void removeWidget(GUIWidget *pWidget, undoStatus undoSettings=UNDO);
+    //GUIModelObjects and GUIWidgets methods
+    void takeOwnershipOf(QList<GUIModelObject*> &rModeObjectlist, QList<GUIWidget*> &rWidgetList);
+
+    //GUIModelObject methods
     GUIModelObject *addGUIModelObject(QString typeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool hasGUIModelObject(QString name);
-    void takeOwnershipOf(QList<GUIModelObject*> &rModeObjectlist, QList<GUIWidget*> &rWidgetList);
-    void rememberSelectedWidget(GUIWidget *widget);
-    void forgetSelectedWidget(GUIWidget *widget);
-    QList<GUIWidget *> getSelectedGUIWidgetPtrs();
     void rememverSelectedGUIModelObject(GUIModelObject *object);
     void forgetSelectedGUIModelObject(GUIModelObject *object);
     QList<GUIModelObject *> getSelectedGUIModelObjectPtrs();
+    bool isObjectSelected();
 
-    //Handle connectors
+    //GUIWidgets methods
+    GUITextWidget *addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
+    GUIBoxWidget *addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
+    void removeWidget(GUIWidget *pWidget, undoStatus undoSettings=UNDO);
+    void rememberSelectedWidget(GUIWidget *widget);
+    void forgetSelectedWidget(GUIWidget *widget);
+    QList<GUIWidget *> getSelectedGUIWidgetPtrs();
+
+    //Handle connector methods
+    void rememberSubConnector(GUIConnector *pConnector);
+    void removeSubConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
     GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
-    void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
     void setIsCreatingConnector(bool isCreatingConnector);
-    bool getIsCreatingConnector();
-    void forgetContainedConnector(GUIConnector *pConnector); //! @todo maybe can be protected, other container (and self) should be able to access it, noone else needs to
+    bool isCreatingConnector();
+    void cancelCreatingConnector();
+    void rememberSelectedSubConnector(GUIConnector *pConnector);
+    void forgetSelectedSubConnector(GUIConnector *pConnector);
+    void makeConnectorDiagonal(bool diagonal);
+    void updateTempConnector(QPointF pos);
+    void addOneConnectorLine(QPointF pos);
+    void removeOneConnectorLine(QPointF pos);
+    bool isConnectorSelected();
 
     //Handle container appearance
     QString getIconPath(const graphicsType gfxType);
@@ -86,51 +103,10 @@ public:
     void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
-    bool isObjectSelected();
-    bool isConnectorSelected();
-
+    //Plot and simulation results methods
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
     bool hasOpenPlotCurves();
-
-    UndoStack *getUndoStackPtr();
-    CopyStack *getDragCopyStackPtr();
-
-    //These (overloaded versions) are used in containerPropertiesDialog by systems
-    //virtual void setTypeCQS(QString /*typestring*/){assert(false);}
-    virtual size_t getNumberOfLogSamples(){assert(false);}
-    virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
-
-
-    void setModelFile(QString path);
-    QFileInfo getModelFileInfo();
-    void setScriptFile(QString path);
-    QString getScriptFile();
-
-    QStringList getGUIModelObjectNames();
-
-
-
-    //Public member variable
-    ProjectTab *mpParentProjectTab;
-
-    //SHOULD BE PROTECTED
-    QList<GUIConnector *> mSelectedSubConnectorsList;
-    QList<GUIConnector *> mSubConnectorList;
-
-    GUIModelObject *mpTempGUIModelObject;
-    GUIConnector *mpTempConnector;
-    graphicsType mGfxType;
-
-    size_t mHighestWidgetIndex;
-    QMap<size_t, GUIWidget *> mWidgetMap;
-
-    QList<QStringList> getFavoriteVariables();
-    void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
-    void removeFavoriteVariableByComponentName(QString componentName);
-
-    QList<QStringList> mFavoriteVariables;
-
     QVector<double> getTimeVector(int generation);
     QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
     bool componentHasPlotGeneration(int generation, QString componentName);
@@ -142,8 +118,31 @@ public:
     QStringList getPlotVariableFromAlias(QString alias);
     QString getPlotAlias(QString componentName, QString portName, QString dataName);
 
+    //Undo/redo methods
+    UndoStack *getUndoStackPtr();
+
+    //Copy/paste methods
+    CopyStack *getDragCopyStackPtr();
+
+    //These (overloaded versions) are used in containerPropertiesDialog by systems
+    virtual size_t getNumberOfLogSamples(){assert(false);}
+    virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
+
+    //Model and script file methods
+    void setModelFile(QString path);
+    QFileInfo getModelFileInfo();
+    void setScriptFile(QString path);
+    QString getScriptFile();
+    QStringList getGUIModelObjectNames();
+
+    //Numbered sections methods
     void selectSection(int no, bool append=false);
     void assignSection(int no);
+
+    //Favorite variables methods
+    QList<QStringList> getFavoriteVariables();
+    void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
+    void removeFavoriteVariableByComponentName(QString componentName);
 
 
 public slots:
@@ -176,6 +175,7 @@ public slots:
     void updateUndoStatus();
         //Appearance and settings
     void setGfxType(graphicsType gfxType);
+    graphicsType getGfxType();
     void openPropertiesDialogSlot();
         //Enter and exit a container object
     void enterContainer();
@@ -218,6 +218,7 @@ protected:
     virtual void renameExternalPort(QString oldName, QString newName);
     virtual void openPropertiesDialog();
     void clearContents();
+    void forgetSubConnector(GUIConnector *pConnector);
         //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -231,6 +232,9 @@ protected:
 
     UndoStack *mpUndoStack;
 
+    QList<GUIConnector *> mSelectedSubConnectorsList;
+    QList<GUIConnector *> mSubConnectorList;
+
     QList<GUITextWidget *> mTextWidgetList; //! @todo we should really have one common list for all guiwidgets, or maybe only have the guiwidget map bellow
     QList<GUIBoxWidget *> mBoxWidgetList;
     QList<GUIModelObject *> mSelectedGUIModelObjectsList;
@@ -240,6 +244,15 @@ protected:
 
     int nPlotCurves;
 
+    GUIModelObject *mpTempGUIModelObject;
+    GUIConnector *mpTempConnector;
+
+    graphicsType mGfxType;
+
+    size_t mHighestWidgetIndex;
+    QMap<size_t, GUIWidget *> mWidgetMap;
+
+    QList<QStringList> mFavoriteVariables;
 
 protected slots:
 

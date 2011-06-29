@@ -413,7 +413,7 @@ void UndoStack::undoOneStep()
             this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
             return;
         }
-        mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
+        mpParentContainerObject->removeSubConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
     }
 
         //Remove objects after removing connectors, to make sure connectors don't lose their start and end components
@@ -565,7 +565,7 @@ void UndoStack::redoOneStep()
                 this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
+            mpParentContainerObject->removeSubConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
         }
         else if(stuffElement.attribute("what") == "addedconnector")
         {

@@ -1548,7 +1548,7 @@ QString PlotTab::updateXmlOutputTextInDialog()
         display.append(lines[i]);
         display.append("\n");
     }
-    for(size_t k=0; k<mpXmlIndentationSpinBox->value(); ++k) display.append(" ");
+    for(int k=0; k<mpXmlIndentationSpinBox->value(); ++k) display.append(" ");
     display.append("...\n");
     display.append(lines[lines.size()-2]);
     display.append(lines[lines.size()-1]);

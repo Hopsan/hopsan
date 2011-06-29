@@ -659,6 +659,10 @@ GUIBoxWidget *GUIContainerObject::addBoxWidget(QPointF position, undoStatus undo
 }
 
 
+//! @brief Removes specified widget
+//! Works for both text and box widgets
+//! @param pWidget Pointer to widget to remove
+//! @param undoSettings Tells whether or not this shall be registered in undo stack
 void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSettings)
 {
     if(undoSettings == UNDO && mTextWidgetList.contains(qobject_cast<GUITextWidget *>(pWidget)))
@@ -694,7 +698,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     QList<GUIConnector *> pConnectorList = obj_ptr->getGUIConnectorPtrs();
     for(int i=0; i<pConnectorList.size(); ++i)
     {
-        this->removeConnector(pConnectorList[i], undoSettings);
+        this->removeSubConnector(pConnectorList[i], undoSettings);
     }
 
     if (undoSettings == UNDO && !mUndoDisabled)
@@ -882,7 +886,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
     {
         qDebug() << "___Adding internalConnection";
         //Make previous parent container forget about the connector
-        internalConnectors[i]->getParentContainer()->forgetContainedConnector(internalConnectors[i]);
+        internalConnectors[i]->getParentContainer()->forgetSubConnector(internalConnectors[i]);
 
         //Make new container own and know about the connector
         this->getContainedScenePtr()->addItem(internalConnectors[i]);
@@ -914,7 +918,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
         GUIModelObject *pTransPort = this->addGUIModelObject(HOPSANGUICONTAINERPORTTYPENAME, portpos.toPoint(),0);
 
         //Make previous parent container forget about the connector
-        transitConnectors[i]->getParentContainer()->forgetContainedConnector(transitConnectors[i]);
+        transitConnectors[i]->getParentContainer()->forgetSubConnector(transitConnectors[i]);
 
         //Add the port to this container
         this->getContainedScenePtr()->addItem(transitConnectors[i]);
@@ -1051,10 +1055,24 @@ bool GUIContainerObject::hasConnector(QString startComp, QString startPort, QStr
 }
 
 
+//! @brief Notifies container object that a subconnector has been selected
+void GUIContainerObject::rememberSelectedSubConnector(GUIConnector *pConnector)
+{
+    mSelectedSubConnectorsList.append(pConnector);
+}
+
+
+//! @brief Notifies container object that a subconnector has been deselected
+void GUIContainerObject::forgetSelectedSubConnector(GUIConnector *pConnector)
+{
+    mSelectedSubConnectorsList.removeAll(pConnector);
+}
+
+
 //! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
-void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus undoSettings)
+void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus undoSettings)
 {
     bool doDelete = false;          //! @todo Why would we not want to delete the connector when we call the function that is meant to delete it?
     bool endPortWasConnected = false;       //Tells if connector is finished or being created
@@ -1126,7 +1144,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
 void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings)
 {
         //When clicking start port (begin creation of connector)
-    if (!getIsCreatingConnector())
+    if (!isCreatingConnector())
     {
         mpTempConnector = new GUIConnector(pPort, this);
         deselectAll();
@@ -1525,6 +1543,9 @@ void GUIContainerObject::groupSelected(QPointF pt)
 }
 
 
+//! @brief Selects model objects in section with specified number.
+//! @param no Number of section
+//! @param append True if previously selected objects shall remain selected
 void GUIContainerObject::selectSection(int no, bool append)
 {
     if(!append)
@@ -1542,6 +1563,9 @@ void GUIContainerObject::selectSection(int no, bool append)
 }
 
 
+//! @brief Assigns the selected component to the section with specified number.
+//! This is used to "group" components into sections with Ctrl+#, so they can be selected quickly again by pressing #.
+//! @param no Number of section
 void GUIContainerObject::assignSection(int no)
 {
     if(!isObjectSelected()) return;
@@ -1720,6 +1744,7 @@ QString GUIContainerObject::getScriptFile()
 }
 
 
+//! @brief Returns a list with the names of the model objects in the container
 QStringList GUIContainerObject::getGUIModelObjectNames()
 {
     QStringList retval;
@@ -1756,22 +1781,108 @@ void GUIContainerObject::setIsCreatingConnector(bool isCreatingConnector)
 
 
 //! @brief Access function for mIsCreatingConnector
-bool GUIContainerObject::getIsCreatingConnector()
+bool GUIContainerObject::isCreatingConnector()
 {
     return mIsCreatingConnector;
 }
+
+
+//! @brief Tells container object to remember a new sub connector
+void GUIContainerObject::rememberSubConnector(GUIConnector *pConnector)
+{
+    mSubConnectorList.append(pConnector);
+}
+
 
 //! @brief This is a helpfunction that can be used to make a container "forget" about a certain connector
 //!
 //! It does not delete the connector and connected components dos not forget about it
 //! use only when transfering ownership of objects to an other container
-void GUIContainerObject::forgetContainedConnector(GUIConnector *pConnector)
+void GUIContainerObject::forgetSubConnector(GUIConnector *pConnector)
 {
     mSubConnectorList.removeAll(pConnector);
 }
 
 
-//! @brief Disables the undo function for the current model
+//! @brief Aborts creation of new connector.
+void GUIContainerObject::cancelCreatingConnector()
+{
+    if(mIsCreatingConnector)
+    {
+        mpTempConnector->getStartPort()->removeConnection(mpTempConnector);
+        if(!mpTempConnector->getStartPort()->isConnected() && !mPortsHidden)
+        {
+            mpTempConnector->getStartPort()->show();
+        }
+        mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpTempConnector);
+        setIsCreatingConnector(false);
+        delete(mpTempConnector);
+        gpMainWindow->hideHelpPopupMessage();
+    }
+}
+
+
+//! @brief Swiches mode of connector being created to or from diagonal mode.
+//! @param diagonal Tells whether or not connector shall be diagonal or not
+void GUIContainerObject::makeConnectorDiagonal(bool diagonal)
+{
+    if (mIsCreatingConnector && (mpTempConnector->isMakingDiagonal() != diagonal))
+    {
+        mpTempConnector->makeDiagonal(diagonal);
+        mpTempConnector->drawConnector();
+        mpParentProjectTab->mpGraphicsView->updateViewPort();
+    }
+}
+
+
+//! @brief Redraws the connector being created.
+//! @param pos Position to draw connector to
+void GUIContainerObject::updateTempConnector(QPointF pos)
+{
+    mpTempConnector->updateEndPoint(pos);
+    mpTempConnector->drawConnector();
+}
+
+
+//! @brief Adds one new line to the connector being created.
+//! @param pos Position to add new line at
+void GUIContainerObject::addOneConnectorLine(QPointF pos)
+{
+    mpTempConnector->addPoint(pos);
+}
+
+
+//! @brief Removse one line from connector being created.
+//! @param pos Position to redraw connector to after removing the line
+void GUIContainerObject::removeOneConnectorLine(QPointF pos)
+{
+    if((mpTempConnector->getNumberOfLines() == 1 && mpTempConnector->isMakingDiagonal()) ||  (mpTempConnector->getNumberOfLines() == 2 && !mpTempConnector->isMakingDiagonal()))
+    {
+        mpTempConnector->getStartPort()->removeConnection(mpTempConnector);
+        if(!mpTempConnector->getStartPort()->isConnected() && !mPortsHidden)
+        {
+            mpTempConnector->getStartPort()->show();
+        }
+        mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpTempConnector);
+        mIsCreatingConnector = false;
+        mpParentProjectTab->mpGraphicsView->setIgnoreNextContextMenuEvent();
+        delete(mpTempConnector);
+        gpMainWindow->hideHelpPopupMessage();
+    }
+
+    if(mIsCreatingConnector)
+    {
+        mpTempConnector->removePoint(true);
+        mpTempConnector->updateEndPoint(pos);
+        mpTempConnector->drawConnector();
+        mpParentProjectTab->mpGraphicsView->updateViewPort();
+    }
+}
+
+
+//! @brief Disables the undo function for the current model.
+//! @param enabled Tells whether or not to enable the undo stack
+//! @param dontAskJustDoIt If true, the warning box will not appear
 void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 {
     if(enabled)
@@ -1842,6 +1953,14 @@ void GUIContainerObject::setGfxType(graphicsType gfxType)
     this->mpParentProjectTab->mpGraphicsView->updateViewPort();
     emit setAllGfxType(mGfxType);
 }
+
+
+//! @brief Returns current graphics type used by container object
+graphicsType GUIContainerObject::getGfxType()
+{
+    return mGfxType;
+}
+
 
 //! @brief A slot that opens the properties dialog
 void GUIContainerObject::openPropertiesDialogSlot()
@@ -2064,6 +2183,7 @@ void GUIContainerObject::rotateLeft()
 }
 
 
+//! @brief Flips selected contained objects horizontally
 void GUIContainerObject::flipHorizontal()
 {
     if(this->isObjectSelected())
@@ -2075,6 +2195,7 @@ void GUIContainerObject::flipHorizontal()
 }
 
 
+//! @brief Flips selected contained objects vertically
 void GUIContainerObject::flipVertical()
 {
     if(this->isObjectSelected())
@@ -2127,13 +2248,19 @@ void GUIContainerObject::collectPlotData()
 }
 
 
+//! @brief Returns time vector for specified plot generation.
+//! @param generation Generation to fetch time vector from
 QVector<double> GUIContainerObject::getTimeVector(int generation)
 {
-    //qDebug() << "getTimeVector()";
     return mTimeVectors.at(generation);
 }
 
 
+//! @brief Returns plot data for specified variable.
+//! @param generation Generation to plot from
+//! @param componentName Name of component where variable is located
+//! @param portName Name of port where variable is located
+//! @param dataName Name of physical quantity of the variable
 QVector<double> GUIContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
 {
     //qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
@@ -2142,24 +2269,36 @@ QVector<double> GUIContainerObject::getPlotData(int generation, QString componen
 }
 
 
+//! @brief Tells whether or not specified component has specified plot generation.
+//! It does not if the generation was simulated before this component was added
+//! @param generation Generation to look for
+//! @param componentName Name of component to look in
 bool GUIContainerObject::componentHasPlotGeneration(int generation, QString componentName)
 {
     return mPlotData.at(generation).contains(componentName);
 }
 
 
+//! @brief Returns a copy of all existing plot data in container.
+//! @note This object is gigantic, and will likey reduce performance if used too often.
 QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > GUIContainerObject::getAllPlotData()
 {
     return mPlotData;
 }
 
 
+//! @brief Returns total number of plot generation.
+//! I.e. how many times the container has been simulated since opened.
 int GUIContainerObject::getNumberOfPlotGenerations()
 {
     return mPlotData.size();
 }
 
 
+//! @brief Opens a box and lets user choose new plot alias for specified variable.
+//! @param componentName Name of component where variable is located
+//! @param portName Name of port where variable is located
+//! @param dataName Name of physical quantity of the variable
 void GUIContainerObject::definePlotAlias(QString componentName, QString portName, QString dataName)
 {
     bool ok;
@@ -2174,6 +2313,10 @@ void GUIContainerObject::definePlotAlias(QString componentName, QString portName
 }
 
 
+//! @brief Defines a new plot alias for specified variable.
+//! @param componentName Name of component where variable is located
+//! @param portName Name of port where variable is located
+//! @param dataName Name of physical quantity of the variable
 bool GUIContainerObject::definePlotAlias(QString alias, QString componentName, QString portName, QString dataName)
 {
     if(mPlotAliasMap.contains(alias)) return false;
@@ -2186,12 +2329,16 @@ bool GUIContainerObject::definePlotAlias(QString alias, QString componentName, Q
 }
 
 
+//! @brief Undefines an existing plot alias.
+//! @param alias Name of alias to undefine
 void GUIContainerObject::undefinePlotAlias(QString alias)
 {
     mPlotAliasMap.remove(alias);
 }
 
 
+//! @brief Returns the plot variable for specified alias.
+//! @returns A stringlist with componentName, portName and dataName of variable, or null if alias does not exist.
 QStringList GUIContainerObject::getPlotVariableFromAlias(QString alias)
 {
     if(mPlotAliasMap.contains(alias))
@@ -2201,6 +2348,10 @@ QStringList GUIContainerObject::getPlotVariableFromAlias(QString alias)
 }
 
 
+//! @brief Returns plot alias for specified variable.
+//! @param componentName Name of component where variable is located
+//! @param portName Name of port where variable is located
+//! @param dataName Name of physical quantity of the variable
 QString GUIContainerObject::getPlotAlias(QString componentName, QString portName, QString dataName)
 {
     QStringList variableDescription;
