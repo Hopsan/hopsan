@@ -43,50 +43,6 @@ class GUIModelObjectAppearance;
 class LibraryListWidgetItem;
 
 class LibraryComponent;
-
-
-
-
-//class LibraryListWidgetItem : public QListWidgetItem
-//{
-//public:
-//    LibraryListWidgetItem(GUIModelObjectAppearance *pAppearanceData, QListWidget *parent = 0);
-//    LibraryListWidgetItem(const QListWidgetItem &other);
-//    GUIModelObjectAppearance *getAppearanceData();
-//    QString getTypeName();
-
-////public slots:
-//    void selectIcon(graphicsType gfxType=USERGRAPHICS);
-
-//private:
-//    GUIModelObjectAppearance *mpAppearanceData;
-
-//};
-
-//class LibraryListWidget : public QListWidget
-//{
-//    Q_OBJECT
-
-//public:
-//    LibraryListWidget(LibraryListWidget *pParentLibraryListWidget, QString mapKey, LibraryWidget *pParentLibraryWidget, QTreeWidgetItem *pParentTreeWidgetItem);
-//    bool mIsUserLib;
-//    QTreeWidgetItem *mpParentTreeWidgetItem;
-//    QString mMapKey;
-
-//protected:
-//    virtual void mousePressEvent(QMouseEvent *event);
-//    virtual void mouseMoveEvent(QMouseEvent *event);
-
-//public slots:
-//    virtual void highLightItem(QListWidgetItem *item);
-
-//private:
-//    QPointF dragStartPosition;
-//    LibraryWidget *mpParentLibraryWidget;
-//    QListWidgetItem *mpHoveredItem;
-//};
-
-
 class MainWindow;
 class LibraryContentsTree;
 class LibraryListWidget;
@@ -156,8 +112,6 @@ private:
     LibraryWidget *mpLibraryWidget;
 };
 
-
-//! @note New classes
 
 class LibraryContentsTree
 {

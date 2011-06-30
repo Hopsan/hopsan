@@ -41,7 +41,6 @@ public:
     void saveSettingsToDomElement(QDomElement &rDomElement);
     void loadSettingsFromDomElement(QDomElement &rDomElement);
 
-
 public slots:
     void runPyScript();
     void runPyScript(QString command);

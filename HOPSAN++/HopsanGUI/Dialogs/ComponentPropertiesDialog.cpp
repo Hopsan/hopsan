@@ -170,16 +170,16 @@ void ComponentPropertiesDialog::createEditStuff()
 
     //qDebug() << "after parnames";
 
-    cancelButton = new QPushButton(tr("&Cancel"), this);
-    okButton = new QPushButton(tr("&Ok"), this);
-    okButton->setDefault(true);
+    mpCancelButton = new QPushButton(tr("&Cancel"), this);
+    mpOkButton = new QPushButton(tr("&Ok"), this);
+    mpOkButton->setDefault(true);
 
-    buttonBox = new QDialogButtonBox(Qt::Vertical, this);
-    buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
-    buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
+    mpButtonBox = new QDialogButtonBox(Qt::Vertical, this);
+    mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
 
-    connect(okButton, SIGNAL(clicked()), SLOT(okPressed()));
-    connect(cancelButton, SIGNAL(clicked()), SLOT(close()));
+    connect(mpOkButton, SIGNAL(clicked()), SLOT(okPressed()));
+    connect(mpCancelButton, SIGNAL(clicked()), SLOT(close()));
 
     QGroupBox *pHelpGroupBox = new QGroupBox();
     QVBoxLayout *pHelpLayout = new QVBoxLayout();
@@ -210,7 +210,7 @@ void ComponentPropertiesDialog::createEditStuff()
     ++lr;
 
     mainLayout->addLayout(pNameLayout, lr, 0);
-    mainLayout->addWidget(buttonBox, lr, 1);
+    mainLayout->addWidget(mpButtonBox, lr, 1);
 
     ++lr;
 

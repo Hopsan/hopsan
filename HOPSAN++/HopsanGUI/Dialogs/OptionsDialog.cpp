@@ -227,7 +227,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
 
-    connect(gpMainWindow->optionsAction,    SIGNAL(triggered()),    this,                   SLOT(show()));
+    connect(gpMainWindow->mpOptionsAction,    SIGNAL(triggered()),    this,                   SLOT(show()));
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarLabel,     SLOT(setEnabled(bool)));
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarSpinBox,   SLOT(setEnabled(bool)));
     connect(mpBackgroundColorButton,        SIGNAL(clicked()),      this,                   SLOT(colorDialog()));
@@ -283,12 +283,12 @@ void OptionsDialog::updateValues()
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
     for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
     {
-        gpMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+        gpMainWindow->mpProjectTabs->getTab(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     }
     gConfig.setBackgroundColor(mPickedBackgroundColor);
     for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
     {
-        gpMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->updateViewPort();
+        gpMainWindow->mpProjectTabs->getTab(i)->getGraphicsView()->updateViewPort();
     }
     gConfig.setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
     gConfig.setProgressBarStep(mpProgressBarSpinBox->value());

@@ -270,7 +270,7 @@ public slots:
 
     int getSimulationTime(MainWindow* o)
     {
-        return o->mpProjectTabs->getCurrentTab()->mLastSimulationTime;
+        return o->mpProjectTabs->getCurrentTab()->getLastSimulationTime();
     }
 
     void useMultiCore(MainWindow* o)

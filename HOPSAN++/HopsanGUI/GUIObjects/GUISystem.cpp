@@ -246,10 +246,10 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
     if (mLoadType!="EXTERNAL")
     {
         //! @todo what happens if a subsystem (embeded) is asved, then we dont want to set the current graphics view
-        if (this->mpParentProjectTab->mpGraphicsView != 0)
+        if (this->mpParentProjectTab->getGraphicsView() != 0)
         {
             qreal x,y,zoom;
-            this->mpParentProjectTab->mpGraphicsView->getViewPort(x,y,zoom);
+            this->mpParentProjectTab->getGraphicsView()->getViewPort(x,y,zoom);
             appendViewPortTag(guiStuff, x, y, zoom);
         }
         QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
@@ -376,19 +376,18 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         this->setDisplayName(realName); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
         this->mNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
         this->mPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
-        gpMainWindow->toggleNamesAction->setChecked(!mNamesHidden);
-        gpMainWindow->togglePortsAction->setChecked(!mPortsHidden);
+        gpMainWindow->mpToggleNamesAction->setChecked(!mNamesHidden);
+        gpMainWindow->mpTogglePortsAction->setChecked(!mPortsHidden);
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
         double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
         double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
         setScriptFile(guiStuff.firstChildElement(HMF_SCRIPTFILETAG).attribute("path"));
 
-        mpParentProjectTab->mpGraphicsView->scale(zoom, zoom);
-        mpParentProjectTab->mpGraphicsView->mZoomFactor = zoom;
-        //emit mpParentProjectTab->mpGraphicsView->zoomChange(zoom);
+        mpParentProjectTab->getGraphicsView()->setZoomFactor(zoom);
+        //emit mpParentProjectTab->getGraphicsView()->zoomChange(zoom);
 
         qDebug() << "Center on " << x << ", " << y;
-        mpParentProjectTab->mpGraphicsView->centerOn(x, y);
+        mpParentProjectTab->getGraphicsView()->centerOn(x, y);
         //! @todo load viewport and pose and stuff
 
         //Load simulation time
@@ -510,8 +509,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //! @todo maybe can do this for subsystems to (even if we dont see them right now)
         if (this->mpParentContainerObject == 0)
         {
-            //mpParentProjectTab->mpGraphicsView->centerView();
-            mpParentProjectTab->mpGraphicsView->updateViewPort();
+            //mpParentProjectTab->getGraphicsView()->centerView();
+            mpParentProjectTab->getGraphicsView()->updateViewPort();
         }
         this->mpParentProjectTab->setSaved(true);
 

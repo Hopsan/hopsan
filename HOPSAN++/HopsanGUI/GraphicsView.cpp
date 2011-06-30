@@ -50,7 +50,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
         : QGraphicsView(parent)
 {
     mpParentProjectTab = parent;
-    mpContainerObject = mpParentProjectTab->mpSystem;
+    mpContainerObject = mpParentProjectTab->getSystem();
 
     mIgnoreNextContextMenuEvent = false;
     mCtrlKeyPressed = false;
@@ -70,29 +70,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     mZoomFactor = 1.0;
 
     this->updateViewPort();
-
-    this->createActions();
-    this->createMenus();
-
     this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
-}
-
-
-//! Creastes the menus
-void GraphicsView::createMenus()
-{
-    menuInsert = new QMenu(this);
-    menuInsert->setObjectName("menuInsert");
-    menuInsert->setTitle("Insert");
-    menuInsert->addAction(systemPortAction);
-}
-
-
-//! Defines the actions
-void GraphicsView::createActions()
-{
-    systemPortAction = new QAction(this);
-    systemPortAction->setText("System Port");
 }
 
 
@@ -207,11 +185,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Also changes to the correct background color if it is not the correct one.
 void GraphicsView::updateViewPort()
 {
-    if( (mpParentProjectTab->mpSystem->getGfxType() == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
+    if( (mpParentProjectTab->getSystem()->getGfxType() == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
     {
         this->setBackgroundBrush(gConfig.getBackgroundColor());
     }
-    else if( (mpParentProjectTab->mpSystem->getGfxType() == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
+    else if( (mpParentProjectTab->getSystem()->getGfxType() == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
     {
         this->setBackgroundBrush(mIsoColor);
     }
@@ -247,9 +225,26 @@ bool GraphicsView::isLeftMouseButtonPressed()
 }
 
 
+//! @brief Tells the graphics view to ignore the next context menu event
 void GraphicsView::setIgnoreNextContextMenuEvent()
 {
     mIgnoreNextContextMenuEvent = true;
+}
+
+
+//! @brief Sets the zoom factor to specified value
+void GraphicsView::setZoomFactor(double zoomFactor)
+{
+    resetZoom();
+    scale(zoomFactor, zoomFactor);
+    mZoomFactor = zoomFactor;
+}
+
+
+//! @brief Returns the current soom factor
+double GraphicsView::getZoomFactor()
+{
+    return mZoomFactor;
 }
 
 

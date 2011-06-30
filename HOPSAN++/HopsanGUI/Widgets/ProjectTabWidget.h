@@ -81,15 +81,12 @@ public:
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
+    GUISystem *getSystem();
+    GraphicsView *getGraphicsView();
+    QuickNavigationWidget *getQuickNavigationWidget();
+    int getLastSimulationTime();
 
-        //Public member variables
-    //! @todo these should not be public
-    GUISystem *mpSystem;
     ProjectTabWidget *mpParentProjectTabWidget;
-    GraphicsView *mpGraphicsView;
-    QuickNavigationWidget *mpQuickNavigationWidget;
-
-    int mLastSimulationTime;
 
 public slots:
     bool simulate();
@@ -104,8 +101,13 @@ signals:
     void simulationFinished();
 
 private:
-    bool mIsSaved;
     void saveModel(saveTarget saveAsFlag);
+
+    bool mIsSaved;
+    GUISystem *mpSystem;
+    GraphicsView *mpGraphicsView;
+    QuickNavigationWidget *mpQuickNavigationWidget;
+    int mLastSimulationTime;
 };
 
 #endif // PROJECTTABWIDGET_H

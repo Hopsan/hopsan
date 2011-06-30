@@ -85,7 +85,7 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
     if(mpParentContainerObject != 0)
     {
-        connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
+        connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
 //        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
@@ -145,7 +145,7 @@ void GUIModelObject::snapNameTextPosition(QPointF pos)
 
     if(mpParentContainerObject != 0)
     {
-        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -503,7 +503,7 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mousePressEvent(event);
 
-    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed())
+    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isCtrlKeyPressed())
     {
         mpParentContainerObject->deselectAll();
         this->select();
@@ -512,7 +512,7 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QMimeData *mimeData = new QMimeData;
         mimeData->setText("HOPSANDRAGCOPY");
 
-        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->mpGraphicsView);
+        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->getGraphicsView());
         drag->setMimeData(mimeData);
         drag->setPixmap(QIcon(QPixmap(this->mGUIModelObjectAppearance.getIconPath())).pixmap(40,40));
         drag->setHotSpot(QPoint(20, 20));
@@ -650,14 +650,14 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
         if(this->isSelected())
         {
             mpParentContainerObject->rememverSelectedGUIModelObject(this);
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
         else
         {
             mpParentContainerObject->forgetSelectedGUIModelObject(this);
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
     }
 
@@ -675,16 +675,16 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
                 (mGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
                 !(mGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
                 !(mGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
-                (abs(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
-                (abs(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) )
+                (abs(mGUIConnectorPtrs.first()->getStartPoint().x() - mGUIConnectorPtrs.first()->getEndPoint().x()) < SNAPDISTANCE) &&
+                (abs(mGUIConnectorPtrs.first()->getStartPoint().x() - mGUIConnectorPtrs.first()->getEndPoint().x()) > 0.0) )
             {
                 if(this->mGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
-                    this->moveBy(mGUIConnectorPtrs.first()->mPoints.last().x() - mGUIConnectorPtrs.first()->mPoints.first().x(), 0);
+                    this->moveBy(mGUIConnectorPtrs.first()->getEndPoint().x() - mGUIConnectorPtrs.first()->getStartPoint().x(), 0);
                 }
                 else
                 {
-                    this->moveBy(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x(), 0);
+                    this->moveBy(mGUIConnectorPtrs.first()->getStartPoint().x() - mGUIConnectorPtrs.first()->getEndPoint().x(), 0);
                 }
             }
 
@@ -693,16 +693,16 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
                 (mGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
                 !(mGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
                 !(mGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() > 2) &&
-                (abs(mGUIConnectorPtrs.first()->mPoints.first().y() - mGUIConnectorPtrs.first()->mPoints.last().y()) < SNAPDISTANCE) &&
-                (abs(mGUIConnectorPtrs.first()->mPoints.first().y() - mGUIConnectorPtrs.first()->mPoints.last().y()) > 0.0) )
+                (abs(mGUIConnectorPtrs.first()->getStartPoint().y() - mGUIConnectorPtrs.first()->getEndPoint().y()) < SNAPDISTANCE) &&
+                (abs(mGUIConnectorPtrs.first()->getStartPoint().y() - mGUIConnectorPtrs.first()->getEndPoint().y()) > 0.0) )
             {
                 if(this->mGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
-                    this->moveBy(0, mGUIConnectorPtrs.first()->mPoints.last().y() - mGUIConnectorPtrs.first()->mPoints.first().y());
+                    this->moveBy(0, mGUIConnectorPtrs.first()->getEndPoint().y() - mGUIConnectorPtrs.first()->getStartPoint().y());
                 }
                 else
                 {
-                    this->moveBy(0, mGUIConnectorPtrs.first()->mPoints.first().y() - mGUIConnectorPtrs.first()->mPoints.last().y());
+                    this->moveBy(0, mGUIConnectorPtrs.first()->getStartPoint().y() - mGUIConnectorPtrs.first()->getEndPoint().y());
                 }
             }
         }

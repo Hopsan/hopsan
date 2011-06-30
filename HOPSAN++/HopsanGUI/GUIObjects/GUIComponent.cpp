@@ -48,7 +48,7 @@ GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF po
     //Component shall be hidden when toggle signals is deactivated, if it is of signal type and has no power ports (= is a sensor)
     if(this->getTypeCQS() == "S" && !this->hasPowerPorts())
     {
-        connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+        connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
     }
 }
 

@@ -78,8 +78,7 @@ public:
     void removeConnection(GUIConnector *pConnector);
     bool isConnected();
 
-    GUIModelObject *mpParentGuiModelObject; //!< @todo should be private or protected
-    QPointF rectPos;
+    GUIModelObject *mpParentGuiModelObject;
 
 public slots:
     void hideIfNotConnected(bool togglePortsActionTriggered);

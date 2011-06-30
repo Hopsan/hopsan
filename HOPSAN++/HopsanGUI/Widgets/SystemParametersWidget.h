@@ -66,8 +66,8 @@ protected:
 
 class SystemParameterTableWidget : public QTableWidget
 {
+    friend class SystemParametersWidget;
     Q_OBJECT
-
 public:
     SystemParameterTableWidget(int rows, int columns, QWidget *parent=0);
 
@@ -80,7 +80,7 @@ public slots:
     void setParameters();
     void changeParameter(QTableWidgetItem *item=0);
 
-//private slots:
+private slots:
     void openComponentPropertiesDialog();
     void addParameter();
     void removeSelectedParameters();

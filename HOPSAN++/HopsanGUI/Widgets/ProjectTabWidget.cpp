@@ -113,14 +113,42 @@ void ProjectTab::hasChanged()
 }
 
 
-//! Returns whether or not the current project is saved
+//! @brief Returns a pointer to the system in the tab
+GUISystem *ProjectTab::getSystem()
+{
+    return mpSystem;
+}
+
+
+//! @brief Returns a pointer to the graphics view displayed in the tab
+GraphicsView *ProjectTab::getGraphicsView()
+{
+    return mpGraphicsView;
+}
+
+
+//! @brief Returns a pointer to the quick navigation widget
+QuickNavigationWidget *ProjectTab::getQuickNavigationWidget()
+{
+    return mpQuickNavigationWidget;
+}
+
+
+//! @brief Returns last simulation time for tab
+int ProjectTab::getLastSimulationTime()
+{
+    return mLastSimulationTime;
+}
+
+
+//! @brief Returns whether or not the current project is saved
 bool ProjectTab::isSaved()
 {
     return mIsSaved;
 }
 
 
-//! Set function to tell the tab whether or not it is saved
+//! @brief Set function to tell the tab whether or not it is saved
 void ProjectTab::setSaved(bool value)
 {
     if(value)
@@ -384,21 +412,21 @@ ProjectTab *ProjectTabWidget::getTab(int index)
 //! Be sure to check that the number of tabs is not zero before calling this.
 GUISystem *ProjectTabWidget::getCurrentTopLevelSystem()
 {
-    return getCurrentTab()->mpSystem;
+    return getCurrentTab()->getSystem();
 }
 
 
 //! @brief Returns a pointer to the currently open container object in current tab
 GUIContainerObject *ProjectTabWidget::getCurrentContainer()
 {
-    return getCurrentTab()->mpGraphicsView->getContainerPtr();
+    return getCurrentTab()->getGraphicsView()->getContainerPtr();
 }
 
 
 //! @brief Returns a pointer to the currently open container object in specified tab
 GUIContainerObject *ProjectTabWidget::getContainer(int index)
 {
-    return getTab(index)->mpGraphicsView->getContainerPtr();
+    return getTab(index)->getGraphicsView()->getContainerPtr();
 }
 
 
@@ -406,7 +434,7 @@ GUIContainerObject *ProjectTabWidget::getContainer(int index)
 //! Be sure to check that the tab exist before calling this.
 GUISystem *ProjectTabWidget::getSystem(int index)
 {
-    return getTab(index)->mpSystem;
+    return getTab(index)->getSystem();
 }
 
 
@@ -430,7 +458,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     tabName.append(QString::number(mNumberOfUntitledTabs));
 
     ProjectTab *newTab = new ProjectTab(this);
-    newTab->mpSystem->setName(tabName);
+    newTab->getSystem()->setName(tabName);
 
     this->addTab(newTab, tabName);
     this->setCurrentWidget(newTab);
@@ -480,7 +508,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     }
 
 
-    if (getTab(index)->mpSystem->hasOpenPlotCurves())
+    if (getTab(index)->getSystem()->hasOpenPlotCurves())
     {
         QMessageBox msgBox;
         msgBox.setWindowIcon(gpMainWindow->windowIcon());
@@ -508,15 +536,15 @@ bool ProjectTabWidget::closeProjectTab(int index)
     //Disconnect signals
     //std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
     //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
-    disconnect(gpMainWindow->resetZoomAction,       SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(resetZoom()));
-    disconnect(gpMainWindow->zoomInAction,          SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(zoomIn()));
-    disconnect(gpMainWindow->zoomOutAction,         SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(zoomOut()));
-    disconnect(gpMainWindow->exportPDFAction,       SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(exportToPDF()));
-    disconnect(gpMainWindow->centerViewAction,      SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(centerView()));
+    disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(resetZoom()));
+    disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomIn()));
+    disconnect(gpMainWindow->mpZoomOutAction,         SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomOut()));
+    disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPDF()));
+    disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(centerView()));
 
-    disconnect(gpMainWindow->simulateAction,        SIGNAL(triggered()),    getTab(index),                  SLOT(simulate()));
-    disconnect(gpMainWindow->saveAction,            SIGNAL(triggered()),    getTab(index),                  SLOT(save()));
-    disconnect(gpMainWindow->saveAsAction,          SIGNAL(triggered()),    getTab(index),                  SLOT(saveAs()));
+    disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),    getTab(index),                      SLOT(simulate()));
+    disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
+    disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),    getTab(index),                      SLOT(saveAs()));
 
     getContainer(index)->disconnectMainWindowActions();
 
@@ -614,9 +642,9 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     {
         //! @todo check if we could load else give error message and dont attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
-        pCurrentTab->mpSystem->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-        pCurrentTab->mpSystem->setAppearanceDataBasePath(pCurrentTab->mpSystem->getModelFileInfo().absolutePath());
-        pCurrentTab->mpSystem->loadFromDomElement(systemElement);
+        pCurrentTab->getSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+        pCurrentTab->getSystem()->setAppearanceDataBasePath(pCurrentTab->getSystem()->getModelFileInfo().absolutePath());
+        pCurrentTab->getSystem()->loadFromDomElement(systemElement);
     }
     else
     {
@@ -637,42 +665,42 @@ void ProjectTabWidget::tabChanged()
     {
             //If you add a disconnect here, remember to also add it to the close tab function!
         //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
-        disconnect(gpMainWindow->resetZoomAction,       SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(resetZoom()));
-        disconnect(gpMainWindow->zoomInAction,          SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(zoomIn()));
-        disconnect(gpMainWindow->zoomOutAction,         SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(zoomOut()));
-        disconnect(gpMainWindow->exportPDFAction,       SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(exportToPDF()));
-        disconnect(gpMainWindow->centerViewAction,      SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(centerView()));
+        disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(resetZoom()));
+        disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(zoomIn()));
+        disconnect(gpMainWindow->mpZoomOutAction,         SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(zoomOut()));
+        disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(exportToPDF()));
+        disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(centerView()));
 
         getContainer(i)->disconnectMainWindowActions();
 
-        disconnect(gpMainWindow->simulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
-        disconnect(gpMainWindow->saveAction,            SIGNAL(triggered()),        getTab(i),          SLOT(save()));
-        disconnect(gpMainWindow->saveAsAction,          SIGNAL(triggered()),        getTab(i),          SLOT(saveAs()));
+        disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
+        disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),        getTab(i),          SLOT(save()));
+        disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),        getTab(i),          SLOT(saveAs()));
     }
     if(this->count() != 0)
     {
-        connect(gpMainWindow->simulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()));
-        connect(gpMainWindow->saveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()));
-        connect(gpMainWindow->saveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()));
+        connect(gpMainWindow->mpSimulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()));
+        connect(gpMainWindow->mpSaveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()));
+        connect(gpMainWindow->mpSaveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()));
 
-        connect(gpMainWindow->resetZoomAction,      SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(resetZoom()));
-        connect(gpMainWindow->zoomInAction,         SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(zoomIn()));
-        connect(gpMainWindow->zoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(zoomOut()));
-        connect(gpMainWindow->exportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(exportToPDF()));
-        connect(gpMainWindow->centerViewAction,     SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(centerView()));
+        connect(gpMainWindow->mpResetZoomAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()));
+        connect(gpMainWindow->mpZoomInAction,         SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()));
+        connect(gpMainWindow->mpZoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()));
+        connect(gpMainWindow->mpExportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()));
+        connect(gpMainWindow->mpCenterViewAction,     SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(centerView()));
 
         getCurrentContainer()->connectMainWindowActions();
 
-        getCurrentContainer()->updateUndoStatus();
+        getCurrentContainer()->updateUndoButtons();
         getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
 
-        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->mpSystem->getGfxType())
+        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->getSystem()->getGfxType())
         {
-            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->mpSystem->getGfxType());
+            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->getSystem()->getGfxType());
         }
 
-        gpMainWindow->toggleNamesAction->setChecked(!getCurrentContainer()->areNamesHidden());
-        gpMainWindow->togglePortsAction->setChecked(!getCurrentContainer()->arePortsHidden());
+        gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentContainer()->areNamesHidden());
+        gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentContainer()->arePortsHidden());
     }
 }
 

@@ -251,7 +251,7 @@ void WelcomeDialog::updateGraphics()
 void WelcomeDialog::createNewModel()
 {
     gpMainWindow->mpProjectTabs->addNewProjectTab();
-    gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
@@ -263,7 +263,7 @@ void WelcomeDialog::loadExistingModel()
     gpMainWindow->mpProjectTabs->loadModel();
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
-        gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+        gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
     }
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
@@ -279,7 +279,7 @@ void WelcomeDialog::loadLastSession()
         qDebug() << "Opening last session model: " << gConfig.getLastSessionModels().at(i);
         gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
     }
-    gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+    gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();

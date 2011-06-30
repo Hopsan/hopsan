@@ -63,8 +63,8 @@ void Configuration::saveToXml()
     appendDomValueNode(settings, "progressbar_step", mProgressBarStep);
     appendDomBooleanNode(settings, "multicore", mUseMulticore);
     appendDomValueNode(settings, "numberofthreads", mNumberOfThreads);
-    appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->toggleNamesAction->isChecked());
-    appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->togglePortsAction->isChecked());
+    appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->mpToggleNamesAction->isChecked());
+    appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 

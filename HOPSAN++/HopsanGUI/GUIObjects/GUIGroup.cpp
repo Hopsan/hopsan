@@ -358,7 +358,7 @@ void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //{
 //    QGraphicsItem::mouseDoubleClickEvent(event);
-//    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
+//    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->setScene(getContainedScenePtr());
 
 ////    gpMainWindow->mpBackButton->show();
 

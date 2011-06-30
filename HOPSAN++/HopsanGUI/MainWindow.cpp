@@ -231,7 +231,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete mpProjectTabs;
-    delete menubar;
+    delete mpMenuBar;
     delete mpStatusBar;
 }
 
@@ -268,7 +268,7 @@ void MainWindow::initializeWorkspace()
             }
             if(mpProjectTabs->count() != 0) // Failed loading last session models
             {
-                mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
+                mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
             }
         }
         else
@@ -299,13 +299,13 @@ void MainWindow::openPlotWidget()
 
             mpPlotWidgetDock->show();
             mpPlotWidgetDock->raise();
-            plotAction->setChecked(true);
+            mpPlotAction->setChecked(true);
             connect(mpPlotWidgetDock, SIGNAL(visibilityChanged(bool)), this, SLOT(updatePlotActionButton(bool)));
         }
         else
         {
             mpPlotWidgetDock->hide();
-            plotAction->setChecked(false);
+            mpPlotAction->setChecked(false);
         }
     }
 }
@@ -365,180 +365,180 @@ PyDockWidget *MainWindow::getPythonDock()
 //! @brief Defines the actions used by the toolbars
 void MainWindow::createActions()
 {
-    newAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-New.png"), tr("&New"), this);
-    newAction->setShortcut(tr("New"));
-    newAction->setToolTip(tr("Create New Project"));
-    connect(newAction, SIGNAL(triggered()), mpProjectTabs, SLOT(addNewProjectTab()));
+    mpNewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-New.png"), tr("&New"), this);
+    mpNewAction->setShortcut(tr("New"));
+    mpNewAction->setToolTip(tr("Create New Project"));
+    connect(mpNewAction, SIGNAL(triggered()), mpProjectTabs, SLOT(addNewProjectTab()));
 
-    openAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Open.png"), tr("&Open"), this);
-    openAction->setShortcut(QKeySequence("Ctrl+o"));
-    openAction->setToolTip(tr("Load Model File (Ctrl+O)"));
-    connect(openAction, SIGNAL(triggered()), mpProjectTabs, SLOT(loadModel()));
+    mpOpenAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Open.png"), tr("&Open"), this);
+    mpOpenAction->setShortcut(QKeySequence("Ctrl+o"));
+    mpOpenAction->setToolTip(tr("Load Model File (Ctrl+O)"));
+    connect(mpOpenAction, SIGNAL(triggered()), mpProjectTabs, SLOT(loadModel()));
 
-    saveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
-    saveAction->setShortcut(QKeySequence("Ctrl+s"));
-    saveAction->setToolTip(tr("Save Model File (Ctrl+S)"));
+    mpSaveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
+    mpSaveAction->setShortcut(QKeySequence("Ctrl+s"));
+    mpSaveAction->setToolTip(tr("Save Model File (Ctrl+S)"));
 
-    saveAsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Save As"), this);
-    saveAsAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
-    saveAsAction->setToolTip(tr("Save Model File As (Ctrl+Alt+S)"));
+    mpSaveAsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Save As"), this);
+    mpSaveAsAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
+    mpSaveAsAction->setToolTip(tr("Save Model File As (Ctrl+Alt+S)"));
 
-    closeAction = new QAction(this);
-    closeAction->setText("Close");
-    closeAction->setShortcut(QKeySequence("Ctrl+q"));
-    connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
+    mpCloseAction = new QAction(this);
+    mpCloseAction->setText("Close");
+    mpCloseAction->setShortcut(QKeySequence("Ctrl+q"));
+    connect(mpCloseAction,SIGNAL(triggered()),this,SLOT(close()));
 
-    undoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Undo.png"), tr("&Undo"), this);
-    undoAction->setText("Undo");
-    undoAction->setShortcut(QKeySequence(tr("Ctrl+z")));
-    undoAction->setToolTip(tr("Undo One Step (Ctrl+Z)"));
+    mpUndoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Undo.png"), tr("&Undo"), this);
+    mpUndoAction->setText("Undo");
+    mpUndoAction->setShortcut(QKeySequence(tr("Ctrl+z")));
+    mpUndoAction->setToolTip(tr("Undo One Step (Ctrl+Z)"));
 
-    redoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Redo.png"), tr("&Redo"), this);
-    redoAction->setText("Redo");
-    redoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
-    redoAction->setToolTip(tr("Redo One Step (Ctrl+Y)"));
+    mpRedoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Redo.png"), tr("&Redo"), this);
+    mpRedoAction->setText("Redo");
+    mpRedoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
+    mpRedoAction->setToolTip(tr("Redo One Step (Ctrl+Y)"));
 
-    openUndoAction = new QAction(tr("&Undo History"), this);
-    openUndoAction->setToolTip("Undo History (Ctrl+Shift+U)");
-    connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndoWidget()));
-    openUndoAction->setShortcut(QKeySequence("Ctrl+Shift+u"));
+    mpOpenUndoAction = new QAction(tr("&Undo History"), this);
+    mpOpenUndoAction->setToolTip("Undo History (Ctrl+Shift+U)");
+    connect(mpOpenUndoAction,SIGNAL(triggered()),this,SLOT(openUndoWidget()));
+    mpOpenUndoAction->setShortcut(QKeySequence("Ctrl+Shift+u"));
 
-    disableUndoAction = new QAction(tr("&Disable Undo"), this);
-    disableUndoAction->setText("Disable Undo");
-    disableUndoAction->setCheckable(true);
-    disableUndoAction->setChecked(false);
+    mpDisableUndoAction = new QAction(tr("&Disable Undo"), this);
+    mpDisableUndoAction->setText("Disable Undo");
+    mpDisableUndoAction->setCheckable(true);
+    mpDisableUndoAction->setChecked(false);
 
-    openSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&System Parameters"), this);
-    openSystemParametersAction->setToolTip("System Parameters (Ctrl+Shift+Y)");
-    openSystemParametersAction->setShortcut(tr("Ctrl+Shift+y"));
-    openSystemParametersAction->setCheckable(true);
-    connect(openSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
-    connect(openSystemParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpOpenSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&System Parameters"), this);
+    mpOpenSystemParametersAction->setToolTip("System Parameters (Ctrl+Shift+Y)");
+    mpOpenSystemParametersAction->setShortcut(tr("Ctrl+Shift+y"));
+    mpOpenSystemParametersAction->setCheckable(true);
+    connect(mpOpenSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
+    connect(mpOpenSystemParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
 
-    cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
-    cutAction->setShortcut(tr("Ctrl+x"));
-    cutAction->setToolTip(tr("Cut (Ctrl+X)"));
+    mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
+    mpCutAction->setShortcut(tr("Ctrl+x"));
+    mpCutAction->setToolTip(tr("Cut (Ctrl+X)"));
 
-    copyAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Copy.png"), tr("&Copy"), this);
-    copyAction->setShortcut(tr("Ctrl+c"));
-    copyAction->setToolTip("Copy (Ctrl+C)");
+    mpCopyAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Copy.png"), tr("&Copy"), this);
+    mpCopyAction->setShortcut(tr("Ctrl+c"));
+    mpCopyAction->setToolTip("Copy (Ctrl+C)");
 
-    pasteAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Paste.png"), tr("&Paste"), this);
-    pasteAction->setShortcut(tr("Ctrl+v"));
-    pasteAction->setToolTip(tr("Paste (Ctrl+V)"));
+    mpPasteAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Paste.png"), tr("&Paste"), this);
+    mpPasteAction->setShortcut(tr("Ctrl+v"));
+    mpPasteAction->setToolTip(tr("Paste (Ctrl+V)"));
 
-    simulateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Simulate"), this);
-    simulateAction->setToolTip(tr("Simulate Current Project (Ctrl+Shift+S)"));
-    simulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
-    connect(simulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpSimulateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Simulate"), this);
+    mpSimulateAction->setToolTip(tr("Simulate Current Project (Ctrl+Shift+S)"));
+    mpSimulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
+    connect(mpSimulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
-    plotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
-    plotAction->setCheckable(true);
-    plotAction->setShortcut(QKeySequence("Ctrl+Shift+p"));
-    connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
-    connect(plotAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpPlotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
+    mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
+    mpPlotAction->setCheckable(true);
+    mpPlotAction->setShortcut(QKeySequence("Ctrl+Shift+p"));
+    connect(mpPlotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
+    connect(mpPlotAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    loadLibsAction = new QAction(this);
-    loadLibsAction->setText("Load Libraries");
-    connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addExternalLibrary()));
+    mpLoadLibsAction = new QAction(this);
+    mpLoadLibsAction->setText("Load Libraries");
+    connect(mpLoadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addExternalLibrary()));
 
-    propertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
-    propertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");
-    propertiesAction->setShortcut(QKeySequence("Ctrl+Shift+m"));
-    connect(propertiesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpPropertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
+    mpPropertiesAction->setToolTip("Model Properties (Ctrl+Shift+M)");
+    mpPropertiesAction->setShortcut(QKeySequence("Ctrl+Shift+m"));
+    connect(mpPropertiesAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    optionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
-    optionsAction->setToolTip("Options (Ctrl+Shift+O)");
-    optionsAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
+    mpOptionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
+    mpOptionsAction->setToolTip("Options (Ctrl+Shift+O)");
+    mpOptionsAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
 
-    alignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
-    alignXAction->setText("Align Vertical");
+    mpAlignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
+    mpAlignXAction->setText("Align Vertical");
 
-    alignYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignY.png"), tr("&Align Horizontal (by last selected)"), this);
-    alignYAction->setText("Align Horizontal");
+    mpAlignYAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignY.png"), tr("&Align Horizontal (by last selected)"), this);
+    mpAlignYAction->setText("Align Horizontal");
 
-    rotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left (Ctrl+E)"), this);
-    rotateLeftAction->setText("Rotate Left (Ctrl+E)");
-    rotateLeftAction->setShortcut(QKeySequence("Ctrl+E"));
+    mpRotateLeftAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateLeft.png"), tr("&Rotate Left (Ctrl+E)"), this);
+    mpRotateLeftAction->setText("Rotate Left (Ctrl+E)");
+    mpRotateLeftAction->setShortcut(QKeySequence("Ctrl+E"));
 
-    rotateRightAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateRight.png"), tr("&Rotate Right (Ctrl+R)"), this);
-    rotateRightAction->setText("Rotate Right (Ctrl+R)");
-    rotateRightAction->setShortcut(QKeySequence("Ctrl+R"));
+    mpRotateRightAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-RotateRight.png"), tr("&Rotate Right (Ctrl+R)"), this);
+    mpRotateRightAction->setText("Rotate Right (Ctrl+R)");
+    mpRotateRightAction->setShortcut(QKeySequence("Ctrl+R"));
 
-    flipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Flip Horizontal"), this);
-    flipHorizontalAction->setText("Flip Horizontal (Ctrl+F)");
-    flipHorizontalAction->setShortcut(QKeySequence("Ctrl+F"));
+    mpFlipHorizontalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipHorizontal.png"), tr("&Flip Horizontal"), this);
+    mpFlipHorizontalAction->setText("Flip Horizontal (Ctrl+F)");
+    mpFlipHorizontalAction->setShortcut(QKeySequence("Ctrl+F"));
 
-    flipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Flip Vertical"), this);
-    flipVerticalAction->setText("Flip Vertical (Ctrl+D");
-    flipVerticalAction->setShortcut(QKeySequence("Ctrl+D"));
+    mpFlipVerticalAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-FlipVertical.png"), tr("&Flip Vertical"), this);
+    mpFlipVerticalAction->setText("Flip Vertical (Ctrl+D");
+    mpFlipVerticalAction->setShortcut(QKeySequence("Ctrl+D"));
 
-    resetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom (Ctrl+0)"), this);
-    resetZoomAction->setText("Reset Zoom (Ctrl+0)");
-    resetZoomAction->setShortcut(QKeySequence("Ctrl+0"));
+    mpResetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom (Ctrl+0)"), this);
+    mpResetZoomAction->setText("Reset Zoom (Ctrl+0)");
+    mpResetZoomAction->setShortcut(QKeySequence("Ctrl+0"));
 
-    zoomInAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomIn.png"), tr("&Zoom In (Ctrl+Plus)"), this);
-    zoomInAction->setText("Zoom In (Ctrl+Plus)");
-    zoomInAction->setShortcut(QKeySequence("Ctrl++"));
+    mpZoomInAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomIn.png"), tr("&Zoom In (Ctrl+Plus)"), this);
+    mpZoomInAction->setText("Zoom In (Ctrl+Plus)");
+    mpZoomInAction->setShortcut(QKeySequence("Ctrl++"));
 
-    zoomOutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomOut.png"), tr("&Zoom Out (Ctrl+Minus)"), this);
-    zoomOutAction->setText("Zoom Out (Ctrl+Minus)");
-    zoomOutAction->setShortcut(QKeySequence("Ctrl+-"));
+    mpZoomOutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomOut.png"), tr("&Zoom Out (Ctrl+Minus)"), this);
+    mpZoomOutAction->setText("Zoom Out (Ctrl+Minus)");
+    mpZoomOutAction->setShortcut(QKeySequence("Ctrl+-"));
 
-    centerViewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-CenterView.png"), tr("&Center View (Ctrl+Space)"), this);
-    centerViewAction->setText("Center View (Ctrl+Space)");
-    centerViewAction->setShortcut(QKeySequence("Ctrl+Space"));
+    mpCenterViewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-CenterView.png"), tr("&Center View (Ctrl+Space)"), this);
+    mpCenterViewAction->setText("Center View (Ctrl+Space)");
+    mpCenterViewAction->setShortcut(QKeySequence("Ctrl+Space"));
 
     QIcon toggleNamesIcon;
     toggleNamesIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleNames.png", QSize(), QIcon::Normal, QIcon::On);
-    toggleNamesAction = new QAction(toggleNamesIcon, tr("&Show Component Names (Ctrl+N)"), this);
-    toggleNamesAction->setText("Show Component Names (Ctrl+N)");
-    toggleNamesAction->setCheckable(true);
-    toggleNamesAction->setChecked(gConfig.getToggleNamesButtonCheckedLastSession());
-    toggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
+    mpToggleNamesAction = new QAction(toggleNamesIcon, tr("&Show Component Names (Ctrl+N)"), this);
+    mpToggleNamesAction->setText("Show Component Names (Ctrl+N)");
+    mpToggleNamesAction->setCheckable(true);
+    mpToggleNamesAction->setChecked(gConfig.getToggleNamesButtonCheckedLastSession());
+    mpToggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
 
-    exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
-    exportPDFAction->setText("Export Model to PDF");
+    mpExportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
+    mpExportPDFAction->setText("Export Model to PDF");
 
-    aboutAction = new QAction(this);
-    aboutAction->setText("About");
-    connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
+    mpAboutAction = new QAction(this);
+    mpAboutAction->setText("About");
+    connect(mpAboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
     connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
 
-    helpAction = new QAction(this);
-    helpAction->setText("User Guide");
-    connect(helpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
+    mpHelpAction = new QAction(this);
+    mpHelpAction->setText("User Guide");
+    connect(mpHelpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
 
-    newVersionsAction = new QAction(this);
-    newVersionsAction->setText("Check For New Versions");
-    connect(newVersionsAction, SIGNAL(triggered()), this, SLOT(openArchiveURL()));
+    mpNewVersionsAction = new QAction(this);
+    mpNewVersionsAction->setText("Check For New Versions");
+    connect(mpNewVersionsAction, SIGNAL(triggered()), this, SLOT(openArchiveURL()));
 
     QIcon togglePortsIcon;
     togglePortsIcon.addFile(QString(ICONPATH) + "Hopsan-TogglePorts.png", QSize(), QIcon::Normal, QIcon::On);
-    togglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
-    togglePortsAction->setText("Show Unconnected Ports (Ctrl+T)");
-    togglePortsAction->setCheckable(true);
-    togglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
-    togglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
+    mpTogglePortsAction = new QAction(togglePortsIcon, tr("&Show Unconnected Ports (Ctrl+T)"), this);
+    mpTogglePortsAction->setText("Show Unconnected Ports (Ctrl+T)");
+    mpTogglePortsAction->setCheckable(true);
+    mpTogglePortsAction->setChecked(gConfig.getTogglePortsButtonCheckedLastSession());
+    mpTogglePortsAction->setShortcut(QKeySequence("Ctrl+t"));
 
     QIcon toggleSignalsIcon;
     toggleSignalsIcon.addFile(QString(ICONPATH) + "Hopsan-ToggleSignal.png", QSize(), QIcon::Normal, QIcon::On);
-    toggleSignalsAction = new QAction(toggleSignalsIcon, tr("&Show Signal Components"), this);
-    toggleSignalsAction->setText("Show Signal Components");
-    toggleSignalsAction->setCheckable(true);
-    toggleSignalsAction->setChecked(true);      //! @todo Shall depend on gConfig setting
+    mpToggleSignalsAction = new QAction(toggleSignalsIcon, tr("&Show Signal Components"), this);
+    mpToggleSignalsAction->setText("Show Signal Components");
+    mpToggleSignalsAction->setCheckable(true);
+    mpToggleSignalsAction->setChecked(true);      //! @todo Shall depend on gConfig setting
 
-    saveToWrappedCodeAction = new QAction(this);
-    saveToWrappedCodeAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+W"));
-    this->addAction(saveToWrappedCodeAction);
-    connect(saveToWrappedCodeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
+    mpSaveToWrappedCodeAction = new QAction(this);
+    mpSaveToWrappedCodeAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+W"));
+    this->addAction(mpSaveToWrappedCodeAction);
+    connect(mpSaveToWrappedCodeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
 
-    createSimulinkWrapperAction = new QAction(this);
-    createSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));
-    this->addAction(createSimulinkWrapperAction);
-    connect(createSimulinkWrapperAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
+    mpCreateSimulinkWrapperAction = new QAction(this);
+    mpCreateSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));
+    this->addAction(mpCreateSimulinkWrapperAction);
+    connect(mpCreateSimulinkWrapperAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);
@@ -565,99 +565,95 @@ void MainWindow::createActions()
 void MainWindow::createMenus()
 {
     //Create the menubar
-    menubar = new QMenuBar();
-    menubar->setGeometry(QRect(0,0,800,25));
-    menubar->setObjectName("menubar");
+    mpMenuBar = new QMenuBar();
+    mpMenuBar->setGeometry(QRect(0,0,800,25));
 
     //Create the menues
-    menuFile = new QMenu(menubar);
-    menuFile->setObjectName("menuFile");
-    menuFile->setTitle("&File");
+    mpFileMenu = new QMenu(mpMenuBar);
+    mpFileMenu->setTitle("&File");
 
-    recentMenu = new QMenu(this);
-    recentMenu->setTitle("Recent Models");
+    mpRecentMenu = new QMenu(this);
+    mpRecentMenu->setTitle("&Recent Models");
 
-    menuNew = new QMenu(menubar);
-    menuNew->setObjectName("menuNew");
-    menuNew->setTitle("New");
+    mpNewMenu = new QMenu(mpMenuBar);
+    mpNewMenu->setTitle("&New");
 
-    menuSimulation = new QMenu(menubar);
-    menuSimulation->setObjectName("menuSimulation");
-    menuSimulation->setTitle("&Simulation");
+    mpSimulationMenu = new QMenu(mpMenuBar);
+    mpSimulationMenu->setTitle("&Simulation");
 
-    menuEdit = new QMenu(menubar);
-    menuEdit->setTitle("&Edit");
+    mpEditMenu = new QMenu(mpMenuBar);
+    mpEditMenu->setTitle("&Edit");
 
-    menuView = new QMenu(menubar);
-    menuView->setTitle("&View");
+    mpViewMenu = new QMenu(mpMenuBar);
+    mpViewMenu->setTitle("&View");
 
-    menuTools = new QMenu(menubar);
-    menuTools->setTitle("&Tools");
+    mpToolsMenu = new QMenu(mpMenuBar);
+    mpToolsMenu->setTitle("&Tools");
 
-    menuHelp = new QMenu(menubar);
-    menuHelp->setTitle("&Help");
+    mpHelpMenu = new QMenu(mpMenuBar);
+    mpHelpMenu->setTitle("&Help");
 
-    this->setMenuBar(menubar);
+    this->setMenuBar(mpMenuBar);
 
     //Add the actionbuttons to the menues
-    newAction->setText("Project");
-    menuNew->addAction(newAction);
+    mpNewAction->setText("Project");
+    mpNewMenu->addAction(mpNewAction);
 
-    menuFile->addAction(menuNew->menuAction());
-    menuFile->addAction(openAction);
-    menuFile->addAction(saveAction);
-    menuFile->addAction(saveAsAction);
-    menuFile->addMenu(recentMenu);
-    menuFile->addSeparator();
-    menuFile->addMenu(menuExport);
-    menuFile->addSeparator();
-    menuFile->addAction(loadLibsAction);
-    menuFile->addSeparator();
-    menuFile->addAction(propertiesAction);
-    menuFile->addAction(openSystemParametersAction);
-    menuFile->addSeparator();
-    menuFile->addAction(closeAction);
+    mpFileMenu->addAction(mpNewMenu->menuAction());
+    mpFileMenu->addAction(mpOpenAction);
+    mpFileMenu->addAction(mpSaveAction);
+    mpFileMenu->addAction(mpSaveAsAction);
+    mpFileMenu->addMenu(mpRecentMenu);
+    mpFileMenu->addSeparator();
+    mpFileMenu->addMenu(mpExportMenu);
+    mpFileMenu->addSeparator();
+    mpFileMenu->addAction(mpLoadLibsAction);
+    mpFileMenu->addSeparator();
+    mpFileMenu->addAction(mpPropertiesAction);
+    mpFileMenu->addAction(mpOpenSystemParametersAction);
+    mpFileMenu->addSeparator();
+    mpFileMenu->addAction(mpCloseAction);
 
     this->updateRecentList();
 
-    menuSimulation->addAction(simulateAction);
+    mpSimulationMenu->addAction(mpSimulateAction);
 
-    menuEdit->addAction(undoAction);
-    menuEdit->addAction(redoAction);
-    menuEdit->addAction(openUndoAction);
-    menuEdit->addAction(disableUndoAction);
-    menuEdit->addSeparator();
-    menuEdit->addAction(copyAction);
-    menuEdit->addAction(cutAction);
-    menuEdit->addAction(pasteAction);
+    mpEditMenu->addAction(mpUndoAction);
+    mpEditMenu->addAction(mpRedoAction);
+    mpEditMenu->addAction(mpOpenUndoAction);
+    mpEditMenu->addAction(mpDisableUndoAction);
+    mpEditMenu->addSeparator();
+    mpEditMenu->addAction(mpCopyAction);
+    mpEditMenu->addAction(mpCutAction);
+    mpEditMenu->addAction(mpPasteAction);
 
     //The View menu shall be alphabetically sorted!
-    menuView->addAction(toggleNamesAction);
-    menuView->addAction(togglePortsAction);
-    menuView->addAction(toggleSignalsAction);
-    menuView->addSeparator();
-    menuView->addAction(mpLibDock->toggleViewAction());
-    menuView->addAction(mpEditToolBar->toggleViewAction());
-    menuView->addAction(mpFileToolBar->toggleViewAction());
-    menuView->addAction(mpMessageDock->toggleViewAction());
-    menuView->addAction(mpPyDockWidget->toggleViewAction());
-    menuView->addAction(mpSimToolBar->toggleViewAction());
+    mpViewMenu->addAction(mpToggleNamesAction);
+    mpViewMenu->addAction(mpTogglePortsAction);
+    mpViewMenu->addAction(mpToggleSignalsAction);
+    mpViewMenu->addSeparator();
+    mpViewMenu->addAction(mpLibDock->toggleViewAction());
+    mpViewMenu->addAction(mpEditToolBar->toggleViewAction());
+    mpViewMenu->addAction(mpFileToolBar->toggleViewAction());
+    mpViewMenu->addAction(mpMessageDock->toggleViewAction());
+    mpViewMenu->addAction(mpPyDockWidget->toggleViewAction());
+    mpViewMenu->addAction(mpSimToolBar->toggleViewAction());
 
-    menuTools->addAction(optionsAction);
-    menuTools->addAction(openSystemParametersAction);
+    mpToolsMenu->addAction(mpOptionsAction);
+    mpToolsMenu->addAction(mpOpenSystemParametersAction);
 
-    menuSimulation->addAction(plotAction);
+    mpSimulationMenu->addAction(mpPlotAction);
 
-    menuHelp->addAction(helpAction);
-    menuHelp->addAction(newVersionsAction);
-    menuHelp->addAction(aboutAction);
+    mpHelpMenu->addAction(mpHelpAction);
+    mpHelpMenu->addAction(mpNewVersionsAction);
+    mpHelpMenu->addAction(mpAboutAction);
 
-    menubar->addAction(menuFile->menuAction());
-    menubar->addAction(menuEdit->menuAction());
-    menubar->addAction(menuTools->menuAction());
-    menubar->addAction(menuSimulation->menuAction());
-    menubar->addAction(menuView->menuAction());
-    menubar->addAction(menuHelp->menuAction());
+    mpMenuBar->addAction(mpFileMenu->menuAction());
+    mpMenuBar->addAction(mpEditMenu->menuAction());
+    mpMenuBar->addAction(mpToolsMenu->menuAction());
+    mpMenuBar->addAction(mpSimulationMenu->menuAction());
+    mpMenuBar->addAction(mpViewMenu->menuAction());
+    mpMenuBar->addAction(mpHelpMenu->menuAction());
 }
 
 //! @brief Creates the toolbars
@@ -666,19 +662,19 @@ void MainWindow::createToolbars()
     //File toolbar, contains all file handling stuff (open, save etc)
     mpFileToolBar = addToolBar(tr("File Toolbar"));
     mpFileToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
-    mpFileToolBar->addAction(newAction);
-    mpFileToolBar->addAction(openAction);
-    mpFileToolBar->addAction(saveAction);
-    mpFileToolBar->addAction(saveAsAction);
-    mpFileToolBar->addAction(exportPDFAction);
+    mpFileToolBar->addAction(mpNewAction);
+    mpFileToolBar->addAction(mpOpenAction);
+    mpFileToolBar->addAction(mpSaveAction);
+    mpFileToolBar->addAction(mpSaveAsAction);
+    mpFileToolBar->addAction(mpExportPDFAction);
     //! @note Action and menu shouldn't be here, but it doesn't work otherwise because the menus are created after the toolbars
-    exportToSimulinkAction = new QAction(tr("Export to Simulink S-function Source Files"), this);
-    menuExport = new QMenu("Export Model");
-    menuExport->addAction(exportToSimulinkAction);
+    mpExportToSimulinkAction = new QAction(tr("Export to Simulink S-function Source Files"), this);
+    mpExportMenu = new QMenu("Export Model");
+    mpExportMenu->addAction(mpExportToSimulinkAction);
     mpExportButton = new QToolButton(mpFileToolBar);
     mpExportButton->setToolTip("Export");
     mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Export.png"));
-    mpExportButton->setMenu(menuExport);
+    mpExportButton->setMenu(mpExportMenu);
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
     mpFileToolBar->addWidget(mpExportButton);
 
@@ -691,10 +687,10 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeStepLineEdit);
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpFinishTimeLineEdit);
-    mpSimToolBar->addAction(simulateAction);
-    mpSimToolBar->addAction(plotAction);
-    mpSimToolBar->addAction(propertiesAction);
-    mpSimToolBar->addAction(openSystemParametersAction);
+    mpSimToolBar->addAction(mpSimulateAction);
+    mpSimToolBar->addAction(mpPlotAction);
+    mpSimToolBar->addAction(mpPropertiesAction);
+    mpSimToolBar->addAction(mpOpenSystemParametersAction);
 
     //addToolBarBreak(Qt::TopToolBarArea);
 
@@ -702,36 +698,36 @@ void MainWindow::createToolbars()
     mpEditToolBar = new QToolBar(tr("Edit Toolbar"));
     addToolBar(Qt::LeftToolBarArea, mpEditToolBar);
     mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
-    mpEditToolBar->addAction(cutAction);
-    mpEditToolBar->addAction(copyAction);
-    mpEditToolBar->addAction(pasteAction);
-    mpEditToolBar->addAction(undoAction);
-    mpEditToolBar->addAction(redoAction);
-    mpEditToolBar->addAction(optionsAction);
+    mpEditToolBar->addAction(mpCutAction);
+    mpEditToolBar->addAction(mpCopyAction);
+    mpEditToolBar->addAction(mpPasteAction);
+    mpEditToolBar->addAction(mpUndoAction);
+    mpEditToolBar->addAction(mpRedoAction);
+    mpEditToolBar->addAction(mpOptionsAction);
 
     //View toolbar, contains all cosmetic and zooming tools
     mpViewToolBar = new QToolBar(tr("View Toolbar"));
     addToolBar(Qt::LeftToolBarArea, mpViewToolBar);
     mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
-    mpViewToolBar->addAction(centerViewAction);
-    mpViewToolBar->addAction(resetZoomAction);
-    mpViewToolBar->addAction(zoomInAction);
-    mpViewToolBar->addAction(zoomOutAction);
-    mpViewToolBar->addAction(toggleNamesAction);
-    mpViewToolBar->addAction(togglePortsAction);
-    mpViewToolBar->addAction(toggleSignalsAction);
+    mpViewToolBar->addAction(mpCenterViewAction);
+    mpViewToolBar->addAction(mpResetZoomAction);
+    mpViewToolBar->addAction(mpZoomInAction);
+    mpViewToolBar->addAction(mpZoomOutAction);
+    mpViewToolBar->addAction(mpToggleNamesAction);
+    mpViewToolBar->addAction(mpTogglePortsAction);
+    mpViewToolBar->addAction(mpToggleSignalsAction);
 
     //Tools toolbar, contains all tools used to modify the model
     mpToolsToolBar = new QToolBar(tr("Tools Toolbar"));
     addToolBar(Qt::LeftToolBarArea, mpToolsToolBar);
-    mpToolsToolBar->addAction(alignXAction);
-    mpToolsToolBar->addAction(alignYAction);
-    mpToolsToolBar->addAction(rotateRightAction);
-    mpToolsToolBar->addAction(rotateLeftAction);
-    mpToolsToolBar->addAction(flipHorizontalAction);
-    mpToolsToolBar->addAction(flipVerticalAction);
+    mpToolsToolBar->addAction(mpAlignXAction);
+    mpToolsToolBar->addAction(mpAlignYAction);
+    mpToolsToolBar->addAction(mpRotateRightAction);
+    mpToolsToolBar->addAction(mpRotateLeftAction);
+    mpToolsToolBar->addAction(mpFlipHorizontalAction);
+    mpToolsToolBar->addAction(mpFlipVerticalAction);
 
-    connect(exportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
+    connect(mpExportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 }
 
 
@@ -786,14 +782,14 @@ void MainWindow::openArchiveURL()
 //! @brief Changes the checked setting of plot widget button when plot widget is opened or closed
 void MainWindow::updatePlotActionButton(bool)
 {
-    plotAction->setChecked(mpPlotWidgetDock->isVisible() || !tabifiedDockWidgets(mpPlotWidgetDock).isEmpty());
+    mpPlotAction->setChecked(mpPlotWidgetDock->isVisible() || !tabifiedDockWidgets(mpPlotWidgetDock).isEmpty());
 }
 
 
 //! @brief Changes the checked setting of system parameters button when the system parameter widget is opened or closed
 void MainWindow::updateSystemParametersActionButton(bool)
 {
-    openSystemParametersAction->setChecked(mpSystemParametersDock->isVisible() || !tabifiedDockWidgets(mpSystemParametersDock).isEmpty());
+    mpOpenSystemParametersAction->setChecked(mpSystemParametersDock->isVisible() || !tabifiedDockWidgets(mpSystemParametersDock).isEmpty());
 }
 
 
@@ -801,19 +797,19 @@ void MainWindow::showToolBarHelpPopup()
 {
     QCursor cursor;
     QAction *pHoveredAction = mpSimToolBar->actionAt(mpSimToolBar->mapFromGlobal(cursor.pos()));
-    if(pHoveredAction == simulateAction)
+    if(pHoveredAction == mpSimulateAction)
     {
         showHelpPopupMessage("Starts a new simlation of current model.");
     }
-    else if(pHoveredAction == plotAction)
+    else if(pHoveredAction == mpPlotAction)
     {
         showHelpPopupMessage("Opens the list with all available plot variables from current model.");
     }
-    else if(pHoveredAction == openSystemParametersAction)
+    else if(pHoveredAction == mpOpenSystemParametersAction)
     {
         showHelpPopupMessage("Opens the list of system parameters.");
     }
-    else if(pHoveredAction == propertiesAction)
+    else if(pHoveredAction == mpPropertiesAction)
     {
         showHelpPopupMessage("Opens a dialog with settings for the current model.");
     }
@@ -825,37 +821,37 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
     {
-        togglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->mpSystem->arePortsHidden());
+        mpTogglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->getSystem()->arePortsHidden());
     }
 
     bool noTabs = !(mpProjectTabs->count() > 0);
-    saveAction->setEnabled(!noTabs);
-    saveAsAction->setEnabled(!noTabs);
-    cutAction->setEnabled(!noTabs);
-    copyAction->setEnabled(!noTabs);
-    pasteAction->setEnabled(!noTabs);
-    undoAction->setEnabled(!noTabs);
-    redoAction->setEnabled(!noTabs);
-    centerViewAction->setEnabled(!noTabs);
-    resetZoomAction->setEnabled(!noTabs);
-    zoomInAction->setEnabled(!noTabs);
-    zoomOutAction->setEnabled(!noTabs);
-    toggleNamesAction->setEnabled(!noTabs);
-    togglePortsAction->setEnabled(!noTabs);
-    exportPDFAction->setEnabled(!noTabs);
-    alignXAction->setEnabled(!noTabs);
-    alignYAction->setEnabled(!noTabs);
-    rotateLeftAction->setEnabled(!noTabs);
-    rotateRightAction->setEnabled(!noTabs);
-    flipHorizontalAction->setEnabled(!noTabs);
-    flipVerticalAction->setEnabled(!noTabs);
+    mpSaveAction->setEnabled(!noTabs);
+    mpSaveAsAction->setEnabled(!noTabs);
+    mpCutAction->setEnabled(!noTabs);
+    mpCopyAction->setEnabled(!noTabs);
+    mpPasteAction->setEnabled(!noTabs);
+    mpUndoAction->setEnabled(!noTabs);
+    mpRedoAction->setEnabled(!noTabs);
+    mpCenterViewAction->setEnabled(!noTabs);
+    mpResetZoomAction->setEnabled(!noTabs);
+    mpZoomInAction->setEnabled(!noTabs);
+    mpZoomOutAction->setEnabled(!noTabs);
+    mpToggleNamesAction->setEnabled(!noTabs);
+    mpTogglePortsAction->setEnabled(!noTabs);
+    mpExportPDFAction->setEnabled(!noTabs);
+    mpAlignXAction->setEnabled(!noTabs);
+    mpAlignYAction->setEnabled(!noTabs);
+    mpRotateLeftAction->setEnabled(!noTabs);
+    mpRotateRightAction->setEnabled(!noTabs);
+    mpFlipHorizontalAction->setEnabled(!noTabs);
+    mpFlipVerticalAction->setEnabled(!noTabs);
     mpStartTimeLineEdit->setEnabled(!noTabs);
     mpTimeStepLineEdit->setEnabled(!noTabs);
     mpFinishTimeLineEdit->setEnabled(!noTabs);
-    simulateAction->setEnabled(!noTabs);
-    plotAction->setEnabled(!noTabs);
-    propertiesAction->setEnabled(!noTabs);
-    openSystemParametersAction->setEnabled(!noTabs);
+    mpSimulateAction->setEnabled(!noTabs);
+    mpPlotAction->setEnabled(!noTabs);
+    mpPropertiesAction->setEnabled(!noTabs);
+    mpOpenSystemParametersAction->setEnabled(!noTabs);
 }
 
 
@@ -880,9 +876,9 @@ void MainWindow::registerRecentModel(QFileInfo model)
 //! @brief Updates the "Recent Models" list
 void MainWindow::updateRecentList()
 {
-    recentMenu->clear();
+    mpRecentMenu->clear();
 
-    recentMenu->setEnabled(!gConfig.getRecentModels().empty());
+    mpRecentMenu->setEnabled(!gConfig.getRecentModels().empty());
     if(!gConfig.getRecentModels().empty())
     {
         for(int i=0; i<gConfig.getRecentModels().size(); ++i)
@@ -890,8 +886,8 @@ void MainWindow::updateRecentList()
             if(gConfig.getRecentModels().at(i) != "")
             {
                 QAction *tempAction;
-                tempAction = recentMenu->addAction(gConfig.getRecentModels().at(i));
-                disconnect(recentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
+                tempAction = mpRecentMenu->addAction(gConfig.getRecentModels().at(i));
+                disconnect(mpRecentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
                 connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));
             }
         }
@@ -904,6 +900,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     hideHelpPopupMessage();
 
     QMainWindow::mouseMoveEvent(event);
+}
+
+
+OptionsDialog *MainWindow::getOptionsDialog()
+{
+    return mpOptionsDialog;
 }
 
 //! @brief Sets a new startvalue.
@@ -966,6 +968,24 @@ double MainWindow::getFinishTimeFromToolBar()
 }
 
 
+QLineEdit *MainWindow::getStartTimeLineEdit()
+{
+    return mpStartTimeLineEdit;
+}
+
+
+QLineEdit *MainWindow::getTimeStepLineEdit()
+{
+    return mpTimeStepLineEdit;
+}
+
+
+QLineEdit *MainWindow::getFinishTimeLineEdit()
+{
+    return mpFinishTimeLineEdit;
+}
+
+
 //! @brief Make sure the values make sens.
 //! @see fixTimeStep()
 void MainWindow::fixSimulationParameterValues()
@@ -996,6 +1016,6 @@ void MainWindow::fixTimeStep()
 
     if (mpProjectTabs->count() > 0)
     {
-        mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->setDesiredTimeStep(getTimeStepFromToolBar());
+        mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->setDesiredTimeStep(getTimeStepFromToolBar());
     }
 }

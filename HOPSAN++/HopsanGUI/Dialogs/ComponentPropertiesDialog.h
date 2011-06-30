@@ -53,18 +53,18 @@ private:
     void createEditStuff();
     bool interpretedAsStartValue(QString &parameterDescription);
 
-    QLabel *label;
-    QLineEdit *lineEdit;
+    QLabel *mpLabel;
+    QLineEdit *mpLineEdit;
 
     QLineEdit *mpNameEdit;
 
     QVector<ParameterLayout *> mvParameterLayout;
     QVector<ParameterLayout *> mvStartValueLayout;
 
-    QDialogButtonBox *buttonBox;
-    QPushButton *okButton;
-    QPushButton *cancelButton;
-    QWidget *extension;
+    QDialogButtonBox *mpButtonBox;
+    QPushButton *mpOkButton;
+    QPushButton *mpCancelButton;
+    QWidget *mpExtension;
 };
 
 

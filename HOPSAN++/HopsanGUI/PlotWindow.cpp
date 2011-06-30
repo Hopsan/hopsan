@@ -252,7 +252,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),           SIGNAL(simulationFinished()),                                   this,               SLOT(updateLists()),    Qt::UniqueConnection);
     connect(mpPortList,                                             SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
     connect(mpVariableList,                                         SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
-    connect(gpMainWindow->mpOptionsDialog,                          SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
+    connect(gpMainWindow->getOptionsDialog(),                       SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
 
 
         //Hide lists and curve areas by default if screen size is small
@@ -1869,7 +1869,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     {
         for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
         {
-            if(gpMainWindow->mpProjectTabs->getTab(i)->mpSystem->getModelFileInfo().filePath() == modelPath)
+            if(gpMainWindow->mpProjectTabs->getTab(i)->getSystem()->getModelFileInfo().filePath() == modelPath)
             {
                 mpContainerObject = gpMainWindow->mpProjectTabs->getContainer(i);
                 break;

@@ -66,17 +66,16 @@ public:
     void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getNumberOfLines();
     connectorGeometry getGeometry(int lineNumber);
-    QVector<QPointF> getPointsVector();
     GUIPort *getStartPort();
     GUIPort *getEndPort();
+    QPointF getStartPoint();
+    QPointF getEndPoint();
     QString getStartPortName();
     QString getEndPortName();
     QString getStartComponentName();
     QString getEndComponentName();
     GUIConnectorLine *getLine(int line);
     GUIConnectorLine *getLastLine();
-    GUIConnectorLine *getSecondLastLine();
-    GUIConnectorLine *getThirdLastLine();
     bool isFirstOrLastDiagonal();
     bool isFirstAndLastDiagonal();
     void determineAppearance();
@@ -86,8 +85,6 @@ public:
     bool isActive();
 
     void saveToDomElement(QDomElement &rDomElement);
-
-    QVector<QPointF> mPoints;
 
 public slots:
     void setIsoStyle(graphicsType gfxType);
@@ -129,23 +126,22 @@ private:
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
     GUIConnectorLine *mpTempLine;
+
     QVector<GUIConnectorLine*> mpLines;
-
     QVector<connectorGeometry> mGeometries;
-
+    QVector<QPointF> mPoints;
 };
 
 
 class GUIConnectorLine : public QObject, public QGraphicsLineItem
 {
+    friend class GUIConnector;
     Q_OBJECT
 public:
     GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUIConnectorAppearance *pConnApp, int lineNumber, GUIConnector *parent = 0);
     ~GUIConnectorLine();
 
     GUIConnector *mpParentGUIConnector;
-    QPointF startPos;
-    QPointF endPos;
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
     void addEndArrow();
     void addStartArrow();
@@ -155,7 +151,6 @@ public:
     void setGeometry(connectorGeometry geometry);
     void setLine(QPointF pos1, QPointF pos2);
     int getLineNumber();
-    QPointF mOldPos;
     void setPen(const QPen &pen);
 
 public slots:
@@ -189,6 +184,10 @@ private:
     QGraphicsLineItem *mArrowLine2;
     qreal mArrowSize;
     qreal mArrowAngle;
+
+    QPointF mStartPos;
+    QPointF mEndPos;
+    QPointF mOldPos;
 };
 
 #endif // GUICONNECTOR_H

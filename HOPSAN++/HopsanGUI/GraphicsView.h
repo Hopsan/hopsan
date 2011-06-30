@@ -48,14 +48,10 @@ public:
     bool isCtrlKeyPressed();
     bool isLeftMouseButtonPressed();
     void setIgnoreNextContextMenuEvent();
+    void setZoomFactor(double zoomFactor);
+    double getZoomFactor();
 
     ProjectTab *mpParentProjectTab;
-
-    QAction *systemPortAction;
-    QMenu *menuInsert;
-    qreal mZoomFactor;
-
-
 
 signals:
     void keyPressDelete();
@@ -95,6 +91,7 @@ private:
     bool mCtrlKeyPressed;
     bool mLeftMouseButtonPressed;
     bool mIgnoreNextContextMenuEvent;
+    double mZoomFactor;
 
     GUIContainerObject *mpContainerObject;
 };

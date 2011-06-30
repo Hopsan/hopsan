@@ -152,7 +152,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 
     if(mpGUIConnectorAppearance->getStyle() == SIGNALCONNECTOR)
     {
-        connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+        connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
     }
 }
 
@@ -391,7 +391,7 @@ void GUIConnector::finishCreation()
             mPoints[mPoints.size()-3].setY(mPoints[mPoints.size()-2].y());
         }
         this->drawConnector();
-        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
     }
 
         //Make sure the end point of the connector is the center position of the end port
@@ -467,7 +467,7 @@ void GUIConnector::finishCreation()
 
     if(mpGUIConnectorAppearance->getStyle() == SIGNALCONNECTOR)
     {
-        connect(gpMainWindow->toggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+        connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
     }
 }
 
@@ -500,13 +500,6 @@ connectorGeometry GUIConnector::getGeometry(int lineNumber)
 }
 
 
-//! @brief Returns the point vector used by the connector
-QVector<QPointF> GUIConnector::getPointsVector()
-{
-    return mPoints;
-}
-
-
 //! @brief Returns a pointer to the start port of a connector
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
@@ -526,6 +519,19 @@ GUIPort *GUIConnector::getEndPort()
     return mpEndPort;
 }
 
+
+//! @brief Returns the start point of the connector
+QPointF GUIConnector::getStartPoint()
+{
+    return mPoints.first();
+}
+
+
+//! @brief Returns the end point of the connector
+QPointF GUIConnector::getEndPoint()
+{
+    return mPoints.last();
+}
 
 //! @brief Returns the name of the start port of a connector
 //! @see getEndPortName()
@@ -577,26 +583,6 @@ GUIConnectorLine *GUIConnector::getLine(int line)
 GUIConnectorLine *GUIConnector::getLastLine()
 {
     return mpLines[mpLines.size()-1];
-}
-
-
-//! @brief Returns the second last line of the connector
-//! @see getThirdLastLine()
-//! @see getLastLine()
-//! @see getLine(int line)
-GUIConnectorLine *GUIConnector::getSecondLastLine()
-{
-    return mpLines[mpLines.size()-2];
-}
-
-
-//! @brief Returns the third last line of the connector
-//! @see getSecondLastLine()
-//! @see getLastLine()
-//! @see getLine(int line)
-GUIConnectorLine *GUIConnector::getThirdLastLine()
-{
-    return mpLines[mpLines.size()-3];
 }
 
 
@@ -709,7 +695,7 @@ void GUIConnector::drawConnector(bool alignOperation)
         mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
     }
 
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
 }
 
 
@@ -795,7 +781,7 @@ void GUIConnector::makeDiagonal(bool enable)
         mMakingDiagonal = true;
         removePoint();
         mGeometries.back() = DIAGONAL;
-        mPoints.back() = mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
+        mPoints.back() = mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
     else
@@ -826,11 +812,11 @@ void GUIConnector::makeDiagonal(bool enable)
                 }
 
             }
-            addPoint(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos())));
         }
         else    //Only one (diagonal) line exist, so special solution is required
         {
-            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos())));
             if(getStartPort()->getPortDirection() == LEFTRIGHT)
             {
                 mGeometries[0] = VERTICAL;
@@ -865,7 +851,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             mpParentContainerObject->rememberSelectedSubConnector(this);
             connect(mpParentContainerObject, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             disconnect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
@@ -895,7 +881,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
                 mpParentContainerObject->forgetSelectedSubConnector(this);
                 disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
                 connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-                disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+                disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             }
         }
     }
@@ -1132,8 +1118,8 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUICo
     mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
     mParentConnectorEndPortConnected = false;
-    this->startPos = QPointF(x1,y1);
-    this->endPos = QPointF(x2,y2);
+    this->mStartPos = QPointF(x1,y1);
+    this->mEndPos = QPointF(x2,y2);
     mHasStartArrow = false;
     mHasEndArrow = false;
     mArrowSize = 8.0;
@@ -1348,8 +1334,8 @@ void GUIConnectorLine::setConnected()
 //! @param y2 Y-coordinate of the end position.
 void GUIConnectorLine::setLine(QPointF pos1, QPointF pos2)
 {
-    this->startPos = this->mapFromParent(pos1);
-    this->endPos = this->mapFromParent(pos2);
+    this->mStartPos = this->mapFromParent(pos1);
+    this->mEndPos = this->mapFromParent(pos2);
     if(mHasEndArrow)
     {
         delete(mArrowLine1);
@@ -1371,15 +1357,15 @@ void GUIConnectorLine::setLine(QPointF pos1, QPointF pos2)
 //! @see addStartArrow()
 void GUIConnectorLine::addEndArrow()
 {
-    qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
-    mArrowLine1 = new QGraphicsLineItem(this->endPos.x(),
-                                        this->endPos.y(),
-                                        this->endPos.x()-mArrowSize*cos(angle+mArrowAngle),
-                                        this->endPos.y()-mArrowSize*sin(angle+mArrowAngle), this);
-    mArrowLine2 = new QGraphicsLineItem(this->endPos.x(),
-                                        this->endPos.y(),
-                                        this->endPos.x()-mArrowSize*cos(angle-mArrowAngle),
-                                        this->endPos.y()-mArrowSize*sin(angle-mArrowAngle), this);
+    qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
+    mArrowLine1 = new QGraphicsLineItem(this->mEndPos.x(),
+                                        this->mEndPos.y(),
+                                        this->mEndPos.x()-mArrowSize*cos(angle+mArrowAngle),
+                                        this->mEndPos.y()-mArrowSize*sin(angle+mArrowAngle), this);
+    mArrowLine2 = new QGraphicsLineItem(this->mEndPos.x(),
+                                        this->mEndPos.y(),
+                                        this->mEndPos.x()-mArrowSize*cos(angle-mArrowAngle),
+                                        this->mEndPos.y()-mArrowSize*sin(angle-mArrowAngle), this);
     this->setPen(this->pen());
     mHasEndArrow = true;
 }
@@ -1389,15 +1375,15 @@ void GUIConnectorLine::addEndArrow()
 //! @see addEndArrow()
 void GUIConnectorLine::addStartArrow()
 {
-    qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
-    mArrowLine1 = new QGraphicsLineItem(this->startPos.x(),
-                                        this->startPos.y(),
-                                        this->startPos.x()+mArrowSize*cos(angle+mArrowAngle),
-                                        this->startPos.y()+mArrowSize*sin(angle+mArrowAngle), this);
-    mArrowLine2 = new QGraphicsLineItem(this->startPos.x(),
-                                        this->startPos.y(),
-                                        this->startPos.x()+mArrowSize*cos(angle-mArrowAngle),
-                                        this->startPos.y()+mArrowSize*sin(angle-mArrowAngle), this);
+    qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
+    mArrowLine1 = new QGraphicsLineItem(this->mStartPos.x(),
+                                        this->mStartPos.y(),
+                                        this->mStartPos.x()+mArrowSize*cos(angle+mArrowAngle),
+                                        this->mStartPos.y()+mArrowSize*sin(angle+mArrowAngle), this);
+    mArrowLine2 = new QGraphicsLineItem(this->mStartPos.x(),
+                                        this->mStartPos.y(),
+                                        this->mStartPos.x()+mArrowSize*cos(angle-mArrowAngle),
+                                        this->mStartPos.y()+mArrowSize*sin(angle-mArrowAngle), this);
     this->setPen(this->pen());
     mHasStartArrow = true;
 }

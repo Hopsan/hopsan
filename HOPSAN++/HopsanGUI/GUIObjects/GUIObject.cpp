@@ -196,13 +196,13 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             connect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
             connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
             connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
             disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
             connect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             emit objectSelected();
@@ -214,13 +214,13 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
             disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
             disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
             connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
             disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             mpSelectionBox->setPassive();
@@ -232,7 +232,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
     // Move component only horizontal, vertical or snap to original position if Ctrl is pressed
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isCtrlKeyPressed() && mpParentContainerObject->mpParentProjectTab->mpGraphicsView->isLeftMouseButtonPressed())
+        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isCtrlKeyPressed() && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isLeftMouseButtonPressed())
         {
             QPointF diff = this->pos()-mOldPos;
             if( diff.manhattanLength() < SNAPDISTANCE)
@@ -318,7 +318,7 @@ void GUIObject::moveUp()
 {
     //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
+    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
 }
 
 
@@ -329,7 +329,7 @@ void GUIObject::moveUp()
 void GUIObject::moveDown()
 {
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
 }
 
 
@@ -340,7 +340,7 @@ void GUIObject::moveDown()
 void GUIObject::moveLeft()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
 }
 
 
@@ -351,7 +351,7 @@ void GUIObject::moveLeft()
 void GUIObject::moveRight()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
 }
 
 

@@ -61,8 +61,8 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
 {
         //Initialize
     setIsCreatingConnector(false);
-    mPortsHidden = !gpMainWindow->togglePortsAction->isChecked();
-    mNamesHidden = !gpMainWindow->toggleNamesAction->isChecked();
+    mPortsHidden = !gpMainWindow->mpTogglePortsAction->isChecked();
+    mNamesHidden = !gpMainWindow->mpToggleNamesAction->isChecked();
     mUndoDisabled = false;
     mGfxType = USERGRAPHICS;
 
@@ -79,8 +79,8 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
     mpUndoStack = new UndoStack(this);
     mpUndoStack->clear();
 
-    gpMainWindow->toggleNamesAction->setChecked(true);
-    gpMainWindow->togglePortsAction->setChecked(true);
+    gpMainWindow->mpToggleNamesAction->setChecked(true);
+    gpMainWindow->mpTogglePortsAction->setChecked(true);
 
     mpDragCopyStack = new CopyStack();
 
@@ -100,29 +100,29 @@ GUIContainerObject::~GUIContainerObject()
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
 void GUIContainerObject::connectMainWindowActions()
 {
-    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
-    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(clicked()), this, SLOT(undo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()), Qt::UniqueConnection);
 
-    connect(gpMainWindow->togglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoEnabled(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
-    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
-    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
-    connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()), Qt::UniqueConnection);
-    connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()), Qt::UniqueConnection);
-    connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateRight()), Qt::UniqueConnection);
-    connect(gpMainWindow->rotateLeftAction,     SIGNAL(triggered()),        this,     SLOT(rotateLeft()), Qt::UniqueConnection);
-    connect(gpMainWindow->flipHorizontalAction, SIGNAL(triggered()),        this,     SLOT(flipHorizontal()), Qt::UniqueConnection);
-    connect(gpMainWindow->flipVerticalAction,   SIGNAL(triggered()),        this,     SLOT(flipVertical()), Qt::UniqueConnection);
-    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpTogglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpToggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpDisableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoEnabled(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpCutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpCopyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpPasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpAlignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpAlignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpRotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateRight()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpRotateLeftAction,     SIGNAL(triggered()),        this,     SLOT(rotateLeft()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpFlipHorizontalAction, SIGNAL(triggered()),        this,     SLOT(flipHorizontal()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpFlipVerticalAction,   SIGNAL(triggered()),        this,     SLOT(flipVertical()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpPropertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
-    connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
-    connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()), Qt::UniqueConnection);
+    connect(gpMainWindow->getStartTimeLineEdit(), SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
+    connect(gpMainWindow->getTimeStepLineEdit(),  SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()), Qt::UniqueConnection);
+    connect(gpMainWindow->getFinishTimeLineEdit(),SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()), Qt::UniqueConnection);
 
     //getCurrentContainer()->updateUndoStatus();
 }
@@ -131,29 +131,29 @@ void GUIContainerObject::connectMainWindowActions()
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
 void GUIContainerObject::disconnectMainWindowActions()
 {
-    disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
     disconnect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(clicked()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()));
     disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()));
 
-    disconnect(gpMainWindow->toggleNamesAction,     SIGNAL(triggered(bool)),    this,      SLOT(toggleNames(bool)));
-    disconnect(gpMainWindow->togglePortsAction,     SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
-    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoEnabled(bool)));
-    disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
-    disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
-    disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
-    disconnect(gpMainWindow->alignXAction,          SIGNAL(triggered()),        this,    SLOT(alignX()));
-    disconnect(gpMainWindow->alignYAction,          SIGNAL(triggered()),        this,    SLOT(alignY()));
-    disconnect(gpMainWindow->rotateRightAction,     SIGNAL(triggered()),        this,    SLOT(rotateRight()));
-    disconnect(gpMainWindow->rotateLeftAction,      SIGNAL(triggered()),        this,    SLOT(rotateLeft()));
-    disconnect(gpMainWindow->flipHorizontalAction,  SIGNAL(triggered()),        this,    SLOT(flipHorizontal()));
-    disconnect(gpMainWindow->flipVerticalAction,    SIGNAL(triggered()),        this,    SLOT(flipVertical()));
-    disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
+    disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,      SLOT(toggleNames(bool)));
+    disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
+    disconnect(gpMainWindow->mpDisableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoEnabled(bool)));
+    disconnect(gpMainWindow->mpCutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
+    disconnect(gpMainWindow->mpCopyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
+    disconnect(gpMainWindow->mpPasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
+    disconnect(gpMainWindow->mpAlignXAction,          SIGNAL(triggered()),        this,    SLOT(alignX()));
+    disconnect(gpMainWindow->mpAlignYAction,          SIGNAL(triggered()),        this,    SLOT(alignY()));
+    disconnect(gpMainWindow->mpRotateRightAction,     SIGNAL(triggered()),        this,    SLOT(rotateRight()));
+    disconnect(gpMainWindow->mpRotateLeftAction,      SIGNAL(triggered()),        this,    SLOT(rotateLeft()));
+    disconnect(gpMainWindow->mpFlipHorizontalAction,  SIGNAL(triggered()),        this,    SLOT(flipHorizontal()));
+    disconnect(gpMainWindow->mpFlipVerticalAction,    SIGNAL(triggered()),        this,    SLOT(flipVertical()));
+    disconnect(gpMainWindow->mpPropertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
 
-    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
-    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
-    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  this,    SLOT(updateStopTime()));
+    disconnect(gpMainWindow->getStartTimeLineEdit(),   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
+    disconnect(gpMainWindow->getTimeStepLineEdit(),    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
+    disconnect(gpMainWindow->getFinishTimeLineEdit(),  SIGNAL(editingFinished()),  this,    SLOT(updateStopTime()));
 }
 
 //! @brief A helpfunction that determines on which edge an external port should be placed based on its internal position
@@ -710,7 +710,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
     emit checkMessages();
-    mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentProjectTab->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1112,7 +1112,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
     }
 
     //Refresh the graphics view
-    mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentProjectTab->getGraphicsView()->updateViewPort();
 
     emit connectorRemoved();
 }
@@ -1178,7 +1178,7 @@ void GUIContainerObject::cutSelected(CopyStack *xmlStack)
     this->copySelected(xmlStack);
     this->mpUndoStack->newPost("cut");
     emit deleteSelected();
-    mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentProjectTab->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1275,7 +1275,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QPointF oldCenter = QPointF(x, y);
 
     QCursor cursor;
-    QPointF newCenter = mpParentProjectTab->mpGraphicsView->mapToScene(mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
+    QPointF newCenter = mpParentProjectTab->getGraphicsView()->mapToScene(mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos()));
 
     qDebug() << "Pasting at " << newCenter;
 
@@ -1399,7 +1399,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         mGUIModelObjectMap.find(itn.value()).value()->setSelected(true);
     }
 
-    mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentProjectTab->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1811,7 +1811,7 @@ void GUIContainerObject::makeConnectorDiagonal(bool diagonal)
     {
         mpTempConnector->makeDiagonal(diagonal);
         mpTempConnector->drawConnector();
-        mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentProjectTab->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -1846,7 +1846,7 @@ void GUIContainerObject::removeOneConnectorLine(QPointF pos)
         }
         mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpTempConnector);
         mIsCreatingConnector = false;
-        mpParentProjectTab->mpGraphicsView->setIgnoreNextContextMenuEvent();
+        mpParentProjectTab->getGraphicsView()->setIgnoreNextContextMenuEvent();
         delete(mpTempConnector);
         gpMainWindow->hideHelpPopupMessage();
     }
@@ -1856,7 +1856,7 @@ void GUIContainerObject::removeOneConnectorLine(QPointF pos)
         mpTempConnector->removePoint(true);
         mpTempConnector->updateEndPoint(pos);
         mpTempConnector->drawConnector();
-        mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentProjectTab->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -1885,8 +1885,8 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
             mUndoDisabled = true;
             if(gpMainWindow->mpProjectTabs->getCurrentContainer() == this)      //Only modify main window actions if this is current container
             {
-                gpMainWindow->undoAction->setDisabled(true);
-                gpMainWindow->redoAction->setDisabled(true);
+                gpMainWindow->mpUndoAction->setDisabled(true);
+                gpMainWindow->mpRedoAction->setDisabled(true);
             }
         }
     }
@@ -1895,13 +1895,13 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
         mUndoDisabled = false;
         if(gpMainWindow->mpProjectTabs->getCurrentContainer() == this)      //Only modify main window actions if this is current container
         {
-            gpMainWindow->undoAction->setDisabled(false);
-            gpMainWindow->redoAction->setDisabled(false);
+            gpMainWindow->mpUndoAction->setDisabled(false);
+            gpMainWindow->mpRedoAction->setDisabled(false);
         }
     }
 
-    if(gpMainWindow->disableUndoAction->isChecked() != mUndoDisabled)
-        gpMainWindow->disableUndoAction->setChecked(mUndoDisabled);
+    if(gpMainWindow->mpDisableUndoAction->isChecked() != mUndoDisabled)
+        gpMainWindow->mpDisableUndoAction->setChecked(mUndoDisabled);
 }
 
 
@@ -1927,17 +1927,17 @@ bool GUIContainerObject::isUndoEnabled()
 
 
 //! @brief Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
-void GUIContainerObject::updateUndoStatus()
+void GUIContainerObject::updateUndoButtons()
 {
     if(mUndoDisabled)
     {
-        gpMainWindow->undoAction->setDisabled(true);
-        gpMainWindow->redoAction->setDisabled(true);
+        gpMainWindow->mpUndoAction->setDisabled(true);
+        gpMainWindow->mpRedoAction->setDisabled(true);
     }
     else
     {
-        gpMainWindow->undoAction->setDisabled(false);
-        gpMainWindow->redoAction->setDisabled(false);
+        gpMainWindow->mpUndoAction->setDisabled(false);
+        gpMainWindow->mpRedoAction->setDisabled(false);
     }
 }
 
@@ -1945,7 +1945,7 @@ void GUIContainerObject::updateUndoStatus()
 void GUIContainerObject::setGfxType(graphicsType gfxType)
 {
     this->mGfxType = gfxType;
-    this->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    this->mpParentProjectTab->getGraphicsView()->updateViewPort();
     emit setAllGfxType(mGfxType);
 }
 
@@ -2064,9 +2064,9 @@ void GUIContainerObject::enterContainer()
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
     //Show this scene
-    mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
-    mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
-    mpParentProjectTab->mpQuickNavigationWidget->addOpenContainer(this);
+    mpParentProjectTab->getGraphicsView()->setScene(getContainedScenePtr());
+    mpParentProjectTab->getGraphicsView()->setContainerPtr(this);
+    mpParentProjectTab->getQuickNavigationWidget()->addOpenContainer(this);
 
         //Disconnect parent system and connect new system with actions
 //    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
@@ -2095,8 +2095,8 @@ void GUIContainerObject::enterContainer()
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
-    gpMainWindow->undoAction->setDisabled(this->mUndoDisabled);
-    gpMainWindow->redoAction->setDisabled(this->mUndoDisabled);
+    gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
+    gpMainWindow->mpRedoAction->setDisabled(this->mUndoDisabled);
 
     this->collectPlotData();
 }
@@ -2106,8 +2106,8 @@ void GUIContainerObject::exitContainer()
 {
     this->deselectAll();
     //Go back to parent system
-    mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
-    mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
+    mpParentProjectTab->getGraphicsView()->setScene(this->mpParentContainerObject->getContainedScenePtr());
+    mpParentProjectTab->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
 
         //Disconnect this system and connect parent system with undo and redo actions
 //    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
@@ -2143,8 +2143,8 @@ void GUIContainerObject::exitContainer()
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
-    gpMainWindow->undoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
-    gpMainWindow->redoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
+    gpMainWindow->mpUndoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
+    gpMainWindow->mpRedoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
 
         //Refresh external port appearance
     //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal

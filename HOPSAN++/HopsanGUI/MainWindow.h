@@ -53,110 +53,80 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QWidget *mpCentralWidget;
-    QGridLayout *mpCentralGridLayout;
-    QGridLayout *mpTabgrid;
-
-    //Widgets that can be displayed in main window
-    UndoWidget *mpUndoWidget;
-    ProjectTabWidget *mpProjectTabs;
-    LibraryWidget *mpLibrary;
-    OptionsDialog *mpOptionsDialog;
-    MessageWidget *mpMessageWidget;
-    WelcomeDialog *mpWelcomeDialog;
-    Configuration *mpConfig;
-
-    AboutDialog *mpAboutDialog;
-    HelpDialog *mpHelpDialog;
-
-    QStatusBar *mpStatusBar;
-    PlotWidget *mpPlotWidget;
-    PyDockWidget *mpPyDockWidget;
-    SystemParametersWidget *mpSystemParametersWidget;
-
-    //Menubar items
-    QMenuBar *menubar;
-    QMenu *menuFile;
-    QMenu *menuNew;
-    QMenu *menuLibs;
-    QMenu *menuSimulation;
-    QMenu *menuEdit;
-    QMenu *menuView;
-    QMenu *menuTools;
-    QMenu *menuPlot;
-    QMenu *recentMenu;
-    QMenu *menuHelp;
-    QMenu *menuExport;
-
-    //Buttons
-    QToolButton *mpExportButton;
-
-    //Toolbar items
-    QToolBar *mpFileToolBar;
-    QToolBar *mpEditToolBar;
-    QToolBar *mpToolsToolBar;
-    QToolBar *mpSimToolBar;
-    QToolBar *mpViewToolBar;
-    QLineEdit *mpStartTimeLineEdit;
-    QLineEdit *mpTimeStepLineEdit;
-    QLineEdit *mpFinishTimeLineEdit;
-    QLabel *mpTimeLabelDeliminator1;
-    QLabel *mpTimeLabelDeliminator2;
-
-    //Actions used in menubar and toolbar
-    QAction *newAction;
-    QAction *openAction;
-    QAction *saveAction;
-    QAction *saveAsAction;
-    QAction *exportToSimulinkAction;
-    QAction *closeAction;
-    QAction *undoAction;
-    QAction *redoAction;
-    QAction *openUndoAction;
-    QAction *openSystemParametersAction;
-    QAction *disableUndoAction;
-    QAction *cutAction;
-    QAction *copyAction;
-    QAction *pasteAction;
-    QAction *simulateAction;
-    QAction *plotAction;
-    QAction *loadLibsAction;
-    QAction *propertiesAction;
-    QAction *optionsAction;
-    QAction *resetZoomAction;
-    QAction *zoomInAction;
-    QAction *zoomOutAction;
-    QAction *centerViewAction;
-    QAction *toggleNamesAction;
-    QAction *togglePortsAction;
-    QAction *toggleSignalsAction;
-    QAction *showPortsAction;
-    QAction *exportPDFAction;
-    QAction *alignXAction;
-    QAction *alignYAction;
-    QAction *rotateLeftAction;
-    QAction *rotateRightAction;
-    QAction *flipHorizontalAction;
-    QAction *flipVerticalAction;
-    QAction *aboutAction;
-    QAction *helpAction;
-    QAction *newVersionsAction;
-    QAction *saveToWrappedCodeAction;
-    QAction *createSimulinkWrapperAction;
-
     //Set and get methods for simulation parameters in toolbar
+    OptionsDialog *getOptionsDialog();
+    PyDockWidget *getPythonDock();
+
+    QLineEdit *getStartTimeLineEdit();
+    QLineEdit *getTimeStepLineEdit();
+    QLineEdit *getFinishTimeLineEdit();
     void setStartTimeInToolBar(double startTime);
     void setTimeStepInToolBar(double timeStep);
     void setFinishTimeInToolBar(double finishTime);
     double getStartTimeFromToolBar();
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
+
     void closeEvent(QCloseEvent *event);
 
     void showHelpPopupMessage(QString message);
     void hideHelpPopupMessage();
 
-    PyDockWidget *getPythonDock();
+    //Configuration object
+    Configuration *mpConfig;    //Public so that python wrappers can access it
+                                //! @todo Why can't python wrappers use gpConfig?
+
+    //Widgets
+    //! @todo These should probably not be public
+    UndoWidget *mpUndoWidget;
+    ProjectTabWidget *mpProjectTabs;
+    LibraryWidget *mpLibrary;
+    MessageWidget *mpMessageWidget;
+    PlotWidget *mpPlotWidget;
+    PyDockWidget *mpPyDockWidget;
+    SystemParametersWidget *mpSystemParametersWidget;
+    QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
+
+    //Actions (public because other widgets connect to them)
+    QAction *mpNewAction;
+    QAction *mpOpenAction;
+    QAction *mpSaveAction;
+    QAction *mpSaveAsAction;
+    QAction *mpExportToSimulinkAction;
+    QAction *mpCloseAction;
+    QAction *mpUndoAction;
+    QAction *mpRedoAction;
+    QAction *mpOpenUndoAction;
+    QAction *mpOpenSystemParametersAction;
+    QAction *mpDisableUndoAction;
+    QAction *mpCutAction;
+    QAction *mpCopyAction;
+    QAction *mpPasteAction;
+    QAction *mpSimulateAction;
+    QAction *mpPlotAction;
+    QAction *mpLoadLibsAction;
+    QAction *mpPropertiesAction;
+    QAction *mpOptionsAction;
+    QAction *mpResetZoomAction;
+    QAction *mpZoomInAction;
+    QAction *mpZoomOutAction;
+    QAction *mpCenterViewAction;
+    QAction *mpToggleNamesAction;
+    QAction *mpTogglePortsAction;
+    QAction *mpToggleSignalsAction;
+    QAction *mpShowPortsAction;
+    QAction *mpExportPDFAction;
+    QAction *mpAlignXAction;
+    QAction *mpAlignYAction;
+    QAction *mpRotateLeftAction;
+    QAction *mpRotateRightAction;
+    QAction *mpFlipHorizontalAction;
+    QAction *mpFlipVerticalAction;
+    QAction *mpAboutAction;
+    QAction *mpHelpAction;
+    QAction *mpNewVersionsAction;
+    QAction *mpSaveToWrappedCodeAction;
+    QAction *mpCreateSimulinkWrapperAction;
 
 public slots:
     void show();
@@ -181,13 +151,6 @@ private slots:
     void showToolBarHelpPopup();
 
 private:
-    //Dock area widgets
-    QDockWidget *mpMessageDock;
-    QDockWidget *mpLibDock;
-    QDockWidget *mpPlotWidgetDock;
-    QDockWidget *mpUndoWidgetDock;
-    QDockWidget *mpSystemParametersDock;
-
     //Methods that adjusts simulation parameters if they are illegal
     void fixFinishTime();
     void fixTimeStep();
@@ -195,6 +158,54 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
+
+    //Dialogs
+    OptionsDialog *mpOptionsDialog;
+    WelcomeDialog *mpWelcomeDialog;
+    AboutDialog *mpAboutDialog;
+    HelpDialog *mpHelpDialog;
+
+    //Simulation setup line edits
+    QLineEdit *mpStartTimeLineEdit;
+    QLineEdit *mpTimeStepLineEdit;
+    QLineEdit *mpFinishTimeLineEdit;
+
+    //Dock area widgets
+    QDockWidget *mpMessageDock;
+    QDockWidget *mpLibDock;
+    QDockWidget *mpPlotWidgetDock;
+    QDockWidget *mpUndoWidgetDock;
+    QDockWidget *mpSystemParametersDock;
+
+    QWidget *mpCentralWidget;
+    QGridLayout *mpCentralGridLayout;
+    QGridLayout *mpTabgrid;
+
+    //Menubar items
+    QMenuBar *mpMenuBar;
+    QMenu *mpFileMenu;
+    QMenu *mpNewMenu;
+    QMenu *mpLibsMenu;
+    QMenu *mpSimulationMenu;
+    QMenu *mpEditMenu;
+    QMenu *mpViewMenu;
+    QMenu *mpToolsMenu;
+    QMenu *mpPlotMenu;
+    QMenu *mpRecentMenu;
+    QMenu *mpHelpMenu;
+    QMenu *mpExportMenu;
+
+    //Buttons
+    QToolButton *mpExportButton;
+
+    //Toolbar items
+    QToolBar *mpFileToolBar;
+    QToolBar *mpEditToolBar;
+    QToolBar *mpToolsToolBar;
+    QToolBar *mpSimToolBar;
+    QToolBar *mpViewToolBar;
+    QLabel *mpTimeLabelDeliminator1;
+    QLabel *mpTimeLabelDeliminator2;
 
     //Help popup
     QWidget *mpHelpPopup;
