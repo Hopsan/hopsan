@@ -68,7 +68,6 @@ public:
     int type() const;
 
     //Public members
-    QPointF mOldPos;
     GUIContainerObject *mpParentContainerObject;
 
 public slots:
@@ -103,6 +102,7 @@ protected:
     QString mHmfTagName;
     bool mIsFlipped;
     GUIObjectSelectionBox *mpSelectionBox;
+    QPointF mOldPos;
 };
 
 

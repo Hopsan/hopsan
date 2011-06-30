@@ -72,9 +72,13 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     mpNameText = new GUIModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
     this->setNameTextPos(0); //Set initial name text position
-    if(pParentContainer != 0 && pParentContainer->mNamesHidden)
+    if(pParentContainer != 0 && pParentContainer->areNamesHidden())
     {
         this->hideName(NOUNDO);
+    }
+    else
+    {
+        this->showName(NOUNDO);
     }
 
         //Create connections
@@ -723,7 +727,7 @@ void GUIModelObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-            if ((*i)->isConnected() || mpParentContainerObject->mPortsHidden)
+            if ((*i)->isConnected() || mpParentContainerObject->arePortsHidden())
             {
                 (*i)->hide();
             }

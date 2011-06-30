@@ -47,7 +47,7 @@ class GUIWidget : public GUIObject
 public:
     GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
     void setOldPos();
-    int mWidgetIndex;
+    int getWidgetIndex();
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -59,6 +59,7 @@ public slots:
     virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
 
 protected:
+    int mWidgetIndex;
     bool mIsResizing;
 };
 

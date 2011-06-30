@@ -90,15 +90,8 @@ public:
     GUIPort *getPort(QString name);
     QList<GUIPort*> &getPortListPtrs();
 
-    //Public members
-    GUIModelObjectDisplayName *mpNameText;
-
     enum { Type = GUIMODELOBJECT };
     int type() const;
-
-    //Temporary - these belong in container object, but they must be here because of the load function
-    bool mPortsHidden;
-    bool mNamesHidden;
 
 public slots:
     void deleteMe();
@@ -149,6 +142,8 @@ protected:
     QList<GUIConnector*> mGUIConnectorPtrs;
 
     QGraphicsLineItem *mpTempLine;
+
+    GUIModelObjectDisplayName *mpNameText;
 
 protected slots:
     void snapNameTextPosition(QPointF pos);

@@ -825,7 +825,7 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
     {
-        togglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->mpSystem->mPortsHidden);
+        togglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->mpSystem->arePortsHidden());
     }
 
     bool noTabs = !(mpProjectTabs->count() > 0);

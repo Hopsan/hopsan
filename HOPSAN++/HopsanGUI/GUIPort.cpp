@@ -103,7 +103,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     if(mpParentGuiModelObject->mpParentContainerObject != 0)
     {
-        this->hideIfNotConnected(!mpParentGuiModelObject->mpParentContainerObject->mPortsHidden);
+        this->hideIfNotConnected(!mpParentGuiModelObject->mpParentContainerObject->arePortsHidden());
     }
 
     //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing

@@ -1070,7 +1070,7 @@ void UndoStack::registerAddedBoxWidget(GUIBoxWidget *item)
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "addedboxwidget");
-    stuffElement.setAttribute("index", item->mWidgetIndex);
+    stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -1085,7 +1085,7 @@ void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "deletedboxwidget");
-    stuffElement.setAttribute("index", item->mWidgetIndex);
+    stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -1172,7 +1172,7 @@ void UndoStack::registerAddedTextWidget(GUITextWidget *item)
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "addedtextwidget");
-    stuffElement.setAttribute("index", item->mWidgetIndex);
+    stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -1187,7 +1187,7 @@ void UndoStack::registerDeletedTextWidget(GUITextWidget *item)
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "deletedtextwidget");
-    stuffElement.setAttribute("index", item->mWidgetIndex);
+    stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -1230,7 +1230,7 @@ void UndoStack::registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF new
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "movedwidget");
-    stuffElement.setAttribute("index", item->mWidgetIndex);
+    stuffElement.setAttribute("index", item->getWidgetIndex());
     appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
     gpMainWindow->mpUndoWidget->refreshList();

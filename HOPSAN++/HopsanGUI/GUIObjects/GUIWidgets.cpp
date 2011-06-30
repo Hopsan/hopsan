@@ -63,6 +63,12 @@ void GUIWidget::setOldPos()
     mOldPos = this->pos();
 }
 
+
+int GUIWidget::getWidgetIndex()
+{
+    return mWidgetIndex;
+}
+
 QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if(change == QGraphicsItem::ItemSelectedHasChanged)

@@ -80,20 +80,20 @@ public:
     QList<GUIWidget *> getSelectedGUIWidgetPtrs();
 
     //Handle connector methods
+    bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
+    GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void rememberSubConnector(GUIConnector *pConnector);
     void removeSubConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
-    GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
-    bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
-    void setIsCreatingConnector(bool isCreatingConnector);
-    bool isCreatingConnector();
-    void cancelCreatingConnector();
+    bool isConnectorSelected();
     void rememberSelectedSubConnector(GUIConnector *pConnector);
     void forgetSelectedSubConnector(GUIConnector *pConnector);
-    void makeConnectorDiagonal(bool diagonal);
-    void updateTempConnector(QPointF pos);
+    bool isCreatingConnector();
+    void setIsCreatingConnector(bool isCreatingConnector);
+    void cancelCreatingConnector();
     void addOneConnectorLine(QPointF pos);
     void removeOneConnectorLine(QPointF pos);
-    bool isConnectorSelected();
+    void makeConnectorDiagonal(bool diagonal);
+    void updateTempConnector(QPointF pos);
 
     //Handle container appearance
     QString getIconPath(const graphicsType gfxType);
@@ -146,59 +146,78 @@ public:
 
 
 public slots:
-        //Selection
+
+    //Selection slots
     void selectAll();
     void deselectAll();
     void deselectSelectedNameText();
     QPointF getCenterPointFromSelection();
-        //show/hide
+
+    //Show/hide slots
     void hideNames();
     void showNames();
     void toggleNames(bool value);
     void hidePorts(bool doIt);
-        //Create and remove
+
+    //Connector slots
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
+
+    //Section slots
     void groupSelected(QPointF pt);
-        //CopyPaste
+
+    //Copy/paste slots
     void cutSelected(CopyStack *xmlStack = 0);
     void copySelected(CopyStack *xmlStack = 0);
     void paste(CopyStack *xmlStack = 0);
-        //Align
+
+    //Alignment slots
     void alignX();
     void alignY();
-        //UndoRedo
+
+    //Undo/redo slots
     void undo();
     void redo();
     void clearUndo();
     void setUndoEnabled(bool enabled, bool dontAskJustDoIt=false);
     bool isUndoEnabled();
     void updateUndoStatus();
-        //Appearance and settings
+
+    //Appearance slots
     void setGfxType(graphicsType gfxType);
     graphicsType getGfxType();
+    bool arePortsHidden();
+    bool areNamesHidden();
+
+    //Properties slots
     void openPropertiesDialogSlot();
-        //Enter and exit a container object
+
+    //Enter and exit a container object
     void enterContainer();
     void exitContainer();
-        //Rotate and flip objects
+
+    //Rotate and flip slots
     void rotateRight();
     void rotateLeft();
     void flipHorizontal();
     void flipVertical();
 
+    //Plot data slots
     void collectPlotData();
 
 signals:
-        //Selection
+
+    //Selection signals
     void deselectAllNameText();
     void deselectAllGUIObjects();
     void selectAllGUIObjects();
     void deselectAllGUIConnectors();
     void selectAllGUIConnectors();
-        //HideShow
+
+    //Hide/show signals
     void hideAllNameText();
     void showAllNameText();
-        //Other
+
+    //Other signals
     void checkMessages();
     void deleteSelected();
     void setAllGfxType(graphicsType);
@@ -211,7 +230,8 @@ signals:
 
 
 protected:
-        //Protected methods
+
+    //Protected methods
     virtual void createPorts();
     virtual void createExternalPort(QString portName);
     virtual void removeExternalPort(QString portName);
@@ -219,53 +239,59 @@ protected:
     virtual void openPropertiesDialog();
     void clearContents();
     void forgetSubConnector(GUIConnector *pConnector);
-        //Protected overloaded Qt methods
+
+    //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
+    //Scene pointer member
+    QGraphicsScene *mpScene;
+
+    //Model and script file members
     QFileInfo mModelFileInfo;
     QString mScriptFilePath;
-    QMap<QString, QStringList> mPlotAliasMap;
 
+    //Model object members
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
     GUIModelObjectMapT mGUIModelObjectMap;
+    GUIModelObject *mpTempGUIModelObject;
 
-    UndoStack *mpUndoStack;
-
+    //Connector members
     QList<GUIConnector *> mSelectedSubConnectorsList;
     QList<GUIConnector *> mSubConnectorList;
+    GUIConnector *mpTempConnector;
+    bool mIsCreatingConnector;
 
+    //Widget members
+    QMap<size_t, GUIWidget *> mWidgetMap;
     QList<GUITextWidget *> mTextWidgetList; //! @todo we should really have one common list for all guiwidgets, or maybe only have the guiwidget map bellow
     QList<GUIBoxWidget *> mBoxWidgetList;
     QList<GUIModelObject *> mSelectedGUIModelObjectsList;
     QList<GUIWidget *> mSelectedGUIWidgetsList;
+    size_t mHighestWidgetIndex;
 
-    bool mUndoDisabled;
-
-    int nPlotCurves;
-
-    GUIModelObject *mpTempGUIModelObject;
-    GUIConnector *mpTempConnector;
-
+    //Contained object appearance members
+    bool mPortsHidden;
+    bool mNamesHidden;
     graphicsType mGfxType;
 
-    size_t mHighestWidgetIndex;
-    QMap<size_t, GUIWidget *> mWidgetMap;
-
-    QList<QStringList> mFavoriteVariables;
-
-protected slots:
-
-
-private:
-    bool mIsCreatingConnector;
-    QGraphicsScene *mpScene;
-    double mPasteOffset;
+    //Plot members
     QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
     QList< QVector<double> > mTimeVectors;
-    QList< QList<GUIModelObject *> > mSection;
+    QMap<QString, QStringList> mPlotAliasMap;
+    int nPlotCurves;
+    QList<QStringList> mFavoriteVariables;
 
+    //Undo-redo members
+    UndoStack *mpUndoStack;
+    bool mUndoDisabled;
+
+    //Copy-paste members
     CopyStack *mpDragCopyStack;
+    double mPasteOffset;
+
+    //Numbered sections members
+    QList< QList<GUIModelObject *> > mSection;
 };
 
 #endif // GUICONTAINEROBJECT_H

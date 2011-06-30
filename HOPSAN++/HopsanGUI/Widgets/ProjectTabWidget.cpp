@@ -671,8 +671,8 @@ void ProjectTabWidget::tabChanged()
             gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->mpSystem->getGfxType());
         }
 
-        gpMainWindow->toggleNamesAction->setChecked(!getCurrentContainer()->mNamesHidden);
-        gpMainWindow->togglePortsAction->setChecked(!getCurrentContainer()->mPortsHidden);
+        gpMainWindow->toggleNamesAction->setChecked(!getCurrentContainer()->areNamesHidden());
+        gpMainWindow->togglePortsAction->setChecked(!getCurrentContainer()->arePortsHidden());
     }
 }
 

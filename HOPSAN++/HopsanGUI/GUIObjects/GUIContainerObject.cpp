@@ -540,29 +540,10 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
         mGUIModelObjectMap.insert(mpTempGUIModelObject->getName(), mpTempGUIModelObject);
     }
 
-        //Set name visibility status (no undo because it will be registered as an added object anyway)
-    if(nameStatus == NAMEVISIBLE)
-    {
-        mpTempGUIModelObject->showName(NOUNDO);
-    }
-    else if(nameStatus == NAMENOTVISIBLE)
-    {
-        mpTempGUIModelObject->hideName(NOUNDO);
-    }
-    else if(!mNamesHidden)
-    {
-        mpTempGUIModelObject->showName(NOUNDO);
-    }
-    else if(mNamesHidden)
-    {
-        mpTempGUIModelObject->hideName(NOUNDO);
-    }
-
     if(undoSettings == UNDO)
     {
         mpUndoStack->registerAddedObject(mpTempGUIModelObject);
     }
-
 
     mpTempGUIModelObject->setSelected(false);
     mpTempGUIModelObject->setSelected(true);
@@ -679,7 +660,7 @@ void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSetting
     mTextWidgetList.removeAll(qobject_cast<GUITextWidget *>(pWidget));
     mBoxWidgetList.removeAll(qobject_cast<GUIBoxWidget *>(pWidget));
     mSelectedGUIWidgetsList.removeAll(pWidget);
-    mWidgetMap.remove(pWidget->mWidgetIndex);
+    mWidgetMap.remove(pWidget->getWidgetIndex());
     delete(pWidget);
 }
 
@@ -838,7 +819,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
     {
         this->getContainedScenePtr()->addItem(rWidgetList[i]);
         rWidgetList[i]->setParentContainerObject(this);
-        mWidgetMap.insert(rWidgetList[i]->mWidgetIndex, rWidgetList[i]);
+        mWidgetMap.insert(rWidgetList[i]->getWidgetIndex(), rWidgetList[i]);
         //! @todo what if idx already taken, dont care for now as we shal only move into groups when they are created
     }
 
@@ -1512,7 +1493,7 @@ void GUIContainerObject::groupSelected(QPointF pt)
 
     for (int i=0; i<widgets.size(); ++i)
     {
-        mWidgetMap.remove(widgets[i]->mWidgetIndex);
+        mWidgetMap.remove(widgets[i]->getWidgetIndex());
 
         //temporary hack, to remove from widget lists
         GUITextWidget *pTextWidget = qobject_cast<GUITextWidget*>(widgets[i]);
@@ -1921,6 +1902,20 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 
     if(gpMainWindow->disableUndoAction->isChecked() != mUndoDisabled)
         gpMainWindow->disableUndoAction->setChecked(mUndoDisabled);
+}
+
+
+//! @brief Tells whether or not unconnected ports in container are hidden
+bool GUIContainerObject::arePortsHidden()
+{
+    return mPortsHidden;
+}
+
+
+//! @brief Tells whether or not object names in container are hidden
+bool GUIContainerObject::areNamesHidden()
+{
+    return mNamesHidden;
 }
 
 
