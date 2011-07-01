@@ -180,7 +180,7 @@ public slots:
     void clearUndo();
     void setUndoEnabled(bool enabled, bool dontAskJustDoIt=false);
     bool isUndoEnabled();
-    void updateUndoStatus();
+    void updateUndoButtons();
 
     //Appearance slots
     void setGfxType(graphicsType gfxType);
