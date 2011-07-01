@@ -30,13 +30,15 @@
 
 using namespace hopsan;
 
-//! @class SecondOrderFilter
+//! @class hopsan::SecondOrderFilter
 //! @brief The SecondOrderFilter class implements a second order filter using bilinear transform
 //!
 //! To declare a filter like \f[G=\frac{a_2 s^2 + a_1 s + a_0}{b_2 s^2 + b_1 s + b_0}\f]
 //! the syntax is filter.setNumDen(num, den)
-//! where \f$num=\{a_2, a_1, a_0\}\f$
-//! and \f$den=\{b_2, b_1, b_0\}\f$
+//! where \f$num[0]=a_0\f$, \f$num[1]=a_1\f$, \f$num[2]=a_2\f$
+//! and \f$den[0]=b_0\f$, \f$den[1]=b_1\f$, \f$den[2]=b_2\f$,
+// where \f$num=\{a_2, a_1, a_0\}\f$
+// and \f$den=\{b_2, b_1, b_0\}\f$
 //!
 
 SecondOrderFilter::SecondOrderFilter()

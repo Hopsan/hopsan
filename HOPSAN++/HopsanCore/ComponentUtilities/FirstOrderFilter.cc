@@ -30,7 +30,7 @@
 
 using namespace hopsan;
 
-//! @class FirstOrderFilter
+//! @class hopsan::FirstOrderFilter
 //! @brief The FirstOrderFilter class implements a first order filter using bilinear transform
 //!
 //! To declare a filter like \f[G=\frac{a_1 s + a_0}{b_1 s + b_0}\f]

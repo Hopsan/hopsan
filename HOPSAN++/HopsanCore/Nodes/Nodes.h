@@ -33,7 +33,7 @@ namespace hopsan {
     DLLIMPORTEXPORT void register_nodes(NodeFactory* nfampND_ct);
 
     //!
-    //! @class NodeSignal
+    //! @class hopsan::NodeSignal
     //! @brief A signal node
     //! @ingroup SignalNode
     //!
@@ -52,7 +52,7 @@ namespace hopsan {
 
 
     //!
-    //! @class NodeHydraulic
+    //! @class hopsan::NodeHydraulic
     //! @brief A hydraulic node
     //! @ingroup HydraulicNode
     //!
@@ -92,7 +92,7 @@ namespace hopsan {
 
 
     //!
-    //! @class NodePneumatic
+    //! @class hopsan::NodePneumatic
     //! @brief A pneumatic node
     //! @ingroup PneumaticNode
     //!
@@ -131,7 +131,7 @@ namespace hopsan {
     };
 
     //!
-    //! @class NodeMechanic
+    //! @class hopsan::NodeMechanic
     //! @brief A mechanic node
     //! @ingroup MechanicalNode
     //!
@@ -166,7 +166,7 @@ namespace hopsan {
     };
 
     //!
-    //! @class NodeMechanicRotational
+    //! @class hopsan::NodeMechanicRotational
     //! @brief A rotational mechanic node
     //! @ingroup RotationalMechanicalNode
     //!
@@ -203,7 +203,7 @@ namespace hopsan {
 
 
     //!
-    //! @class NodeElectric
+    //! @class hopsan::NodeElectric
     //! @brief An electric node
     //! @ingroup ElectricNode
     //!

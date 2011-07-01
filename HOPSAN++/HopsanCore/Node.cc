@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-//! @class Node
+//! @class hopsan::Node
 //! @brief The Node base class
 //! @ingroup Nodes
 

@@ -29,7 +29,7 @@
 
 using namespace hopsan;
 
-////! @class Delay
+////! @class hopsan::Delay
 ////! @brief The Delay class delayes a variable in time (A \f$\mbox{\LaTeX}\f$ example: \f$e^{\pi}=-1\f$)
 ////!
 ////! Delay delayes a variable, the following example

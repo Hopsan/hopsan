@@ -30,7 +30,7 @@
 
 using namespace hopsan;
 
-/*! @class IntegratorLimited
+/*! @class hopsan::IntegratorLimited
  *  @brief The IntegratorLimited class implements a integrator using bilinear
  *  transform which integrates a variable with limited output signal and wind-up protection
  *

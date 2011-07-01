@@ -40,7 +40,7 @@
 using namespace std;
 using namespace hopsan;
 
-//! @class Parameter
+//! @class hopsan::Parameter
 //! @brief The Parameter class implements the parameter used in the container class Parameters
 //!
 //! The parameter is implemented with a name, a value string and a data pointer that can be of various types.
@@ -255,7 +255,7 @@ bool Parameter::evaluate(std::string &rResult)
     return success;
 }
 
-//! @class Parameters
+//! @class hopsan::Parameters
 //! @brief The Parameters class implements the parameters used in both Componenets and ComponentSystems
 //!
 
