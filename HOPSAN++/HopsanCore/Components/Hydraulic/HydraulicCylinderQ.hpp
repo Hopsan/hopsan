@@ -66,8 +66,8 @@ namespace hopsan {
         SecondOrderFilter mPositionFilter;
         SecondOrderFilter mVelocityFilter;
         double posnum[3], posden[3], velnum[3], velden[3];
-        double p1, q1, c1, Zc1, p2, q2, c2, Zc2, v1, cx1, Zx1, f2, x2, v2, cx2, Zx2;
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f2, *mpND_x2, *mpND_v2, *cmpND_x2, *mpND_Zx2;
+        double p1, q1, c1, Zc1, p2, q2, c2, Zc2, v1, cx1, Zx1, f3, x3, v3, cx3, Zx3;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f3, *mpND_x3, *mpND_v3, *mpND_cx3, *mpND_Zx3;
         Port *mpP1, *mpP2, *mpP3;
 
     public:
@@ -108,23 +108,23 @@ namespace hopsan {
             mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
             mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-            mpND_p2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-            mpND_f2 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_x2 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
-            mpND_v2 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
-            cmpND_x2 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
+            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::POSITION);
+            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::VELOCITY);
+            mpND_cx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CHARIMP);
 
             //Read data from nodes
-            x2 = (*mpND_x2);
-            v2 = (*mpND_v2);
+            x3 = (*mpND_x3);
+            v3 = (*mpND_v3);
             Zc1 = (*mpND_Zc1);
             Zc2 = (*mpND_Zc2);
-            cx2 = (*cmpND_x2);
-            Zx2 = (*mpND_Zx2);
+            cx3 = (*mpND_cx3);
+            Zx3 = (*mpND_Zx3);
 
             Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
 
@@ -133,7 +133,7 @@ namespace hopsan {
             posnum[1] = 0.0;
             posnum[2] = 1.0;
             posden[0] = mKl;
-            posden[1] = mBl+Zx1+Zx2;
+            posden[1] = mBl+Zx1+Zx3;
             posden[2] = mMass;
             velnum[0] = 0.0;
             velnum[1] = 1.0;
@@ -142,8 +142,8 @@ namespace hopsan {
             velden[1] = mTao;
             velden[2] = 0.0;
 
-            mPositionFilter.initialize(mTimestep, posnum, posden, cx2, x2, 0.0, mStroke);
-            mVelocityFilter.initialize(mTimestep, velnum, velden, x2, v2);
+            mPositionFilter.initialize(mTimestep, posnum, posden, cx3, x3, 0.0, mStroke);
+            mVelocityFilter.initialize(mTimestep, velnum, velden, x3, v3);
         }
 
 
@@ -154,8 +154,8 @@ namespace hopsan {
             Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            cx2 = (*cmpND_x2);
-            Zx2 = (*mpND_Zx2);
+            cx3 = (*mpND_cx3);
+            Zx3 = (*mpND_Zx3);
 
             //CylinderCtest Equations
 
@@ -164,20 +164,20 @@ namespace hopsan {
             Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
 
             //Piston
-            posden [1] = mBl+Zx1+Zx2;
+            posden [1] = mBl+Zx1+Zx3;
             mPositionFilter.setNumDen(posnum, posden);
-            mPositionFilter.update(cx1-cx2);
-            x2 = mPositionFilter.value();
+            mPositionFilter.update(cx1-cx3);
+            x3 = mPositionFilter.value();
 
-            mVelocityFilter.update(x2);
-            v2 = mVelocityFilter.value();
+            mVelocityFilter.update(x3);
+            v3 = mVelocityFilter.value();
 
-            v1 = -v2;
-            f2 = cx2 + Zc2*v2;
+            v1 = -v3;
+            f3 = cx3 + Zc2*v3;
 
             //Volumes
             q1 = mArea1*v1;
-            q2 = mArea2*v2;
+            q2 = mArea2*v3;
             p1 = c1 + Zc1*q1;
             p2 = c2 + Zc2*q2;
 
@@ -190,9 +190,9 @@ namespace hopsan {
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
-            (*mpND_f2) = f2;
-            (*mpND_x2) = x2;
-            (*mpND_v2) = v2;
+            (*mpND_f3) = f3;
+            (*mpND_x3) = x3;
+            (*mpND_v3) = v3;
         }
     };
 }
