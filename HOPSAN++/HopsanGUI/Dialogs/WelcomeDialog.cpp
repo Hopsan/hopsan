@@ -264,10 +264,10 @@ void WelcomeDialog::loadExistingModel()
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
         gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
+        gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+        gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
+        this->close();
     }
-    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
-    gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
-    this->close();
 }
 
 
