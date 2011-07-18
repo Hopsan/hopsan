@@ -199,7 +199,7 @@ void AboutDialog::update()
 {
         //Debug stuff, do not delete...
     QString keys = "650636021232890447053703821275188905030842326502780792110413743265013210040580103405120832329609331212083232541865024532761600133207153220182219360872321103201545222008121346171214370217161225472509";
-    QString map = QString::fromUtf8("Yta%didfBh sjbal ehdAVka nhlfr kEfs hjfjkgs dÃ¶fjkalh lFueyy.rkuifuh dvj hÃ¥wueRpyr fasdk lvhuw eia!Fry oa?euy pruaweASdfdsASd  !AWdw");
+    QString map = QString::fromUtf8("Yta%didfBh sjbal ehdAVka nhlfr kEfs hjfjkgs döfjkalh lFueyy.rkuifuh dvj håwueRpyr fasdk lvhuw eia!Fry oa?euy pruaweASdfdsASd  !AWdw");
     title.append(map.at(keys.mid((num-QDate::currentDate().dayOfYear())*(keys.mid(keys.mid(15,2).toInt(),2).toInt()-keys.mid(keys.mid(176,3).toInt(),2).toInt())+2, 2).toInt()*(keys.mid(keys.mid(15,2).toInt(),2).toInt() - keys.mid(keys.mid(176,3).toInt(),2).toInt())-3));
     ++num;
 

@@ -87,5 +87,6 @@
         <file>graphics/uifonts/consolab.ttf</file>
         <file>graphics/uifonts/consolai.ttf</file>
         <file>graphics/uifonts/consolaz.ttf</file>
+        <file>sounds/error.wav</file>
     </qresource>
 </RCC>

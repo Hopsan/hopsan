@@ -234,12 +234,19 @@ void MessageWidget::printCoreMessages()
     int nmsg = mpCoreAccess->getNumberOfMessages();
     //nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
 
+    bool playErrorSound = false;
     for (int idx=0; idx < nmsg; ++idx)
     {
         QString message, type, tag;
         mpCoreAccess->getMessage(message, type, tag);
+        if(type == "error")
+            playErrorSound = true;
         mMessageList.append(GUIMessage(message, type, tag));
         updateDisplay();
+    }
+    if(playErrorSound)
+    {
+        QSound::play(QString(SOUNDSPATH) + "error.wav");
     }
 }
 
@@ -248,6 +255,7 @@ void MessageWidget::printCoreMessages()
 //! @param message String containing the message
 void MessageWidget::printGUIErrorMessage(QString message, QString tag)
 {
+    QSound::play(QString(SOUNDSPATH) + "error.wav");
     mMessageList.append(GUIMessage(message.prepend("Error: "), "error", tag));
     updateDisplay();
 }
