@@ -364,10 +364,11 @@ void SystemParameterTableWidget::update()
     {
         gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
     }
+
+    disconnect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
+
     if(qParameterNames.isEmpty())
     {
-        disconnect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
-
         setColumnCount(1);
         setRowCount(1);
         verticalHeader()->hide();
