@@ -132,8 +132,8 @@ namespace hopsan {
             mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
             mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
-            double num[3] = {0.0, 0.0, 1.0};
-            double den[3] = {1.0/(omegah*omegah), 2.0*deltah/omegah, 1.0};
+            double num[3] = {1.0, 0.0, 0.0};
+            double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
             filter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
         }
 

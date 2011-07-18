@@ -124,6 +124,7 @@ public:
     QAction *mpFlipVerticalAction;
     QAction *mpAboutAction;
     QAction *mpHelpAction;
+    QAction *mpWebsiteAction;
     QAction *mpNewVersionsAction;
     QAction *mpSaveToWrappedCodeAction;
     QAction *mpCreateSimulinkWrapperAction;
@@ -145,6 +146,7 @@ private slots:
     void openUndoWidget();
     void openSystemParametersWidget();
     void openRecentModel();
+    void openHopsanURL();
     void openArchiveURL();
     void updatePlotActionButton(bool);
     void updateSystemParametersActionButton(bool);

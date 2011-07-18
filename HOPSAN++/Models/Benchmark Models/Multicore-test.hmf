@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
-    <system typename="Subsystem" cqs_type="S" name="Multicore-test">
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.0" hopsancoreversion="0">
+    <system typename="Subsystem" name="Multicore-test">
         <hopsangui>
-            <pose x="0" y="0" flipped="0" a="0"/>
+            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2497.27675" y="2521.610749999999" zoom="0.6575162324319883"/>
+            <viewport x="2521.854089999999" y="3047.240358749999" zoom="0.4663235691007009"/>
+            <ports hidden="0"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="Multicore-test">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -18,7 +21,7 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2447" flipped="1" a="0"/>
+                    <pose x="2344.34191115384555814671" y="2492.628192307691279" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -26,7 +29,7 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2485" flipped="1" a="0"/>
+                    <pose x="2344.34191115384555814671" y="2602.628192307691279" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -34,7 +37,7 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2632" flipped="1" a="0"/>
+                    <pose x="2320.75313990384529461153" y="3024.537014807691321" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -42,7 +45,19 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2595" flipped="1" a="0"/>
+                    <pose x="2320.75313990384529461153" y="2988.537014807691321" flipped="1" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalDummy" name="Signal Dummy_1">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2619.34191115384555814671" y="2539.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -50,27 +65,19 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2559" flipped="1" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalDummy" name="Signal Dummy_1">
-                <parameters/>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2680" y="2393" flipped="0" a="0"/>
+                    <pose x="2320.75313990384529461153" y="2951.537014807691321" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_2">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2680" y="2424" flipped="0" a="0"/>
+                    <pose x="2620.34191115384555814671" y="2601.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -78,17 +85,19 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2522" flipped="1" a="0"/>
+                    <pose x="2320.75313990384529461153" y="3061.537014807691321" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_3">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2680" y="2455" flipped="0" a="0"/>
+                    <pose x="2620.34191115384555814671" y="2570.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -96,154 +105,228 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2670" flipped="1" a="0"/>
+                    <pose x="2275.72003115384541160893" y="3639.9895010576910863" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_10">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2329" y="2228" flipped="0" a="0"/>
+                    <pose x="2329.00000000000000000000" y="2228" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_4">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2680" y="2486" flipped="0" a="0"/>
+                    <pose x="2620.34191115384555814671" y="2632.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_11">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2329" y="2191" flipped="0" a="0"/>
+                    <pose x="2329.00000000000000000000" y="2191" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_5">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2681" y="2641" flipped="0" a="0"/>
+                    <pose x="2595.75313990384529461153" y="2998.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_12">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2329" y="2264" flipped="0" a="0"/>
+                    <pose x="2329.00000000000000000000" y="2264" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_6">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2681" y="2610" flipped="0" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalDummy" name="Signal Dummy_7">
-                <parameters/>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2681" y="2579" flipped="0" a="0"/>
+                    <pose x="2596.75313990384529461153" y="3060.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_13">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2329" y="2301" flipped="0" a="0"/>
+                    <pose x="2329.00000000000000000000" y="2301" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalDummy" name="Signal Dummy_7">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2596.75313990384529461153" y="3029.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_8">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2681" y="2548" flipped="0" a="0"/>
+                    <pose x="2596.75313990384529461153" y="3091.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_14">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2325.896624999999" y="2743.4195" flipped="0" a="0"/>
+                    <pose x="2202.72003115384541160893" y="3566.9895010576910863" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="SignalDummy" name="Signal Dummy_9">
-                <parameters/>
+            <component typename="SignalSource" name="Source1">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                    <parameter value="1" name="y"/>
+                </parameters>
                 <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
+                    <startvalue portname="out" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2680" y="2517" flipped="0" a="0"/>
+                    <pose x="2043.85556625000003805326" y="2428.1444337500001893" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_15">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2325.896624999999" y="2705.4195" flipped="0" a="0"/>
+                    <pose x="2202.72003115384541160893" y="3639.9895010576910863" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="HydraulicDummyC" name="C-Type Dummy">
-                <parameters/>
-                <startvalues>
-                    <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="Pressure" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2327" y="2337" flipped="0" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalDummy" name="Signal Dummy_10">
-                <parameters/>
+            <component typename="SignalDummy" name="Signal Dummy_9">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2677" y="2238" flipped="0" a="0"/>
+                    <pose x="2550.72003115384541160893" y="3613.9895010576910863" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Source2">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                    <parameter value="1" name="y"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="1988.34191115384555814671" y="2727.628192307691279" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicDummyC" name="C-Type Dummy_16">
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2202.72003115384541160893" y="3676.9895010576910863" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Source3">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                    <parameter value="1" name="y"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="1964.75313990384529461153" y="3188.6814485576910556" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalDummy" name="Signal Dummy_10">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2677.00000000000000000000" y="2238" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -251,17 +334,32 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2402" y="2264" flipped="1" a="0"/>
+                    <pose x="2402.00000000000000000000" y="2264" flipped="1" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Source4">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                    <parameter value="1" name="y"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="1919.72003115384541160893" y="3801.9895010576910863" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_11">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2678" y="2300" flipped="0" a="0"/>
+                    <pose x="2678.00000000000000000000" y="2300" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -269,17 +367,19 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2402" y="2228" flipped="1" a="0"/>
+                    <pose x="2402.00000000000000000000" y="2228" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_12">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2678" y="2269" flipped="0" a="0"/>
+                    <pose x="2678.00000000000000000000" y="2269" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -287,17 +387,19 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2402" y="2191" flipped="1" a="0"/>
+                    <pose x="2402.00000000000000000000" y="2191" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalDummy" name="Signal Dummy_13">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2678" y="2331" flipped="0" a="0"/>
+                    <pose x="2678.00000000000000000000" y="2331" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -305,7 +407,19 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2402" y="2301" flipped="1" a="0"/>
+                    <pose x="2402.00000000000000000000" y="2301" flipped="1" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalDummy" name="Signal Dummy_14">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2551.72003115384541160893" y="3675.9895010576910863" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -313,29 +427,19 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2398.896624999999" y="2743.4195" flipped="1" a="0"/>
+                    <pose x="2275.72003115384541160893" y="3603.9895010576910863" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="SignalDummy" name="Signal Dummy_14">
-                <parameters/>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2685.980125" y="2708.336" flipped="0" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalSource" name="Constant">
+            <component typename="SignalDummy" name="Signal Dummy_15">
                 <parameters>
-                    <parameter value="10000" name="Value"/>
+                    <parameter value="0" name="out, Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2046" y="2426" flipped="0" a="0"/>
+                    <pose x="2551.72003115384541160893" y="3644.9895010576910863" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -343,134 +447,153 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2398.896624999999" y="2705.4195" flipped="1" a="0"/>
+                    <pose x="2275.72003115384541160893" y="3566.9895010576910863" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="SignalDummy" name="Signal Dummy_15">
-                <parameters/>
+            <component typename="SignalDummy" name="Signal Dummy_16">
+                <parameters>
+                    <parameter value="0" name="out, Value"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2685.980125" y="2677.336" flipped="0" a="0"/>
+                    <pose x="2551.72003115384541160893" y="3706.9895010576910863" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="HydraulicDummyQ" name="Q-Type Dummy">
+            <component typename="HydraulicDummyQ" name="Q-Type Dummy_16">
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2337" flipped="1" a="0"/>
+                    <pose x="2275.72003115384541160893" y="3676.9895010576910863" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_1">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2374" flipped="0" a="0"/>
+                    <pose x="2271.34191115384555814671" y="2529.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_2">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2410" flipped="0" a="0"/>
+                    <pose x="2271.34191115384555814671" y="2492.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_3">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2447" flipped="0" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalDummy" name="Signal Dummy">
-                <parameters/>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2679" y="2362" flipped="0" a="0"/>
+                    <pose x="2271.34191115384555814671" y="2565.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_4">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2485" flipped="0" a="0"/>
+                    <pose x="2271.34191115384555814671" y="2602.628192307691279" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_5">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2559" flipped="0" a="0"/>
+                    <pose x="2247.75313990384529461153" y="2988.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_6">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2522" flipped="0" a="0"/>
+                    <pose x="2247.75313990384529461153" y="2951.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_7">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2595" flipped="0" a="0"/>
+                    <pose x="2247.75313990384529461153" y="3024.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_8">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2632" flipped="0" a="0"/>
+                    <pose x="2247.75313990384529461153" y="3061.537014807691321" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicDummyC" name="C-Type Dummy_9">
-                <parameters/>
+                <parameters>
+                    <parameter value="0" name="P1, Flow"/>
+                    <parameter value="0" name="P1, Pressure"/>
+                </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
                     <startvalue portname="P1" variable="Pressure" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2327" y="2670" flipped="0" a="0"/>
+                    <pose x="2202.72003115384541160893" y="3603.9895010576910863" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -478,7 +601,7 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2374" flipped="1" a="0"/>
+                    <pose x="2344.34191115384555814671" y="2565.628192307691279" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -486,906 +609,970 @@
                 <parameters/>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2400" y="2410" flipped="1" a="0"/>
+                    <pose x="2344.34191115384555814671" y="2529.628192307691279" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
         </objects>
         <connections>
-            <connect endport="P1" endcomponent="Q-Type Dummy" startport="P1" startcomponent="C-Type Dummy">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2337"/>
-                        <coordinate x="2372" y="2337"/>
-                        <coordinate x="2372" y="2337"/>
-                        <coordinate x="2377.5" y="2337"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_1" startport="P1" startcomponent="C-Type Dummy_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2374"/>
-                        <coordinate x="2376" y="2374"/>
-                        <coordinate x="2376" y="2374"/>
-                        <coordinate x="2377.5" y="2374"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_2" startport="P1" startcomponent="C-Type Dummy_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2410"/>
-                        <coordinate x="2376" y="2410"/>
-                        <coordinate x="2376" y="2410"/>
-                        <coordinate x="2377.5" y="2410"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_3" startport="P1" startcomponent="C-Type Dummy_3">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2447"/>
-                        <coordinate x="2386" y="2447"/>
-                        <coordinate x="2386" y="2447"/>
-                        <coordinate x="2377.5" y="2447"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_4" startport="P1" startcomponent="C-Type Dummy_4">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2485"/>
-                        <coordinate x="2376" y="2485"/>
-                        <coordinate x="2376" y="2485"/>
-                        <coordinate x="2377.5" y="2485"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_8" startport="P1" startcomponent="C-Type Dummy_6">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2522"/>
-                        <coordinate x="2372" y="2522"/>
-                        <coordinate x="2372" y="2522"/>
-                        <coordinate x="2377.5" y="2522"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_7" startport="P1" startcomponent="C-Type Dummy_5">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2559"/>
-                        <coordinate x="2376" y="2559"/>
-                        <coordinate x="2376" y="2559"/>
-                        <coordinate x="2377.5" y="2559"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_6" startport="P1" startcomponent="C-Type Dummy_7">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2595"/>
-                        <coordinate x="2376" y="2595"/>
-                        <coordinate x="2376" y="2595"/>
-                        <coordinate x="2377.5" y="2595"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_5" startport="P1" startcomponent="C-Type Dummy_8">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2632"/>
-                        <coordinate x="2386" y="2632"/>
-                        <coordinate x="2386" y="2632"/>
-                        <coordinate x="2377.5" y="2632"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_9" startport="P1" startcomponent="C-Type Dummy_9">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2349.5" y="2670"/>
-                        <coordinate x="2376" y="2670"/>
-                        <coordinate x="2376" y="2670"/>
-                        <coordinate x="2377.5" y="2670"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_4" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2218" y="2079.88"/>
-                        <coordinate x="2568" y="2079.88"/>
-                        <coordinate x="2661.5" y="2486"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_3" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2215" y="2070.88"/>
-                        <coordinate x="2580" y="2070.88"/>
-                        <coordinate x="2661.5" y="2455"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_2" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2212" y="2060.88"/>
-                        <coordinate x="2586" y="2060.88"/>
-                        <coordinate x="2661.5" y="2424"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_1" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2207" y="2050.88"/>
-                        <coordinate x="2597" y="2050.88"/>
-                        <coordinate x="2661.5" y="2393"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2203" y="2040.88"/>
-                        <coordinate x="2606" y="2040.88"/>
-                        <coordinate x="2660.5" y="2362"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_9" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2217" y="2892.5905"/>
-                        <coordinate x="2569" y="2892.5905"/>
-                        <coordinate x="2661.5" y="2517"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_8" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2212" y="2901.5905"/>
-                        <coordinate x="2578" y="2901.5905"/>
-                        <coordinate x="2662.5" y="2548"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_7" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2210" y="2910.4005"/>
-                        <coordinate x="2584" y="2910.4005"/>
-                        <coordinate x="2662.5" y="2579"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_6" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2205" y="2919.4005"/>
-                        <coordinate x="2595" y="2919.4005"/>
-                        <coordinate x="2662.5" y="2610"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_5" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2201" y="2928.4005"/>
-                        <coordinate x="2601" y="2928.4005"/>
-                        <coordinate x="2662.5" y="2641"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_12" startport="P1" startcomponent="C-Type Dummy_11">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2351.5" y="2191"/>
-                        <coordinate x="2374" y="2191"/>
-                        <coordinate x="2374" y="2191"/>
-                        <coordinate x="2379.5" y="2191"/>
+                        <coordinate x="2351.50000000000000000000" y="2191.00000000000000000000"/>
+                        <coordinate x="2374.00000000000000000000" y="2191.00000000000000000000"/>
+                        <coordinate x="2374.00000000000000000000" y="2191.00000000000000000000"/>
+                        <coordinate x="2379.50000000000000000000" y="2191.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_11" startport="P1" startcomponent="C-Type Dummy_10">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2351.5" y="2228"/>
-                        <coordinate x="2378" y="2228"/>
-                        <coordinate x="2378" y="2228"/>
-                        <coordinate x="2379.5" y="2228"/>
+                        <coordinate x="2351.50000000000000000000" y="2228.00000000000000000000"/>
+                        <coordinate x="2378.00000000000000000000" y="2228.00000000000000000000"/>
+                        <coordinate x="2378.00000000000000000000" y="2228.00000000000000000000"/>
+                        <coordinate x="2379.50000000000000000000" y="2228.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_10" startport="P1" startcomponent="C-Type Dummy_12">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2351.5" y="2264"/>
-                        <coordinate x="2378" y="2264"/>
-                        <coordinate x="2378" y="2264"/>
-                        <coordinate x="2379.5" y="2264"/>
+                        <coordinate x="2351.50000000000000000000" y="2264.00000000000000000000"/>
+                        <coordinate x="2378.00000000000000000000" y="2264.00000000000000000000"/>
+                        <coordinate x="2378.00000000000000000000" y="2264.00000000000000000000"/>
+                        <coordinate x="2379.50000000000000000000" y="2264.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_13" startport="P1" startcomponent="C-Type Dummy_13">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2351.5" y="2301"/>
-                        <coordinate x="2388" y="2301"/>
-                        <coordinate x="2388" y="2301"/>
-                        <coordinate x="2379.5" y="2301"/>
+                        <coordinate x="2351.50000000000000000000" y="2301.00000000000000000000"/>
+                        <coordinate x="2388.00000000000000000000" y="2301.00000000000000000000"/>
+                        <coordinate x="2388.00000000000000000000" y="2301.00000000000000000000"/>
+                        <coordinate x="2379.50000000000000000000" y="2301.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_9" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="C-Type Dummy_13" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2670"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2306.50000000000000000000" y="2301.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_8" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="C-Type Dummy_12" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2632"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2306.50000000000000000000" y="2264.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_7" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="C-Type Dummy_10" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2595"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2306.50000000000000000000" y="2228.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_5" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="C-Type Dummy_11" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2559"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2306.50000000000000000000" y="2191.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_6" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Q-Type Dummy_12" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2522"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_4" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2485"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_3" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2447"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_2" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2410"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_1" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2374"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2304.5" y="2337"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_13" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2306.5" y="2301"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_12" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2306.5" y="2264"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_10" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2306.5" y="2228"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_11" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2306.5" y="2191"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_12" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2291" y="2159"/>
-                        <coordinate x="2446" y="2159"/>
-                        <coordinate x="2424.5" y="2191"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2291.00000000000000000000" y="2159.00000000000000000000"/>
+                        <coordinate x="2446.00000000000000000000" y="2159.00000000000000000000"/>
+                        <coordinate x="2424.50000000000000000000" y="2191.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_11" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Q-Type Dummy_11" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2288" y="2147"/>
-                        <coordinate x="2460" y="2147"/>
-                        <coordinate x="2424.5" y="2228"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2288.00000000000000000000" y="2147.00000000000000000000"/>
+                        <coordinate x="2460.00000000000000000000" y="2147.00000000000000000000"/>
+                        <coordinate x="2424.50000000000000000000" y="2228.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_10" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Q-Type Dummy_10" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2286" y="2136"/>
-                        <coordinate x="2470" y="2136"/>
-                        <coordinate x="2424.5" y="2264"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2286.00000000000000000000" y="2136.00000000000000000000"/>
+                        <coordinate x="2470.00000000000000000000" y="2136.00000000000000000000"/>
+                        <coordinate x="2424.50000000000000000000" y="2264.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_13" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Q-Type Dummy_13" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2283" y="2125"/>
-                        <coordinate x="2486" y="2125"/>
-                        <coordinate x="2424.5" y="2301"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2283.00000000000000000000" y="2125.00000000000000000000"/>
+                        <coordinate x="2486.00000000000000000000" y="2125.00000000000000000000"/>
+                        <coordinate x="2424.50000000000000000000" y="2301.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Signal Dummy_13" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2281" y="2114"/>
-                        <coordinate x="2496" y="2114"/>
-                        <coordinate x="2422.5" y="2337"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2201.01000000000021827873" y="2030.40000000000009094947"/>
+                        <coordinate x="2615.55000000000018189894" y="2030.40000000000009094947"/>
+                        <coordinate x="2659.50000000000000000000" y="2331.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_1" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Signal Dummy_11" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2278" y="2103"/>
-                        <coordinate x="2504" y="2103"/>
-                        <coordinate x="2422.5" y="2374"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2198.19000000000005456968" y="2019.11999999999989086064"/>
+                        <coordinate x="2616.96000000000003637979" y="2019.11999999999989086064"/>
+                        <coordinate x="2659.50000000000000000000" y="2300.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_2" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Signal Dummy_12" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2275" y="2092"/>
-                        <coordinate x="2515" y="2092"/>
-                        <coordinate x="2422.5" y="2410"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2196.78000000000020008883" y="2007.83999999999991814548"/>
+                        <coordinate x="2622.59999999999990905053" y="2007.83999999999991814548"/>
+                        <coordinate x="2659.50000000000000000000" y="2269.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_9" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Signal Dummy_10" startport="out" startcomponent="Source1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2300" y="2826.9205"/>
-                        <coordinate x="2453" y="2826.9205"/>
-                        <coordinate x="2422.5" y="2670"/>
+                        <coordinate x="2056.35556625000026542693" y="2428.14443375000018932042"/>
+                        <coordinate x="2195.36999999999989086064" y="1996.55999999999994543032"/>
+                        <coordinate x="2631.05999999999994543032" y="1996.55999999999994543032"/>
+                        <coordinate x="2658.50000000000000000000" y="2238.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_5" startport="out" startcomponent="Constant">
+            <connect endport="P1" endcomponent="Q-Type Dummy_3" startport="P1" startcomponent="C-Type Dummy_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2296" y="2837.9205"/>
-                        <coordinate x="2462" y="2837.9205"/>
-                        <coordinate x="2422.5" y="2632"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_6" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2294" y="2847.9205"/>
-                        <coordinate x="2478" y="2847.9205"/>
-                        <coordinate x="2422.5" y="2595"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_7" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2287" y="2854.9205"/>
-                        <coordinate x="2498" y="2854.9205"/>
-                        <coordinate x="2422.5" y="2559"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_8" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2284" y="2863.9205"/>
-                        <coordinate x="2509" y="2863.9205"/>
-                        <coordinate x="2422.5" y="2522"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_4" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2279" y="2873.9205"/>
-                        <coordinate x="2523" y="2873.9205"/>
-                        <coordinate x="2422.5" y="2485"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_3" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2276" y="2882.9205"/>
-                        <coordinate x="2537" y="2882.9205"/>
-                        <coordinate x="2422.5" y="2447"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_13" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2201.01" y="2030.4"/>
-                        <coordinate x="2615.55" y="2030.4"/>
-                        <coordinate x="2659.5" y="2331"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_11" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2198.19" y="2019.12"/>
-                        <coordinate x="2616.96" y="2019.12"/>
-                        <coordinate x="2659.5" y="2300"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_12" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2196.78" y="2007.84"/>
-                        <coordinate x="2622.6" y="2007.84"/>
-                        <coordinate x="2659.5" y="2269"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Signal Dummy_10" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2195.37" y="1996.56"/>
-                        <coordinate x="2631.06" y="1996.56"/>
-                        <coordinate x="2658.5" y="2238"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_15" startport="P1" startcomponent="C-Type Dummy_15">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2348.396624999999" y="2705.4195"/>
-                        <coordinate x="2384.896624999999" y="2705.4195"/>
-                        <coordinate x="2384.896624999999" y="2705.4195"/>
-                        <coordinate x="2376.396624999999" y="2705.4195"/>
+                        <coordinate x="2293.84191115384555814671" y="2492.62819230769127898384"/>
+                        <coordinate x="2316.34191115384555814671" y="2492.62819230769127898384"/>
+                        <coordinate x="2316.34191115384555814671" y="2492.62819230769127898384"/>
+                        <coordinate x="2321.84191115384555814671" y="2492.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Q-Type Dummy_14" startport="P1" startcomponent="C-Type Dummy_14">
+            <connect endport="P1" endcomponent="Q-Type Dummy_2" startport="P1" startcomponent="C-Type Dummy_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2348.396624999999" y="2743.4195"/>
-                        <coordinate x="2374.896624999999" y="2743.4195"/>
-                        <coordinate x="2374.896624999999" y="2743.4195"/>
-                        <coordinate x="2376.396624999999" y="2743.4195"/>
+                        <coordinate x="2293.84191115384555814671" y="2529.62819230769127898384"/>
+                        <coordinate x="2320.34191115384555814671" y="2529.62819230769127898384"/>
+                        <coordinate x="2320.34191115384555814671" y="2529.62819230769127898384"/>
+                        <coordinate x="2321.84191115384555814671" y="2529.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_15" startport="out" startcomponent="Constant">
+            <connect endport="P1" endcomponent="Q-Type Dummy_1" startport="P1" startcomponent="C-Type Dummy_3">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2303.396624999999" y="2705.4195"/>
+                        <coordinate x="2293.84191115384555814671" y="2565.62819230769127898384"/>
+                        <coordinate x="2320.34191115384555814671" y="2565.62819230769127898384"/>
+                        <coordinate x="2320.34191115384555814671" y="2565.62819230769127898384"/>
+                        <coordinate x="2321.84191115384555814671" y="2565.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_4" startport="P1" startcomponent="C-Type Dummy_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2293.84191115384555814671" y="2602.62819230769127898384"/>
+                        <coordinate x="2330.34191115384555814671" y="2602.62819230769127898384"/>
+                        <coordinate x="2330.34191115384555814671" y="2602.62819230769127898384"/>
+                        <coordinate x="2321.84191115384555814671" y="2602.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_4" startport="out" startcomponent="Source2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2248.84191115384555814671" y="2602.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_14" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="C-Type Dummy_3" startport="out" startcomponent="Source2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2303.396624999999" y="2743.4195"/>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2248.84191115384555814671" y="2565.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_15" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="C-Type Dummy_1" startport="out" startcomponent="Source2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2308.68825" y="2816.6605"/>
-                        <coordinate x="2444.046124999999" y="2816.6605"/>
-                        <coordinate x="2421.396624999999" y="2705.4195"/>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2248.84191115384555814671" y="2529.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_2" startport="out" startcomponent="Source2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2248.84191115384555814671" y="2492.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_3" startport="out" startcomponent="Source2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2233.34191115384555814671" y="2460.62819230769127898384"/>
+                        <coordinate x="2388.34191115384555814671" y="2460.62819230769127898384"/>
+                        <coordinate x="2366.84191115384555814671" y="2492.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Q-Type Dummy_14" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Q-Type Dummy_2" startport="out" startcomponent="Source2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2311.73" y="2809.056125"/>
-                        <coordinate x="2433.4" y="2809.056125"/>
-                        <coordinate x="2421.396624999999" y="2743.4195"/>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2230.34191115384555814671" y="2448.62819230769127898384"/>
+                        <coordinate x="2402.34191115384555814671" y="2448.62819230769127898384"/>
+                        <coordinate x="2366.84191115384555814671" y="2529.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="out" endcomponent="Constant" startport="in" startcomponent="Signal Dummy_15">
+            <connect endport="in" endcomponent="Q-Type Dummy_1" startport="out" startcomponent="Source2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2667.480125" y="2677.336"/>
-                        <coordinate x="2611.342375" y="2942.893125"/>
-                        <coordinate x="2194.622625" y="2942.893125"/>
-                        <coordinate x="2058.5" y="2426"/>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2228.34191115384555814671" y="2437.62819230769127898384"/>
+                        <coordinate x="2412.34191115384555814671" y="2437.62819230769127898384"/>
+                        <coordinate x="2366.84191115384555814671" y="2565.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Signal Dummy_14" startport="out" startcomponent="Constant">
+            <connect endport="in" endcomponent="Q-Type Dummy_4" startport="out" startcomponent="Source2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2058.5" y="2426"/>
-                        <coordinate x="2193.10175" y="2953.539249999999"/>
-                        <coordinate x="2618.94675" y="2953.539249999999"/>
-                        <coordinate x="2667.480125" y="2708.336"/>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2225.34191115384555814671" y="2426.62819230769127898384"/>
+                        <coordinate x="2428.34191115384555814671" y="2426.62819230769127898384"/>
+                        <coordinate x="2366.84191115384555814671" y="2602.62819230769127898384"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_4" startport="out" startcomponent="Source2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2143.35191115384577642544" y="2332.02819230769136993331"/>
+                        <coordinate x="2557.89191115384574004565" y="2332.02819230769136993331"/>
+                        <coordinate x="2601.84191115384555814671" y="2632.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_2" startport="out" startcomponent="Source2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2140.53191115384561271640" y="2320.74819230769116984447"/>
+                        <coordinate x="2559.30191115384559452650" y="2320.74819230769116984447"/>
+                        <coordinate x="2601.84191115384555814671" y="2601.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_3" startport="out" startcomponent="Source2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2139.12191115384575823555" y="2309.46819230769142450299"/>
+                        <coordinate x="2564.94191115384546719724" y="2309.46819230769142450299"/>
+                        <coordinate x="2601.84191115384555814671" y="2570.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_1" startport="out" startcomponent="Source2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.84191115384555814671" y="2727.62819230769127898384"/>
+                        <coordinate x="2137.71191115384544900735" y="2298.18819230769122441416"/>
+                        <coordinate x="2573.40191115384550357703" y="2298.18819230769122441416"/>
+                        <coordinate x="2600.84191115384555814671" y="2539.62819230769127898384"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_7" startport="P1" startcomponent="C-Type Dummy_6">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2270.25313990384529461153" y="2951.53701480769132103887"/>
+                        <coordinate x="2292.75313990384529461153" y="2951.53701480769132103887"/>
+                        <coordinate x="2292.75313990384529461153" y="2951.53701480769132103887"/>
+                        <coordinate x="2298.25313990384529461153" y="2951.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_6" startport="P1" startcomponent="C-Type Dummy_5">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2270.25313990384529461153" y="2988.53701480769132103887"/>
+                        <coordinate x="2296.75313990384529461153" y="2988.53701480769132103887"/>
+                        <coordinate x="2296.75313990384529461153" y="2988.53701480769132103887"/>
+                        <coordinate x="2298.25313990384529461153" y="2988.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_5" startport="P1" startcomponent="C-Type Dummy_7">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2270.25313990384529461153" y="3024.53701480769132103887"/>
+                        <coordinate x="2296.75313990384529461153" y="3024.53701480769132103887"/>
+                        <coordinate x="2296.75313990384529461153" y="3024.53701480769132103887"/>
+                        <coordinate x="2298.25313990384529461153" y="3024.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_8" startport="P1" startcomponent="C-Type Dummy_8">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2270.25313990384529461153" y="3061.53701480769132103887"/>
+                        <coordinate x="2306.75313990384529461153" y="3061.53701480769132103887"/>
+                        <coordinate x="2306.75313990384529461153" y="3061.53701480769132103887"/>
+                        <coordinate x="2298.25313990384529461153" y="3061.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_8" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2225.25313990384529461153" y="3061.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_7" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2225.25313990384529461153" y="3024.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_5" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2225.25313990384529461153" y="2988.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_6" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2225.25313990384529461153" y="2951.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_7" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2209.75313990384529461153" y="2919.53701480769132103887"/>
+                        <coordinate x="2364.75313990384529461153" y="2919.53701480769132103887"/>
+                        <coordinate x="2343.25313990384529461153" y="2951.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_6" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2206.75313990384529461153" y="2907.53701480769132103887"/>
+                        <coordinate x="2378.75313990384529461153" y="2907.53701480769132103887"/>
+                        <coordinate x="2343.25313990384529461153" y="2988.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_5" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2204.75313990384529461153" y="2896.53701480769132103887"/>
+                        <coordinate x="2388.75313990384529461153" y="2896.53701480769132103887"/>
+                        <coordinate x="2343.25313990384529461153" y="3024.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_8" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2201.75313990384529461153" y="2885.53701480769132103887"/>
+                        <coordinate x="2404.75313990384529461153" y="2885.53701480769132103887"/>
+                        <coordinate x="2343.25313990384529461153" y="3061.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_8" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2119.76313990384551289026" y="2790.93701480769141198834"/>
+                        <coordinate x="2534.30313990384547651047" y="2790.93701480769141198834"/>
+                        <coordinate x="2578.25313990384529461153" y="3091.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_6" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2116.94313990384534918121" y="2779.65701480769121189951"/>
+                        <coordinate x="2535.71313990384533099132" y="2779.65701480769121189951"/>
+                        <coordinate x="2578.25313990384529461153" y="3060.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_7" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2115.53313990384549470036" y="2768.37701480769101181068"/>
+                        <coordinate x="2541.35313990384520366206" y="2768.37701480769101181068"/>
+                        <coordinate x="2578.25313990384529461153" y="3029.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_5" startport="out" startcomponent="Source3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1977.25313990384529461153" y="3188.68144855769105561194"/>
+                        <coordinate x="2114.12313990384518547216" y="2757.09701480769126646919"/>
+                        <coordinate x="2549.81313990384524004185" y="2757.09701480769126646919"/>
+                        <coordinate x="2577.25313990384529461153" y="2998.53701480769132103887"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_15" startport="P1" startcomponent="C-Type Dummy_14">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2225.22003115384541160893" y="3566.98950105769108631648"/>
+                        <coordinate x="2247.72003115384541160893" y="3566.98950105769108631648"/>
+                        <coordinate x="2247.72003115384541160893" y="3566.98950105769108631648"/>
+                        <coordinate x="2253.22003115384541160893" y="3566.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_14" startport="P1" startcomponent="C-Type Dummy_9">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2225.22003115384541160893" y="3603.98950105769108631648"/>
+                        <coordinate x="2251.72003115384541160893" y="3603.98950105769108631648"/>
+                        <coordinate x="2251.72003115384541160893" y="3603.98950105769108631648"/>
+                        <coordinate x="2253.22003115384541160893" y="3603.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_9" startport="P1" startcomponent="C-Type Dummy_15">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2225.22003115384541160893" y="3639.98950105769108631648"/>
+                        <coordinate x="2251.72003115384541160893" y="3639.98950105769108631648"/>
+                        <coordinate x="2251.72003115384541160893" y="3639.98950105769108631648"/>
+                        <coordinate x="2253.22003115384541160893" y="3639.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Dummy_16" startport="P1" startcomponent="C-Type Dummy_16">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2225.22003115384541160893" y="3676.98950105769108631648"/>
+                        <coordinate x="2261.72003115384541160893" y="3676.98950105769108631648"/>
+                        <coordinate x="2261.72003115384541160893" y="3676.98950105769108631648"/>
+                        <coordinate x="2253.22003115384541160893" y="3676.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_16" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2180.22003115384541160893" y="3676.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_15" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2180.22003115384541160893" y="3639.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_9" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2180.22003115384541160893" y="3603.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_14" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2180.22003115384541160893" y="3566.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_15" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2164.72003115384541160893" y="3534.98950105769108631648"/>
+                        <coordinate x="2319.72003115384541160893" y="3534.98950105769108631648"/>
+                        <coordinate x="2298.22003115384541160893" y="3566.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_14" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2161.72003115384541160893" y="3522.98950105769108631648"/>
+                        <coordinate x="2333.72003115384541160893" y="3522.98950105769108631648"/>
+                        <coordinate x="2298.22003115384541160893" y="3603.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_9" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2159.72003115384541160893" y="3511.98950105769108631648"/>
+                        <coordinate x="2343.72003115384541160893" y="3511.98950105769108631648"/>
+                        <coordinate x="2298.22003115384541160893" y="3639.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-Type Dummy_16" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2156.72003115384541160893" y="3500.98950105769108631648"/>
+                        <coordinate x="2359.72003115384541160893" y="3500.98950105769108631648"/>
+                        <coordinate x="2298.22003115384541160893" y="3676.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_16" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2074.73003115384562988766" y="3406.38950105769117726595"/>
+                        <coordinate x="2489.27003115384559350787" y="3406.38950105769117726595"/>
+                        <coordinate x="2533.22003115384541160893" y="3706.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_14" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2071.91003115384546617861" y="3395.10950105769097717712"/>
+                        <coordinate x="2490.68003115384544798872" y="3395.10950105769097717712"/>
+                        <coordinate x="2533.22003115384541160893" y="3675.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_15" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2070.50003115384561169776" y="3383.82950105769123183563"/>
+                        <coordinate x="2496.32003115384532065946" y="3383.82950105769123183563"/>
+                        <coordinate x="2533.22003115384541160893" y="3644.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Signal Dummy_9" startport="out" startcomponent="Source4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1932.22003115384541160893" y="3801.98950105769108631648"/>
+                        <coordinate x="2069.09003115384530246956" y="3372.54950105769103174680"/>
+                        <coordinate x="2504.78003115384535703924" y="3372.54950105769103174680"/>
+                        <coordinate x="2532.22003115384541160893" y="3613.98950105769108631648"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
                 </hopsangui>
             </connect>
         </connections>

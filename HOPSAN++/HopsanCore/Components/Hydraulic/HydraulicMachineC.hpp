@@ -195,9 +195,8 @@ namespace hopsan {
             v1e = std::max(v1,v1min);
             v2e = std::max(v2,v2min);
 
-            std::stringstream ss;
-
             dpr = dp / (pi * 2);
+            limitValue(eps, -1.0, +1.0);
             dpe = dpr * eps;    //Effective displacement
             ka = 1 / (1 - alfa);
             ap = -a3;
@@ -207,10 +206,6 @@ namespace hopsan {
 
             qp1 = dpe*w3;
             qp2 = -dpe*w3;
-
-//            ss.flush();
-//            ss << "cp1 = " << cp1;
-//            this->addDebugMessage(ss.str());
 
             pp1 = (cp1 + qp1*Zc1 + cim*(cp2*Zc1 + cp1*Zc2)) / (cim*(Zc1 + Zc2) + 1);
             pp2 = (cp2 + qp2*Zc2 + cim*(cp2*Zc1 + cp1*Zc2)) / (cim*(Zc1 + Zc2) + 1);
@@ -277,12 +272,6 @@ namespace hopsan {
             (*mpND_t3) = t3;
             (*mpND_c3) = c3;
             (*mpND_Zx3) = Zx3;
-
-
-//            ss.clear();
-//            ss << "Output = " << c1 << " " << Zc1 << " " << c2 << " " << Zc2 << " " << t3 << " " << c3 << " " << Zx3;
-//            this->addDebugMessage(ss.str());
-
         }
     };
 }
