@@ -19,6 +19,7 @@
 //! @date   2010-12-06
 //!
 //! @brief Contains a hydraulic directional3/2-valve of Q-type
+// $Id$
 
 #ifndef HYDRAULIC32DIRECTIONALVALVE_HPP_INCLUDED
 #define HYDRAULIC32DIRECTIONALVALVE_HPP_INCLUDED
@@ -106,8 +107,15 @@ namespace hopsan {
             mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
             mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
-            double num[3] = {1.0, 0.0, 0.0};
-            double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
+            double num[3];// = {1.0, 0.0, 0.0};
+            double den[3];// = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
+            num[0] = 1.0;
+            num[1] = 0.0;
+            num[2] = 0.0;
+            den[0] = 1.0;
+            den[1] = 2.0*deltah/omegah;
+            den[2] = 1.0/(omegah*omegah);
+
             filter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
         }
 
