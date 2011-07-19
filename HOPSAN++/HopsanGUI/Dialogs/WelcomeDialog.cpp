@@ -43,7 +43,7 @@
 //! Shows a cool picture, some logotypes, current version and some license information
 //!
 
-//! Constructor for the about dialog
+//! Constructor for the welcome dialog
 //! @param parent Pointer to the main window
 WelcomeDialog::WelcomeDialog(MainWindow *parent)
     : QDialog(parent)
@@ -148,7 +148,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpNewsLabel->hide();
     mpWeb->hide();
     connect(mpWeb, SIGNAL(loadFinished(bool)), this, SLOT(showNews(bool)));
-    mpWeb->load(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/news"));
+    mpWeb->load(QUrl(QString(NEWSLINK)));
     mpWeb->setMaximumHeight(70);
     mpWeb->setMaximumWidth(400);
     mpWeb->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
@@ -183,6 +183,8 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 }
 
 
+//! @brief Handles mouse move events in welcome dialog
+//! Used to colorize the large buttons (new/open/last session)
 void WelcomeDialog::mouseMoveEvent(QMouseEvent *event)
 {
     if(mpNew->underMouse())
@@ -204,18 +206,20 @@ void WelcomeDialog::mouseMoveEvent(QMouseEvent *event)
 }
 
 
+//! @brief Reimplementation of QDialog::focusNextPrevChild().
+//! Used to change color of large buttons when using keys to cycle them.
+//! @param next True if cycling forward, false if backward
 bool WelcomeDialog::focusNextPrevChild(bool next)
 {
     QDialog::focusNextPrevChild(next);
-
-    qDebug() << "Key pressed!";
     this->updateGraphics();
 
     return true;    //Silly, but will supress warning message
 }
 
 
-
+//! @brief Updates the graphics in welcome dialog.
+//! Changes color of the large selection buttons, and the descriptive text beneath them.
 void WelcomeDialog::updateGraphics()
 {
     if(mpNew->hasFocus())
@@ -248,6 +252,7 @@ void WelcomeDialog::updateGraphics()
 }
 
 
+//! @brief Creates a new blank model and exits welcome dialog.
 void WelcomeDialog::createNewModel()
 {
     gpMainWindow->mpProjectTabs->addNewProjectTab();
@@ -258,6 +263,7 @@ void WelcomeDialog::createNewModel()
 }
 
 
+//! @brief Opens load dialog, and closes the welcome dialog if a model was loaded.
 void WelcomeDialog::loadExistingModel()
 {
     gpMainWindow->mpProjectTabs->loadModel();
@@ -271,12 +277,12 @@ void WelcomeDialog::loadExistingModel()
 }
 
 
+//! @brief Loads all models from last session and closes the welcome dialog.
 void WelcomeDialog::loadLastSession()
 {
 
     for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
     {
-        qDebug() << "Opening last session model: " << gConfig.getLastSessionModels().at(i);
         gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
     }
     gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
@@ -286,6 +292,7 @@ void WelcomeDialog::loadLastSession()
 }
 
 
+//! @brief Opens selected recent model from the list and closes the welcome dialog.
 void WelcomeDialog::openRecentModel()
 {
     gpMainWindow->mpProjectTabs->loadModel(mModelList.at(mpRecentList->currentIndex().row()));
@@ -295,25 +302,32 @@ void WelcomeDialog::openRecentModel()
 }
 
 
+//! @brief Loads specified URL in external web browser.
+//! @param link Contains the URL to open
 void WelcomeDialog::urlClicked(const QUrl &link)
 {
     QDesktopServices::openUrl(link);
 }
 
 
+//! @brief Opens the download page in external browser.
+//! @todo Make a permanent link to this page in case it changes.
+//! @todo Make a define that contains this link, in case it is used elsewhere.
 void WelcomeDialog::openDownloadPage()
 {
-    QDesktopServices::openUrl(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/archive?l=en"));
+    QDesktopServices::openUrl(QUrl(QString(DOWNLOADLINK)));
 }
 
 
-void WelcomeDialog::showNews(bool loadedSuccesfully)
+//! @brief Slot that shows the news box if the page was successfully loaded.
+//! @param loadedSuccessfully True if a page was loaded (this does NOT mean that the loaded page is the correct one!)
+void WelcomeDialog::showNews(bool loadedSuccessfully)
 {
-    qDebug() << mpWeb->page()->currentFrame()->metaData().size();
+    //Verify that the loaded page is the correct one, otherwise do not show it
     if(mpWeb->page()->currentFrame()->metaData().contains("type", "hopsanngnews"))
     {
-        mpNewsLabel->setVisible(loadedSuccesfully);
-        mpWeb->setVisible(loadedSuccesfully);
+        mpNewsLabel->setVisible(loadedSuccessfully);
+        mpWeb->setVisible(loadedSuccessfully);
 
         QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversion").value();
         double webVersion = webVersionString.toDouble();

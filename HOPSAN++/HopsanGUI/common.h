@@ -29,6 +29,10 @@
 
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
+#define HOPSANLINK "http://tiny.cc/hopsan"
+#define NEWSLINK "http://tiny.cc/hopsannews"
+#define DOWNLOADLINK "http://tiny.cc/hopsanarchive"
+
 
 //Development defines, swich commen block with release++ bellow on real release
 #define MAINPATH "../"

@@ -511,6 +511,11 @@ void MainWindow::createActions()
     mpHelpAction->setText("User Guide");
     connect(mpHelpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
 
+    mpWebsiteAction = new QAction(this);
+    mpWebsiteAction->setText("Open Hopsan Website");
+    connect(mpWebsiteAction, SIGNAL(triggered()), this, SLOT(openHopsanURL()));
+
+    //! @todo Check for new version could probably work in a better way...
     mpNewVersionsAction = new QAction(this);
     mpNewVersionsAction->setText("Check For New Versions");
     connect(mpNewVersionsAction, SIGNAL(triggered()), this, SLOT(openArchiveURL()));
@@ -645,6 +650,7 @@ void MainWindow::createMenus()
     mpSimulationMenu->addAction(mpPlotAction);
 
     mpHelpMenu->addAction(mpHelpAction);
+    mpHelpMenu->addAction(mpWebsiteAction);
     mpHelpMenu->addAction(mpNewVersionsAction);
     mpHelpMenu->addAction(mpAboutAction);
 
@@ -773,9 +779,15 @@ void MainWindow::openRecentModel()
 }
 
 
+void MainWindow::openHopsanURL()
+{
+    QDesktopServices::openUrl(QUrl(QString(HOPSANLINK)));
+}
+
+
 void MainWindow::openArchiveURL()
 {
-    QDesktopServices::openUrl(QUrl("http://www.iei.liu.se/flumes/system-simulation/hopsanng/archive?l=en"));
+    QDesktopServices::openUrl(QUrl(QString(DOWNLOADLINK)));
 }
 
 
