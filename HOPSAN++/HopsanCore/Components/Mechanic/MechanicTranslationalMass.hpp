@@ -137,16 +137,16 @@ namespace hopsan {
             if(x2<xMin)
             {
                 x2=xMin;
-                v2=std::max(0.0, v2);
-                mInt.initializeValues(v2, xMin);
-                mFilter.initializeValues(c1-c2, v2);
+                v2=0.0;
+                mInt.initializeValues(0.0, xMin);
+                mFilter.initializeValues(0.0, 0.0);
             }
             if(x2>xMax)
             {
                 x2=xMax;
-                v2=std::min(0.0, v2);
-                mInt.initializeValues(v2, xMax);
-                mFilter.initializeValues(c1-c2, v2);
+                v2=0.0;
+                mInt.initializeValues(0.0, xMax);
+                mFilter.initializeValues(0.0, 0.0);
             }
 
             v1 = -v2;
@@ -161,6 +161,13 @@ namespace hopsan {
             (*mpND_f2) = f2;
             (*mpND_x2) = x2;
             (*mpND_v2) = v2;
+            double tmp;
+            if((mTime>9.) && (mTime<9.+5.*mTimestep))
+            {
+                tmp=c1-c2;
+                tmp=c1-c2;
+            }
+
 
 //            if((mTime>.5) && (mTime<.5001))
 //            {
