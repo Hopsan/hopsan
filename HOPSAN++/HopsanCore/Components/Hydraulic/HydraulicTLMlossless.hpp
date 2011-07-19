@@ -129,7 +129,7 @@ namespace hopsan {
             //! @todo now when we update, in the next step we will read a value that is delayed two times, or??
             (*mpND_c1) = mDelayedC1.update(c1);
             (*mpND_Zc1) = mZc;
-            (*mpND_c2) = mDelayedC1.update(c2);
+            (*mpND_c2) = mDelayedC2.update(c2);
             (*mpND_Zc2) = mZc;
 
         }
