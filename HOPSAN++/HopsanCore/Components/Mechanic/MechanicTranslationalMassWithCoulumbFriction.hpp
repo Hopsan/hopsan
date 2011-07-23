@@ -158,25 +158,25 @@ namespace hopsan {
                 fe = -fk;
             }
             v2 = mFilter.update(f-fe);
-            v1 = -v2;
             x2 = mInt.update(v2);
-            if(x2>xmax)
+            if(x2<xMin)
             {
-                x2=xmax;
-                v2=0;
-                v1=0;
+                x2=xMin;
+                v2=std::max(0.0, v2);
+                mInt.initializeValues(0, xMin);
+                mFilter.initializeValues(0, 0);
             }
-            else if(x2<xmin)
+            else if(x2>xMax)
             {
-                x2=xmin;
-                v2=0;
-                v1=0;
+                x2=xMax;
+                v2=std::min(0.0, v2);
+                mInt.initializeValues(0, xMax);
+                mFilter.initializeValues(0, 0);
             }
             x1 = -x2 + mLength;
+            v1 = -v2;
             f1 = c1 + Zx1*v1;
             f2 = c2 + Zx2*v2;
-
-
 
             //Write new values to nodes
             (*mpND_f1) = f1;
