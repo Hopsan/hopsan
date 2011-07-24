@@ -128,6 +128,7 @@ public:
     QAction *mpNewVersionsAction;
     QAction *mpSaveToWrappedCodeAction;
     QAction *mpCreateSimulinkWrapperAction;
+    QAction *mpShowLossesAction;
 
 public slots:
     void show();

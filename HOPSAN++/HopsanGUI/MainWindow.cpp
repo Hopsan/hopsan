@@ -545,6 +545,11 @@ void MainWindow::createActions()
     this->addAction(mpCreateSimulinkWrapperAction);
     connect(mpCreateSimulinkWrapperAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 
+    mpShowLossesAction = new QAction(this);
+    mpShowLossesAction->setShortcut(QKeySequence("Ctrl+L"));
+    this->addAction(mpShowLossesAction);
+    connect(mpShowLossesAction, SIGNAL(triggered()), mpProjectTabs, SLOT(showLosses()));
+
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);
     mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);

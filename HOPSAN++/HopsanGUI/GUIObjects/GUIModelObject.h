@@ -103,6 +103,7 @@ public slots:
     void hideName(undoStatus undoSettings = NOUNDO);
     void showName(undoStatus undoSettings = NOUNDO);
     void setIcon(graphicsType);
+    void showLosses();
 
 signals:
     void nameChanged();
@@ -144,6 +145,8 @@ protected:
     QGraphicsLineItem *mpTempLine;
 
     GUIModelObjectDisplayName *mpNameText;
+
+    QGraphicsTextItem *mpLossesDisplay;
 
 protected slots:
     void snapNameTextPosition(QPointF pos);

@@ -30,6 +30,7 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../GUIConnector.h"
 #include "../GUIPort.h"
+#include "../Widgets/MessageWidget.h"
 #include "../UndoStack.h"
 #include "../Configuration.h"
 #include "../MainWindow.h"
@@ -95,6 +96,9 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     {
         //maybe something different
     }
+
+    mpLossesDisplay = new QGraphicsTextItem(this);
+    mpLossesDisplay->setVisible(false);
 }
 
 
@@ -331,6 +335,92 @@ void GUIModelObject::setIcon(graphicsType gfxType)
         {
             mpIcon->setPos(this->boundingRect().width(),0);
         }
+    }
+}
+
+
+void GUIModelObject::showLosses()
+{
+    if(getTypeCQS() == "S")
+        return;
+
+    double totalLosses=0.0;
+    double hydraulicLosses = 0.0;
+    double mechanicLosses = 0.0;
+    int generation = mpParentContainerObject->getNumberOfPlotGenerations()-1;
+
+    for(int p=0; p<mPortListPtrs.size(); ++p)
+    {
+
+        if(mPortListPtrs[p]->getNodeType() == "NodeHydraulic")
+        {
+            QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Pressure");
+            QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Flow");
+            for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
+            {
+                totalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                hydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+            }
+        }
+        else if(mPortListPtrs[p]->getNodeType() == "NodeMechanic")
+        {
+            QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
+            QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
+            for(int s=0; s<vForce.size()-1; ++s)
+            {
+                totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+            }
+        }
+        else
+        {
+          //Do something...
+        }
+    }
+
+    if(totalLosses != 0)
+    {
+        if(getTypeCQS() == "Q")
+        {
+            totalLosses *= -1;
+            hydraulicLosses *= -1;
+            mechanicLosses *= -1;
+        }
+        QString totalString;
+        totalString.setNum(totalLosses);
+        QString totalAddedString;
+        totalAddedString.setNum(-totalLosses);
+        QString hydraulicString;
+        hydraulicString.setNum(hydraulicLosses);
+        QString mechanicString;
+        mechanicString.setNum(mechanicLosses);
+
+        QString message;
+        if(totalLosses > 0)
+            message.append(this->getName() + ": Total losses = " + totalString + " J");
+        else
+            message.append(this->getName() + ": Total added energy = " + totalAddedString + " J");
+        if(hydraulicLosses > 0)
+            message.append(" (hydraulic " + hydraulicString + " J)");
+        if(mechanicLosses > 0)
+            message.append(" (mechanic " + mechanicString + " J)");
+        gpMainWindow->mpMessageWidget->printGUIInfoMessage(message);
+
+        QString label;
+        if(totalLosses > 0)
+        {
+            label = "<p><span style=\"background-color:lightyellow; color:red\">&#160;&#160;Total losses: <b>" + totalString + " J</b>&#160;&#160;</span></p>";
+        }
+        else
+        {
+            label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;Total losses: <b>" + totalAddedString + " J</b>&#160;&#160;</span></p>";
+        }
+        mpLossesDisplay->setHtml(label);
+        mpLossesDisplay->setTransform(this->transform().inverted());
+        mpLossesDisplay->setRotation(360-this->rotation());
+        mpLossesDisplay->setPos(mapFromScene(getCenterPos()).x()-mpLossesDisplay->boundingRect().width()/2.0,
+                                mapFromScene(getCenterPos()).y()-mpLossesDisplay->boundingRect().height()/2.0);
+        mpLossesDisplay->show();
     }
 }
 

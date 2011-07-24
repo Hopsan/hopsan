@@ -40,7 +40,7 @@ namespace hopsan {
     {
 
     private:
-        double m, b, fs, fk, xmin, xmax;                                                                        //Changeable parameters
+        double m, b, fs, fk, xMin, xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
         double mLength;                                                                                     //This length is not accesible by the user, it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
@@ -65,8 +65,8 @@ namespace hopsan {
             b = 10;
             fs = 50;
             fk = 45;
-            xmin = 0;
-            xmax = 1;
+            xMin = 0;
+            xMax = 1;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
@@ -77,8 +77,8 @@ namespace hopsan {
             registerParameter("b", "Viscous Friction Coefficient", "[Ns/m]", b);
             registerParameter("f_s", "Static Friction Force", "[N]",  fs);
             registerParameter("f_k", "Kinetic Friction Force", "[N]",  fk);
-            registerParameter("x_min", "Lower Limit of Position", "[m]",  xmin);
-            registerParameter("x_max", "Upper Limit of Position", "[m]",  xmax);
+            registerParameter("x_min", "Lower Limit of Position", "[m]",  xMin);
+            registerParameter("x_max", "Upper Limit of Position", "[m]",  xMax);
         }
 
 

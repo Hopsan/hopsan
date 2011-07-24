@@ -2243,6 +2243,16 @@ void GUIContainerObject::collectPlotData()
 }
 
 
+void GUIContainerObject::showLosses()
+{
+    GUIModelObjectMapT::iterator moit;
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    {
+        moit.value()->showLosses();
+    }
+}
+
+
 //! @brief Returns time vector for specified plot generation.
 //! @param generation Generation to fetch time vector from
 QVector<double> GUIContainerObject::getTimeVector(int generation)

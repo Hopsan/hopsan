@@ -204,6 +204,9 @@ public slots:
     //Plot data slots
     void collectPlotData();
 
+    //Losses
+    void showLosses();
+
 signals:
 
     //Selection signals

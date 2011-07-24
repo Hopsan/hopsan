@@ -717,3 +717,9 @@ void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 {
     qobject_cast<GUISystem*>(getCurrentContainer())->createSimulinkSourceFiles();
 }
+
+
+void ProjectTabWidget::showLosses()
+{
+    qobject_cast<GUISystem*>(getCurrentContainer())->showLosses();
+}
