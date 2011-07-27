@@ -53,6 +53,15 @@ friend class UndoWidget;
 
 public:
     UndoStack(GUIContainerObject *parentSystem);
+
+    QDomElement toXml();
+    void fromXml(QDomElement &undoElement);
+    void clear(QString errorMsg = "");
+    void newPost(QString type = "");
+    void insertPost(QString str);
+    void undoOneStep();
+    void redoOneStep();
+
     void registerDeletedObject(GUIModelObject *item);
     void registerDeletedConnector(GUIConnector *item);
     void registerAddedObject(GUIModelObject *item);
@@ -74,15 +83,9 @@ public:
     void registerDeletedTextWidget(GUITextWidget *item);
     void registerModifiedTextWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color);
     void registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos);
-    void clear(QString errorMsg = "");
-    void newPost(QString type = "");
-    void insertPost(QString str);
-    void undoOneStep();
-    void redoOneStep();
 
 private:
     GUIContainerObject *mpParentContainerObject;
-    QList< QList<QString> > mStack;
     int mCurrentStackPosition;
 
     QDomElement getCurrentPost();

@@ -270,6 +270,9 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
         }
         this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
     }
+
+    guiStuff.appendChild(mpUndoStack->toXml());
+
     return guiStuff;
 }
 
@@ -382,6 +385,14 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
         double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
         setScriptFile(guiStuff.firstChildElement(HMF_SCRIPTFILETAG).attribute("path"));
+
+        bool dontClearUndo = false;
+        if(!guiStuff.firstChildElement(HMF_UNDO).isNull())
+        {
+            QDomElement undoElement = guiStuff.firstChildElement(HMF_UNDO);
+            mpUndoStack->fromXml(undoElement);
+            dontClearUndo = true;
+        }
 
         mpParentProjectTab->getGraphicsView()->setZoomFactor(zoom);
         //emit mpParentProjectTab->getGraphicsView()->zoomChange(zoom);
@@ -504,7 +515,10 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
         //Deselect all components
         this->deselectAll();
-        this->mpUndoStack->clear();
+        if(!dontClearUndo)
+        {
+            this->mpUndoStack->clear();
+        }
         //Only do this for the root system
         //! @todo maybe can do this for subsystems to (even if we dont see them right now)
         if (this->mpParentContainerObject == 0)

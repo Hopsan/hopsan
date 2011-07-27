@@ -53,13 +53,33 @@ UndoStack::UndoStack(GUIContainerObject *parentSystem) : QObject()
 }
 
 
+QDomElement UndoStack::toXml()
+{
+    return mUndoRoot;
+}
+
+
+void UndoStack::fromXml(QDomElement &undoElement)
+{
+    mUndoRoot.clear();
+    mDomDocument.replaceChild(undoElement.cloneNode(), mDomDocument.firstChild());
+    mUndoRoot = undoElement;
+    mCurrentStackPosition = mUndoRoot.lastChildElement().attribute("number").toInt();
+    gpMainWindow->mpUndoWidget->refreshList();
+
+    gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
+}
+
+
 //! @brief Clears all contents in the undo stack
 //! @param errorMsg (optional) Error message that will be displayed in message widget
 void UndoStack::clear(QString errorMsg)
 {
+    gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
+
     mCurrentStackPosition = -1;
     mUndoRoot.clear();
-    mUndoRoot = mDomDocument.createElement("hopsanundo");
+    mUndoRoot = mDomDocument.createElement(HMF_UNDO);
     mDomDocument.appendChild(mUndoRoot);
     QDomElement firstPost = appendDomElement(mUndoRoot, "post");
     firstPost.setAttribute("number", mCurrentStackPosition);

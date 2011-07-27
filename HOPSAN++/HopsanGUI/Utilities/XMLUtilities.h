@@ -147,5 +147,6 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 
 #define HMF_CAFVERSIONTAG "version"
 
+#define HMF_UNDO "hopsanundo"
 
 #endif // XMLUTILITIES_H
