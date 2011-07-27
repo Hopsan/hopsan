@@ -77,6 +77,7 @@ public:
     void addConnection(GUIConnector *pConnector);
     void removeConnection(GUIConnector *pConnector);
     bool isConnected();
+    QVector<GUIPort *> getConnectedPorts();
 
     GUIModelObject *mpParentGuiModelObject;
 

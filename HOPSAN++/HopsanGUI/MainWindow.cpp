@@ -113,9 +113,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 
-    //Load configuration from settings file
-    gConfig.loadFromXml();
-
     //Update style sheet setting
     if(!gConfig.getUseNativeStyleSheet())
     {

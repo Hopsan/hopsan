@@ -575,6 +575,21 @@ bool GUIPort::isConnected()
 }
 
 
+//! @brief Returns a vector with all ports connected to this port.
+QVector<GUIPort *> GUIPort::getConnectedPorts()
+{
+    QVector<GUIPort *> vector;
+    for(int i=0; i<mConnectedConnectors.size(); ++i)
+    {
+        if(mConnectedConnectors.at(i)->getStartPort() == this)
+            vector.append(mConnectedConnectors.at(i)->getEndPort());
+        else
+            vector.append(mConnectedConnectors.at(i)->getStartPort());
+    }
+    return vector;
+}
+
+
 //! @todo Do we really need both direction and heading
 qreal GUIPort::getPortHeading()
 {

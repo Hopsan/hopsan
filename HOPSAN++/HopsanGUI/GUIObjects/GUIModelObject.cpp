@@ -360,30 +360,28 @@ void GUIModelObject::showLosses()
 
     qDebug() << "The Matrix is a pig.";
 
-    // TEMPORARY HACK, ignore components with multi ports until we figure out how to solve it...
     for(int p=0; p<mPortListPtrs.size(); ++p)
     {
-        if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT")
-        {
-            gpMainWindow->mpMessageWidget->printGUIWarningMessage(getName() + " contains multiports. Energy calculation not possible (yet).");
-            return;
-        }
-    }
-    // END OF TEMPORARY HACK
-
-    for(int p=0; p<mPortListPtrs.size(); ++p)
-    {
-        qDebug() << "The Matrix is a parrot.";
-
         if(mPortListPtrs[p]->getNodeType() == "NodeHydraulic")
         {
-            qDebug() << "The Matrix is 1. My name is " << mPortListPtrs[p]->getName() << " in " << getName();
-
-            if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT")
+            //Power port, so we must cycle all connected ports and ask for their data
+            if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
             {
-                //! @todo Cycle sub ports and do the stuff for each of them...
+                QVector<GUIPort *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
+                for(int i=0; i<vConnectedPorts.size(); ++i)
+                {
+                    QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
+                    QString portName = vConnectedPorts.at(i)->getName();
+                    QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, componentName, portName, "Pressure");
+                    QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, componentName, portName, "Flow");
+                    for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
+                    {
+                        totalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        hydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    }
+                }
             }
-            else
+            else    //Normal port!
             {
                 QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Pressure");
                 QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Flow");
@@ -398,19 +396,39 @@ void GUIModelObject::showLosses()
         else if(mPortListPtrs[p]->getNodeType() == "NodeMechanic")
         {
             qDebug() << "The Matrix is a a sweet dude.";
-            //! @todo Add multiport check here too...
-            QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
-            QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
-            for(int s=0; s<vForce.size()-1; ++s)
+
+            //Power port, so we must cycle all connected ports and ask for their data
+            if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
             {
-            totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-            mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-        }
+                QVector<GUIPort *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
+                for(int i=0; i<vConnectedPorts.size(); ++i)
+                {
+                    QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
+                    QString portName = vConnectedPorts.at(i)->getName();
+                    QVector<double> vForce = mpParentContainerObject->getPlotData(generation, componentName, portName, "Force");
+                    QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, componentName, portName, "Velocity");
+                    for(int s=0; s<vForce.size()-1; ++s) //Minus one because of integration method
+                    {
+                        totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    }
+                }
+            }
+            else    //Normal port!
+            {
+                QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
+                QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
+                for(int s=0; s<vForce.size()-1; ++s)
+                {
+                    totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                }
+            }
         }
         else
         {
             qDebug() << "The Matrix is something else.";
-            //Do something else...
+            //Do something else?!
         }
     }
 
