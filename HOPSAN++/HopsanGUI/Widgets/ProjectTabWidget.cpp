@@ -300,6 +300,11 @@ void ProjectTab::saveAs()
 //! @brief Slot that tells the current system to collect plot data from core
 void ProjectTab::collectPlotData()
 {
+    //If we collect plot data, we can plot and calculate losses, so enable these buttons
+    gpMainWindow->mpPlotAction->setEnabled(true);
+    gpMainWindow->mpShowLossesAction->setEnabled(true);
+
+    //Tell container to do the job
     this->mpGraphicsView->getContainerPtr()->collectPlotData();
 }
 
@@ -379,6 +384,8 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     this->setPalette(gConfig.getPalette());
 
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(updateToolBarsToNewTab()));
+    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(refreshUndoWidgetList()));
 
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
@@ -691,7 +698,7 @@ void ProjectTabWidget::tabChanged()
 
         getCurrentContainer()->connectMainWindowActions();
 
-        getCurrentContainer()->updateUndoButtons();
+        getCurrentContainer()->updateMainWindowButtons();
         getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
 
         if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->getSystem()->getGfxType())

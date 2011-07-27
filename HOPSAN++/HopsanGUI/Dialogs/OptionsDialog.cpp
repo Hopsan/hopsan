@@ -227,7 +227,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
 
-    connect(gpMainWindow->mpOptionsAction,    SIGNAL(triggered()),    this,                   SLOT(show()));
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarLabel,     SLOT(setEnabled(bool)));
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarSpinBox,   SLOT(setEnabled(bool)));
     connect(mpBackgroundColorButton,        SIGNAL(clicked()),      this,                   SLOT(colorDialog()));

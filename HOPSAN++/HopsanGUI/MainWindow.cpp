@@ -56,35 +56,16 @@ CopyStack gCopyStack;
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-{    
-    //! @todo Much of the stuff here has nothing todo with creating a main window. It should probably be moved to InitializeWorkspace, or somewhere else.
+{
+    gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
 
-    //Create globals
-    gpMainWindow = this;    //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
-    gConfig = Configuration();
-    gCopyStack = CopyStack();
-    mpConfig = &gConfig;        //! @todo Is this pointer variable needed?
-
-    //Set the name and size of the main window
-    this->setObjectName("MainWindow");
-    int sh = qApp->desktop()->screenGeometry().height();
-    int sw = qApp->desktop()->screenGeometry().width();
-    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
-    int w = this->size().width();
-    int h = this->size().height();
-    int x = (sw - w)/2;
-    int y = (sh - h)/2;
-    this->move(x, y);       //Move window to center of screen
-    this->setWindowTitle("Hopsan");
-    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+    //Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
     this->setMouseTracking(true);
 
-    //Create dialogs
-    mpAboutDialog = new AboutDialog(this);
-    mpHelpDialog = new HelpDialog(this);
+    mpConfig = &gConfig;        //!< @todo Is this pointer variable needed?
 
-    //Create the message widget and its dock
+    //Create the message widget and its dock (must be done before everything that uses it!)
     mpMessageDock = new QDockWidget(tr("Messages"), this);
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
@@ -93,6 +74,39 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     mpMessageWidget->checkMessages();
     mpMessageWidget->printGUIInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
+
+
+    //Load configuration from settings file
+    gConfig.loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
+
+    //Update style sheet setting
+    if(!gConfig.getUseNativeStyleSheet())
+    {
+        setStyleSheet(gConfig.getStyleSheet());
+        setPalette(gConfig.getPalette());
+    }
+    qApp->setFont(gConfig.getFont());
+
+    //Set the size and position of the main window
+    int sh = qApp->desktop()->screenGeometry().height();
+    int sw = qApp->desktop()->screenGeometry().width();
+    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
+    int w = this->size().width();
+    int h = this->size().height();
+    int x = (sw - w)/2;
+    int y = (sh - h)/2;
+    this->move(x, y);       //Move window to center of screen
+
+    //Set name and icon of main window
+    this->setWindowTitle("Hopsan");
+    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+
+    //Set dock widget corner owner
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+
+    //Create dialogs
+    mpAboutDialog = new AboutDialog(this);
+    mpHelpDialog = new HelpDialog(this);
 
     //Create the Python widget
     mpPyDockWidget = new PyDockWidget(this, this);
@@ -117,12 +131,19 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibDock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
 
-    //Set dock widget corner owner
-    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    //Create the statusbar widget
+    mpStatusBar = new QStatusBar();
+    mpStatusBar->setObjectName("statusBar");
+    this->setStatusBar(mpStatusBar);
+
+    //Create the undo widget and the options dialog
+    mpUndoWidget = new UndoWidget(this);
+    mpOptionsDialog = new OptionsDialog(this);
 
     //Create the central widget for the main window
     mpCentralWidget = new QWidget(this);
     mpCentralWidget->setObjectName("centralwidget");
+    this->setCentralWidget(mpCentralWidget);
 
     //Create the grid layout for the centralwidget
     mpCentralGridLayout = new QGridLayout(mpCentralWidget);
@@ -133,64 +154,9 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs->setObjectName("projectTabs");
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0,4,4);
 
-    //Initialize the help message popup
-    mpHelpPopup = new QWidget(this);
-    mpHelpPopupIcon = new QLabel();
-    mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
-    mpHelpPopupLabel = new QLabel();
-    mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
-    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
-    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
-    mpHelpPopupGroupBoxLayout->setContentsMargins(3,3,3,3);
-    mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
-    mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
-    mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
-    mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
-    mpHelpPopup->setLayout(mpHelpPopupLayout);
-    mpHelpPopup->setBaseSize(100,30);
-    mpHelpPopup->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,224,255); } QLabel { margin : 0px; } ");
-    mpHelpPopup->hide();
-    mpHelpPopupTimer = new QTimer(this);
-    connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
-
-    //Set the correct position of the popup message in the central widget
-    mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
-    mpCentralGridLayout->setColumnMinimumWidth(0,5);
-    mpCentralGridLayout->setColumnStretch(0,0);
-    mpCentralGridLayout->setColumnStretch(1,0);
-    mpCentralGridLayout->setColumnStretch(2,0);
-    mpCentralGridLayout->setColumnStretch(3,1);
-    mpCentralGridLayout->setRowMinimumHeight(0,25);
-    mpCentralGridLayout->setRowStretch(0,0);
-    mpCentralGridLayout->setRowStretch(1,0);
-    mpCentralGridLayout->setRowStretch(2,1);
-
-    //Create actions, toolbars and menus
-    this->createActions();
-    this->createToolbars();
-    this->createMenus();
-
-    //Set the central widget
-    this->setCentralWidget(mpCentralWidget);
-
-    //Create the Statusbar
-    mpStatusBar = new QStatusBar();
-    mpStatusBar->setObjectName("statusBar");
-    this->setStatusBar(mpStatusBar);
-
-    //Create the undo widget and the options dialog
-    mpUndoWidget = new UndoWidget(this);
-    mpOptionsDialog = new OptionsDialog(this);
-
-    //Load default libraries
-    QString componentPath = gExecPath + QString(COMPONENTPATH);
-    componentPath.chop(1);
-    mpLibrary->loadLibrary(componentPath);
-    for(int i=0; i<gConfig.getUserLibs().size(); ++i)
-    {
-        mpLibrary->loadExternalLibrary(gConfig.getUserLibs().at(i));
-    }
+    //Create the system parameter widget and hide it
+    mpSystemParametersWidget = new SystemParametersWidget(this);
+    mpSystemParametersWidget->setVisible(false);
 
     //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
@@ -216,18 +182,48 @@ MainWindow::MainWindow(QWidget *parent)
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
     tabifyDockWidget(mpPyDockWidget, mpMessageDock);
 
-    //Create the system parameter widget and hide it
-    mpSystemParametersWidget = new SystemParametersWidget(this);
-    mpSystemParametersWidget->setVisible(false);
+    //Initialize the help message popup
+    mpHelpPopup = new QWidget(this);
+    mpHelpPopupIcon = new QLabel();
+    mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
+    mpHelpPopupLabel = new QLabel();
+    mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
+    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
+    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
+    mpHelpPopupGroupBoxLayout->setContentsMargins(3,3,3,3);
+    mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
+    mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
+    mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
+    mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
+    mpHelpPopup->setLayout(mpHelpPopupLayout);
+    mpHelpPopup->setBaseSize(100,30);
+    mpHelpPopup->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,224,255); } QLabel { margin : 0px; } ");
+    mpHelpPopup->hide();
+    mpHelpPopupTimer = new QTimer(this);
+    connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
 
-    //Connect tab change slot with toolbars and undo widget
-    //! @todo Can't this be done in the creator for ProjectTabWidget?
-    connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
-    connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
+    //Set the correct position of the help popup message in the central widget
+    mpCentralGridLayout->addWidget(mpHelpPopup, 1,1,1,1);
+    mpCentralGridLayout->setColumnMinimumWidth(0,5);
+    mpCentralGridLayout->setColumnStretch(0,0);
+    mpCentralGridLayout->setColumnStretch(1,0);
+    mpCentralGridLayout->setColumnStretch(2,0);
+    mpCentralGridLayout->setColumnStretch(3,1);
+    mpCentralGridLayout->setRowMinimumHeight(0,25);
+    mpCentralGridLayout->setRowStretch(0,0);
+    mpCentralGridLayout->setRowStretch(1,0);
+    mpCentralGridLayout->setRowStretch(2,1);
+
+    //Create actions, toolbars and menus
+    this->createActions();
+    this->createToolbars();
+    this->createMenus();
 }
 
 
 //! @brief Destructor
+//! @todo Shouldn't all member pointers be deleted here?
 MainWindow::~MainWindow()
 {
     delete mpProjectTabs;
@@ -236,9 +232,19 @@ MainWindow::~MainWindow()
 }
 
 
-//! @brief Initializes the workspace by either opening specified model, loading last session or showing the Welcome dialog.
+//! @brief Initializes the workspace.
+//! All startup events that does not involve creating the main window and its widgets/dialogs belongs here.
 void MainWindow::initializeWorkspace()
 {
+    //Load default and user specified libraries
+    QString componentPath = gExecPath + QString(COMPONENTPATH);
+    componentPath.chop(1);
+    mpLibrary->loadLibrary(componentPath);
+    for(int i=0; i<gConfig.getUserLibs().size(); ++i)
+    {
+        mpLibrary->loadExternalLibrary(gConfig.getUserLibs().at(i));
+    }
+
     //Create the plot widget, only once! :)
     mpPlotWidget = new PlotWidget(this);
 
@@ -452,6 +458,7 @@ void MainWindow::createActions()
     mpOptionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
     mpOptionsAction->setToolTip("Options (Ctrl+Shift+O)");
     mpOptionsAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
+    connect(mpOptionsAction, SIGNAL(triggered()), mpOptionsDialog, SLOT(show()));
 
     mpAlignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
     mpAlignXAction->setText("Align Vertical");
@@ -511,6 +518,9 @@ void MainWindow::createActions()
     mpHelpAction->setText("User Guide");
     connect(mpHelpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
 
+    mpNewVersionsAction = new QAction(this);
+    mpNewVersionsAction->setText("Check For New Versions");
+    connect(mpNewVersionsAction, SIGNAL(triggered()), this, SLOT(openArchiveURL()));
     mpWebsiteAction = new QAction(this);
     mpWebsiteAction->setText("Open Hopsan Website");
     connect(mpWebsiteAction, SIGNAL(triggered()), this, SLOT(openHopsanURL()));
@@ -545,7 +555,7 @@ void MainWindow::createActions()
     this->addAction(mpCreateSimulinkWrapperAction);
     connect(mpCreateSimulinkWrapperAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 
-    mpShowLossesAction = new QAction(this);
+    mpShowLossesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Losses.png"), tr("Calculate Losses"), this);
     mpShowLossesAction->setShortcut(QKeySequence("Ctrl+L"));
     this->addAction(mpShowLossesAction);
     connect(mpShowLossesAction, SIGNAL(triggered()), mpProjectTabs, SLOT(showLosses()));
@@ -627,6 +637,8 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
+    mpSimulationMenu->addAction(mpPlotAction);
+    mpSimulationMenu->addAction(mpShowLossesAction);
 
     mpEditMenu->addAction(mpUndoAction);
     mpEditMenu->addAction(mpRedoAction);
@@ -651,8 +663,6 @@ void MainWindow::createMenus()
 
     mpToolsMenu->addAction(mpOptionsAction);
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
-
-    mpSimulationMenu->addAction(mpPlotAction);
 
     mpHelpMenu->addAction(mpHelpAction);
     mpHelpMenu->addAction(mpWebsiteAction);
@@ -700,6 +710,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpFinishTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
     mpSimToolBar->addAction(mpPlotAction);
+    mpSimToolBar->addAction(mpShowLossesAction);
     mpSimToolBar->addAction(mpPropertiesAction);
     mpSimToolBar->addAction(mpOpenSystemParametersAction);
 

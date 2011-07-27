@@ -1927,19 +1927,15 @@ bool GUIContainerObject::isUndoEnabled()
 
 
 //! @brief Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
-void GUIContainerObject::updateUndoButtons()
+void GUIContainerObject::updateMainWindowButtons()
 {
-    if(mUndoDisabled)
-    {
-        gpMainWindow->mpUndoAction->setDisabled(true);
-        gpMainWindow->mpRedoAction->setDisabled(true);
-    }
-    else
-    {
-        gpMainWindow->mpUndoAction->setDisabled(false);
-        gpMainWindow->mpRedoAction->setDisabled(false);
-    }
+    gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
+    gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
+
+    gpMainWindow->mpPlotAction->setDisabled(mPlotData.isEmpty());
+    gpMainWindow->mpShowLossesAction->setDisabled(mPlotData.isEmpty());
 }
+
 
 //! @brief Sets the iso graphics option for the model
 void GUIContainerObject::setGfxType(graphicsType gfxType)
@@ -2245,6 +2241,13 @@ void GUIContainerObject::collectPlotData()
 
 void GUIContainerObject::showLosses()
 {
+    //We should not be here if there is no plot data, but let's check to be sure
+    if(mPlotData.isEmpty())
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Attempted to calculate losses for a model that has not been simulated.");
+        return;
+    }
+
     GUIModelObjectMapT::iterator moit;
     for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {

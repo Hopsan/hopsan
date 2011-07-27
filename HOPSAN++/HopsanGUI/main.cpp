@@ -28,6 +28,8 @@
 
 #include "common.h"
 #include "MainWindow.h"
+#include "Configuration.h"
+#include "CopyStack.h"
 #include "Dialogs/WelcomeDialog.h"
 
 //Global stuff
@@ -40,22 +42,26 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    //Create global variables
     gExecPath = qApp->applicationDirPath().append('/');
+    gConfig = Configuration();
+    gCopyStack = CopyStack();
 
+    //Load settings
     loadApplicationFonts();
 
+    //Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     QSplashScreen splash(pixmap);
     splash.show();
-    //splash.raise();
 
+    //Create the mainwindow
     MainWindow mainwindow;
 
+    //Show splash screen, show main window and initialize workspace
     QTimer::singleShot(1000, &splash, SLOT(close()));
     QTimer::singleShot(400, &mainwindow, SLOT(show()));
-    QTimer::singleShot(751, &mainwindow, SLOT(initializeWorkspace()));
-
-    //splash.finish(&mainwindow);
+    QTimer::singleShot(500, &mainwindow, SLOT(initializeWorkspace()));
 
     return a.exec();
 }

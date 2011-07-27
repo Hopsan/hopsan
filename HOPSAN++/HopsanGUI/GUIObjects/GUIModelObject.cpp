@@ -98,6 +98,7 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     }
 
     mpLossesDisplay = new QGraphicsTextItem(this);
+    mpLossesDisplay->setFlags(QGraphicsItem::ItemIgnoresTransformations);
     mpLossesDisplay->setVisible(false);
 }
 
@@ -341,42 +342,79 @@ void GUIModelObject::setIcon(graphicsType gfxType)
 
 void GUIModelObject::showLosses()
 {
+    qDebug() << "What is the Matrix?";
+
     if(getTypeCQS() == "S")
         return;
+
+    if(mpLossesDisplay->isVisible())        //If losses are visible, hide it and do no calculations.
+    {                                       //This will make the losses button work as a show/hide toggle button.
+        mpLossesDisplay->hide();
+        return;
+    }
 
     double totalLosses=0.0;
     double hydraulicLosses = 0.0;
     double mechanicLosses = 0.0;
     int generation = mpParentContainerObject->getNumberOfPlotGenerations()-1;
 
+    qDebug() << "The Matrix is a pig.";
+
+    // TEMPORARY HACK, ignore components with multi ports until we figure out how to solve it...
     for(int p=0; p<mPortListPtrs.size(); ++p)
     {
+        if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT")
+        {
+            gpMainWindow->mpMessageWidget->printGUIWarningMessage(getName() + " contains multiports. Energy calculation not possible (yet).");
+            return;
+        }
+    }
+    // END OF TEMPORARY HACK
+
+    for(int p=0; p<mPortListPtrs.size(); ++p)
+    {
+        qDebug() << "The Matrix is a parrot.";
 
         if(mPortListPtrs[p]->getNodeType() == "NodeHydraulic")
         {
-            QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Pressure");
-            QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Flow");
-            for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
+            qDebug() << "The Matrix is 1. My name is " << mPortListPtrs[p]->getName() << " in " << getName();
+
+            if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT")
             {
-                totalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                hydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                //! @todo Cycle sub ports and do the stuff for each of them...
+            }
+            else
+            {
+                QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Pressure");
+                QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Flow");
+
+                for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
+                {
+                    totalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    hydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                }
             }
         }
         else if(mPortListPtrs[p]->getNodeType() == "NodeMechanic")
         {
+            qDebug() << "The Matrix is a a sweet dude.";
+            //! @todo Add multiport check here too...
             QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
             QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
             for(int s=0; s<vForce.size()-1; ++s)
             {
-                totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-            }
+            totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+            mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+        }
         }
         else
         {
-          //Do something...
+            qDebug() << "The Matrix is something else.";
+            //Do something else...
         }
     }
+
+    qDebug() << "The Matris is a monkey.";
 
     if(totalLosses != 0)
     {
@@ -392,8 +430,12 @@ void GUIModelObject::showLosses()
         totalAddedString.setNum(-totalLosses);
         QString hydraulicString;
         hydraulicString.setNum(hydraulicLosses);
+        QString hydraulicAddedString;
+        hydraulicAddedString.setNum(-hydraulicLosses);
         QString mechanicString;
         mechanicString.setNum(mechanicLosses);
+        QString mechanicAddedString;
+        mechanicAddedString.setNum(-mechanicLosses);
 
         QString message;
         if(totalLosses > 0)
@@ -409,19 +451,46 @@ void GUIModelObject::showLosses()
         QString label;
         if(totalLosses > 0)
         {
-            label = "<p><span style=\"background-color:lightyellow; color:red\">&#160;&#160;Total losses: <b>" + totalString + " J</b>&#160;&#160;</span></p>";
+            label = "<p><span style=\"background-color:lightyellow; color:red\"><b>&#160;&#160;Total losses: " + totalString + " J&#160;&#160;</b>";
         }
         else
         {
-            label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;Total losses: <b>" + totalAddedString + " J</b>&#160;&#160;</span></p>";
+            label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;Added energy: <b>" + totalAddedString + " J</b>&#160;&#160;";
         }
+        if(hydraulicLosses > 0 && hydraulicLosses != totalLosses)
+        {
+            label.append("<br>&#160;&#160;Hydraulic losses: <b>" + hydraulicString + " J</b>&#160;&#160;");
+        }
+        else if(hydraulicLosses < 0 && hydraulicLosses != totalLosses)
+        {
+            label.append("<br><font color=\"green\">&#160;&#160;Added hydraulic energy: <b>" + hydraulicAddedString + " J</b>&#160;&#160;</font>");
+        }
+        if(mechanicLosses > 0 && mechanicLosses != totalLosses)
+        {
+            label.append("<br>&#160;&#160;Mechanic losses: <b>" + mechanicString + " J</b>&#160;&#160;");
+        }
+        else if(mechanicLosses < 0 && mechanicLosses != totalLosses)
+        {
+            label.append("<br><font color=\"green\">&#160;&#160;Added mechanic energy: <b>" + mechanicAddedString + " J</b>&#160;&#160;</font>");
+        }
+        label.append("</span></p>");
         mpLossesDisplay->setHtml(label);
-        mpLossesDisplay->setTransform(this->transform().inverted());
-        mpLossesDisplay->setRotation(360-this->rotation());
-        mpLossesDisplay->setPos(mapFromScene(getCenterPos()).x()-mpLossesDisplay->boundingRect().width()/2.0,
-                                mapFromScene(getCenterPos()).y()-mpLossesDisplay->boundingRect().height()/2.0);
+
+        QPointF pt;
+        QPointF localCenter = this->boundingRect().center();
+        QTransform transf;
+        transf.rotate(-(this->rotation()));
+        if (this->mIsFlipped)
+            transf.scale(-1.0,1.0);
+        pt.rx() = -mpLossesDisplay->boundingRect().width()/2.0;
+        pt.ry() = -mpLossesDisplay->boundingRect().height()/2.0;
+        pt = transf*pt;
+        mpLossesDisplay->setPos(localCenter + pt);
         mpLossesDisplay->show();
+        mpLossesDisplay->setZValue(20);
     }
+
+    qDebug() << "Hopsan is the Matrix.";
 }
 
 
