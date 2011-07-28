@@ -1,0 +1,52 @@
+% ************* Document Style ************
+% - Bibliography Style
+% - LaTeX Packages
+% - Equation Numbering
+% - Custom Symbols
+% - Source Code
+% *****************************************
+
+% *********** Bibliography Style **********
+
+\bibliographystyle{abbrvnat}
+
+% ************ LaTeX Packages *************
+
+\usepackage[latin1]{inputenc}							%Swedish characters
+\usepackage{graphicx}									%Enable figures
+\usepackage{float}										%Enable figure placements
+\usepackage[round,comma,authoryear,sort&compress]{natbib}	%Bibliography
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{textcomp}									%Degree symbol, trademark
+\usepackage{listings}									%Source code
+\usepackage{color}
+\usepackage{subfigure}
+\usepackage{needspace}									%Avoid undesired page breaks
+
+% ********** Equation Numbering ***********
+
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+
+% ************ Custom Symbols *************
+
+\newcommand{\reg}{$\mbox{}^{\textregistered}$\hspace{1ex}}	%Registered trademark
+\def\trademark{{\hbox{\tiny TM}}}
+%$^{\mathrm{TM}}$ - kan skrivas så, men blir lite stort
+
+% ************** Source code **************
+
+\definecolor{listingsgray}{gray}{0.9}
+\definecolor{darkred}{rgb}{0.7,0,0}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+\lstset
+{
+	language=C,
+	linewidth=90mm,
+	frame=TB,
+	basicstyle=\scriptsize\ttfamily,
+	keywordstyle=\color{blue}\ttfamily\scriptsize,
+	commentstyle=\color{darkgreen}\scriptsize\ttfamily,
+	stringstyle=\color{darkred}\ttfamily\scriptsize,
+	framerule=0.5pt
+}
