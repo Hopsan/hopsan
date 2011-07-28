@@ -54,6 +54,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 
     mIgnoreNextContextMenuEvent = false;
     mCtrlKeyPressed = false;
+    mShiftKeyPressed = false;
     mLeftMouseButtonPressed = false;
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
@@ -153,9 +154,9 @@ void GraphicsView::dropEvent(QDropEvent *event)
         if(text == "HOPSANDRAGCOPY")
         {
             //These booleans must be reset here, because they are not automatically reset when dropping things.
-            //It doesn't really matter if it will be incorrect, because keeping the ctrl key pressed after a drop
+            //It doesn't really matter if it will be incorrect, because keeping the shift key pressed after a drop
             //and attempting to do more ctrl-stuff does not make any sense anyway.
-            mCtrlKeyPressed = false;
+            mShiftKeyPressed = false;
             mLeftMouseButtonPressed = false;
 
             //Paste the drag copy component
@@ -178,6 +179,8 @@ void GraphicsView::dropEvent(QDropEvent *event)
         mpContainerObject->addGUIModelObject(text, this->mapToScene(position.toPoint()).toPoint());
         this->setFocus();
     }
+
+    this->setDragMode(NoDrag);
 }
 
 
@@ -218,6 +221,14 @@ bool GraphicsView::isCtrlKeyPressed()
 {
     return mCtrlKeyPressed;
 }
+
+
+//! @brief Returns whether or not shift key is pressed
+bool GraphicsView::isShiftKeyPressed()
+{
+    return mShiftKeyPressed;
+}
+
 
 bool GraphicsView::isLeftMouseButtonPressed()
 {
@@ -299,8 +310,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     bool doNotForwardEvent = false;
     bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
-    //bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);   //Commented because it is not used, to avoid compile warnings
-    //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);
+    bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
+    //bool altPressed = event->modifiers().testFlag(Qt::AltModifier); //Commented because it is not used, to avoid compile warnings
 
     //qDebug() << "shiftPressed = " << shiftPressed;
     //qDebug() << "event->key() = " << event->key();
@@ -452,6 +463,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             this->setDragMode(RubberBandDrag);
         }
     }
+    else if (shiftPressed)
+    {
+        mShiftKeyPressed = true;
+    }
 
     if(!doNotForwardEvent)
     {
@@ -474,6 +489,10 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     {
         mCtrlKeyPressed = false;
         this->setDragMode(RubberBandDrag);
+    }
+    else if(event->key() == Qt::Key_Shift)
+    {
+        mShiftKeyPressed = false;
     }
 
     QGraphicsView::keyReleaseEvent(event);

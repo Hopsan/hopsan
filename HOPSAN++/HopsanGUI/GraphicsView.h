@@ -46,6 +46,7 @@ public:
     void setContainerPtr(GUIContainerObject *pContainer);
     GUIContainerObject *getContainerPtr();
     bool isCtrlKeyPressed();
+    bool isShiftKeyPressed();
     bool isLeftMouseButtonPressed();
     void setIgnoreNextContextMenuEvent();
     void setZoomFactor(double zoomFactor);
@@ -89,6 +90,7 @@ private:
     void createMenus();
     QColor mIsoColor;
     bool mCtrlKeyPressed;
+    bool mShiftKeyPressed;
     bool mLeftMouseButtonPressed;
     bool mIgnoreNextContextMenuEvent;
     double mZoomFactor;

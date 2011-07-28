@@ -680,7 +680,7 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mousePressEvent(event);
 
-    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isCtrlKeyPressed())
+    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isShiftKeyPressed())
     {
         mpParentContainerObject->deselectAll();
         this->select();
