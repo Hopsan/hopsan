@@ -32,6 +32,7 @@
 
 #include <cstring>
 #include <limits>
+#include <complex>
 
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
@@ -368,10 +369,7 @@ PlotTab *PlotWindow::getCurrentPlotTab()
 //! @param dataUnit Unit of variable
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath)
 {
-    //getCurrentPlotTab()->getPlot()->replot();
-    qDebug() << "dataUnit = " << dataUnit;
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
-    qDebug() << "dataUnit = " << dataUnit;
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelPath, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
     pTempCurve->updatePlotInfoDockVisibility();
@@ -473,6 +471,18 @@ void PlotWindow::loadFromXml()
 }
 
 
+void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
+{
+    addPlotTab();
+    getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+    getCurrentPlotTab()->updateLabels();
+    PlotCurve *pNewCurve = new PlotCurve(curve->getGeneration(), curve->getComponentName(), curve->getPortName(), curve->getDataName(), curve->getDataUnit(), curve->getAxisY(), curve->getContainerObjectPtr()->getModelFileInfo().filePath(), getCurrentPlotTab());
+    getCurrentPlotTab()->addCurve(pNewCurve);
+    pNewCurve->toFFT();
+    pNewCurve->updatePlotInfoDockVisibility();
+}
+
+
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::close()
 {
@@ -564,6 +574,12 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpColorButton->setFixedSize(25, 25);
 
+    mpFrequencyAnalysisButton = new QToolButton(this);
+    mpFrequencyAnalysisButton->setToolTip("Frequency Analysis");
+    mpFrequencyAnalysisButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-FrequencyAnalysis.png"));
+    mpFrequencyAnalysisButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpFrequencyAnalysisButton->setFixedSize(25, 25);
+
     mpScaleButton = new QToolButton(this);
     mpScaleButton->setToolTip("Scale Curve");
     mpScaleButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
@@ -602,22 +618,24 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpCloseButton->setFixedSize(20, 20);
 
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpColorBlob,            0,  0);
-    mpLayout->addWidget(mpGenerationLabel,      0,  1);
-    mpLayout->addWidget(mpPreviousButton,       0,  2);
-    mpLayout->addWidget(mpNextButton,           0,  3);
-    mpLayout->addWidget(mpSizeSpinBox,          0,  4);
-    mpLayout->addWidget(mpCloseButton,          0,  5);
-    mpLayout->addWidget(mpColorButton,          1,  2);
-    mpLayout->addWidget(mpScaleButton,          1,  3);
-    mpLayout->addWidget(mpAutoUpdateCheckBox,   1,  4,1,2);
+    mpLayout->addWidget(mpColorBlob,                0,  0);
+    mpLayout->addWidget(mpGenerationLabel,          0,  1);
+    mpLayout->addWidget(mpPreviousButton,           0,  2);
+    mpLayout->addWidget(mpNextButton,               0,  3);
+    mpLayout->addWidget(mpSizeSpinBox,              0,  4);
+    mpLayout->addWidget(mpCloseButton,              0,  5);
+    mpLayout->addWidget(mpFrequencyAnalysisButton,  1,  1);
+    mpLayout->addWidget(mpColorButton,              1,  2);
+    mpLayout->addWidget(mpScaleButton,              1,  3);
+    mpLayout->addWidget(mpAutoUpdateCheckBox,       1,  4,  1,  2);
 
     setLayout(mpLayout);
 
-    connect(mpColorBlob,            SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setActive(bool)));
-    connect(mpPreviousButton,       SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setPreviousGeneration()));
-    connect(mpNextButton,           SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setNextGeneration()));
-    connect(mpAutoUpdateCheckBox,   SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
+    connect(mpColorBlob,                SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setActive(bool)));
+    connect(mpPreviousButton,           SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setPreviousGeneration()));
+    connect(mpNextButton,               SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setNextGeneration()));
+    connect(mpAutoUpdateCheckBox,       SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
+    connect(mpFrequencyAnalysisButton,  SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(performFrequencyAnalysis()));
 }
 
 
@@ -1441,7 +1459,6 @@ void PlotTab::update()
         mMarkerPtrs.at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
         mMarkerPtrs.at(i)->setYValue(mpPlot->invTransform(QwtPlot::yLeft, mpPlot->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
     }
-
     mpPlot->replot();
 }
 
@@ -1878,7 +1895,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     }
     assert(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
 
-    mpContainerObject->incrementOpenPlotCurves();;
+    mpContainerObject->incrementOpenPlotCurves();
     mGeneration = generation;
     mComponentName = componentName;
     mPortName = portName;
@@ -2070,6 +2087,70 @@ void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double 
     mOffsetX=offsetX;
     mOffsetY=offsetY;
     updateCurve();
+}
+
+
+//! @brief Converts the plot curve to its frequency spectrum by using FFT
+void PlotCurve::toFFT()
+{
+    //Vector size has to be an even potential of 2.
+    //Calculate largets potential that is smaller than or equal to the vector size.
+    int n = pow(2, int(log2(mDataVector.size())));
+    if(n != mDataVector.size())     //Vector is not an exact potential, so reduce it
+    {
+        QString oldString, newString;
+        oldString.setNum(mDataVector.size());
+        newString.setNum(n);
+        QMessageBox::information(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
+                                 "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
+        reduceVectorSize(mDataVector, n);
+        reduceVectorSize(mTimeVector, n);
+    }
+
+    QVector<double> data;
+    for(int i=0; i<n; ++i)
+    {
+        data.append(mDataVector.at(i));
+        data.append(0);
+        qDebug() << "[" << mDataVector.at(i) << "]";
+    }
+
+    //Apply the fourier transform
+    FFT(data);
+
+    //Create a complex vector
+    QVector< std::complex<double> > vComplex;
+    for(int i=0; i<2*n; i+=2)
+    {
+        vComplex.append(std::complex<double>(data[i], data[i+1]));
+    }
+
+    //Scalar multiply complex vector with its conjugate, and divide it with its size
+    mDataVector.clear();
+    for(int i=0; i<n/2; ++i)        //FFT is symmetric, so only use first half
+    {
+        mDataVector.append(real(vComplex[i]*conj(vComplex[i]))/n);              //Slaling
+    }
+
+    //Create the x vector (frequency)
+    double max = mTimeVector.last();
+    mTimeVector.clear();
+    for(int i=0; i<n/2; ++i)
+    {
+        mTimeVector.append(double(i)/max);
+    }
+
+    mDataName = "Value";
+    mDataUnit = "-";
+
+    updateCurve();
+    mpParentPlotTab->changeXVector(mTimeVector, "", "", "Frequency", "Hz");
+    mpParentPlotTab->update();
+    updatePlotInfoBox();
+
+    mpPlotInfoBox->mpNextButton->setDisabled(true);
+    mpPlotInfoBox->mpPreviousButton->setDisabled(true);
+    mpPlotInfoBox->mpFrequencyAnalysisButton->setDisabled(true);
 }
 
 
@@ -2328,6 +2409,12 @@ void PlotCurve::updateCurve()
 void PlotCurve::setAutoUpdate(bool value)
 {
     mAutoUpdate = value;
+}
+
+
+void PlotCurve::performFrequencyAnalysis()
+{
+    mpParentPlotTab->mpParentPlotWindow->performFrequencyAnalysis(this);
 }
 
 

@@ -1028,7 +1028,8 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 
     vector<Port*>::iterator pit;
     Component *pMinLevelComp=0;
-    size_t min = std::numeric_limits<size_t>::max();
+    //size_t min = std::numeric_limits<size_t>::max();
+    size_t min = (size_t)-1;
     for (pit=pNode->mPortPtrs.begin(); pit!=pNode->mPortPtrs.end(); ++pit)
     {
         if ((*pit)->getComponent()->getModelHierarchyDepth() < min)

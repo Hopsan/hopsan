@@ -48,6 +48,7 @@ class GUISystem;
 class PlotTabWidget;
 class PlotTab;
 class PlotMarker;
+class PlotCurve;
 
 class PlotWindow : public QMainWindow
 {
@@ -80,6 +81,7 @@ public slots:
     void createPlotWindowFromTab();
     void saveToXml();
     void loadFromXml();
+    void performFrequencyAnalysis(PlotCurve *curve);
 
 private:
     QGridLayout *mpLayout;
@@ -154,6 +156,7 @@ private:
     QGridLayout *mpLayout;
     QSpinBox *mpSizeSpinBox;
     QToolButton *mpColorButton;
+    QToolButton *mpFrequencyAnalysisButton;
     QToolButton *mpScaleButton;
     QCheckBox *mpAutoUpdateCheckBox;
     QLabel *mpLabel;
@@ -301,6 +304,7 @@ public:
     void setGeneration(int generation);
     void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
+    void toFFT();
 
 public slots:
     void setLineWidth(int);
@@ -316,6 +320,7 @@ public slots:
     void setPreviousGeneration();
     void setNextGeneration();
     void setAutoUpdate(bool value);
+    void performFrequencyAnalysis();
 
 private slots:
     void setActive(bool value);

@@ -48,5 +48,7 @@ qreal dist(QPointF &rPoint1, QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
 QString parseVariableDescription(QString input);
 QString parseVariableUnit(QString input);
+void FFT(QVector<double> &data);
+void reduceVectorSize(QVector<double> &vector, int newSize);
 
 #endif // GUIUTILITIES_H
