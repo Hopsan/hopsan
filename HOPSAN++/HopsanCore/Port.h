@@ -59,6 +59,7 @@ namespace hopsan {
         virtual void writeNode(const size_t &idx, const double &value, const size_t portIdx=0);
 
         virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0);
+        virtual double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx=0);
 
         virtual void saveLogData(std::string filename, const size_t portIdx=0);
         virtual void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx=0);
@@ -123,6 +124,7 @@ namespace hopsan {
     private:
         std::string mPortName;
         Node* mpNode;
+        Node* mpNCDummyNode; //NotConnected dummy node
 
         bool mConnectionRequired;
 
@@ -159,6 +161,7 @@ namespace hopsan {
         void writeNode(const size_t &idx, const double &value, const size_t portIdx);
 
         double *getNodeDataPtr(const size_t idx, const size_t portIdx);
+        double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx);
 
         void saveLogData(std::string filename, const size_t portIdx=0);
         void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx=0);

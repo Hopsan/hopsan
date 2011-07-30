@@ -47,6 +47,7 @@ Port::Port(string node_type, string portname, Component *portOwner, Port *pParen
     mConnectedPorts.clear();
     mpNode = 0;
     mpStartNode = 0;
+    mpNCDummyNode = 0;
 }
 
 
@@ -63,6 +64,12 @@ Port::~Port()
         {
 //FIXA            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
         }
+    }
+
+    //Remove dummy node if it exists
+    if (mpNCDummyNode != 0)
+    {
+        delete mpNCDummyNode;
     }
 }
 
@@ -158,10 +165,29 @@ void Port::writeNode(const size_t &idx, const double &value, const size_t /*port
     }
 }
 
-
 double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/)
 {
     return mpNode->getDataPtr(idx);
+}
+
+//! Get a ptr to the data variable in the node, if node is not created (port not connected) return ptr to dummy node data
+//! @param [in] idx The id of the data variable to return ptr to
+//! @param [in] defaultValue Default value if port not connected
+double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t /*portIdx*/)
+{
+    if (mpNode != 0)
+    {
+        return mpNode->getDataPtr(idx);
+    }
+    else
+    {
+        if (mpNCDummyNode == 0)
+        {
+            mpNCDummyNode = HopsanEssentials::getInstance()->createNode(mNodeType);
+        }
+        mpNCDummyNode->setData(idx, defaultValue);
+        return mpNCDummyNode->getDataPtr(idx);
+    }
 }
 
 
@@ -664,6 +690,11 @@ void MultiPort::writeNode(const size_t &idx, const double &value, const size_t p
 double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx)
 {
     return mSubPortsVector[portIdx]->getNodeDataPtr(idx);
+}
+
+double *MultiPort::getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getSafeNodeDataPtr(idx, defaultValue);
 }
 
 void MultiPort::saveLogData(std::string filename, const size_t portIdx)

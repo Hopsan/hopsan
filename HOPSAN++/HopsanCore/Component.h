@@ -165,7 +165,7 @@ class ComponentSystem; //Forward declaration
         //Virtual functions
         virtual void simulateOneTimestep();
         virtual void finalize();
-        virtual void secretFinalize();
+        //virtual void secretFinalize();
         virtual void setTimestep(const double timestep);
 
         //Stop a running simulation
@@ -214,7 +214,7 @@ class ComponentSystem; //Forward declaration
         std::string mName;
         std::string mTypeName;
         Parameters *mParameters;
-        std::vector<double*> mDummyNDptrs; //This vector is used by components to store dummy NodeData pointers that are created for non connected optional ports
+        //std::vector<double*> mDummyNDptrs; //This vector is used by components to store dummy NodeData pointers that are created for non connected optional ports
         PortPtrMapT mPortPtrMap;
         double mMeasuredTime;
     };

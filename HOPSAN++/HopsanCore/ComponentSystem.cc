@@ -2845,7 +2845,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
         {
             mComponentSignalptrs[s]->finalize();
         }
-        mComponentSignalptrs[s]->secretFinalize();
+//        mComponentSignalptrs[s]->secretFinalize();
     }
 
     //C components
@@ -2859,7 +2859,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
         {
             mComponentCptrs[c]->finalize();
         }
-        mComponentCptrs[c]->secretFinalize();
+//        mComponentCptrs[c]->secretFinalize();
     }
 
     //Q components
@@ -2873,7 +2873,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
         {
             mComponentQptrs[q]->finalize();
         }
-        mComponentQptrs[q]->secretFinalize();
+//        mComponentQptrs[q]->secretFinalize();
     }
 
     //loadStartValuesFromSimulation();
