@@ -2107,29 +2107,18 @@ void PlotCurve::toFFT()
         reduceVectorSize(mTimeVector, n);
     }
 
-    QVector<double> data;
-    for(int i=0; i<n; ++i)
-    {
-        data.append(mDataVector.at(i));
-        data.append(0);
-        qDebug() << "[" << mDataVector.at(i) << "]";
-    }
+    //Create a complex vector
+    QVector< std::complex<double> > vComplex = realToComplex(mDataVector);
 
     //Apply the fourier transform
-    FFT(data);
-
-    //Create a complex vector
-    QVector< std::complex<double> > vComplex;
-    for(int i=0; i<2*n; i+=2)
-    {
-        vComplex.append(std::complex<double>(data[i], data[i+1]));
-    }
+    FFT(vComplex);
 
     //Scalar multiply complex vector with its conjugate, and divide it with its size
     mDataVector.clear();
     for(int i=0; i<n/2; ++i)        //FFT is symmetric, so only use first half
     {
-        mDataVector.append(real(vComplex[i]*conj(vComplex[i]))/n);              //Slaling
+        //! @todo Should we compensate for only using haft the vector, to maintain energy density?
+        mDataVector.append(real(vComplex[i]*conj(vComplex[i]))/n);
     }
 
     //Create the x vector (frequency)

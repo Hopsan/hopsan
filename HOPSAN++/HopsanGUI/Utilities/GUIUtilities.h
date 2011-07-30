@@ -32,6 +32,7 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QDebug>
+#include <complex>
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
@@ -48,7 +49,8 @@ qreal dist(QPointF &rPoint1, QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
 QString parseVariableDescription(QString input);
 QString parseVariableUnit(QString input);
-void FFT(QVector<double> &data);
+QVector< std::complex<double> > realToComplex(QVector<double> realVector);
+void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
 
 #endif // GUIUTILITIES_H

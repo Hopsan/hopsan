@@ -29,6 +29,7 @@
 #include <QStringList>
 #include <limits>
 #include <math.h>
+#include <complex>
 
 #include "GUIUtilities.h"
 
@@ -258,6 +259,20 @@ QString parseVariableUnit(QString input)
 }
 
 
+//! @brief Converts a vector of real numbers to a vector of complex numbers with i=0
+//! @param realVector Vector with real numbers
+//! @returns Vector with complex numbers
+QVector< complex<double> > realToComplex(QVector<double> realVector)
+{
+    QVector< complex<double> > complexVector;
+    for(int i=0; i<realVector.size(); ++i)
+    {
+        complexVector.append(std::complex<double>(realVector[i], 0));
+    }
+    return complexVector;
+}
+
+
 
 //! @brief Forward fast fourier transform
 //! Transforms given vector into its fourier transform.
@@ -266,50 +281,56 @@ QString parseVariableUnit(QString input)
 //! V. Myrnyy, A Simple and Efficient FFT Implementation in C++, Dr.Dobbs, 2007
 //! http://drdobbs.com/cpp/199500857
 //! @param data Vector with data
-void FFT(QVector<double> &data)
+void FFT(QVector< complex<double> > &data)
 {
-    long nn = data.size()/2;
+    unsigned long n = data.size();       // n = data.size()
 
-    unsigned long n, mmax, m, j, istep, i;
+    unsigned long mmax, m, j, istep, i;
     double wtemp, wr, wpr, wpi, wi, theta;
     double tempr, tempi;
 
-    // reverse-binary reindexing
-    n = nn<<1;
+    // Reverse-binary reindexing
     j=1;
-    for (i=1; i<n; i+=2) {
-        if (j>i) {
-            qSwap(data[j-1], data[i-1]);
-            qSwap(data[j], data[i]);
+    for (i=0; i<n; ++i)
+    {
+        if (j>i)
+        {
+            qDebug() << "j = " << j;
+            swap(data[j-1].real(), data[i].real());     //Even numbers
+            swap(data[j-1].imag(), data[i].imag());         //Odd numbers
         }
-        m = nn;
-        while (m>=2 && j>m) {
+        m = n>>1;
+        while (m>=2 && j>m)
+        {
             j -= m;
-            m >>= 1;
+            m >>= 1;    //m = m/2
         }
         j += m;
     };
 
-    // here begins the Danielson-Lanczos section
-    mmax=2;
-    while (n>mmax) {
+    // Here begins the Danielson-Lanczos section
+    mmax=1;
+    while (n>mmax)
+    {
         istep = mmax<<1;
-        theta = -(2*M_PI/mmax);
+        theta = -(M_PI/mmax);
         wtemp = sin(0.5*theta);
         wpr = -2.0*wtemp*wtemp;
         wpi = sin(theta);
         wr = 1.0;
         wi = 0.0;
-        for (m=1; m < mmax; m += 2) {
-            for (i=m; i <= n; i += istep) {
+        for (m=0; m < mmax; m++)
+        {
+            for (i=m; i < n; i += istep)
+            {
                 j=i+mmax;
-                tempr = wr*data[j-1] - wi*data[j];
-                tempi = wr * data[j] + wi*data[j-1];
+                tempr = wr*data[j].real() - wi*data[j].imag();
+                tempi = wr*data[j].imag() + wi*data[j].real();
 
-                data[j-1] = data[i-1] - tempr;
-                data[j] = data[i] - tempi;
-                data[i-1] += tempr;
-                data[i] += tempi;
+                data[j].real() = data[i].real() - tempr;
+                data[j].imag() = data[i].imag() - tempi;
+                data[i].real() += tempr;
+                data[i].imag() += tempi;
             }
             wtemp=wr;
             wr += wr*wpr - wi*wpi;
