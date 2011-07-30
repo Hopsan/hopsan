@@ -193,10 +193,7 @@ class ComponentSystem; //Forward declaration
         typeCQS mTypeCQS;
         double mTimestep, mDesiredTimestep;
         double mTime;
-        bool mIsComponentC; //!< @todo we should nou need these bools, we can check type==CQSTYPE in the isComponent*() functions
-        bool mIsComponentQ;
         bool mIsComponentSystem;
-        bool mIsComponentSignal;
 
         size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
 

@@ -467,11 +467,7 @@ Component::Component(string name)
     mName = name;
     mTimestep = 0.001;
 
-    mIsComponentC = false;
-    mIsComponentQ = false;
     mIsComponentSystem = false;
-    mIsComponentSignal = false;
-    //mTypeCQS = "";
     mTypeCQS = Component::UNDEFINEDCQSTYPE;
 
     mpSystemParent = 0;
@@ -636,30 +632,6 @@ Component::typeCQS Component::getTypeCQS()
 }
 
 
-////! Convert the C, Q or S type from enum to string
-////! @todo This function may not need to be meber in Component, (maybe enum should be free aswell), this function may be completely useless
-//string Component::convertTypeCQS2String(typeCQS type)
-//{
-//    switch (type)
-//    {
-//    case C :
-//        return "C";
-//        break;
-//    case Q :
-//        return "Q";
-//        break;
-//    case S :
-//        return "S";
-//        break;
-//    case UNDEFINEDCQSTYPE :
-//        return "NOCQSTYPE";
-//        break;
-//    default :
-//        return "Invalid CQS Type";
-//    }
-//}
-
-
 //! Get the CQStype as string
 string Component::getTypeCQSString()
 {
@@ -743,13 +715,13 @@ bool Component::isSimulationOk()
 
 bool Component::isComponentC()
 {
-    return mIsComponentC;
+    return mTypeCQS == C;
 }
 
 
 bool Component::isComponentQ()
 {
-    return mIsComponentQ;
+    return mTypeCQS == Q;
 }
 
 
@@ -761,7 +733,7 @@ bool Component::isComponentSystem()
 
 bool Component::isComponentSignal()
 {
-    return mIsComponentSignal;
+    return mTypeCQS == S;
 }
 
 
@@ -1069,105 +1041,6 @@ void Component::disableStartValue(Port *pPort, const size_t &idx)
 }
 
 
-//! @brief Change the cqs type of a stored subsystem component
-bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
-{
-    //First get the component ptr and check if we are requesting new type
-    Component* tmpptr = getSubComponent(name);
-    if (newType != tmpptr->getTypeCQS())
-    {
-        //check that it is a system component, in that case change the cqs type
-        if ( tmpptr->isComponentSystem() )
-        {
-            //Cast to system ptr
-            //! @todo should have a member function that return systemcomponent ptrs
-            ComponentSystem* tmpsysptr = dynamic_cast<ComponentSystem*>(tmpptr);
-
-            //Remove old version
-            this->removeSubComponentPtrFromStorage(tmpsysptr);
-
-            //Change cqsType localy in the subcomponent, make sure to set true to avoid looping back to this rename
-            tmpsysptr->setTypeCQS(newType, true);
-
-            //readd to system
-            this->addSubComponentPtrToStorage(tmpsysptr);
-        }
-        else
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-//! @brief This function automatically determines the CQS type depending on the what has been connected to the systemports
-//! @todo This function will go through all conected ports every time it is run, maybe a quicker version would only be run on the port beeing connected or disconnectd, in the connect and disconnect function
-void ComponentSystem::determineCQSType()
-{
-    PortPtrMapT::iterator ppmit;
-
-    size_t c_ctr=0;
-    size_t q_ctr=0;
-    size_t s_ctr=0;
-
-    for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
-    {
-        //all ports should be system ports in a subsystem
-        assert((*ppmit).second->getPortType() == SYSTEMPORT);
-
-        //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
-        //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if wedont want ot in some other place
-        vector<Port*> connectedPorts = (*ppmit).second->getConnectedPorts(-1); //Make a copy of connected ports
-        vector<Port*>::iterator cpit;
-        for (cpit=connectedPorts.begin(); cpit!=connectedPorts.end(); ++cpit)
-        {
-            if ( (*cpit)->getComponent()->getSystemParent() == this )
-            {
-                switch ((*cpit)->getComponent()->getTypeCQS())
-                {
-                case C :
-                    ++c_ctr;
-                    break;
-                case Q :
-                    ++q_ctr;
-                    break;
-                case S :
-                    ++s_ctr;
-                    break;
-                default :
-                    assert("This should not happen" == 0);
-                }
-            }
-        }
-    }
-
-    //Ok now lets determine i we have a valid CQS type or not
-    if ( (c_ctr > 0) && (q_ctr == 0) )
-    {
-        this->setTypeCQS(C);
-    }
-    else if ( (q_ctr > 0) && (c_ctr == 0) )
-    {
-        this->setTypeCQS(Q);
-    }
-    else if ( (s_ctr > 0) && (c_ctr==0) && (q_ctr==0) )
-    {
-        this->setTypeCQS(S);
-    }
-    else
-    {
-        //If we swap from valid type then give warning
-        if (this->getTypeCQS() != UNDEFINEDCQSTYPE)
-        {
-            gCoreMessageHandler.addWarningMessage(string("Your action has caused the CQS type to become invalid in system: ")+this->getName());
-        }
-        //! @todo maybe we should let the GUI display ??? in port overlays instead of sending warning messages
-
-        this->setTypeCQS(UNDEFINEDCQSTYPE);
-    }
-}
-
-
 ComponentSystem *Component::getSystemParent()
 {
     if(mpSystemParent)
@@ -1190,7 +1063,6 @@ size_t Component::getModelHierarchyDepth()
 ComponentSignal::ComponentSignal(string name) : Component(name)
 {
     mTypeCQS = Component::S;
-    mIsComponentSignal = true;
 }
 
 Component::~Component()
@@ -1239,7 +1111,6 @@ void Component::loadStartValuesFromSimulation()
 ComponentC::ComponentC(string name) : Component(name)
 {
     mTypeCQS = Component::C;
-    mIsComponentC = true;
 }
 
 
@@ -1247,5 +1118,4 @@ ComponentC::ComponentC(string name) : Component(name)
 ComponentQ::ComponentQ(string name) : Component(name)
 {
     mTypeCQS = Component::Q;
-    mIsComponentQ = true;
 }
