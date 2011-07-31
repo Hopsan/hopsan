@@ -201,13 +201,15 @@ public:
     ~PlotTab();
     PlotWindow *mpParentPlotWindow;
 
-    void addCurve(PlotCurve *curve);
+    void addCurve(PlotCurve *curve, bool addToSecondPlot=false);
     void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
     QList<PlotCurve *> getCurves();
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
     QwtPlot *getPlot();
+    QwtPlot *getSecondPlot();
+    void showSecondPlot(bool visible);
     int getNumberOfCurves();
     void update();
     void insertMarker(QwtPlotCurve *curve);
@@ -243,13 +245,16 @@ private slots:
 
 private:
     QwtPlot *mpPlot;
+    QwtPlot *mpSecondPlot;
 
     QList<PlotCurve *> mPlotCurvePtrs;
+    QList<PlotCurve *> mSecondPlotCurvePtrs;
     PlotCurve *mpActivePlotCurve;
     bool mShowGrid();
     QStringList mCurveColors;
     QStringList mUsedColors;
     QwtPlotGrid * mpGrid;
+    QwtPlotGrid * mpSecondGrid;
     QwtPlotZoomer *mpZoomer;
     QwtPlotZoomer *mpZoomerRight;
     QwtPlotMagnifier *mpMagnifier;
@@ -293,7 +298,7 @@ class PlotCurve : public QObject
     Q_OBJECT
     friend class PlotInfoBox;
 public:
-    PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath="", PlotTab *parent=0);
+    PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath="", PlotTab *parent=0, bool addToSecondPlot=false);
     ~PlotCurve();
     PlotTab *mpParentPlotTab;
 
