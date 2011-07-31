@@ -82,6 +82,9 @@ public slots:
     void saveToXml();
     void loadFromXml();
     void performFrequencyAnalysis(PlotCurve *curve);
+    void createBodePlot();
+    void createBodePlotFromDialog();
+    void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve);
 
 private:
     QGridLayout *mpLayout;
@@ -103,6 +106,7 @@ private:
     QToolButton *mpResetXVectorButton;
     QToolButton *mpShowListsButton;
     QToolButton *mpShowCurvesButton;
+    QToolButton *mpBodePlotButton;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
     QAction *mpExportToCsvAction;
@@ -119,6 +123,9 @@ private:
     QListWidget *mpComponentList;
     QListWidget *mpPortList;
     QListWidget *mpVariableList;
+
+    QMap<QRadioButton *, PlotCurve *> mBodeInputButtonToCurveMap;
+    QMap<QRadioButton *, PlotCurve *> mBodeOutputButtonToCurveMap;
 };
 
 
@@ -304,7 +311,8 @@ public:
     void setGeneration(int generation);
     void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
-    void toFFT();
+    void setData(QVector<double> vData, QVector<double> vTime);
+    void toFrequencySpectrum();
 
 public slots:
     void setLineWidth(int);

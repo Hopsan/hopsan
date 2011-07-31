@@ -285,6 +285,8 @@ void FFT(QVector< complex<double> > &data)
 {
     unsigned long n = data.size();       // n = data.size()
 
+    qDebug() << "FFT of vector with size " << n;
+
     unsigned long mmax, m, j, istep, i;
     double wtemp, wr, wpr, wpi, wi, theta;
     double tempr, tempi;
@@ -295,7 +297,6 @@ void FFT(QVector< complex<double> > &data)
     {
         if (j>i)
         {
-            qDebug() << "j = " << j;
             swap(data[j-1].real(), data[i].real());     //Even numbers
             swap(data[j-1].imag(), data[i].imag());         //Odd numbers
         }
@@ -338,6 +339,7 @@ void FFT(QVector< complex<double> > &data)
         }
         mmax=istep;
     }
+    qDebug () << "FFT successful!";
 }
 
 

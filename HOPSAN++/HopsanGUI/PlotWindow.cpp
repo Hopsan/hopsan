@@ -171,6 +171,10 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpResetXVectorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
     mpResetXVectorButton->setEnabled(false);
 
+    mpBodePlotButton = new QToolButton(mpToolBar);
+    mpBodePlotButton->setToolTip("Create Bode Plot");
+    mpBodePlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-TransferFunctionAnalysis.png"));
+
     mpToolBar->addWidget(mpNewPlotButton);
     mpToolBar->addWidget(mpLoadFromXmlButton);
     mpToolBar->addWidget(mpSaveButton);
@@ -182,6 +186,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addWidget(mpGridButton);
     mpToolBar->addWidget(mpBackgroundColorButton);
     mpToolBar->addWidget(mpResetXVectorButton);
+    mpToolBar->addWidget(mpBodePlotButton);
     mpToolBar->addSeparator();
     mpToolBar->addWidget(mpShowListsButton);
     mpToolBar->addWidget(mpShowCurvesButton);
@@ -240,6 +245,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(mpNewPlotButton,                                        SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
     connect(mpLoadFromXmlButton,                                    SIGNAL(clicked()),                                              this,               SLOT(loadFromXml()));
     connect(mpSaveButton,                                           SIGNAL(clicked()),                                              this,               SLOT(saveToXml()));
+    connect(mpBodePlotButton,                                       SIGNAL(clicked()),                                              this,               SLOT(createBodePlot()));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
@@ -478,10 +484,127 @@ void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
     getCurrentPlotTab()->updateLabels();
     PlotCurve *pNewCurve = new PlotCurve(curve->getGeneration(), curve->getComponentName(), curve->getPortName(), curve->getDataName(), curve->getDataUnit(), curve->getAxisY(), curve->getContainerObjectPtr()->getModelFileInfo().filePath(), getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pNewCurve);
-    pNewCurve->toFFT();
+    pNewCurve->toFrequencySpectrum();
     pNewCurve->updatePlotInfoDockVisibility();
 }
 
+
+void PlotWindow::createBodePlot()
+{
+    QDialog *pCreateBodeDialog = new QDialog(this);
+    pCreateBodeDialog->setWindowTitle("Create Bode Plot");
+
+    QGroupBox *pInputGroupBox = new QGroupBox(tr("Input Variable"));
+    QVBoxLayout *pInputGroupBoxLayout = new QVBoxLayout;
+    pInputGroupBoxLayout->addStretch(1);
+    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(); ++i)
+    {
+        QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
+                                               getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
+                                               getCurrentPlotTab()->getCurves().at(i)->getDataName());
+        mBodeInputButtonToCurveMap.insert(radio, getCurrentPlotTab()->getCurves().at(i));
+        pInputGroupBoxLayout->addWidget(radio);
+    }
+    pInputGroupBox->setLayout(pInputGroupBoxLayout);
+
+    QGroupBox *pOutputGroupBox = new QGroupBox(tr("Input Variable"));
+    QVBoxLayout *pOutputGroupBoxLayout = new QVBoxLayout;
+    pOutputGroupBoxLayout->addStretch(1);
+    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(); ++i)
+    {
+        QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
+                                               getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
+                                               getCurrentPlotTab()->getCurves().at(i)->getDataName());
+        mBodeOutputButtonToCurveMap.insert(radio, getCurrentPlotTab()->getCurves().at(i));
+        pOutputGroupBoxLayout->addWidget(radio);
+    }
+    pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
+
+    QPushButton *pNextButton = new QPushButton("Go!");
+
+    QVBoxLayout *pBodeDialogLayout = new QVBoxLayout;
+    pBodeDialogLayout->addWidget(pInputGroupBox);
+    pBodeDialogLayout->addWidget(pOutputGroupBox);
+    pBodeDialogLayout->addWidget(pNextButton);
+
+    pCreateBodeDialog->setLayout(pBodeDialogLayout);
+
+    pCreateBodeDialog->show();
+
+    connect(pNextButton, SIGNAL(clicked()), this, SLOT(createBodePlotFromDialog()));
+    connect(pNextButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
+}
+
+
+void PlotWindow::createBodePlotFromDialog()
+{
+    PlotCurve *inputCurve;
+    PlotCurve *outputCurve;
+    QMap<QRadioButton *, PlotCurve *>::iterator it;
+    for(it=mBodeInputButtonToCurveMap.begin(); it!=mBodeInputButtonToCurveMap.end(); ++it)
+    {
+        if(it.key()->isChecked())
+            inputCurve = it.value();
+    }
+    for(it=mBodeOutputButtonToCurveMap.begin(); it!=mBodeOutputButtonToCurveMap.end(); ++it)
+    {
+        if(it.key()->isChecked())
+            outputCurve = it.value();
+    }
+    createBodePlot(inputCurve, outputCurve);
+}
+
+
+void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
+{
+    //! @todo Make sure data vector is 2^n
+
+    //Create a complex vector
+    QVector< std::complex<double> > vInputComplex = realToComplex(pInputCurve->getDataVector());
+    QVector< std::complex<double> > vOutputComplex = realToComplex(pOutputCurve->getDataVector());
+
+    //Apply the fourier transform
+    FFT(vInputComplex);
+    FFT(vOutputComplex);
+
+    QVector<double> vTransferFunction;
+    for(int i=0; i<vInputComplex.size()/2; ++i)
+    {
+        if(vInputComplex.at(i) == std::complex<double>(0,0))
+        {
+            vTransferFunction.append(vTransferFunction.at(i-1));
+        }
+        else
+        {
+            std::complex<double> tempComplex = vOutputComplex.at(i)/vInputComplex.at(i);
+            vTransferFunction.append(sqrt(tempComplex.real()*tempComplex.real() + tempComplex.imag()*tempComplex.imag()));
+        }
+
+        //qDebug() << "Gain = " << vTransferFunction.at(i);
+    }
+
+    QVector<double> vFrequency;
+    double stoptime = pInputCurve->getTimeVector().last();
+    for(int i=0; i<vTransferFunction.size(); ++i)
+    {
+        vFrequency.append(i/stoptime);
+        qDebug() << "Frequency = " << vFrequency.at(i);
+    }
+
+    addPlotTab();
+    PlotCurve *pNewCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
+                                         pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                         getCurrentPlotTab());
+    getCurrentPlotTab()->addCurve(pNewCurve);
+    pNewCurve->setData(vTransferFunction, vFrequency);
+    pNewCurve->updatePlotInfoDockVisibility();
+
+    getCurrentPlotTab()->rescaleToCurves();
+    getCurrentPlotTab()->getPlot()->replot();
+
+    getCurrentPlotTab()->getPlot()->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+    getCurrentPlotTab()->getPlot()->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+}
 
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::close()
@@ -2090,8 +2213,16 @@ void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double 
 }
 
 
+void PlotCurve::setData(QVector<double> vData, QVector<double> vTime)
+{
+    mDataVector = vData;
+    mTimeVector = vTime;
+    updateCurve();
+}
+
+
 //! @brief Converts the plot curve to its frequency spectrum by using FFT
-void PlotCurve::toFFT()
+void PlotCurve::toFrequencySpectrum()
 {
     //Vector size has to be an even potential of 2.
     //Calculate largets potential that is smaller than or equal to the vector size.
