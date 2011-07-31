@@ -611,18 +611,18 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
     PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
                                           pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
                                           getCurrentPlotTab(), true);
-    getCurrentPlotTab()->addCurve(pPhaseCurve, true);
+    getCurrentPlotTab()->addCurve(pPhaseCurve, SECONDPLOT);
     pPhaseCurve->setData(vBodePhase, vFrequency);
     pPhaseCurve->updatePlotInfoDockVisibility();
 
-    getCurrentPlotTab()->showSecondPlot(true);
+    getCurrentPlotTab()->showPlot(SECONDPLOT, true);
     getCurrentPlotTab()->getPlot()->replot();
 
     getCurrentPlotTab()->rescaleToCurves();
 
     //getCurrentPlotTab()->getPlot()->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
-    getCurrentPlotTab()->getPlot()->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
-    getCurrentPlotTab()->getSecondPlot()->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+    getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+    getCurrentPlotTab()->getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
 
 }
 
@@ -844,8 +844,8 @@ void PlotTabWidget::tabChanged()
 
     if(this->count() != 0)
     {
-        mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer->isEnabled());
-        mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner->isEnabled());
+        mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer[FIRSTPLOT]->isEnabled());
+        mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner[FIRSTPLOT]->isEnabled());
         mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid->isVisible());
         mpParentPlotWindow->mpResetXVectorButton->setEnabled(getCurrentTab()->mHasSpecialXAxis);
 
@@ -898,46 +898,71 @@ PlotTab::PlotTab(PlotWindow *parent)
 
     mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
 
-    mpPlot = new QwtPlot();
-    mpPlot->setAcceptDrops(false);
-    mpPlot->setCanvasBackground(QColor(Qt::white));
-    mpPlot->setAutoReplot(true);
+    mpPlot[FIRSTPLOT] = new QwtPlot();
+    mpPlot[FIRSTPLOT]->setAcceptDrops(false);
+    mpPlot[FIRSTPLOT]->setCanvasBackground(QColor(Qt::white));
+    mpPlot[FIRSTPLOT]->setAutoReplot(true);
 
-    mpSecondPlot = new QwtPlot();
-    mpSecondPlot->setAcceptDrops(false);
-    mpSecondPlot->setCanvasBackground(QColor(Qt::white));
-    mpSecondPlot->setAutoReplot(true);
+    mpPlot[SECONDPLOT] = new QwtPlot();
+    mpPlot[SECONDPLOT]->setAcceptDrops(false);
+    mpPlot[SECONDPLOT]->setCanvasBackground(QColor(Qt::white));
+    mpPlot[SECONDPLOT]->setAutoReplot(true);
 
 
         //Panning Tool
-    mpPanner = new QwtPlotPanner(mpPlot->canvas());
-    mpPanner->setMouseButton(Qt::LeftButton);
-    mpPanner->setEnabled(false);
+    mpPanner[FIRSTPLOT] = new QwtPlotPanner(mpPlot[FIRSTPLOT]->canvas());
+    mpPanner[FIRSTPLOT]->setMouseButton(Qt::LeftButton);
+    mpPanner[FIRSTPLOT]->setEnabled(false);
+
+    mpPanner[SECONDPLOT] = new QwtPlotPanner(mpPlot[SECONDPLOT]->canvas());
+    mpPanner[SECONDPLOT]->setMouseButton(Qt::LeftButton);
+    mpPanner[SECONDPLOT]->setEnabled(false);
 
         //Rubber Band Zoom
-    mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpPlot->canvas());      //Zoomer for left y axis
-    mpZoomer->setMaxStackDepth(10000);
-    mpZoomer->setRubberBand(QwtPicker::NoRubberBand);
-    mpZoomer->setRubberBandPen(QColor(Qt::green));
-    mpZoomer->setTrackerMode(QwtPicker::ActiveOnly);
-    mpZoomer->setTrackerPen(QColor(Qt::white));
-    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
-    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-    mpZoomer->setZoomBase(QRectF());
-    mpZoomer->setEnabled(false);
+    mpZoomer[FIRSTPLOT] = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpPlot[FIRSTPLOT]->canvas());      //Zoomer for left y axis
+    mpZoomer[FIRSTPLOT]->setMaxStackDepth(10000);
+    mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+    mpZoomer[FIRSTPLOT]->setRubberBandPen(QColor(Qt::green));
+    mpZoomer[FIRSTPLOT]->setTrackerMode(QwtPicker::ActiveOnly);
+    mpZoomer[FIRSTPLOT]->setTrackerPen(QColor(Qt::white));
+    mpZoomer[FIRSTPLOT]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    mpZoomer[FIRSTPLOT]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+    mpZoomer[FIRSTPLOT]->setZoomBase(QRectF());
+    mpZoomer[FIRSTPLOT]->setEnabled(false);
 
-    mpZoomerRight = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot->canvas());   //Zoomer for right y axis
-    mpZoomerRight->setMaxStackDepth(10000);
-    mpZoomerRight->setRubberBand(QwtPicker::NoRubberBand);
-    mpZoomerRight->setRubberBandPen(QColor(Qt::green));
-    mpZoomerRight->setTrackerMode(QwtPicker::ActiveOnly);
-    mpZoomerRight->setTrackerPen(QColor(Qt::white));
-    mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
-    mpZoomerRight->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-    mpZoomerRight->setEnabled(false);
+    mpZoomerRight[FIRSTPLOT] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot[FIRSTPLOT]->canvas());   //Zoomer for right y axis
+    mpZoomerRight[FIRSTPLOT]->setMaxStackDepth(10000);
+    mpZoomerRight[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+    mpZoomerRight[FIRSTPLOT]->setRubberBandPen(QColor(Qt::green));
+    mpZoomerRight[FIRSTPLOT]->setTrackerMode(QwtPicker::ActiveOnly);
+    mpZoomerRight[FIRSTPLOT]->setTrackerPen(QColor(Qt::white));
+    mpZoomerRight[FIRSTPLOT]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    mpZoomerRight[FIRSTPLOT]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+    mpZoomerRight[FIRSTPLOT]->setEnabled(false);
+
+    mpZoomer[SECONDPLOT] = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpPlot[SECONDPLOT]->canvas());      //Zoomer for left y axis
+    mpZoomer[SECONDPLOT]->setMaxStackDepth(10000);
+    mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+    mpZoomer[SECONDPLOT]->setRubberBandPen(QColor(Qt::green));
+    mpZoomer[SECONDPLOT]->setTrackerMode(QwtPicker::ActiveOnly);
+    mpZoomer[SECONDPLOT]->setTrackerPen(QColor(Qt::white));
+    mpZoomer[SECONDPLOT]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    mpZoomer[SECONDPLOT]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+    mpZoomer[SECONDPLOT]->setZoomBase(QRectF());
+    mpZoomer[SECONDPLOT]->setEnabled(false);
+
+    mpZoomerRight[SECONDPLOT] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot[SECONDPLOT]->canvas());   //Zoomer for right y axis
+    mpZoomerRight[SECONDPLOT]->setMaxStackDepth(10000);
+    mpZoomerRight[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+    mpZoomerRight[SECONDPLOT]->setRubberBandPen(QColor(Qt::green));
+    mpZoomerRight[SECONDPLOT]->setTrackerMode(QwtPicker::ActiveOnly);
+    mpZoomerRight[SECONDPLOT]->setTrackerPen(QColor(Qt::white));
+    mpZoomerRight[SECONDPLOT]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    mpZoomerRight[SECONDPLOT]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+    mpZoomerRight[SECONDPLOT]->setEnabled(false);
 
         //Wheel Zoom
-    mpMagnifier = new QwtPlotMagnifier(mpPlot->canvas());
+    mpMagnifier = new QwtPlotMagnifier(mpPlot[FIRSTPLOT]->canvas());
     mpMagnifier->setAxisEnabled(QwtPlot::yLeft, true);
     mpMagnifier->setAxisEnabled(QwtPlot::yRight, true);
     mpMagnifier->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
@@ -954,14 +979,14 @@ PlotTab::PlotTab(PlotWindow *parent)
     mpGrid->enableYMin(true);
     mpGrid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     mpGrid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    mpGrid->attach(mpPlot);
+    mpGrid->attach(mpPlot[FIRSTPLOT]);
 
     mpSecondGrid = new QwtPlotGrid;
     mpSecondGrid->enableXMin(true);
     mpSecondGrid->enableYMin(true);
     mpSecondGrid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     mpSecondGrid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    mpSecondGrid->attach(mpSecondPlot);
+    mpSecondGrid->attach(mpPlot[SECONDPLOT]);
 
     QwtLegend *tempLegend = new QwtLegend();
     //tempLegend->setPalette(QPalette(QColor("black"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("black"), QColor("white"), QColor("white"), QColor("white")));
@@ -972,17 +997,17 @@ PlotTab::PlotTab(PlotWindow *parent)
     {
         tempList.at(i)->setAutoFillBackground(false);
     }
-    mpPlot->insertLegend(tempLegend, QwtPlot::TopLegend);
-    mpPlot->setAutoFillBackground(false);
+    mpPlot[FIRSTPLOT]->insertLegend(tempLegend, QwtPlot::TopLegend);
+    mpPlot[FIRSTPLOT]->setAutoFillBackground(false);
 
     QGridLayout *pLayout = new QGridLayout(this);
-    pLayout->addWidget(mpPlot);
-    pLayout->addWidget(mpSecondPlot);
+    pLayout->addWidget(mpPlot[FIRSTPLOT]);
+    pLayout->addWidget(mpPlot[SECONDPLOT]);
     this->setLayout(pLayout);
 
-    showSecondPlot(false);
+    showPlot(SECONDPLOT, false);
 
-    mpPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mpPlot[FIRSTPLOT]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
@@ -990,30 +1015,27 @@ PlotTab::PlotTab(PlotWindow *parent)
 //! @brief Destructor for plot tab. Removes all curves before tab is deleted.
 PlotTab::~PlotTab()
 {
-    while(!mPlotCurvePtrs.empty())
+    while(!mPlotCurvePtrs[FIRSTPLOT].empty())
     {
-        removeCurve(mPlotCurvePtrs.last());
+        removeCurve(mPlotCurvePtrs[FIRSTPLOT].last());
+    }
+    while(!mPlotCurvePtrs[SECONDPLOT].empty())
+    {
+        removeCurve(mPlotCurvePtrs[SECONDPLOT].last());
     }
 }
 
 
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
-void PlotTab::addCurve(PlotCurve *curve, bool addToSecondPlot)
+void PlotTab::addCurve(PlotCurve *curve, HopsanPlotID plotID)
 {
     if(mHasSpecialXAxis)
     {
         curve->getCurvePtr()->setSamples(mVectorX, curve->getDataVector());
     }
 
-    if(addToSecondPlot)
-    {
-        mSecondPlotCurvePtrs.append(curve);
-    }
-    else
-    {
-        mPlotCurvePtrs.append(curve);
-    }
+    mPlotCurvePtrs[plotID].append(curve);
 
     int i=0;
     while(mUsedColors.contains(mCurveColors.first()))
@@ -1024,10 +1046,10 @@ void PlotTab::addCurve(PlotCurve *curve, bool addToSecondPlot)
         if(i>mCurveColors.size()) break;
     }
     mUsedColors.append(mCurveColors.first());
-    mpPlot->enableAxis(curve->getAxisY());
+    mpPlot[plotID]->enableAxis(curve->getAxisY());
     rescaleToCurves();
     updateLabels();
-    mpPlot->replot();
+    mpPlot[plotID]->replot();
     curve->setLineColor(mCurveColors.first());
     curve->setLineWidth(2);
     mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
@@ -1054,107 +1076,107 @@ void PlotTab::rescaleToCurves()
     yMinRightSecond=0;
     yMaxRightSecond=10;
 
-    if(!mPlotCurvePtrs.empty())
+    if(!mPlotCurvePtrs[FIRSTPLOT].empty())
     {
         bool foundFirstLeft = false;
         bool foundFirstRight = false;
 
-        xMin=mPlotCurvePtrs.first()->getCurvePtr()->minXValue();
-        xMax=mPlotCurvePtrs.first()->getCurvePtr()->maxXValue();
+        xMin=mPlotCurvePtrs[FIRSTPLOT].first()->getCurvePtr()->minXValue();
+        xMax=mPlotCurvePtrs[FIRSTPLOT].first()->getCurvePtr()->maxXValue();
 
-        for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+        for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
         {
-            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft)
+            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yLeft)
             {
                 if(foundFirstLeft == false)
                 {
-                    yMinLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    yMaxLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    yMinLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
+                    yMaxLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
                     foundFirstLeft = true;
                 }
                 else
                 {
-                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue() < yMinLeft)
-                        yMinLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue() > yMaxLeft)
-                        yMaxLeft=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue() < yMinLeft)
+                        yMinLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
+                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxLeft)
+                        yMaxLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
                 }
             }
 
-            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight)
+            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yRight)
             {
                 if(foundFirstRight == false)
                 {
-                    yMinRight=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    yMaxRight=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    yMinRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
+                    yMaxRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
                     foundFirstRight = true;
                 }
                 else
                 {
-                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue() < yMinRight)
-                        yMinRight=mPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    if(mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue() > yMaxRight)
-                        yMaxRight=mPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue() < yMinRight)
+                        yMinRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
+                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxRight)
+                        yMaxRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
                 }
             }
 
-            if(mPlotCurvePtrs.at(i)->getCurvePtr()->minXValue() < xMin)
-                xMin=mPlotCurvePtrs.at(i)->getCurvePtr()->minXValue();
-            if(mPlotCurvePtrs.at(i)->getCurvePtr()->maxXValue() > xMax)
-                xMax=mPlotCurvePtrs.at(i)->getCurvePtr()->maxXValue();
+            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minXValue() < xMin)
+                xMin=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minXValue();
+            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxXValue() > xMax)
+                xMax=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxXValue();
 
         }
     }
 
 
-    if(!mSecondPlotCurvePtrs.empty())
+    if(!mPlotCurvePtrs[SECONDPLOT].empty())
     {
         bool foundFirstLeft = false;
         bool foundFirstRight = false;
 
-        xMinSecond=mSecondPlotCurvePtrs.first()->getCurvePtr()->minXValue();
-        xMaxSecond=mSecondPlotCurvePtrs.first()->getCurvePtr()->maxXValue();
+        xMinSecond=mPlotCurvePtrs[SECONDPLOT].first()->getCurvePtr()->minXValue();
+        xMaxSecond=mPlotCurvePtrs[SECONDPLOT].first()->getCurvePtr()->maxXValue();
 
-        for(int i=0; i<mSecondPlotCurvePtrs.size(); ++i)
+        for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
         {
-            if(mSecondPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft)
+            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getAxisY() == QwtPlot::yLeft)
             {
                 if(foundFirstLeft == false)
                 {
-                    yMinLeftSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    yMaxLeftSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    yMinLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
+                    yMaxLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
                     foundFirstLeft = true;
                 }
                 else
                 {
-                    if(mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minYValue() < yMinLeftSecond)
-                        yMinLeftSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    if(mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue() > yMaxLeftSecond)
-                        yMaxLeftSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue() < yMinLeftSecond)
+                        yMinLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
+                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxLeftSecond)
+                        yMaxLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
                 }
             }
 
-            if(mSecondPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight)
+            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getAxisY() == QwtPlot::yRight)
             {
                 if(foundFirstRight == false)
                 {
-                    yMinRightSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    yMaxRightSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    yMinRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
+                    yMaxRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
                     foundFirstRight = true;
                 }
                 else
                 {
-                    if(mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minYValue() < yMinRightSecond)
-                        yMinRightSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minYValue();
-                    if(mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue() > yMaxRightSecond)
-                        yMaxRightSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxYValue();
+                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue() < yMinRightSecond)
+                        yMinRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
+                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxRightSecond)
+                        yMaxRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
                 }
             }
 
-            if(mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minXValue() < xMinSecond)
-                xMinSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->minXValue();
-            if(mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxXValue() > xMaxSecond)
-                xMaxSecond=mSecondPlotCurvePtrs.at(i)->getCurvePtr()->maxXValue();
+            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minXValue() < xMinSecond)
+                xMinSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minXValue();
+            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxXValue() > xMaxSecond)
+                xMaxSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxXValue();
 
         }
     }
@@ -1189,44 +1211,44 @@ void PlotTab::rescaleToCurves()
     double heightLeftSecond = yMaxLeftSecond-yMinLeftSecond;
     double heightRightSecond = yMaxRightSecond-yMinRightSecond;
 
-    mpPlot->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
-    mpPlot->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
-    mpPlot->setAxisScale(QwtPlot::xBottom, xMin, xMax);
+    mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
+    mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
+    mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::xBottom, xMin, xMax);
 
     qDebug() << "yMin = " << yMinLeft << ", yMax = " << yMaxLeft;
 
-    mpSecondPlot->setAxisScale(QwtPlot::yLeft, yMinLeftSecond-0.05*heightLeftSecond, yMaxLeftSecond+0.05*heightLeftSecond);
-    mpSecondPlot->setAxisScale(QwtPlot::yRight, yMinRightSecond-0.05*heightRightSecond, yMaxRightSecond+0.05*heightRightSecond);
-    mpSecondPlot->setAxisScale(QwtPlot::xBottom, xMinSecond, xMaxSecond);
+    mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::yLeft, yMinLeftSecond-0.05*heightLeftSecond, yMaxLeftSecond+0.05*heightLeftSecond);
+    mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::yRight, yMinRightSecond-0.05*heightRightSecond, yMaxRightSecond+0.05*heightRightSecond);
+    mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::xBottom, xMinSecond, xMaxSecond);
 
     QRectF tempDoubleRect;
     tempDoubleRect.setX(xMin);
     tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
     tempDoubleRect.setWidth(xMax-xMin);
     tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
-    mpZoomer->setZoomBase(tempDoubleRect);
+    mpZoomer[FIRSTPLOT]->setZoomBase(tempDoubleRect);
 
     QRectF tempDoubleRect2;
     tempDoubleRect2.setX(xMin);
     tempDoubleRect2.setY(yMinRight-0.05*heightRight);
     tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
     tempDoubleRect2.setWidth(xMax-xMin);
-    mpZoomerRight->setZoomBase(tempDoubleRect2);
+    mpZoomerRight[FIRSTPLOT]->setZoomBase(tempDoubleRect2);
 
     //! @todo Uncomment this when zoomer is fixed for secondary plot
-//    QRectF tempDoubleRect3;
-//    tempDoubleRect3.setX(xMinSecond);
-//    tempDoubleRect3.setY(yMinSecondLeft-0.05*heightLeftSecond);
-//    tempDoubleRect3.setWidth(xMaxSecond-xMinSecond);
-//    tempDoubleRect3.setHeight(yMaxSecondLeft-yMinSecondLeft+0.1*heightLeftSecond);
-//    mpZoomer->setZoomBase(tempDoubleRect3);
+    QRectF tempDoubleRect3;
+    tempDoubleRect3.setX(xMinSecond);
+    tempDoubleRect3.setY(yMinLeftSecond-0.05*heightLeftSecond);
+    tempDoubleRect3.setWidth(xMaxSecond-xMinSecond);
+    tempDoubleRect3.setHeight(yMaxLeftSecond-yMinLeftSecond+0.1*heightLeftSecond);
+    mpZoomer[SECONDPLOT]->setZoomBase(tempDoubleRect3);
 
-//    QRectF tempDoubleRect4;
-//    tempDoubleRect4.setX(xMinSecond);
-//    tempDoubleRect4.setY(yMinSecondRight-0.05*heightRightSecond);
-//    tempDoubleRect4.setHeight(yMaxSecondRight-yMinSecondRight+0.1*heightRightSecond);
-//    tempDoubleRect4.setWidth(xMaxSecond-xMinSecond);
-//    mpZoomerRight->setZoomBase(tempDoubleRect4);
+    QRectF tempDoubleRect4;
+    tempDoubleRect4.setX(xMinSecond);
+    tempDoubleRect4.setY(yMinRightSecond-0.05*heightRightSecond);
+    tempDoubleRect4.setHeight(yMaxRightSecond-yMinRightSecond+0.1*heightRightSecond);
+    tempDoubleRect4.setWidth(xMaxSecond-xMinSecond);
+    mpZoomerRight[SECONDPLOT]->setZoomBase(tempDoubleRect4);
 
             //Curve Marker
     mpMarkerSymbol = new QwtSymbol();
@@ -1244,7 +1266,7 @@ void PlotTab::removeCurve(PlotCurve *curve)
     {
         if(mMarkerPtrs.at(i)->getCurve() == curve)
         {
-            mpPlot->canvas()->removeEventFilter(mMarkerPtrs.at(i));
+            mpPlot[FIRSTPLOT]->canvas()->removeEventFilter(mMarkerPtrs.at(i));
             mMarkerPtrs.at(i)->detach();
             //delete(mMarkerPtrs.at(i));
             mMarkerPtrs.removeAt(i);
@@ -1262,7 +1284,7 @@ void PlotTab::removeCurve(PlotCurve *curve)
     }
 
     curve->getCurvePtr()->detach();
-    mPlotCurvePtrs.removeAll(curve);
+    mPlotCurvePtrs[FIRSTPLOT].removeAll(curve);
     delete(curve);
     rescaleToCurves();
     updateLabels();
@@ -1280,9 +1302,9 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
 {
     mVectorX = xArray;
 
-    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        mPlotCurvePtrs.at(i)->getCurvePtr()->setSamples(mVectorX, mPlotCurvePtrs.at(i)->getDataVector());
+        mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->setSamples(mVectorX, mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
     }
 
     rescaleToCurves();
@@ -1305,32 +1327,32 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
 
 void PlotTab::updateLabels()
 {
-    mpPlot->setAxisTitle(QwtPlot::yLeft, QwtText());
-    mpPlot->setAxisTitle(QwtPlot::yRight, QwtText());
+    mpPlot[FIRSTPLOT]->setAxisTitle(QwtPlot::yLeft, QwtText());
+    mpPlot[FIRSTPLOT]->setAxisTitle(QwtPlot::yRight, QwtText());
 
     QStringList leftUnits, rightUnits;
-    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        QString newUnit = QString(mPlotCurvePtrs.at(i)->getDataName() + " [" + mPlotCurvePtrs.at(i)->getDataUnit() + "]");
-        if( !(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
+        QString newUnit = QString(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataName() + " [" + mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit() + "]");
+        if( !(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
         {
-            if(!mpPlot->axisTitle(mPlotCurvePtrs.at(i)->getAxisY()).isEmpty())
+            if(!mpPlot[FIRSTPLOT]->axisTitle(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY()).isEmpty())
             {
-                mpPlot->setAxisTitle(mPlotCurvePtrs.at(i)->getAxisY(), QwtText(QString(mpPlot->axisTitle(mPlotCurvePtrs.at(i)->getAxisY()).text().append(", "))));
+                mpPlot[FIRSTPLOT]->setAxisTitle(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY(), QwtText(QString(mpPlot[FIRSTPLOT]->axisTitle(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY()).text().append(", "))));
             }
-            mpPlot->setAxisTitle(mPlotCurvePtrs.at(i)->getAxisY(), QwtText(QString(mpPlot->axisTitle(mPlotCurvePtrs.at(i)->getAxisY()).text().append(newUnit))));
-            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yLeft)
+            mpPlot[FIRSTPLOT]->setAxisTitle(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY(), QwtText(QString(mpPlot[FIRSTPLOT]->axisTitle(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY()).text().append(newUnit))));
+            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yLeft)
             {
                 leftUnits.append(newUnit);
             }
-            if(mPlotCurvePtrs.at(i)->getAxisY() == QwtPlot::yRight)
+            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yRight)
             {
                 rightUnits.append(newUnit);
             }
         }
     }
 
-    mpPlot->setAxisTitle(QwtPlot::xBottom, QwtText(mVectorXLabel));
+    mpPlot[FIRSTPLOT]->setAxisTitle(QwtPlot::xBottom, QwtText(mVectorXLabel));
 }
 
 
@@ -1342,9 +1364,9 @@ bool PlotTab::isGridVisible()
 
 void PlotTab::resetXVector()
 {
-    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        mPlotCurvePtrs.at(i)->getCurvePtr()->setSamples(mPlotCurvePtrs.at(i)->getTimeVector(), mPlotCurvePtrs.at(i)->getDataVector());
+        mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
     }
 
     mVectorXLabel = QString("Time [s]");
@@ -1353,7 +1375,7 @@ void PlotTab::resetXVector()
     mHasSpecialXAxis = false;
 
     rescaleToCurves();
-    mpPlot->replot();
+    mpPlot[FIRSTPLOT]->replot();
 
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
@@ -1436,7 +1458,7 @@ void PlotTab::exportToCsv()
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
 
         //Cycle plot curves
-    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
         fileStream << "x" << i;                                         //Write time/X vector
         if(mHasSpecialXAxis)
@@ -1448,17 +1470,17 @@ void PlotTab::exportToCsv()
         }
         else
         {
-            for(int j=0; j<mPlotCurvePtrs[i]->getTimeVector().size(); ++j)
+            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector().size(); ++j)
             {
-                fileStream << "," << mPlotCurvePtrs[i]->getTimeVector()[j];
+                fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
             }
         }
         fileStream << "\n";
 
         fileStream << "y" << i;                                             //Write data vector
-        for(int k=0; k<mPlotCurvePtrs[i]->getDataVector().size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
         {
-            fileStream << "," << mPlotCurvePtrs[i]->getDataVector()[k];
+            fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
         }
         fileStream << "\n";
     }
@@ -1494,7 +1516,7 @@ void PlotTab::exportToMatlab()
     fileStream << "% MATLAB File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
 
         //Cycle plot curves
-    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
         fileStream << "x" << i << "=[";                                         //Write time/X vector
         if(mHasSpecialXAxis)
@@ -1507,19 +1529,19 @@ void PlotTab::exportToMatlab()
         }
         else
         {
-            for(int j=0; j<mPlotCurvePtrs[i]->getTimeVector().size(); ++j)
+            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector().size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mPlotCurvePtrs[i]->getTimeVector()[j];
+                fileStream << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
             }
         }
         fileStream << "]\n";
 
         fileStream << "y" << i << "=[";                                             //Write data vector
-        for(int k=0; k<mPlotCurvePtrs[i]->getDataVector().size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
         {
             if(k>0) fileStream << ",";
-            fileStream << mPlotCurvePtrs[i]->getDataVector()[k];
+            fileStream << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
         }
         fileStream << "]\n";
     }
@@ -1528,9 +1550,9 @@ void PlotTab::exportToMatlab()
     QStringList matlabColors;
     matlabColors << "r" << "g" << "b" << "c" << "m" << "y";
     fileStream << "hold on\n";
-    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        fileStream << "plot(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[i]->getCurvePtr()->pen().width() << ")\n";
+        fileStream << "plot(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->getCurvePtr()->pen().width() << ")\n";
     }
 
     file.close();
@@ -1564,7 +1586,7 @@ void PlotTab::exportToGnuplot()
         //Write initial comment
     fileStream << "# gnuplot File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
     fileStream << "# T";
-    for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
         fileStream << "                  Y" << i;
     }
@@ -1572,15 +1594,15 @@ void PlotTab::exportToGnuplot()
 
         //Write time and data vectors
     QString dummy;
-    for(int i=0; i<mPlotCurvePtrs.first()->getTimeVector().size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector().size(); ++i)
     {
-        dummy.setNum(mPlotCurvePtrs.first()->getTimeVector()[i]);
+        dummy.setNum(mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector()[i]);
         fileStream << dummy;
         for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
 
-        for(int k=0; k<mPlotCurvePtrs.size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT].size(); ++k)
         {
-            dummy.setNum(mPlotCurvePtrs[k]->getDataVector()[i]);
+            dummy.setNum(mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector()[i]);
             fileStream << dummy;
             for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
         }
@@ -1605,7 +1627,7 @@ void PlotTab::exportToPdf()
         printer->setFullPage(false);
         printer->setOutputFormat(QPrinter::PdfFormat);
         printer->setOutputFileName(fileName);
-        renderer.renderTo(mpPlot,*printer);
+        renderer.renderTo(mpPlot[FIRSTPLOT],*printer);
     }
 }
 
@@ -1617,10 +1639,10 @@ void PlotTab::exportToPng()
        this, "Export File Name", QString(),
        "Portable Network Graphics (*.png)");
 
-    QPixmap pixmap(mpPlot->width(), mpPlot->height());
+    QPixmap pixmap(mpPlot[FIRSTPLOT]->width(), mpPlot[FIRSTPLOT]->height());
     pixmap.fill();
     QwtPlotRenderer renderer;
-    renderer.renderTo(mpPlot, pixmap);
+    renderer.renderTo(mpPlot[FIRSTPLOT], pixmap);
 
     pixmap.save( fileName );
 }
@@ -1631,12 +1653,17 @@ void PlotTab::enableZoom(bool value)
     if(mpParentPlotWindow->mpPanButton->isChecked() && value)
     {
         mpParentPlotWindow->mpPanButton->setChecked(false);
-        mpPanner->setEnabled(false);
+        mpPanner[FIRSTPLOT]->setEnabled(false);
+        mpPanner[SECONDPLOT]->setEnabled(false);
     }
-    mpZoomer->setEnabled(value);
-    if(value)   { mpZoomer->setRubberBand(QwtPicker::RectRubberBand); }
-    else        { mpZoomer->setRubberBand(QwtPicker::NoRubberBand); }
-    mpZoomerRight->setEnabled(value);
+    mpZoomer[FIRSTPLOT]->setEnabled(value);
+    if(value)   { mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
+    else        { mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
+    mpZoomerRight[FIRSTPLOT]->setEnabled(value);
+    mpZoomer[SECONDPLOT]->setEnabled(value);
+    if(value)   { mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
+    else        { mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
+    mpZoomerRight[SECONDPLOT]->setEnabled(value);
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
@@ -1646,11 +1673,15 @@ void PlotTab::enablePan(bool value)
     if(mpParentPlotWindow->mpZoomButton->isChecked() && value)
     {
         mpParentPlotWindow->mpZoomButton->setChecked(false);
-        mpZoomer->setEnabled(false);
-        mpZoomer->setRubberBand(QwtPicker::NoRubberBand);
-        mpZoomerRight->setEnabled(false);
+        mpZoomer[FIRSTPLOT]->setEnabled(false);
+        mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[FIRSTPLOT]->setEnabled(false);
+        mpZoomer[SECONDPLOT]->setEnabled(false);
+        mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[SECONDPLOT]->setEnabled(false);
     }
-    mpPanner->setEnabled(value);
+    mpPanner[FIRSTPLOT]->setEnabled(value);
+    mpPanner[SECONDPLOT]->setEnabled(value);
 }
 
 
@@ -1663,20 +1694,20 @@ void PlotTab::enableGrid(bool value)
 
 void PlotTab::setBackgroundColor()
 {
-    QColor color = QColorDialog::getColor(mpPlot->canvasBackground().color(), this);
+    QColor color = QColorDialog::getColor(mpPlot[FIRSTPLOT]->canvasBackground().color(), this);
     if (color.isValid())
     {
-        mpPlot->setCanvasBackground(color);
-        mpPlot->replot();
-        mpSecondPlot->setCanvasBackground(color);
-        mpSecondPlot->replot();
+        mpPlot[FIRSTPLOT]->setCanvasBackground(color);
+        mpPlot[FIRSTPLOT]->replot();
+        mpPlot[SECONDPLOT]->setCanvasBackground(color);
+        mpPlot[SECONDPLOT]->replot();
     }
 }
 
 
 QList<PlotCurve *> PlotTab::getCurves()
 {
-    return mPlotCurvePtrs;
+    return mPlotCurvePtrs[FIRSTPLOT];
 }
 
 
@@ -1692,52 +1723,46 @@ PlotCurve *PlotTab::getActivePlotCurve()
 }
 
 
-QwtPlot *PlotTab::getPlot()
+QwtPlot *PlotTab::getPlot(HopsanPlotID plotID)
 {
-    return mpPlot;
+    return mpPlot[plotID];
 }
 
 
-QwtPlot *PlotTab::getSecondPlot()
+void PlotTab::showPlot(HopsanPlotID plotID, bool visible)
 {
-    return mpSecondPlot;
-}
-
-
-void PlotTab::showSecondPlot(bool visible)
-{
-    mpSecondPlot->setVisible(visible);
+    mpPlot[plotID]->setVisible(visible);
 }
 
 
 int PlotTab::getNumberOfCurves()
 {
-    return mPlotCurvePtrs.size();
+    return mPlotCurvePtrs[FIRSTPLOT].size();
 }
 
 
 void PlotTab::update()
 {
-    mpPlot->enableAxis(QwtPlot::yLeft, false);
-    mpPlot->enableAxis(QwtPlot::yRight, false);
+    mpPlot[FIRSTPLOT]->enableAxis(QwtPlot::yLeft, false);
+    mpPlot[FIRSTPLOT]->enableAxis(QwtPlot::yRight, false);
     QList<PlotCurve *>::iterator cit;
-    for(cit=mPlotCurvePtrs.begin(); cit!=mPlotCurvePtrs.end(); ++cit)
+    for(cit=mPlotCurvePtrs[FIRSTPLOT].begin(); cit!=mPlotCurvePtrs[FIRSTPLOT].end(); ++cit)
     {
-        if(!mpPlot->axisEnabled((*cit)->getAxisY())) { mpPlot->enableAxis((*cit)->getAxisY()); }
-        (*cit)->getCurvePtr()->attach(mpPlot);
+        if(!mpPlot[FIRSTPLOT]->axisEnabled((*cit)->getAxisY())) { mpPlot[FIRSTPLOT]->enableAxis((*cit)->getAxisY()); }
+        (*cit)->getCurvePtr()->attach(mpPlot[FIRSTPLOT]);
     }
 
     for(int i=0; i<mMarkerPtrs.size(); ++i)
     {
         QPointF posF = mMarkerPtrs.at(i)->value();
-        double x = mpPlot->transform(QwtPlot::xBottom, posF.x());
-        double y = mpPlot->transform(QwtPlot::yLeft, posF.y());
+        double x = mpPlot[FIRSTPLOT]->transform(QwtPlot::xBottom, posF.x());
+        double y = mpPlot[FIRSTPLOT]->transform(QwtPlot::yLeft, posF.y());
         QPoint pos = QPoint(x,y);
         QwtPlotCurve *pCurve = mMarkerPtrs.at(i)->getCurve()->getCurvePtr();
         mMarkerPtrs.at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
-        mMarkerPtrs.at(i)->setYValue(mpPlot->invTransform(QwtPlot::yLeft, mpPlot->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
+        mMarkerPtrs.at(i)->setYValue(mpPlot[FIRSTPLOT]->invTransform(QwtPlot::yLeft, mpPlot[FIRSTPLOT]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
     }
-    mpPlot->replot();
+    mpPlot[FIRSTPLOT]->replot();
 }
 
 
@@ -1751,15 +1776,15 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
     PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
     mMarkerPtrs.append(tempMarker);
 
-    tempMarker->attach(mpPlot);
+    tempMarker->attach(mpPlot[FIRSTPLOT]);
     QCursor cursor;
     tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
-    tempMarker->setYValue(mpPlot->invTransform(QwtPlot::yLeft, mpPlot->transform(pCurve->getCurvePtr()->yAxis(), pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y())));
+    tempMarker->setYValue(mpPlot[FIRSTPLOT]->invTransform(QwtPlot::yLeft, mpPlot[FIRSTPLOT]->transform(pCurve->getCurvePtr()->yAxis(), pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y())));
 
     QString xString;
     QString yString;
     double x = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x();
-    double y = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(mpPlot->canvas()->mapFromGlobal(cursor.pos()))).y();
+    double y = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(mpPlot[FIRSTPLOT]->canvas()->mapFromGlobal(cursor.pos()))).y();
     xString.setNum(x);
     yString.setNum(y);
     QwtText tempLabel;
@@ -1771,8 +1796,8 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
     tempMarker->setLabel(tempLabel);
     tempMarker->setLabelAlignment(Qt::AlignTop);
 
-    mpPlot->canvas()->installEventFilter(tempMarker);
-    mpPlot->canvas()->setMouseTracking(true);
+    mpPlot[FIRSTPLOT]->canvas()->installEventFilter(tempMarker);
+    mpPlot[FIRSTPLOT]->canvas()->setMouseTracking(true);
 }
 
 
@@ -1789,7 +1814,7 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
     }
 
         //Cycle plot curves and write data tags
-    for(int j=0; j<mPlotCurvePtrs[0]->getTimeVector().size(); ++j)
+    for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++j)
     {
         QDomElement dataTag = appendDomElement(rDomElement, "data");
 
@@ -1799,26 +1824,26 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
         }
         else                        //X-axis = time
         {
-            dataTag.setAttribute("time", mPlotCurvePtrs[0]->getTimeVector()[j]);
+            dataTag.setAttribute("time", mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[j]);
         }
 
         //Write variable tags for each variable
-        for(int i=0; i<mPlotCurvePtrs.size(); ++i)
+        for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
         {
             QString numTemp;
             numTemp.setNum(i);
-            QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[i]->getDataName()+numTemp);
+            QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[FIRSTPLOT][i]->getDataName()+numTemp);
             QString valueString;
-            valueString.setNum(mPlotCurvePtrs[i]->getDataVector()[j]);
+            valueString.setNum(mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[j]);
             QDomText value = varTag.ownerDocument().createTextNode(valueString);
             varTag.appendChild(value);
 
             if(descriptions)
             {
-                varTag.setAttribute("component", mPlotCurvePtrs[i]->getComponentName());
-                varTag.setAttribute("port", mPlotCurvePtrs[i]->getPortName());
-                varTag.setAttribute("type", mPlotCurvePtrs[i]->getDataName());
-                varTag.setAttribute("unit", mPlotCurvePtrs[i]->getDataUnit());
+                varTag.setAttribute("component", mPlotCurvePtrs[FIRSTPLOT][i]->getComponentName());
+                varTag.setAttribute("port", mPlotCurvePtrs[FIRSTPLOT][i]->getPortName());
+                varTag.setAttribute("type", mPlotCurvePtrs[FIRSTPLOT][i]->getDataName());
+                varTag.setAttribute("unit", mPlotCurvePtrs[FIRSTPLOT][i]->getDataUnit());
             }
         }
     }
@@ -2017,7 +2042,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 {
     QWidget::contextMenuEvent(event);
 
-    if(this->mpZoomer->isEnabled())
+    if(this->mpZoomer[FIRSTPLOT]->isEnabled())
     {
         return;
     }
@@ -2036,8 +2061,8 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
 
-    yAxisLeftMenu->setEnabled(mpPlot->axisEnabled(QwtPlot::yLeft));
-    yAxisRightMenu->setEnabled(mpPlot->axisEnabled(QwtPlot::yRight));
+    yAxisLeftMenu->setEnabled(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft));
+    yAxisRightMenu->setEnabled(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yRight));
 
         //Create menu and actions for changing units
     changeUnitsMenu = menu.addMenu(QString("Change Units"));
@@ -2045,7 +2070,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QMap<QString, double> unitMap;
     QList<PlotCurve *>::iterator itc;
     QMap<QString, double>::iterator itu;
-    for(itc=mPlotCurvePtrs.begin(); itc!=mPlotCurvePtrs.end(); ++itc)
+    for(itc=mPlotCurvePtrs[FIRSTPLOT].begin(); itc!=mPlotCurvePtrs[FIRSTPLOT].end(); ++itc)
     {
         QMenu *pTempMenu = changeUnitsMenu->addMenu(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
         unitMap = gConfig.getCustomUnits((*itc)->getDataName());
@@ -2058,13 +2083,13 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
 
         //Create actions for making axis logarithmic
-    if(mpPlot->axisEnabled(QwtPlot::yLeft))
+    if(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft))
     {
         setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
         setLeftAxisLogarithmic->setCheckable(true);
         setLeftAxisLogarithmic->setChecked(mLeftAxisLogarithmic);
     }
-    if(mpPlot->axisEnabled(QwtPlot::yRight))
+    if(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yRight))
     {
         setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
         setRightAxisLogarithmic->setCheckable(true);
@@ -2074,7 +2099,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
         //Create menu for insereting curve markers
     insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
-    for(itc=mPlotCurvePtrs.begin(); itc!=mPlotCurvePtrs.end(); ++itc)
+    for(itc=mPlotCurvePtrs[FIRSTPLOT].begin(); itc!=mPlotCurvePtrs[FIRSTPLOT].end(); ++itc)
     {
         QAction *pTempAction = insertMarkerMenu->addAction(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
         actionToCurveMap.insert(pTempAction, (*itc));
@@ -2111,11 +2136,11 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         mRightAxisLogarithmic = !mRightAxisLogarithmic;
         if(mRightAxisLogarithmic)
         {
-            mpPlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
+            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
         }
         else
         {
-            mpPlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
         }
     }
     else if (selectedAction == setLeftAxisLogarithmic)
@@ -2123,11 +2148,11 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         mLeftAxisLogarithmic = !mLeftAxisLogarithmic;
         if(mLeftAxisLogarithmic)
         {
-            mpPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
         }
         else
         {
-            mpPlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
         }
     }
 
@@ -2204,11 +2229,11 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mpCurve->setYAxis(axisY);
     if(addToSecondPlot)
     {
-        mpCurve->attach(parent->getSecondPlot());
+        mpCurve->attach(parent->getPlot(SECONDPLOT));
     }
     else
     {
-        mpCurve->attach(parent->getPlot());
+        mpCurve->attach(parent->getPlot(FIRSTPLOT));
     }
     qDebug() << "1";
         //Create the plot info box
@@ -2732,7 +2757,7 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
         midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
 
-        if(!mpPlotTab->mpZoomer->isEnabled() && !mpPlotTab->mpPanner->isEnabled())
+        if(!mpPlotTab->mpZoomer[FIRSTPLOT]->isEnabled() && !mpPlotTab->mpPanner[FIRSTPLOT]->isEnabled())
         {
             if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {

@@ -67,6 +67,7 @@ enum undoStatus {NOUNDO, UNDO};
 enum saveTarget {EXISTINGFILE, NEWFILE};
 enum simulationMethod {SINGLECORE, MULTICORE};
 enum connectorStyle {POWERCONNECTOR, SIGNALCONNECTOR, UNDEFINEDCONNECTOR};
+enum HopsanPlotID {FIRSTPLOT, SECONDPLOT};
 
 //Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"

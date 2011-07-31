@@ -201,15 +201,14 @@ public:
     ~PlotTab();
     PlotWindow *mpParentPlotWindow;
 
-    void addCurve(PlotCurve *curve, bool addToSecondPlot=false);
+    void addCurve(PlotCurve *curve, HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
     QList<PlotCurve *> getCurves();
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
-    QwtPlot *getPlot();
-    QwtPlot *getSecondPlot();
-    void showSecondPlot(bool visible);
+    QwtPlot *getPlot(HopsanPlotID plotID=FIRSTPLOT);
+    void showPlot(HopsanPlotID plotID, bool visible);
     int getNumberOfCurves();
     void update();
     void insertMarker(QwtPlotCurve *curve);
@@ -244,21 +243,19 @@ private slots:
     void saveToXml();
 
 private:
-    QwtPlot *mpPlot;
-    QwtPlot *mpSecondPlot;
+    QwtPlot *mpPlot[2];
 
-    QList<PlotCurve *> mPlotCurvePtrs;
-    QList<PlotCurve *> mSecondPlotCurvePtrs;
+    QList<PlotCurve *> mPlotCurvePtrs[2];
     PlotCurve *mpActivePlotCurve;
     bool mShowGrid();
     QStringList mCurveColors;
     QStringList mUsedColors;
     QwtPlotGrid * mpGrid;
     QwtPlotGrid * mpSecondGrid;
-    QwtPlotZoomer *mpZoomer;
-    QwtPlotZoomer *mpZoomerRight;
+    QwtPlotZoomer *mpZoomer[2];
+    QwtPlotZoomer *mpZoomerRight[2];
     QwtPlotMagnifier *mpMagnifier;
-    QwtPlotPanner *mpPanner;
+    QwtPlotPanner *mpPanner[2];
     QList<PlotMarker *> mMarkerPtrs;
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
