@@ -63,10 +63,12 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     : QMainWindow(parent)
 
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose, true);
+    setAttribute(Qt::WA_MouseTracking, true);
+
     setWindowTitle("Hopsan Plot Window");
-    setAcceptDrops(false);
-    setAttribute(Qt::WA_TransparentForMouseEvents, false);
+    //setAcceptDrops(false);
+    //setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setPalette(gConfig.getPalette());
 
     int sh = qApp->desktop()->screenGeometry().height();
@@ -83,26 +85,30 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
         //Create the toolbar and its buttons
     mpToolBar = new QToolBar(this);
 
-    mpNewPlotButton = new QToolButton(mpToolBar);
+    mpNewPlotButton = new QAction(this);
     mpNewPlotButton->setToolTip("Create New Plot");
     mpNewPlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
+    connect(mpNewPlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpZoomButton = new QToolButton(mpToolBar);
+    mpZoomButton = new QAction(this);
     mpZoomButton->setToolTip("Zoom (Z)");
     mpZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom.png"));
     mpZoomButton->setCheckable(true);
     mpZoomButton->setShortcut(QKeySequence("z"));
+    connect(mpZoomButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpPanButton = new QToolButton(mpToolBar);
+    mpPanButton = new QAction(this);
     mpPanButton->setToolTip("Pan (X)");
     mpPanButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
     mpPanButton->setCheckable(true);
     mpPanButton->setShortcut(QKeySequence("x"));
+    connect(mpPanButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpSaveButton = new QToolButton(mpToolBar);
+    mpSaveButton = new QAction(this);
     mpSaveButton->setToolTip("Save Plot Window Description File (.xml)");
     mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
     mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
+    connect(mpSaveButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpExportToXmlAction = new QAction("Export to Extensible Markup Language File (.xml)", mpToolBar);
     mpExportToCsvAction = new QAction("Export to Comma-Separeted Values File (.csv)", mpToolBar);
@@ -134,63 +140,72 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpExportGfxButton->setMenu(mpExportGfxMenu);
     mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
 
-    mpLoadFromXmlButton = new QToolButton(mpToolBar);
+    mpLoadFromXmlButton = new QAction(this);
     mpLoadFromXmlButton->setToolTip("Import Plot");
     mpLoadFromXmlButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    connect(mpLoadFromXmlButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpGridButton = new QToolButton(mpToolBar);
+    mpGridButton = new QAction(this);
     mpGridButton->setToolTip("Show Grid (G)");
     mpGridButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Grid.png"));
     mpGridButton->setCheckable(true);
     mpGridButton->setChecked(true);
     mpGridButton->setShortcut(QKeySequence("g"));
+    connect(mpGridButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpBackgroundColorButton = new QToolButton(mpToolBar);
+    mpBackgroundColorButton = new QAction(this);
     mpBackgroundColorButton->setToolTip("Select Canvas Color (C)");
     mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
     mpBackgroundColorButton->setShortcut(QKeySequence("c"));
+    connect(mpBackgroundColorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpShowListsButton = new QToolButton(mpToolBar);
+    mpShowListsButton = new QAction(this);
     mpShowListsButton->setCheckable(true);
     mpShowListsButton->setChecked(true);
     mpShowListsButton->setToolTip("Toggle Parameter Lists");
     mpShowListsButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
+    connect(mpShowListsButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpShowCurvesButton = new QToolButton(mpToolBar);
+    mpShowCurvesButton = new QAction(this);
     mpShowCurvesButton->setCheckable(true);
     mpShowCurvesButton->setChecked(true);
     mpShowCurvesButton->setToolTip("Toggle Curve Controls");
     mpShowCurvesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurves.png"));
+    connect(mpShowCurvesButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpNewWindowFromTabButton = new QToolButton(mpToolBar);
+    mpNewWindowFromTabButton = new QAction(this);
     mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
     mpNewWindowFromTabButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-OpenTabInNewPlotWindow.png"));
+    connect(mpNewWindowFromTabButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpResetXVectorButton = new QToolButton(mpToolBar);
+    mpResetXVectorButton = new QAction(this);
     mpResetXVectorButton->setToolTip("Reset Time Vector");
     mpResetXVectorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
     mpResetXVectorButton->setEnabled(false);
+    connect(mpResetXVectorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpBodePlotButton = new QToolButton(mpToolBar);
+    mpBodePlotButton = new QAction(this);
     mpBodePlotButton->setToolTip("Create Bode Plot");
     mpBodePlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-TransferFunctionAnalysis.png"));
+    connect(mpBodePlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpToolBar->addWidget(mpNewPlotButton);
-    mpToolBar->addWidget(mpLoadFromXmlButton);
-    mpToolBar->addWidget(mpSaveButton);
+    mpToolBar->addAction(mpNewPlotButton);
+    mpToolBar->addAction(mpLoadFromXmlButton);
+    mpToolBar->addAction(mpSaveButton);
     mpToolBar->addWidget(mpExportButton);
     mpToolBar->addWidget(mpExportGfxButton);
     mpToolBar->addSeparator();
-    mpToolBar->addWidget(mpZoomButton);
-    mpToolBar->addWidget(mpPanButton);
-    mpToolBar->addWidget(mpGridButton);
-    mpToolBar->addWidget(mpBackgroundColorButton);
-    mpToolBar->addWidget(mpResetXVectorButton);
-    mpToolBar->addWidget(mpBodePlotButton);
+    mpToolBar->addAction(mpZoomButton);
+    mpToolBar->addAction(mpPanButton);
+    mpToolBar->addAction(mpGridButton);
+    mpToolBar->addAction(mpBackgroundColorButton);
+    mpToolBar->addAction(mpResetXVectorButton);
+    mpToolBar->addAction(mpBodePlotButton);
     mpToolBar->addSeparator();
-    mpToolBar->addWidget(mpShowListsButton);
-    mpToolBar->addWidget(mpShowCurvesButton);
-    mpToolBar->addWidget(mpNewWindowFromTabButton);
+    mpToolBar->addAction(mpShowListsButton);
+    mpToolBar->addAction(mpShowCurvesButton);
+    mpToolBar->addAction(mpNewWindowFromTabButton);
+    mpToolBar->setMouseTracking(true);
 
     addToolBar(mpToolBar);
 
@@ -219,20 +234,51 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpVariableList = new VariableListWidget(this);
     mpVariableList->setMaximumHeight(100);
 
+    //Initialize the help message popup
+    mpHelpPopup = new QWidget(this);
+    mpHelpPopupIcon = new QLabel();
+    mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
+    mpHelpPopupLabel = new QLabel();
+    mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
+    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
+    mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
+    mpHelpPopupGroupBoxLayout->setContentsMargins(3,3,3,3);
+    mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
+    mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
+    mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
+    mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
+    mpHelpPopup->setLayout(mpHelpPopupLayout);
+    mpHelpPopup->setBaseSize(50,30);
+    mpHelpPopup->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
+    mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,224,255); } QLabel { margin : 0px; } ");
+    mpHelpPopup->hide();
+    mpHelpPopupTimer = new QTimer(this);
+    connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
+
     this->setDockOptions(QMainWindow::AllowNestedDocks);
 
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpPlotTabs,0,0,1,4);
-    mpLayout->addWidget(mpComponentsLabel,1,0);
-    mpLayout->addWidget(mpPortsLabel,1,1);
-    mpLayout->addWidget(mpVariablesLabel,1,2);
-    mpLayout->addWidget(mpComponentList,2,0);
-    mpLayout->addWidget(mpPortList,2,1);
-    mpLayout->addWidget(mpVariableList,2,2);
+    mpLayout->addWidget(mpPlotTabs,0,0,4,4);
+    mpLayout->addWidget(mpComponentsLabel,4,0);
+    mpLayout->addWidget(mpPortsLabel,4,1);
+    mpLayout->addWidget(mpVariablesLabel,4,2);
+    mpLayout->addWidget(mpComponentList,5,0);
+    mpLayout->addWidget(mpPortList,5,1);
+    mpLayout->addWidget(mpVariableList,5,2);
+    mpLayout->addWidget(mpHelpPopup, 0,0,1,4);
 
-    mpLayout->setRowStretch(0,1);
+    //Set the correct position of the help popup message in the central widget
+    mpLayout->setColumnMinimumWidth(0,5);
+    mpLayout->setColumnStretch(0,0);
+    mpLayout->setColumnStretch(1,0);
+    mpLayout->setColumnStretch(2,0);
+    mpLayout->setColumnStretch(3,1);
+    mpLayout->setRowMinimumHeight(0,25);
+    mpLayout->setRowStretch(0,0);
     mpLayout->setRowStretch(1,0);
-    mpLayout->setRowStretch(2,0);
+    mpLayout->setRowStretch(2,1);
+    mpLayout->setRowStretch(3,0);
+    mpLayout->setRowStretch(4,0);
 
     QWidget *pCentralWidget = new QWidget(this);
     pCentralWidget->setLayout(mpLayout);
@@ -242,17 +288,17 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     updateLists();
 
         //Establish signal and slots connections
-    connect(mpNewPlotButton,                                        SIGNAL(clicked()),                                              this,               SLOT(addPlotTab()));
-    connect(mpLoadFromXmlButton,                                    SIGNAL(clicked()),                                              this,               SLOT(loadFromXml()));
-    connect(mpSaveButton,                                           SIGNAL(clicked()),                                              this,               SLOT(saveToXml()));
-    connect(mpBodePlotButton,                                       SIGNAL(clicked()),                                              this,               SLOT(createBodePlot()));
+    connect(mpNewPlotButton,                                        SIGNAL(triggered()),                                            this,               SLOT(addPlotTab()));
+    connect(mpLoadFromXmlButton,                                    SIGNAL(triggered()),                                            this,               SLOT(loadFromXml()));
+    connect(mpSaveButton,                                           SIGNAL(triggered()),                                            this,               SLOT(saveToXml()));
+    connect(mpBodePlotButton,                                       SIGNAL(triggered()),                                            this,               SLOT(createBodePlot()));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpComponentsLabel,  SLOT(setVisible(bool)));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpPortsLabel,       SLOT(setVisible(bool)));
     connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpVariablesLabel,   SLOT(setVisible(bool)));
-    connect(mpNewWindowFromTabButton,                               SIGNAL(clicked()),                                              this,               SLOT(createPlotWindowFromTab()));
+    connect(mpNewWindowFromTabButton,                               SIGNAL(triggered()),                                            this,               SLOT(createPlotWindowFromTab()));
     connect(mpComponentList,                                        SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
     connect(gpMainWindow->mpProjectTabs,                            SIGNAL(currentChanged(int)),                                    this,               SLOT(updateLists()));
     connect(gpMainWindow->mpProjectTabs->getCurrentContainer(),     SIGNAL(componentChanged()),                                     this,               SLOT(updateLists()));
@@ -268,6 +314,8 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
         mpShowListsButton->toggle();
         mpShowCurvesButton->toggle();
     }
+
+    this->setMouseTracking(true);
 }
 
 
@@ -366,6 +414,30 @@ PlotTabWidget *PlotWindow::getPlotTabWidget()
 PlotTab *PlotWindow::getCurrentPlotTab()
 {
     return qobject_cast<PlotTab *>(mpPlotTabs->currentWidget());
+}
+
+
+
+
+//! @brief Shows the help popup message for 5 seconds with specified message.
+//! Any message already being shown will be replaced. Messages can be hidden in advance by calling mpHelpPopup->hide().
+//! @param message String with text so show in message
+void PlotWindow::showHelpPopupMessage(QString message)
+{
+    if(gConfig.getShowPopupHelp())
+    {
+        mpHelpPopupLabel->setText(message);
+        mpHelpPopup->show();
+        mpHelpPopupTimer->stop();
+        mpHelpPopupTimer->start(5000);
+    }
+}
+
+
+//! @brief Hides the help popup message
+void PlotWindow::hideHelpPopupMessage()
+{
+    mpHelpPopup->hide();
 }
 
 
@@ -535,6 +607,7 @@ void PlotWindow::createBodePlot()
 
     pCreateBodeDialog->show();
 
+    connect(pCancelButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
     connect(pNextButton, SIGNAL(clicked()), this, SLOT(createBodePlotFromDialog()));
     connect(pNextButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
 }
@@ -640,6 +713,70 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
 
     getCurrentPlotTab()->rescaleToCurves();
 }
+
+
+void PlotWindow::showToolBarHelpPopup()
+{
+    QCursor cursor;
+    QAction *pHoveredAction = mpToolBar->actionAt(mpToolBar->mapFromGlobal(cursor.pos()));
+    if(pHoveredAction == mpNewPlotButton)
+    {
+        showHelpPopupMessage("Create a new empty plot tab.");
+    }
+    else if(pHoveredAction == mpBodePlotButton)
+    {
+        showHelpPopupMessage("Performs transfer function analysis and shows the bode diagram.");
+    }
+    else if(pHoveredAction == mpZoomButton)
+    {
+        showHelpPopupMessage("Enable zooming tool.");
+    }
+    else if(pHoveredAction == mpPanButton)
+    {
+        showHelpPopupMessage("Enable panning tool.");
+    }
+    else if(pHoveredAction == mpSaveButton)
+    {
+        showHelpPopupMessage("Save plot window to XML.");
+    }
+    else if(pHoveredAction == mpLoadFromXmlButton)
+    {
+        showHelpPopupMessage("Load plot window from XML.");
+    }
+    else if(pHoveredAction == mpGridButton)
+    {
+        showHelpPopupMessage("Toggle background grid.");
+    }
+    else if(pHoveredAction == mpBackgroundColorButton)
+    {
+        showHelpPopupMessage("Change background color.");
+    }
+    else if(pHoveredAction == mpNewWindowFromTabButton)
+    {
+        showHelpPopupMessage("Create new plot window from current tab.");
+    }
+    else if(pHoveredAction == mpResetXVectorButton)
+    {
+        showHelpPopupMessage("Reset X-vector to simulation time.");
+    }
+    else if(pHoveredAction == mpShowListsButton)
+    {
+        showHelpPopupMessage("Show/hide variable lists.");
+    }
+    else if(pHoveredAction == mpShowCurvesButton)
+    {
+        showHelpPopupMessage("Show/hide plot curve control panel.");
+    }
+}
+
+
+void PlotWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    hideHelpPopupMessage();
+
+    QMainWindow::mouseMoveEvent(event);
+}
+
 
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::close()

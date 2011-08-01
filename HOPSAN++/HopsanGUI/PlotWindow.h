@@ -62,7 +62,8 @@ public:
     void setGeneration(int gen);
     PlotTabWidget *getPlotTabWidget();
     PlotTab *getCurrentPlotTab();
-
+    void showHelpPopupMessage(QString message);
+    void hideHelpPopupMessage();
     GUISystem *mpCurrentGUISystem;
 
 signals:
@@ -83,6 +84,10 @@ public slots:
     void createBodePlot();
     void createBodePlotFromDialog();
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve);
+    void showToolBarHelpPopup();
+
+protected:
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
     QGridLayout *mpLayout;
@@ -91,20 +96,20 @@ private:
 
     QToolBar *mpToolBar;
 
-    QToolButton *mpNewPlotButton;
-    QToolButton *mpZoomButton;
-    QToolButton *mpPanButton;
-    QToolButton *mpSaveButton;
+    QAction *mpNewPlotButton;
+    QAction *mpZoomButton;
+    QAction *mpPanButton;
+    QAction *mpSaveButton;
     QToolButton *mpExportButton;
     QToolButton *mpExportGfxButton;
-    QToolButton *mpLoadFromXmlButton;
-    QToolButton *mpGridButton;
-    QToolButton *mpBackgroundColorButton;
-    QToolButton *mpNewWindowFromTabButton;
-    QToolButton *mpResetXVectorButton;
-    QToolButton *mpShowListsButton;
-    QToolButton *mpShowCurvesButton;
-    QToolButton *mpBodePlotButton;
+    QAction *mpLoadFromXmlButton;
+    QAction *mpGridButton;
+    QAction *mpBackgroundColorButton;
+    QAction *mpNewWindowFromTabButton;
+    QAction *mpResetXVectorButton;
+    QAction *mpShowListsButton;
+    QAction *mpShowCurvesButton;
+    QAction *mpBodePlotButton;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
     QAction *mpExportToCsvAction;
@@ -124,6 +129,15 @@ private:
 
     QMap<QRadioButton *, PlotCurve *> mBodeInputButtonToCurveMap;
     QMap<QRadioButton *, PlotCurve *> mBodeOutputButtonToCurveMap;
+
+    //Help popup
+    QWidget *mpHelpPopup;
+    QLabel *mpHelpPopupIcon;
+    QLabel *mpHelpPopupLabel;
+    QHBoxLayout *mpHelpPopupLayout;
+    QGroupBox *mpHelpPopupGroupBox;
+    QHBoxLayout *mpHelpPopupGroupBoxLayout;
+    QTimer *mpHelpPopupTimer;
 };
 
 
