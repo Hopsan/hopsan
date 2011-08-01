@@ -44,6 +44,11 @@
 #define COMPONENTPATH "../HopsanGUI/componentData/"
 #define MODELPATH "../Models/"
 #define HELPPATH "../HopsanGUI/docs/html/"
+#ifdef WIN32
+#define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
+#else
+#define DATAPATH gExecPath
+#endif
 
 //Relese++ defines
 //#define MAINPATH "../"
@@ -55,6 +60,11 @@
 //#define COMPONENTPATH "../componentData/"
 //#define MODELPATH "../Models/"
 //#define HELPPATH "../Help/"
+//#ifdef WIN32
+//#define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
+//#else
+//#define DATAPATH gExecPath
+//#endif
 
 //! @todo all of these dont have to be common
 //Enums

@@ -139,7 +139,9 @@ void Configuration::saveToXml()
 
     //Save to file
     const int IndentSize = 4;
-    QFile xmlsettings(gExecPath+QString(MAINPATH) + "hopsanconfig.xml");
+    if(!QDir(DATAPATH).exists())
+        QDir().mkdir(DATAPATH);
+    QFile xmlsettings(DATAPATH + "hopsanconfig.xml");
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         qDebug() << "Failed to open file for writing: " << gExecPath+QString(MAINPATH) << "settings.xml";
@@ -157,7 +159,8 @@ void Configuration::loadFromXml()
     loadDefaultsFromXml();
 
     //Read from hopsanconfig.xml
-    QFile file(gExecPath+QString(MAINPATH) + "hopsanconfig.xml");
+    QFile file(DATAPATH + "hopsanconfig.xml");
+    qDebug() << "Reading config from " << file.fileName();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
