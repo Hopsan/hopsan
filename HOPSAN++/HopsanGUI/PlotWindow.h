@@ -40,8 +40,6 @@
 #include "GUIObjects/GUIContainerObject.h"
 
 class MainWindow;
-class VariablePlot;
-class VariablePlotZoomer;
 class PlotParameterTree;
 class PlotWidget;
 class GUISystem;
@@ -204,15 +202,15 @@ public:
     void addCurve(PlotCurve *curve, HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
-    QList<PlotCurve *> getCurves();
+    QList<PlotCurve *> getCurves(HopsanPlotID plotID=FIRSTPLOT);
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
     QwtPlot *getPlot(HopsanPlotID plotID=FIRSTPLOT);
     void showPlot(HopsanPlotID plotID, bool visible);
-    int getNumberOfCurves();
+    int getNumberOfCurves(HopsanPlotID plotID);
     void update();
     void insertMarker(QwtPlotCurve *curve);
-    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
+    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit, HopsanPlotID plotID=FIRSTPLOT);
     void updateLabels();
     bool isGridVisible();
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
@@ -247,22 +245,17 @@ private:
 
     QList<PlotCurve *> mPlotCurvePtrs[2];
     PlotCurve *mpActivePlotCurve;
-    bool mShowGrid();
     QStringList mCurveColors;
     QStringList mUsedColors;
-    QwtPlotGrid * mpGrid;
-    QwtPlotGrid * mpSecondGrid;
+    QwtPlotGrid *mpGrid[2];
     QwtPlotZoomer *mpZoomer[2];
     QwtPlotZoomer *mpZoomerRight[2];
-    QwtPlotMagnifier *mpMagnifier;
+    QwtPlotMagnifier *mpMagnifier[2];
     QwtPlotPanner *mpPanner[2];
     QList<PlotMarker *> mMarkerPtrs;
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;
-
-    QString mUnitLeft;
-    QString mUnitRight;
 
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
@@ -295,11 +288,12 @@ class PlotCurve : public QObject
     Q_OBJECT
     friend class PlotInfoBox;
 public:
-    PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath="", PlotTab *parent=0, bool addToSecondPlot=false);
+    PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath="", PlotTab *parent=0, HopsanPlotID plotID=FIRSTPLOT, HopsanPlotCurveType curveType=PORTVARIABLE);
     ~PlotCurve();
     PlotTab *mpParentPlotTab;
 
     int getGeneration();
+    HopsanPlotCurveType getCurveType();
     QwtPlotCurve *getCurvePtr();
     QDockWidget *getPlotInfoDockWidget();
     QString getComponentName();
@@ -337,6 +331,7 @@ private slots:
     void updateCurve();
 
 private:
+    HopsanPlotCurveType mCurveType;
     QwtPlotCurve *mpCurve;
     int mGeneration;
     QString mComponentName;
