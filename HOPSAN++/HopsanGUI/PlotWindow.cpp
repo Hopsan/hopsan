@@ -52,7 +52,7 @@
 #include "qwt_symbol.h"
 #include "qwt_text_label.h"
 #include "qwt_plot_renderer.h"
-//#include "qwt_double_rect.h"
+#include "qwt_scale_map.h"
 
 const double DBLMAX = std::numeric_limits<double>::max();
 
@@ -630,14 +630,15 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
     pPhaseCurve->updatePlotInfoDockVisibility();
 
     getCurrentPlotTab()->showPlot(SECONDPLOT, true);
-    getCurrentPlotTab()->getPlot()->replot();
+    getCurrentPlotTab()->getPlot(FIRSTPLOT)->replot();
+    getCurrentPlotTab()->getPlot(SECONDPLOT)->replot();
 
-    getCurrentPlotTab()->rescaleToCurves();
 
-    //getCurrentPlotTab()->getPlot()->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+    getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
 
+    getCurrentPlotTab()->rescaleToCurves();
 }
 
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
@@ -887,6 +888,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     this->setAcceptDrops(true);
     mHasSpecialXAxis=false;
     mVectorXLabel = QString("Time [s]");
+    mLeftAxisLogarithmic = false;
 
         //Initiate default values for left y-axis
     mCurrentUnitsLeft.insert("Value", gConfig.getDefaultUnit("Value"));
@@ -1183,22 +1185,56 @@ void PlotTab::rescaleToCurves()
         yMinRightSecond = yMinRightSecond-1;
     }
 
-
+    //Calculate heights (used for calculating margins at top and bottom
     double heightLeft = yMaxLeft-yMinLeft;
     double heightRight = yMaxRight-yMinRight;
-
     double heightLeftSecond = yMaxLeftSecond-yMinLeftSecond;
     double heightRightSecond = yMaxRightSecond-yMinRightSecond;
+
+    //If plot has log scale, we need a different approach for calculating margins
+    if(mpPlot[FIRSTPLOT]->axisScaleEngine(QwtPlot::yLeft)->transformation()->type() == QwtScaleTransformation::Log10)
+    {
+        heightLeft = 0;
+        yMaxLeft = yMaxLeft*2;
+        yMinLeft = yMinLeft/2;
+    }
+    if(mpPlot[FIRSTPLOT]->axisScaleEngine(QwtPlot::yRight)->transformation()->type() == QwtScaleTransformation::Log10)
+    {
+        heightRight = 0;
+        yMaxRight = yMaxRight*2;
+        yMinRight = yMinRight/2;
+    }
+    if(mpPlot[SECONDPLOT]->axisScaleEngine(QwtPlot::yLeft)->transformation()->type() == QwtScaleTransformation::Log10)
+    {
+        heightLeftSecond = 0;
+        yMaxLeftSecond = yMaxLeftSecond*2;
+        yMinLeftSecond = yMinLeftSecond/2;
+    }
+    if(mpPlot[SECONDPLOT]->axisScaleEngine(QwtPlot::yRight)->transformation()->type() == QwtScaleTransformation::Log10)
+    {
+        heightRightSecond = 0;
+        yMaxRightSecond = yMaxRightSecond*2;
+        yMinRightSecond = yMinRightSecond/2;
+    }
+
+    qDebug() << "yMinLeft = " << yMinLeft << ", yMaxLeft = " << yMaxLeft << ", heightLeft = " << heightLeft;
 
     mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
     mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
     mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-
-    qDebug() << "yMin = " << yMinLeft << ", yMax = " << yMaxLeft;
+    mpPlot[FIRSTPLOT]->updateAxes();
 
     mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::yLeft, yMinLeftSecond-0.05*heightLeftSecond, yMaxLeftSecond+0.05*heightLeftSecond);
     mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::yRight, yMinRightSecond-0.05*heightRightSecond, yMaxRightSecond+0.05*heightRightSecond);
     mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::xBottom, xMinSecond, xMaxSecond);
+    mpPlot[SECONDPLOT]->updateAxes();
+
+//    mpPlot[FIRSTPLOT]->setAxisAutoScale(QwtPlot::yLeft);
+//    mpPlot[FIRSTPLOT]->setAxisAutoScale(QwtPlot::yRight);
+//    mpPlot[FIRSTPLOT]->setAxisAutoScale(QwtPlot::xBottom);
+//    mpPlot[SECONDPLOT]->setAxisAutoScale(QwtPlot::yLeft);
+//    mpPlot[SECONDPLOT]->setAxisAutoScale(QwtPlot::yRight);
+//    mpPlot[SECONDPLOT]->setAxisAutoScale(QwtPlot::xBottom);
 
     QRectF tempDoubleRect;
     tempDoubleRect.setX(xMin);
@@ -1214,7 +1250,6 @@ void PlotTab::rescaleToCurves()
     tempDoubleRect2.setWidth(xMax-xMin);
     mpZoomerRight[FIRSTPLOT]->setZoomBase(tempDoubleRect2);
 
-    //! @todo Uncomment this when zoomer is fixed for secondary plot
     QRectF tempDoubleRect3;
     tempDoubleRect3.setX(xMinSecond);
     tempDoubleRect3.setY(yMinLeftSecond-0.05*heightLeftSecond);
@@ -2177,10 +2212,14 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         if(mRightAxisLogarithmic)
         {
             mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
+            rescaleToCurves();
+            mpPlot[FIRSTPLOT]->replot();
         }
         else
         {
             mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+            rescaleToCurves();
+            mpPlot[FIRSTPLOT]->replot();
         }
     }
     else if (selectedAction == setLeftAxisLogarithmic)
@@ -2188,11 +2227,17 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         mLeftAxisLogarithmic = !mLeftAxisLogarithmic;
         if(mLeftAxisLogarithmic)
         {
+            qDebug() << "Logarithmic!";
             mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+            rescaleToCurves();
+            mpPlot[FIRSTPLOT]->replot();
         }
         else
         {
+            qDebug() << "Linear!";
             mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+            rescaleToCurves();
+            mpPlot[FIRSTPLOT]->replot();
         }
     }
 

@@ -242,7 +242,8 @@ HEADERS += win32dll.h \
     ComponentUtilities/WhiteGaussianNoise.h \
     Components/Signal/SignalNoiseGenerator.hpp \
     Components/Signal/SignalAdditiveNoise.hpp \
-    Components/Mechanic/MechanicRackAndPinion.hpp
+    Components/Mechanic/MechanicRackAndPinion.hpp \
+    Components/Signal/SignalStepExponentialDelay.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
