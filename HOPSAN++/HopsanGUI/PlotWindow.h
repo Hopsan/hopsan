@@ -293,6 +293,7 @@ public:
     PlotTab *mpParentPlotTab;
 
     int getGeneration();
+    QString getCurveName();
     HopsanPlotCurveType getCurveType();
     QwtPlotCurve *getCurvePtr();
     QDockWidget *getPlotInfoDockWidget();

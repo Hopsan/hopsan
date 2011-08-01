@@ -576,6 +576,8 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
     QVector<double> vBodeGain;
     QVector<double> vBodePhase;
 
+    double phaseCorrection=0;
+    QVector<double> vBodePhaseUncorrected;
     for(int i=0; i<Y.size()/2; ++i)
     {
         if(Y.at(i) == std::complex<double>(0,0))        //Check for division by zero
@@ -589,7 +591,17 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
         if(i!=0)
         {
             vBodeGain.append(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag()));  //Gain: abs(G) = sqrt(R^2 + X^2)
-            vBodePhase.append(atan2(G[i].imag(), G[i].real())*180/3.14159265);          //Phase: arg(G) = arctan(X/R)
+            vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180/3.14159265);          //Phase: arg(G) = arctan(X/R)
+
+            // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
+            if(vBodePhaseUncorrected.size() > 1)
+            {
+                if(vBodePhaseUncorrected.last() > 170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] < -170)
+                    phaseCorrection -= 360;
+                else if(vBodePhaseUncorrected.last() < -170 && vBodePhaseUncorrected[vBodePhaseUncorrected.size()-2] > 170)
+                    phaseCorrection += 360;
+            }
+            vBodePhase.append(vBodePhaseUncorrected.last() + phaseCorrection);
         }
     }
 
@@ -1778,21 +1790,26 @@ void PlotTab::update()
 //! @param curve is a pointer to the specified curve
 void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 {
-    qDebug() << "Inserting curve marker for " << pCurve->getComponentName() << ", " << pCurve->getPortName() << ", " << pCurve->getDataName();
+    int plotID;
+    for(plotID=0; plotID<2; ++plotID)
+    {
+        if(mPlotCurvePtrs[plotID].contains(pCurve))
+            break;
+    }
 
     mpMarkerSymbol->setPen(QPen(pCurve->getCurvePtr()->pen().brush().color(), 3));
     PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
     mMarkerPtrs.append(tempMarker);
 
-    tempMarker->attach(mpPlot[FIRSTPLOT]);
+    tempMarker->attach(mpPlot[plotID]);
     QCursor cursor;
     tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
-    tempMarker->setYValue(mpPlot[FIRSTPLOT]->invTransform(QwtPlot::yLeft, mpPlot[FIRSTPLOT]->transform(pCurve->getCurvePtr()->yAxis(), pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y())));
+    tempMarker->setYValue(mpPlot[plotID]->invTransform(QwtPlot::yLeft, mpPlot[plotID]->transform(pCurve->getCurvePtr()->yAxis(), pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y())));
 
     QString xString;
     QString yString;
     double x = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x();
-    double y = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(mpPlot[FIRSTPLOT]->canvas()->mapFromGlobal(cursor.pos()))).y();
+    double y = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(mpPlot[plotID]->canvas()->mapFromGlobal(cursor.pos()))).y();
     xString.setNum(x);
     yString.setNum(y);
     QwtText tempLabel;
@@ -1804,8 +1821,8 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
     tempMarker->setLabel(tempLabel);
     tempMarker->setLabelAlignment(Qt::AlignTop);
 
-    mpPlot[FIRSTPLOT]->canvas()->installEventFilter(tempMarker);
-    mpPlot[FIRSTPLOT]->canvas()->setMouseTracking(true);
+    mpPlot[plotID]->canvas()->installEventFilter(tempMarker);
+    mpPlot[plotID]->canvas()->setMouseTracking(true);
 }
 
 
@@ -2119,10 +2136,13 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
         //Create menu for insereting curve markers
     insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
-    for(itc=mPlotCurvePtrs[FIRSTPLOT].begin(); itc!=mPlotCurvePtrs[FIRSTPLOT].end(); ++itc)
+    for(int plotID=0; plotID<2; ++plotID)
     {
-        QAction *pTempAction = insertMarkerMenu->addAction(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
-        actionToCurveMap.insert(pTempAction, (*itc));
+        for(itc=mPlotCurvePtrs[plotID].begin(); itc!=mPlotCurvePtrs[plotID].end(); ++itc)
+        {
+            QAction *pTempAction = insertMarkerMenu->addAction((*itc)->getCurveName());
+            actionToCurveMap.insert(pTempAction, (*itc));
+        }
     }
 
 
@@ -2306,6 +2326,21 @@ int PlotCurve::getGeneration()
 {
     return mGeneration;
 }
+
+QString PlotCurve::getCurveName()
+{
+    if(mCurveType == PORTVARIABLE)
+        return QString(mComponentName + ", " + mPortName + ", " + mDataName);
+    else if(mCurveType == FREQUENCYANALYSIS)
+        return "Frequency Spectrum";
+    else if(mCurveType == BODEGAIN)
+        return "Magnitude Plot";
+    else if(mCurveType == BODEPHASE)
+        return "Phase Plot";
+    else
+        return "Unnamed Curve";
+}
+
 
 //! @brief Returns the type of the curve
 HopsanPlotCurveType PlotCurve::getCurveType()
@@ -2773,19 +2808,17 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSym
 //! @param ev ent Event to be interrupted
 bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 {
-
-        // Key press events, used to initiate moving of a marker if mouse cursor is close enough
+        // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
     if (event->type() == QEvent::MouseButtonPress)
     {
-        qDebug() << "mousePressEvent()";
         QCursor cursor;
         QPointF midPoint;
-        midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
+        midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
+        midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
 
         if(!mpPlotTab->mpZoomer[FIRSTPLOT]->isEnabled() && !mpPlotTab->mpPanner[FIRSTPLOT]->isEnabled())
         {
-            if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+            if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
                 mIsBeingMoved = true;
                 return true;
@@ -2799,9 +2832,9 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         bool retval = false;
         QCursor cursor;
         QPointF midPoint;
-        midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-        midPoint.setY(mpPlotTab->getPlot()->transform(QwtPlot::yLeft, value().y()));
-        if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+        midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
+        midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
+        if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
             mMarkerSymbol.setPen(QPen(mpCurve->getCurvePtr()->pen().brush().color().lighter(165), 3));
             this->setSymbol(&mMarkerSymbol);
@@ -2820,10 +2853,10 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 
         if(mIsBeingMoved)
         {
-            double x = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).x();
-            double y = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(mpPlotTab->getPlot()->canvas()->mapFromGlobal(cursor.pos()))).y();
+            double x = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).x();
+            double y = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).y();
             setXValue(x);
-            setYValue(mpPlotTab->getPlot()->invTransform(QwtPlot::yLeft, mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), y)));
+            setYValue(this->plot()->invTransform(QwtPlot::yLeft, this->plot()->transform(mpCurve->getCurvePtr()->yAxis(), y)));
 
             QString xString;
             QString yString;
@@ -2854,9 +2887,9 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         {
             QCursor cursor;
             QPointF midPoint;
-            midPoint.setX(mpPlotTab->getPlot()->transform(QwtPlot::xBottom, value().x()));
-            midPoint.setY(mpPlotTab->getPlot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
-            if((mpPlotTab->getPlot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+            midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
+            midPoint.setY(this->plot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
+            if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
                 plot()->canvas()->removeEventFilter(this);
                 mpPlotTab->mMarkerPtrs.removeAll(this);
