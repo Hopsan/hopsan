@@ -89,5 +89,6 @@
         <file>graphics/uifonts/consolaz.ttf</file>
         <file>sounds/error.wav</file>
         <file>graphics/uiicons/Hopsan-Losses.png</file>
+        <file>graphics/uiicons/Hopsan-FrequencyAnalysis.png</file>
     </qresource>
 </RCC>
