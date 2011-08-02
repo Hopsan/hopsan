@@ -251,6 +251,7 @@ public slots:
     void exportToGnuplot();
     void exportToPdf();
     void exportToPng();
+    void insertMarker(PlotCurve *pCurve, double x, double y);
     void insertMarker(PlotCurve *pCurve, QPoint pos);
 
 private slots:

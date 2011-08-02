@@ -694,7 +694,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         }
         if(i!=0)
         {
-            vBodeGain.append(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag()));  //Gain: abs(G) = sqrt(R^2 + X^2)
+            vBodeGain.append(10*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
             vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180/3.14159265);          //Phase: arg(G) = arctan(X/R)
 
             // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
@@ -741,11 +741,21 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     getCurrentPlotTab()->getPlot(SECONDPLOT)->replot();
 
 
-    getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+    //getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
 
     getCurrentPlotTab()->rescaleToCurves();
+
+
+    for(int i=1; i<vBodePhase.size(); ++i)
+    {
+        if(vBodePhase.at(i) < -180 && vBodePhase.at(i-1) > -180)
+        {
+            getCurrentPlotTab()->insertMarker(pGainCurve, F.at(i), vBodeGain.at(i));
+            break;
+        }
+    }
 }
 
 
@@ -1891,6 +1901,39 @@ void PlotTab::update()
         }
         mpPlot[plotID]->replot();
     }
+}
+
+
+void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y)
+{
+    qDebug() << "x and y = " << x << ", " << y;
+
+    int plotID = getPlotIDFromCurve(pCurve);
+
+    mpMarkerSymbol->setPen(QPen(pCurve->getCurvePtr()->pen().brush().color(), 3));
+    PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
+    mMarkerPtrs[plotID].append(tempMarker);
+
+    tempMarker->attach(mpPlot[plotID]);
+    QCursor cursor;
+    tempMarker->setXValue(x);
+    tempMarker->setYValue(y);
+
+    QString xString;
+    QString yString;
+    xString.setNum(x);
+    yString.setNum(y);
+    QwtText tempLabel;
+    tempLabel.setText("("+xString+", "+yString+")");
+    tempLabel.setText("("+xString+", "+yString+")");
+    tempLabel.setColor(pCurve->getCurvePtr()->pen().brush().color());
+    tempLabel.setBackgroundBrush(QColor(255,255,255,220));
+    tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
+    tempMarker->setLabel(tempLabel);
+    tempMarker->setLabelAlignment(Qt::AlignTop);
+
+    mpPlot[plotID]->canvas()->installEventFilter(tempMarker);
+    mpPlot[plotID]->canvas()->setMouseTracking(true);
 }
 
 
