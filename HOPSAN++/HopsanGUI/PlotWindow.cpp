@@ -1128,7 +1128,7 @@ PlotTab::PlotTab(PlotWindow *parent)
 
     for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
     {
-        showPlot(plotID, false);
+        showPlot(HopsanPlotID(plotID), false);
     }
 
     mpPlot[FIRSTPLOT]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
