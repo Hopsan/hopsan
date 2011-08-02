@@ -255,6 +255,8 @@ private slots:
     void saveToXml();
 
 private:
+    int getPlotIDFromCurve(PlotCurve *pCurve);
+
     QwtPlot *mpPlot[2];
 
     QList<PlotCurve *> mPlotCurvePtrs[2];
@@ -266,7 +268,7 @@ private:
     QwtPlotZoomer *mpZoomerRight[2];
     QwtPlotMagnifier *mpMagnifier[2];
     QwtPlotPanner *mpPanner[2];
-    QList<PlotMarker *> mMarkerPtrs;
+    QList<PlotMarker *> mMarkerPtrs[2];
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;

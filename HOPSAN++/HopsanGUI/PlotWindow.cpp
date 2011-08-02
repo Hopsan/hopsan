@@ -1115,16 +1115,21 @@ PlotTab::PlotTab(PlotWindow *parent)
     {
         tempList.at(i)->setAutoFillBackground(false);
     }
-    mpPlot[FIRSTPLOT]->insertLegend(tempLegend, QwtPlot::TopLegend);
-    mpPlot[FIRSTPLOT]->setAutoFillBackground(false);
-    mpPlot[SECONDPLOT]->setAutoFillBackground(false);
 
     QGridLayout *pLayout = new QGridLayout(this);
-    pLayout->addWidget(mpPlot[FIRSTPLOT]);
-    pLayout->addWidget(mpPlot[SECONDPLOT]);
+    mpPlot[FIRSTPLOT]->insertLegend(tempLegend, QwtPlot::TopLegend);
+    for(int plotID=0; plotID<2; ++plotID)
+    {
+        mpPlot[plotID]->setAutoFillBackground(false);
+        pLayout->addWidget(mpPlot[plotID]);
+    }
+
     this->setLayout(pLayout);
 
-    showPlot(SECONDPLOT, false);
+    for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
+    {
+        showPlot(plotID, false);
+    }
 
     mpPlot[FIRSTPLOT]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1134,13 +1139,12 @@ PlotTab::PlotTab(PlotWindow *parent)
 //! @brief Destructor for plot tab. Removes all curves before tab is deleted.
 PlotTab::~PlotTab()
 {
-    while(!mPlotCurvePtrs[FIRSTPLOT].empty())
+    for(int plotID=0; plotID<2; ++plotID)
     {
-        removeCurve(mPlotCurvePtrs[FIRSTPLOT].last());
-    }
-    while(!mPlotCurvePtrs[SECONDPLOT].empty())
-    {
-        removeCurve(mPlotCurvePtrs[SECONDPLOT].last());
+        while(!mPlotCurvePtrs[plotID].empty())
+        {
+            removeCurve(mPlotCurvePtrs[plotID].last());
+        }
     }
 }
 
@@ -1178,232 +1182,128 @@ void PlotTab::addCurve(PlotCurve *curve, HopsanPlotID plotID)
 //! @brief Rescales the axes and the zommers so that all plot curves will fit
 void PlotTab::rescaleToCurves()
 {
-    double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight;
-    double xMinSecond, xMaxSecond, yMinLeftSecond, yMaxLeftSecond, yMinRightSecond, yMaxRightSecond;
-
-    xMin=0;
-    xMax=10;
-    yMinLeft=0;
-    yMaxLeft=10;
-    yMinRight=0;
-    yMaxRight=10;
-
-    xMinSecond=0;
-    xMaxSecond=10;
-    yMinLeftSecond=0;
-    yMaxLeftSecond=10;
-    yMinRightSecond=0;
-    yMaxRightSecond=10;
-
-    if(!mPlotCurvePtrs[FIRSTPLOT].empty())
+    //Cycle plots and rescale each of them
+    for(int plotID=0; plotID<2; ++plotID)
     {
-        bool foundFirstLeft = false;
-        bool foundFirstRight = false;
+        double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight;
 
-        xMin=mPlotCurvePtrs[FIRSTPLOT].first()->getCurvePtr()->minXValue();
-        xMax=mPlotCurvePtrs[FIRSTPLOT].first()->getCurvePtr()->maxXValue();
+        xMin=0;         //Min value for X axis
+        xMax=10;        //Max value for X axis
+        yMinLeft=0;     //Min value for left Y axis
+        yMaxLeft=10;    //Max value for left Y axis
+        yMinRight=0;    //Min value for right Y axis
+        yMaxRight=10;   //Max value for right Y axis
 
-        for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+        //Cycle plots
+        if(!mPlotCurvePtrs[plotID].empty())
         {
-            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yLeft)
+            bool foundFirstLeft = false;        //Tells that first left axis curve was found
+            bool foundFirstRight = false;       //Tells that first right axis curve was found
+
+            //Initialize values for X axis by using the first curve
+            xMin=mPlotCurvePtrs[plotID].first()->getCurvePtr()->minXValue();
+            xMax=mPlotCurvePtrs[plotID].first()->getCurvePtr()->maxXValue();
+
+            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
-                if(foundFirstLeft == false)
+                if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                 {
-                    yMinLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
-                    yMaxLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
-                    foundFirstLeft = true;
+                    if(foundFirstLeft == false)     //First left-axis curve, use min and max Y values as initial values
+                    {
+                        yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                        foundFirstLeft = true;
+                    }
+                    else    //Compare min/max Y value with previous and change if the new one is smaller/larger
+                    {
+                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinLeft)
+                            yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue() > yMaxLeft)
+                            yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                    }
                 }
-                else
+
+                if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight)
                 {
-                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue() < yMinLeft)
-                        yMinLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
-                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxLeft)
-                        yMaxLeft=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
+                    if(foundFirstRight == false)    //First right-axis curve, use min and max Y values as initial values
+                    {
+                        yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        yMaxRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                        foundFirstRight = true;
+                    }
+                    else    //Compare min/max Y value with previous and change if the new one is smaller/larger
+                    {
+                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinRight)
+                            yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue() > yMaxRight)
+                            yMaxRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                    }
                 }
+
+                //Compare min/max X value with previous and change if the new one is smaller/larger
+                if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minXValue() < xMin)
+                    xMin=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minXValue();
+                if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxXValue() > xMax)
+                    xMax=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxXValue();
+
             }
-
-            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getAxisY() == QwtPlot::yRight)
-            {
-                if(foundFirstRight == false)
-                {
-                    yMinRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
-                    yMaxRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
-                    foundFirstRight = true;
-                }
-                else
-                {
-                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue() < yMinRight)
-                        yMinRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minYValue();
-                    if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxRight)
-                        yMaxRight=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxYValue();
-                }
-            }
-
-            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minXValue() < xMin)
-                xMin=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->minXValue();
-            if(mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxXValue() > xMax)
-                xMax=mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->maxXValue();
-
         }
-    }
 
-
-    if(!mPlotCurvePtrs[SECONDPLOT].empty())
-    {
-        bool foundFirstLeft = false;
-        bool foundFirstRight = false;
-
-        xMinSecond=mPlotCurvePtrs[SECONDPLOT].first()->getCurvePtr()->minXValue();
-        xMaxSecond=mPlotCurvePtrs[SECONDPLOT].first()->getCurvePtr()->maxXValue();
-
-        for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
+        //Max and min must not be same value; if they are, decrease/increase them by one
+        if(yMaxLeft == yMinLeft)
         {
-            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getAxisY() == QwtPlot::yLeft)
-            {
-                if(foundFirstLeft == false)
-                {
-                    yMinLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
-                    yMaxLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
-                    foundFirstLeft = true;
-                }
-                else
-                {
-                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue() < yMinLeftSecond)
-                        yMinLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
-                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxLeftSecond)
-                        yMaxLeftSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
-                }
-            }
-
-            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getAxisY() == QwtPlot::yRight)
-            {
-                if(foundFirstRight == false)
-                {
-                    yMinRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
-                    yMaxRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
-                    foundFirstRight = true;
-                }
-                else
-                {
-                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue() < yMinRightSecond)
-                        yMinRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minYValue();
-                    if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue() > yMaxRightSecond)
-                        yMaxRightSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxYValue();
-                }
-            }
-
-            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minXValue() < xMinSecond)
-                xMinSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->minXValue();
-            if(mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxXValue() > xMaxSecond)
-                xMaxSecond=mPlotCurvePtrs[SECONDPLOT].at(i)->getCurvePtr()->maxXValue();
+            yMaxLeft = yMaxLeft+1;
+            yMinLeft = yMinLeft-1;
         }
+        if(yMaxRight == yMinRight)
+        {
+            yMaxRight = yMaxRight+1;
+            yMinRight = yMinRight-1;
+        }
+
+        //Calculate heights (used for calculating margins at top and bottom
+        double heightLeft = yMaxLeft-yMinLeft;
+        double heightRight = yMaxRight-yMinRight;
+
+        //If plot has log scale, we use a different approach for calculating margins
+        //(fixed margins would not make sense with a log scale)
+        if(mpPlot[plotID]->axisScaleEngine(QwtPlot::yLeft)->transformation()->type() == QwtScaleTransformation::Log10)
+        {
+            heightLeft = 0;
+            yMaxLeft = yMaxLeft*2;
+            yMinLeft = yMinLeft/2;
+        }
+        if(mpPlot[plotID]->axisScaleEngine(QwtPlot::yRight)->transformation()->type() == QwtScaleTransformation::Log10)
+        {
+            heightRight = 0;
+            yMaxRight = yMaxRight*2;
+            yMinRight = yMinRight/2;
+        }
+
+        //Scale the axes
+        mpPlot[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
+        mpPlot[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
+        mpPlot[plotID]->setAxisScale(QwtPlot::xBottom, xMin, xMax);
+        mpPlot[plotID]->updateAxes();
+
+        //Scale the zoom base (maximum zoom)
+        QRectF tempDoubleRect;
+        tempDoubleRect.setX(xMin);
+        tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
+        tempDoubleRect.setWidth(xMax-xMin);
+        tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
+        mpZoomer[plotID]->setZoomBase(tempDoubleRect);
+
+        QRectF tempDoubleRect2;
+        tempDoubleRect2.setX(xMin);
+        tempDoubleRect2.setY(yMinRight-0.05*heightRight);
+        tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
+        tempDoubleRect2.setWidth(xMax-xMin);
+        mpZoomerRight[plotID]->setZoomBase(tempDoubleRect2);
     }
 
-
-    if(yMaxLeft == yMinLeft)
-    {
-        yMaxLeft = yMaxLeft+1;
-        yMinLeft = yMinLeft-1;
-    }
-    if(yMaxRight == yMinRight)
-    {
-        yMaxRight = yMaxRight+1;
-        yMinRight = yMinRight-1;
-    }
-
-    if(yMaxLeftSecond == yMinLeftSecond)
-    {
-        yMaxLeftSecond = yMaxLeftSecond+1;
-        yMinLeftSecond = yMinLeftSecond-1;
-    }
-    if(yMaxRightSecond == yMinRightSecond)
-    {
-        yMaxRightSecond = yMaxRightSecond+1;
-        yMinRightSecond = yMinRightSecond-1;
-    }
-
-    //Calculate heights (used for calculating margins at top and bottom
-    double heightLeft = yMaxLeft-yMinLeft;
-    double heightRight = yMaxRight-yMinRight;
-    double heightLeftSecond = yMaxLeftSecond-yMinLeftSecond;
-    double heightRightSecond = yMaxRightSecond-yMinRightSecond;
-
-    //If plot has log scale, we need a different approach for calculating margins
-    if(mpPlot[FIRSTPLOT]->axisScaleEngine(QwtPlot::yLeft)->transformation()->type() == QwtScaleTransformation::Log10)
-    {
-        heightLeft = 0;
-        yMaxLeft = yMaxLeft*2;
-        yMinLeft = yMinLeft/2;
-    }
-    if(mpPlot[FIRSTPLOT]->axisScaleEngine(QwtPlot::yRight)->transformation()->type() == QwtScaleTransformation::Log10)
-    {
-        heightRight = 0;
-        yMaxRight = yMaxRight*2;
-        yMinRight = yMinRight/2;
-    }
-    if(mpPlot[SECONDPLOT]->axisScaleEngine(QwtPlot::yLeft)->transformation()->type() == QwtScaleTransformation::Log10)
-    {
-        heightLeftSecond = 0;
-        yMaxLeftSecond = yMaxLeftSecond*2;
-        yMinLeftSecond = yMinLeftSecond/2;
-    }
-    if(mpPlot[SECONDPLOT]->axisScaleEngine(QwtPlot::yRight)->transformation()->type() == QwtScaleTransformation::Log10)
-    {
-        heightRightSecond = 0;
-        yMaxRightSecond = yMaxRightSecond*2;
-        yMinRightSecond = yMinRightSecond/2;
-    }
-
-    qDebug() << "yMinLeft = " << yMinLeft << ", yMaxLeft = " << yMaxLeft << ", heightLeft = " << heightLeft;
-
-    mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
-    mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
-    mpPlot[FIRSTPLOT]->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-    mpPlot[FIRSTPLOT]->updateAxes();
-
-    mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::yLeft, yMinLeftSecond-0.05*heightLeftSecond, yMaxLeftSecond+0.05*heightLeftSecond);
-    mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::yRight, yMinRightSecond-0.05*heightRightSecond, yMaxRightSecond+0.05*heightRightSecond);
-    mpPlot[SECONDPLOT]->setAxisScale(QwtPlot::xBottom, xMinSecond, xMaxSecond);
-    mpPlot[SECONDPLOT]->updateAxes();
-
-//    mpPlot[FIRSTPLOT]->setAxisAutoScale(QwtPlot::yLeft);
-//    mpPlot[FIRSTPLOT]->setAxisAutoScale(QwtPlot::yRight);
-//    mpPlot[FIRSTPLOT]->setAxisAutoScale(QwtPlot::xBottom);
-//    mpPlot[SECONDPLOT]->setAxisAutoScale(QwtPlot::yLeft);
-//    mpPlot[SECONDPLOT]->setAxisAutoScale(QwtPlot::yRight);
-//    mpPlot[SECONDPLOT]->setAxisAutoScale(QwtPlot::xBottom);
-
-    QRectF tempDoubleRect;
-    tempDoubleRect.setX(xMin);
-    tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
-    tempDoubleRect.setWidth(xMax-xMin);
-    tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
-    mpZoomer[FIRSTPLOT]->setZoomBase(tempDoubleRect);
-
-    QRectF tempDoubleRect2;
-    tempDoubleRect2.setX(xMin);
-    tempDoubleRect2.setY(yMinRight-0.05*heightRight);
-    tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
-    tempDoubleRect2.setWidth(xMax-xMin);
-    mpZoomerRight[FIRSTPLOT]->setZoomBase(tempDoubleRect2);
-
-    QRectF tempDoubleRect3;
-    tempDoubleRect3.setX(xMinSecond);
-    tempDoubleRect3.setY(yMinLeftSecond-0.05*heightLeftSecond);
-    tempDoubleRect3.setWidth(xMaxSecond-xMinSecond);
-    tempDoubleRect3.setHeight(yMaxLeftSecond-yMinLeftSecond+0.1*heightLeftSecond);
-    mpZoomer[SECONDPLOT]->setZoomBase(tempDoubleRect3);
-
-    QRectF tempDoubleRect4;
-    tempDoubleRect4.setX(xMinSecond);
-    tempDoubleRect4.setY(yMinRightSecond-0.05*heightRightSecond);
-    tempDoubleRect4.setHeight(yMaxRightSecond-yMinRightSecond+0.1*heightRightSecond);
-    tempDoubleRect4.setWidth(xMaxSecond-xMinSecond);
-    mpZoomerRight[SECONDPLOT]->setZoomBase(tempDoubleRect4);
-
-            //Curve Marker
+    //Curve Marker
     mpMarkerSymbol = new QwtSymbol();
-    //mpMarkerSymbol->setPen(QPen(QBrush(Color(Qt::red)), 3));
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
     mpMarkerSymbol->setSize(10,10);
 }
@@ -1413,17 +1313,15 @@ void PlotTab::rescaleToCurves()
 //! @param curve Pointer to curve to remove
 void PlotTab::removeCurve(PlotCurve *curve)
 {
-    for(int i=0; i<mMarkerPtrs.size(); ++i)
+    int plotID = getPlotIDFromCurve(curve);
+
+    for(int i=0; i<mMarkerPtrs[plotID].size(); ++i)
     {
-        if(mMarkerPtrs.at(i)->getCurve() == curve)
+        if(mMarkerPtrs[plotID].at(i)->getCurve() == curve)
         {
-            for(int plotID=0; plotID<2; ++plotID)
-            {
-                mpPlot[plotID]->canvas()->removeEventFilter(mMarkerPtrs.at(i));
-            }
-            mMarkerPtrs.at(i)->detach();
-            //delete(mMarkerPtrs.at(i));
-            mMarkerPtrs.removeAt(i);
+            mpPlot[plotID]->canvas()->removeEventFilter(mMarkerPtrs[plotID].at(i));
+            mMarkerPtrs[plotID].at(i)->detach();
+            mMarkerPtrs[plotID].removeAt(i);
             --i;
         }
     }
@@ -1943,15 +1841,15 @@ void PlotTab::update()
             (*cit)->getCurvePtr()->attach(mpPlot[plotID]);
         }
 
-        for(int i=0; i<mMarkerPtrs.size(); ++i)
+        for(int i=0; i<mMarkerPtrs[plotID].size(); ++i)
         {
-            QPointF posF = mMarkerPtrs.at(i)->value();
+            QPointF posF = mMarkerPtrs[plotID].at(i)->value();
             double x = mpPlot[plotID]->transform(QwtPlot::xBottom, posF.x());
             double y = mpPlot[plotID]->transform(QwtPlot::yLeft, posF.y());
             QPoint pos = QPoint(x,y);
-            QwtPlotCurve *pCurve = mMarkerPtrs.at(i)->getCurve()->getCurvePtr();
-            mMarkerPtrs.at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
-            mMarkerPtrs.at(i)->setYValue(mpPlot[plotID]->invTransform(QwtPlot::yLeft, mpPlot[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
+            QwtPlotCurve *pCurve = mMarkerPtrs[plotID].at(i)->getCurve()->getCurvePtr();
+            mMarkerPtrs[plotID].at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
+            mMarkerPtrs[plotID].at(i)->setYValue(mpPlot[plotID]->invTransform(QwtPlot::yLeft, mpPlot[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
         }
         mpPlot[plotID]->replot();
     }
@@ -1962,16 +1860,11 @@ void PlotTab::update()
 //! @param curve is a pointer to the specified curve
 void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 {
-    int plotID;
-    for(plotID=0; plotID<2; ++plotID)
-    {
-        if(mPlotCurvePtrs[plotID].contains(pCurve))
-            break;
-    }
+    int plotID = getPlotIDFromCurve(pCurve);
 
     mpMarkerSymbol->setPen(QPen(pCurve->getCurvePtr()->pen().brush().color(), 3));
     PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
-    mMarkerPtrs.append(tempMarker);
+    mMarkerPtrs[plotID].append(tempMarker);
 
     tempMarker->attach(mpPlot[plotID]);
     QCursor cursor;
@@ -2142,6 +2035,18 @@ void PlotTab::saveToXml()
     file.close();
 
     mpExportXmlDialog->close();
+}
+
+
+int PlotTab::getPlotIDFromCurve(PlotCurve *pCurve)
+{
+    for(int plotID=0; plotID<2; ++plotID)
+    {
+        if(mPlotCurvePtrs[plotID].contains(pCurve))
+            return plotID;
+    }
+    assert(false);      //Plot curve has no plot ID (should never happen)
+    return -1;
 }
 
 
@@ -3074,7 +2979,10 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
             if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
                 plot()->canvas()->removeEventFilter(this);
-                mpPlotTab->mMarkerPtrs.removeAll(this);
+                for(int plotID=0; plotID<2; ++plotID)
+                {
+                    mpPlotTab->mMarkerPtrs[plotID].removeAll(this);     //Cycle all plots and remove the marker if it is found
+                }
                 this->hide();           // This will only hide and inactivate the marker. Deleting it seem to make program crash.
                 this->detach();
                 return true;
