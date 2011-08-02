@@ -594,7 +594,7 @@ void PlotWindow::createBodePlot()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    double maxFreq = (getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().size()+1)/getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().last();
+    double maxFreq = (getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().size()+1)/getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().last()/2;
     QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency to plot:");
     QLabel *pMaxFrequencyValue = new QLabel();
     QLabel *pMaxFrequencyUnit = new QLabel("Hz");
@@ -712,7 +712,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
     QVector<double> F;
     double stoptime = pInputCurve->getTimeVector().last();
-    for(int i=1; i<G.size(); ++i)
+    for(int i=1; i<G.size()/2; ++i)
     {
         F.append((i+1)/stoptime);
         if(F.last() >= Fmax) break;
