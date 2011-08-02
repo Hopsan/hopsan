@@ -48,7 +48,7 @@ namespace hopsan {
         SignalSink(const std::string name) : ComponentSignal(name)
         {
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);
         }
 
 

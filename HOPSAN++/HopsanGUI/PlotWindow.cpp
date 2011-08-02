@@ -565,8 +565,8 @@ void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
 
 void PlotWindow::createBodePlot()
 {
-    QDialog *pCreateBodeDialog = new QDialog(this);
-    pCreateBodeDialog->setWindowTitle("Create Bode Plot");
+    mpCreateBodeDialog = new QDialog(this);
+    mpCreateBodeDialog->setWindowTitle("Create Bode Plot");
 
     QGroupBox *pInputGroupBox = new QGroupBox(tr("Input Variable"));
     QVBoxLayout *pInputGroupBoxLayout = new QVBoxLayout;
@@ -594,29 +594,48 @@ void PlotWindow::createBodePlot()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
+    double maxFreq = (getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().size()+1)/getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().last();
+    QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency to plot:");
+    QLabel *pMaxFrequencyValue = new QLabel();
+    QLabel *pMaxFrequencyUnit = new QLabel("Hz");
+    pMaxFrequencyValue->setNum(maxFreq);
+    mpMaxFrequencySlider = new QSlider(this);
+    mpMaxFrequencySlider->setOrientation(Qt::Horizontal);
+    mpMaxFrequencySlider->setMinimum(0);
+    mpMaxFrequencySlider->setMaximum(maxFreq);
+    mpMaxFrequencySlider->setValue(maxFreq);
+    connect(mpMaxFrequencySlider, SIGNAL(valueChanged(int)), pMaxFrequencyValue, SLOT(setNum(int)));
+
+    QHBoxLayout *pSliderLayout = new QHBoxLayout();
+    pSliderLayout->addWidget(mpMaxFrequencySlider);
+    pSliderLayout->addWidget(pMaxFrequencyValue);
+    pSliderLayout->addWidget(pMaxFrequencyUnit);
+
     QPushButton *pCancelButton = new QPushButton("Cancel");
     QPushButton *pNextButton = new QPushButton("Go!");
 
     QGridLayout *pBodeDialogLayout = new QGridLayout;
     pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 2);
     pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 2);
-    pBodeDialogLayout->addWidget(pCancelButton, 2, 0, 1, 1);
-    pBodeDialogLayout->addWidget(pNextButton, 2, 1, 1, 1);
+    pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 2);
+    pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 2);
+    pBodeDialogLayout->addWidget(pCancelButton, 4, 0, 1, 1);
+    pBodeDialogLayout->addWidget(pNextButton, 4, 1, 1, 1);
 
-    pCreateBodeDialog->setLayout(pBodeDialogLayout);
+    mpCreateBodeDialog->setLayout(pBodeDialogLayout);
 
-    pCreateBodeDialog->show();
+    mpCreateBodeDialog->show();
 
-    connect(pCancelButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
+    connect(pCancelButton, SIGNAL(clicked()), mpCreateBodeDialog, SLOT(close()));
     connect(pNextButton, SIGNAL(clicked()), this, SLOT(createBodePlotFromDialog()));
-    connect(pNextButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
+    //connect(pNextButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
 }
 
 
 void PlotWindow::createBodePlotFromDialog()
 {
-    PlotCurve *inputCurve;
-    PlotCurve *outputCurve;
+    PlotCurve *inputCurve = 0;
+    PlotCurve *outputCurve = 0;
     QMap<QRadioButton *, PlotCurve *>::iterator it;
     for(it=mBodeInputButtonToCurveMap.begin(); it!=mBodeInputButtonToCurveMap.end(); ++it)
     {
@@ -628,11 +647,23 @@ void PlotWindow::createBodePlotFromDialog()
         if(it.key()->isChecked())
             outputCurve = it.value();
     }
-    createBodePlot(inputCurve, outputCurve);
+    if(inputCurve == 0 || outputCurve == 0)
+    {
+        QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Both input and output vectors must be selected."));
+    }
+    else if(inputCurve == outputCurve)
+    {
+        QMessageBox::warning(this, tr("Transfer Function Analysis Failed"), tr("Input and output vectors must be different."));
+    }
+    else
+    {
+        mpCreateBodeDialog->close();
+        createBodePlot(inputCurve, outputCurve, mpMaxFrequencySlider->value());
+    }
 }
 
 
-void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
+void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax)
 {
     //! @todo Make sure data vector is 2^n
 
@@ -684,7 +715,10 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
     for(int i=1; i<G.size(); ++i)
     {
         F.append((i+1)/stoptime);
+        if(F.last() >= Fmax) break;
     }
+    vBodeGain.resize(F.size());
+    vBodePhase.resize(F.size());
 
 
     addPlotTab();
@@ -715,6 +749,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve)
 }
 
 
+//! @brief Shows the help popup with a message for the currently hovered toolbar item
 void PlotWindow::showToolBarHelpPopup()
 {
     QCursor cursor;
@@ -819,7 +854,7 @@ VariableListWidget::VariableListWidget(PlotWindow *parentPlotWindow, QWidget *pa
 //! @brief Initializes drag operations from variable list widget
 void VariableListWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (!(event->buttons() & Qt::LeftButton))
+    if (!(event->buttons() & Qt::LeftButton) || mpParentPlotWindow->mpVariableList->count() == 0)
     {
         return;
     }
@@ -942,7 +977,7 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
     mpParentPlotWindow = parent;
     this->setTabsClosable(true);
 
-    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
+    //connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closePlotTab(int)));
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
 }
@@ -983,9 +1018,9 @@ void PlotTabWidget::tabChanged()
     {
         disconnect(mpParentPlotWindow->mpZoomButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableZoom(bool)));
         disconnect(mpParentPlotWindow->mpPanButton,                 SIGNAL(toggled(bool)),  getTab(i),  SLOT(enablePan(bool)));
-        disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(clicked()),      getTab(i),  SLOT(setBackgroundColor()));
+        disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(triggered()),      getTab(i),  SLOT(setBackgroundColor()));
         disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
-        disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(clicked()),      getTab(i),  SLOT(resetXVector()));
+        disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(triggered()),      getTab(i),  SLOT(resetXVector()));
         disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToXml()));
         disconnect(mpParentPlotWindow->mpExportToXmlAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
         disconnect(mpParentPlotWindow->mpExportToMatlabAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToMatlab()));
@@ -1000,12 +1035,13 @@ void PlotTabWidget::tabChanged()
         mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner[FIRSTPLOT]->isEnabled());
         mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid[FIRSTPLOT]->isVisible());
         mpParentPlotWindow->mpResetXVectorButton->setEnabled(getCurrentTab()->mHasSpecialXAxis);
+        mpParentPlotWindow->mpBodePlotButton->setEnabled(getCurrentTab()->getCurves(FIRSTPLOT).size() > 1);
 
         connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
         connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
-        connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(clicked()),      getCurrentTab(),    SLOT(setBackgroundColor()));
+        connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(triggered()),      getCurrentTab(),    SLOT(setBackgroundColor()));
         connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
-        connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(clicked()),      getCurrentTab(),    SLOT(resetXVector()));
+        connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(triggered()),      getCurrentTab(),    SLOT(resetXVector()));
         connect(mpParentPlotWindow->mpExportToXmlAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToXml()));
         connect(mpParentPlotWindow->mpExportToCsvAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToCsv()));
         connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
@@ -1176,6 +1212,8 @@ void PlotTab::addCurve(PlotCurve *curve, HopsanPlotID plotID)
     curve->setLineColor(mCurveColors.first());
     curve->setLineWidth(2);
     mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
+
+    mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
 }
 
 

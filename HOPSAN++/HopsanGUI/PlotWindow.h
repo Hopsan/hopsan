@@ -83,7 +83,7 @@ public slots:
     void performFrequencyAnalysis(PlotCurve *curve);
     void createBodePlot();
     void createBodePlotFromDialog();
-    void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve);
+    void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
 
 protected:
@@ -138,6 +138,9 @@ private:
     QGroupBox *mpHelpPopupGroupBox;
     QHBoxLayout *mpHelpPopupGroupBoxLayout;
     QTimer *mpHelpPopupTimer;
+
+    QDialog *mpCreateBodeDialog;
+    QSlider *mpMaxFrequencySlider;
 };
 
 

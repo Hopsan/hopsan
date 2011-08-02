@@ -37,6 +37,7 @@ class GUIModelObject;
 class GUISystem;
 class GUIContainerObject;
 class GUIConnector;
+class PlotWindow;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 
@@ -84,7 +85,8 @@ public:
 public slots:
     void hideIfNotConnected(bool togglePortsActionTriggered);
     void setVisible(bool value);
-    bool plot(QString dataName, QString dataUnit=QString());
+    PlotWindow* plot(QString dataName, QString dataUnit=QString());
+    void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
     void refreshPortGraphics();
     void refreshPortGraphics(QString cqsType, QString portType, QString nodeType);

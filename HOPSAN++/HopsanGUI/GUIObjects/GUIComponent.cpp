@@ -83,7 +83,13 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     //If this is a sink component that has plot data, plot it instead of showing the dialog
     if(this->getTypeName() == "SignalSink" && this->getPort("in") != 0 && this->mpParentContainerObject->getAllPlotData().size() > 0)   //Not very nice code, but a nice feature...
-        getPort("in")->plot("Value");
+    {
+        PlotWindow *pPlotWindow = getPort("in")->getConnectedPorts().first()->plot("Value");
+        for(int i=1; (i<getPort("in")->getConnectedPorts().size() && pPlotWindow != 0); ++i)
+        {
+            getPort("in")->getConnectedPorts().at(i)->plotToPlotWindow(pPlotWindow, "Value");
+        }
+    }
     else
         openPropertiesDialog();
 }

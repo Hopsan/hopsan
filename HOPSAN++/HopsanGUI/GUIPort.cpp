@@ -31,6 +31,7 @@
 #include "GUIConnector.h"
 
 #include "MainWindow.h"
+#include "PlotWindow.h"
 #include "CoreAccess.h"
 #include "GraphicsView.h"
 #include "Configuration.h"
@@ -465,17 +466,20 @@ GUIModelObject *GUIPort::getGuiModelObject()
 //! Plots the variable with name 'dataName' in the node the port is connected to.
 //! @param dataName tells which variable to plot.
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
-bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
+PlotWindow *GUIPort::plot(QString dataName, QString dataUnit)
 {
-    qDebug() << mpParentGuiModelObject->getName() << ", " << getName() << ", plot(" << dataName << ", " << dataUnit << ")";
-    bool success = false;
     if(this->isConnected())
     {
-        if(gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, ""))
-            success = true;
+        return gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit);
     }
 
-    return success;
+    return 0;       //Fail!
+}
+
+
+void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit)
+{
+    pPlotWindow->addPlotCurve(mpParentGuiModelObject->mpParentContainerObject->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit);
 }
 
 
