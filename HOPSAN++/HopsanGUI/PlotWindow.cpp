@@ -748,11 +748,26 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     getCurrentPlotTab()->rescaleToCurves();
 
 
+    //Add a curve marker at the amplitude margin
     for(int i=1; i<vBodePhase.size(); ++i)
     {
         if(vBodePhase.at(i) < -180 && vBodePhase.at(i-1) > -180)
         {
-            getCurrentPlotTab()->insertMarker(pGainCurve, F.at(i), vBodeGain.at(i));
+            QString valueString;
+            valueString.setNum(fabs(vBodeGain.at(i)));
+            getCurrentPlotTab()->insertMarker(pGainCurve, F.at(i), vBodeGain.at(i), "Gain Margin = " + valueString + " dB", false);
+            break;
+        }
+    }
+
+    //Add a curve marker at the phase margin
+    for(int i=1; i<vBodeGain.size(); ++i)
+    {
+        if(vBodeGain.at(i) < -0 && vBodeGain.at(i-1) > -0)
+        {
+            QString valueString;
+            valueString.setNum(fabs(180.0+vBodePhase.at(i)));
+            getCurrentPlotTab()->insertMarker(pPhaseCurve, F.at(i), vBodePhase.at(i), "Phase Margin = " + valueString + trUtf8("°"), false);
             break;
         }
     }
@@ -1904,7 +1919,7 @@ void PlotTab::update()
 }
 
 
-void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y)
+void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel, bool movable)
 {
     qDebug() << "x and y = " << x << ", " << y;
 
@@ -1924,8 +1939,14 @@ void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y)
     xString.setNum(x);
     yString.setNum(y);
     QwtText tempLabel;
-    tempLabel.setText("("+xString+", "+yString+")");
-    tempLabel.setText("("+xString+", "+yString+")");
+    if(altLabel != QString())
+    {
+        tempLabel.setText(altLabel);
+    }
+    else
+    {
+        tempLabel.setText("("+xString+", "+yString+")");
+    }
     tempLabel.setColor(pCurve->getCurvePtr()->pen().brush().color());
     tempLabel.setBackgroundBrush(QColor(255,255,255,220));
     tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
@@ -1934,12 +1955,14 @@ void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y)
 
     mpPlot[plotID]->canvas()->installEventFilter(tempMarker);
     mpPlot[plotID]->canvas()->setMouseTracking(true);
+
+    tempMarker->setMovable(movable);
 }
 
 
 //! @brief Inserts a curve marker at the specified curve
 //! @param curve is a pointer to the specified curve
-void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
+void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos, bool movable)
 {
     int plotID = getPlotIDFromCurve(pCurve);
 
@@ -1960,7 +1983,6 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
     yString.setNum(y);
     QwtText tempLabel;
     tempLabel.setText("("+xString+", "+yString+")");
-    tempLabel.setText("("+xString+", "+yString+")");
     tempLabel.setColor(pCurve->getCurvePtr()->pen().brush().color());
     tempLabel.setBackgroundBrush(QColor(255,255,255,220));
     tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
@@ -1969,6 +1991,8 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos)
 
     mpPlot[plotID]->canvas()->installEventFilter(tempMarker);
     mpPlot[plotID]->canvas()->setMouseTracking(true);
+
+    tempMarker->setMovable(movable);
 }
 
 
@@ -2966,6 +2990,7 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSym
     mIsBeingMoved = false;
     mMarkerSymbol = markerSymbol;
     setSymbol(&mMarkerSymbol);
+    mIsMovable = true;
 }
 
 
@@ -2976,6 +3001,9 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSym
 //! @param ev ent Event to be interrupted
 bool PlotMarker::eventFilter(QObject *object, QEvent *event)
 {
+    if(!mIsMovable)
+        return false;
+
         // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
     if (event->type() == QEvent::MouseButtonPress)
     {
@@ -3072,6 +3100,12 @@ bool PlotMarker::eventFilter(QObject *object, QEvent *event)
         return false;
     }
     return false;
+}
+
+
+void PlotMarker::setMovable(bool movable)
+{
+    mIsMovable = movable;
 }
 
 

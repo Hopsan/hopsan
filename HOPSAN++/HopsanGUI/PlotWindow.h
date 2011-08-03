@@ -251,8 +251,8 @@ public slots:
     void exportToGnuplot();
     void exportToPdf();
     void exportToPng();
-    void insertMarker(PlotCurve *pCurve, double x, double y);
-    void insertMarker(PlotCurve *pCurve, QPoint pos);
+    void insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel=QString(), bool movable=true);
+    void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
 
 private slots:
     QString updateXmlOutputTextInDialog();
@@ -388,11 +388,13 @@ public:
     PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSymbol);
     PlotCurve *getCurve();
     virtual bool eventFilter (QObject *, QEvent *);
+    void setMovable(bool movable);
 
 private:
     PlotCurve *mpCurve;
     PlotTab *mpPlotTab;
     bool mIsBeingMoved;
+    bool mIsMovable;
     QwtSymbol mMarkerSymbol;
 };
 
