@@ -108,7 +108,7 @@ namespace hopsan {
         {
             //Get variable values from nodes
             c1  = (*mpND_c1)*gearRatio;
-            Zx1 = (*mpND_Zx1)*pow(gearRatio, 2.0);
+            Zx1 = (*mpND_Zx1)*gearRatio*gearRatio;
             c2  = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 

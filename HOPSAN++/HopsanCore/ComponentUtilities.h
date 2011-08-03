@@ -24,6 +24,7 @@
 #include "ComponentUtilities/TurbulentFlowFunction.h"
 #include "ComponentUtilities/ValveHysteresis.h"
 #include "ComponentUtilities/DoubleIntegratorWithDamping.h"
+#include "ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h"
 #include "ComponentUtilities/ValveHysteresis.h"
 #include "ComponentUtilities/ludcmp.h"
 #include "ComponentUtilities/matrix.h"

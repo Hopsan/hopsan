@@ -40,7 +40,7 @@ namespace hopsan {
     {
 
     private:
-        double m, b, fs, fk, xMin, xMax;                                                                        //Changeable parameters
+        double m, B, fs, fk, xMin, xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
         double mLength;                                                                                     //This length is not accesible by the user, it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
@@ -48,8 +48,9 @@ namespace hopsan {
         //DoubleIntegratorWithDamping mIntegrator;                                                            //External functions
         double mNum[3];
         double mDen[3];
-        SecondOrderFilter mFilter;
-        Integrator mInt;
+        DoubleIntegratorWithDampingAndCoulumbFriction mIntegrator;
+//        SecondOrderFilter mFilter;
+//        Integrator mInt;
         Port *mpP1, *mpP2;                                                                                  //Ports
 
     public:
@@ -62,7 +63,7 @@ namespace hopsan {
         {
             //Set member attributes
             m = 100.0;
-            b = 10;
+            B = 10;
             fs = 50;
             fk = 45;
             xMin = 0;
@@ -74,7 +75,7 @@ namespace hopsan {
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("m", "Mass", "[kg]", m);
-            registerParameter("b", "Viscous Friction Coefficient", "[Ns/m]", b);
+            registerParameter("b", "Viscous Friction Coefficient", "[Ns/m]", B);
             registerParameter("f_s", "Static Friction Force", "[N]",  fs);
             registerParameter("f_k", "Kinetic Friction Force", "[N]",  fk);
             registerParameter("x_min", "Lower Limit of Position", "[m]",  xMin);
@@ -106,15 +107,16 @@ namespace hopsan {
 
             mLength = x1+x2;
 
-            //Initialize integrator
-            mNum[0] = 0.0;
-            mNum[1] = 1.0;
-            mNum[2] = 0.0;
-            mDen[0] = 0;
-            mDen[1] = b;
-            mDen[2] = m;
-            mFilter.initialize(mTimestep, mNum, mDen, -f1, -v1);
-            mInt.initialize(mTimestep, -v1, -x1+mLength);
+//            //Initialize integrator
+//            mNum[0] = 0.0;
+//            mNum[1] = 1.0;
+//            mNum[2] = 0.0;
+//            mDen[0] = 0;
+//            mDen[1] = b;
+//            mDen[2] = m;
+//            mFilter.initialize(mTimestep, mNum, mDen, -f1, -v1);
+//            mInt.initialize(mTimestep, -v1, -x1+mLength);
+            mIntegrator.initialize(mTimestep, 0, m, fs, fk, 0, 0, 0);
 
             //Print debug message if start velocities doe not match
             if((*mpND_v1) != -(*mpND_v2))
@@ -137,44 +139,26 @@ namespace hopsan {
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 
-            //Mass equations
-            // f = external forces
-            // fs = static friction force
-            // fk = kinetic friction force
-            // fe = effective friction force
-            mDen[1] = b+Zx1+Zx2;
-            mFilter.setDen(mDen);
-            f = c1 - c2;
-            if(f > -fs && f < fs)       //External forces are smaller than coulumb friction, so mass is not moving
-            {
-                fe = f;
-            }
-            else if(f > fs)            //External forces are positive and larger than coulumb friction
-            {
-                fe = fk;
-            }
-            else if(f < -fs)           //External forces are negative and larger than coulumb friction
-            {
-                fe = -fk;
-            }
-            v2 = mFilter.update(f-fe);
-            x2 = mInt.update(v2);
+            mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
+            mIntegrator.integrateWithUndo((c1-c2)/m);
+            v2 = mIntegrator.valueFirst();
+            x2 = mIntegrator.valueSecond();
+
             if(x2<xMin)
             {
                 x2=xMin;
                 v2=std::max(0.0, v2);
-                mInt.initializeValues(0, xMin);
-                mFilter.initializeValues(0, 0);
+                mIntegrator.initializeValues(0.0, x2, v2);
             }
-            else if(x2>xMax)
+            if(x2>xMax)
             {
                 x2=xMax;
                 v2=std::min(0.0, v2);
-                mInt.initializeValues(0, xMax);
-                mFilter.initializeValues(0, 0);
+                mIntegrator.initializeValues(0.0, x2, v2);
             }
-            x1 = -x2 + mLength;
+
             v1 = -v2;
+            x1 = -x2 + mLength;
             f1 = c1 + Zx1*v1;
             f2 = c2 + Zx2*v2;
 

@@ -75,7 +75,8 @@ SOURCES += Port.cc \
     CoreUtilities/HmfLoader.cc \
     ComponentSystem.cc \
     ../ExternalDependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
-    ComponentUtilities/WhiteGaussianNoise.cc
+    ComponentUtilities/WhiteGaussianNoise.cc \
+    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -243,7 +244,8 @@ HEADERS += win32dll.h \
     Components/Signal/SignalNoiseGenerator.hpp \
     Components/Signal/SignalAdditiveNoise.hpp \
     Components/Mechanic/MechanicRackAndPinion.hpp \
-    Components/Signal/SignalStepExponentialDelay.hpp
+    Components/Signal/SignalStepExponentialDelay.hpp \
+    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

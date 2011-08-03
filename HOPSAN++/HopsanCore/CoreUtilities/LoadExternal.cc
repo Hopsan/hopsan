@@ -53,7 +53,22 @@ bool LoadExternal::load(string libpath)
 //! @todo Write some message output if DLL/SO fails to load or similar
 #ifdef WIN32
     HINSTANCE lib_ptr;
+
+//Use this for 64-bit compilation
+//    int len;
+//    int slength = (int)libpath.length() + 1;
+//    len = MultiByteToWideChar(CP_ACP, 0, libpath.c_str(), slength, 0, 0);
+//    wchar_t* buf = new wchar_t[len];
+//    MultiByteToWideChar(CP_ACP, 0, libpath.c_str(), slength, buf, len);
+//    std::wstring r(buf);
+//    delete[] buf;
+//    LPCWSTR wstr = r.c_str();
+//    lib_ptr = LoadLibrary(wstr);
+//End of 64-bit
+
+//Use this for 32-bit compilation
     lib_ptr = LoadLibrary(libpath.c_str());
+//End of 32-bit
 
     if (!lib_ptr)
     {

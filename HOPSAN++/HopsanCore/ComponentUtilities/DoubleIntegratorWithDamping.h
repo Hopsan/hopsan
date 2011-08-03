@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Integrator.h
+//! @file   DoubleIntegratorWithDamping.h
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-06-30
 //!

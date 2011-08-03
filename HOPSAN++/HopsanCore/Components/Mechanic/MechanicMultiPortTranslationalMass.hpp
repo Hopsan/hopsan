@@ -40,9 +40,7 @@ namespace hopsan {
         double f1, v1, c1, Zx1, f2, v2, c2, Zx2;                                                    //Node data variables
         double mNum[3];
         double mDen[3];
-        SecondOrderFilter mFilter;
-        Integrator mInt;
-
+        DoubleIntegratorWithDamping mIntegrator;
         std::vector<double*> mvpN_f1, mvpN_x1, mvpN_v1, mvpN_c1, mvpN_Zx1, mvpN_f2, mvpN_x2, mvpN_v2, mvpN_c2, mvpN_Zx2;
         std::vector<double> x1, x2, mvpStartX1, mvpStartX2;
         size_t mNumPorts1, mNumPorts2;
@@ -166,15 +164,7 @@ namespace hopsan {
                 }
             }
 
-
-            mNum[0] = 0.0;
-            mNum[1] = 1.0;
-            mNum[2] = 0.0;
-            mDen[0] = m;
-            mDen[1] = B;
-            mDen[2] = k;
-            mFilter.initialize(mTimestep, mNum, mDen, 0, -v1);
-            mInt.initialize(mTimestep, v2, x2[0]);
+            mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
 
             //Print debug message if velocities do not match
             if(v1 != -v2)
@@ -211,26 +201,22 @@ namespace hopsan {
                 Zx2 += (*mvpN_Zx2[i]);
             }
 
-            //Mass equations
-            mDen[1] = B+Zx1+Zx2;
-            mFilter.setDen(mDen);
-
-            v2 = mFilter.update(c1-c2);
-            double x_nom = mInt.update(v2);
+            mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
+            mIntegrator.integrateWithUndo((c1-c2)/m);
+            v2 = mIntegrator.valueFirst();
+            double x_nom = mIntegrator.valueSecond();
 
             if(x_nom<xMin)
             {
                 x_nom=xMin;
                 v2=std::max(0.0, v2);
-                mInt.initializeValues(v2, xMin);
-                mFilter.initializeValues(c1-c2, v2);
+                mIntegrator.initializeValues(0.0, x_nom, v2);
             }
             if(x_nom>xMax)
             {
                 x_nom=xMax;
                 v2=std::min(0.0, v2);
-                mInt.initializeValues(v2, xMax);
-                mFilter.initializeValues(c1-c2, v2);
+                mIntegrator.initializeValues(0.0, x_nom, v2);
             }
 
             v1 = -v2;

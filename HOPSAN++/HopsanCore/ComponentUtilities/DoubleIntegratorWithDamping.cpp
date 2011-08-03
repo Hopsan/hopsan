@@ -76,7 +76,7 @@ void DoubleIntegratorWithDamping::integrateWithUndo(double u)
 
     double tempDelaySY = mDelaySY;
     mDelaySY = (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(u + mDelayU);
-    mDelayY = mDelayY + mTimeStep/2.0*tempDelaySY;
+    mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
     mDelayU = u;
 }
 
