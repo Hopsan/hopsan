@@ -112,6 +112,7 @@
 #include "Signal/SignalIntegratorLimited2.hpp"
 #include "Signal/SignalTimeDelay.hpp"
 #include "Signal/SignalFirstOrderFilter.hpp"
+#include "Signal/SignalFirstOrderTransferFunction.hpp"
 #include "Signal/SignalSecondOrderFilter.hpp"
 #include "Signal/SignalSecondOrderTransferFunction.hpp"
 #include "Signal/SignalHysteresis.hpp"

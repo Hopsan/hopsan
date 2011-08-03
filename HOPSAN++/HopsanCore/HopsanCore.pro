@@ -244,7 +244,8 @@ HEADERS += win32dll.h \
     Components/Signal/SignalStepExponentialDelay.hpppp \
     ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h \
     ComponentUtilities/SecondOrderTransferFunction.h \
-    ComponentUtilities/FirstOrderTransferFunction.h
+    ComponentUtilities/FirstOrderTransferFunction.h \
+    Components/Signal/SignalFirstOrderTransferFunction.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

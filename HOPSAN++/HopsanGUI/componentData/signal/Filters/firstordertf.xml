@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SignalFirstOrderTransferFunction" displayname="General first order transfer function">
+        <icon isopath="" iconrotation="ON" userpath="firstordertf.svg"/>
+        <portpose x="0" y="0.5" a="0" name="in"/>
+        <portpose x="1" y="0.5" a="0" name="out"/>
+    </modelobject>
+</hopsanobjectappearance>
