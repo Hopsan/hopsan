@@ -22,10 +22,9 @@
 //!
 //$Id$
 
-#include <iostream>
-#include <cassert>
-#include <math.h>
-#include "../HopsanCore.h"
+//#include <iostream>
+//#include <cassert>
+#include <algorithm>
 #include "SecondOrderTransferFunction.h"
 
 using namespace hopsan;
@@ -152,9 +151,8 @@ double SecondOrderTransferFunction::update(double u)
 }
 
 
-//! Observe that a call to this method has to be followed by another call to update(double u)
+//! Return current filter output value
 //! @return The filtered actual value.
-//! @see value(double u)
 double SecondOrderTransferFunction::value()
 {
     return mValue;

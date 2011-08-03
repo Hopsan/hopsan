@@ -25,9 +25,7 @@
 #ifndef SECONDORDERTRANSFERFUNCTION_H_INCLUDED
 #define SECONDORDERTRANSFERFUNCTION_H_INCLUDED
 
-#include <deque>
 #include "../win32dll.h"
-#include "Delay.hpp"
 
 namespace hopsan {
 
@@ -48,7 +46,7 @@ namespace hopsan {
         void setNumDen(double num[3], double den[3]);
         void setMinMax(double min, double max);
         double update(double u);
-	double value();
+        double value();
 
     private:
         double mValue;

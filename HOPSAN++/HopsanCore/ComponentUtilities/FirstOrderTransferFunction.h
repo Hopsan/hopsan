@@ -25,9 +25,7 @@
 #ifndef FIRSTORDERTRANSFERFUNCTION_H_INCLUDED
 #define FIRSTORDERTRANSFERFUNCTION_H_INCLUDED
 
-#include <deque>
 #include "../win32dll.h"
-#include "Delay.hpp"
 
 namespace hopsan {
 
@@ -48,7 +46,7 @@ namespace hopsan {
         void setDen(double den[2]);
         void setNumDen(double num[2], double den[2]);
         double update(double &u);
-        double &value();
+        double value();
 
     private:
         double mValue;
