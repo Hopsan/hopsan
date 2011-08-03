@@ -41,7 +41,7 @@ namespace hopsan {
         double J, B, k;
         double num[3];
         double den[3];
-        SecondOrderFilter mFilter;
+        SecondOrderTransferFunction mFilter;
         Integrator mInt;
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
         double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2;

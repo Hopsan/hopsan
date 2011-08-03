@@ -160,13 +160,11 @@
 #include "Mechanic/MechanicRotationalInterfaceQ.hpp"
 #include "Mechanic/MechanicRackAndPinion.hpp"
 
-
-
 #include "../Component.h"
 
 namespace hopsan {
 
-    DLLIMPORTEXPORT void register_components(ComponentFactory* cfampND_ct);
+    DLLIMPORTEXPORT void register_components(ComponentFactory* pComponentFactory);
 }
 
 #endif // COMPONENTS_H_INCLUDED

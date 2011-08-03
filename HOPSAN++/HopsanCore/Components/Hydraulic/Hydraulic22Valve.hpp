@@ -46,7 +46,7 @@ namespace hopsan {
         double overlap;
         double omegah;
         double deltah;
-        SecondOrderFilter filter;
+        SecondOrderTransferFunction filter;
         TurbulentFlowFunction qTurb_pa;
         double xv, xpanom, Kcpa, qpa;
 

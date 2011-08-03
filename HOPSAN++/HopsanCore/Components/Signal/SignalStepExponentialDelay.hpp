@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SignalStepExponentialDelay.hpp
+//! @file   SignalStepExponentialDelay.hpppp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2011-08-01
 //!

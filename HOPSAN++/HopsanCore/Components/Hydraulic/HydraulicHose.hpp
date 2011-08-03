@@ -50,7 +50,7 @@ namespace hopsan {
         double W1, W2, W3, W4, C1F, C2F, RQF1, RQF2, RQEF1, RQEF2;
         double c1i[1001];       //1001 because 1000 with starting at 1 (stupid Fortran thing)
         double c2i[1001];
-        FirstOrderFilter FilterC1F, FilterC2F, FilterC1F1, FilterC2F1;
+        FirstOrderTransferFunction FilterC1F, FilterC2F, FilterC1F1, FilterC2F1;
         double numC1F[2], denC1F[2];
         double numC2F[2], denC2F[2];
         double numC1F1[2], denC1F1[2];

@@ -45,7 +45,7 @@ namespace hopsan {
 
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
-        FirstOrderFilter mFilterLP;
+        FirstOrderTransferFunction mFilterLP;
         Port *mpP1, *mpP2;
 
     public:

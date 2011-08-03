@@ -48,7 +48,7 @@ namespace hopsan {
                f2, x2, v2, c2, Zx2; //Node data variables
         double mNum[3];
         double mDen[3];
-        SecondOrderFilter mFilter;
+        SecondOrderTransferFunction mFilter;
         Integrator mInt;
         Port *mpP1, *mpP2;
 

@@ -14,11 +14,11 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SecondOrderFilter.cc
+//! @file   SecondOrderTransferFunction.cc
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-23
 //!
-//! @brief Contains the Core Second Order Filter class
+//! @brief Contains the Core Second Transfer Function class
 //!
 //$Id$
 
@@ -26,12 +26,12 @@
 #include <cassert>
 #include <math.h>
 #include "../HopsanCore.h"
-#include "SecondOrderFilter.h"
+#include "SecondOrderTransferFunction.h"
 
 using namespace hopsan;
 
-//! @class hopsan::SecondOrderFilter
-//! @brief The SecondOrderFilter class implements a second order filter using bilinear transform
+//! @class hopsan::SecondOrderTransferFunction
+//! @brief The SecondOrderTransferFunction class implements a second order transfer function using bilinear transform
 //!
 //! To declare a filter like \f[G=\frac{a_2 s^2 + a_1 s + a_0}{b_2 s^2 + b_1 s + b_0}\f]
 //! the syntax is filter.setNumDen(num, den)
@@ -41,12 +41,12 @@ using namespace hopsan;
 // and \f$den=\{b_2, b_1, b_0\}\f$
 //!
 
-SecondOrderFilter::SecondOrderFilter()
-{
-}
+//SecondOrderTransferFunction::SecondOrderTransferFunction()
+//{
+//}
 
 
-void SecondOrderFilter::initialize(double timestep, double num[3], double den[3], double u0, double y0, double min, double max)
+void SecondOrderTransferFunction::initialize(double timestep, double num[3], double den[3], double u0, double y0, double min, double max)
 {
     mMin = min;
     mMax = max;
@@ -59,7 +59,7 @@ void SecondOrderFilter::initialize(double timestep, double num[3], double den[3]
 }
 
 
-void SecondOrderFilter::setNum(double num[3])
+void SecondOrderTransferFunction::setNum(double num[3])
 {
     mCoeffU[0] = num[0]*mTimeStep*mTimeStep + 2.0*num[1]*mTimeStep + 4.0*num[2];
     mCoeffU[1] = 2.0*num[0]*mTimeStep*mTimeStep - 8.0*num[2];
@@ -67,7 +67,7 @@ void SecondOrderFilter::setNum(double num[3])
 }
 
 
-void SecondOrderFilter::setDen(double den[3])
+void SecondOrderTransferFunction::setDen(double den[3])
 {
     mCoeffY[0] = den[0]*mTimeStep*mTimeStep + 2.0*den[1]*mTimeStep + 4.0*den[2];
     mCoeffY[1] = 2.0*den[0]*mTimeStep*mTimeStep - 8.0*den[2];
@@ -75,7 +75,7 @@ void SecondOrderFilter::setDen(double den[3])
 }
 
 
-void SecondOrderFilter::setNumDen(double num[3], double den[3])
+void SecondOrderTransferFunction::setNumDen(double num[3], double den[3])
 {
 //num =
 //(c*T^2*q^2 + 2*c*T^2*q + c*T^2 - 2*b*T*q^2 + 2*b*T + 4*a*q^2 - 8*a*q + 4*a)
@@ -104,14 +104,14 @@ void SecondOrderFilter::setNumDen(double num[3], double den[3])
 }
 
 
-void SecondOrderFilter::setMinMax(double min, double max)
+void SecondOrderTransferFunction::setMinMax(double min, double max)
 {
     mMin = min;
     mMax = max;
 }
 
 
-void SecondOrderFilter::initializeValues(double u0, double y0)
+void SecondOrderTransferFunction::initializeValues(double u0, double y0)
 {
     mDelayU[0] = u0;
     mDelayU[1] = u0;
@@ -120,7 +120,7 @@ void SecondOrderFilter::initializeValues(double u0, double y0)
 }
 
 
-double SecondOrderFilter::update(double u)
+double SecondOrderTransferFunction::update(double u)
 {
     mValue = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU[0] + mCoeffU[2]*mDelayU[1] - (mCoeffY[1]*mDelayY[0] + mCoeffY[2]*mDelayY[1]));
 
@@ -155,7 +155,7 @@ double SecondOrderFilter::update(double u)
 //! Observe that a call to this method has to be followed by another call to update(double u)
 //! @return The filtered actual value.
 //! @see value(double u)
-double SecondOrderFilter::value()
+double SecondOrderTransferFunction::value()
 {
     return mValue;
 }

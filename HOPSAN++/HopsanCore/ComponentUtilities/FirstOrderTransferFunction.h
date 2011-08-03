@@ -14,20 +14,20 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   FirstOrderFilter.h
+//! @file   FirstOrderTransferFunction.h
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2009-12-23
 //!
-//! @brief Contains the Core First Order Filter class
+//! @brief Contains the Core First Order Transfer Function class
 //!
 //$Id$
 
-#ifndef FIRSTORDERFILTER_H_INCLUDED
-#define FIRSTORDERFILTER_H_INCLUDED
+#ifndef FIRSTORDERTRANSFERFUNCTION_H_INCLUDED
+#define FIRSTORDERTRANSFERFUNCTION_H_INCLUDED
 
 #include <deque>
 #include "../win32dll.h"
-#include "Delay.h"
+#include "Delay.hpp"
 
 namespace hopsan {
 
@@ -37,10 +37,10 @@ namespace hopsan {
             den[0]*s + den[1]
     */
 
-    class DLLIMPORTEXPORT FirstOrderFilter
+    class DLLIMPORTEXPORT FirstOrderTransferFunction
     {
     public:
-        FirstOrderFilter();
+        //FirstOrderTransferFunction();
         void initialize(double timestep, double num[2], double den[2], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
         void initializeValues(double u0, double y0);
         void setMinMax(double min, double max);
@@ -59,4 +59,4 @@ namespace hopsan {
         double mTimeStep;
     };
 }
-#endif // FIRSTORDERFILTER_H_INCLUDED
+#endif

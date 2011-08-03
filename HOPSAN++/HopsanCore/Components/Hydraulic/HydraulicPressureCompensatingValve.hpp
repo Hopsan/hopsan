@@ -43,7 +43,7 @@ namespace hopsan {
         double mPrevX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
-        FirstOrderFilter mFilterLP;
+        FirstOrderTransferFunction mFilterLP;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
                *mpND_p_open, *mpND_c_open, *mpND_p_close, *mpND_c_close;

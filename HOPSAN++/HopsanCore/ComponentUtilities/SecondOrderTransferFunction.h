@@ -14,20 +14,20 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SecondOrderFilter.h
+//! @file   SecondOrderTransferFunction.h
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2009-12-23
 //!
-//! @brief Contains the Core Second Order Filter class
+//! @brief Contains the Core Second Order Transfer Function class
 //!
 //$Id$
 
-#ifndef SECONDORDERFILTER_H_INCLUDED
-#define SECONDORDERFILTER_H_INCLUDED
+#ifndef SECONDORDERTRANSFERFUNCTION_H_INCLUDED
+#define SECONDORDERTRANSFERFUNCTION_H_INCLUDED
 
 #include <deque>
 #include "../win32dll.h"
-#include "Delay.h"
+#include "Delay.hpp"
 
 namespace hopsan {
 
@@ -37,10 +37,10 @@ namespace hopsan {
             den[2]*s^2 + den[1]*s + den[0]
     */
 
-    class DLLIMPORTEXPORT SecondOrderFilter
+    class DLLIMPORTEXPORT SecondOrderTransferFunction
     {
     public:
-        SecondOrderFilter();
+        //SecondOrderTransferFunction();
         void initialize(double timestep, double num[3], double den[3], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
         void initializeValues(double u0, double y0);
         void setNum(double num[3]);
@@ -60,4 +60,4 @@ namespace hopsan {
     };
 }
 
-#endif // SECONDORDERFILTER_H_INCLUDED
+#endif

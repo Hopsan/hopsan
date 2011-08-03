@@ -774,7 +774,7 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "#include \"" + relIncludePath + "/Nodes/Nodes.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/AuxiliarySimulationFunctions.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/CSVParser.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Delay.h\"\n";
+    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Delay.hpp\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/DoubleIntegratorWithDamping.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/FirstOrderFilter.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Integrator.h\"\n";

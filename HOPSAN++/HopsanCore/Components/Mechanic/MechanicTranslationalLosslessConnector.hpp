@@ -43,7 +43,7 @@ namespace hopsan {
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
-        SecondOrderFilter mFilter;
+        SecondOrderTransferFunction mFilter;
         Integrator mInt;
         Port *mpP1, *mpP2;
 

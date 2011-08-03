@@ -63,8 +63,8 @@ namespace hopsan {
         double mBl;
         double mKl;
         double mTao;
-        SecondOrderFilter mPositionFilter;
-        SecondOrderFilter mVelocityFilter;
+        SecondOrderTransferFunction mPositionFilter;
+        SecondOrderTransferFunction mVelocityFilter;
         double posnum[3], posden[3], velnum[3], velden[3];
         double p1, q1, c1, Zc1, p2, q2, c2, Zc2, v1, cx1, Zx1, f3, x3, v3, cx3, Zx3;
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f3, *mpND_x3, *mpND_v3, *mpND_cx3, *mpND_Zx3;

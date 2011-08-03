@@ -49,7 +49,7 @@ namespace hopsan {
         double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb;
         double *mpND_xvin, *mpND_xvout;
 
-        SecondOrderFilter filter;
+        SecondOrderTransferFunction filter;
         TurbulentFlowFunction qTurb_pa;
         TurbulentFlowFunction qTurb_bt;
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn, *mpOut;

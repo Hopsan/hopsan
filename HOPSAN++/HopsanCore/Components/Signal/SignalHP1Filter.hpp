@@ -38,7 +38,7 @@ namespace hopsan {
     {
 
     private:
-        FirstOrderFilter mFilter;
+        FirstOrderTransferFunction mFilter;
         double mW, mMin, mMax;
         double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;

@@ -62,11 +62,8 @@ SOURCES += Port.cc \
     HopsanEssentials.cc \
     ComponentUtilities/ValveHysteresis.cc \
     ComponentUtilities/TurbulentFlowFunction.cc \
-    ComponentUtilities/SecondOrderFilter.cc \
     ComponentUtilities/IntegratorLimited.cc \
     ComponentUtilities/Integrator.cc \
-    ComponentUtilities/FirstOrderFilter.cc \
-    ComponentUtilities/Delay.cc \
     CoreUtilities/HopsanCoreMessageHandler.cc \
     ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     ComponentUtilities/DoubleIntegratorWithDamping.cpp \
@@ -76,7 +73,9 @@ SOURCES += Port.cc \
     ComponentSystem.cc \
     ../ExternalDependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
     ComponentUtilities/WhiteGaussianNoise.cc \
-    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp
+    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
+    ComponentUtilities/SecondOrderTransferFunction.cc \
+    ComponentUtilities/FirstOrderTransferFunction.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -87,7 +86,7 @@ HEADERS += win32dll.h \
     CoreUtilities/ClassFactory.hpp \
     Components/HydraulicComponentTemplate.hpp \
     Components/Components.h \
-    Components/Signal/SignalTimeDelay.hpp \
+    Components/Signal/SignalTimeDelay.hpppp \
     Components/Signal/SignalSubtract.hpp \
     Components/Signal/SignalStep.hpp \
     Components/Signal/SignalSquareWave.hpp \
@@ -143,11 +142,9 @@ HEADERS += win32dll.h \
     HopsanEssentials.h \
     ComponentUtilities/ValveHysteresis.h \
     ComponentUtilities/TurbulentFlowFunction.h \
-    ComponentUtilities/SecondOrderFilter.h \
     ComponentUtilities/IntegratorLimited.h \
     ComponentUtilities/Integrator.h \
-    ComponentUtilities/FirstOrderFilter.h \
-    ComponentUtilities/Delay.h \
+    ComponentUtilities/Delay.hpp \
     CoreUtilities/HopsanCoreMessageHandler.h \
     version.h \
     Components/Hydraulic/HydraulicTankC.hpp \
@@ -244,8 +241,10 @@ HEADERS += win32dll.h \
     Components/Signal/SignalNoiseGenerator.hpp \
     Components/Signal/SignalAdditiveNoise.hpp \
     Components/Mechanic/MechanicRackAndPinion.hpp \
-    Components/Signal/SignalStepExponentialDelay.hpp \
-    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h
+    Components/Signal/SignalStepExponentialDelay.hpppp \
+    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h \
+    ComponentUtilities/SecondOrderTransferFunction.h \
+    ComponentUtilities/FirstOrderTransferFunction.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

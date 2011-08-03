@@ -27,7 +27,7 @@
 
 #include <deque>
 #include "../win32dll.h"
-#include "Delay.h"
+#include "Delay.hpp"
 
 namespace hopsan {
 

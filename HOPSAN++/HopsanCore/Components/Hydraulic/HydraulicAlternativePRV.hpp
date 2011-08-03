@@ -43,7 +43,7 @@ namespace hopsan {
         double mPrevX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
-        SecondOrderFilter mFilter;
+        SecondOrderTransferFunction mFilter;
         //FirstOrderFilter mFilter;
         Port *mpP1, *mpP2, *mpX;
 

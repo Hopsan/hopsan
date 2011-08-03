@@ -42,7 +42,7 @@ namespace hopsan {
         double gearRatio, J, B, k;
         double num[3];
         double den[3];
-        SecondOrderFilter mFilter;
+        SecondOrderTransferFunction mFilter;
         Integrator mInt;
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1,
                *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
