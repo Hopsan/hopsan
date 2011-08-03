@@ -754,7 +754,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         if(vBodePhase.at(i) < -180 && vBodePhase.at(i-1) > -180)
         {
             QString valueString;
-            valueString.setNum(fabs(vBodeGain.at(i)));
+            valueString.setNum(-vBodeGain.at(i));
             getCurrentPlotTab()->insertMarker(pGainCurve, F.at(i), vBodeGain.at(i), "Gain Margin = " + valueString + " dB", false);
             break;
         }
@@ -766,7 +766,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         if(vBodeGain.at(i) < -0 && vBodeGain.at(i-1) > -0)
         {
             QString valueString;
-            valueString.setNum(fabs(180.0+vBodePhase.at(i)));
+            valueString.setNum(180.0+vBodePhase.at(i));
             getCurrentPlotTab()->insertMarker(pPhaseCurve, F.at(i), vBodePhase.at(i), "Phase Margin = " + valueString + trUtf8("°"), false);
             break;
         }
