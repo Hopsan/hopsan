@@ -8,17 +8,41 @@ Write text here...
 \subsubsection{Rotate, Flip \& Align}
 Write text here...
 
-\subsubsection{Connector Snapping}
+\subsubsection{Connectors}
 Write text here...
+%Straight/diagonal
+%Snapping
 
 \subsubsection{Copy \& Paste}
-Write text here...
+Copying components is a fast method for creating models with several similar components and circuits. There are two ways to copy items in Hopsan; by keyboard commands and by drag-copying.\\
+
+The keyboard way will copy everything that is selected to the clipboard, including connectors, text/box widgets, components and parameters, when pressing \textbf{Ctrl+C}. This will erase any previous content in the clipboard. When pressing \textbf{Ctrl-V}, items will be pasted at the mouse location in the workspace.\\
+
+A faster way to quickly copy just one component is by holding shift and dragging the component by the mouse. This will create a new component instantly, that can be dropped anywhere on the workspace. This will not affect any contents in the regular clipboard.
 
 \subsubsection{Undo \& Redo}
-Write text here...
+Most editing actions in Hopsan, such as adding and deleting components, connecting and disconnecting, changing parameters, renaming objects, moving objects and rotating objects, can be undone. This is performed by pressing the undo button in the toolbar, or by pressing \textbf{Ctrl+Z}.
 
-\subsubsection{Quick Numbered Selection}
-Write text here...
+\begin{SCfigure}[6][h]
+  %\centering
+  \includegraphics[width=5mm]
+    {../../HopsanGUI/graphics/uiicons/Hopsan-Undo.png}
+  \caption*{Undo last action}
+\end{SCfigure} 
+
+% Explain redo
+
+\begin{SCfigure}[6][h]
+  %\centering
+  \includegraphics[width=5mm]
+    {../../HopsanGUI/graphics/uiicons/Hopsan-Redo.png}
+  \caption*{Redo one action}
+\end{SCfigure} 
+
+%Mention undo widget
+
+\subsubsection{Quick Selection}
+It is possible to define quick selection groups of components and connectors. These are assigned a number, and can quickly be re-selected later by pressing that number key. This is done by first selecting the components and then pressing Ctrl+\#, where \# is a number from 1-9. This will replace any current groups assigned to this number. These components can now be re-selected at any time by pressing this key. 
 
 \subsubsection{Groups}
 Write text here...

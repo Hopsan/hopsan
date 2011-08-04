@@ -13,7 +13,6 @@
 % ************ LaTeX Packages *************
 
 \usepackage[latin1]{inputenc}							%Swedish characters
-\usepackage{graphicx}									%Enable figures
 \usepackage{float}										%Enable figure placements
 \usepackage[round,comma,authoryear,sort&compress]{natbib}	%Bibliography
 \usepackage{amsmath}
@@ -22,7 +21,10 @@
 \usepackage{listings}									%Source code
 \usepackage{color}
 \usepackage{subfigure}
-\usepackage{needspace}									%Avoid undesired page breaks
+\usepackage{needspace}	
+\usepackage[pdftex]{graphicx}
+\usepackage{caption}
+\usepackage[raggedright]{sidecap}								%Avoid undesired page breaks
 
 % ********** Equation Numbering ***********
 
@@ -32,7 +34,7 @@
 
 \newcommand{\reg}{$\mbox{}^{\textregistered}$\hspace{1ex}}	%Registered trademark
 \def\trademark{{\hbox{\tiny TM}}}
-%$^{\mathrm{TM}}$ - kan skrivas så, men blir lite stort
+%$^{\mathrm{TM}}$ - kan skrivas sï¿½, men blir lite stort
 
 % ************** Source code **************
 
