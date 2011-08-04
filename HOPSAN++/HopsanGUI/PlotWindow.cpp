@@ -126,6 +126,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportPlot.png"));
     mpExportButton->setMenu(mpExportMenu);
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
+    mpExportButton->setMouseTracking(true);
 
     mpExportPdfAction = new QAction("Export to PDF", mpToolBar);
     mpExportPngAction = new QAction("Export to PNG", mpToolBar);
@@ -139,6 +140,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpExportGfxButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
     mpExportGfxButton->setMenu(mpExportGfxMenu);
     mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
+    mpExportGfxButton->setMouseTracking(true);
 
     mpLoadFromXmlButton = new QAction(this);
     mpLoadFromXmlButton->setToolTip("Import Plot");
@@ -185,7 +187,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(mpResetXVectorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpBodePlotButton = new QAction(this);
-    mpBodePlotButton->setToolTip("Create Bode Plot");
+    mpBodePlotButton->setToolTip("Transfer Function Analysis");
     mpBodePlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-TransferFunctionAnalysis.png"));
     connect(mpBodePlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
@@ -248,6 +250,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
     mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
     mpHelpPopup->setLayout(mpHelpPopupLayout);
+    mpHelpPopup->setMouseTracking(true);
     mpHelpPopup->setBaseSize(50,30);
     mpHelpPopup->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
     mpHelpPopup->setStyleSheet("QGroupBox { background-color : rgba(255,255,224,255); } QLabel { margin : 0px; } ");
@@ -319,12 +322,37 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 }
 
 
-void PlotWindow::addPlotTab()
+void PlotWindow::addPlotTab(QString requestedName)
 {
-    QString numString;
-    numString.setNum(mpPlotTabs->count());
     PlotTab *mpNewTab = new PlotTab(this);
-    mpPlotTabs->addTab(mpNewTab, "Plot " + numString);
+
+    QString tabName;
+    QString numString;
+    if(requestedName.isEmpty())
+    {
+        for(int tabID=0; true; ++tabID)
+        {
+            numString.setNum(tabID);
+            bool found = false;
+            for(int i=0; i<mpPlotTabs->count(); ++i)
+            {
+                if(mpPlotTabs->tabText(i) == "Plot " + numString)
+                {
+                    found=true;
+                    break;
+                }
+            }
+            if(!found)
+                break;
+        }
+        tabName = "Plot " + numString;
+    }
+    else
+    {
+        tabName = requestedName;
+    }
+
+    mpPlotTabs->addTab(mpNewTab, tabName);
 
     mpPlotTabs->setCurrentIndex(mpPlotTabs->count()-1);
 }
@@ -566,7 +594,7 @@ void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
 void PlotWindow::createBodePlot()
 {
     mpCreateBodeDialog = new QDialog(this);
-    mpCreateBodeDialog->setWindowTitle("Create Bode Plot");
+    mpCreateBodeDialog->setWindowTitle("Transfer Function Analysis");
 
     QGroupBox *pInputGroupBox = new QGroupBox(tr("Input Variable"));
     QVBoxLayout *pInputGroupBoxLayout = new QVBoxLayout;
@@ -595,7 +623,7 @@ void PlotWindow::createBodePlot()
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
     double maxFreq = (getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().size()+1)/getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().last()/2;
-    QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency to plot:");
+    QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
     QLabel *pMaxFrequencyValue = new QLabel();
     QLabel *pMaxFrequencyUnit = new QLabel("Hz");
     pMaxFrequencyValue->setNum(maxFreq);
@@ -677,6 +705,9 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
     //Divide the fourier transform elementwise and take their absolute value
     QVector< std::complex<double> > G;
+    QVector<double> vRe;
+    QVector<double> vIm;
+    QVector<double> vImNeg;
     QVector<double> vBodeGain;
     QVector<double> vBodePhase;
 
@@ -686,7 +717,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     {
         if(Y.at(i) == std::complex<double>(0,0))        //Check for division by zero
         {
-            G.append(G[i-1]);    //! @todo This is not a good solution
+            G.append(G[i-1]);    //! @todo This is not a good solution, and what if i=0?
         }
         else
         {
@@ -694,6 +725,9 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         }
         if(i!=0)
         {
+            vRe.append(G[i].real());
+            vIm.append(G[i].imag());
+            vImNeg.append(-G[i].imag());
             vBodeGain.append(10*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
             vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180/3.14159265);          //Phase: arg(G) = arctan(X/R)
 
@@ -712,7 +746,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
     QVector<double> F;
     double stoptime = pInputCurve->getTimeVector().last();
-    for(int i=1; i<G.size()/2; ++i)
+    for(int i=1; i<G.size(); ++i)
     {
         F.append((i+1)/stoptime);
         if(F.last() >= Fmax) break;
@@ -721,7 +755,23 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     vBodePhase.resize(F.size());
 
 
-    addPlotTab();
+    addPlotTab("Nyquist Plot");
+    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
+                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+    getCurrentPlotTab()->addCurve(pNyquistCurve1);
+    pNyquistCurve1->setData(vIm, vRe);
+    pNyquistCurve1->updatePlotInfoDockVisibility();
+    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
+                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+    getCurrentPlotTab()->addCurve(pNyquistCurve2);
+    pNyquistCurve2->setData(vImNeg, vRe);
+    pNyquistCurve2->updatePlotInfoDockVisibility();
+    getCurrentPlotTab()->getPlot()->replot();
+    getCurrentPlotTab()->rescaleToCurves();
+
+    addPlotTab("Bode Diagram");
     PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
                                           pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
@@ -785,7 +835,7 @@ void PlotWindow::showToolBarHelpPopup()
     }
     else if(pHoveredAction == mpBodePlotButton)
     {
-        showHelpPopupMessage("Performs transfer function analysis and shows the bode diagram.");
+        showHelpPopupMessage("Performs transfer function analysis to generate nyquist plot and bode diagram.");
     }
     else if(pHoveredAction == mpZoomButton)
     {
@@ -1482,6 +1532,14 @@ void PlotTab::updateLabels()
             {
                 mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Relative Magnitude [-]");
                 mpPlot[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+            }
+        }
+        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == NYQUIST)
+        {
+            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+            {
+                mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Im");
+                mpPlot[plotID]->setAxisTitle(QwtPlot::xBottom, "Re");
             }
         }
         else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BODEGAIN)
@@ -2525,6 +2583,8 @@ QString PlotCurve::getCurveName()
         return QString(mComponentName + ", " + mPortName + ", " + mDataName);
     else if(mCurveType == FREQUENCYANALYSIS)
         return "Frequency Spectrum";
+    else if(mCurveType == NYQUIST)
+        return "Nyquist Plot";
     else if(mCurveType == BODEGAIN)
         return "Magnitude Plot";
     else if(mCurveType == BODEPHASE)
@@ -2899,8 +2959,8 @@ void PlotCurve::updateToNewGeneration()
 //! @brief Updates buttons and text in plot info box to correct values
 void PlotCurve::updatePlotInfoBox()
 {
-    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getNumberOfPlotGenerations() > 1);
-    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getNumberOfPlotGenerations()-1 && mpContainerObject->getNumberOfPlotGenerations() > 1);
+    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getNumberOfPlotGenerations() > 1 && mAutoUpdate);
+    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getNumberOfPlotGenerations()-1 && mpContainerObject->getNumberOfPlotGenerations() > 1 && mAutoUpdate);
 
     QString numString1, numString2;
     numString1.setNum(mGeneration+1);

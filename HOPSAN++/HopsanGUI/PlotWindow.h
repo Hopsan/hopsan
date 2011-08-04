@@ -70,7 +70,7 @@ signals:
     void curveAdded();
 
 public slots:
-    void addPlotTab();
+    void addPlotTab(QString requestedName=QString());
     void updateLists();
     void updatePortList();
     void updateVariableList();
