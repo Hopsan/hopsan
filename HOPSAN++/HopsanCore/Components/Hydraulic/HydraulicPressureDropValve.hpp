@@ -51,10 +51,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPressureDropValve("PressureDropValve");
+            return new HydraulicPressureDropValve();
         }
 
-        HydraulicPressureDropValve(const std::string name) : ComponentQ(name)
+        HydraulicPressureDropValve() : ComponentQ()
         {
             pref = 2000000;
             tao = 0.01;
@@ -96,8 +96,8 @@ namespace hopsan {
             mPrevX0 = 0;
 
             double wCutoff = 1 / tao;
-            double num [2] = {0.0, 1.0};
-            double den [2] = {1.0/wCutoff, 1.0};
+            double num[2] = {1.0, 0.0};
+            double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, x0max);
         }
 
@@ -174,8 +174,8 @@ namespace hopsan {
 
             //Filter
             wCutoff = (1.0 + b2/b1) * 1.0/tao;                //Cutoff frequency
-            double num [2] = {0.0, 1.0};
-            double den [2] = {1.0/wCutoff, 1.0};
+            double num[2] = {1.0, 0.0};
+            double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.setNumDen(num,den);
             mFilterLP.update(xsh);
             x0 = mFilterLP.value();

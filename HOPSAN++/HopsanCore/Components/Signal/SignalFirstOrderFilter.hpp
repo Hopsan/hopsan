@@ -38,7 +38,7 @@ namespace hopsan {
     {
 
     private:
-        FirstOrderTransferFunction mFilter;
+        FirstOrderTransferFunction mTF;
         double wnum, wden, k;
         double min, max;
         double *mpND_in, *mpND_out;
@@ -77,12 +77,12 @@ namespace hopsan {
             double num[2];
             double den[2];
 
-            num[0] = k/wnum;
-            num[1] = k;
-            den[0] = 1.0/wden;
-            den[1] = 1.0;
+            num[1] = k/wnum;
+            num[0] = k;
+            den[1] = 1.0/wden;
+            den[0] = 1.0;
 
-            mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), min, max);
+            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), min, max);
 
             (*mpND_out) = (*mpND_in);
         }
@@ -90,7 +90,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mFilter.update((*mpND_in));
+            (*mpND_out) = mTF.update((*mpND_in));
         }
     };
 }

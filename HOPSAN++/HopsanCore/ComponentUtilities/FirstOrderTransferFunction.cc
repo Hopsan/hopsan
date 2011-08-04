@@ -34,8 +34,8 @@ using namespace hopsan;
 //!
 //! To declare a filter like \f[G=\frac{a_1 s + a_0}{b_1 s + b_0}\f]
 //! the syntax is filter.setNumDen(num, den)
-//! where \f$num=\{a_1, a_0\}\f$
-//! and \f$den=\{b_1, b_0\}\f$
+//! where \f$num[0]=a_0\f$, \f$num[1]=a_1\f$
+//! and \f$den[0]=b_0\f$, \f$den[1]=b_1\f$
 //!
 
 //FirstOrderTransferFunction::FirstOrderTransferFunction()
@@ -64,25 +64,25 @@ void FirstOrderTransferFunction::setMinMax(double min, double max)
 
 void FirstOrderTransferFunction::setNum(double num[2])
 {
-    mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
-    mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
+    mCoeffU[0] = num[0]*mTimeStep-2.0*num[1];
+    mCoeffU[1] = num[0]*mTimeStep+2.0*num[1];
 }
 
 
 void FirstOrderTransferFunction::setDen(double den[2])
 {
-    mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
-    mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
+    mCoeffY[0] = den[0]*mTimeStep-2.0*den[1];
+    mCoeffY[1] = den[0]*mTimeStep+2.0*den[1];
 }
 
 
 void FirstOrderTransferFunction::setNumDen(double num[2], double den[2])
 {
-    mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
-    mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
+    mCoeffU[0] = num[0]*mTimeStep-2.0*num[1];
+    mCoeffU[1] = num[0]*mTimeStep+2.0*num[1];
 
-    mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
-    mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
+    mCoeffY[0] = den[0]*mTimeStep-2.0*den[1];
+    mCoeffY[1] = den[0]*mTimeStep+2.0*den[1];
 }
 
 

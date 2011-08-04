@@ -29,12 +29,6 @@
 
 namespace hopsan {
 
-    /*
-            num[2]*s^2 + num[1]*s + num[0]
-    G = --------------------------------------
-            den[2]*s^2 + den[1]*s + den[0]
-    */
-
     class DLLIMPORTEXPORT SecondOrderTransferFunction
     {
     public:

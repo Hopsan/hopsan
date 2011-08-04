@@ -53,10 +53,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPressureCompensatingValve("PressureCompensatingValve");
+            return new HydraulicPressureCompensatingValve();
         }
 
-        HydraulicPressureCompensatingValve(const std::string name) : ComponentQ(name)
+        HydraulicPressureCompensatingValve() : ComponentQ()
         {
             pref = 2000000;
             tao = 0.01;
@@ -105,8 +105,8 @@ namespace hopsan {
             Cf = 1/(Kcf * sqrt(pnom));
 
             double wCutoff = 1 / tao;
-            double num [2] = {0.0, 1.0};
-            double den [2] = {1.0/wCutoff, 1.0};
+            double num[2] = {1.0, 0.0};
+            double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.initialize(mTimestep, num, den, x0max, x0max, 0.0, x0max);
         }
 

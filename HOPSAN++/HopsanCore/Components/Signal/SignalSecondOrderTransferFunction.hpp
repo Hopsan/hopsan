@@ -38,7 +38,7 @@ namespace hopsan {
     {
 
     private:
-        SecondOrderTransferFunction mFilter;
+        SecondOrderTransferFunction mTF2;
         double a0, a1, a2, b0, b1, b2;
 
         double *mpND_in, *mpND_out;
@@ -63,12 +63,13 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("a_0", "First numerator coefficient", "[-]", a0);
-            registerParameter("a_1", "Second numerator coefficient", "[-]", a1);
-            registerParameter("a_2", "Third numerator coefficient", "[-]", a2);
-            registerParameter("b_0", "First denominator coefficient", "[-]", b0);
-            registerParameter("b_1", "Second denominator coefficient", "[-]", b1);
-            registerParameter("b_2", "Third denominator coefficient", "[-]", b2);
+            registerParameter("a_2", "S^2 numerator coefficient", "[-]", a2);
+            registerParameter("a_1", "S^1 numerator coefficient", "[-]", a1);
+            registerParameter("a_0", "S^0 numerator coefficient", "[-]", a0);
+
+            registerParameter("b_2", "S^2 denominator coefficient", "[-]", b2);
+            registerParameter("b_1", "S^1 denominator coefficient", "[-]", b1);
+            registerParameter("b_0", "S^0 denominator coefficient", "[-]", b0);
         }
 
 
@@ -87,7 +88,7 @@ namespace hopsan {
             den[1] = b1;
             den[2] = b2;
 
-            mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in));
+            mTF2.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in));
 
             //Writes out the value for time "zero"
             (*mpND_out) = (*mpND_in);
@@ -96,7 +97,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mFilter.update(*mpND_in);
+            (*mpND_out) = mTF2.update(*mpND_in);
         }
     };
 }

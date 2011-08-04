@@ -29,12 +29,6 @@
 
 namespace hopsan {
 
-    /*
-            num[0]*s + num[1]
-    G = -------------------------
-            den[0]*s + den[1]
-    */
-
     class DLLIMPORTEXPORT FirstOrderTransferFunction
     {
     public:

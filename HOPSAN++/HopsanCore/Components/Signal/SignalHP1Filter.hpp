@@ -38,7 +38,7 @@ namespace hopsan {
     {
 
     private:
-        FirstOrderTransferFunction mFilter;
+        FirstOrderTransferFunction mTF;
         double mW, mMin, mMax;
         double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
@@ -46,10 +46,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalHP1Filter("Filter");
+            return new SignalHP1Filter();
         }
 
-        SignalHP1Filter(const std::string name) : ComponentSignal(name)
+        SignalHP1Filter() : ComponentSignal()
         {
 
             mMin = -1.5E+300;
@@ -74,12 +74,12 @@ namespace hopsan {
             double num[2];
             double den[2];
 
-            num[0] = 1.0/mW;
-            num[1] = 0.0;
-            den[0] = 1.0/mW;
-            den[1] = 1.0;
+            num[1] = 1.0/mW;
+            num[0] = 0.0;
+            den[1] = 1.0/mW;
+            den[0] = 1.0;
 
-            mFilter.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
+            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
 
             (*mpND_out) = (*mpND_in);
         }
@@ -87,7 +87,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = mFilter.update((*mpND_in));
+            (*mpND_out) = mTF.update((*mpND_in));
         }
     };
 }

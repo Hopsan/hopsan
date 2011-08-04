@@ -39,7 +39,7 @@ namespace hopsan {
 
     private:
         FirstOrderTransferFunction mTF;
-        double a0, a1, b0, b1;
+        double mNum[2], mDen[2];
 
         double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
@@ -52,19 +52,19 @@ namespace hopsan {
 
         SignalFirstOrderTransferFunction() : ComponentSignal()
         {
-
-            a0 = 1;
-            a1 = 1;
-            b0 = 1;
-            b1 = 1;
-
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("a_0", "First numerator coefficient", "[-]", a0);
-            registerParameter("a_1", "Second numerator coefficient", "[-]", a1);
-            registerParameter("b_0", "First denominator coefficient", "[-]", b0);
-            registerParameter("b_1", "Second denominator coefficient", "[-]", b1);
+            mNum[0] = 1;
+            mNum[1] = 1;
+            mDen[0] = 1;
+            mDen[1] = 1;
+
+            registerParameter("a_1", "S^1 numerator coefficient", "[-]", mNum[1]);
+            registerParameter("a_0", "S^0 numerator coefficient", "[-]", mNum[0]);
+
+            registerParameter("b_1", "S^1 denominator coefficient", "[-]", mDen[1]);
+            registerParameter("b_0", "S^0 denominator coefficient", "[-]", mDen[0]);
         }
 
 
@@ -73,15 +73,7 @@ namespace hopsan {
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
-            double num[2];
-            double den[2];
-
-            num[0] = a0;
-            num[1] = a1;
-            den[0] = b0;
-            den[1] = b1;
-
-            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in));
+            mTF.initialize(mTimestep, mNum, mDen, (*mpND_in), (*mpND_in));
 
             //Writes out the value for time "zero"
             (*mpND_out) = (*mpND_in);

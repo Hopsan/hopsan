@@ -222,31 +222,31 @@ namespace hopsan {
             W4 = W3*exp(Rw/(2*Zc0));
 
 
-            numC1F[0] = 1/W2;
-            numC1F[1] = 1;
-            denC1F[0] = 1/W1;
-            denC1F[1] = 1;
+            numC1F[1] = 1/W2;
+            numC1F[0] = 1;
+            denC1F[1] = 1/W1;
+            denC1F[0] = 1;
             FilterC1F.setNumDen(numC1F, denC1F);
             C1F = FilterC1F.update(c1i[NTIME1]);
 
-            numC2F[0] = 1/W2;
-            numC2F[1] = 1;
-            denC2F[0] = 1/W1;
-            denC2F[1] = 1;
+            numC2F[1] = 1/W2;
+            numC2F[0] = 1;
+            denC2F[1] = 1/W1;
+            denC2F[0] = 1;
             FilterC2F.setNumDen(numC2F, denC2F);
             C2F = FilterC2F.update(c2i[NTIME1]);
 
-            numC1F1[0] = 1/W4;
-            numC1F1[1] = 1;
-            denC1F1[0] = 1/W3;
-            denC1F1[1] = 1;
+            numC1F1[1] = 1/W4;
+            numC1F1[0] = 1;
+            denC1F1[1] = 1/W3;
+            denC1F1[0] = 1;
             FilterC1F1.setNumDen(numC1F1, denC1F1);
             C1F1 = FilterC1F1.update(C1F);
 
-            numC2F1[0] = 1/W4;
-            numC2F1[1] = 1;
-            denC2F1[0] = 1/W3;
-            denC2F1[1] = 1;
+            numC2F1[1] = 1/W4;
+            numC2F1[0] = 1;
+            denC2F1[1] = 1/W3;
+            denC2F1[0] = 1;
             FilterC2F1.setNumDen(numC2F1, denC2F1);
             C2F1 = FilterC2F1.update(C2F);
 

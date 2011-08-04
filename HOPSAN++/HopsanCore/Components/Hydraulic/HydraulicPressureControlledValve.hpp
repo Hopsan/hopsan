@@ -53,10 +53,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPressureControlledValve("PressureControlledValve");
+            return new HydraulicPressureControlledValve();
         }
 
-        HydraulicPressureControlledValve(const std::string name) : ComponentQ(name)
+        HydraulicPressureControlledValve() : ComponentQ()
         {
             pref = 2000000;
             tao = 0.01;
@@ -105,8 +105,8 @@ namespace hopsan {
             x0max = qnom/sqrt(pnom);
 
             double wCutoff = 1 / tao;
-            double num [2] = {0.0, 1.0};
-            double den [2] = {1.0/wCutoff, 1.0};
+            double num[2] = {1.0, 0.0};
+            double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0, x0max);
         }
 
@@ -135,7 +135,7 @@ namespace hopsan {
             /* Equations */
 
             b1 = Cs+Cf*(p1-p2);                                 //Help Variable, equals sqrt(p1-p2)/Kctot
-           xs = (p_open - pref - p_close) / b1;                // Spool position calculation
+            xs = (p_open - pref - p_close) / b1;                // Spool position calculation
             xh = ph/b1;
             xsh = mHyst.getValue(xs, xh, mPrevX0);              //Hysteresis
             x0 = mFilterLP.update(xsh);                         //Dynamics

@@ -36,8 +36,6 @@ using namespace hopsan;
 //! the syntax is filter.setNumDen(num, den)
 //! where \f$num[0]=a_0\f$, \f$num[1]=a_1\f$, \f$num[2]=a_2\f$
 //! and \f$den[0]=b_0\f$, \f$den[1]=b_1\f$, \f$den[2]=b_2\f$,
-// where \f$num=\{a_2, a_1, a_0\}\f$
-// and \f$den=\{b_2, b_1, b_0\}\f$
 //!
 
 //SecondOrderTransferFunction::SecondOrderTransferFunction()
