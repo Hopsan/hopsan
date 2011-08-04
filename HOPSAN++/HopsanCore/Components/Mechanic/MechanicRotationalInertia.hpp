@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------
- This source file is part of Hopsan NG
-
- Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
-    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
-
- This file is provided "as is", with no guarantee or warranty for the
- functionality or reliability of the contents. All contents in this file is
- the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- redistributing any part of this file is prohibited without explicit
- permission from the copyright holders.
------------------------------------------------------------------------------*/
-
 //!
 //! @file   MechanicRotationalInertia.hpp
 //! @author Robert Braun <robert.braun@liu.se>
@@ -38,11 +23,10 @@ namespace hopsan {
     {
 
     private:
-        double J, B, k;
+        double J, B;
         double num[3];
         double den[3];
-        SecondOrderTransferFunction mFilter;
-        Integrator mInt;
+        DoubleIntegratorWithDamping mIntegrator;
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
         double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2;
         Port *mpP1, *mpP2;
@@ -58,7 +42,6 @@ namespace hopsan {
             //Set member attributes
             J = 0.1;
             B = 10;
-            k = 0.0;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
@@ -67,7 +50,6 @@ namespace hopsan {
             //Register changable parameters to the HOPSAN++ core
             registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
             registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
-            registerParameter("k", "Spring Coefficient", "[Nm/rad]", k);
         }
 
 
@@ -89,14 +71,7 @@ namespace hopsan {
             a1 = (*mpND_a1);
             w1 = (*mpND_w1);
 
-            num[0] = 0.0;
-            num[1] = 1.0;
-            num[2] = 0.0;
-            den[0] = k;
-            den[1] = B;
-            den[2] = J;
-            mFilter.initialize(mTimestep, num, den, -t1, -w1);
-            mInt.initialize(mTimestep, -w1, -a1);
+            mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
         }
 
 
@@ -108,13 +83,12 @@ namespace hopsan {
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 
-            //Mass equations
-            den[1] = B+Zx1+Zx2;
-
-            mFilter.setNumDen(num, den);
-            w2 = mFilter.update(c1-c2);
+            //Inertia equations
+            mIntegrator.setDamping((B+Zx1+Zx2)/J*mTimestep);
+            mIntegrator.integrate((c1-c2)/J);
+            w2 = mIntegrator.valueFirst();
+            a2 = mIntegrator.valueSecond();
             w1 = -w2;
-            a2 = mInt.update(w2);
             a1 = -a2;
             t1 = c1 + Zx1*w1;
             t2 = c2 + Zx2*w2;

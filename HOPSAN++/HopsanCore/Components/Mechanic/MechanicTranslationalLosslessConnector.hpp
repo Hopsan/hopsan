@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------
- This source file is part of Hopsan NG
-
- Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
-    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
-
- This file is provided "as is", with no guarantee or warranty for the
- functionality or reliability of the contents. All contents in this file is
- the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- redistributing any part of this file is prohibited without explicit
- permission from the copyright holders.
------------------------------------------------------------------------------*/
-
 //!
 //! @file   MechanicRotationalInertia.hpp
 //! @author Robert Braun <robert.braun@liu.se>
@@ -43,7 +28,6 @@ namespace hopsan {
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
-        SecondOrderTransferFunction mFilter;
         Integrator mInt;
         Port *mpP1, *mpP2;
 
@@ -88,7 +72,7 @@ namespace hopsan {
             mInt.initialize(mTimestep, -v1, -x1+mLength);
 
             //Print debug message if velocities do not match
-            if((*mpND_v1) != -(*mpND_v2))
+            if(mpP1->readNode(NodeMechanic::VELOCITY) != -mpP2->readNode(NodeMechanic::VELOCITY))
             {
                 std::stringstream ss;
                 ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<

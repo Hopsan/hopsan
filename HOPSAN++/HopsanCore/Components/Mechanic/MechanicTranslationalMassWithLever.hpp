@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------
- This source file is part of Hopsan NG
-
- Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
-    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
-
- This file is provided "as is", with no guarantee or warranty for the
- functionality or reliability of the contents. All contents in this file is
- the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
- redistributing any part of this file is prohibited without explicit
- permission from the copyright holders.
------------------------------------------------------------------------------*/
-
 //!
 //! @file   MechanicTranslationalMassWithLever.hpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
@@ -41,15 +26,14 @@ namespace hopsan {
     {
 
     private:
-        double L1, L2, w, m, B, k;
+        double L1, L2, w, m, B;
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1,
                *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
         double f1, x1, v1, c1, Zx1,
                f2, x2, v2, c2, Zx2; //Node data variables
         double mNum[3];
         double mDen[3];
-        SecondOrderTransferFunction mFilter;
-        Integrator mInt;
+        DoubleIntegratorWithDamping mIntegrator;
         Port *mpP1, *mpP2;
 
     public:
@@ -65,7 +49,6 @@ namespace hopsan {
             L2 = 1;
             m = 1.0;
             B = 10;
-            k = 0.0;
             w = 1.0;
 
             //Add ports to the component
@@ -77,7 +60,6 @@ namespace hopsan {
             registerParameter("L_2", "Length", "[m]",               L2);
             registerParameter("m",  "Mass", "[kg]",                m);
             registerParameter("B",  "Viscous Friction", "[Ns/m]",  B);
-            registerParameter("k",  "Spring Coefficient", "[N/m]", k);
         }
 
 
@@ -98,23 +80,16 @@ namespace hopsan {
 
             //Initialization
             f1 = (*mpND_f1);
+            f2 = (*mpND_f2);
             x1 = (*mpND_x1);
-            v1 = (*mpND_v1);
-            x2 = (*mpND_x2);
+            v2 = (*mpND_v1);
 
             w = (L1+L2)/L1;
 
-            mNum[0] = 0.0;
-            mNum[1] = 1.0;
-            mNum[2] = 0.0;
-            mDen[0] = k;
-            mDen[1] = B;
-            mDen[2] = m;
-            mFilter.initialize(mTimestep, mNum, mDen, -f1/w, -v1*w);
-            mInt.initialize(mTimestep, -v1*w, -x1*w);
+            mIntegrator.initialize(mTimestep, 0, (f1-f2)/m, -x1/w, -v1/w);
 
             //Print debug message if velocities do not match
-            if((*mpND_v1)*w != -(*mpND_v2))
+            if(mpP1->readNode(NodeMechanic::VELOCITY)*w != -mpP2->readNode(NodeMechanic::VELOCITY))
             {
                 std::stringstream ss;
                 ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<
@@ -133,12 +108,11 @@ namespace hopsan {
             Zx2 = (*mpND_Zx2);
 
             //Mass equations
-            mDen[1] = B + Zx1 + Zx2;
-
-            mFilter.setDen(mDen);
-            v2 = mFilter.update(c1-c2);
+            mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
+            mIntegrator.integrateWithUndo((c1-c2)/m);
+            v2 = mIntegrator.valueFirst();
+            x2 = mIntegrator.valueSecond();
             v1 = -v2/w;
-            x2 = mInt.update(v2);
             x1 = -x2/w;
             f1 = (c1 - Zx1*v2)*w;
             f2 = c2 + Zx2*v2;

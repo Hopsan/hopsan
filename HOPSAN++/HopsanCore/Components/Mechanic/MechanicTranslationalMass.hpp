@@ -134,7 +134,7 @@ namespace hopsan {
             //x2 = mInt.update(v2);
 
             mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
-            mIntegrator.integrateWithUndo((c1-c2)/m);
+            mIntegrator.integrate((c1-c2)/m);
             v2 = mIntegrator.valueFirst();
             x2 = mIntegrator.valueSecond();
 
