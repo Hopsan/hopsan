@@ -776,13 +776,11 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/CSVParser.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Delay.hpp\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/DoubleIntegratorWithDamping.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/FirstOrderFilter.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Integrator.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/IntegratorLimited.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ludcmp.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/matrix.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ReadDataCurve.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/SecondOrderFilter.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/SecondOrderTransferFunction.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/TurbulentFlowFunction.h\"\n";
     wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ValveHysteresis.h\"\n";

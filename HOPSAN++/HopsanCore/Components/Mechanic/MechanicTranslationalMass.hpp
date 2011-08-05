@@ -106,7 +106,7 @@ namespace hopsan {
 //            mDen[2] = m;
 //            mFilter.initialize(mTimestep, mNum, mDen, 0, -v1);
 //            mInt.initialize(mTimestep, -v1, -x1+mLength);
-            mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
+            mIntegrator.initialize(mTimestep, B/m*mTimestep, (f1-f2)/m, x2, v2);
 
             //Print debug message if velocities do not match
             if((*mpND_v1) != -(*mpND_v2))
