@@ -239,14 +239,17 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
     mpHelpPopupIcon = new QLabel();
+    mpHelpPopupIcon->setMouseTracking(true);
     mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
     mpHelpPopupLabel = new QLabel();
+    mpHelpPopupLabel->setMouseTracking(true);
     mpHelpPopupGroupBoxLayout = new QHBoxLayout(mpHelpPopup);
     mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupIcon);
     mpHelpPopupGroupBoxLayout->addWidget(mpHelpPopupLabel);
     mpHelpPopupGroupBoxLayout->setContentsMargins(3,3,3,3);
     mpHelpPopupGroupBox = new QGroupBox(mpHelpPopup);
     mpHelpPopupGroupBox->setLayout(mpHelpPopupGroupBoxLayout);
+    mpHelpPopupGroupBox->setMouseTracking(true);
     mpHelpPopupLayout = new QHBoxLayout(mpHelpPopup);
     mpHelpPopupLayout->addWidget(mpHelpPopupGroupBox);
     mpHelpPopup->setLayout(mpHelpPopupLayout);
@@ -581,13 +584,58 @@ void PlotWindow::loadFromXml()
 
 void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
 {
+    mpFrequencyAnalysisCurve = curve;
+
+    QLabel *pInfoLabel = new QLabel(tr("This will generate a frequency spectrum. Using more log samples will increase accuracy of the results."));
+    pInfoLabel->setWordWrap(true);
+    pInfoLabel->setFixedWidth(300);
+
+    mpFrequencyAnalysisDialog = new QDialog(this);
+    mpFrequencyAnalysisDialog->setWindowTitle("Generate Frequency Spectrum");
+
+    mpLogScaleCheckBox = new QCheckBox("Use log scale");
+    mpLogScaleCheckBox->setChecked(true);
+
+    mpPowerSpectrumCheckBox = new QCheckBox("Power spectrum");
+    mpPowerSpectrumCheckBox->setChecked(false);
+
+    QPushButton *pCancelButton = new QPushButton("Cancel");
+    QPushButton *pNextButton = new QPushButton("Go!");
+
+    QGridLayout *pFrequencyAnalysisDialogLayout = new QGridLayout(mpFrequencyAnalysisDialog);
+    pFrequencyAnalysisDialogLayout->addWidget(pInfoLabel,               0, 0, 1, 2);
+    pFrequencyAnalysisDialogLayout->addWidget(mpLogScaleCheckBox,       1, 0, 1, 2);
+    pFrequencyAnalysisDialogLayout->addWidget(mpPowerSpectrumCheckBox,  2, 0, 1, 2);
+    pFrequencyAnalysisDialogLayout->addWidget(pCancelButton,            3, 0, 1, 1);
+    pFrequencyAnalysisDialogLayout->addWidget(pNextButton,              3, 1, 1, 1);
+
+    mpFrequencyAnalysisDialog->setLayout(pFrequencyAnalysisDialogLayout);
+
+    mpFrequencyAnalysisDialog->show();
+
+    connect(pCancelButton, SIGNAL(clicked()), mpFrequencyAnalysisDialog, SLOT(close()));
+    connect(pNextButton, SIGNAL(clicked()), this, SLOT(performFrequencyAnalysisFromDialog()));
+}
+
+
+void PlotWindow::performFrequencyAnalysisFromDialog()
+{
+    mpFrequencyAnalysisDialog->close();
+
     addPlotTab();
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
     getCurrentPlotTab()->updateLabels();
-    PlotCurve *pNewCurve = new PlotCurve(curve->getGeneration(), curve->getComponentName(), curve->getPortName(), curve->getDataName(), curve->getDataUnit(), curve->getAxisY(), curve->getContainerObjectPtr()->getModelFileInfo().filePath(), getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
+    PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getGeneration(), mpFrequencyAnalysisCurve->getComponentName(), mpFrequencyAnalysisCurve->getPortName(), mpFrequencyAnalysisCurve->getDataName(), mpFrequencyAnalysisCurve->getDataUnit(), mpFrequencyAnalysisCurve->getAxisY(), mpFrequencyAnalysisCurve->getContainerObjectPtr()->getModelFileInfo().filePath(), getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
     getCurrentPlotTab()->addCurve(pNewCurve);
     pNewCurve->toFrequencySpectrum();
     pNewCurve->updatePlotInfoDockVisibility();
+    //! @todo Make logged axis an option for user
+    if(mpLogScaleCheckBox->isChecked())
+    {
+        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+    }
+    getCurrentPlotTab()->rescaleToCurves();
 }
 
 
@@ -1050,7 +1098,8 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
     : QTabWidget(parent)
 {
     mpParentPlotWindow = parent;
-    this->setTabsClosable(true);
+    setTabsClosable(true);
+    setMouseTracking(true);
 
     //connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closePlotTab(int)));
@@ -1133,7 +1182,8 @@ PlotTab::PlotTab(PlotWindow *parent)
     : QWidget(parent)
 {
     mpParentPlotWindow = parent;
-    this->setAcceptDrops(true);
+    setAcceptDrops(true);
+    setMouseTracking(true);
     mHasSpecialXAxis=false;
     mVectorXLabel = QString("Time [s]");
     mLeftAxisLogarithmic = false;
@@ -1165,7 +1215,8 @@ PlotTab::PlotTab(PlotWindow *parent)
     for(int plotID=0; plotID<2; ++plotID)
     {
         //Plots
-        mpPlot[plotID] = new QwtPlot();
+        mpPlot[plotID] = new QwtPlot(mpParentPlotWindow);
+        mpPlot[plotID]->setMouseTracking(true);
         mpPlot[plotID]->setAcceptDrops(false);
         mpPlot[plotID]->setCanvasBackground(QColor(Qt::white));
         mpPlot[plotID]->setAutoReplot(true);
@@ -2750,16 +2801,22 @@ void PlotCurve::toFrequencySpectrum()
 
     //Scalar multiply complex vector with its conjugate, and divide it with its size
     mDataVector.clear();
-    for(int i=0; i<n/2; ++i)        //FFT is symmetric, so only use first half
+    for(int i=1; i<n/2; ++i)        //FFT is symmetric, so only use first half
     {
-        //! @todo Should we compensate for only using haft the vector, to maintain energy density?
-        mDataVector.append(real(vComplex[i]*conj(vComplex[i]))/n);
+        if(mpParentPlotTab->mpParentPlotWindow->mpPowerSpectrumCheckBox->isChecked())
+        {
+            mDataVector.append(real(vComplex[i]*conj(vComplex[i]))/n);
+        }
+        else
+        {
+            mDataVector.append(sqrt(vComplex[i].real()*vComplex[i].real() + vComplex[i].imag()*vComplex[i].imag()));
+        }
     }
 
     //Create the x vector (frequency)
     double max = mTimeVector.last();
     mTimeVector.clear();
-    for(int i=0; i<n/2; ++i)
+    for(int i=1; i<n/2; ++i)
     {
         mTimeVector.append(double(i)/max);
     }

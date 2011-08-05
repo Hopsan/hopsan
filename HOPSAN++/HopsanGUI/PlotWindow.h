@@ -81,6 +81,7 @@ public slots:
     void saveToXml();
     void loadFromXml();
     void performFrequencyAnalysis(PlotCurve *curve);
+    void performFrequencyAnalysisFromDialog();
     void createBodePlot();
     void createBodePlotFromDialog();
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
@@ -141,6 +142,11 @@ private:
 
     QDialog *mpCreateBodeDialog;
     QSlider *mpMaxFrequencySlider;
+
+    QDialog *mpFrequencyAnalysisDialog;
+    QCheckBox *mpLogScaleCheckBox;
+    QCheckBox *mpPowerSpectrumCheckBox;
+    PlotCurve *mpFrequencyAnalysisCurve;
 };
 
 
