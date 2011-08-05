@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="85"
+   width="60"
    height="50"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.48.1 r9760"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="firstordertf.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -27,16 +27,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="9.3549964"
-     inkscape:cx="30.308449"
-     inkscape:cy="24.090398"
+     inkscape:zoom="4.4719441"
+     inkscape:cx="14.469798"
+     inkscape:cy="-1.3840266"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="995"
-     inkscape:window-x="-2"
-     inkscape:window-y="-3"
+     inkscape:window-width="1600"
+     inkscape:window-height="1178"
+     inkscape:window-x="72"
+     inkscape:window-y="1042"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -168,13 +168,13 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(-210.65625,-380.875)"
+     transform="translate(-210.65698,-380.88847)"
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
     <path
-       style="fill:#ffffff;fill-opacity:1;stroke:#0000bb;stroke-width:1.49999988000000010;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.49999999000000010, 1.49999999000000010;stroke-dashoffset:0"
-       d="m 211.40698,381.63847 83.50001,0 0,48.5 -83.50001,0 z"
+       style="fill:#ffffff;fill-opacity:1;stroke:#0000bb;stroke-width:1.49999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.49999998, 1.49999998;stroke-dashoffset:0"
+       d="m 211.40698,381.63847 58.5,0 0,48.5 -58.5,0 z"
        id="rect3623-1-1"
        inkscape:connector-curvature="0" />
     <text
@@ -191,7 +191,7 @@
          sodipodi:role="line" /></text>
     <g
        id="g3089"
-       transform="translate(-17.032665,-1.4565975)">
+       transform="translate(-29.53267,-1.4565975)">
       <path
          id="polyline5208"
          d="m 249.89968,406.13956 40.57994,0 0,-0.50216 -40.57994,0"
