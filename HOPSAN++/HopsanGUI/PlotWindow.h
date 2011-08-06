@@ -38,6 +38,8 @@
 #include <qwt_symbol.h>
 
 #include "GUIObjects/GUIContainerObject.h"
+#include "Utilities/BarChartPlotter/barchartplotter.h"
+#include "Utilities/BarChartPlotter/axisbase.h"
 
 class MainWindow;
 class PlotParameterTree;
@@ -59,6 +61,7 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath = QString());
+    void addBarChart(QStandardItemModel *pItemModel);
     void setGeneration(int gen);
     PlotTabWidget *getPlotTabWidget();
     PlotTab *getCurrentPlotTab();
@@ -222,6 +225,7 @@ public:
     ~PlotTab();
     PlotWindow *mpParentPlotWindow;
 
+    void addBarChart(QStandardItemModel *pItemModel);
     void addCurve(PlotCurve *curve, HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
@@ -268,6 +272,9 @@ private:
     int getPlotIDFromCurve(PlotCurve *pCurve);
 
     QwtPlot *mpPlot[2];
+    QSint::BarChartPlotter *mpBarPlot;
+
+    QGridLayout *mpLayout;
 
     QList<PlotCurve *> mPlotCurvePtrs[2];
     PlotCurve *mpActivePlotCurve;

@@ -126,7 +126,10 @@ SOURCES += main.cpp \
     GUIObjects/GUIContainerPort.cpp \
     Dialogs/ContainerPortPropertiesDialog.cpp \
     Dialogs/WelcomeDialog.cpp \
-    Dialogs/HelpDialog.cpp
+    Dialogs/HelpDialog.cpp \
+    Utilities/BarChartPlotter/plotterbase.cpp \
+    Utilities/BarChartPlotter/barchartplotter.cpp \
+    Utilities/BarChartPlotter/axisbase.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -173,7 +176,10 @@ HEADERS += MainWindow.h \
     GUIObjects/GUIContainerPort.h \
     Dialogs/ContainerPortPropertiesDialog.h \
     Dialogs/WelcomeDialog.h \
-    Dialogs/HelpDialog.h
+    Dialogs/HelpDialog.h \
+    Utilities/BarChartPlotter/plotterbase.h \
+    Utilities/BarChartPlotter/barchartplotter.h \
+    Utilities/BarChartPlotter/axisbase.h
 
 OTHER_FILES += \
     ../hopsandefaults \

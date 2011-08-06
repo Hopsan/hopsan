@@ -29,6 +29,7 @@
 #include <QCursor>
 #include <QAction>
 #include <QDateTime>
+#include <QStandardItemModel>
 
 #include <cstring>
 #include <limits>
@@ -53,6 +54,9 @@
 #include "qwt_text_label.h"
 #include "qwt_plot_renderer.h"
 #include "qwt_scale_map.h"
+
+#include "Utilities/BarChartPlotter/barchartplotter.h"
+#include "Utilities/BarChartPlotter/axisbase.h"
 
 const double DBLMAX = std::numeric_limits<double>::max();
 
@@ -480,10 +484,36 @@ void PlotWindow::hideHelpPopupMessage()
 //! @param dataUnit Unit of variable
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath)
 {
+//    //! TEMPTEMPTEMP
+//   QStandardItemModel *pItemModel = new QStandardItemModel(5,4,this);
+//   pItemModel->setHorizontalHeaderLabels(QStringList() <<
+//                                        "Mass" << "Orifice" << "2009" << "2010");
+//   pItemModel->setVerticalHeaderLabels(QStringList() <<
+//                                      "Water" << "Coal" << "Oil" << "Sand" << "Stone");
+//   pItemModel->setHeaderData(0, Qt::Vertical, Qt::red, Qt::BackgroundRole);
+//   pItemModel->setHeaderData(1, Qt::Vertical, Qt::blue, Qt::BackgroundRole);
+//   pItemModel->setHeaderData(2, Qt::Vertical, Qt::green, Qt::BackgroundRole);
+//   pItemModel->setHeaderData(3, Qt::Vertical, Qt::yellow, Qt::BackgroundRole);
+//   pItemModel->setHeaderData(4, Qt::Vertical, Qt::white, Qt::BackgroundRole);
+
+//   for (int i = 0; i < 5; i++)
+//       for (int j = 0; j < 4; j++)
+//           pItemModel->setData(pItemModel->index(i,j), qrand()%40-20);
+
+//   addBarChart(pItemModel);
+//   //! TEMPTEMPTEMP
+
+
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelPath, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
     pTempCurve->updatePlotInfoDockVisibility();
+}
+
+
+void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
+{
+    getCurrentPlotTab()->addBarChart(pItemModel);
 }
 
 
@@ -1264,6 +1294,8 @@ PlotTab::PlotTab(PlotWindow *parent)
         mpGrid[plotID]->attach(mpPlot[plotID]);
     }
 
+    mpBarPlot = new QSint::BarChartPlotter(this);
+
         //Curve Marker Symbol
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
@@ -1278,20 +1310,21 @@ PlotTab::PlotTab(PlotWindow *parent)
         tempList.at(i)->setAutoFillBackground(false);
     }
 
-    QGridLayout *pLayout = new QGridLayout(this);
+    mpLayout = new QGridLayout(this);
     mpPlot[FIRSTPLOT]->insertLegend(tempLegend, QwtPlot::TopLegend);
     for(int plotID=0; plotID<2; ++plotID)
     {
         mpPlot[plotID]->setAutoFillBackground(false);
-        pLayout->addWidget(mpPlot[plotID]);
+        mpLayout->addWidget(mpPlot[plotID]);
     }
 
-    this->setLayout(pLayout);
+    this->setLayout(mpLayout);
 
     for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
     {
         showPlot(HopsanPlotID(plotID), false);
     }
+    mpBarPlot->setVisible(false);
 
     mpPlot[FIRSTPLOT]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1308,6 +1341,46 @@ PlotTab::~PlotTab()
             removeCurve(mPlotCurvePtrs[plotID].last());
         }
     }
+}
+
+
+void PlotTab::addBarChart(QStandardItemModel *pItemModel)
+{
+    for(int i=0; i<2; ++i)
+    {
+        mpPlot[i]->setVisible(false);
+    }
+    mpBarPlot->setVisible(true);
+
+    mpBarPlot->axisY()->setRanges(-100, 100);
+    mpBarPlot->axisY()->setTicks(2, 10);                     //Minor & major
+    mpBarPlot->axisY()->setPen(QPen(Qt::darkGray));
+    mpBarPlot->axisY()->setMinorTicksPen(QPen(Qt::gray));
+    mpBarPlot->axisY()->setMajorTicksPen(QPen(Qt::darkGray));
+    //mpBarPlot->axisY()->setMinorGridPen(QPen(Qt::gray));
+    mpBarPlot->axisY()->setMajorGridPen(QPen(Qt::lightGray));
+    mpBarPlot->axisY()->setTextColor(Qt::black);
+
+    mpBarPlot->axisX()->setPen(QPen(Qt::darkGray));
+    mpBarPlot->axisX()->setMinorTicksPen(QPen(Qt::gray));
+    mpBarPlot->axisX()->setMajorTicksPen(QPen(Qt::darkGray));
+    mpBarPlot->axisX()->setMajorGridPen(QPen(Qt::lightGray));
+    mpBarPlot->axisX()->setTextColor(Qt::black);
+
+    mpBarPlot->setBarSize(32, 128);
+    mpBarPlot->setBarOpacity(0.75);
+
+//    QLinearGradient bg(0,0,0,1);
+//    bg.setCoordinateMode(QGradient::ObjectBoundingMode);
+//    bg.setColorAt(1, Qt::white);
+//    bg.setColorAt(0.5, QColor(0xccccff));
+//    bg.setColorAt(0, Qt::white);
+//    mpBarPlot->setBackground(QBrush(bg));
+    mpBarPlot->setBackground(QColor("White"));
+
+    mpBarPlot->setModel(pItemModel);
+
+    mpLayout->addWidget(mpBarPlot);
 }
 
 
