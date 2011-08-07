@@ -25,6 +25,7 @@
 #include "GUIContainerObject.h"
 
 #include "../MainWindow.h"
+#include "../PlotWindow.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
 #include "../UndoStack.h"
@@ -2248,11 +2249,81 @@ void GUIContainerObject::showLosses()
         return;
     }
 
+    //Calculate total losses in model
+    double totalLosses=0;
     GUIModelObjectMapT::iterator moit;
     for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {
         moit.value()->showLosses();
+        double componentTotal, componentHydraulic, componentMechanic;
+        moit.value()->getLosses(componentTotal, componentHydraulic, componentMechanic);
+        if(componentTotal > 0)
+            totalLosses += componentTotal;
     }
+
+    //Don't open plot if we are turning losses display off
+    if(!mGUIModelObjectMap.begin().value()->isLossesDisplayVisible())
+        return;
+
+    //Count number of component that are to be plotted, and store their names
+    int nComponents=0;
+    QStringList componentNames;
+    QList<double> componentLosses;
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    {
+        double componentTotal, componentHydraulic, componentMechanic;
+        moit.value()->getLosses(componentTotal, componentHydraulic, componentMechanic);
+        if(abs(componentTotal) > abs(0.05*totalLosses))     //Condition for plotting
+        {
+            ++nComponents;
+            componentNames.append(moit.value()->getName());
+            componentLosses.append(componentTotal);
+        }
+    }
+
+    //Sort losses for plot (bubblesort)
+    int i,j;
+    for(i=0; i<componentLosses.size(); i++)
+    {
+        for(j=0;j<i;j++)
+        {
+            if(fabs(componentLosses[i])>fabs(componentLosses[j]))
+            {
+                double temp=componentLosses[i];
+                componentLosses[i]=componentLosses[j];
+                componentLosses[j]=temp;
+
+                QString temp2 = componentNames[i];
+                componentNames[i]=componentNames[j];
+                componentNames[j]=temp2;
+            }
+        }
+    }
+
+    //Create item model, containing data for bar chart plot
+    QStandardItemModel *pItemModel = new QStandardItemModel(2,nComponents,this);
+    pItemModel->setHeaderData(0, Qt::Vertical, Qt::red, Qt::BackgroundRole);
+    pItemModel->setHeaderData(1, Qt::Vertical, Qt::green, Qt::BackgroundRole);
+
+    //Add data to plot bars from each component
+    for(int c=0; c<componentLosses.size(); ++c)
+    {
+        if(abs(componentLosses.at(c)) > abs(0.05*totalLosses))
+        {
+            if(componentLosses.at(c) > 0)
+                pItemModel->setData(pItemModel->index(0,c), componentLosses.at(c));
+            else
+                pItemModel->setData(pItemModel->index(1,c), -componentLosses.at(c));
+        }
+    }
+
+    pItemModel->setVerticalHeaderLabels(QStringList() << "Added" << "Losses");
+    pItemModel->setHorizontalHeaderLabels(componentNames);
+
+    PlotWindow *pPlotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotParameterTree, gpMainWindow);
+    pPlotWindow->getCurrentPlotTab()->setTabName("Energy Losses");
+    pPlotWindow->addBarChart(pItemModel);
+    pPlotWindow->show();
 }
 
 

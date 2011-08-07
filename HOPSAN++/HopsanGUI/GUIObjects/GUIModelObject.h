@@ -93,6 +93,9 @@ public:
     enum { Type = GUIMODELOBJECT };
     int type() const;
 
+    void getLosses(double &total, double &hydraulic, double &mechanic);
+    bool isLossesDisplayVisible();
+
 public slots:
     void deleteMe();
     void rotate90cw(undoStatus undoSettings = UNDO);
@@ -147,6 +150,10 @@ protected:
     GUIModelObjectDisplayName *mpNameText;
 
     QGraphicsTextItem *mpLossesDisplay;
+
+    double mTotalLosses;
+    double mHydraulicLosses;
+    double mMechanicLosses;
 
 protected slots:
     void snapNameTextPosition(QPointF pos);

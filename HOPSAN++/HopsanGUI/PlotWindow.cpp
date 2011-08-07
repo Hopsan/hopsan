@@ -1344,6 +1344,12 @@ PlotTab::~PlotTab()
 }
 
 
+void PlotTab::setTabName(QString name)
+{
+    mpParentPlotWindow->mpPlotTabs->setTabText(mpParentPlotWindow->mpPlotTabs->indexOf(this), name);
+}
+
+
 void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 {
     for(int i=0; i<2; ++i)
@@ -1352,8 +1358,33 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     }
     mpBarPlot->setVisible(true);
 
-    mpBarPlot->axisY()->setRanges(-100, 100);
-    mpBarPlot->axisY()->setTicks(2, 10);                     //Minor & major
+    int min=0;
+    int max=0;
+    for(int c=0; c<pItemModel->columnCount(); ++c)
+    {
+        int componentMin = 0;
+        int componentMax = 0;
+        for(int r=0; r<pItemModel->rowCount(); ++r)
+        {
+            double data = pItemModel->data(pItemModel->index(r, c)).toInt();
+            if(data > 0)
+            {
+                componentMax += data;
+            }
+            if(data < 0)
+            {
+                componentMin += data;
+            }
+        }
+
+        min=std::min(min, componentMin);
+        max=std::max(max, componentMax);
+    }
+
+
+    mpBarPlot->axisY()->setRanges(min, max);
+
+    mpBarPlot->axisY()->setTicks(max/50, max/10);                     //Minor & major
     mpBarPlot->axisY()->setPen(QPen(Qt::darkGray));
     mpBarPlot->axisY()->setMinorTicksPen(QPen(Qt::gray));
     mpBarPlot->axisY()->setMajorTicksPen(QPen(Qt::darkGray));
@@ -1366,9 +1397,10 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     mpBarPlot->axisX()->setMajorTicksPen(QPen(Qt::darkGray));
     mpBarPlot->axisX()->setMajorGridPen(QPen(Qt::lightGray));
     mpBarPlot->axisX()->setTextColor(Qt::black);
+    mpBarPlot->axisX()->setFont(QFont("Calibri", 9));
 
     mpBarPlot->setBarSize(32, 128);
-    mpBarPlot->setBarOpacity(0.75);
+    mpBarPlot->setBarOpacity(1.0);
 
 //    QLinearGradient bg(0,0,0,1);
 //    bg.setCoordinateMode(QGradient::ObjectBoundingMode);

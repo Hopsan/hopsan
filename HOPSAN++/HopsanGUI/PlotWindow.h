@@ -225,6 +225,7 @@ public:
     ~PlotTab();
     PlotWindow *mpParentPlotWindow;
 
+    void setTabName(QString name);
     void addBarChart(QStandardItemModel *pItemModel);
     void addCurve(PlotCurve *curve, HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();

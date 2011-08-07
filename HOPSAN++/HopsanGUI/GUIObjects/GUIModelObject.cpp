@@ -127,6 +127,15 @@ int GUIModelObject::type() const
     return Type;
 }
 
+
+void GUIModelObject::getLosses(double &total, double &hydraulic, double &mechanic)
+{
+    total = mTotalLosses;
+    hydraulic = mHydraulicLosses;
+    mechanic = mMechanicLosses;
+}
+
+
 //! @brief Updates name text position
 //! @param pos Position where name text was dropped
 void GUIModelObject::snapNameTextPosition(QPointF pos)
@@ -344,18 +353,13 @@ void GUIModelObject::showLosses()
 {
     qDebug() << "What is the Matrix?";
 
+    mTotalLosses = 0.0;
+    mHydraulicLosses = 0.0;
+    mMechanicLosses = 0.0;
+
     if(getTypeCQS() == "S")
         return;
 
-    if(mpLossesDisplay->isVisible())        //If losses are visible, hide it and do no calculations.
-    {                                       //This will make the losses button work as a show/hide toggle button.
-        mpLossesDisplay->hide();
-        return;
-    }
-
-    double totalLosses=0.0;
-    double hydraulicLosses = 0.0;
-    double mechanicLosses = 0.0;
     int generation = mpParentContainerObject->getNumberOfPlotGenerations()-1;
 
     qDebug() << "The Matrix is a pig.";
@@ -376,8 +380,8 @@ void GUIModelObject::showLosses()
                     QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, componentName, portName, "Flow");
                     for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
                     {
-                        totalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        hydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mTotalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mHydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
                     }
                 }
             }
@@ -388,8 +392,8 @@ void GUIModelObject::showLosses()
 
                 for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
                 {
-                    totalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                    hydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    mTotalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    mHydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
                 }
             }
         }
@@ -409,8 +413,8 @@ void GUIModelObject::showLosses()
                     QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, componentName, portName, "Velocity");
                     for(int s=0; s<vForce.size()-1; ++s) //Minus one because of integration method
                     {
-                        totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mTotalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mMechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
                     }
                 }
             }
@@ -423,8 +427,8 @@ void GUIModelObject::showLosses()
                     QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
                     for(int s=0; s<vForce.size()-1; ++s)
                     {
-                        totalLosses += (-fabs(vForce.at(s) * vVelocity.at(s))) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        mechanicLosses += (-fabs(vForce.at(s) * vVelocity.at(s))) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mTotalLosses += (-fabs(vForce.at(s) * vVelocity.at(s))) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mMechanicLosses += (-fabs(vForce.at(s) * vVelocity.at(s))) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
                     }
                 }
 
@@ -435,8 +439,8 @@ void GUIModelObject::showLosses()
                     QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
                     for(int s=0; s<vForce.size()-1; ++s)
                     {
-                        totalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        mechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mTotalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mMechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
                     }
                 }
             }
@@ -450,40 +454,40 @@ void GUIModelObject::showLosses()
 
     qDebug() << "The Matris is a monkey.";
 
-    if(totalLosses != 0)
+    if(mTotalLosses != 0)
     {
         if(getTypeCQS() == "Q")
         {
-            totalLosses *= -1;
-            hydraulicLosses *= -1;
-            mechanicLosses *= -1;
+            mTotalLosses *= -1;
+            mHydraulicLosses *= -1;
+            mMechanicLosses *= -1;
         }
         QString totalString;
-        totalString.setNum(totalLosses);
+        totalString.setNum(mTotalLosses);
         QString totalAddedString;
-        totalAddedString.setNum(-totalLosses);
+        totalAddedString.setNum(-mTotalLosses);
         QString hydraulicString;
-        hydraulicString.setNum(hydraulicLosses);
+        hydraulicString.setNum(mHydraulicLosses);
         QString hydraulicAddedString;
-        hydraulicAddedString.setNum(-hydraulicLosses);
+        hydraulicAddedString.setNum(-mHydraulicLosses);
         QString mechanicString;
-        mechanicString.setNum(mechanicLosses);
+        mechanicString.setNum(mMechanicLosses);
         QString mechanicAddedString;
-        mechanicAddedString.setNum(-mechanicLosses);
+        mechanicAddedString.setNum(-mMechanicLosses);
 
         QString message;
-        if(totalLosses > 0)
+        if(mTotalLosses > 0)
             message.append(this->getName() + ": Total losses = " + totalString + " J");
         else
             message.append(this->getName() + ": Total added energy = " + totalAddedString + " J");
-        if(hydraulicLosses > 0)
+        if(mHydraulicLosses > 0)
             message.append(" (hydraulic " + hydraulicString + " J)");
-        if(mechanicLosses > 0)
+        if(mMechanicLosses > 0)
             message.append(" (mechanic " + mechanicString + " J)");
         gpMainWindow->mpMessageWidget->printGUIInfoMessage(message);
 
         QString label;
-        if(totalLosses > 0)
+        if(mTotalLosses > 0)
         {
             label = "<p><span style=\"background-color:lightyellow; color:red\"><b>&#160;&#160;Total losses: " + totalString + " J&#160;&#160;</b>";
         }
@@ -491,19 +495,19 @@ void GUIModelObject::showLosses()
         {
             label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;Added energy: <b>" + totalAddedString + " J</b>&#160;&#160;";
         }
-        if(hydraulicLosses > 0 && hydraulicLosses != totalLosses)
+        if(mHydraulicLosses > 0 && mHydraulicLosses != mTotalLosses)
         {
             label.append("<br>&#160;&#160;Hydraulic losses: <b>" + hydraulicString + " J</b>&#160;&#160;");
         }
-        else if(hydraulicLosses < 0 && hydraulicLosses != totalLosses)
+        else if(mHydraulicLosses < 0 && mHydraulicLosses != mTotalLosses)
         {
             label.append("<br><font color=\"green\">&#160;&#160;Added hydraulic energy: <b>" + hydraulicAddedString + " J</b>&#160;&#160;</font>");
         }
-        if(mechanicLosses > 0 && mechanicLosses != totalLosses)
+        if(mMechanicLosses > 0 && mMechanicLosses != mTotalLosses)
         {
             label.append("<br>&#160;&#160;Mechanic losses: <b>" + mechanicString + " J</b>&#160;&#160;");
         }
-        else if(mechanicLosses < 0 && mechanicLosses != totalLosses)
+        else if(mMechanicLosses < 0 && mMechanicLosses != mTotalLosses)
         {
             label.append("<br><font color=\"green\">&#160;&#160;Added mechanic energy: <b>" + mechanicAddedString + " J</b>&#160;&#160;</font>");
         }
@@ -520,12 +524,19 @@ void GUIModelObject::showLosses()
         pt.ry() = -mpLossesDisplay->boundingRect().height()/2.0;
         pt = transf*pt;
         mpLossesDisplay->setPos(localCenter + pt);
-        mpLossesDisplay->show();
+        mpLossesDisplay->setVisible(!mpLossesDisplay->isVisible());
         mpLossesDisplay->setZValue(20);
     }
 
     qDebug() << "Hopsan is the Matrix.";
 }
+
+
+bool GUIModelObject::isLossesDisplayVisible()
+{
+    return mpLossesDisplay->isVisible();
+}
+
 
 
 //! @brief Returns a pointer to the port with the specified name
