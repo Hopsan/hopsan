@@ -115,6 +115,11 @@ double hopsan::dxOnNegative(double x)
     return 0.0;
 }
 
+double hopsan::dxAbs(double x)
+{
+    if (x < 0.0) { return -1; }
+    return 1;
+}
 
 //! @brief Returns y1 or y2 depending on the value of x.
 //! @param x input value
@@ -173,8 +178,23 @@ double hopsan::dxSquareAbsL(double x, double x0)
 {
     return 1.0 / (sqrt(x0 + fabs(x)) * 2.0) * hopsan::sign(x);
 }
-
-
+//! @brief Safe variant of atan2
+double hopsan::Atan2L(double y, double x)
+{
+    if (x >0. || x<0.)
+    { return atan2(y,x);}
+        else
+    {return 0.;}
+}
+double hopsan::d1Atan2L(double y, double x)
+{
+    return x/(0.001 + Power(x,2) + Power(y,2));
+}
+//! @brief Derivative of ATAN2L with respect to x
+double hopsan::d2Atan2L(double y, double x)
+{
+    return -y/(0.001 + Power(x,2) + Power(y,2));
+}
 //! @brief Returns 1.0 if input variables have same sign, else returns 0.0
 double hopsan::equalSigns(double x, double y)
 {
@@ -183,13 +203,60 @@ double hopsan::equalSigns(double x, double y)
     }
     return 1.0;
 }
+//! @brief Safe variant of asin
+double hopsan::ArcSinL(double x)
+{
+    return asin(limit(x,-0.999,0.999));
+}
+//! @brief derivative of AsinL
+double hopsan::dxArcSinL(double x)
+{
+    return 1/Sqrt(1 - Power(limit(x,-
+                                  0.999,0.999),2));
+}
+//! @brief difference between two angles, fi1-fi2
 
+double hopsan::diffAngle(double fi1, double fi2)
+{   double output;
+    double output0 = fi1-fi2;
+    double output1 = fi1-fi2 + 2*3.14159;
+    double output2 = fi1-fi2 - 2*3.14159;
+    if (fabs(output0)> fabs(output1))
+      {output = output1;}
+    else if (fabs(output0)< fabs(output2))
+      {output = output2;}
+    else
+      {output = output0;}
+    //this is a fix to make it work for small angle differences. Something is wrong with the conditions
+    output=fi1-fi2;
+    return output;
+
+}
+//! @brief Induced drag coefficient for aircraft model
+double hopsan::CLift( double alpha,double CLalpha,double ap,double an,double expclp,double expcln)
+{
+    return Sin(2*alpha)/Sqrt(2) + ((-(1/Sqrt(2)) + CLalpha/2.)*Sin(2*alpha))/
+            (1 + Abs(onNegative(Sin(alpha))*Power(Sin(alpha)/an,expcln) +
+                onPositive(Sin(alpha))*Power(Sin(alpha)/ap,expclp)));
+}
+//! @brief Induced drag coefficient for aircraft model
+double hopsan::CDragInd(double alpha,double AR,double e,double CLalpha,double ap,double an,double expclp,double expcln)
+{
+     return 0.35355*(1 - 1/
+       (1 + Abs(onNegative(Sin(alpha))*Power(Sin(alpha)/an,expcln) +
+                onPositive(Sin(alpha))*Power(Sin(alpha)/ap,expclp))))*(1 - Cos(2*alpha)) +
+             ((1 - Cos(2*alpha))*(Sin(2*alpha)/Sqrt(2) +
+                        ((-(1/Sqrt(2)) + CLalpha/2.)*Sin(2*alpha))/
+                                (1 + Abs(onNegative(Sin(alpha))*Power(Sin(alpha)/an,expcln) +
+                                 onPositive(Sin(alpha))*Power(Sin(alpha)/ap,expclp)))))/(2.*AR*e);
+}
 
 //! @brief Overloads void hopsan::limitValue() with a return value.
 //! @see void hopsan::limitValue(&value, min, max)
 //! @param x Value to be limited
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
+
 double hopsan::limit(double x, double xmin, double xmax)
 {
     double output = x;
@@ -266,8 +333,35 @@ double hopsan::Tan(double x)
 }
 
 
+//! @brief function for using Mathematica syntax
+double hopsan::Cot(double x)
+{
+    return 1/tan(x);
+}
+
+
+//! @brief function for using Mathematica syntax
+double hopsan::Csc(double x)
+{
+    return 1/sin(x);
+}
+
+
+//! @brief function for using Mathematica syntax
+double hopsan::Sec(double x)
+{
+    return 1/cos(x);
+}
+
+
 //! @brief Wrapper function, for using Mathematica syntax
 double hopsan::Sqrt(double x)
 {
     return sqrt(x);
+}
+
+//! @brief Wrapper function, for using Mathematica syntax
+double hopsan::Abs(double x)
+{
+    return fabs(x);
 }

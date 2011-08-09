@@ -40,6 +40,7 @@ extern "C" {
     double DLLIMPORTEXPORT dxOnPositive(double x);
     double DLLIMPORTEXPORT onNegative(double x);
     double DLLIMPORTEXPORT dxOnNegative(double x);
+    double DLLIMPORTEXPORT dxAbs(double x);
     double DLLIMPORTEXPORT ifPositive(double x, double y1, double y2);
     double DLLIMPORTEXPORT dtIfPositive(double x, double y1, double y2);
     double DLLIMPORTEXPORT dfIfPositive(double x, double y1, double y2);
@@ -47,6 +48,14 @@ extern "C" {
     double DLLIMPORTEXPORT dxSignedSquareL(double x, double x0);
     double DLLIMPORTEXPORT squareAbsL(double x, double x0);
     double DLLIMPORTEXPORT dxSquareAbsL(double x, double x0);
+    double DLLIMPORTEXPORT Atan2L(double y, double x);
+    double DLLIMPORTEXPORT d1Atan2L(double y, double x);
+    double DLLIMPORTEXPORT d2Atan2L(double y, double x);
+    double DLLIMPORTEXPORT ArcSinL(double x);
+    double DLLIMPORTEXPORT dxArcSinL(double x);
+    double DLLIMPORTEXPORT diffAngle(double fi1, double fi2);
+    double DLLIMPORTEXPORT CLift( double alpha,double CLalpha,double ap,double an,double expclp,double expcln);
+    double DLLIMPORTEXPORT CDragInd(double alpha,double AR,double e,double CLalpha,double ap,double an,double expclp,double expcln);
     double DLLIMPORTEXPORT equalSigns(double x, double y);
     double DLLIMPORTEXPORT limit(double x, double xmin, double xmax);
     double DLLIMPORTEXPORT dxLimit(double x, double xmin, double xmax);
@@ -58,7 +67,11 @@ extern "C" {
     double DLLIMPORTEXPORT Sin(double x);
     double DLLIMPORTEXPORT Cos(double x);
     double DLLIMPORTEXPORT Tan(double x);
+    double DLLIMPORTEXPORT Csc(double x);
+    double DLLIMPORTEXPORT Sec(double x);
+    double DLLIMPORTEXPORT Cot(double x);
     double DLLIMPORTEXPORT Sqrt(double x);
+    double DLLIMPORTEXPORT Abs(double x);
 }
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H
