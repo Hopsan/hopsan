@@ -49,8 +49,6 @@ class HydraulicCylinderC : public ComponentC
         double c1, ci1, cl1, c2, ci2, cl2;  //Members because old value need to be remembered
         double mNum[2];
         double mDen[2];
-        //FirstOrderTransferFunction mFilter;
-        Integrator mInt;
 
         //Node data pointers
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3;
