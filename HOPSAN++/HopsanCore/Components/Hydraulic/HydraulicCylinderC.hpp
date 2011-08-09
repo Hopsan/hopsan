@@ -51,7 +51,9 @@ class HydraulicCylinderC : public ComponentC
         double mDen[2];
 
         //Node data pointers
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1,
+               *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
+               *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3;
 
         //Ports
         Port *mpP1, *mpP2, *mpP3;
