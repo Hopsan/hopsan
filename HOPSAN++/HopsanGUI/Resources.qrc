@@ -91,5 +91,6 @@
         <file>graphics/uiicons/Hopsan-Losses.png</file>
         <file>graphics/uiicons/Hopsan-FrequencyAnalysis.png</file>
         <file>graphics/uiicons/Hopsan-TransferFunctionAnalysis.png</file>
+        <file>graphics/porticons/MultiPortOverlay.svg</file>
     </qresource>
 </RCC>
