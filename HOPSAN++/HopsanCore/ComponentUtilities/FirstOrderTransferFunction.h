@@ -39,7 +39,7 @@ namespace hopsan {
         void setNum(double num[2]);
         void setDen(double den[2]);
         void setNumDen(double num[2], double den[2]);
-        double update(double &u);
+        double update(double u);
         double value();
 
     private:
