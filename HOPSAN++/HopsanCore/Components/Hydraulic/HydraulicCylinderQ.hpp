@@ -129,9 +129,9 @@ namespace hopsan {
             Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
 
             //Initialization of filters
-            posnum[0] = 0.0;
+            posnum[0] = 1.0;
             posnum[1] = 0.0;
-            posnum[2] = 1.0;
+            posnum[2] = 0.0;
             posden[0] = mKl;
             posden[1] = mBl+Zx1+Zx3;
             posden[2] = mMass;
