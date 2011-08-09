@@ -82,7 +82,7 @@ void DoubleIntegratorWithDamping::integrateWithUndo(double u)
 //! Last step must have been called with integrateWithUndo() for this to work.
 void DoubleIntegratorWithDamping::redoIntegrate(double u)
 {
-    double tempDelaySY = mDelaySY;
+    double tempDelaySY = mDelaySYbackup;
     mDelaySY = (2-mW0)/(2+mW0)*mDelaySYbackup + mTimeStep/(2.0+mW0)*(u + mDelayUbackup);
     mDelayY = mDelayYbackup + mTimeStep/2.0*(mDelaySY+tempDelaySY);
     mDelayU = u;

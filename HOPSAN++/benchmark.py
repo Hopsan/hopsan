@@ -1,6 +1,6 @@
 filename="output.csv"
-runs=1000
-maxload=1000
+runs=100
+maxload=300
 balance=0.95
 time=10
 timestep=0.001
@@ -22,18 +22,12 @@ multicore=True
 
 for i in range(runs):
 
-  load1 = maxload*random.random()
-  load2 = load1 + 2*(1-balance)*load1*(random.random()-0.5)
-  load3 = load1 + 2*(1-balance)*load1*(random.random()-0.5)
-  load4 = load1 + 2*(1-balance)*load1*(random.random()-0.5)
+  load = maxload*random.random()
+  hopsan.setSystemParameter("load", load)
+  hopsan.setSystemParameter("sigma", load*0.2)
 
-  flops=load1*12 + load2*12 + load3*12 + load4*12
-
-  hopsan.setParameter("Source1", "y", load1)
-  hopsan.setParameter("Source2", "y", load2)
-  hopsan.setParameter("Source3", "y", load3)
-  hopsan.setParameter("Source4", "y", load4)
-
+  hopsan.turnOffProgressBar()
+  
   if multicore:
     hopsan.useSingleCore()
     multicore=False
@@ -43,6 +37,8 @@ for i in range(runs):
     
   hopsan.simulate()
   time = hopsan.getSimulationTime()
+  
+  flops=load*48
   
   if multicore:
     mfile.write("  <measurement>\n")

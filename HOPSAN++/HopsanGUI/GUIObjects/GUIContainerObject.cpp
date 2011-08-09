@@ -2375,8 +2375,8 @@ void GUIContainerObject::showLossesFromDialog()
 
     //Create item model, containing data for bar chart plot
     QStandardItemModel *pItemModel = new QStandardItemModel(2,nComponents,this);
-    pItemModel->setHeaderData(0, Qt::Vertical, Qt::red, Qt::BackgroundRole);
-    pItemModel->setHeaderData(1, Qt::Vertical, Qt::green, Qt::BackgroundRole);
+    pItemModel->setHeaderData(0, Qt::Vertical, Qt::darkRed, Qt::BackgroundRole);
+    pItemModel->setHeaderData(1, Qt::Vertical, Qt::darkGreen, Qt::BackgroundRole);
 
     //Add data to plot bars from each component
     for(int c=0; c<componentLosses.size(); ++c)

@@ -78,8 +78,13 @@ void Configuration::saveToXml()
         {
             for(it3 = it2.value().begin(); it3 != it2.value().end(); ++it3)
             {
+                QString type;
+                if(it1.key() == POWERCONNECTOR) type = "Power";
+                if(it1.key() == SIGNALCONNECTOR) type = "Signal";
+                if(it1.key() == UNDEFINEDCONNECTOR) type = "Undefined";
+
                 QDomElement tempElement = appendDomElement(style, "penstyle");
-                tempElement.setAttribute("type", it1.key());
+                tempElement.setAttribute("type", type);
                 tempElement.setAttribute("gfxtype", it2.key());
                 tempElement.setAttribute("situation", it3.key());
                 tempElement.setAttribute("color", it3.value().color().name());
