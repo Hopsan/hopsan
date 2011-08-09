@@ -34,16 +34,15 @@ namespace hopsan {
     {
 
     private:
-        double m, B, /*k,*/ xMin, xMax;
+        double m, B, k, xMin, xMax;
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
-        double mNum[3];
-        double mDen[3];
-        //SecondOrderFilter mFilter;
-        //Integrator mInt;
-        DoubleIntegratorWithDamping mIntegrator;
+        double mNumX[3], mNumV[2];
+        double mDenX[3], mDenV[2];
+        SecondOrderTransferFunction mFilterX;
+        FirstOrderTransferFunction mFilterV;
         Port *mpP1, *mpP2;
 
     public:
@@ -57,7 +56,7 @@ namespace hopsan {
             //Set member attributes
             m = 100.0;
             B = 10;
-            //k = 0.0;
+            k = 0.0;
             xMin = 0.0;
             xMax = 1.0;
 
@@ -68,7 +67,7 @@ namespace hopsan {
             //Register changable parameters to the HOPSAN++ core
             registerParameter("m", "Mass", "[kg]",                  m);
             registerParameter("B", "Viscous Friction", "[Ns/m]",    B);
-            //registerParameter("k", "Spring Coefficient", "[N/m]",   k);
+            registerParameter("k", "Spring Coefficient", "[N/m]",   k);
             registerParameter("x_min", "Minimum Position", "[m]",   xMin);
             registerParameter("x_max", "Maximum Position", "[m]",   xMax);
         }
@@ -98,15 +97,18 @@ namespace hopsan {
 
             mLength = x1+x2;
 
-//            mNum[0] = 0.0;
-//            mNum[1] = 1.0;
-//            mNum[2] = 0.0;
-//            mDen[0] = k;
-//            mDen[1] = B;
-//            mDen[2] = m;
-//            mFilter.initialize(mTimestep, mNum, mDen, 0, -v1);
-//            mInt.initialize(mTimestep, -v1, -x1+mLength);
-            mIntegrator.initialize(mTimestep, B/m*mTimestep, (f1-f2)/m, x2, v2);
+            mNumX[0] = 1.0;
+            mNumX[1] = 0.0;
+            mNumX[2] = 0.0;
+            mDenX[0] = k;
+            mDenX[1] = B;
+            mDenX[2] = m;
+            mNumV[0] = 1.0;
+            mNumV[1] = 0.0;
+            mDenV[0] = B;
+            mDenV[1] = m;
+            mFilterX.initialize(mTimestep, mNumX, mDenX, 0, -v1);
+            mFilterV.initialize(mTimestep, mNumV, mDenV, 0, -x1);
 
             //Print debug message if velocities do not match
             if((*mpND_v1) != -(*mpND_v2))
@@ -128,27 +130,33 @@ namespace hopsan {
             Zx2 = (*mpND_Zx2);
 
             //Mass equations
-            //mDen[1] = B+Zx1+Zx2;
-            //mFilter.setDen(mDen);
-            //v2 = mFilter.update(c1-c2);
-            //x2 = mInt.update(v2);
+            mDenX[1] = B+Zx1+Zx2;
+            mDenV[0] = B+Zx1+Zx2;
+            mFilterX.setDen(mDenX);
+            mFilterV.setDen(mDenV);
 
-            mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
-            mIntegrator.integrate((c1-c2)/m);
-            v2 = mIntegrator.valueFirst();
-            x2 = mIntegrator.valueSecond();
+            x2 = mFilterX.update(c1-c2);
+            v2 = mFilterV.update(c1-c2 - k*x2);
+
+            if((mTime > 6) && (mTime < 6.01))
+            {
+                double apa = c1-c2;
+                stringstream ss;
+                ss << "t: " << mTime << "   c1-c2 = " << apa << "   v2 = " << v2;
+                addDebugMessage(ss.str());
+            }
 
             if(x2<xMin)
             {
                 x2=xMin;
-                v2=std::max(0.0, v2);
-                mIntegrator.initializeValues(0.0, x2, v2);
+                mFilterX.initializeValues(c1-c2, x2);
+                mFilterV.initializeValues(c1-c2, 0.0);
             }
             if(x2>xMax)
             {
                 x2=xMax;
-                v2=std::min(0.0, v2);
-                mIntegrator.initializeValues(0.0, x2, v2);
+                mFilterX.initializeValues(c1-c2, x2);
+                mFilterV.initializeValues(c1-c2, 0.0);
             }
 
             v1 = -v2;
@@ -163,6 +171,13 @@ namespace hopsan {
             (*mpND_f2) = f2;
             (*mpND_x2) = x2;
             (*mpND_v2) = v2;
+
+//            if((mTime>.5) && (mTime<.5001))
+//            {
+//                std::stringstream ss;
+//                ss << "mTime: " << mTime << "     c1-c2: " << c1-c2 << "    v2: " << v2 << std::endl;
+//                addInfoMessage(ss.str());
+//            }
         }
     };
 }
