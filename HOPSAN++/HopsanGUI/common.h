@@ -27,44 +27,41 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+//Numerical definitions
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
+
+//Web link definitions
 #define HOPSANLINK "http://tiny.cc/hopsan"
 #define NEWSLINK "http://tiny.cc/hopsannews"
 #define DOWNLOADLINK "http://tiny.cc/hopsanarchive"
 
-
-//Development defines, swich commen block with release++ bellow on real release
+//Path definitions (development and release)
 #define MAINPATH "../"
-#define OBJECTICONPATH "../HopsanGUI/graphics/objecticons/"
-#define ICONPATH "../HopsanGUI/graphics/uiicons/"
-#define PORTICONPATH "../HopsanGUI/graphics/porticons/"
-#define GRAPHICSPATH "../HopsanGUI/graphics/"
-#define SOUNDSPATH "../HopsanGUI/sounds/"
-#define COMPONENTPATH "../HopsanGUI/componentData/"
 #define MODELPATH "../Models/"
-#define HELPPATH "../HopsanGUI/docs/html/"
+#define OBJECTICONPATH ":graphics/objecticons/"
+#define ICONPATH ":graphics/uiicons/"
+#define PORTICONPATH ":graphics/porticons/"
+#define GRAPHICSPATH ":graphics/"
+#define SOUNDSPATH ":sounds/"
 #ifdef WIN32
 #define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
 #else
 #define DATAPATH gExecPath
 #endif
 
-//Relese++ defines
-//#define MAINPATH "../"
-//#define OBJECTICONPATH ":graphics/objecticons/"
-//#define ICONPATH ":graphics/uiicons/"
-//#define PORTICONPATH ":graphics/porticons/"
-//#define GRAPHICSPATH ":graphics/"
-//#define SOUNDSPATH ":sounds/"
+//Path definitions (development)
+#define COMPONENTPATH "../HopsanGUI/componentData/"
+#define HELPPATH "../HopsanGUI/docs/html/"
+
+//Path definition (release)
 //#define COMPONENTPATH "../componentData/"
-//#define MODELPATH "../Models/"
 //#define HELPPATH "../Help/"
-//#ifdef WIN32
-//#define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
-//#else
-//#define DATAPATH gExecPath
-//#endif
+
+//Gui TypeName defines
+#define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
+#define HOPSANGUISYSTEMTYPENAME "Subsystem"
+#define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
 
 //! @todo all of these dont have to be common
 //Enums
@@ -79,11 +76,6 @@ enum simulationMethod {SINGLECORE, MULTICORE};
 enum connectorStyle {POWERCONNECTOR, SIGNALCONNECTOR, UNDEFINEDCONNECTOR};
 enum HopsanPlotID {FIRSTPLOT, SECONDPLOT};
 enum HopsanPlotCurveType {PORTVARIABLE, FREQUENCYANALYSIS, NYQUIST, BODEGAIN, BODEPHASE, GENERAL};
-
-//Gui TypeName defines
-#define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
-#define HOPSANGUISYSTEMTYPENAME "Subsystem"
-#define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
 
 //Global pointer to the main window
 class MainWindow;

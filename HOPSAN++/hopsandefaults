@@ -142,4 +142,5 @@
         <customunit unit="-" scale="1" name="Value"/>
         <customunit unit="m/s" scale="1" name="Velocity"/>
     </units>
+    <python/>
 </hopsandefaults>

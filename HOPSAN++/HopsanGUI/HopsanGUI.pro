@@ -127,9 +127,9 @@ SOURCES += main.cpp \
     Dialogs/ContainerPortPropertiesDialog.cpp \
     Dialogs/WelcomeDialog.cpp \
     Dialogs/HelpDialog.cpp \
-    Utilities/BarChartPlotter/plotterbase.cpp \
-    Utilities/BarChartPlotter/barchartplotter.cpp \
-    Utilities/BarChartPlotter/axisbase.cpp
+    ../ExternalDependencies/BarChartPlotter/plotterbase.cpp \
+    ../ExternalDependencies/BarChartPlotter/barchartplotter.cpp \
+    ../ExternalDependencies/BarChartPlotter/axisbase.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -177,9 +177,9 @@ HEADERS += MainWindow.h \
     Dialogs/ContainerPortPropertiesDialog.h \
     Dialogs/WelcomeDialog.h \
     Dialogs/HelpDialog.h \
-    Utilities/BarChartPlotter/plotterbase.h \
-    Utilities/BarChartPlotter/barchartplotter.h \
-    Utilities/BarChartPlotter/axisbase.h
+    ../ExternalDependencies/BarChartPlotter/plotterbase.h \
+    ../ExternalDependencies/BarChartPlotter/barchartplotter.h \
+    ../ExternalDependencies/BarChartPlotter/axisbase.h
 
 OTHER_FILES += \
     ../hopsandefaults \
