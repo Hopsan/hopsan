@@ -90,5 +90,6 @@
         <file>sounds/error.wav</file>
         <file>graphics/uiicons/Hopsan-Losses.png</file>
         <file>graphics/uiicons/Hopsan-FrequencyAnalysis.png</file>
+        <file>graphics/uiicons/Hopsan-TransferFunctionAnalysis.png</file>
     </qresource>
 </RCC>

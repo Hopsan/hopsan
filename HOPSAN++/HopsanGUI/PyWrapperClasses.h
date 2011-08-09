@@ -36,6 +36,7 @@
 #include "Configuration.h"
 #include "PlotWindow.h"
 #include "Widgets/PyDockWidget.h"
+#include "Widgets/SystemParametersWidget.h"
 
 
 //Just for test purposes
@@ -240,6 +241,14 @@ public slots:
         {
             o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->setParameterValue(parName, QString::number(value));
         }
+    }
+
+    void setSystemParameter(MainWindow* o, const QString& parName, const double& value)
+    {
+        QString valueString;
+        valueString.setNum(value);
+            o->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(parName, valueString, "", "", "double");
+        o->mpSystemParametersWidget->update();
     }
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)

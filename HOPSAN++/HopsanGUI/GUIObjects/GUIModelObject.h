@@ -107,6 +107,7 @@ public slots:
     void showName(undoStatus undoSettings = NOUNDO);
     void setIcon(graphicsType);
     void showLosses();
+    void hideLosses();
 
 signals:
     void nameChanged();

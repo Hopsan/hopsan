@@ -55,8 +55,8 @@
 #include "qwt_plot_renderer.h"
 #include "qwt_scale_map.h"
 
-#include "Utilities/BarChartPlotter/barchartplotter.h"
-#include "Utilities/BarChartPlotter/axisbase.h"
+#include "../ExternalDependencies/BarChartPlotter/barchartplotter.h"
+#include "../ExternalDependencies/BarChartPlotter/axisbase.h"
 
 const double DBLMAX = std::numeric_limits<double>::max();
 
@@ -370,8 +370,6 @@ void PlotWindow::updateLists()
 {
     if(gpMainWindow->mpProjectTabs->count() == 0) return;
 
-    qDebug() << "Update lists!";
-
         //Disconnect update functions from item change slots, to prevent new updates before this one is finished
     disconnect(mpComponentList,     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updatePortList()));
     disconnect(mpPortList,          SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updateVariableList()));
@@ -402,7 +400,6 @@ void PlotWindow::updateLists()
 //! @brief Updates the port list
 void PlotWindow::updatePortList()
 {
-    qDebug() << "Update port lists!";
     if(mpComponentList->count() == 0) { return; }
 
     disconnect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
@@ -422,7 +419,6 @@ void PlotWindow::updatePortList()
 //! @brief Updates the variable list
 void PlotWindow::updateVariableList()
 {
-    qDebug() << "Update variable lists!";
     if(mpComponentList->count() == 0 || mpPortList->count() == 0) { return; }
 
     mpVariableList->clear();
@@ -484,26 +480,6 @@ void PlotWindow::hideHelpPopupMessage()
 //! @param dataUnit Unit of variable
 void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath)
 {
-//    //! TEMPTEMPTEMP
-//   QStandardItemModel *pItemModel = new QStandardItemModel(5,4,this);
-//   pItemModel->setHorizontalHeaderLabels(QStringList() <<
-//                                        "Mass" << "Orifice" << "2009" << "2010");
-//   pItemModel->setVerticalHeaderLabels(QStringList() <<
-//                                      "Water" << "Coal" << "Oil" << "Sand" << "Stone");
-//   pItemModel->setHeaderData(0, Qt::Vertical, Qt::red, Qt::BackgroundRole);
-//   pItemModel->setHeaderData(1, Qt::Vertical, Qt::blue, Qt::BackgroundRole);
-//   pItemModel->setHeaderData(2, Qt::Vertical, Qt::green, Qt::BackgroundRole);
-//   pItemModel->setHeaderData(3, Qt::Vertical, Qt::yellow, Qt::BackgroundRole);
-//   pItemModel->setHeaderData(4, Qt::Vertical, Qt::white, Qt::BackgroundRole);
-
-//   for (int i = 0; i < 5; i++)
-//       for (int j = 0; j < 4; j++)
-//           pItemModel->setData(pItemModel->index(i,j), qrand()%40-20);
-
-//   addBarChart(pItemModel);
-//   //! TEMPTEMPTEMP
-
-
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelPath, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
@@ -587,8 +563,6 @@ void PlotWindow::saveToXml()
             curveElement.setAttribute("model",      mpPlotTabs->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
         }
     }
-
-
 
     appendRootXMLProcessingInstruction(domDocument);
 

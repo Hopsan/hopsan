@@ -61,7 +61,7 @@ public slots:
     void tabChanged();
     void saveCurrentModelToWrappedCode();
     void createSimulinkWrapperFromCurrentModel();
-    void showLosses();
+    void showLosses(bool show);
 
 signals:
     void checkMessages();

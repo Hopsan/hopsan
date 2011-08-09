@@ -219,7 +219,6 @@ void Configuration::loadFromXml()
             if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
 
-
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
             while(!penElement.isNull())
@@ -283,6 +282,7 @@ void Configuration::loadFromXml()
                                      defaultUnitElement.attribute("unit"));
                 defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
             }
+
             QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
             while (!customUnitElement.isNull())
             {
@@ -299,7 +299,8 @@ void Configuration::loadFromXml()
 
             //Load settings to PyDockWidget in MainWindow
             QDomElement pythonElement = configRoot.firstChildElement("python");
-            gpMainWindow->getPythonDock()->loadSettingsFromDomElement(pythonElement);
+            if(!pythonElement.isNull())
+                gpMainWindow->getPythonDock()->loadSettingsFromDomElement(pythonElement);
         }
     }
     file.close();

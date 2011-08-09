@@ -144,6 +144,8 @@ public:
     void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
     void removeFavoriteVariableByComponentName(QString componentName);
 
+    //Losses methods
+    bool areLossesVisible();
 
 public slots:
 
@@ -205,7 +207,9 @@ public slots:
     void collectPlotData();
 
     //Losses
-    void showLosses();
+    void showLosses(bool show);
+    void showLossesFromDialog();
+    void hideLosses();
 
 signals:
 
@@ -295,6 +299,11 @@ protected:
 
     //Numbered sections members
     QList< QList<GUIModelObject *> > mSection;
+
+    //Losses members
+    bool mLossesVisible;
+    QDialog *mpLossesDialog;
+    QSlider *mpMinLossesSlider;
 };
 
 #endif // GUICONTAINEROBJECT_H

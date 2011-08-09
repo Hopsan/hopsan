@@ -554,8 +554,9 @@ void MainWindow::createActions()
 
     mpShowLossesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Losses.png"), tr("Calculate Losses"), this);
     mpShowLossesAction->setShortcut(QKeySequence("Ctrl+L"));
+    mpShowLossesAction->setCheckable(true);
     this->addAction(mpShowLossesAction);
-    connect(mpShowLossesAction, SIGNAL(triggered()), mpProjectTabs, SLOT(showLosses()));
+    connect(mpShowLossesAction, SIGNAL(triggered(bool)), mpProjectTabs, SLOT(showLosses(bool)));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);

@@ -38,8 +38,8 @@
 #include <qwt_symbol.h>
 
 #include "GUIObjects/GUIContainerObject.h"
-#include "Utilities/BarChartPlotter/barchartplotter.h"
-#include "Utilities/BarChartPlotter/axisbase.h"
+#include "../ExternalDependencies/BarChartPlotter/barchartplotter.h"
+#include "../ExternalDependencies/BarChartPlotter/axisbase.h"
 
 class MainWindow;
 class PlotParameterTree;

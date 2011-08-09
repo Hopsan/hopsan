@@ -708,6 +708,7 @@ void ProjectTabWidget::tabChanged()
 
         gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentContainer()->areNamesHidden());
         gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentContainer()->arePortsHidden());
+        gpMainWindow->mpShowLossesAction->setChecked(getCurrentContainer()->areLossesVisible());
     }
 }
 
@@ -726,7 +727,7 @@ void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 }
 
 
-void ProjectTabWidget::showLosses()
+void ProjectTabWidget::showLosses(bool show)
 {
-    qobject_cast<GUISystem*>(getCurrentContainer())->showLosses();
+    qobject_cast<GUISystem*>(getCurrentContainer())->showLosses(show);
 }

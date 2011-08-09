@@ -351,7 +351,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
 
 void GUIModelObject::showLosses()
 {
-    qDebug() << "What is the Matrix?";
+    QTime time;
 
     mTotalLosses = 0.0;
     mHydraulicLosses = 0.0;
@@ -362,7 +362,7 @@ void GUIModelObject::showLosses()
 
     int generation = mpParentContainerObject->getNumberOfPlotGenerations()-1;
 
-    qDebug() << "The Matrix is a pig.";
+    time.start();
 
     for(int p=0; p<mPortListPtrs.size(); ++p)
     {
@@ -399,8 +399,6 @@ void GUIModelObject::showLosses()
         }
         else if(mPortListPtrs[p]->getNodeType() == "NodeMechanic")
         {
-            qDebug() << "The Matrix is a a sweet dude.";
-
             //Power port, so we must cycle all connected ports and ask for their data
             if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
             {
@@ -420,43 +418,24 @@ void GUIModelObject::showLosses()
             }
             else    //Normal port!
             {
-                //HACK! HACK! HACK!
-                if(getTypeName() == "HydraulicCylinderC")
+                QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
+                QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
+                for(int s=0; s<vForce.size()-1; ++s)
                 {
-                    QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
-                    QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
-                    for(int s=0; s<vForce.size()-1; ++s)
-                    {
-                        mTotalLosses += (-fabs(vForce.at(s) * vVelocity.at(s))) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        mMechanicLosses += (-fabs(vForce.at(s) * vVelocity.at(s))) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                    }
-                }
-
-                //HACK! HACK! HACK!
-                else
-                {
-                    QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
-                    QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
-                    for(int s=0; s<vForce.size()-1; ++s)
-                    {
-                        mTotalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        mMechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                    }
+                    mTotalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    mMechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
                 }
             }
         }
         else
         {
-            qDebug() << "The Matrix is something else.";
             //Do something else?!
         }
     }
 
-    qDebug() << "The Matris is a monkey.";
-
     if(mTotalLosses != 0)
     {
-        if(getTypeCQS() == "Q")
+        if(getTypeCQS() == "Q")     //Invert losses for Q components (because positive direction is defined as outwards for Q and inwards for C)
         {
             mTotalLosses *= -1;
             mHydraulicLosses *= -1;
@@ -474,17 +453,6 @@ void GUIModelObject::showLosses()
         mechanicString.setNum(mMechanicLosses);
         QString mechanicAddedString;
         mechanicAddedString.setNum(-mMechanicLosses);
-
-        QString message;
-        if(mTotalLosses > 0)
-            message.append(this->getName() + ": Total losses = " + totalString + " J");
-        else
-            message.append(this->getName() + ": Total added energy = " + totalAddedString + " J");
-        if(mHydraulicLosses > 0)
-            message.append(" (hydraulic " + hydraulicString + " J)");
-        if(mMechanicLosses > 0)
-            message.append(" (mechanic " + mechanicString + " J)");
-        gpMainWindow->mpMessageWidget->printGUIInfoMessage(message);
 
         QString label;
         if(mTotalLosses > 0)
@@ -524,11 +492,15 @@ void GUIModelObject::showLosses()
         pt.ry() = -mpLossesDisplay->boundingRect().height()/2.0;
         pt = transf*pt;
         mpLossesDisplay->setPos(localCenter + pt);
-        mpLossesDisplay->setVisible(!mpLossesDisplay->isVisible());
+        mpLossesDisplay->setVisible(true);
         mpLossesDisplay->setZValue(20);
     }
+}
 
-    qDebug() << "Hopsan is the Matrix.";
+
+void GUIModelObject::hideLosses()
+{
+    mpLossesDisplay->setVisible(false);
 }
 
 

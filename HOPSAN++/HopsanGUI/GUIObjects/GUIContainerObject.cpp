@@ -64,6 +64,7 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
     setIsCreatingConnector(false);
     mPortsHidden = !gpMainWindow->mpTogglePortsAction->isChecked();
     mNamesHidden = !gpMainWindow->mpToggleNamesAction->isChecked();
+    mLossesVisible = false;
     mUndoDisabled = false;
     mGfxType = USERGRAPHICS;
 
@@ -598,6 +599,12 @@ void GUIContainerObject::removeFavoriteVariableByComponentName(QString component
             return;
         }
     }
+}
+
+
+bool GUIContainerObject::areLossesVisible()
+{
+    return mLossesVisible;
 }
 
 
@@ -2240,8 +2247,78 @@ void GUIContainerObject::collectPlotData()
 }
 
 
-void GUIContainerObject::showLosses()
+void GUIContainerObject::showLosses(bool show)
 {
+    if(!show)
+    {
+        mLossesVisible=false;
+        hideLosses();
+        return;
+    }
+
+
+    QLabel *pInfoLabel = new QLabel(tr("This will calculate energy losses for each component."));
+    pInfoLabel->setWordWrap(true);
+    pInfoLabel->setFixedWidth(300);
+
+    mpLossesDialog = new QDialog(gpMainWindow);
+    mpLossesDialog->setWindowTitle("Calculate Losses");
+
+    QCheckBox *pIgnoreSmallLossesCheckBox = new QCheckBox("Ignore small losses in bar chart plot");
+    pIgnoreSmallLossesCheckBox->setChecked(true);
+
+    QLabel *pMinLossesLabel = new QLabel("Ignore losses smaller than ");
+    QLabel *pMinLossesValue = new QLabel();
+    QLabel *pMinLossesUnit = new QLabel("%");
+    pMinLossesValue->setNum(5);
+    mpMinLossesSlider = new QSlider(mpLossesDialog);
+    mpMinLossesSlider->setOrientation(Qt::Horizontal);
+    mpMinLossesSlider->setMinimum(0);
+    mpMinLossesSlider->setMaximum(100);
+    mpMinLossesSlider->setValue(5);
+    connect(mpMinLossesSlider, SIGNAL(valueChanged(int)), pMinLossesValue, SLOT(setNum(int)));
+
+    QHBoxLayout *pSliderLayout = new QHBoxLayout();
+    pSliderLayout->addWidget(pMinLossesLabel);
+    pSliderLayout->addWidget(mpMinLossesSlider);
+    pSliderLayout->addWidget(pMinLossesValue);
+    pSliderLayout->addWidget(pMinLossesUnit);
+
+    connect(pIgnoreSmallLossesCheckBox, SIGNAL(toggled(bool)), pMinLossesLabel, SLOT(setEnabled(bool)));
+    connect(pIgnoreSmallLossesCheckBox, SIGNAL(toggled(bool)), mpMinLossesSlider, SLOT(setEnabled(bool)));
+    connect(pIgnoreSmallLossesCheckBox, SIGNAL(toggled(bool)), pMinLossesValue, SLOT(setEnabled(bool)));
+    connect(pIgnoreSmallLossesCheckBox, SIGNAL(toggled(bool)), pMinLossesUnit, SLOT(setEnabled(bool)));
+
+    QPushButton *pCancelButton = new QPushButton("Cancel");
+    QPushButton *pNextButton = new QPushButton("Go!");
+
+    QGridLayout *pLossesDialogLayout = new QGridLayout;
+    pLossesDialogLayout->addWidget(pInfoLabel, 0, 0, 1, 2);
+    pLossesDialogLayout->addWidget(pIgnoreSmallLossesCheckBox, 1, 0, 1, 2);
+    pLossesDialogLayout->addLayout(pSliderLayout, 2, 0, 1, 2);
+    pLossesDialogLayout->addWidget(pCancelButton, 3, 0, 1, 1);
+    pLossesDialogLayout->addWidget(pNextButton, 3, 1, 1, 1);
+
+    mpLossesDialog->setLayout(pLossesDialogLayout);
+
+    mpLossesDialog->show();
+
+    connect(pCancelButton, SIGNAL(clicked()), mpLossesDialog, SLOT(close()));
+    connect(pNextButton, SIGNAL(clicked()), this, SLOT(showLossesFromDialog()));
+}
+
+
+void GUIContainerObject::showLossesFromDialog()
+{
+    mpLossesDialog->close();
+    mLossesVisible=true;
+
+    double limit=0;
+    if(mpMinLossesSlider->isEnabled())
+    {
+        limit=mpMinLossesSlider->value()/100.0;
+    }
+
     //We should not be here if there is no plot data, but let's check to be sure
     if(mPlotData.isEmpty())
     {
@@ -2261,10 +2338,6 @@ void GUIContainerObject::showLosses()
             totalLosses += componentTotal;
     }
 
-    //Don't open plot if we are turning losses display off
-    if(!mGUIModelObjectMap.begin().value()->isLossesDisplayVisible())
-        return;
-
     //Count number of component that are to be plotted, and store their names
     int nComponents=0;
     QStringList componentNames;
@@ -2273,7 +2346,7 @@ void GUIContainerObject::showLosses()
     {
         double componentTotal, componentHydraulic, componentMechanic;
         moit.value()->getLosses(componentTotal, componentHydraulic, componentMechanic);
-        if(abs(componentTotal) > abs(0.05*totalLosses))     //Condition for plotting
+        if(abs(componentTotal) > abs(limit*totalLosses))     //Condition for plotting
         {
             ++nComponents;
             componentNames.append(moit.value()->getName());
@@ -2308,7 +2381,7 @@ void GUIContainerObject::showLosses()
     //Add data to plot bars from each component
     for(int c=0; c<componentLosses.size(); ++c)
     {
-        if(abs(componentLosses.at(c)) > abs(0.05*totalLosses))
+        if(abs(componentLosses.at(c)) > abs(limit*totalLosses))
         {
             if(componentLosses.at(c) > 0)
                 pItemModel->setData(pItemModel->index(0,c), componentLosses.at(c));
@@ -2324,6 +2397,16 @@ void GUIContainerObject::showLosses()
     pPlotWindow->getCurrentPlotTab()->setTabName("Energy Losses");
     pPlotWindow->addBarChart(pItemModel);
     pPlotWindow->show();
+}
+
+
+void GUIContainerObject::hideLosses()
+{
+    GUIModelObjectMapT::iterator moit;
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    {
+        moit.value()->hideLosses();
+    }
 }
 
 
