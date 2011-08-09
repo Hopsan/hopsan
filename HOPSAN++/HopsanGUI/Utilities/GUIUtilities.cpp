@@ -181,20 +181,60 @@ qreal dist(QPointF &rPoint1, QPointF &rPoint2)
 }
 
 
+void replaceWord(QString &string, QString before, QString after)
+{
+    if(string.contains(before, Qt::CaseSensitive))
+    {
+        if(!string.at(string.indexOf(before,0,Qt::CaseSensitive)-1).isLetter() &&
+           !string.at(string.indexOf(before,0,Qt::CaseSensitive)+before.size()).isLetter())
+        {
+            string.replace(before, after, Qt::CaseSensitive);
+        }
+    }
+}
+
 
 QString parseVariableDescription(QString input)
 {
     QString retval;
-    input.replace("alpha",      QObject::trUtf8("α"), Qt::CaseInsensitive);
-    input.replace("beta",       QObject::trUtf8("β"), Qt::CaseInsensitive);
-    input.replace("delta",      QObject::trUtf8("δ"), Qt::CaseInsensitive);
-    input.replace("epsilon",    QObject::trUtf8("ε"), Qt::CaseInsensitive);
-    input.replace("kappa",      QObject::trUtf8("κ"), Qt::CaseInsensitive);
-    input.replace("tao",        QObject::trUtf8("τ"), Qt::CaseInsensitive);
-    input.replace("omega",      QObject::trUtf8("ω"), Qt::CaseInsensitive);
-    input.replace("eta",        QObject::trUtf8("η"), Qt::CaseInsensitive);
-    input.replace("rho",        QObject::trUtf8("ρ"), Qt::CaseInsensitive);
-    input.replace("signa",      QObject::trUtf8("σ"), Qt::CaseInsensitive);
+
+    replaceWord(input,  "Gamma",        QObject::trUtf8("Γ"));
+    replaceWord(input,  "Delta",        QObject::trUtf8("Δ"));
+    replaceWord(input,  "Theta",        QObject::trUtf8("Θ"));
+    replaceWord(input,  "Lambda",       QObject::trUtf8("Λ"));
+    replaceWord(input,  "Xi",           QObject::trUtf8("Ξ"));
+    replaceWord(input,  "Pi",           QObject::trUtf8("Π"));
+    replaceWord(input,  "Sigma",        QObject::trUtf8("Σ"));
+    replaceWord(input,  "Phi",          QObject::trUtf8("Φ"));
+    replaceWord(input,  "Psi",          QObject::trUtf8("Ψ"));
+    replaceWord(input,  "Omega",        QObject::trUtf8("Ω"));
+
+    replaceWord(input,  "alpha",        QObject::trUtf8("α"));
+    replaceWord(input,  "beta",         QObject::trUtf8("β"));
+    replaceWord(input,  "gamma",        QObject::trUtf8("γ"));
+    replaceWord(input,  "delta",        QObject::trUtf8("δ"));
+    replaceWord(input,  "epsilon",      QObject::trUtf8("ε"));
+    replaceWord(input,  "zeta",         QObject::trUtf8("ζ"));
+    replaceWord(input,  "eta",          QObject::trUtf8("η"));
+    replaceWord(input,  "theta",        QObject::trUtf8("θ"));
+    replaceWord(input,  "lota",         QObject::trUtf8("ι"));
+    replaceWord(input,  "kappa",        QObject::trUtf8("κ"));
+    replaceWord(input,  "lambda",       QObject::trUtf8("λ"));
+    replaceWord(input,  "mu",           QObject::trUtf8("μ"));
+    replaceWord(input,  "nu",           QObject::trUtf8("ν"));
+    replaceWord(input,  "xi",           QObject::trUtf8("ξ"));
+    replaceWord(input,  "omicron",      QObject::trUtf8("ο"));
+    replaceWord(input,  "pi",           QObject::trUtf8("π"));
+    replaceWord(input,  "rho",          QObject::trUtf8("ρ"));
+    replaceWord(input,  "finalsigma",   QObject::trUtf8("ς"));
+    replaceWord(input,  "sigma",        QObject::trUtf8("σ"));
+    replaceWord(input,  "tao",          QObject::trUtf8("τ"));
+    replaceWord(input,  "upsilon",      QObject::trUtf8("υ"));
+    replaceWord(input,  "phi",          QObject::trUtf8("φ"));
+    replaceWord(input,  "chi",          QObject::trUtf8("χ"));
+    replaceWord(input,  "psi",          QObject::trUtf8("ψ"));
+    replaceWord(input,  "omega",        QObject::trUtf8("ω"));
+
 
     if(input.count("_") == 1 && !input.contains("^"))
     {

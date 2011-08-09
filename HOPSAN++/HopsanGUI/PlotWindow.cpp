@@ -1374,15 +1374,14 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     mpBarPlot->axisX()->setFont(QFont("Calibri", 9));
 
     mpBarPlot->setBarSize(32, 128);
-    mpBarPlot->setBarOpacity(1.0);
+    mpBarPlot->setBarOpacity(0.9);
 
-//    QLinearGradient bg(0,0,0,1);
-//    bg.setCoordinateMode(QGradient::ObjectBoundingMode);
-//    bg.setColorAt(1, Qt::white);
-//    bg.setColorAt(0.5, QColor(0xccccff));
-//    bg.setColorAt(0, Qt::white);
-//    mpBarPlot->setBackground(QBrush(bg));
-    mpBarPlot->setBackground(QColor("White"));
+    QLinearGradient bg(0,0,0,1);
+    bg.setCoordinateMode(QGradient::ObjectBoundingMode);
+    bg.setColorAt(1, QColor(0xccccff));
+    bg.setColorAt(0.0, Qt::white);
+    mpBarPlot->setBackground(QBrush(bg));
+    //mpBarPlot->setBackground(QColor("White"));
 
     mpBarPlot->setModel(pItemModel);
 
