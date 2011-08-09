@@ -62,7 +62,7 @@ void DoubleIntegratorWithDamping::integrate(double u)
 {
     double tempDelaySY = mDelaySY;
     mDelaySY = (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(u + mDelayU);
-    mDelayY = mDelayY + mTimeStep/2.0*tempDelaySY;
+    mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
     mDelayU = u;
 }
 
@@ -74,10 +74,7 @@ void DoubleIntegratorWithDamping::integrateWithUndo(double u)
     mDelayYbackup = mDelayY;
     mDelayUbackup = mDelayU;
 
-    double tempDelaySY = mDelaySY;
-    mDelaySY = (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(u + mDelayU);
-    mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
-    mDelayU = u;
+    integrate(u);
 }
 
 
@@ -85,8 +82,9 @@ void DoubleIntegratorWithDamping::integrateWithUndo(double u)
 //! Last step must have been called with integrateWithUndo() for this to work.
 void DoubleIntegratorWithDamping::redoIntegrate(double u)
 {
+    double tempDelaySY = mDelaySY;
     mDelaySY = (2-mW0)/(2+mW0)*mDelaySYbackup + mTimeStep/(2.0+mW0)*(u + mDelayUbackup);
-    mDelayY = mDelayYbackup + mTimeStep/2.0*mDelaySYbackup;
+    mDelayY = mDelayYbackup + mTimeStep/2.0*(mDelaySY+tempDelaySY);
     mDelayU = u;
 }
 
