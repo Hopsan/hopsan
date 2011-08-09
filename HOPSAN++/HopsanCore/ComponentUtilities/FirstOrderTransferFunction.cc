@@ -94,7 +94,7 @@ void FirstOrderTransferFunction::initializeValues(double u0, double y0)
 }
 
 
-double FirstOrderTransferFunction::update(double &u)
+double FirstOrderTransferFunction::update(double u)
 {
     //Filter equation
     //Bilinear transform is used
