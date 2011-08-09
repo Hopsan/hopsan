@@ -372,11 +372,11 @@ void GUIPort::refreshPortOverlayPosition()
     }
 }
 
-void GUIPort::refreshPortGraphics(QString cqsType, QString portType, QString nodeType)
-{
-    mpPortAppearance->selectPortIcon(cqsType, portType, nodeType);
-    refreshPortGraphics();
-}
+//void GUIPort::refreshPortGraphics(QString cqsType, QString portType, QString nodeType)
+//{
+//    mpPortAppearance->selectPortIcon(cqsType, portType, nodeType);
+//    refreshPortGraphics();
+//}
 
 
 //! @brief recreate the port graphics overlay
@@ -384,6 +384,25 @@ void GUIPort::refreshPortGraphics(QString cqsType, QString portType, QString nod
 void GUIPort::refreshPortGraphics()
 {
     qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
+
+    //Systemports may change appearance depending on what is connected
+    if (getPortType() == "SYSTEMPORT")
+    {
+        QString cqsType;
+        if (getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+        {
+            //If we are port in containerport model object then ask our parent system model object about cqs-type
+            //cqsType = getParentContainerObjectPtr()->getTypeCQS();
+            cqsType = "NULL"; //Dont show cqs typ internally, it will become confusing
+        }
+        else
+        {
+            //If we are external systemport then ask our model object about the cqs-type
+            cqsType = getGuiModelObject()->getTypeCQS();
+        }
+        mpPortAppearance->selectPortIcon(cqsType, getPortType(), getNodeType());
+    }
+
     //Remove old port graphics overlay
     for(int i = 0; i < mvPortGraphicsOverlayPtrs.size(); ++i)
     {

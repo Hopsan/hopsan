@@ -172,12 +172,33 @@ void GUIConnector::commonConstructorCode()
 //! @brief Destructor for connector class
 GUIConnector::~GUIConnector()
 {
+    refreshConnectedSystemportsGraphics();
+
     delete mpGUIConnectorAppearance;
 
     mpStartPort->getGuiModelObject()->forgetConnector(this);
     if(mIsConnected)
     {
         mpEndPort->getGuiModelObject()->forgetConnector(this);
+    }
+}
+
+//! @brief A special help function, useful to call graphics refresh on connected systemports (if any)
+void GUIConnector::refreshConnectedSystemportsGraphics()
+{
+    if (mpStartPort)
+    {
+        if (getStartPort()->getPortType() == "SYSTEMPORT")
+        {
+            getStartPort()->refreshPortGraphics();
+        }
+    }
+    if (mpEndPort)
+    {
+        if (getEndPort()->getPortType() == "SYSTEMPORT")
+        {
+            getEndPort()->refreshPortGraphics();
+        }
     }
 }
 
@@ -444,22 +465,8 @@ void GUIConnector::finishCreation()
     }
 
         //If containerport refresh graphics
-    qDebug() << "Port Types: " << getStartPort()->getPortType() << " " << getEndPort()->getPortType();
-    QString cqsType, portType, nodeType;
-    if (getStartPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
-    {
-        cqsType = getStartPort()->getGuiModelObject()->getTypeCQS();
-        portType = getStartPort()->getPortType();
-        nodeType = getStartPort()->getNodeType();
-        getStartPort()->refreshPortGraphics(cqsType, portType, nodeType);
-    }
-    if (getEndPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
-    {
-        cqsType = getEndPort()->getGuiModelObject()->getTypeCQS();
-        portType = getEndPort()->getPortType();
-        nodeType = getEndPort()->getNodeType();
-        getEndPort()->refreshPortGraphics(cqsType, portType, nodeType);
-    }
+    //qDebug() << "Port Types: " << getStartPort()->getPortType() << " " << getEndPort()->getPortType();
+    refreshConnectedSystemportsGraphics();
 
         //Hide ports; connected ports shall not be visible
     mpStartPort->hide();
@@ -650,52 +657,57 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 //! @brief Draws lines between the points in the mPoints vector, and stores them in the mpLines vector
 void GUIConnector::drawConnector(bool alignOperation)
 {
-    if(!mIsConnected)        //End port is not connected, which means we are creating a new line
+    //Do not try to draw if no points have been added yet (avoid crash in code bellow)
+    if (mPoints.size() > 0)
     {
+        if(!mIsConnected)        //End port is not connected, which means we are creating a new line
+        {
             //Remove lines if there are too many
-        while(mpLines.size() > mPoints.size()-1)
-        {
-            this->scene()->removeItem(mpLines.back());
-            delete(mpLines.back());
-            mpLines.pop_back();
-        }
+            while(mpLines.size() > mPoints.size()-1)
+            {
+                this->scene()->removeItem(mpLines.back());
+                delete(mpLines.back());
+                mpLines.pop_back();
+            }
             //Add lines if there are too few
-        while(mpLines.size() < mPoints.size()-1)
-        {
-            mpTempLine = new GUIConnectorLine(0, 0, 0, 0, mpGUIConnectorAppearance, mpLines.size(), this);
-            mpTempLine->setPassive();
-            connect(mpTempLine,SIGNAL(lineSelected(bool, int)),this,SLOT(doSelect(bool, int)));
-            connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
-            connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
-            connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-            connect(this,SIGNAL(connectionFinished()),mpTempLine,SLOT(setConnected()));
-            mpLines.push_back(mpTempLine);
+            while(mpLines.size() < mPoints.size()-1)
+            {
+                mpTempLine = new GUIConnectorLine(0, 0, 0, 0, mpGUIConnectorAppearance, mpLines.size(), this);
+                mpTempLine->setPassive();
+                connect(mpTempLine,SIGNAL(lineSelected(bool, int)),this,SLOT(doSelect(bool, int)));
+                connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
+                connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
+                connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
+                connect(this,SIGNAL(connectionFinished()),mpTempLine,SLOT(setConnected()));
+                mpLines.push_back(mpTempLine);
+            }
+
         }
-    }
-    else        //End port is connected, so the connector is modified or has moved
-    {
-        if(mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected() && this->isActive() && !alignOperation)
+        else        //End port is connected, so the connector is modified or has moved
         {
+            if(mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected() && this->isActive() && !alignOperation)
+            {
                 //Both components and connector are selected, so move whole connector along with components
-            moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),
-                          getStartPort()->mapToScene(getStartPort()->boundingRect().center()).y()-mPoints[0].y());
-        }
-        else
-        {
+                moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),
+                              getStartPort()->mapToScene(getStartPort()->boundingRect().center()).y()-mPoints[0].y());
+            }
+            else
+            {
                 //Retrieve start and end points from ports in case components have moved
-            updateStartPoint(getStartPort()->mapToScene(getStartPort()->boundingRect().center()));
-            updateEndPoint(getEndPort()->mapToScene(getEndPort()->boundingRect().center()));
+                updateStartPoint(getStartPort()->mapToScene(getStartPort()->boundingRect().center()));
+                updateEndPoint(getEndPort()->mapToScene(getEndPort()->boundingRect().center()));
+            }
         }
-    }
 
-       //Redraw the lines based on the mPoints vector
-    for(int i = 0; i != mPoints.size()-1; ++i)
-    {
-        if( (mpLines[i]->line().p1() != mPoints[i]) || (mpLines[i]->line().p2() != mPoints[i+1]) )   //Don't redraw the line if it has not changed
-        mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
-    }
+        //Redraw the lines based on the mPoints vector
+        for(int i=0; i<mPoints.size()-1; ++i)
+        {
+            if( (mpLines[i]->line().p1() != mPoints[i]) || (mpLines[i]->line().p2() != mPoints[i+1]) )   //Don't redraw the line if it has not changed
+                mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
+        }
 
-    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+        mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+    }
 }
 
 

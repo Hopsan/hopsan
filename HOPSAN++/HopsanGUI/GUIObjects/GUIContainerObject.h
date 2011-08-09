@@ -98,7 +98,7 @@ public:
     //Handle container appearance
     QString getIconPath(const graphicsType gfxType);
     void setIconPath(const QString path, const graphicsType gfxType);
-    CONTAINEREDGE findPortEdge(QPointF center, QPointF pt);
+    CONTAINEREDGE findPortEdge(QPointF center, QPointF pt); //!< @todo maybe not public
     virtual void refreshAppearance();
     void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
@@ -246,6 +246,7 @@ protected:
     virtual void openPropertiesDialog();
     void clearContents();
     void forgetSubConnector(GUIConnector *pConnector);
+    void refreshInternalContainerPortGraphics();
 
     //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

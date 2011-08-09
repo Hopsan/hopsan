@@ -113,6 +113,7 @@ signals:
     void connectionFinished();
 
 private:
+    void refreshConnectedSystemportsGraphics();
     void disconnectPortSigSlots(GUIPort* pPort);
     void connectPortSigSlots(GUIPort* pPort);
 

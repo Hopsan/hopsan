@@ -89,7 +89,7 @@ public slots:
     void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
     void refreshPortGraphics();
-    void refreshPortGraphics(QString cqsType, QString portType, QString nodeType);
+    //void refreshPortGraphics(QString cqsType, QString portType, QString nodeType);
 
 signals:
     void portClicked(GUIPort *item);

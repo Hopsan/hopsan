@@ -1792,6 +1792,20 @@ void GUIContainerObject::forgetSubConnector(GUIConnector *pConnector)
     mSubConnectorList.removeAll(pConnector);
 }
 
+//! @brief Refresh the graphics of all internal container ports
+void GUIContainerObject::refreshInternalContainerPortGraphics()
+{
+    GUIModelObjectMapT::iterator moit;
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    {
+        if(moit.value()->type() == GUICONTAINERPORT)
+        {
+            //We assume that a container port only have ONE gui port
+            moit.value()->getPortListPtrs().first()->refreshPortGraphics();
+        }
+    }
+}
+
 
 //! @brief Aborts creation of new connector.
 void GUIContainerObject::cancelCreatingConnector()
@@ -2095,12 +2109,14 @@ void GUIContainerObject::enterContainer()
 //    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
       this->connectMainWindowActions();
 
-        //Upddate plot widget and undo widget to new container
+        //Update plot widget and undo widget to new container
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(this->mUndoDisabled);
+
+    refreshInternalContainerPortGraphics();
 
     this->collectPlotData();
 }

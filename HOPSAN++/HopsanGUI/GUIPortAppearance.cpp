@@ -38,7 +38,7 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
     if (nodetype == "NodeSignal")
     {
         mIconPath.append("SignalPort");
-        if ( porttype == "READPORT")
+        if ( porttype == "READPORT" || porttype == "READMULTIPORT")
         {
             mIconPath.append("_read");
         }

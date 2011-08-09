@@ -894,13 +894,14 @@ void ComponentSystem::determineCQSType()
                     ++s_ctr;
                     break;
                 default :
-                    assert("This should not happen" == 0);
+                    ;
+                    //Do nothing, (connecting a port from a system with no cqs type set yet)
                 }
             }
         }
     }
 
-    //Ok now lets determine i we have a valid CQS type or not
+    //Ok now lets determine if we have a valid CQS type or not
     if ( (c_ctr > 0) && (q_ctr == 0) )
     {
         this->setTypeCQS(C);
@@ -1821,6 +1822,13 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
     //Update the CQS type
     this->determineCQSType();
+
+    //Update parent cqs-type
+    //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
+    if (mpSystemParent != 0)
+    {
+        this->mpSystemParent->determineCQSType();
+    }
 
     ss << "Disconnected: {"<< pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} and {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
     cout << ss.str() << endl;
