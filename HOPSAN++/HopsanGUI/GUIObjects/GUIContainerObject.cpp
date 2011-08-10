@@ -2259,7 +2259,10 @@ void GUIContainerObject::collectPlotData()
         }
         componentMap.insert(moit.value()->getName(), portMap);
     }
-    mPlotData.append(componentMap);
+    if(!componentMap.isEmpty())
+    {
+        mPlotData.append(componentMap);
+    }
 }
 
 

@@ -104,7 +104,7 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::integrateWithUndo(double u)
 void DoubleIntegratorWithDampingAndCoulumbFriction::redoIntegrate(double u)
 {
     mDelaySY = (2-mW0)/(2+mW0)*mDelaySYbackup + mTimeStep/(2.0+mW0)*(u + mDelayUbackup);
-    mDelayY = mDelayYbackup + mTimeStep/2.0*mDelaySYbackup;
+    mDelayY = mDelayYbackup + mTimeStep/2.0*(mDelaySY+mDelaySYbackup);
     mDelayU = u;
 }
 
