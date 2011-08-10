@@ -228,12 +228,12 @@ QString parseVariableDescription(QString input)
     replaceWord(input,  "rho",          QObject::trUtf8("ρ"));
     replaceWord(input,  "finalsigma",   QObject::trUtf8("ς"));
     replaceWord(input,  "sigma",        QObject::trUtf8("σ"));
-    replaceWord(input,  "tao",          QObject::trUtf8("τ"));
-    replaceWord(input,  "upsilon",      QObject::trUtf8("υ"));
-    replaceWord(input,  "phi",          QObject::trUtf8("φ"));
-    replaceWord(input,  "chi",          QObject::trUtf8("χ"));
-    replaceWord(input,  "psi",          QObject::trUtf8("ψ"));
-    replaceWord(input,  "omega",        QObject::trUtf8("ω"));
+    replaceWord(input,  "tao",          QObject::trUtf8("τ"));
+    replaceWord(input,  "upsilon",      QObject::trUtf8("υ"));
+    replaceWord(input,  "phi",          QObject::trUtf8("φ"));
+    replaceWord(input,  "chi",          QObject::trUtf8("χ"));
+    replaceWord(input,  "psi",          QObject::trUtf8("ψ"));
+    replaceWord(input,  "omega",        QObject::trUtf8("ω"));
 
 
     if(input.count("_") == 1 && !input.contains("^"))
