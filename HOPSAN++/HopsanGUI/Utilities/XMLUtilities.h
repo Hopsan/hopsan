@@ -119,6 +119,7 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 #define HMF_SYSTEMPARAMETERTAG "globalkey"
 #define HMF_TRUETAG "true"
 #define HMF_FALSETAG "false"
+#define HMF_PORTPOSITIONS "portpositions"
 #define HMF_PORTPOSETAG "portpose"
 #define HMF_POSETAG "pose"
 #define HMF_VIEWPORTTAG "viewport"

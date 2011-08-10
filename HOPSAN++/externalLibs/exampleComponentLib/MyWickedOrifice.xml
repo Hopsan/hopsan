@@ -2,7 +2,9 @@
 <hopsanobjectappearance version="0.1">
 	<modelobject typename="MyWickedOrifice" displayname="MyWickedOrifice">
 		<icon isopath="" userpath="svg/orifice_user.svg" iconrotation="ON"/>
-		<portpose name="P1" x="1.0" y="0.5" a="0"/>
-		<portpose name="P2" x="0.0" y="0.5" a="180"/>
+		<portpositions>
+		    <portpose name="P1" x="1.0" y="0.5" a="0"/>
+		    <portpose name="P2" x="0.0" y="0.5" a="180"/>
+		</portpositions>
 	</modelobject>
 </hopsanobjectappearance>

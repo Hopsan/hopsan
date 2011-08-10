@@ -259,6 +259,22 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
     this->makeSurePathsAbsolute();
 
     QString portname;
+    QDomElement xmlPorts = domElement.firstChildElement(HMF_PORTPOSITIONS);
+    while (!xmlPorts.isNull())
+    {
+        QDomElement xmlPortPose = xmlPorts.firstChildElement(HMF_PORTPOSETAG);
+        while (!xmlPortPose.isNull())
+        {
+            GUIPortAppearance portApp;
+            parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
+            mPortAppearanceMap.insert(portname, portApp);
+            xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
+        }
+        // There should only be one <ports>, but lets check for more just in case
+        xmlPorts = xmlPorts.nextSiblingElement(HMF_PORTPOSITIONS);
+    }
+
+    // Read old style portposes, where portposes were not contained inside a common "ports" element
     QDomElement xmlPortPose = domElement.firstChildElement(HMF_PORTPOSETAG);
     while (!xmlPortPose.isNull())
     {
@@ -290,10 +306,11 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
             xmlHelp.setAttribute(HMF_HELPPICTURETAG, mHelpPicture);
     }
 
+    QDomElement xmlPortPositions = appendDomElement(rDomElement, HMF_PORTPOSITIONS);
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
-        appendPortPoseTag(xmlObject, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
+        appendPortPoseTag(xmlPortPositions, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
     }
     this->makeSurePathsAbsolute(); //Switch back to absolute paths
 }
