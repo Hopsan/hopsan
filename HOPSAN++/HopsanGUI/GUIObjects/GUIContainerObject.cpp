@@ -2370,24 +2370,66 @@ void GUIContainerObject::showLossesFromDialog()
         }
     }
 
+    QStringList lossesNames;
+    QList<double> lossesValues;
+    QStringList addedNames;
+    QList<double> addedValues;
+    for(int i=0; i<componentLosses.size(); ++i)
+    {
+        if(componentLosses.at(i) > 0)
+        {
+            lossesNames.append(componentNames.at(i));
+            lossesValues.append(componentLosses.at(i));
+        }
+        else
+        {
+            addedNames.append(componentNames.at(i));
+            addedValues.append(componentLosses.at(i));
+        }
+    }
+
     //Sort losses for plot (bubblesort)
     int i,j;
-    for(i=0; i<componentLosses.size(); i++)
+    for(i=0; i<lossesValues.size(); i++)
     {
         for(j=0;j<i;j++)
         {
-            if(fabs(componentLosses[i])>fabs(componentLosses[j]))
+            if(fabs(lossesValues[i])>fabs(lossesValues[j]))
             {
-                double temp=componentLosses[i];
-                componentLosses[i]=componentLosses[j];
-                componentLosses[j]=temp;
+                double temp=lossesValues[i];
+                lossesValues[i]=lossesValues[j];
+                lossesValues[j]=temp;
 
-                QString temp2 = componentNames[i];
-                componentNames[i]=componentNames[j];
-                componentNames[j]=temp2;
+                QString temp2 = lossesNames[i];
+                lossesNames[i]=lossesNames[j];
+                lossesNames[j]=temp2;
             }
         }
     }
+    for(i=0; i<addedValues.size(); i++)
+    {
+        for(j=0;j<i;j++)
+        {
+            if(fabs(addedValues[i])>fabs(addedValues[j]))
+            {
+                double temp=addedValues[i];
+                addedValues[i]=addedValues[j];
+                addedValues[j]=temp;
+
+                QString temp2 = addedNames[i];
+                addedNames[i]=addedNames[j];
+                addedNames[j]=temp2;
+            }
+        }
+    }
+
+    componentNames.clear();
+    componentNames.append(addedNames);
+    componentNames.append(lossesNames);
+
+    componentLosses.clear();
+    componentLosses.append(addedValues);
+    componentLosses.append(lossesValues);
 
     //Create item model, containing data for bar chart plot
     QStandardItemModel *pItemModel = new QStandardItemModel(2,nComponents,this);
