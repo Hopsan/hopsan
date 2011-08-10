@@ -181,19 +181,29 @@ qreal dist(QPointF &rPoint1, QPointF &rPoint2)
 }
 
 
+//! @brief Replaces a word in a string, but only if it is not part of a longer word.
+//! @param string Reference to string that shall be modified
+//! @param before The old word that will be replaced (if it exists)
+//! @param after The new word that will replace the old one
 void replaceWord(QString &string, QString before, QString after)
 {
-    if(string.contains(before, Qt::CaseSensitive))
+    if(string.contains(before))
     {
-        if(!string.at(string.indexOf(before,0,Qt::CaseSensitive)-1).isLetter() &&
-           !string.at(string.indexOf(before,0,Qt::CaseSensitive)+before.size()).isLetter())
+        if(!(string.indexOf(before) > 0 && string.at(string.indexOf(before)-1).isLetter()) &&
+           !(string.indexOf(before) < string.size()-before.size() && string.at(string.indexOf(before)+before.size()).isLetter()))
         {
-            string.replace(before, after, Qt::CaseSensitive);
+            string.replace(before, after);
         }
     }
 }
 
 
+//! @brief Parses special symbols, subscripts and superscript in parameter names
+//! Names of greek letters will be transformed into greek letters.
+//! All text after '^' will be superscript.
+//! All text after '_' will be subscript.
+//! Superscripts and subscripts always cancels each other.
+//! @param input String with parameter name to parse
 QString parseVariableDescription(QString input)
 {
     QString retval;
@@ -259,6 +269,8 @@ QString parseVariableDescription(QString input)
 }
 
 
+//! @brief Parses a unit string with superscripts.
+//! @param input String with unit name to parse
 QString parseVariableUnit(QString input)
 {
     if(!input.startsWith("[") || (!input.endsWith("]")))        //If no square brackets, we don't know what to do, so do nothing
@@ -272,12 +284,12 @@ QString parseVariableUnit(QString input)
 
     while(true)
     {
-        idx=retval.indexOf("^", idx);
-        if(idx==-1) break;
-        retval.remove(idx,1);
-        retval.insert(idx, "<sup>");
+        idx=retval.indexOf("^", idx);       //Find next '^' symbol.
+        if(idx==-1) break;                  //If no symbol, we are finished.
+        retval.remove(idx,1);               //Remove the symbol
+        retval.insert(idx, "<sup>");        //Begin superscript
 
-        tempidx=std::numeric_limits<int>::max();
+        tempidx=std::numeric_limits<int>::max();        //Find next arithmetic symbol, and cancel subscript there, or at end if no symbols found.
         if(retval.contains("*"))
             tempidx=min(tempidx, retval.indexOf("*", idx));
         if(retval.contains("/"))
@@ -286,7 +298,7 @@ QString parseVariableUnit(QString input)
             tempidx=min(tempidx, retval.indexOf("+", idx));
         if(retval.contains("-"))
             tempidx=min(tempidx, retval.indexOf("-", idx));
-        if(tempidx == -1 || tempidx > retval.size()) tempidx = retval.size();
+        if(tempidx == -1 || tempidx > retval.size()) tempidx = retval.size();   // Will this ever happen?!
         idx=tempidx;
 
         retval.insert(idx, "</sup>");

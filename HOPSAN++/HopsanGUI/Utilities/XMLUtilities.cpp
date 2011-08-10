@@ -392,6 +392,7 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 }
 
 
+//! @brief Converts a color to a string of syntax "R,G,B".
 QString makeRgbString(QColor color)
 {
     QString red, green,blue;
@@ -401,6 +402,7 @@ QString makeRgbString(QColor color)
     return QString(red+","+green+","+blue);
 }
 
+//! @brief Converts a string of syntax "R,G,B" into three numbers for red, green and blue.
 
 void parseRgbString(QString rgb, double &red, double &green, double &blue)
 {
@@ -411,6 +413,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
 }
 
 
+//! @brief Handles compatibility issues for elements loaded from hmf files
 //! @todo Add check for separate orifice areas in 4/3 valve
 void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 {
