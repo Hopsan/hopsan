@@ -107,8 +107,9 @@ namespace hopsan {
             mNumV[1] = 0.0;
             mDenV[0] = B;
             mDenV[1] = m;
-            mFilterX.initialize(mTimestep, mNumX, mDenX, 0, -v1);
-            mFilterV.initialize(mTimestep, mNumV, mDenV, 0, -x1);
+
+            mFilterX.initialize(mTimestep, mNumX, mDenX, f1-f2, -x1);
+            mFilterV.initialize(mTimestep, mNumV, mDenV, f1-f2 - k*x2, -v1);
 
             //Print debug message if velocities do not match
             if((*mpND_v1) != -(*mpND_v2))
