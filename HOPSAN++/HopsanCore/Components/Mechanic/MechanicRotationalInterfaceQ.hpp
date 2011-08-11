@@ -39,6 +39,7 @@ namespace hopsan {
 
     private:
         Port *mpP1;
+        double *mpND_t, *mpND_w, *mpND_c, *mpND_Zx;
 
     public:
         static Component *Creator()
@@ -53,12 +54,22 @@ namespace hopsan {
 
         void initialize()
         {
-            //Interfacing is handled through readnode/writenode from the RT wrapper file
+            mpND_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
+            mpND_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
         }
 
         void simulateOneTimestep()
         {
-            //Interfacing is handled through readnode/writenode from the RT wrapper file
+            //! @todo If this works, do same in other Q-type interface components
+
+            //Calculate torque from c and Zx
+            double w = (*mpND_w);
+            double c = (*mpND_c);
+            double Zx = (*mpND_Zx);
+
+            (*mpND_t) = c + Zx*w;
         }
     };
 }
