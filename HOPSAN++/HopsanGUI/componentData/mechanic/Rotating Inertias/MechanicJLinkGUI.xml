@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version='0.1'>
+ 
+ <modelobject typename='MechanicJLink'
+     displayname='MechanicJLink'>
+  
+  <icon isopath='MechanicJLink.svg'
+      iconrotation='ON'
+      userpath='MechanicJLink.svg'/>
+   <portpose x='0.5'
+       y='1'
+       a='90'
+       name='Pm1' />
+   <portpose x='0.5'
+       y='0'
+       a='270'
+       name='Pmr2' />
+</modelobject>
+</hopsanobjectappearance>
