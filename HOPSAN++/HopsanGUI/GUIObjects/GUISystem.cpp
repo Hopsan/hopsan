@@ -189,8 +189,6 @@ void GUISystem::openPropertiesDialog()
 void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     GUIModelObject::saveCoreDataToDomElement(rDomElement);
-    //rDomElement.setAttribute(HMF_TYPETAG, getTypeName());     //We dont really need to save the type in systems, but lets do it anyway
-    //rDomElement.setAttribute(HMF_NAMETAG, getName());
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 
     QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
@@ -305,8 +303,8 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         //If it would be, the load function will fail
         xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
 
-        //Save the name that we have set for this subsystem, this name will overwrite the defualt one in the external file
-        xmlSubsystem.setAttribute( HMF_NAMETAG, this->getName());
+        //Save the name and type that we have set for this subsystem, this name will overwrite the defualt one in the external file
+        GUIModelObject::saveCoreDataToDomElement(xmlSubsystem); //!< @todo Not sure why we should not use savecoredata in GUISystem instead, but it seems to be embeded specific
     }
 
     //Save gui object stuff
