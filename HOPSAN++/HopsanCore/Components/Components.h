@@ -160,6 +160,18 @@
 #include "Mechanic/MechanicRotationalInterfaceC.hpp"
 #include "Mechanic/MechanicRotationalInterfaceQ.hpp"
 #include "Mechanic/MechanicRackAndPinion.hpp"
+#include "Mechanic/MechanicJLink.hpp"
+
+#include "Electric/ElectricMotor.hpp"
+#include "Electric/ElectricMotorGear.hpp"
+#include "Electric/ElectricUsource.hpp"
+#include "Electric/ElectricIsource.hpp"
+#include "Electric/ElectricGround.hpp"
+#include "Electric/ElectricBattery.hpp"
+#include "Electric/ElectricResistor.hpp"
+#include "Electric/ElectricCapacitance2.hpp"
+#include "Electric/ElectricInductance.hpp"
+#include "Electric/ElectricIcontroller.hpp"
 
 #include "../Component.h"
 

@@ -196,4 +196,18 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceC", MechanicRotationalInterfaceC::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceQ", MechanicRotationalInterfaceQ::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRackAndPinion", MechanicRackAndPinion::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicJLink", MechanicJLink::Creator);
+
+    //Electrical components
+    pComponentFactory->registerCreatorFunction("ElectricMotor", ElectricMotor::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricMotorGear", ElectricMotorGear::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricUsource", ElectricUsource::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricIsource", ElectricIsource::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricGround", ElectricGround::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricBattery", ElectricBattery::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricResistor", ElectricResistor::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricCapacitance2", ElectricCapacitance2::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricInductance", ElectricInductance::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricIcontroller", ElectricIcontroller::Creator);
+
 }
