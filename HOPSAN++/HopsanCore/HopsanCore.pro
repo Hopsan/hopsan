@@ -242,6 +242,8 @@ HEADERS += win32dll.h \
     Components/Signal/SignalAdditiveNoise.hpp \
     Components/Mechanic/MechanicRackAndPinion.hpp \
     Components/Mechanic/MechanicJLink.hpp \
+    Components/Mechanic/MechanicThetaSource.hpp \
+    Components/Mechanic/MechanicVehicle1D.hpp \
     Components/Signal/SignalStepExponentialDelay.hpppp \
     ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h \
     ComponentUtilities/SecondOrderTransferFunction.h \
