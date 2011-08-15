@@ -247,16 +247,17 @@ HEADERS += win32dll.h \
     ComponentUtilities/SecondOrderTransferFunction.h \
     ComponentUtilities/FirstOrderTransferFunction.h \
     Components/Signal/SignalFirstOrderTransferFunction.hpp \
-    Components/Electric/ElectricResistor.hpp \
-    Components/Electric/ElectricUsource.hpp \
+    Components/Electric/ElectricBattery.hpp \
     Components/Electric/ElectricCapacitance2.hpp \
     Components/Electric/ElectricGround.hpp \
+    Components/Electric/ElectricIcontroller.hpp \
     Components/Electric/ElectricInductance.hpp \
-    Components/Electric/ElectricBattery.hpp \
+    Components/Electric/ElectricIsource.hpp \
     Components/Electric/ElectricMotor.hpp \
     Components/Electric/ElectricMotorGear.hpp \
-    Components/Electric/ElectricIcontroller.hpp \
-    Components/Electric/ElectricIsource.hpp
+    Components/Electric/ElectricResistor.hpp \
+    Components/Electric/ElectricUsource.hpp
+
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
