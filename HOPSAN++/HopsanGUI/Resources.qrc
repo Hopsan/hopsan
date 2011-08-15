@@ -92,5 +92,7 @@
         <file>graphics/uiicons/Hopsan-FrequencyAnalysis.png</file>
         <file>graphics/uiicons/Hopsan-TransferFunctionAnalysis.png</file>
         <file>graphics/porticons/MultiPortOverlay.svg</file>
+        <file>graphics/porticons/ElectricPort.svg</file>
+        <file>graphics/porticons/PneumaticPort.svg</file>
     </qresource>
 </RCC>
