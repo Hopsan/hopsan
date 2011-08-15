@@ -161,6 +161,8 @@
 #include "Mechanic/MechanicRotationalInterfaceQ.hpp"
 #include "Mechanic/MechanicRackAndPinion.hpp"
 #include "Mechanic/MechanicJLink.hpp"
+#include "Mechanic/MechanicThetaSource.hpp"
+#include "Mechanic/MechanicVehicle1D.hpp"
 
 /* Electric Components */
 #include "Electric/ElectricBattery.hpp"

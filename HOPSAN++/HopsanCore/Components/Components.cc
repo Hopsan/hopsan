@@ -197,6 +197,8 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceQ", MechanicRotationalInterfaceQ::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRackAndPinion", MechanicRackAndPinion::Creator);
     pComponentFactory->registerCreatorFunction("MechanicJLink", MechanicJLink::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicThetaSource", MechanicThetaSource::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicVehicle1D", MechanicVehicle1D::Creator);
 
     //Electric components
     pComponentFactory->registerCreatorFunction("ElectricBattery", ElectricBattery::Creator);
