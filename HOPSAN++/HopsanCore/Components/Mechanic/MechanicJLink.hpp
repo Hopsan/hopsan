@@ -2,7 +2,7 @@
 #define MECHANICJLINK_HPP_INCLUDED
 
 #include <iostream>
-#include <Qt/QDebug.h>
+//#include <Qt/QDebug.h>
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
 #include <math.h>

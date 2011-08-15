@@ -2,7 +2,7 @@
 #define ELECTRICRESISTOR_HPP_INCLUDED
 
 #include <iostream>
-#include <Qt/qdebug.h>
+//#include <Qt/qdebug.h>
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
 #include <math.h>
