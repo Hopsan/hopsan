@@ -76,7 +76,7 @@ public:
      }
 
      ElectricBattery(const std::string name = "Battery"
-                             ,const double cond = 0.01
+                             ,const double cond = 100
                              ,const double unom = 12
                              ,const double capacity = 41
                              ,const double kappa = 0.1
