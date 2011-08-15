@@ -242,6 +242,7 @@ public:
     void updateLabels();
     bool isGridVisible();
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
+    bool isSpecialPlot();
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
@@ -313,6 +314,8 @@ private:
     QCheckBox *mpIncludeTimeCheckBox;
     QCheckBox *mpIncludeDescriptionsCheckBox;
     QTextEdit *mpXmlOutputTextBox;
+
+    bool mIsSpecialPlot;
 };
 
 

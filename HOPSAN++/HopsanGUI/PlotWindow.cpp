@@ -242,6 +242,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
+    mpHelpPopup->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     mpHelpPopupIcon = new QLabel();
     mpHelpPopupIcon->setMouseTracking(true);
     mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
@@ -1159,11 +1160,42 @@ void PlotTabWidget::tabChanged()
 
     if(this->count() != 0)
     {
-        mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer[FIRSTPLOT]->isEnabled());
-        mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner[FIRSTPLOT]->isEnabled());
-        mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid[FIRSTPLOT]->isVisible());
-        mpParentPlotWindow->mpResetXVectorButton->setEnabled(getCurrentTab()->mHasSpecialXAxis);
-        mpParentPlotWindow->mpBodePlotButton->setEnabled(getCurrentTab()->getCurves(FIRSTPLOT).size() > 1);
+        if(getCurrentTab()->isSpecialPlot())
+        {
+            mpParentPlotWindow->mpZoomButton->setDisabled(true);
+            mpParentPlotWindow->mpPanButton->setDisabled(true);
+            mpParentPlotWindow->mpSaveButton->setDisabled(true);
+            mpParentPlotWindow->mpExportButton->setDisabled(true);
+            mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
+            mpParentPlotWindow->mpGridButton->setDisabled(true);
+            mpParentPlotWindow->mpBackgroundColorButton->setDisabled(true);
+            mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(true);
+            mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
+            mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
+            mpParentPlotWindow->mpExportMenu->setDisabled(true);
+            mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
+        }
+        else
+        {
+            mpParentPlotWindow->mpZoomButton->setDisabled(false);
+            mpParentPlotWindow->mpPanButton->setDisabled(false);
+            mpParentPlotWindow->mpSaveButton->setDisabled(false);
+            mpParentPlotWindow->mpExportButton->setDisabled(false);
+            mpParentPlotWindow->mpExportGfxButton->setDisabled(false);
+            mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(false);
+            mpParentPlotWindow->mpGridButton->setDisabled(false);
+            mpParentPlotWindow->mpBackgroundColorButton->setDisabled(false);
+            mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(false);
+            mpParentPlotWindow->mpResetXVectorButton->setDisabled(false);
+            mpParentPlotWindow->mpBodePlotButton->setDisabled(false);
+            mpParentPlotWindow->mpExportMenu->setDisabled(false);
+            mpParentPlotWindow->mpExportPdfAction->setDisabled(false);
+            mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer[FIRSTPLOT]->isEnabled());
+            mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner[FIRSTPLOT]->isEnabled());
+            mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid[FIRSTPLOT]->isVisible());
+            mpParentPlotWindow->mpResetXVectorButton->setEnabled(getCurrentTab()->mHasSpecialXAxis);
+            mpParentPlotWindow->mpBodePlotButton->setEnabled(getCurrentTab()->getCurves(FIRSTPLOT).size() > 1);
+        }
 
         connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
         connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
@@ -1191,6 +1223,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     mHasSpecialXAxis=false;
     mVectorXLabel = QString("Time [s]");
     mLeftAxisLogarithmic = false;
+    mIsSpecialPlot = false;
 
         //Initiate default values for left y-axis
     mCurrentUnitsLeft.insert("Value", gConfig.getDefaultUnit("Value"));
@@ -1326,6 +1359,27 @@ void PlotTab::setTabName(QString name)
 
 void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 {
+    mIsSpecialPlot = true;
+    mpParentPlotWindow->mpZoomButton->setDisabled(true);
+    mpParentPlotWindow->mpPanButton->setDisabled(true);
+    mpParentPlotWindow->mpSaveButton->setDisabled(true);
+    mpParentPlotWindow->mpExportButton->setDisabled(true);
+    mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
+    mpParentPlotWindow->mpGridButton->setDisabled(true);
+    mpParentPlotWindow->mpBackgroundColorButton->setDisabled(true);
+    mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(true);
+    mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
+    mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
+    mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
+    mpParentPlotWindow->mpShowListsButton->setChecked(false);
+    mpParentPlotWindow->mpComponentList->setVisible(false);
+    mpParentPlotWindow->mpPortList->setVisible(false);
+    mpParentPlotWindow->mpVariableList->setVisible(false);
+    mpParentPlotWindow->mpComponentsLabel->setVisible(false);
+    mpParentPlotWindow->mpPortsLabel->setVisible(false);
+    mpParentPlotWindow->mpVariablesLabel->setVisible(false);
+
+
     for(int i=0; i<2; ++i)
     {
         mpPlot[i]->setVisible(false);
@@ -1355,7 +1409,6 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
         max=std::max(max, componentMax);
     }
 
-
     mpBarPlot->axisY()->setRanges(min, max);
 
     mpBarPlot->axisY()->setTicks(max/50, max/10);                     //Minor & major
@@ -1365,6 +1418,8 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     //mpBarPlot->axisY()->setMinorGridPen(QPen(Qt::gray));
     mpBarPlot->axisY()->setMajorGridPen(QPen(Qt::lightGray));
     mpBarPlot->axisY()->setTextColor(Qt::black);
+    mpBarPlot->axisY()->setOffset(int(log10(max)+1)*10);
+    //qDebug() << "Max = " << max << ", offset = " << mpBarPlot->axisY()->offset();
 
     mpBarPlot->axisX()->setPen(QPen(Qt::darkGray));
     mpBarPlot->axisX()->setMinorTicksPen(QPen(Qt::gray));
@@ -1974,12 +2029,19 @@ void PlotTab::exportToPng()
        this, "Export File Name", QString(),
        "Portable Network Graphics (*.png)");
 
-    QPixmap pixmap(mpPlot[FIRSTPLOT]->width(), mpPlot[FIRSTPLOT]->height());
-    pixmap.fill();
-    QwtPlotRenderer renderer;
-    renderer.renderTo(mpPlot[FIRSTPLOT], pixmap);
-
-    pixmap.save( fileName );
+    if(mpBarPlot)
+    {
+        QPixmap pixmap = QPixmap::grabWidget(this);
+        pixmap.save(fileName);
+    }
+    else
+    {
+        QPixmap pixmap(mpPlot[FIRSTPLOT]->width(), mpPlot[FIRSTPLOT]->height());
+        pixmap.fill();
+        QwtPlotRenderer renderer;
+        renderer.renderTo(mpPlot[FIRSTPLOT], pixmap);
+        pixmap.save(fileName);
+    }
 }
 
 
@@ -2229,6 +2291,12 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
             }
         }
     }
+}
+
+
+bool PlotTab::isSpecialPlot()
+{
+    return mIsSpecialPlot;
 }
 
 
