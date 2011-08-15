@@ -162,16 +162,18 @@
 #include "Mechanic/MechanicRackAndPinion.hpp"
 #include "Mechanic/MechanicJLink.hpp"
 
+/* Electric Components */
+#include "Electric/ElectricBattery.hpp"
+#include "Electric/ElectricCapacitance2.hpp"
+#include "Electric/ElectricGround.hpp"
 #include "Electric/ElectricMotor.hpp"
 #include "Electric/ElectricMotorGear.hpp"
-#include "Electric/ElectricUsource.hpp"
-#include "Electric/ElectricIsource.hpp"
-#include "Electric/ElectricGround.hpp"
-#include "Electric/ElectricBattery.hpp"
-#include "Electric/ElectricResistor.hpp"
-#include "Electric/ElectricCapacitance2.hpp"
-#include "Electric/ElectricInductance.hpp"
 #include "Electric/ElectricIcontroller.hpp"
+#include "Electric/ElectricInductance.hpp"
+#include "Electric/ElectricIsource.hpp"
+#include "Electric/ElectricResistor.hpp"
+#include "Electric/ElectricUsource.hpp"
+
 
 #include "../Component.h"
 
