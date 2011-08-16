@@ -89,6 +89,6 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
     }
     mIconPath.append(".svg");
 
-    qDebug() << "mIconPath = " << mIconPath;
+    //qDebug() << "mIconPath = " << mIconPath;
 }
 

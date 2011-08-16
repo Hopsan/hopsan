@@ -1165,14 +1165,15 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpZoomButton->setDisabled(true);
             mpParentPlotWindow->mpPanButton->setDisabled(true);
             mpParentPlotWindow->mpSaveButton->setDisabled(true);
-            mpParentPlotWindow->mpExportButton->setDisabled(true);
+            mpParentPlotWindow->mpExportToCsvAction->setDisabled(true);
+            mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(true);
+            mpParentPlotWindow->mpExportToMatlabAction->setDisabled(true);
             mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
             mpParentPlotWindow->mpGridButton->setDisabled(true);
             mpParentPlotWindow->mpBackgroundColorButton->setDisabled(true);
             mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(true);
             mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
             mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
-            mpParentPlotWindow->mpExportMenu->setDisabled(true);
             mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
         }
         else
@@ -1180,7 +1181,9 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpZoomButton->setDisabled(false);
             mpParentPlotWindow->mpPanButton->setDisabled(false);
             mpParentPlotWindow->mpSaveButton->setDisabled(false);
-            mpParentPlotWindow->mpExportButton->setDisabled(false);
+            mpParentPlotWindow->mpExportToCsvAction->setDisabled(false);
+            mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(false);
+            mpParentPlotWindow->mpExportToMatlabAction->setDisabled(false);
             mpParentPlotWindow->mpExportGfxButton->setDisabled(false);
             mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(false);
             mpParentPlotWindow->mpGridButton->setDisabled(false);
@@ -1188,7 +1191,6 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(false);
             mpParentPlotWindow->mpResetXVectorButton->setDisabled(false);
             mpParentPlotWindow->mpBodePlotButton->setDisabled(false);
-            mpParentPlotWindow->mpExportMenu->setDisabled(false);
             mpParentPlotWindow->mpExportPdfAction->setDisabled(false);
             mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer[FIRSTPLOT]->isEnabled());
             mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner[FIRSTPLOT]->isEnabled());
@@ -1363,7 +1365,10 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     mpParentPlotWindow->mpZoomButton->setDisabled(true);
     mpParentPlotWindow->mpPanButton->setDisabled(true);
     mpParentPlotWindow->mpSaveButton->setDisabled(true);
-    mpParentPlotWindow->mpExportButton->setDisabled(true);
+    //mpParentPlotWindow->mpExportButton->setDisabled(true);
+    mpParentPlotWindow->mpExportToCsvAction->setDisabled(true);
+    mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(true);
+    mpParentPlotWindow->mpExportToMatlabAction->setDisabled(true);
     mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
     mpParentPlotWindow->mpGridButton->setDisabled(true);
     mpParentPlotWindow->mpBackgroundColorButton->setDisabled(true);
@@ -2029,7 +2034,7 @@ void PlotTab::exportToPng()
        this, "Export File Name", QString(),
        "Portable Network Graphics (*.png)");
 
-    if(mpBarPlot)
+    if(mpBarPlot->isVisible())
     {
         QPixmap pixmap = QPixmap::grabWidget(this);
         pixmap.save(fileName);
@@ -2257,37 +2262,62 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
         rDomElement.setAttribute("datetime", datetime.currentDateTime().toString(Qt::ISODate));
     }
 
-        //Cycle plot curves and write data tags
-    for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++j)
+    if(mpBarPlot->isVisible())
     {
-        QDomElement dataTag = appendDomElement(rDomElement, "data");
+        QAbstractItemModel *model = mpBarPlot->model();
 
-        if(mHasSpecialXAxis)        //Special x-axis, replace time with x-data
+        for(int c=0; c<model->columnCount(); ++c)
         {
-            dataTag.setAttribute(mVectorXDataName, mVectorX[j]);
-        }
-        else                        //X-axis = time
-        {
-            dataTag.setAttribute("time", mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[j]);
-        }
+            double losses = model->data(model->index(0, c)).toInt() - model->data(model->index(1, c)).toInt();;
 
-        //Write variable tags for each variable
-        for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
-        {
-            QString numTemp;
-            numTemp.setNum(i);
-            QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[FIRSTPLOT][i]->getDataName()+numTemp);
+            QDomElement dataTag = appendDomElement(rDomElement, "data");
+            QDomElement varTag = appendDomElement(dataTag, "losses");
             QString valueString;
-            valueString.setNum(mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[j]);
+            valueString.setNum(losses);
             QDomText value = varTag.ownerDocument().createTextNode(valueString);
             varTag.appendChild(value);
 
             if(descriptions)
             {
-                varTag.setAttribute("component", mPlotCurvePtrs[FIRSTPLOT][i]->getComponentName());
-                varTag.setAttribute("port", mPlotCurvePtrs[FIRSTPLOT][i]->getPortName());
-                varTag.setAttribute("type", mPlotCurvePtrs[FIRSTPLOT][i]->getDataName());
-                varTag.setAttribute("unit", mPlotCurvePtrs[FIRSTPLOT][i]->getDataUnit());
+                varTag.setAttribute("component", model->headerData(c, Qt::Horizontal).toString());
+            }
+        }
+    }
+    else
+    {
+
+            //Cycle plot curves and write data tags
+        for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++j)
+        {
+            QDomElement dataTag = appendDomElement(rDomElement, "data");
+
+            if(mHasSpecialXAxis)        //Special x-axis, replace time with x-data
+            {
+                dataTag.setAttribute(mVectorXDataName, mVectorX[j]);
+            }
+            else                        //X-axis = time
+            {
+                dataTag.setAttribute("time", mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[j]);
+            }
+
+            //Write variable tags for each variable
+            for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+            {
+                QString numTemp;
+                numTemp.setNum(i);
+                QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[FIRSTPLOT][i]->getDataName()+numTemp);
+                QString valueString;
+                valueString.setNum(mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[j]);
+                QDomText value = varTag.ownerDocument().createTextNode(valueString);
+                varTag.appendChild(value);
+
+                if(descriptions)
+                {
+                    varTag.setAttribute("component", mPlotCurvePtrs[FIRSTPLOT][i]->getComponentName());
+                    varTag.setAttribute("port", mPlotCurvePtrs[FIRSTPLOT][i]->getPortName());
+                    varTag.setAttribute("type", mPlotCurvePtrs[FIRSTPLOT][i]->getDataName());
+                    varTag.setAttribute("unit", mPlotCurvePtrs[FIRSTPLOT][i]->getDataUnit());
+                }
             }
         }
     }
@@ -2313,15 +2343,19 @@ QString PlotTab::updateXmlOutputTextInDialog()
 
     //We want the first 10 lines and the last 2 from the xml output
     QString display;
-    for(int i=0; i<10; ++i)
+    for(int i=0; i<10 && i<lines.size(); ++i)
     {
         display.append(lines[i]);
         display.append("\n");
     }
     for(int k=0; k<mpXmlIndentationSpinBox->value(); ++k) display.append(" ");
-    display.append("...\n");
-    display.append(lines[lines.size()-2]);
-    display.append(lines[lines.size()-1]);
+    if(lines.size() > 9)
+    {
+        display.append("...\n");
+        display.append(lines[lines.size()-2]);
+        display.append(lines[lines.size()-1]);
+    }
+
 
     display.replace(" ", "&nbsp;");
     display.replace(">", "!!!GT!!!");
@@ -2343,6 +2377,7 @@ QString PlotTab::updateXmlOutputTextInDialog()
     display.replace("9&nbsp;", "9</font>&nbsp;");
 
     display.replace("&lt;hopsanplotdata", "&lt;hopsanplotdata</font>");
+    display.replace("&lt;losses", "&lt;losses</font>");
     display.replace("&nbsp;version=", "&nbsp;version=<font face=\"Consolas\" color=\"darkred\">");
     display.replace("&nbsp;encoding=", "&nbsp;encoding=<font face=\"Consolas\" color=\"darkred\">");
     display.replace("&nbsp;component=", "&nbsp;component=<font face=\"Consolas\" color=\"darkred\">");
@@ -2356,7 +2391,6 @@ QString PlotTab::updateXmlOutputTextInDialog()
     display.replace("&nbsp;", "<font face=\"Consolas\">&nbsp;</font>");
     display.replace("</font></font>", "</font>");
 
-    qDebug() << display;
     mpXmlOutputTextBox->setText(display);
 
     return output;
