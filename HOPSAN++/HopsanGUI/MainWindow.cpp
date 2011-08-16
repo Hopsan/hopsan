@@ -181,6 +181,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
+    mpHelpPopup->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     mpHelpPopupIcon = new QLabel();
     mpHelpPopupIcon->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Info.png"));
     mpHelpPopupLabel = new QLabel();

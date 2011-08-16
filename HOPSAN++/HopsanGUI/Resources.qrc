@@ -94,5 +94,9 @@
         <file>graphics/porticons/MultiPortOverlay.svg</file>
         <file>graphics/porticons/ElectricPort.svg</file>
         <file>graphics/porticons/PneumaticPort.svg</file>
+        <file>graphics/uiicons/Hopsan-ToggleSignal.png</file>
+        <file>graphics/uiicons/Hopsan-Export.png</file>
+        <file>graphics/uiicons/Hopsan-PlotCurveScale.png</file>
+        <file>graphics/uiicons/Hopsan-OpenTabInNewPlotWindow.png</file>
     </qresource>
 </RCC>
