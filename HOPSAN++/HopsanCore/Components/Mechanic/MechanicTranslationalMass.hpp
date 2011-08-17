@@ -150,12 +150,14 @@ namespace hopsan {
             if(x2<xMin)
             {
                 x2=xMin;
+                v2=0.0;
                 mFilterX.initializeValues(c1-c2, x2);
                 mFilterV.initializeValues(c1-c2, 0.0);
             }
             if(x2>xMax)
             {
                 x2=xMax;
+                v2=0.0;
                 mFilterX.initializeValues(c1-c2, x2);
                 mFilterV.initializeValues(c1-c2, 0.0);
             }
