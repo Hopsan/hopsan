@@ -144,7 +144,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
         //Use the setParameter method that mapps to System parameter
         if(!pObject->getParameterNames().contains(parameterName))
         {
-            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.");
+            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
             return;
         }
         pObject->setParameterValue(parameterName, parameterValue, true);

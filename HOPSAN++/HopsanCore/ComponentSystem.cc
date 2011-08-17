@@ -50,6 +50,7 @@ ComponentSystem::ComponentSystem(string name) : Component(name)
     mTypeName = "ComponentSystem";
     mIsComponentSystem = true;
     mDesiredTimestep = 0.001;
+    mInheritTimestep = true;
     #ifdef USETBB
     mpStopMutex = new tbb::mutex();
     #endif
@@ -546,13 +547,25 @@ void ComponentSystem::sortSignalComponentVector(std::vector<Component*> &rOldSig
                 std::vector<Port*> portVector = (*it)->getPortPtrVector();
                 for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
                 {
-                    if(((*itp)->getPortType() == READPORT) &&
-                       ((*itp)->isConnected()) &&
-                       ((!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr())) && (*itp)->getNodePtr()->getWritePortComponentPtr() != 0 &&(*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeCQS() == Component::S) &&
-                       ((*itp)->getNodePtr()->getWritePortComponentPtr() != 0) &&
-                       ((*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent == this))
+                    if((*itp)->getPortType() == READPORT && (*itp)->isConnected() &&
+                       (*itp)->getNodePtr()->getWritePortComponentPtr() != 0)
                     {
-                        readyToAdd=false;   //Flag false if required component is not yet added to signal vector, in case node has a write port
+                        if((*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent == this)
+                        {
+                            if(!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr()) &&
+                               (*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeCQS() == Component::S)
+                            {
+                                readyToAdd = false;     //Depending on normal component which has not yet been added
+                            }
+                        }
+                        else
+                        {
+                            if(!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent) &&
+                               (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent->getTypeCQS() == Component::S)
+                            {
+                                readyToAdd = false;     //Depending on subsystem component which has not yer been added
+                            }
+                        }
                     }
                 }
                 if(readyToAdd)  //Add the component if all required write port components was already added

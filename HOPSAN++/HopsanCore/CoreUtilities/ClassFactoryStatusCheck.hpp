@@ -44,15 +44,15 @@ void checkClassFactoryStatus(FactoryT  *pFactory)
     {
         if ( it->second == FactoryT::REGISTEREDOK )
         {
-            hopsan::gCoreMessageHandler.addDebugMessage(std::string("Registered: ") + std::string(it->first) + std::string(" in core"));
+            hopsan::gCoreMessageHandler.addDebugMessage(std::string("Registered: ") + std::string(it->first) + std::string(" in core"), "successfulregister");
         }
         else if ( it->second == FactoryT::ALLREADYREGISTERED )
         {
-            hopsan::gCoreMessageHandler.addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" was already registerd in core. Your new Component or Node will NOT be availiable!"));
+            hopsan::gCoreMessageHandler.addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" was already registerd in core. Your new Component or Node will NOT be availiable!"), "alreadyregistered");
         }
         else if ( it->second == FactoryT::NOTREGISTERED )
         {
-            hopsan::gCoreMessageHandler.addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" has not been registered in core"));
+            hopsan::gCoreMessageHandler.addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" has not been registered in core"), "notregistered");
         }
     }
 }
