@@ -162,6 +162,7 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
                 tempItem->setFont(0,tempFont);
                 tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
+                tempItem->setToolTip(0, tree->mChildNodesPtrs.at(i)->mName);
                 mpTree->addTopLevelItem(tempItem);
                 loadTreeView(tree->mChildNodesPtrs.at(i), tempItem);
             }
@@ -173,6 +174,7 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
             tempItem = new QTreeWidgetItem();
             mTreeItemToContentsMap.insert(tempItem, tree->mComponentPtrs.at(i));
             tempItem->setText(0, tree->mComponentPtrs.at(i)->getName());
+            tempItem->setToolTip(0, tree->mComponentPtrs.at(i)->getName());
             mpTree->addTopLevelItem(tempItem);
         }
     }
@@ -189,6 +191,7 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
                 tempItem->setFont(0,tempFont);
                 tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
+                tempItem->setToolTip(0, tree->mChildNodesPtrs.at(i)->mName);
                 parentItem->addChild(tempItem);
                 loadTreeView(tree->mChildNodesPtrs.at(i), tempItem);
             }
@@ -200,6 +203,7 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
             tempItem = new QTreeWidgetItem();
             mTreeItemToContentsMap.insert(tempItem, tree->mComponentPtrs.at(i));
             tempItem->setText(0, tree->mComponentPtrs.at(i)->getName());
+            tempItem->setToolTip(0, tree->mComponentPtrs.at(i)->getName());
             tempItem->setIcon(0, tree->mComponentPtrs.at(i)->getIcon(mGfxType));
             parentItem->addChild(tempItem);
         }
@@ -232,6 +236,7 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
                 tempItem->setFont(0,tempFont);
                 tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
+                tempItem->setToolTip(0, tree->mChildNodesPtrs.at(i)->mName);
                 mpTree->addTopLevelItem(tempItem);
                 loadDualView(tree->mChildNodesPtrs.at(i), tempItem);
             }
@@ -250,6 +255,7 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
                 tempItem->setFont(0,tempFont);
                 tempItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Folder.png"));
                 tempItem->setText(0, tree->mChildNodesPtrs.at(i)->mName);
+                tempItem->setToolTip(0, tree->mChildNodesPtrs.at(i)->mName);
                 parentItem->addChild(tempItem);
                 loadDualView(tree->mChildNodesPtrs.at(i), tempItem);
             }
@@ -297,6 +303,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
     {
         QListWidgetItem *tempItem = new QListWidgetItem();
         tempItem->setIcon(tree->mComponentPtrs.at(i)->getIcon(mGfxType));
+        tempItem->setToolTip(tree->mComponentPtrs.at(i)->getName());
         mListItemToContentsMap.insert(tempItem, tree->mComponentPtrs.at(i));
         tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         mpList->addItem(tempItem);
@@ -306,6 +313,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
         for(int i=0; i<tree->mChildNodesPtrs.at(j)->mComponentPtrs.size(); ++i)
         {
             QListWidgetItem *tempItem = new QListWidgetItem();
+            tempItem->setToolTip(tree->mComponentPtrs.at(i)->getName());
             tempItem->setIcon(tree->mChildNodesPtrs.at(j)->mComponentPtrs.at(i)->getIcon(mGfxType));
             mListItemToContentsMap.insert(tempItem, tree->mChildNodesPtrs.at(j)->mComponentPtrs.at(i));
             tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
