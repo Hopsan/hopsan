@@ -60,7 +60,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->setInteractive(true);
     this->setEnabled(true);
     this->setAcceptDrops(true);
-
+    this->setMouseTracking(true);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -503,7 +503,9 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 //! @param event contains information of the mouse moving operation.
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
-    //this->updateViewPort();     //Refresh the viewport
+    //! @todo This is a stupid solution, graphics view need to remove the text from the library because mouse move event in library is too slow...
+    gpMainWindow->mpLibrary->mpComponentNameField->setText(QString());
+
         //If creating connector, the end port shall be updated to the mouse position.
     if (mpContainerObject->isCreatingConnector())
     {

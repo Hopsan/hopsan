@@ -68,6 +68,8 @@ public:
 
     graphicsType mGfxType;
 
+        QLabel *mpComponentNameField;
+
 public slots:
     void addExternalLibrary(QString libDir = QString());
     void setGfxType(graphicsType gfxType);
@@ -87,7 +89,7 @@ private:
     LibraryContentsTree *mpContentsTree;
 
     QTreeWidget *mpTree;
-    QLabel *mpComponentNameField;
+
     LibraryListWidget *mpList;
     QToolButton *mpTreeViewButton;
     QToolButton *mpDualViewButton;

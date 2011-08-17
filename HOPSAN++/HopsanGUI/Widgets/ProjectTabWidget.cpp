@@ -54,6 +54,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 {
     this->setPalette(gConfig.getPalette());
 
+    this->setMouseTracking(true);
+
     mpParentProjectTabWidget = parent;
     mpQuickNavigationWidget = new QuickNavigationWidget(this);
     mpSystem = new GUISystem(this, 0);

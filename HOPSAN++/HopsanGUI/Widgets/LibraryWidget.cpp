@@ -346,6 +346,7 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
     drag->setHotSpot(QPoint(20, 20));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
 
+    mpComponentNameField->setText(QString());
     gpMainWindow->hideHelpPopupMessage();
 }
 
@@ -634,7 +635,10 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
 void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    mpComponentNameField->setText(QString());
     gpMainWindow->hideHelpPopupMessage();
+
+    qDebug() << "You are hovering me!";
 
     QWidget::mouseMoveEvent(event);
 }

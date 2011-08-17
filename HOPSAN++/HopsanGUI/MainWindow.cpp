@@ -140,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the central widget for the main window
     mpCentralWidget = new QWidget(this);
     mpCentralWidget->setObjectName("centralwidget");
+    mpCentralWidget->setMouseTracking(true);
     this->setCentralWidget(mpCentralWidget);
 
     //Create the grid layout for the centralwidget
@@ -149,6 +150,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
+    mpProjectTabs->setMouseTracking(true);
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0,4,4);
 
     //Create the system parameter widget and hide it
@@ -925,6 +927,11 @@ void MainWindow::updateRecentList()
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     hideHelpPopupMessage();
+
+    if(!mpLibrary->underMouse())
+    {
+        mpLibrary->mpComponentNameField->setText(QString());
+    }
 
     QMainWindow::mouseMoveEvent(event);
 }
