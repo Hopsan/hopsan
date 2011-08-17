@@ -161,10 +161,10 @@ void PlotParameterTree::updateList()
             {
                 QVector<QString> parameterNames;
                 QVector<QString> parameterUnits;
-                gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), parameterNames, parameterUnits);
+                gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getPortName(), parameterNames, parameterUnits);
                 if(!timeVectorRetained)
                 {
-                    time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
+                    time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getPortName()));
                     timeVectorRetained = true;
                 }
                 if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
@@ -172,10 +172,10 @@ void PlotParameterTree::updateList()
                     for(int i = 0; i!=parameterNames.size(); ++i)
                     {
                         parameterUnits[i] = gConfig.getDefaultUnit(parameterNames[i]);
-                        tempPlotParameterItem = new PlotParameterItem(pComponent->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
+                        tempPlotParameterItem = new PlotParameterItem(pComponent->getName(), (*itp)->getPortName(), parameterNames[i], parameterUnits[i], tempComponentItem);
                         tempComponentItem->addChild(tempPlotParameterItem);
                         QStringList parameterDescription;
-                        parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
+                        parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getPortName() << parameterNames[i] << parameterUnits[i];
                         mAvailableParameters.append(parameterDescription);
                         if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(parameterDescription))
                         {

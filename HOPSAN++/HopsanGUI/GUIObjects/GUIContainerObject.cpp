@@ -266,8 +266,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     sdisp=disp;
     for (it=rightEdge.begin(); it!=rightEdge.end(); ++it)
     {
-        it.value()->updatePositionByFraction(1.0, sdisp);
-        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
+        it.value()->setCenterPosByFraction(1.0, sdisp);
+        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -275,8 +275,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     sdisp=disp;
     for (it=bottomEdge.begin(); it!=bottomEdge.end(); ++it)
     {
-        it.value()->updatePositionByFraction(sdisp, 1.0);
-        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
+        it.value()->setCenterPosByFraction(sdisp, 1.0);
+        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -284,8 +284,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     sdisp=disp;
     for (it=leftEdge.begin(); it!=leftEdge.end(); ++it)
     {
-        it.value()->updatePositionByFraction(0.0, sdisp);
-        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
+        it.value()->setCenterPosByFraction(0.0, sdisp);
+        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -293,8 +293,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     sdisp=disp;
     for (it=topEdge.begin(); it!=topEdge.end(); ++it)
     {
-        it.value()->updatePositionByFraction(sdisp, 0.0);
-        this->createExternalPort(it.value()->getName());    //refresh the external port graphics
+        it.value()->setCenterPosByFraction(sdisp, 0.0);
+        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 }
@@ -436,7 +436,7 @@ void GUIContainerObject::removeExternalPort(QString portName)
     QList<GUIPort*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
-        if ((*plit)->getName() == portName )
+        if ((*plit)->getPortName() == portName )
         {
             //Delete the GUIPort its post in the portlist and its appearance data
             mGUIModelObjectAppearance.erasePortAppearance(portName);
@@ -458,7 +458,7 @@ void GUIContainerObject::renameExternalPort(const QString oldName, const QString
     QList<GUIPort*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
-        if ((*plit)->getName() == oldName )
+        if ((*plit)->getPortName() == oldName )
         {
             //Rename the port appearance data by remove and re-add
             GUIPortAppearance tmp = mGUIModelObjectAppearance.getPortAppearanceMap().value(oldName);
@@ -1080,7 +1080,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
              {
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
-                 this->getCoreSystemAccessPtr()->disconnect(pStartP->getGuiModelObjectName(), pStartP->getName(), pEndP->getGuiModelObjectName(), pEndP->getName());
+                 this->getCoreSystemAccessPtr()->disconnect(pStartP->getGuiModelObjectName(), pStartP->getPortName(), pEndP->getGuiModelObjectName(), pEndP->getPortName());
                  emit checkMessages();
                  endPortWasConnected = true;
              }
@@ -1154,7 +1154,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         }
         else
         {
-            success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(), mpTempConnector->getStartPortName(), pPort->getGuiModelObjectName(), pPort->getName() );
+            success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(), mpTempConnector->getStartPortName(), pPort->getGuiModelObjectName(), pPort->getPortName() );
         }
 
         if (success)
@@ -2239,13 +2239,13 @@ void GUIContainerObject::collectPlotData()
 
             QVector<QString> names;
             QVector<QString> units;
-            getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(moit.value()->getName(), (*pit)->getName(), names, units);
+            getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(moit.value()->getName(), (*pit)->getPortName(), names, units);
 
             QVector<QString>::iterator nit;
             for(nit=names.begin(); nit!=names.end(); ++nit)
             {
                 QPair<QVector<double>, QVector<double> > data;
-                getCoreSystemAccessPtr()->getPlotData(moit.value()->getName(), (*pit)->getName(), (*nit), data);
+                getCoreSystemAccessPtr()->getPlotData(moit.value()->getName(), (*pit)->getPortName(), (*nit), data);
                 variableMap.insert((*nit), data);
 //                if(!timeVectorObtained)
 //                {
@@ -2255,7 +2255,7 @@ void GUIContainerObject::collectPlotData()
 
                 //qDebug() << "Inserting: " << moit.value()->getName() << ", " << (*pit)->getName() << ", " << (*nit);
             }
-            portMap.insert((*pit)->getName(), variableMap);
+            portMap.insert((*pit)->getPortName(), variableMap);
         }
         componentMap.insert(moit.value()->getName(), portMap);
     }

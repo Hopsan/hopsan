@@ -28,6 +28,7 @@
 #include <QGraphicsSvgItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsTextItem>
+#include <QGraphicsWidget>
 
 #include "common.h"
 #include "GUIPortAppearance.h"
@@ -41,7 +42,7 @@ class PlotWindow;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 
-class GUIPort :public QGraphicsSvgItem
+class GUIPort :public QGraphicsWidget
 {
     Q_OBJECT
 public:
@@ -49,20 +50,21 @@ public:
 
     GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
     ~GUIPort();
-    virtual void refreshParentContainerSigSlotConnections();
+    //virtual void refreshParentContainerSigSlotConnections();
 
     GUIContainerObject *getParentContainerObjectPtr();
     GUIModelObject *getGuiModelObject();
-    QString getName();
-    void setDisplayName(const QString name);
     QString getGuiModelObjectName();
+
+    QString getPortName();
+    void setDisplayName(const QString name);
+
     QPointF getCenterPos();
     portDirection getPortDirection();
     qreal getPortHeading();
-    bool getLastNodeData(QString dataName, double& rData);
+    void setCenterPos(qreal x, qreal y);
+    void setCenterPosByFraction(qreal x, qreal y);
 
-    void updatePosition(qreal x, qreal y);
-    void updatePositionByFraction(qreal x, qreal y);
     void magnify(bool blowup);
     void show();
     void hide();
@@ -74,6 +76,9 @@ public:
     void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
 //    void setStartValueDataByNames(QVector<QString> names, QVector<double> values);
     bool setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt);
+
+
+    bool getLastNodeData(QString dataName, double& rData);
 
     void addConnection(GUIConnector *pConnector);
     void removeConnection(GUIConnector *pConnector);
@@ -89,11 +94,10 @@ public slots:
     void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
     void refreshPortGraphics();
-    //void refreshPortGraphics(QString cqsType, QString portType, QString nodeType);
 
-signals:
-    void portClicked(GUIPort *item);
-    void portMoved(GUIPort *item);
+//signals:
+    //void portClicked(GUIPort *item);
+    //void portMoved(GUIPort *item);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -101,27 +105,34 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void addPortGraphicsOverlay(QStringList filepaths);
     void openRightClickMenu(QPoint screenPos);
 
 protected slots:
     void setPortOverlayScale(qreal scale);
 
 private:
+    void refreshPortGraphicsOverlayGraphics();
     void setPortOverlayIconScale();
 
-    QColor myLineColor;
-    qreal myLineWidth;
-    QGraphicsLineItem *lineH;
-    QGraphicsLineItem *lineV;
+//    QColor myLineColor;
+//    qreal myLineWidth;
+//    QGraphicsLineItem *lineH;
+//    QGraphicsLineItem *lineV;
+
+    QVector<GUIConnector*> mConnectedConnectors;
+    GUIPortAppearance *mpPortAppearance;
+    GUIPortAppearance mPortAppearanceAfterLastRefresh;
+    QString mPortName;
+
     qreal mMag;
     qreal mOverlaySetScale;
     bool mIsMagnified;
-    QVector<GUIConnector*> mConnectedConnectors;
-    GUIPortAppearance *mpPortAppearance;
-    QString mName;
+
     QGraphicsTextItem *mpPortLabel;
-    QVector<QGraphicsSvgItem*> mvPortGraphicsOverlayPtrs;
+    //QVector<QGraphicsSvgItem*> mvPortGraphicsOverlayPtrs;
+    QGraphicsSvgItem *mpCQSIconOverlay;
+    QGraphicsSvgItem *mpMultiPortIconOverlay;
+    QGraphicsSvgItem *mpMainIcon;
 };
 
 

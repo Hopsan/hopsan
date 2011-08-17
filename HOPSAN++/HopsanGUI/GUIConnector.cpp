@@ -544,7 +544,7 @@ QPointF GUIConnector::getEndPoint()
 //! @see getEndPortName()
 QString GUIConnector::getStartPortName()
 {
-    return mpStartPort->getName();
+    return mpStartPort->getPortName();
 }
 
 
@@ -552,7 +552,7 @@ QString GUIConnector::getStartPortName()
 //! @see getStartPortName()
 QString GUIConnector::getEndPortName()
 {
-    return mpEndPort->getName();
+    return mpEndPort->getPortName();
 }
 
 

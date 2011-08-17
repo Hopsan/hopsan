@@ -31,64 +31,69 @@
 //! @todo maybe this should be placed in som more generic external .txt file in som way
 void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
 {
-    mIconPath.clear();
-    mIconOverlayPaths.clear();
+    mMainIconPath.clear();
 
-    mIconPath = QString(PORTICONPATH);
+    mMainIconPath = QString(PORTICONPATH);
     if (nodetype == "NodeSignal")
     {
-        mIconPath.append("SignalPort");
+        mMainIconPath.append("SignalPort");
         if ( porttype == "READPORT" || porttype == "READMULTIPORT")
         {
-            mIconPath.append("_read");
+            mMainIconPath.append("_read");
         }
         else
         {
-            mIconPath.append("_write");
+            mMainIconPath.append("_write");
         }
     }
     else
     {
         if (nodetype == "NodeMechanic")
         {
-            mIconPath.append("MechanicPort");
+            mMainIconPath.append("MechanicPort");
         }
         else if (nodetype == "NodeMechanicRotational")
         {
-            mIconPath.append("RotationalMechanicPort");
+            mMainIconPath.append("RotationalMechanicPort");
         }
         else if (nodetype == "NodeHydraulic")
         {
-            mIconPath.append("HydraulicPort");
+            mMainIconPath.append("HydraulicPort");
         }
         else if (nodetype == "NodeElectric")
         {
-            mIconPath.append("ElectricPort");
+            mMainIconPath.append("ElectricPort");
         }
         else
         {
             //SystemPort is a blank port (that is why we use it here)
-            mIconPath.append("SystemPort");
+            mMainIconPath.append("SystemPort");
         }
 
-        //Select overlay icon depending on cqs type and multiport
-        //! @todo maybe should be able to select bassed on other things than cqs type
-        mIconOverlayPaths.clear();
+        //Select cqs overlay icon path depending on cqs type
         if (CQSType == "C")
         {
-            mIconOverlayPaths.append(QString(PORTICONPATH) + "PortOverlayC.svg");
+            mCQSOverlayPath = (QString(PORTICONPATH) + "PortOverlayC.svg");
         }
         else if (CQSType == "Q")
         {
-            mIconOverlayPaths.append(QString(PORTICONPATH) + "PortOverlayQ.svg");
+            mCQSOverlayPath = (QString(PORTICONPATH) + "PortOverlayQ.svg");
+        }
+        else
+        {
+            mCQSOverlayPath.clear();
         }
     }
+    mMainIconPath.append(".svg");
+
+    //Check if we need to add multiport overlay
     if (porttype.contains("MULTIPORT"))
     {
-        mIconOverlayPaths.append(QString(PORTICONPATH) + "MultiPortOverlay.svg");
+        mMultiPortOverlayPath = (QString(PORTICONPATH) + "MultiPortOverlay.svg");
     }
-    mIconPath.append(".svg");
-
-    //qDebug() << "mIconPath = " << mIconPath;
+    else
+    {
+        mMultiPortOverlayPath.clear();
+    }
 }
 

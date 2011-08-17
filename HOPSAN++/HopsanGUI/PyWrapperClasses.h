@@ -80,7 +80,7 @@ public slots:
             res.append("' at component '");
             res.append(o->getGuiModelObjectName());
             res.append("' and port '");
-            res.append(o->getName());
+            res.append(o->getPortName());
             res.append("'.");
         }
 
@@ -101,14 +101,14 @@ public slots:
     QVector<double> getDataVector(GUIPort* o, const QString& dataName)
     {
         QPair<QVector<double>, QVector<double> > yData;
-        o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getName(),dataName,yData);
+        o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getPortName(),dataName,yData);
 
         return yData.second;
     }
 
     QVector<double> getTimeVector(GUIPort* o)
     {
-        QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getName()));
+        QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getPortName()));
 
         return tVector;
     }

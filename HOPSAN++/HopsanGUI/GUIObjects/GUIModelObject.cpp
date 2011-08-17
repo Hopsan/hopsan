@@ -116,7 +116,7 @@ void GUIModelObject::setParentContainerObject(GUIContainerObject *pParentContain
     //Refresh the port signals and slots connections
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
-        mPortListPtrs[i]->refreshParentContainerSigSlotConnections();
+        //mPortListPtrs[i]->refreshParentContainerSigSlotConnections();
     }
 }
 
@@ -375,7 +375,7 @@ void GUIModelObject::showLosses()
                 for(int i=0; i<vConnectedPorts.size(); ++i)
                 {
                     QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
-                    QString portName = vConnectedPorts.at(i)->getName();
+                    QString portName = vConnectedPorts.at(i)->getPortName();
                     QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, componentName, portName, "Pressure");
                     QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, componentName, portName, "Flow");
                     for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
@@ -387,17 +387,17 @@ void GUIModelObject::showLosses()
             }
             else    //Normal port!
             {
-                QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Pressure");
-                QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Flow");
+                QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Pressure");
+                QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Flow");
 
                 for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
                 {
                     mTotalLosses += vPressure.at(s) * vFlow.at(s) *
-                                    (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
-                                     mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
+                                    (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s+1) -
+                                     mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s));
                     mHydraulicLosses += vPressure.at(s) * vFlow.at(s) *
-                                        (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
-                                         mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
+                                        (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s+1) -
+                                         mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s));
                 }
             }
         }
@@ -410,7 +410,7 @@ void GUIModelObject::showLosses()
                 for(int i=0; i<vConnectedPorts.size(); ++i)
                 {
                     QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
-                    QString portName = vConnectedPorts.at(i)->getName();
+                    QString portName = vConnectedPorts.at(i)->getPortName();
                     QVector<double> vForce = mpParentContainerObject->getPlotData(generation, componentName, portName, "Force");
                     QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, componentName, portName, "Velocity");
                     for(int s=0; s<vForce.size()-1; ++s) //Minus one because of integration method
@@ -426,16 +426,16 @@ void GUIModelObject::showLosses()
             }
             else    //Normal port!
             {
-                QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Force");
-                QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
+                QVector<double> vForce = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Force");
+                QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Velocity");
                 for(int s=0; s<vForce.size()-1; ++s)
                 {
                     mTotalLosses += vForce.at(s) * vVelocity.at(s) *
-                                    (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
-                                     mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
+                                    (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s+1) -
+                                     mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s));
                     mMechanicLosses += vForce.at(s) * vVelocity.at(s) *
-                                       (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
-                                        mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
+                                       (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s+1) -
+                                        mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getPortName()).at(s));
                 }
             }
         }
@@ -530,7 +530,7 @@ GUIPort *GUIModelObject::getPort(QString name)
     //! @todo use a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
-        if (mPortListPtrs[i]->getName() == name)
+        if (mPortListPtrs[i]->getPortName() == name)
         {
             return mPortListPtrs[i];
         }

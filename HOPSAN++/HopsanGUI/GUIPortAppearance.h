@@ -33,11 +33,10 @@ class GUIPortAppearance
 public:
     void selectPortIcon(QString cqstype, QString porttype, QString nodetype);
 
-    qreal x;
-    qreal y;
-    qreal rot;
-    QString mIconPath;
-    QStringList mIconOverlayPaths;
+    qreal x,y,rot;
+    QString mMainIconPath;
+    QString mCQSOverlayPath;
+    QString mMultiPortOverlayPath;
 };
 
 typedef QHash<QString, GUIPortAppearance> PortAppearanceMapT;
