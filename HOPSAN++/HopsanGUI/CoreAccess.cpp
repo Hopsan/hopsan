@@ -116,6 +116,19 @@ void CoreSystemAccess::setDesiredTimeStep(double timestep)
     mpCoreComponentSystem->setDesiredTimestep(timestep);
 }
 
+
+void CoreSystemAccess::setInheritTimeStep(bool inherit)
+{
+    mpCoreComponentSystem->setInheritTimestep(inherit);
+}
+
+
+bool CoreSystemAccess::doesInheritTimeStep()
+{
+    return mpCoreComponentSystem->doesInheritTimestep();
+}
+
+
 double CoreSystemAccess::getDesiredTimeStep()
 {
     return mpCoreComponentSystem->getDesiredTimeStep();
@@ -554,7 +567,7 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
     }
 }
 
-void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData)
+void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData)
 {
     int dataId = -1;
     Port* pPort = this->getPortPtr(compname, portname);
@@ -566,13 +579,17 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
         if (dataId >= 0)
         {
             vector< vector<double> > *pData = pPort->getDataVectorPtr();
+            vector<double> *pTime = pPort->getTimeVectorPtr();
 
-            //Ok lets copy all of the data to a QT vector
-            rData.clear();
-            rData.resize(pData->size()); //Allocaate memory
-            for (size_t i=0; i<pData->size(); ++i) //Denna loop ar inte klok
+            //Ok lets copy all of the data to a Qt vector
+            rData.first.clear();
+            rData.first.resize(pTime->size());    //Allocate memory for time
+            rData.second.clear();           //Allocate memory for data
+            rData.second.resize(pData->size());
+            for (size_t i=0; i<pData->size() && i<pTime->size(); ++i)
             {
-                rData[i] = pData->at(i).at(dataId);
+                rData.first[i] = pTime->at(i);
+                rData.second[i] = pData->at(i).at(dataId);
             }
         }
     }

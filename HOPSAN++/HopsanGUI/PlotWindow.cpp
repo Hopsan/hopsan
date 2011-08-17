@@ -381,7 +381,7 @@ void PlotWindow::updateLists()
     mpComponentList->clear();
 
         //Fetch new data and add to the lists
-    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
+    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
     if(!plotData.isEmpty())
     {
         mpComponentList->addItems(plotData.last().keys());
@@ -406,7 +406,7 @@ void PlotWindow::updatePortList()
     disconnect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
 
     mpPortList->clear();
-    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
+    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
     mpPortList->addItems(plotData.last().find(mpComponentList->currentItem()->text()).value().keys());
     mpPortList->setCurrentItem(mpPortList->item(0));
     mpPortList->sortItems();
@@ -423,7 +423,7 @@ void PlotWindow::updateVariableList()
     if(mpComponentList->count() == 0 || mpPortList->count() == 0) { return; }
 
     mpVariableList->clear();
-    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
+    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
     mpVariableList->addItems(plotData.last().find(mpComponentList->currentItem()->text()).value().find(mpPortList->currentItem()->text()).value().keys());
     mpVariableList->setCurrentItem(mpVariableList->item(0));
     mpVariableList->sortItems();
@@ -2743,7 +2743,10 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 
         //Get data from container object
     mDataVector = mpContainerObject->getPlotData(generation, componentName, portName, dataName);
-    mTimeVector = mpContainerObject->getTimeVector(generation);
+    mTimeVector = mpContainerObject->getTimeVector(generation, componentName, portName);
+
+    qDebug() << "mDataVector = " << mDataVector;
+    qDebug() << "mTimeVector = " << mTimeVector;
 
         //Create the actual curve
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
@@ -2754,9 +2757,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 
         //Create the plot info box
     mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
-            qDebug() << "2";
     updatePlotInfoBox();
-            qDebug() << "3";
     mpPlotInfoBox->mpSizeSpinBox->setValue(2);
 
     mpPlotInfoDockWidget = new QDockWidget(mComponentName+", "+mPortName+", "+mDataName+" ["+mDataUnit+"]", mpParentPlotTab->mpParentPlotWindow);
@@ -2911,7 +2912,7 @@ void PlotCurve::setGeneration(int generation)
     mGeneration = generation;
     mDataVector = mpContainerObject->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
     if(mpParentPlotTab->mVectorX.size() == 0)
-        mTimeVector = mpContainerObject->getTimeVector(mGeneration);
+        mTimeVector = mpContainerObject->getTimeVector(mGeneration, mComponentName, mPortName);
     else
         mTimeVector = mpParentPlotTab->mVectorX;
 
@@ -3243,7 +3244,7 @@ void PlotCurve::updateCurve()
     QVector<double> tempY;
     if(mpParentPlotTab->mHasSpecialXAxis)
     {
-        for(int i=0; i<mTimeVector.size(); ++i)
+        for(int i=0; i<mpParentPlotTab->mVectorX.size() && i<mDataVector.size(); ++i)
         {
             tempX.append(mpParentPlotTab->mVectorX[i]*mScaleX + mOffsetX);
             tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);
@@ -3251,7 +3252,7 @@ void PlotCurve::updateCurve()
     }
     else
     {
-        for(int i=0; i<mTimeVector.size(); ++i)
+        for(int i=0; i<mTimeVector.size() && i<mDataVector.size(); ++i)
         {
             tempX.append(mTimeVector[i]*mScaleX + mOffsetX);
             tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);

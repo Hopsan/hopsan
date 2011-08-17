@@ -107,10 +107,10 @@ public:
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
     bool hasOpenPlotCurves();
-    QVector<double> getTimeVector(int generation);
+    QVector<double> getTimeVector(int generation, QString componentName, QString portName);
     QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
     bool componentHasPlotGeneration(int generation, QString componentName);
-    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > getAllPlotData();
+    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > getAllPlotData();
     int getNumberOfPlotGenerations();
     void definePlotAlias(QString componentName, QString portName, QString dataName);
     bool definePlotAlias(QString alias, QString componentName, QString portName, QString dataName);
@@ -284,7 +284,7 @@ protected:
     graphicsType mGfxType;
 
     //Plot members
-    QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > mPlotData;
+    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mPlotData;
     QList< QVector<double> > mTimeVectors;
     QMap<QString, QStringList> mPlotAliasMap;
     int nPlotCurves;

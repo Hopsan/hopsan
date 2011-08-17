@@ -115,8 +115,24 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         //Set GuiSystem specific stuff
     if (mpContainerObject->type() == GUISYSTEM)
     {
+            //Time step
+        mpTimeStepCheckBox = new QCheckBox("Inherit time step from parent system", this);
+        mpTimeStepCheckBox->setChecked(mpContainerObject->getCoreSystemAccessPtr()->doesInheritTimeStep());
+        mpTimeStepLabel = new QLabel(" Time Step:", this);
+        mpTimeStepLabel->setDisabled(mpTimeStepCheckBox->isChecked());
+        QString TimeStepText;
+        TimeStepText.setNum(mpContainerObject->getCoreSystemAccessPtr()->getDesiredTimeStep());
+        mpTimeStepEdit = new QLineEdit(this);
+        mpTimeStepEdit->setValidator(new QDoubleValidator(0.0, 2000000000.0, 10, this));
+        mpTimeStepEdit->setText(TimeStepText);
+        mpTimeStepEdit->setDisabled(mpTimeStepCheckBox->isChecked());
+        connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepLabel, SLOT(setDisabled(bool)));
+        connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepEdit, SLOT(setDisabled(bool)));
+        mpSettingsLayout->addWidget(mpTimeStepCheckBox, 3, 0, 1, 2);
+        mpSettingsLayout->addWidget(mpTimeStepLabel, 4, 0, 1, 1);
+        mpSettingsLayout->addWidget(mpTimeStepEdit, 4, 1, 1, 1);
+
             //Log sampels
-        mpNSamplesLayout = new QHBoxLayout();
         mpNSamplesLabel = new QLabel(tr("Log Samples:"), this);
         mpNSamplesLabel->setEnabled(true);
         QString NSamplesText;
@@ -124,15 +140,14 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         mpNSamplesEdit = new QLineEdit(this);
         mpNSamplesEdit->setValidator(new QIntValidator(0, 2000000000, this));
         mpNSamplesEdit->setText(NSamplesText);
-        mpSettingsLayout->addWidget(mpNSamplesLabel, 3, 0);
-        mpSettingsLayout->addWidget(mpNSamplesEdit, 3, 1);
+        mpSettingsLayout->addWidget(mpNSamplesLabel, 5, 0);
+        mpSettingsLayout->addWidget(mpNSamplesEdit, 5, 1);
 
             //CQS Type
-        mpCQSLayout = new QHBoxLayout();
         mpCQSLabel = new QLabel("CQS-type: ", this);
         mpCQSTypeLabel = new QLabel(mpContainerObject->getTypeCQS(), this);
-        mpSettingsLayout->addWidget(mpCQSLabel, 4, 0);
-        mpSettingsLayout->addWidget(mpCQSTypeLabel, 4, 1);
+        mpSettingsLayout->addWidget(mpCQSLabel, 6, 0);
+        mpSettingsLayout->addWidget(mpCQSTypeLabel, 6, 1);
 
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
     }
@@ -228,6 +243,8 @@ void ContainerPropertiesDialog::setValues()
     //Set GuiSystem specific stuff
     if (mpContainerObject->type() == GUISYSTEM)
     {
+        mpContainerObject->getCoreSystemAccessPtr()->setInheritTimeStep(mpTimeStepCheckBox->isChecked());
+        mpContainerObject->getCoreSystemAccessPtr()->setDesiredTimeStep(mpTimeStepEdit->text().toDouble());
         mpContainerObject->setNumberOfLogSamples(mpNSamplesEdit->text().toInt());
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }

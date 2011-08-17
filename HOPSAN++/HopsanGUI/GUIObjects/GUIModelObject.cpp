@@ -380,8 +380,8 @@ void GUIModelObject::showLosses()
                     QVector<double> vFlow = mpParentContainerObject->getPlotData(generation, componentName, portName, "Flow");
                     for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
                     {
-                        mTotalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        mHydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mTotalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s+1)-mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s));
+                        mHydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s+1)-mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s));
                     }
                 }
             }
@@ -392,8 +392,12 @@ void GUIModelObject::showLosses()
 
                 for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
                 {
-                    mTotalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                    mHydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    mTotalLosses += vPressure.at(s) * vFlow.at(s) *
+                                    (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
+                                     mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
+                    mHydraulicLosses += vPressure.at(s) * vFlow.at(s) *
+                                        (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
+                                         mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
                 }
             }
         }
@@ -411,8 +415,12 @@ void GUIModelObject::showLosses()
                     QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, componentName, portName, "Velocity");
                     for(int s=0; s<vForce.size()-1; ++s) //Minus one because of integration method
                     {
-                        mTotalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                        mMechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                        mTotalLosses += vForce.at(s) * vVelocity.at(s) *
+                                        (mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s+1) -
+                                         mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s));
+                        mMechanicLosses += vForce.at(s) * vVelocity.at(s) *
+                                           (mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s+1) -
+                                            mpParentContainerObject->getTimeVector(generation, componentName, portName).at(s));
                     }
                 }
             }
@@ -422,8 +430,12 @@ void GUIModelObject::showLosses()
                 QVector<double> vVelocity = mpParentContainerObject->getPlotData(generation, getName(), mPortListPtrs[p]->getName(), "Velocity");
                 for(int s=0; s<vForce.size()-1; ++s)
                 {
-                    mTotalLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
-                    mMechanicLosses += vForce.at(s) * vVelocity.at(s) * (mpParentContainerObject->getTimeVector(generation).at(s+1)-mpParentContainerObject->getTimeVector(generation).at(s));
+                    mTotalLosses += vForce.at(s) * vVelocity.at(s) *
+                                    (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
+                                     mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
+                    mMechanicLosses += vForce.at(s) * vVelocity.at(s) *
+                                       (mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s+1) -
+                                        mpParentContainerObject->getTimeVector(generation, getName(), mPortListPtrs[p]->getName()).at(s));
                 }
             }
         }

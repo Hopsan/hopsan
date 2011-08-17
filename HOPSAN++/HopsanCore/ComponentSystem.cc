@@ -1846,6 +1846,19 @@ void ComponentSystem::setDesiredTimestep(const double timestep)
     setTimestep(timestep);
 }
 
+
+void ComponentSystem::setInheritTimestep(const bool inherit)
+{
+    mInheritTimestep = inherit;
+}
+
+
+bool ComponentSystem::doesInheritTimestep()
+{
+    return mInheritTimestep;
+}
+
+
 //void ComponentSystem::setTimestep(const double timestep)
 //{
 //    mTimestep = timestep;
@@ -1913,36 +1926,40 @@ void ComponentSystem::setTimestep(const double timestep)
 }
 
 
-void ComponentSystem::adjustTimestep(double timestep, vector<Component*> componentPtrs)
+//! @brief Figure out which timestep to use for all sub systems
+//! @param componentPtrs Vector with pointers to all sub components
+void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
 {
-    mTimestep = timestep;
-
     for (size_t c=0; c < componentPtrs.size(); ++c)
     {
         if (componentPtrs[c]->isComponentSystem())
         {
-            double subTs = componentPtrs[c]->mDesiredTimestep;
-//cout << componentPtrs[c]->mName << ", mTimestep: "<< componentPtrs[c]->mTimestep << endl;
+            if(componentPtrs[c]->doesInheritTimestep()) //Inherit timestep from parent system
+            {
+                componentPtrs[c]->setTimestep(mTimestep);
+            }
+            else    //Use desired timestep, and adjust it if necessary
+            {
+                double subTs = componentPtrs[c]->mDesiredTimestep;
 
-            //If a subsystem's timestep is larger than this sytem's
-            //timestep change it to this system's timestep
-            if ((subTs > timestep) || (subTs < -0.0))
-            {
-                subTs = timestep;
+                //If a subsystem's timestep is larger than this sytem's
+                //timestep change it to this system's timestep
+                if ((subTs > mTimestep) || (subTs < -0.0))
+                {
+                    subTs = mTimestep;
+                }
+                //Check that subRs is a multiple of timestep
+                else// if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
+                {
+                    //subTs should get the nearest multiple of timestep as possible,
+                    subTs = mTimestep/floor(mTimestep/subTs+0.5);
+                }
+                componentPtrs[c]->setTimestep(subTs);
             }
-            //Check that subRs is a multiple of timestep
-            else// if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
-            {
-                //subTs should get the nearest multiple of timestep as possible,
-                subTs = timestep/floor(timestep/subTs+0.5);
-            }
-            componentPtrs[c]->setTimestep(subTs);
-//cout << componentPtrs[c]->mName << ", subTs: "<< subTs << endl;
         }
         else
         {
-            componentPtrs[c]->setTimestep(timestep);
-//cout << componentPtrs[c]->mName << ", timestep: "<< timestep << endl;
+            componentPtrs[c]->setTimestep(mTimestep);
         }
     }
 }
@@ -2090,9 +2107,9 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     //preAllocate local logspace
     this->preAllocateLogSpace(startT, stopT, nSamples);
 
-    adjustTimestep(mTimestep, mComponentSignalptrs);
-    adjustTimestep(mTimestep, mComponentCptrs);
-    adjustTimestep(mTimestep, mComponentQptrs);
+    adjustTimestep(mComponentSignalptrs);
+    adjustTimestep(mComponentCptrs);
+    adjustTimestep(mComponentQptrs);
 
     this->sortSignalComponentVector(mComponentSignalptrs);
 
@@ -2161,9 +2178,9 @@ void ComponentSystem::initializeComponentsOnly()
     cout << "Initializing SubSystem: " << this->mName << endl;
     mStop = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
-    adjustTimestep(mTimestep, mComponentSignalptrs);
-    adjustTimestep(mTimestep, mComponentCptrs);
-    adjustTimestep(mTimestep, mComponentQptrs);
+    adjustTimestep(mComponentSignalptrs);
+    adjustTimestep(mComponentCptrs);
+    adjustTimestep(mComponentQptrs);
 
     this->sortSignalComponentVector(mComponentSignalptrs);
 

@@ -65,6 +65,10 @@ private:
     QGridLayout *mpAppearanceLayout;
     QGroupBox *mpSettingsGroupBox;
     QGridLayout *mpSettingsLayout;
+    QGridLayout *mpTimeStepLayout;
+    QCheckBox *mpTimeStepCheckBox;
+    QLabel *mpTimeStepLabel;
+    QLineEdit *mpTimeStepEdit;
     QHBoxLayout *mpNSamplesLayout;
     QLabel *mpNSamplesLabel;
     QHBoxLayout *mpCQSLayout;

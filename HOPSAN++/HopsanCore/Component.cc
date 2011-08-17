@@ -705,6 +705,21 @@ void Component::setDesiredTimestep(const double /*timestep*/)
     assert(false);
 }
 
+
+void Component::setInheritTimestep(const bool /*inherit*/)
+{
+    cout << "Warning this function setInheritTimestep is only available on subsystem components" << endl;
+    assert(false);
+}
+
+
+bool Component::doesInheritTimestep()
+{
+    cout << "Warning this function doesInheritTimestep is only available on subsystem components" << endl;
+    assert(false);
+}
+
+
 bool Component::isSimulationOk()
 {
     cout << "Warning this function isSimulationOk() is only available on subsystem components" << endl;

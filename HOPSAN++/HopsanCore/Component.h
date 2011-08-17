@@ -100,6 +100,8 @@ class ComponentSystem; //Forward declaration
         virtual void simulate(const double startT, const double Ts);
         virtual void finalize(const double startT, const double Ts);
         virtual void setDesiredTimestep(const double timestep);
+        virtual void setInheritTimestep(const bool inherit=true);
+        virtual bool doesInheritTimestep();
         virtual bool isSimulationOk();
 
         //Name and type
@@ -191,6 +193,7 @@ class ComponentSystem; //Forward declaration
 
         //==========Protected member variables==========
         typeCQS mTypeCQS;
+        bool mInheritTimestep;
         double mTimestep, mDesiredTimestep;
         double mTime;
         bool mIsComponentSystem;

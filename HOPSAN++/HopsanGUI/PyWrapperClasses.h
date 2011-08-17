@@ -100,10 +100,10 @@ public slots:
 
     QVector<double> getDataVector(GUIPort* o, const QString& dataName)
     {
-        QVector<double> yData;
+        QPair<QVector<double>, QVector<double> > yData;
         o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getName(),dataName,yData);
 
-        return yData;
+        return yData.second;
     }
 
     QVector<double> getTimeVector(GUIPort* o)

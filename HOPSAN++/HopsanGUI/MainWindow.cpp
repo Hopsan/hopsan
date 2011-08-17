@@ -1013,7 +1013,7 @@ QLineEdit *MainWindow::getFinishTimeLineEdit()
 }
 
 
-//! @brief Make sure the values make sens.
+//! @brief Make sure the values make sense.
 //! @see fixTimeStep()
 void MainWindow::fixSimulationParameterValues()
 {

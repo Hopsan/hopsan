@@ -123,6 +123,8 @@ namespace hopsan {
 
         //Set and get desired timestep
         void setDesiredTimestep(const double timestep);
+        void setInheritTimestep(const bool inherit=true);
+        bool doesInheritTimestep();
         double getDesiredTimeStep();
 
         //Stop a running init or simulation
@@ -139,7 +141,7 @@ namespace hopsan {
         //==========Private functions==========
         //Time specific functions
         void setTimestep(const double timestep);
-        void adjustTimestep(double timestep, std::vector<Component*> componentPtrs);
+        void adjustTimestep(std::vector<Component*> componentPtrs);
 
         //log specific functions
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);

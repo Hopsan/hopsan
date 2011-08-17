@@ -771,9 +771,9 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
         {
             if(mPlotData.at(i).contains(oldName))
             {
-                QMap< QString, QMap<QString, QMap<QString, QVector<double> > > > generation;
+                QMap< QString, QMap<QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > generation;
                 generation = mPlotData.at(i);
-                QMap< QString, QMap<QString, QVector<double> > > oldPlotData;
+                QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > oldPlotData;
                 oldPlotData = mPlotData.at(i).find(oldName).value();
                 generation.insert(newName, oldPlotData);
                 generation.remove(oldName);
@@ -2225,17 +2225,17 @@ void GUIContainerObject::flipVertical()
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
 void GUIContainerObject::collectPlotData()
 {
-    bool timeVectorObtained = false;
+    //bool timeVectorObtained = false;
 
     GUIModelObjectMapT::iterator moit;
     QList<GUIPort*>::iterator pit;
-    QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > componentMap;
+    QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > componentMap;
     for(moit=mGUIModelObjectMap.begin(); moit!=mGUIModelObjectMap.end(); ++moit)
     {
-        QMap< QString, QMap<QString, QVector<double> > > portMap;
+        QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > portMap;
         for(pit=moit.value()->getPortListPtrs().begin(); pit!=moit.value()->getPortListPtrs().end(); ++pit)
         {
-            QMap<QString, QVector<double> > variableMap;
+            QMap<QString, QPair<QVector<double>, QVector<double> > > variableMap;
 
             QVector<QString> names;
             QVector<QString> units;
@@ -2244,14 +2244,14 @@ void GUIContainerObject::collectPlotData()
             QVector<QString>::iterator nit;
             for(nit=names.begin(); nit!=names.end(); ++nit)
             {
-                QVector<double> data;
+                QPair<QVector<double>, QVector<double> > data;
                 getCoreSystemAccessPtr()->getPlotData(moit.value()->getName(), (*pit)->getName(), (*nit), data);
                 variableMap.insert((*nit), data);
-                if(!timeVectorObtained)
-                {
-                    mTimeVectors.append(QVector<double>::fromStdVector(getCoreSystemAccessPtr()->getTimeVector(moit.value()->getName(), (*pit)->getName())));
-                    timeVectorObtained = true;
-                }
+//                if(!timeVectorObtained)
+//                {
+//                    mTimeVectors.append(QVector<double>::fromStdVector(getCoreSystemAccessPtr()->getTimeVector(moit.value()->getName(), (*pit)->getName())));
+//                    timeVectorObtained = true;
+//                }
 
                 //qDebug() << "Inserting: " << moit.value()->getName() << ", " << (*pit)->getName() << ", " << (*nit);
             }
@@ -2473,9 +2473,9 @@ void GUIContainerObject::hideLosses()
 
 //! @brief Returns time vector for specified plot generation.
 //! @param generation Generation to fetch time vector from
-QVector<double> GUIContainerObject::getTimeVector(int generation)
+QVector<double> GUIContainerObject::getTimeVector(int generation, QString componentName, QString portName)
 {
-    return mTimeVectors.at(generation);
+    return mPlotData.at(generation).find(componentName).value().find(portName).value().begin().value().first;
 }
 
 
@@ -2488,7 +2488,7 @@ QVector<double> GUIContainerObject::getPlotData(int generation, QString componen
 {
     //qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
     //qDebug() << "Size of data: " << mPlotData.size();
-    return mPlotData.at(generation).find(componentName).value().find(portName).value().find(dataName).value();
+    return mPlotData.at(generation).find(componentName).value().find(portName).value().find(dataName).value().second;
 }
 
 
@@ -2504,7 +2504,7 @@ bool GUIContainerObject::componentHasPlotGeneration(int generation, QString comp
 
 //! @brief Returns a copy of all existing plot data in container.
 //! @note This object is gigantic, and will likey reduce performance if used too often.
-QList< QMap< QString, QMap< QString, QMap<QString, QVector<double> > > > > GUIContainerObject::getAllPlotData()
+QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > GUIContainerObject::getAllPlotData()
 {
     return mPlotData;
 }

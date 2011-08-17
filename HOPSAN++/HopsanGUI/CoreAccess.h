@@ -65,6 +65,8 @@ public:
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);
 
     void setDesiredTimeStep(double timestep);
+    void setInheritTimeStep(bool inherit);
+    bool doesInheritTimeStep();
     double getDesiredTimeStep();
 
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
@@ -125,7 +127,7 @@ public:
     QString getPlotDataUnit(const QString compname, const QString portname, const QString dataname);
     //void getPlotDataUnit(const QString compname, const QString portname, const string dataname, QString &rUnit);
     //QVector<QString> getPlotDataUnits();
-    void getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData);
+    void getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData);
     bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData);
     bool isPortConnected(QString componentName, QString portName);
 

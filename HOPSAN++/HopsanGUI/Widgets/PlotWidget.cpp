@@ -258,11 +258,12 @@ void PlotParameterTree::reportClosedPlotWindow(PlotWindow *window)
 //! @param dataUnit Name of the unit of the parameter
 PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
-    QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
-    QVector<double> yVector;
-    gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
+    //QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
+    QPair<QVector<double>, QVector<double> > vectors;
+    gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, vectors);
 
-    qDebug() << yVector;
+    QVector<double> xVector = vectors.first;
+    QVector<double> yVector = vectors.second;
 
     if((xVector.isEmpty()) || (yVector.isEmpty()))
         return 0;
