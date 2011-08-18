@@ -298,6 +298,8 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 
     mpList->clear();
 
+    qDebug() << "1";
+
     //Add components
     for(int i=0; i<tree->mComponentPtrs.size(); ++i)        //Add own components
     {
@@ -308,18 +310,20 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
         tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         mpList->addItem(tempItem);
     }
+    qDebug() << "2";
     for(int j=0; j<tree->mChildNodesPtrs.size(); ++j)       //Add components from child libraries too
     {
         for(int i=0; i<tree->mChildNodesPtrs.at(j)->mComponentPtrs.size(); ++i)
         {
             QListWidgetItem *tempItem = new QListWidgetItem();
-            tempItem->setToolTip(tree->mComponentPtrs.at(i)->getName());
+            tempItem->setToolTip(tree->mChildNodesPtrs.at(j)->mComponentPtrs.at(i)->getName());
             tempItem->setIcon(tree->mChildNodesPtrs.at(j)->mComponentPtrs.at(i)->getIcon(mGfxType));
             mListItemToContentsMap.insert(tempItem, tree->mChildNodesPtrs.at(j)->mComponentPtrs.at(i));
             tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
             mpList->addItem(tempItem);
         }
     }
+    qDebug() << "3";
 
     connect(mpList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(initializeDrag(QListWidgetItem*)), Qt::UniqueConnection);
 }

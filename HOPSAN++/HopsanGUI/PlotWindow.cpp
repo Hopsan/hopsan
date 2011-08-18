@@ -933,6 +933,32 @@ void PlotWindow::showToolBarHelpPopup()
 }
 
 
+//! @brief Slot that closes all tabs with no curves, and then closes the entire plot window if it has no curves.
+void PlotWindow::closeIfEmpty()
+{
+    int curves=0;
+    for(int i=0; i<mpPlotTabs->count(); ++i)
+    {
+        int nCurvesInTab = 0;
+        for(int plotId=0; plotId<2; ++plotId)
+        {
+            nCurvesInTab += mpPlotTabs->getTab(i)->getNumberOfCurves(HopsanPlotID(plotId));
+        }
+
+        if(nCurvesInTab == 0)
+        {
+            mpPlotTabs->closePlotTab(i);
+            --i;
+        }
+
+        curves += nCurvesInTab;
+    }
+
+    if(curves == 0)
+        close();
+}
+
+
 void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 {
     hideHelpPopupMessage();
@@ -2786,6 +2812,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
+    connect(mpContainerObject, SIGNAL(objectDeleted()), mpParentPlotTab->mpParentPlotWindow, SLOT(closeIfEmpty()), Qt::UniqueConnection);
     connect(mpContainerObject->getGUIModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
     connect(mpContainerObject->getGUIModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
     connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));

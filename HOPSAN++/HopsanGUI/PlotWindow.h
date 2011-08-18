@@ -89,6 +89,7 @@ public slots:
     void createBodePlotFromDialog();
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
+    void closeIfEmpty();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -206,7 +207,7 @@ public:
     PlotTab *getCurrentTab();
     PlotTab *getTab(int i);
 
-private slots:
+public slots:
     void closePlotTab(int index);
     void tabChanged();
 };
