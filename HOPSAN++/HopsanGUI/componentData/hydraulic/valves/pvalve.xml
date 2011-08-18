@@ -6,6 +6,5 @@
         <portpose x="0.3125" y="1" a="270" name="P2"/>
         <portpose x="0" y="0.375" a="0" name="P_OPEN"/>
         <portpose x="0.625" y="0.375" a="180" name="P_CLOSE"/>
-        <portpose x="0.825" y="0.375" a="0" name="PTmp"/>
     </modelobject>
 </hopsanobjectappearance>
