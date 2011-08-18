@@ -528,7 +528,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
         mpTempGUIModelObject = new GUIComponent(pAppearanceData, position, rotation, this, startSelected, mGfxType);
     }
 
-    mpScene->addItem(mpTempGUIModelObject);
+    //mpScene->addItem(mpTempGUIModelObject); //Need to do this earlier
 
     emit checkMessages();
 

@@ -42,6 +42,11 @@ GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject
     this->setParentContainerObject(pParentContainer);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
 
+    if (mpParentContainerObject != 0)
+    {
+        pParentContainer->getContainedScenePtr()->addItem(this);
+    }
+
     //Set position orientation and other appearance stuff
     //Initially we dont know the selection box size
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2), QPen(QColor("darkRed"),2), this);

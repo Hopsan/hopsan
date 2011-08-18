@@ -82,28 +82,33 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mpPortAppearance = pPortAppearance;
     mPortName = portName;
 
-    //Setup port label (ports allways have lables)
-    mpPortLabel = new QGraphicsTextItem(this);
-    mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
-    mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-    mpPortLabel->hide();
-
     mpMultiPortIconOverlay = 0;
     mpCQSIconOverlay = 0;
     mpMainIcon = new QGraphicsSvgItem(mpPortAppearance->mMainIconPath, this);
     this->setGeometry(0.0, 0.0, mpMainIcon->boundingRect().width(), mpMainIcon->boundingRect().height());
-    setTransformOriginPoint(boundingRect().center());     //All rotaion and other transformation should be aplied around the port center
+    this->setTransformOriginPoint(boundingRect().center());     //All rotaion and other transformation should be aplied around the port center
 
     //Now adjust position
     setCenterPos(xpos, ypos);
 
-    this->setAcceptHoverEvents(true);
+    //Setup port label (ports allways have lables)
+    mpPortLabel = new QGraphicsTextItem(this);
+    mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+    mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+    mpPortLabel->setZValue(50); //High value should be on top of everything
+    mpPortLabel->hide();
+    //Port label must exist and be set up before we run setDisplayName
+    this->setDisplayName(mPortName);
+
+    qDebug() << "geometry vs. brect: " << this->geometry() << " " << this->boundingRect();
+    qDebug() << "transformoriginpoint: " << this->transformOriginPoint();
 
     //Setup overlay (if it exists)
     this->refreshPortGraphicsOverlayGraphics();
     this->setRotation(mpPortAppearance->rot);
     this->refreshPortOverlayPosition();
 
+    //Set default magnification
     mMag = GOLDENRATIO;
     mOverlaySetScale = 1.0;
     mIsMagnified = false;
@@ -116,6 +121,8 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     {
         this->hideIfNotConnected(!mpParentGuiModelObject->mpParentContainerObject->arePortsHidden());
     }
+
+    this->setAcceptHoverEvents(true);
 
     //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
     GraphicsView *pView = mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->getGraphicsView(); //! @todo need to be able to access this in some nicer way then ptr madness
@@ -152,18 +159,14 @@ void GUIPort::magnify(bool doMagnify)
 {
     if( doMagnify && !mIsMagnified )
     {
-        this->scale(mMag, mMag);
-        this->moveBy(-(mMag-1.0)*boundingRect().width()/2.0, -(mMag-1.0)*boundingRect().height()/2.0);
-        this->mpPortLabel->moveBy((mMag-1.0)*boundingRect().width()/2.0, (mMag-1.0)*boundingRect().height()/2.0);
+        this->setScale(this->scale()*mMag);
 
         mIsMagnified = true; //This must be set before setPortOverlayScale
         this->setPortOverlayScale(mOverlaySetScale); //Set the scale to the same as current but this time the extra scale factor will be added
     }
     else if ( !doMagnify && mIsMagnified )
     {
-        this->moveBy((mMag-1.0)*boundingRect().width()/2.0, (mMag-1.0)*boundingRect().height()/2.0);
-        this->mpPortLabel->moveBy(-(mMag-1.0)*boundingRect().width()/2.0, -(mMag-1.0)*boundingRect().height()/2.0);
-        this->scale(1.0/mMag,1.0/mMag);
+        this->setScale(this->scale()*1.0/mMag);
 
         mIsMagnified = false; //This must be set before setPortOverlayScale
         this->setPortOverlayScale(mOverlaySetScale); //Set the scale to the same as current, no extra magnification will be added
@@ -199,6 +202,19 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     mpPortLabel->show();
 }
 
+//! Defines what happens when mouse cursor stops hovering a port.
+//! @param *event defines the mouse event.
+void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    this->setCursor(Qt::ArrowCursor);
+    magnify(false);
+
+    mpPortLabel->hide();
+    this->setZValue(0.0);
+
+    QGraphicsWidget::hoverLeaveEvent(event);
+}
+
 //! @brief Updates the gui port position on its parent object, taking coordinates in parent coordinate system
 //! @todo is it necessary to be able to update orientation also?
 void GUIPort::setCenterPos(const qreal x, const qreal y)
@@ -218,26 +234,12 @@ void GUIPort::setCenterPosByFraction(qreal x, qreal y)
     this->setCenterPos(x*mpParentGuiModelObject->boundingRect().width(), y*mpParentGuiModelObject->boundingRect().height());
 }
 
-
+//! Returns the center position in parent coordinates
 QPointF GUIPort::getCenterPos()
 {
-    return this->pos() + QPointF( this->boundingRect().width()/2.0, this->boundingRect().height()/2.0);
+    // QPointF( this->boundingRect().width()/2.0, this->boundingRect().height()/2.0);
+    return this->pos() + QPointF(this->geometry().size().width()/2.0, this->geometry().size().height()/2.0);
 }
-
-
-//! Defines what happens when mouse cursor stops hovering a port.
-//! @param *event defines the mouse event.
-void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-{
-    this->setCursor(Qt::ArrowCursor);
-    magnify(false);
-
-    mpPortLabel->hide();
-    this->setZValue(0.0);
-
-    QGraphicsWidget::hoverLeaveEvent(event);
-}
-
 
 //! Defines what happens when clicking on a port.
 //! @param *event defines the mouse event.
@@ -372,8 +374,8 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
 //! @brief Refreshes the port overlay graphics and lable position
 void GUIPort::refreshPortOverlayPosition()
 {
-    QTransform transf;
-    QPointF pt1, pt2, pt3;
+//    QTransform transf;
+//    QPointF pt1, pt2, pt3;
 
     //Refresh the port label position and orientation
 //    //! @todo something wierd with the portlable it seems to be bigger than what you can see in the gui
@@ -384,45 +386,61 @@ void GUIPort::refreshPortOverlayPosition()
 //        transf.scale(-1.0,1.0);
 //    }
 //    pt2 =  transf * pt1;
-    pt3 = this->boundingRect().center();
+
     //this->mpPortLabel->setPos(pt3-pt2+QPointF(10, 10)); //! @todo This is little messy, GUIPort::magnify fucks the pos for the label a bit
 
-    qDebug() << "Gemotry: " << this->geometry();
-    qDebug() << "bounding rect: " << this->boundingRect();
-    qDebug() << "Gemotry.center: " << this->geometry().center();
-    qDebug() << "Gemotry.center in scene 0: " << this->mapToScene(this->boundingRect().center());
-    pt1 = getGuiModelObject()->mapToScene(this->geometry().center());
-    qDebug() << "Gemotry.center in scene 1: " << pt1;
+//    qDebug() << "Gemotry: " << this->geometry();
+//    qDebug() << "bounding rect: " << this->boundingRect();
+//    qDebug() << "Gemotry.center: " << this->geometry().center();
+//    qDebug() << "Gemotry.center in scene 0: " << this->mapToScene(this->boundingRect().center());
+//    pt1 = getGuiModelObject()->mapToScene(this->geometry().center());
+//    qDebug() << "Gemotry.center in scene 1: " << pt1;
 
-    pt1 = this->mapToScene(this->boundingRect().center());
-    pt2 = this->mapFromScene( pt1 + QPointF(4, 4) );
-    this->mpPortLabel->setPos(pt2);
+//    qDebug() << "centerPos vs. boundingRect.center: " << this->getCenterPos() << " " << this->boundingRect().center();
+
+    //pt1 = this->getCenterPos() + this->getGuiModelObject()->geometry().topLeft();
+    //qDebug() << "Gemotry.center in scene 2: " << pt1;
 
 
-    //Put overlay ptrs into a vector to avoid duplicating transformation code, ignore if null
-    QVector<QGraphicsSvgItem*> overlayPtrs;
+
+//    qDebug() << "scenptrs: " << this->scene() << " " << this->getParentContainerObjectPtr()->getContainedScenePtr();
+//    qDebug() << "scenptrs: " << this->getGuiModelObject()->scene() << " " << this->getParentContainerObjectPtr()->getContainedScenePtr();
+//    qDebug() << "scenptrs: " << mpPortLabel->scene() << " " << this->getParentContainerObjectPtr()->getContainedScenePtr();
+
+//Graphical debugging
+//    QPen rpen(QColor(255,0,0));
+//    QPen gpen(QColor(0,255,0));
+//    QPen bpen(QColor(0,0,255));
+//    bpen.setWidthF(1.0);
+//    gpen.setWidth(1.0);
+//    rpen.setWidthF(1.0);
+//    qreal r = 1;
+//    QPointF sceneLablePt = pt1 + QPointF(10, 10);
+//    QPointF sceneLableRealPt = this->mapToScene(mpPortLabel->pos());
+//    this->getParentContainerObjectPtr()->getContainedScenePtr()->addEllipse(pt1.x()-r, pt1.y()-r,2*r,2*r,bpen)->setZValue(30);
+//    this->getParentContainerObjectPtr()->getContainedScenePtr()->addEllipse(sceneLablePt.x()-r,sceneLablePt.y()-r,2*r,2*r,rpen)->setZValue(30);
+//    r=2;
+//    this->getParentContainerObjectPtr()->getContainedScenePtr()->addEllipse(sceneLableRealPt.x()-r,sceneLableRealPt.y()-r,2*r,2*r,gpen)->setZValue(30);
+//    //this->scene()->addPolygon(mpPortLabel->mapToScene(mpPortLabel->boundingRect()), gpen);
+//    QRectF actBRect(this->mapToScene(mpPortLabel->pos()), mpPortLabel->boundingRect().size());
+//    this->scene()->addPolygon(actBRect, gpen);
+//    //this->scene()->addPolygon(mpPortLabel->sceneBoundingRect(), rpen);
+
+    //Refresh the port overlay graphics positions
     if (mpCQSIconOverlay != 0)
     {
-        overlayPtrs.append(mpCQSIconOverlay);
+        // We take the port center and transform to scene, here we subtract half the overlay size to align overlay center with port center then we transform back to port coordinate system
+        mpCQSIconOverlay->setPos( this->mapFromScene( mpParentGuiModelObject->mapToScene(this->getCenterPos()) - mpCQSIconOverlay->boundingRect().center() ) );
     }
     if (mpMultiPortIconOverlay != 0)
     {
-        overlayPtrs.append(mpMultiPortIconOverlay);
-    }
-    //Refresh the port overlay graphics
-    for(int i=0; i<overlayPtrs.size(); ++i)
-    {
-        transf.reset();
-        pt1 = overlayPtrs[i]->boundingRect().center();
-        transf.rotate(-(overlayPtrs[i]->rotation() + this->rotation() + mpParentGuiModelObject->rotation()));
-        if (mpParentGuiModelObject->isFlipped())
-        {
-            transf.scale(-1.0,1.0);
-        }
-        pt2 =  transf * pt1;
-        overlayPtrs[i]->setPos(pt3-pt2);
+        // We take the port center and transform to scene, here we subtract half the overlay size to align overlay center with port center then we transform back to port coordinate system
+        mpMultiPortIconOverlay->setPos( this->mapFromScene( mpParentGuiModelObject->mapToScene(this->getCenterPos()) - mpMultiPortIconOverlay->boundingRect().center() ) );
     }
 
+    //! @todo Do we even need to recalculate lable pos every time, the offset will never change and lable should move with port anyway
+    //We take the ports bounding rect center in scene coordinates and add a predetermined offset, then transform back to port coordinate system
+    this->mpPortLabel->setPos( this->mapFromScene( this->sceneBoundingRect().center() + QPointF(10, 10) ) );
 }
 
 
@@ -476,7 +494,6 @@ void GUIPort::refreshPortGraphics()
 void GUIPort::setPortOverlayScale(qreal scale)
 {
     mOverlaySetScale = scale;   //Remember what scale we are supposed to have
-    this->mpPortLabel->setScale(mOverlaySetScale);
 
     //Should we add extra overlay scale when magnified
     qreal overlayExtraScaleFactor;
@@ -497,7 +514,6 @@ void GUIPort::setPortOverlayScale(qreal scale)
     {
         mpMultiPortIconOverlay->setScale(mOverlaySetScale * overlayExtraScaleFactor);
     }
-
 }
 
 //! Returns a pointer to the GraphicsView that the port belongs to.
@@ -673,9 +689,10 @@ void GUIPort::setDisplayName(const QString name)
 {
     mPortName = name;
     //Set the lable, &#160 menas extra white space, to make lable more readable
-    QString label("<p><span style=\"background-color:lightyellow\">&#160;&#160;");
+    QString label("<p><span style=\"background-color:lightyellow;font-size:14px;text-align:center\">&#160;&#160;");
     label.append(this->mPortName).append("&#160;&#160;</span></p>");
     mpPortLabel->setHtml(label);
+    mpPortLabel->adjustSize();
 }
 
 
