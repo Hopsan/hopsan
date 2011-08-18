@@ -608,6 +608,23 @@ bool GUIContainerObject::areLossesVisible()
 }
 
 
+GUITextBoxWidget *GUIContainerObject::addTextBoxWidget(QPointF position, undoStatus undoSettings)
+{
+    GUITextBoxWidget *pTempTextBoxWidget;
+    pTempTextBoxWidget = new GUITextBoxWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
+   // mTextWidgetList.append(pTempTextWidget);
+    mWidgetMap.insert(mHighestWidgetIndex, pTempTextBoxWidget);
+    ++mHighestWidgetIndex;
+//    if(undoSettings == UNDO)
+//    {
+//        mpUndoStack->registerAddedTextWidget(pTempTextWidget);
+//    }
+    mpParentProjectTab->hasChanged();
+
+    return pTempTextBoxWidget;
+}
+
+
 //! @brief Inserts a new text widget to the container
 //! @param position Initial position of the widget
 //! @param undoSettings Tells whether or not this shall be registered in the undo stack

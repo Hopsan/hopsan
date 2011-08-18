@@ -64,6 +64,68 @@ protected:
 };
 
 
+class GUITextBoxWidget : public GUIWidget
+{
+    Q_OBJECT
+
+public:
+    GUITextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    void saveToDomElement(QDomElement &rDomElement);
+
+    void setText(QString text);
+    void setFont(QFont font);
+    void setLineWidth(int value);
+    void setLineStyle(Qt::PenStyle style);
+    void setColor(QColor color);
+    void setSize(qreal w, qreal h);
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+public slots:
+    void deleteMe(undoStatus undoSettings=UNDO);
+    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
+    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
+
+private slots:
+    void updateWidgetFromDialog();
+    void openFontDialog();
+    void openColorDialog();
+
+private:
+    QGraphicsTextItem *mpTextItem;
+    QGraphicsRectItem *mpRectItem;
+
+    QDialog *mpEditDialog;
+    QLabel *mpWidthLabelInDialog;
+    QSpinBox *mpWidthBoxInDialog;
+    QLabel *mpColorLabelInDialog;
+    QPushButton *mpFontInDialogButton;
+    QPushButton *mpColorInDialogButton;
+    QLabel *mpStyleLabelInDialog;
+    QComboBox *mpStyleBoxInDialog;
+    QPushButton *mpDoneInDialogButton;
+    QPushButton *mpCancelInDialogButton;
+
+    QTextEdit *mpTextBox;
+    QFont mSelectedFont;
+    QColor mSelectedColor;
+    QLabel *mpExampleLabel;
+
+    bool mResizeTop;
+    bool mResizeBottom;
+    bool mResizeLeft;
+    bool mResizeRight;
+    QPointF mPosBeforeResize;
+    qreal mWidthBeforeResize;
+    qreal mHeightBeforeResize;
+};
+
+
 class GUITextWidget : public GUIWidget
 {
     Q_OBJECT

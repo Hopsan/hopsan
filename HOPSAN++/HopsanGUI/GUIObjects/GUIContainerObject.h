@@ -72,6 +72,7 @@ public:
     bool isObjectSelected();
 
     //GUIWidgets methods
+    GUITextBoxWidget *addTextBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
     GUITextWidget *addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
     GUIBoxWidget *addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
     void removeWidget(GUIWidget *pWidget, undoStatus undoSettings=UNDO);

@@ -128,6 +128,214 @@ void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////
+GUITextBoxWidget::GUITextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+    : GUIWidget(pos, rot, startSelected, pSystem, pParent)
+{
+    this->mHmfTagName = HMF_TEXTBOXWIDGETTAG;
+
+    mpTextItem = new QGraphicsTextItem(text, this);
+    QFont tempFont = mpTextItem->font();
+    tempFont.setPointSize(12);
+    mpTextItem->setFont(tempFont);
+    mpTextItem->setPos(this->boundingRect().center());
+    mpTextItem->show();
+
+    mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
+    QPen tempPen = mpRectItem->pen();
+    tempPen.setWidth(2);
+    tempPen.setStyle(Qt::SolidLine);//Qt::DotLine);
+    tempPen.setCapStyle(Qt::RoundCap);
+    tempPen.setJoinStyle(Qt::RoundJoin);
+    mpRectItem->setPen(tempPen);
+    mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
+    mpRectItem->show();
+
+    this->setColor(QColor("darkolivegreen"));
+
+    this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
+    mpSelectionBox->setSize(0.0, 0.0, max(mpTextItem->boundingRect().width(), mpRectItem->boundingRect().width()),
+                                      max(mpTextItem->boundingRect().height(), mpRectItem->boundingRect().height()));
+
+    this->resize(max(mpTextItem->boundingRect().width(), mpRectItem->boundingRect().width()),
+                 max(mpTextItem->boundingRect().height(), mpRectItem->boundingRect().height()));
+
+      this->setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
+
+    mWidthBeforeResize = mpRectItem->rect().width();
+    mHeightBeforeResize = mpRectItem->rect().height();
+    mPosBeforeResize = this->pos();
+
+    mWidgetIndex = widgetIndex;
+}
+
+void GUITextBoxWidget::saveToDomElement(QDomElement &rDomElement)
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::setText(QString text)
+{
+    mpTextItem->setPlainText(text);
+    if(mpTextItem->boundingRect().intersects(mpRectItem->boundingRect()))
+    {
+        mpRectItem->setRect(mpTextItem->boundingRect());
+    }
+    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    mpSelectionBox->setPassive();
+}
+
+
+void GUITextBoxWidget::setFont(QFont font)
+{
+    mpTextItem->setFont(font);
+    if(mpTextItem->boundingRect().intersects(mpRectItem->boundingRect()))
+    {
+        mpRectItem->setRect(mpTextItem->boundingRect());
+    }
+    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    mpSelectionBox->setPassive();
+    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+}
+
+
+void GUITextBoxWidget::setLineWidth(int value)
+{
+    QPen tempPen;
+    tempPen = mpRectItem->pen();
+    tempPen.setWidth(value);
+    mpRectItem->setPen(tempPen);
+}
+
+
+void GUITextBoxWidget::setLineStyle(Qt::PenStyle style)
+{
+    QPen tempPen;
+    tempPen = mpRectItem->pen();
+    tempPen.setStyle(style);
+    mpRectItem->setPen(tempPen);
+}
+
+
+void GUITextBoxWidget::setColor(QColor color)
+{
+    mpTextItem->setDefaultTextColor(color);
+
+    QPen tempPen;
+    tempPen = mpRectItem->pen();
+    tempPen.setColor(color);
+    mpRectItem->setPen(tempPen);
+
+
+}
+
+void GUITextBoxWidget::setSize(qreal w, qreal h)
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    GUIObject::hoverMoveEvent(event);
+
+    this->setCursor(Qt::ArrowCursor);
+    mResizeLeft = false;
+    mResizeRight = false;
+    mResizeTop = false;
+    mResizeBottom = false;
+
+    int resLim = 5;
+
+    if(event->pos().x() > boundingRect().left() && event->pos().x() < boundingRect().left()+resLim)
+    {
+        mResizeLeft = true;
+    }
+    if(event->pos().x() > boundingRect().right()-resLim && event->pos().x() < boundingRect().right())
+    {
+        mResizeRight = true;
+    }
+    if(event->pos().y() > boundingRect().top() && event->pos().y() < boundingRect().top()+resLim)
+    {
+        mResizeTop = true;
+    }
+    if(event->pos().y() > boundingRect().bottom()-resLim && event->pos().y() < boundingRect().bottom())
+    {
+        mResizeBottom = true;
+    }
+
+    if( (mResizeLeft && mResizeTop) || (mResizeRight && mResizeBottom) )
+        this->setCursor(Qt::SizeFDiagCursor);
+    else if( (mResizeTop && mResizeRight) || (mResizeBottom && mResizeLeft) )
+        this->setCursor(Qt::SizeBDiagCursor);
+    else if(mResizeLeft || mResizeRight)
+        this->setCursor(Qt::SizeHorCursor);
+    else if(mResizeTop || mResizeBottom)
+        this->setCursor(Qt::SizeVerCursor);
+}
+
+void GUITextBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::deleteMe(undoStatus undoSettings)
+{
+    mpParentContainerObject->removeWidget(this, undoSettings);
+}
+
+void GUITextBoxWidget::updateWidgetFromDialog()
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::openFontDialog()
+{
+    //! @todo Implement
+}
+
+void GUITextBoxWidget::openColorDialog()
+{
+    //! @todo Implement
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //! @brief Constructor for text widget class
 //! @param text Initial text in the widget
 //! @param pos Position of text widget

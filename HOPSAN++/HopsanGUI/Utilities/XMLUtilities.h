@@ -88,6 +88,7 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 #define HMF_STARTVALUES "startvalues"
 #define HMF_STARTVALUE "startvalue"
 #define HMF_GROUPTAG "group"
+#define HMF_TEXTBOXWIDGETTAG "textboxwidget"
 #define HMF_TEXTWIDGETTAG "textwidget"
 #define HMF_BOXWIDGETTAG "boxwidget"
 #define HMF_PORTSTAG "ports"

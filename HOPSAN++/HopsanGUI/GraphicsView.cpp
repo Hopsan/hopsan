@@ -88,11 +88,18 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
         {
             QGraphicsView::contextMenuEvent(event);
             QMenu menu(this);
+            QAction *addTextBoxAction = menu.addAction("Add text box widget (experimental)");
             QAction *addTextAction = menu.addAction("Add text widget");
             QAction *addBoxAction = menu.addAction("Add box widget");
 
             QCursor cursor;
             QAction *selectedAction = menu.exec(cursor.pos());
+
+            if(selectedAction == addTextBoxAction)
+            {
+                mpContainerObject->getUndoStackPtr()->newPost();
+                this->mpContainerObject->addTextBoxWidget(this->mapToScene(event->pos()).toPoint());
+            }
 
             if(selectedAction == addTextAction)
             {
