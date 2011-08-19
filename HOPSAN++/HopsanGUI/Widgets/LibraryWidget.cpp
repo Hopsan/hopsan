@@ -675,6 +675,7 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
 
         //Change name in component name field. Resize the text if needed, so that the library widget does not change size.
         mpLibraryWidget->mpComponentNameField->setMaximumWidth(this->width());
+        mpLibraryWidget->mpComponentNameField->setMinimumHeight(mpLibraryWidget->mpComponentNameField->height());
         mpLibraryWidget->mpComponentNameField->setFont(QFont(mpLibraryWidget->mpComponentNameField->font().family(), min(10.0, .9*mpLibraryWidget->width()/(0.615*componentName.size()))));
         mpLibraryWidget->mpComponentNameField->setText(componentName);
     }
