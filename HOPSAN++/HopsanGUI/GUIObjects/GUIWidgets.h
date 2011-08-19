@@ -38,6 +38,7 @@
 #include <QSpinBox>
 #include <QComboBox>
 #include <QToolButton>
+#include <QCheckBox>
 
 
 class GUIWidget : public GUIObject
@@ -101,20 +102,20 @@ private:
     QGraphicsRectItem *mpRectItem;
 
     QDialog *mpEditDialog;
+    QCheckBox *mpShowBoxCheckBoxInDialog;
     QLabel *mpWidthLabelInDialog;
     QSpinBox *mpWidthBoxInDialog;
     QLabel *mpColorLabelInDialog;
     QPushButton *mpFontInDialogButton;
-    QPushButton *mpColorInDialogButton;
+    QToolButton *mpColorInDialogButton;
     QLabel *mpStyleLabelInDialog;
     QComboBox *mpStyleBoxInDialog;
     QPushButton *mpDoneInDialogButton;
     QPushButton *mpCancelInDialogButton;
 
-    QTextEdit *mpTextBox;
+    QTextEdit *mpTextBoxInDialog;
     QFont mSelectedFont;
     QColor mSelectedColor;
-    QLabel *mpExampleLabel;
 
     bool mResizeTop;
     bool mResizeBottom;
