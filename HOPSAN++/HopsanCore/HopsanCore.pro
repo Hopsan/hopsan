@@ -258,7 +258,8 @@ HEADERS += win32dll.h \
     Components/Electric/ElectricMotor.hpp \
     Components/Electric/ElectricMotorGear.hpp \
     Components/Electric/ElectricResistor.hpp \
-    Components/Electric/ElectricUsource.hpp
+    Components/Electric/ElectricUsource.hpp \
+    Components/Hydraulic/Hydraulic33ShuttleValve.hpp
 
 
 OTHER_FILES += \

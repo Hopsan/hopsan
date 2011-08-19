@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="Hydraulic33ShuttleValve" displayname="3/3 Shuttle Valve">
+        <help picture="33valvehelp.svg" text="Hydraulic proportional closed-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction."/>
+		<icon isopath="33valve_iso.svg" iconrotation="ON" userpath="33shuttlevalve_user.svg"/>
+        <portpose x="0.4424" y="0.7" a="90" name="PP"/>
+        <portpose x="0.4424" y="0" a="270" name="PA"/>
+        <portpose x="0.5624" y="0.7" a="90" name="PT"/>
+	<portpose x="0.82" y="0.1" a="0" name="xv_out"/>
+    </modelobject>
+</hopsanobjectappearance>
+
