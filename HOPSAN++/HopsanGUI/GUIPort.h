@@ -26,7 +26,7 @@
 #define GUIPORT_H
 
 #include <QGraphicsSvgItem>
-#include <QGraphicsLineItem>
+//#include <QGraphicsLineItem>
 #include <QGraphicsTextItem>
 #include <QGraphicsWidget>
 
@@ -40,7 +40,7 @@ class GUIContainerObject;
 class GUIConnector;
 class PlotWindow;
 
-enum portDirection {TOPBOTTOM, LEFTRIGHT};
+enum PortDirectionT {TOPBOTTOM, LEFTRIGHT};
 
 class GUIPort :public QGraphicsWidget
 {
@@ -60,10 +60,11 @@ public:
     void setDisplayName(const QString name);
 
     QPointF getCenterPos();
-    portDirection getPortDirection();
-    qreal getPortHeading();
+    qreal getPortRotation();
+    PortDirectionT getPortDirection();
     void setCenterPos(qreal x, qreal y);
     void setCenterPosByFraction(qreal x, qreal y);
+    void setRotation(qreal angle);
 
     void magnify(bool blowup);
     void show();
@@ -85,7 +86,7 @@ public:
     bool isConnected();
     QVector<GUIPort *> getConnectedPorts();
 
-    GUIModelObject *mpParentGuiModelObject;
+    GUIModelObject *mpParentGuiModelObject; //!< @todo make private
 
 public slots:
     void hideIfNotConnected(bool togglePortsActionTriggered);
@@ -101,9 +102,9 @@ public slots:
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openRightClickMenu(QPoint screenPos);
 
@@ -112,7 +113,6 @@ protected slots:
 
 private:
     void refreshPortGraphicsOverlayGraphics();
-    void setPortOverlayIconScale();
 
 //    QColor myLineColor;
 //    qreal myLineWidth;
@@ -122,7 +122,7 @@ private:
     QVector<GUIConnector*> mConnectedConnectors;
     GUIPortAppearance *mpPortAppearance;
     GUIPortAppearance mPortAppearanceAfterLastRefresh;
-    QString mPortName;
+    QString mPortDisplayName;
 
     qreal mMag;
     qreal mOverlaySetScale;

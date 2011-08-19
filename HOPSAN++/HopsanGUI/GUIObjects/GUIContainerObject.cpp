@@ -162,7 +162,7 @@ void GUIContainerObject::disconnectMainWindowActions()
 //! @param[in] center The center point of all objects to be compared with
 //! @param[in] pt The position of this object, used to determine the center relative posistion
 //! @returns An enum that indicates on which side the port should be placed
-GUIContainerObject::CONTAINEREDGE GUIContainerObject::findPortEdge(QPointF center, QPointF pt)
+GUIContainerObject::ContainerEdgeT GUIContainerObject::findPortEdge(QPointF center, QPointF pt)
 {
     //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
     QPointF diff = pt-center;
@@ -231,7 +231,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
             //            QLineF line = QLineF(center, moit.value()->getCenterPos());
             //            this->getContainedScenePtr()->addLine(line); //debug-grej
 
-            CONTAINEREDGE edge = findPortEdge(center, moit.value()->getCenterPos());
+            ContainerEdgeT edge = findPortEdge(center, moit.value()->getCenterPos());
             //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
             //Make sure we dont screw up in the code and forget to rename or create external ports on internal rename or create
@@ -267,6 +267,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     for (it=rightEdge.begin(); it!=rightEdge.end(); ++it)
     {
         it.value()->setCenterPosByFraction(1.0, sdisp);
+        it.value()->setRotation(0);
         this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
@@ -276,6 +277,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     for (it=bottomEdge.begin(); it!=bottomEdge.end(); ++it)
     {
         it.value()->setCenterPosByFraction(sdisp, 1.0);
+        it.value()->setRotation(90);
         this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
@@ -285,6 +287,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     for (it=leftEdge.begin(); it!=leftEdge.end(); ++it)
     {
         it.value()->setCenterPosByFraction(0.0, sdisp);
+        it.value()->setRotation(180);
         this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
@@ -294,6 +297,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     for (it=topEdge.begin(); it!=topEdge.end(); ++it)
     {
         it.value()->setCenterPosByFraction(sdisp, 0.0);
+        it.value()->setRotation(270);
         this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
@@ -383,27 +387,28 @@ void GUIContainerObject::createExternalPort(QString portName)
     PortAppearanceMapT::iterator it = mGUIModelObjectAppearance.getPortAppearanceMap().find(portName);
     if (it != mGUIModelObjectAppearance.getPortAppearanceMap().end())
     {
-        //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
-        QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
-        QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
-        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
-
         //Create new external port if if does not already exist (this is the usual case for individual components)
         GUIPort *pPort = this->getPort(it.key());
         if ( pPort == 0 )
         {
             qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
 
+            //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
+            QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
+            QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
+            it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
+
             qreal x = it.value().x;
             qreal y = it.value().y;
+            qDebug() << "x,y: " << x << " " << y;
 
             if (this->type() == GUIGROUP)
             {
-                pPort = new GroupPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+                pPort = new GroupPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
             }
             else
             {
-                pPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+                pPort = new GUIPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
             }
 
 
@@ -413,8 +418,9 @@ void GUIContainerObject::createExternalPort(QString portName)
         {
 
             //The external port already seems to exist, lets update it incase something has changed
-            //! @todo Maybe need to have a refresh portappearance function, dont really know if thiss will ever be used though, will fix when it becomes necessary
+            //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
             pPort->refreshPortGraphics();
+            pPort->refreshPortOverlayPosition();
             qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
         }
     }

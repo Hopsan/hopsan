@@ -89,7 +89,7 @@ void GUIContainerPort::createPorts()
         mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname));
     }
 
-    mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+    mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
     mPortListPtrs.append(mpGuiPort);
 
 }

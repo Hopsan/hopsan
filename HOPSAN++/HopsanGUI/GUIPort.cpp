@@ -80,7 +80,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     mpParentGuiModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
-    mPortName = portName;
+    mPortDisplayName = portName;
 
     mpMultiPortIconOverlay = 0;
     mpCQSIconOverlay = 0;
@@ -98,10 +98,10 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mpPortLabel->setZValue(50); //High value should be on top of everything
     mpPortLabel->hide();
     //Port label must exist and be set up before we run setDisplayName
-    this->setDisplayName(mPortName);
+    this->setDisplayName(mPortDisplayName);
 
-    qDebug() << "geometry vs. brect: " << this->geometry() << " " << this->boundingRect();
-    qDebug() << "transformoriginpoint: " << this->transformOriginPoint();
+    //qDebug() << "geometry vs. brect: " << this->geometry() << " " << this->boundingRect();
+    //qDebug() << "transformoriginpoint: " << this->transformOriginPoint();
 
     //Setup overlay (if it exists)
     this->refreshPortGraphicsOverlayGraphics();
@@ -125,9 +125,9 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->setAcceptHoverEvents(true);
 
     //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
-    GraphicsView *pView = mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->getGraphicsView(); //! @todo need to be able to access this in some nicer way then ptr madness
+    GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //! @todo need to be able to access this in some nicer way then ptr madness
     connect(gpMainWindow->mpTogglePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(hideIfNotConnected(bool)));
-    connect(pView,                          SIGNAL(zoomChange(qreal)),  this, SLOT(setPortOverlayScale(qreal)));
+    connect(pView,                              SIGNAL(zoomChange(qreal)),  this, SLOT(setPortOverlayScale(qreal)));
 }
 
 GUIPort::~GUIPort()
@@ -241,6 +241,13 @@ QPointF GUIPort::getCenterPos()
     return this->pos() + QPointF(this->geometry().size().width()/2.0, this->geometry().size().height()/2.0);
 }
 
+//! @brief Overloaded setRotation to store rotation in appearance data
+void GUIPort::setRotation(qreal angle)
+{
+    mpPortAppearance->rot = angle;
+    QGraphicsWidget::setRotation(angle);
+}
+
 //! Defines what happens when clicking on a port.
 //! @param *event defines the mouse event.
 void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -343,6 +350,7 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
             //! @todo check if file exist
             mpCQSIconOverlay = new QGraphicsSvgItem(mpPortAppearance->mCQSOverlayPath, this);
             mpCQSIconOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+            mpCQSIconOverlay->setZValue(5);
         }
     }
 
@@ -363,6 +371,7 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
             //! @todo check if file exist
             mpMultiPortIconOverlay = new QGraphicsSvgItem(mpPortAppearance->mMultiPortOverlayPath, this);
             mpMultiPortIconOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+            mpMultiPortIconOverlay->setZValue(5);
         }
     }
 
@@ -452,9 +461,9 @@ void GUIPort::refreshPortGraphics()
     qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
 
     //Systemports may change appearance depending on what is connected
+    QString cqsType;
     if (getPortType() == "SYSTEMPORT")
     {
-        QString cqsType;
         if (getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
         {
             //If we are port in containerport model object then ask our parent system model object about cqs-type
@@ -465,9 +474,12 @@ void GUIPort::refreshPortGraphics()
         {
             //If we are external systemport then ask our model object about the cqs-type
             cqsType = getGuiModelObject()->getTypeCQS();
+            qDebug() << "cqsType: " << cqsType;
         }
-        mpPortAppearance->selectPortIcon(cqsType, getPortType(), getNodeType());
     }
+    mpPortAppearance->selectPortIcon(cqsType, getPortType(), getNodeType());
+    //qDebug() << mpPortAppearance->mMainIconPath << " " << mpPortAppearance->mCQSOverlayPath << " " << mpPortAppearance->mMultiPortOverlayPath;
+    //qDebug() << mpMainIcon << " ,,, " << mpCQSIconOverlay << " ,,, " << mpMultiPortIconOverlay;
 
 
     if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
@@ -593,7 +605,7 @@ bool GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<QString> 
     return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getPortName(), names, valuesTxt);
 }
 
-portDirection GUIPort::getPortDirection()
+PortDirectionT GUIPort::getPortDirection()
 {
     qreal scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation();
     while(scene_angle > 359)
@@ -652,8 +664,8 @@ QVector<GUIPort *> GUIPort::getConnectedPorts()
 }
 
 
-//! @todo Do we really need both direction and heading
-qreal GUIPort::getPortHeading()
+//! @brief Returns the rotation set by port appearance
+qreal GUIPort::getPortRotation()
 {
     return mpPortAppearance->rot;
 }
@@ -676,7 +688,7 @@ void GUIPort::show()
 
 QString GUIPort::getPortName()
 {
-    return mPortName;
+    return mPortDisplayName;
 }
 
 QString GUIPort::getGuiModelObjectName()
@@ -687,10 +699,10 @@ QString GUIPort::getGuiModelObjectName()
 
 void GUIPort::setDisplayName(const QString name)
 {
-    mPortName = name;
+    mPortDisplayName = name;
     //Set the lable, &#160 menas extra white space, to make lable more readable
     QString label("<p><span style=\"background-color:lightyellow;font-size:14px;text-align:center\">&#160;&#160;");
-    label.append(this->mPortName).append("&#160;&#160;</span></p>");
+    label.append(this->mPortDisplayName).append("&#160;&#160;</span></p>");
     mpPortLabel->setHtml(label);
     mpPortLabel->adjustSize();
 }

@@ -42,11 +42,11 @@ class GUIContainerObject : public GUIModelObject
     friend class UndoStack;     //! @todo Not sure about this, but the alternative would be to have lots and lots of access functions only used by undo stack...
     Q_OBJECT
 public:
-    enum CONTAINEREDGE {RIGHTEDGE, BOTTOMEDGE, LEFTEDGE, TOPEDGE};
+    enum ContainerEdgeT {RIGHTEDGE, BOTTOMEDGE, LEFTEDGE, TOPEDGE};
     GUIContainerObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIContainerObject();
 
-    ProjectTab *mpParentProjectTab;
+    ProjectTab *mpParentProjectTab;  //!< @todo not public
 
     //Signal/slot connection methods
     void connectMainWindowActions();
@@ -99,7 +99,7 @@ public:
     //Handle container appearance
     QString getIconPath(const graphicsType gfxType);
     void setIconPath(const QString path, const graphicsType gfxType);
-    CONTAINEREDGE findPortEdge(QPointF center, QPointF pt); //!< @todo maybe not public
+    ContainerEdgeT findPortEdge(QPointF center, QPointF pt); //!< @todo maybe not public
     virtual void refreshAppearance();
     void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
