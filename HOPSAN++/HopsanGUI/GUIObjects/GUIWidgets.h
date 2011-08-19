@@ -47,7 +47,9 @@ class GUIWidget : public GUIObject
 
 public:
     GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
+    QString mType;
     void setOldPos();
+    void setWidgetIndex(int idx);
     int getWidgetIndex();
 
 protected:
@@ -79,6 +81,7 @@ public:
     void setLineStyle(Qt::PenStyle style);
     void setColor(QColor color);
     void setSize(qreal w, qreal h);
+    void setBoxVisible(bool boxVisible);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -127,94 +130,94 @@ private:
 };
 
 
-class GUITextWidget : public GUIWidget
-{
-    Q_OBJECT
-public:
-    GUITextWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
-    void saveToDomElement(QDomElement &rDomElement);
-    void setText(QString text);
-    void setTextColor(QColor color);
-    void setTextFont(QFont font);
+//class GUITextWidget : public GUIWidget
+//{
+//    Q_OBJECT
+//public:
+//    GUITextWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+//    void saveToDomElement(QDomElement &rDomElement);
+//    void setText(QString text);
+//    void setTextColor(QColor color);
+//    void setTextFont(QFont font);
 
-protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+//protected:
+//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-public slots:
-    void deleteMe(undoStatus undoSettings=UNDO);
-    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
-    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
+//public slots:
+//    void deleteMe(undoStatus undoSettings=UNDO);
+//    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
+//    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
 
-private slots:
-    void updateWidgetFromDialog();
-    void openFontDialog();
-    void openColorDialog();
+//private slots:
+//    void updateWidgetFromDialog();
+//    void openFontDialog();
+//    void openColorDialog();
 
-private:
-    QGraphicsTextItem *mpTextItem;
-    QDialog *mpEditTextDialog;
-    QPushButton *mpFontInDialogButton;
-    QPushButton *mpColorInDialogButton;
-    QPushButton *mpDoneInDialogButton;
-    QPushButton *mpCancelInDialogButton;
+//private:
+//    QGraphicsTextItem *mpTextItem;
+//    QDialog *mpEditTextDialog;
+//    QPushButton *mpFontInDialogButton;
+//    QPushButton *mpColorInDialogButton;
+//    QPushButton *mpDoneInDialogButton;
+//    QPushButton *mpCancelInDialogButton;
 
-    QTextEdit *mpTextBox;
-    QFont mSelectedFont;
-    QColor mSelectedColor;
-    QLabel *mpExampleLabel;
-};
+//    QTextEdit *mpTextBox;
+//    QFont mSelectedFont;
+//    QColor mSelectedColor;
+//    QLabel *mpExampleLabel;
+//};
 
 
-class GUIBoxWidget : public GUIWidget
-{
-    Q_OBJECT
-public:
-    GUIBoxWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
-    void saveToDomElement(QDomElement &rDomElement);
-    void setLineWidth(int value);
-    void setLineStyle(Qt::PenStyle style);
-    void setLineColor(QColor color);
-    void setSize(qreal w, qreal h);
+//class GUIBoxWidget : public GUIWidget
+//{
+//    Q_OBJECT
+//public:
+//    GUIBoxWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+//    void saveToDomElement(QDomElement &rDomElement);
+//    void setLineWidth(int value);
+//    void setLineStyle(Qt::PenStyle style);
+//    void setLineColor(QColor color);
+//    void setSize(qreal w, qreal h);
 
-public slots:
-    void deleteMe(undoStatus undoSettings=UNDO);
-    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
-    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
+//public slots:
+//    void deleteMe(undoStatus undoSettings=UNDO);
+//    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
+//    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
 
-protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+//protected:
+//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+//    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+//    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+//    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+//    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-private slots:
-    void openColorDialog();
-    void updateWidgetFromDialog();
+//private slots:
+//    void openColorDialog();
+//    void updateWidgetFromDialog();
 
-private:
-    QGraphicsRectItem *mpRectItem;
+//private:
+//    QGraphicsRectItem *mpRectItem;
 
-    QDialog *mpEditBoxDialog;
-    QLabel *mpWidthLabelInDialog;
-    QSpinBox *mpWidthBoxInDialog;
-    QLabel *mpColorLabelInDialog;
-    QToolButton *mpColorInDialogButton;
-    QLabel *mpStyleLabelInDialog;
-    QComboBox *mpStyleBoxInDialog;
-    QPushButton *mpDoneInDialogButton;
-    QPushButton *mpCancelInDialogButton;
+//    QDialog *mpEditBoxDialog;
+//    QLabel *mpWidthLabelInDialog;
+//    QSpinBox *mpWidthBoxInDialog;
+//    QLabel *mpColorLabelInDialog;
+//    QToolButton *mpColorInDialogButton;
+//    QLabel *mpStyleLabelInDialog;
+//    QComboBox *mpStyleBoxInDialog;
+//    QPushButton *mpDoneInDialogButton;
+//    QPushButton *mpCancelInDialogButton;
 
-    QColor mSelectedColor;
+//    QColor mSelectedColor;
 
-    bool mResizeTop;
-    bool mResizeBottom;
-    bool mResizeLeft;
-    bool mResizeRight;
-    QPointF mPosBeforeResize;
-    qreal mWidthBeforeResize;
-    qreal mHeightBeforeResize;
-};
+//    bool mResizeTop;
+//    bool mResizeBottom;
+//    bool mResizeLeft;
+//    bool mResizeRight;
+//    QPointF mPosBeforeResize;
+//    qreal mWidthBeforeResize;
+//    qreal mHeightBeforeResize;
+//};
 
 
 #endif // GUIWIDGETS_H

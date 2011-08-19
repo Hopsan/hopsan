@@ -73,8 +73,8 @@ public:
 
     //GUIWidgets methods
     GUITextBoxWidget *addTextBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
-    GUITextWidget *addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
-    GUIBoxWidget *addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
+    //GUITextWidget *addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
+    //GUIBoxWidget *addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
     void removeWidget(GUIWidget *pWidget, undoStatus undoSettings=UNDO);
     void rememberSelectedWidget(GUIWidget *widget);
     void forgetSelectedWidget(GUIWidget *widget);
@@ -264,6 +264,7 @@ protected:
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
     GUIModelObjectMapT mGUIModelObjectMap;
     GUIModelObject *mpTempGUIModelObject;
+    QList<GUIModelObject *> mSelectedGUIModelObjectsList;
 
     //Connector members
     QList<GUIConnector *> mSelectedSubConnectorsList;
@@ -273,9 +274,6 @@ protected:
 
     //Widget members
     QMap<size_t, GUIWidget *> mWidgetMap;
-    QList<GUITextWidget *> mTextWidgetList; //! @todo we should really have one common list for all guiwidgets, or maybe only have the guiwidget map bellow
-    QList<GUIBoxWidget *> mBoxWidgetList;
-    QList<GUIModelObject *> mSelectedGUIModelObjectsList;
     QList<GUIWidget *> mSelectedGUIWidgetsList;
     size_t mHighestWidgetIndex;
 

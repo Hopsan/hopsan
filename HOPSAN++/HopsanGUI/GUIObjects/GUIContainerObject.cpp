@@ -618,56 +618,17 @@ GUITextBoxWidget *GUIContainerObject::addTextBoxWidget(QPointF position, undoSta
 {
     GUITextBoxWidget *pTempTextBoxWidget;
     pTempTextBoxWidget = new GUITextBoxWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
-   // mTextWidgetList.append(pTempTextWidget);
+    qDebug() << "Creating widget, index = " << pTempTextBoxWidget->getWidgetIndex();
     mWidgetMap.insert(mHighestWidgetIndex, pTempTextBoxWidget);
+    qDebug() << "Inserting widget in map, index = " << mHighestWidgetIndex;
     ++mHighestWidgetIndex;
-//    if(undoSettings == UNDO)
-//    {
-//        mpUndoStack->registerAddedTextWidget(pTempTextWidget);
-//    }
+    if(undoSettings == UNDO)
+    {
+        mpUndoStack->registerAddedWidget(pTempTextBoxWidget);
+    }
     mpParentProjectTab->hasChanged();
 
     return pTempTextBoxWidget;
-}
-
-
-//! @brief Inserts a new text widget to the container
-//! @param position Initial position of the widget
-//! @param undoSettings Tells whether or not this shall be registered in the undo stack
-GUITextWidget *GUIContainerObject::addTextWidget(QPointF position, undoStatus undoSettings)
-{
-    GUITextWidget *pTempTextWidget;
-    pTempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
-    mTextWidgetList.append(pTempTextWidget);
-    mWidgetMap.insert(mHighestWidgetIndex, pTempTextWidget);
-    ++mHighestWidgetIndex;
-    if(undoSettings == UNDO)
-    {
-        mpUndoStack->registerAddedTextWidget(pTempTextWidget);
-    }
-    mpParentProjectTab->hasChanged();
-
-    return pTempTextWidget;
-}
-
-
-//! @brief Inserts a new box widget to the container
-//! @param position Initial position of the widget
-//! @param undoSettings Tells whether or not this shall be registered in the undo stack
-GUIBoxWidget *GUIContainerObject::addBoxWidget(QPointF position, undoStatus undoSettings)
-{
-    GUIBoxWidget *pTempBoxWidget;
-    pTempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this, mHighestWidgetIndex);
-    mBoxWidgetList.append(pTempBoxWidget);
-    mWidgetMap.insert(mHighestWidgetIndex, pTempBoxWidget);
-    ++mHighestWidgetIndex;
-    if(undoSettings == UNDO)
-    {
-        mpUndoStack->registerAddedBoxWidget(pTempBoxWidget);
-    }
-    mpParentProjectTab->hasChanged();
-
-    return pTempBoxWidget;
 }
 
 
@@ -677,19 +638,12 @@ GUIBoxWidget *GUIContainerObject::addBoxWidget(QPointF position, undoStatus undo
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSettings)
 {
-    if(undoSettings == UNDO && mTextWidgetList.contains(qobject_cast<GUITextWidget *>(pWidget)))
+    if(undoSettings == UNDO)
     {
         mpUndoStack->newPost();
-        mpUndoStack->registerDeletedTextWidget(qobject_cast<GUITextWidget *>(pWidget));
-    }
-    else if(undoSettings == UNDO && mBoxWidgetList.contains(qobject_cast<GUIBoxWidget *>(pWidget)))
-    {
-        mpUndoStack->newPost();
-        mpUndoStack->registerDeletedBoxWidget(qobject_cast<GUIBoxWidget *>(pWidget));
+        mpUndoStack->registerDeletedWidget(pWidget);
     }
 
-    mTextWidgetList.removeAll(qobject_cast<GUITextWidget *>(pWidget));
-    mBoxWidgetList.removeAll(qobject_cast<GUIBoxWidget *>(pWidget));
     mSelectedGUIWidgetsList.removeAll(pWidget);
     mWidgetMap.remove(pWidget->getWidgetIndex());
     delete(pWidget);
@@ -1252,21 +1206,12 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
     }
 
         //Copy widgets
-    //! @todo All widgets should probably use the same load/save functions. Then we could use the mSelectedWidgetList, and this would be much nicer.
-    QList<GUIBoxWidget *>::iterator itbw;
-    for(itbw = mBoxWidgetList.begin(); itbw!=mBoxWidgetList.end(); ++itbw)
+    QMap<size_t, GUIWidget *>::iterator itw;
+    for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
     {
-        if((*itbw)->isSelected())
+        if((*itw)->isSelected())
         {
-            (*itbw)->saveToDomElement(*copyRoot);
-        }
-    }
-    QList<GUITextWidget *>::iterator ittw;
-    for(ittw = mTextWidgetList.begin(); ittw!=mTextWidgetList.end(); ++ittw)
-    {
-        if((*ittw)->isSelected())
-        {
-            (*ittw)->saveToDomElement(*copyRoot);
+            (*itw)->saveToDomElement(*copyRoot);
         }
     }
 }
@@ -1401,26 +1346,16 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         connectorElement = connectorElement.nextSiblingElement("connect");
     }
 
-        //Paste text widgets
-    QDomElement textElement = copyRoot->firstChildElement("textwidget");
-    while(!textElement.isNull())
+        //Paste widgets
+    QDomElement textBoxElement = copyRoot->firstChildElement(HMF_TEXTBOXWIDGETTAG);
+    while(!textBoxElement.isNull())
     {
-        loadTextWidget(textElement, this, NOUNDO);
-        mTextWidgetList.last()->setSelected(true);
-        mTextWidgetList.last()->moveBy(xOffset, yOffset);
-        mpUndoStack->registerAddedTextWidget(mTextWidgetList.last());
-        textElement = textElement.nextSiblingElement("textwidget");
-    }
+        GUITextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, NOUNDO);
 
-        //Paste box widgets
-    QDomElement boxElement = copyRoot->firstChildElement("boxwidget");
-    while(!boxElement.isNull())
-    {
-        loadBoxWidget(boxElement, this, NOUNDO);
-        mBoxWidgetList.last()->setSelected(true);
-        mBoxWidgetList.last()->moveBy(xOffset, yOffset);
-        mpUndoStack->registerAddedBoxWidget(mBoxWidgetList.last());
-        boxElement = boxElement.nextSiblingElement("boxwidget");
+        pWidget->setSelected(true);
+        pWidget->moveBy(xOffset, yOffset);
+        mpUndoStack->registerAddedWidget(pWidget);
+        textBoxElement = textBoxElement.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
     }
 
         //Select all pasted components
@@ -1525,18 +1460,6 @@ void GUIContainerObject::groupSelected(QPointF pt)
     for (int i=0; i<widgets.size(); ++i)
     {
         mWidgetMap.remove(widgets[i]->getWidgetIndex());
-
-        //temporary hack, to remove from widget lists
-        GUITextWidget *pTextWidget = qobject_cast<GUITextWidget*>(widgets[i]);
-        if (pTextWidget != 0)
-        {
-            mTextWidgetList.removeAll(pTextWidget);
-        }
-        GUIBoxWidget *pBoxWidget = qobject_cast<GUIBoxWidget*>(widgets[i]);
-        if (pBoxWidget != 0)
-        {
-            mBoxWidgetList.removeAll(pBoxWidget);
-        }
     }
 
     //Create a new group at the location of the specified

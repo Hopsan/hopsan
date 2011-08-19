@@ -338,50 +338,12 @@ void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pContainer)
 }
 
 
-
-void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings)
+GUITextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings)
 {
     QString text;
     QFont font;
-    QColor fontcolor;
-    QPointF point;
-
-    //Read gui specific stuff
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-
-    if(!guiData.isNull())
-    {
-        QDomElement textobjectTag = guiData.firstChildElement("textobject");
-        text = textobjectTag.attribute("text");
-        font.fromString(textobjectTag.attribute("font"));
-        fontcolor.setNamedColor(textobjectTag.attribute("fontcolor"));
-
-        QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
-        QPointF tempPoint;
-        tempPoint.setX(poseTag.attribute("x").toDouble());
-        tempPoint.setY(poseTag.attribute("y").toDouble());
-        point = tempPoint.toPoint();
-    }
-
-    //qDebug() << "Loading text widget, point = " << data.point;
-    GUITextWidget *pWidget = pContainer->addTextWidget(point, NOUNDO);
-    pWidget->setText(text);
-    pWidget->setTextFont(font);
-    pWidget->setTextColor(fontcolor);
-    if(undoSettings == UNDO)
-    {
-        pContainer->getUndoStackPtr()->registerAddedTextWidget(pWidget);
-    }
-}
-
-
-
-
-//! @brief Convenience function for loading a box widget from a dom element
-void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings)
-{
+    QColor color;
     QString linestyle;
-    QColor linecolor;
     QPointF point;
     qreal width, height, linewidth;
 
@@ -390,6 +352,17 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, und
 
     if(!guiData.isNull())   //! @todo What if it is null?!
     {
+        QDomElement textobjectTag = guiData.firstChildElement("textobject");
+        text = textobjectTag.attribute("text");
+        font.fromString(textobjectTag.attribute("font"));
+        color.setNamedColor(textobjectTag.attribute("fontcolor"));
+
+        QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
+        QPointF tempPoint;
+        tempPoint.setX(poseTag.attribute("x").toDouble());
+        tempPoint.setY(poseTag.attribute("y").toDouble());
+        point = tempPoint.toPoint();
+
         QDomElement sizeTag = guiData.firstChildElement("size");
         width = sizeTag.attribute("width").toDouble();
         height = sizeTag.attribute("height").toDouble();
@@ -397,19 +370,14 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, und
         QDomElement lineTag = guiData.firstChildElement("line");
         linewidth = lineTag.attribute("width").toDouble();
         linestyle = lineTag.attribute(HMF_STYLETAG);
-        linecolor.setNamedColor(lineTag.attribute("color"));
-
-        QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
-        QPointF tempPoint;
-        tempPoint.setX(poseTag.attribute("x").toDouble());
-        tempPoint.setY(poseTag.attribute("y").toDouble());
-        point = tempPoint.toPoint();
     }
 
-    GUIBoxWidget *pWidget = pContainer->addBoxWidget(point, NOUNDO);
+    GUITextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NOUNDO);
+    pWidget->setText(text);
+    pWidget->setFont(font);
+    pWidget->setColor(color);
     pWidget->setSize(width, height);
     pWidget->setLineWidth(linewidth);
-
     if(linestyle == "solidline")
         pWidget->setLineStyle(Qt::SolidLine);
     if(linestyle == "dashline")
@@ -418,13 +386,12 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, und
         pWidget->setLineStyle(Qt::DotLine);
     if(linestyle == "dashdotline")
         pWidget->setLineStyle(Qt::DashDotLine);
-
-    pWidget->setLineColor(linecolor);
-    pWidget->setSelected(true);
-    pWidget->setSelected(false);     //For some reason this is needed
-
+    pWidget->setSelected(true);     //!< @todo Stupid!
+    pWidget->setSelected(false);    //For some reason this is needed...
     if(undoSettings == UNDO)
     {
-        pContainer->getUndoStackPtr()->registerAddedBoxWidget(pWidget);
+        pContainer->getUndoStackPtr()->registerAddedWidget(pWidget);
     }
+
+    return pWidget;
 }

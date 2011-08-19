@@ -324,16 +324,11 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
             it.value()->saveToDomElement(xmlObjects);
         }
 
-            //Save all text widgets
-        for(int i = 0; i != mTextWidgetList.size(); ++i)
+            //Save all widgets
+        QMap<size_t, GUIWidget *>::iterator itw;
+        for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
         {
-            mTextWidgetList[i]->saveToDomElement(xmlObjects);
-        }
-
-            //Save all box widgets
-        for(int i = 0; i != mBoxWidgetList.size(); ++i)
-        {
-            mBoxWidgetList[i]->saveToDomElement(xmlObjects);
+            itw.value()->saveToDomElement(xmlObjects);
         }
 
             //Save the connectors
@@ -447,21 +442,13 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             }
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
-        qDebug() << "Loading text widgets!";
-        //3. Load all text widgets
-        xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTWIDGETTAG);
-        while (!xmlSubObject.isNull())
-        {
-            loadTextWidget(xmlSubObject, this, NOUNDO);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTWIDGETTAG);
-        }
 
-        //4. Load all box widgets
-        xmlSubObject = xmlSubObjects.firstChildElement(HMF_BOXWIDGETTAG);
+        //3. Load all text box widgets
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTBOXWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
-            loadBoxWidget(xmlSubObject, this, NOUNDO);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_BOXWIDGETTAG);
+            loadTextBoxWidget(xmlSubObject, this, NOUNDO);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
         }
 
         //5. Load all sub-systems

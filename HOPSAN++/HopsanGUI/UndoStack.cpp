@@ -321,12 +321,20 @@ void UndoStack::undoOneStep()
                 mpParentContainerObject->getGUIModelObject(objectName)->showName(NOUNDO);
             }
         }
-        else if(stuffElement.attribute("what") == "addedboxwidget")
+        else if(stuffElement.attribute("what") == "addedtextboxwidget")
         {
-             size_t index = stuffElement.attribute("index").toInt();
-             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
+            size_t index = stuffElement.attribute("index").toInt();
+            mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
         }
-        else if(stuffElement.attribute("what") == "resizedboxwidget")
+        else if(stuffElement.attribute("what") == "deletedtextboxwidget")
+        {
+            QDomElement textBoxElement = stuffElement.firstChildElement(HMF_TEXTBOXWIDGETTAG);
+            loadTextBoxWidget(textBoxElement, mpParentContainerObject, NOUNDO);
+            mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value()->setWidgetIndex(stuffElement.attribute("index").toInt());
+            mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
+            mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
+        }
+        else if(stuffElement.attribute("what") == "resizedtextboxwidget")
         {
             size_t index = stuffElement.attribute("index").toInt();
             double w_old = stuffElement.attribute("w_old").toDouble();
@@ -334,62 +342,44 @@ void UndoStack::undoOneStep()
             double x_old, y_old;
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
             parseDomValueNode2(oldPosElement, x_old, y_old);
-            GUIBoxWidget *tempWidget = qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
+            GUITextBoxWidget *tempWidget = qobject_cast<GUITextBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
             tempWidget->setSize(w_old, h_old);
             tempWidget->setPos(x_old, y_old);
         }
-        else if(stuffElement.attribute("what") == "modifiedboxwidgetstyle")
+        else if(stuffElement.attribute("what") == "modifiedtextboxwidget")
         {
             size_t index = stuffElement.attribute("index").toInt();
+            GUITextBoxWidget *pWidget = qobject_cast<GUITextBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
+
+            QFont font;
+            font.fromString(stuffElement.attribute("font_old"));
             int lineWidth = stuffElement.attribute("linewidth_old").toInt();
-            QColor lineColor = QColor(stuffElement.attribute("linecolor_old"));
             QString lineStyle = stuffElement.attribute("linestyle_old");
+            bool boxVisibleBefore = stuffElement.attribute("box_visible_before").toInt();
             if(lineStyle == "solidline")
             {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::SolidLine);
+                pWidget->setLineStyle(Qt::SolidLine);
             }
             else if(lineStyle == "dashline")
             {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::DashLine);
+                pWidget->setLineStyle(Qt::DashLine);
             }
             else if(lineStyle == "dotline")
             {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::DotLine);
+                pWidget->setLineStyle(Qt::DotLine);
             }
             else if(lineStyle == "dashdotline")
             {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::DashDotLine);
+                pWidget->setLineStyle(Qt::DashDotLine);
             }
-            qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineColor(lineColor);
-            qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineWidth(lineWidth);
-        }
-        else if(stuffElement.attribute("what") == "deletedboxwidget")
-        {
-             QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
-             loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
-             mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
-             mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-        }
-        else if(stuffElement.attribute("what") == "addedtextwidget")
-        {
-             size_t index = stuffElement.attribute("index").toInt();
-             addedWidgetList.append(index);
-        }
-        else if(stuffElement.attribute("what") == "deletedtextwidget")
-        {
-             QDomElement textElement = stuffElement.firstChildElement(HMF_TEXTWIDGETTAG);
-             loadTextWidget(textElement, mpParentContainerObject, NOUNDO);
-             mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
-             mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-        }
-        else if(stuffElement.attribute("what") == "modifiedtextwidget")
-        {
-            size_t index = stuffElement.attribute("index").toInt();
-            QFont font;
-            font.fromString(stuffElement.attribute("font_old"));
-            qobject_cast<GUITextWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setText(stuffElement.attribute("text_old"));
-            qobject_cast<GUITextWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setTextFont(font);
-            qobject_cast<GUITextWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setTextColor(QColor(stuffElement.attribute("color_old")));
+
+            pWidget->setText(stuffElement.attribute("text_old"));
+            pWidget->setFont(font);
+            pWidget->setColor(QColor(stuffElement.attribute("color_old")));
+            pWidget->setLineWidth(lineWidth);
+            pWidget->setBoxVisible(boxVisibleBefore);
+
+
         }
         else if(stuffElement.attribute("what") == "movedwidget")
         {
@@ -399,6 +389,7 @@ void UndoStack::undoOneStep()
             size_t index = stuffElement.attribute("index").toInt();
             if(!mpParentContainerObject->mWidgetMap.contains(index))
             {
+                qDebug() << "Failed to find index in map: " << index;
                 this->clear("Undo stack attempted to access non-existing widget. Stack was cleared to ensure stability.");
                 return;
             }
@@ -698,21 +689,20 @@ void UndoStack::redoOneStep()
                 mpParentContainerObject->getGUIModelObject(objectName)->hideName(NOUNDO);
             }
         }
-        else if(stuffElement.attribute("what") == "addedboxwidget")
+        else if(stuffElement.attribute("what") == "addedtextboxwidget")
         {
-            QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
-            //gpMainWindow->mpMessageWidget->printGUIDebugMessage(boxElement.toDocument().toString());
-            loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
+            QDomElement textBoxElement = stuffElement.firstChildElement(HMF_TEXTBOXWIDGETTAG);
+            loadTextBoxWidget(textBoxElement, mpParentContainerObject, NOUNDO);
+            mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value()->setWidgetIndex(stuffElement.attribute("index").toInt());
             mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
             mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-            mpParentContainerObject->mHighestWidgetIndex -= 1;
         }
-        else if(stuffElement.attribute("what") == "deletedboxwidget")
+        else if(stuffElement.attribute("what") == "deletedtextboxwidget")
         {
-             size_t index = stuffElement.attribute("index").toInt();
-             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
+            size_t index = stuffElement.attribute("index").toInt();
+            mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
         }
-        else if(stuffElement.attribute("what") == "resizedboxwidget")
+        else if(stuffElement.attribute("what") == "resizedtextboxwidget")
         {
             size_t index = stuffElement.attribute("index").toInt();
             double w_new = stuffElement.attribute("w_new").toDouble();
@@ -720,31 +710,43 @@ void UndoStack::redoOneStep()
             double x_new, y_new;
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
             parseDomValueNode2(newPosElement, x_new, y_new);
-            GUIBoxWidget *tempWidget = qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
+            GUITextBoxWidget *tempWidget = qobject_cast<GUITextBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
             tempWidget->setSize(w_new, h_new);
             tempWidget->setPos(x_new, y_new);
         }
-        else if(stuffElement.attribute("what") == "addedtextwidget")
-        {
-            QDomElement textElement = stuffElement.firstChildElement(HMF_TEXTWIDGETTAG);
-            loadTextWidget(textElement, mpParentContainerObject, NOUNDO);
-            mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
-            mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-            mpParentContainerObject->mHighestWidgetIndex -= 1;
-        }
-        else if(stuffElement.attribute("what") == "deletedtextwidget")
-        {
-             size_t index = stuffElement.attribute("index").toInt();
-             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
-        }
-        else if(stuffElement.attribute("what") == "modifiedtextwidget")
+        else if(stuffElement.attribute("what") == "modifiedtextboxwidget")
         {
             size_t index = stuffElement.attribute("index").toInt();
+            GUITextBoxWidget *pWidget = qobject_cast<GUITextBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
+
             QFont font;
             font.fromString(stuffElement.attribute("font"));
-            qobject_cast<GUITextWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setText(stuffElement.attribute("text"));
-            qobject_cast<GUITextWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setTextFont(font);
-            qobject_cast<GUITextWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setTextColor(QColor(stuffElement.attribute("color")));
+
+            int lineWidth = stuffElement.attribute("linewidth").toInt();
+            QString lineStyle = stuffElement.attribute("linestyle");
+            bool boxVisible = stuffElement.attribute("box_visible").toInt();
+            if(lineStyle == "solidline")
+            {
+                pWidget->setLineStyle(Qt::SolidLine);
+            }
+            else if(lineStyle == "dashline")
+            {
+                pWidget->setLineStyle(Qt::DashLine);
+            }
+            else if(lineStyle == "dotline")
+            {
+                pWidget->setLineStyle(Qt::DotLine);
+            }
+            else if(lineStyle == "dashdotline")
+            {
+                pWidget->setLineStyle(Qt::DashDotLine);
+            }
+
+            pWidget->setText(stuffElement.attribute("text"));
+            pWidget->setFont(font);
+            pWidget->setColor(QColor(stuffElement.attribute("color")));
+            pWidget->setLineWidth(lineWidth);
+            pWidget->setBoxVisible(boxVisible);
         }
         else if(stuffElement.attribute("what") == "movedwidget")
         {
@@ -758,31 +760,6 @@ void UndoStack::redoOneStep()
                 return;
             }
             mpParentContainerObject->mWidgetMap.find(index).value()->setPos(x_new, y_new);
-        }
-        else if(stuffElement.attribute("what") == "modifiedboxwidgetstyle")
-        {
-            size_t index = stuffElement.attribute("index").toInt();
-            int lineWidth = stuffElement.attribute("linewidth").toInt();
-            QColor lineColor = QColor(stuffElement.attribute("linecolor"));
-            QString lineStyle = stuffElement.attribute("linestyle");
-            if(lineStyle == "solidline")
-            {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::SolidLine);
-            }
-            else if(lineStyle == "dashline")
-            {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::DashLine);
-            }
-            else if(lineStyle == "dotline")
-            {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::DotLine);
-            }
-            else if(lineStyle == "dashdotline")
-            {
-                qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineStyle(Qt::DashDotLine);
-            }
-            qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineColor(lineColor);
-            qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value())->setLineWidth(lineWidth);
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
@@ -1081,37 +1058,55 @@ void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
 }
 
 
-//! @brief Register function for adding a box widget
-//! @param item Pointer to the box widget item
-void UndoStack::registerAddedBoxWidget(GUIBoxWidget *item)
+void UndoStack::registerAddedWidget(GUIWidget *item)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "addedboxwidget");
+    if(item->mType == "TextBoxWidget")
+        stuffElement.setAttribute("what", "addedtextboxwidget");
     stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
-//! @brief Register function for deleting a box widget
-//! @param item Pointer to box widget about to be deleted
-void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
+void UndoStack::registerDeletedWidget(GUIWidget *item)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "deletedboxwidget");
+    if(item->mType == "TextBoxWidget")
+        stuffElement.setAttribute("what", "deletedtextboxwidget");
     stuffElement.setAttribute("index", item->getWidgetIndex());
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
-//! @brief Register function for resizing a box widget
+//! @brief Register function for moving a GUI Widget
+//! @param item Pointer to the moved GUI Widget
+//! @param oldPos Previous position
+//! @param newPos New Position
+void UndoStack::registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos)
+{
+    qDebug() << "registerMovedWidget(), index = " << item->getWidgetIndex();
+
+    if(!mpParentContainerObject->isUndoEnabled())
+        return;
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "movedwidget");
+    stuffElement.setAttribute("index", item->getWidgetIndex());
+    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+//! @brief Register function for resizing a text box widget
 //! Although this function handles position changes, it must not be confused with registerMovedWidget function. This functin only remembers the position because resizing a box will move the center position.
 //! @param index Widget index of the resized box widget
 //! @param w_old Previous width of the box widget
@@ -1120,13 +1115,13 @@ void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
 //! @param h_new New height of the box widget
 //! @param oldPos Previous position of the box widget
 //! @param newPos New position of the box widget
-void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos)
+void UndoStack::registerResizedTextBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "resizedboxwidget");
+    stuffElement.setAttribute("what", "resizedtextboxwidget");
     stuffElement.setAttribute("index", index);
     stuffElement.setAttribute("w_old", w_old);
     stuffElement.setAttribute("h_old", h_old);
@@ -1135,31 +1130,30 @@ void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, 
     appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
     gpMainWindow->mpUndoWidget->refreshList();
-
-    //gpMainWindow->mpMessageWidget->printGUIDebugMessage( mDomDocument.toString(4));
 }
 
 
-//! @brief Register function for modifying the style of a box widget
-//! @param index Widget index of the modified box widget
-//! @param oldLineWidth Previous line width
-//! @param oldLineStyle Previous pen style (Qt enum)
-//! @param oldLineColor Previous line color
-//! @param lineWidth New line width
-//! @param lineStyle New pen style
-//! @param lineColor New line color
-void UndoStack::registerModifiedBoxWidgetStyle(int index, int oldLineWidth, Qt::PenStyle oldLineStyle, QColor oldLineColor, int lineWidth, Qt::PenStyle lineStyle, QColor lineColor)
+void UndoStack::registerModifiedTextBoxWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color, int oldLineWidth, Qt::PenStyle oldLineStyle, int lineWidth, Qt::PenStyle lineStyle, bool boxVisibleBefore, bool boxVisible)
 {
+
+    qDebug() << "registerModifiedTextBoxWidget()";
     if(!mpParentContainerObject->isUndoEnabled())
         return;
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "modifiedboxwidgetstyle");
+
+    stuffElement.setAttribute("what", "modifiedtextboxwidget");
     stuffElement.setAttribute("index", index);
-    stuffElement.setAttribute("linewidth", lineWidth);
+    stuffElement.setAttribute("text_old", oldText);
+    stuffElement.setAttribute("text", text);
+    stuffElement.setAttribute("font_old", oldFont.toString());
+    stuffElement.setAttribute("font", font.toString());
+    stuffElement.setAttribute("color_old", oldColor.name());
+    stuffElement.setAttribute("color", color.name());
     stuffElement.setAttribute("linewidth_old", oldLineWidth);
-    stuffElement.setAttribute("linecolor", lineColor.name());
-    stuffElement.setAttribute("linecolor_old", oldLineColor.name());
+    stuffElement.setAttribute("linewidth", lineWidth);
+    stuffElement.setAttribute("box_visible_before", boxVisibleBefore);
+    stuffElement.setAttribute("box_visible", boxVisible);
 
     if(lineStyle == Qt::SolidLine)
         stuffElement.setAttribute("linestyle", "solidline");
@@ -1182,79 +1176,6 @@ void UndoStack::registerModifiedBoxWidgetStyle(int index, int oldLineWidth, Qt::
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
-
-//! @brief Register function for adding a text widget
-//! @param item Pointer to the new text widget
-void UndoStack::registerAddedTextWidget(GUITextWidget *item)
-{
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "addedtextwidget");
-    stuffElement.setAttribute("index", item->getWidgetIndex());
-    item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
-}
-
-
-//! @brief Register function for deleting a text widget
-//! @param item Pointer to the text widget about to be deleted
-void UndoStack::registerDeletedTextWidget(GUITextWidget *item)
-{
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "deletedtextwidget");
-    stuffElement.setAttribute("index", item->getWidgetIndex());
-    item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
-}
-
-
-//! @brief Register function for modying a text widget
-//! @param index Widget index of the text widget
-//! @param oldText Previous text
-//! @param oldFont Previous text font
-//! @param oldColor Previous text color
-//! @param text New text
-//! @param font New text font
-//! @param color New text color
-void UndoStack::registerModifiedTextWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color)
-{
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "modifiedtextwidget");
-    stuffElement.setAttribute("index", index);
-    stuffElement.setAttribute("text_old", oldText);
-    stuffElement.setAttribute("text", text);
-    stuffElement.setAttribute("font_old", oldFont.toString());
-    stuffElement.setAttribute("font", font.toString());
-    stuffElement.setAttribute("color_old", oldColor.name());
-    stuffElement.setAttribute("color", color.name());
-    gpMainWindow->mpUndoWidget->refreshList();
-}
-
-
-//! @brief Register function for moving a GUI Widget
-//! @param item Pointer to the moved GUI Widget
-//! @param oldPos Previous position
-//! @param newPos New Position
-void UndoStack::registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos)
-{
-    if(!mpParentContainerObject->isUndoEnabled())
-        return;
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "movedwidget");
-    stuffElement.setAttribute("index", item->getWidgetIndex());
-    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
-    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    gpMainWindow->mpUndoWidget->refreshList();
-}
 
 
 //! @brief Returns the DOM element for the current undo post

@@ -33,6 +33,7 @@
 class LibraryWidget;
 class GUIModelObject;
 class GUIContainerObject;
+class GUITextBoxWidget;
 
 
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings=UNDO);
@@ -51,8 +52,6 @@ void loadFavoriteVariable(QDomElement &rDomElement, GUIContainerObject* pContain
 
 void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pContainer);
 
-void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings=UNDO);
-
-void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings=UNDO);
+GUITextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings=UNDO);
 
 #endif // LOADOBJECTS_H
