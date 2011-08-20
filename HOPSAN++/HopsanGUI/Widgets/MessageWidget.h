@@ -54,15 +54,18 @@ public slots:
 
 private:
     void setMessageColor(QString type);
-    void updateDisplay();
-    size_t subsequentTagCount(QString tag, size_t startIdx);
-    size_t tagCount(QString tag);
-    QList< GUIMessage > mMessageList;
+    void updateNewMessagesOnly();
+    void updateEverything();
+    void appendOneMessage(GUIMessage msg);
+    QList< GUIMessage > mNewMessageList;
+    QList< GUIMessage > mPrintedMessageList;
     bool mGroupByTag;
     bool mShowErrorMessages;
     bool mShowInfoMessages;
     bool mShowWarningMessages;
     bool mShowDebugMessages;
+    QString mLastTag;
+    int mSubsequentTags;
 
     CoreMessagesAccess *mpCoreAccess;
 

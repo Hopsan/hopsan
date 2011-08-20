@@ -558,7 +558,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
             success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
             if (!success)
             {
-                gpMainWindow->mpMessageWidget->printGUIWarningMessage("ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
+                gpMainWindow->mpMessageWidget->printGUIWarningMessage("ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
             }
         }
 

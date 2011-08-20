@@ -150,81 +150,59 @@ void MessageWidget::setMessageColor(QString type)
 }
 
 
+void MessageWidget::updateNewMessagesOnly()
+{
+        //Loop through message list and print messages
+    for(int msg=0; msg<mNewMessageList.size(); ++msg)
+    {
+        appendOneMessage(mNewMessageList.at(msg));
+    }
+
+    mPrintedMessageList.append(mNewMessageList);
+    mNewMessageList.clear();
+}
+
+
 //! @brief Updates the displayed messages from the message list
-void MessageWidget::updateDisplay()
+void MessageWidget::updateEverything()
 {
     mpTextEdit->clear();         //Clear the message box (we can not call this->clear(), since this would also clear the message list and we wouldn't have anything to print)
-    //QStringList usedTags;
+    mPrintedMessageList.append(mNewMessageList);
+    mNewMessageList.clear();
+    mLastTag = QString();
+    mSubsequentTags = 1;
 
         //Loop through message list and print messages
-    for(int msg=0; msg<mMessageList.size(); ++msg)
+    for(int msg=0; msg<mPrintedMessageList.size(); ++msg)
     {
-        if( !(mMessageList.at(msg).type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
-            !(mMessageList.at(msg).type == "warning" && !mShowWarningMessages) &&
-            !(mMessageList.at(msg).type == "info" && !mShowInfoMessages) &&
-            !(mMessageList.at(msg).type == "debug" && !mShowDebugMessages))
-        {
-            setMessageColor(mMessageList.at(msg).type);
-            if(!mMessageList.at(msg).tag.isEmpty() && mGroupByTag)     //Message is tagged, and group by tag setting is active
-            {
-                size_t nTags = subsequentTagCount(mMessageList.at(msg).tag, msg);
-                if(nTags == 1)                      //There is only one tag, so avoid appending "(0 similar)"
-                {
-                    mpTextEdit->append("[" + mMessageList.at(msg).time + "] " + mMessageList.at(msg).message);
-                }
-                else                                //There are more than one tag, so append ("X similar)"
-                {
-                    QString numString;
-                    numString.setNum(nTags-1);
-                    mpTextEdit->append("[" + mMessageList.at(msg).time + "] " + mMessageList.at(msg).message + "    (" + numString + " similar)");
-                }
-                msg += nTags-1;
-            }
-            else        //Message is not tagged, or group by tag setting is not active
-            {
-                mpTextEdit->append("[" + mMessageList.at(msg).time + "] " + mMessageList.at(msg).message);
-            }
-        }
+        appendOneMessage(mPrintedMessageList.at(msg));
     }
 }
 
 
-//! @brief Counts number of subsequent tags of the same name from a certain position in the message list
-//! @param tag Tag name to look for
-//! @param startIdx Position in list to start looking
-size_t MessageWidget::subsequentTagCount(QString tag, size_t startIdx)
+void MessageWidget::appendOneMessage(GUIMessage msg)
 {
-    size_t nTags = 0;
-    for(int i=startIdx; i<mMessageList.size(); ++i)
+    if( !(msg.type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
+        !(msg.type == "warning" && !mShowWarningMessages) &&
+        !(msg.type == "info" && !mShowInfoMessages) &&
+        !(msg.type == "debug" && !mShowDebugMessages))
     {
-        if(mMessageList.at(i).tag == tag)
+        if(!msg.tag.isEmpty() && msg.tag == mLastTag && mGroupByTag)     //Message is tagged, and group by tag setting is active
         {
-            ++nTags;
+            ++mSubsequentTags;
+            QString numString;
+            numString.setNum(mSubsequentTags);
+            mpTextEdit->undo();
+            setMessageColor(msg.type);
+            mpTextEdit->append("[" + msg.time + "] " + msg.message + "    (" + numString + " similar)");
         }
-        else
+        else        //Message is not tagged, or group by tag setting is not active
         {
-            return nTags;
+            setMessageColor(msg.type);
+            mpTextEdit->append("[" + msg.time + "] " + msg.message);
+            mLastTag =msg.tag;
         }
     }
-    return nTags;
-}
-
-
-//! @brief Help function that counts how many messages with a specified tag that exists in message list
-//! @param tag Name of the tag that shall be counted
-//! @todo This is no longer used and can safely be removed
-size_t MessageWidget::tagCount(QString tag)
-{
-    size_t nTags = 0;
-    QList<GUIMessage>::iterator it;
-    for(it=mMessageList.begin(); it!=mMessageList.end(); ++it)
-    {
-        if((*it).tag == tag)
-        {
-            ++nTags;
-        }
-    }
-    return nTags;
 }
 
 
@@ -241,8 +219,8 @@ void MessageWidget::printCoreMessages()
         mpCoreAccess->getMessage(message, type, tag);
         if(type == "error")
             playErrorSound = true;
-        mMessageList.append(GUIMessage(message, type, tag));
-        updateDisplay();
+        mNewMessageList.append(GUIMessage(message, type, tag));
+        updateNewMessagesOnly();
     }
     if(playErrorSound)
     {
@@ -256,8 +234,8 @@ void MessageWidget::printCoreMessages()
 void MessageWidget::printGUIErrorMessage(QString message, QString tag)
 {
     QSound::play(QString(SOUNDSPATH) + "error.wav");
-    mMessageList.append(GUIMessage(message.prepend("Error: "), "error", tag));
-    updateDisplay();
+    mNewMessageList.append(GUIMessage(message.prepend("Error: "), "error", tag));
+    updateNewMessagesOnly();
 }
 
 
@@ -265,8 +243,8 @@ void MessageWidget::printGUIErrorMessage(QString message, QString tag)
 //! @param message String containing the message
 void MessageWidget::printGUIWarningMessage(QString message, QString tag)
 {
-    mMessageList.append(GUIMessage(message.prepend("Warning: "), "warning", tag));
-    updateDisplay();
+    mNewMessageList.append(GUIMessage(message.prepend("Warning: "), "warning", tag));
+    updateNewMessagesOnly();
 }
 
 
@@ -274,8 +252,8 @@ void MessageWidget::printGUIWarningMessage(QString message, QString tag)
 //! @param message String containing the message
 void MessageWidget::printGUIInfoMessage(QString message, QString tag)
 {
-    mMessageList.append(GUIMessage(message.prepend("Info: "), "info", tag));
-    updateDisplay();
+    mNewMessageList.append(GUIMessage(message.prepend("Info: "), "info", tag));
+    updateNewMessagesOnly();
 }
 
 
@@ -283,8 +261,8 @@ void MessageWidget::printGUIInfoMessage(QString message, QString tag)
 //! @param message String containing the message
 void MessageWidget::printGUIDebugMessage(QString message, QString tag)
 {
-    mMessageList.append(GUIMessage(message.prepend("Debug: "), "debug", tag));
-    updateDisplay();
+    mNewMessageList.append(GUIMessage(message.prepend("Debug: "), "debug", tag));
+    updateNewMessagesOnly();
 }
 
 
@@ -292,11 +270,14 @@ void MessageWidget::printGUIDebugMessage(QString message, QString tag)
 void MessageWidget::clear()
 {
     mpTextEdit->clear();
-    mMessageList.clear();
+    mPrintedMessageList.clear();
+    mNewMessageList.clear();
+    updateEverything();
 }
 
 
 //! @brief Slot that checks messages from core and prints them
+//! @todo Is this function necessary? All it does is calling another one...
 void MessageWidget::checkMessages()
 {
     printCoreMessages();
@@ -308,7 +289,7 @@ void MessageWidget::checkMessages()
 void MessageWidget::setGroupByTag(bool value)
 {
     mGroupByTag = value;
-    updateDisplay();
+    updateEverything();
 }
 
 
@@ -317,7 +298,7 @@ void MessageWidget::setGroupByTag(bool value)
 void MessageWidget::showErrorMessages(bool value)
 {
     mShowErrorMessages = value;
-    updateDisplay();
+    updateEverything();
 }
 
 
@@ -326,7 +307,7 @@ void MessageWidget::showErrorMessages(bool value)
 void MessageWidget::showWarningMessages(bool value)
 {
     mShowWarningMessages = value;
-    updateDisplay();
+    updateEverything();
 }
 
 
@@ -335,7 +316,7 @@ void MessageWidget::showWarningMessages(bool value)
 void MessageWidget::showInfoMessages(bool value)
 {
     mShowInfoMessages = value;
-    updateDisplay();
+    updateEverything();
 }
 
 
@@ -344,7 +325,7 @@ void MessageWidget::showInfoMessages(bool value)
 void MessageWidget::showDebugMessages(bool value)
 {
     mShowDebugMessages = value;
-    updateDisplay();
+    updateEverything();
 }
 
 

@@ -932,7 +932,7 @@ void ComponentSystem::determineCQSType()
         //If we swap from valid type then give warning
         if (this->getTypeCQS() != UNDEFINEDCQSTYPE)
         {
-            gCoreMessageHandler.addWarningMessage(string("Your action has caused the CQS type to become invalid in system: ")+this->getName());
+            gCoreMessageHandler.addWarningMessage(string("Your action has caused the CQS type to become invalid in system: ")+this->getName(), "invalidcqstype");
         }
         //! @todo maybe we should let the GUI display ??? in port overlays instead of sending warning messages
 
