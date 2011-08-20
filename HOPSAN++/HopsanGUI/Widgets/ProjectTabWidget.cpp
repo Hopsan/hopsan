@@ -642,6 +642,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
 
     this->addProjectTab(new ProjectTab(this), fileInfo.baseName());
     ProjectTab *pCurrentTab = this->getCurrentTab();
+    pCurrentTab->getSystem()->setUndoEnabled(false, true);
 
     //Check if this is an expected hmf xml file
     //! @todo maybe write helpfunction that does this directly in system (or container)
@@ -660,6 +661,8 @@ void ProjectTabWidget::loadModel(QString modelFileName)
         //! @todo give some cool error message
     }
     pCurrentTab->setSaved(true);
+
+    pCurrentTab->getSystem()->setUndoEnabled(true, true);
 
     emit newTabAdded();
 }
