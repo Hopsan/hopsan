@@ -95,7 +95,8 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mpPortLabel = new QGraphicsTextItem(this);
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-    mpPortLabel->setZValue(50); //High value should be on top of everything
+    //! @todo This Z value won't really do anything, right?
+    mpPortLabel->setZValue(PORTLABEL_Z); //High value should be on top of everything
     mpPortLabel->hide();
     //Port label must exist and be set up before we run setDisplayName
     this->setDisplayName(mPortDisplayName);
@@ -198,7 +199,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     this->setCursor(Qt::CrossCursor);
 
     magnify(true);
-    this->setZValue(1.0);
+    this->setZValue(HOVEREDPORT_Z);
     mpPortLabel->show();
 }
 
@@ -210,7 +211,7 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     magnify(false);
 
     mpPortLabel->hide();
-    this->setZValue(0.0);
+    this->setZValue(PORT_Z);
 
     QGraphicsWidget::hoverLeaveEvent(event);
 }
@@ -350,7 +351,7 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
             //! @todo check if file exist
             mpCQSIconOverlay = new QGraphicsSvgItem(mpPortAppearance->mCQSOverlayPath, this);
             mpCQSIconOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-            mpCQSIconOverlay->setZValue(5);
+            mpCQSIconOverlay->setZValue(CQSVERLAY_Z);
         }
     }
 
@@ -371,7 +372,7 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
             //! @todo check if file exist
             mpMultiPortIconOverlay = new QGraphicsSvgItem(mpPortAppearance->mMultiPortOverlayPath, this);
             mpMultiPortIconOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-            mpMultiPortIconOverlay->setZValue(5);
+            mpMultiPortIconOverlay->setZValue(MULTIPORTOVERLAY_Z);
         }
     }
 

@@ -363,7 +363,7 @@ void GUITextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpEditDialog->setLayout(pDialogLayout);
     mpEditDialog->show();
 
-    this->setZValue(0);
+    this->setZValue(WIDGET_Z);
     this->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
     mSelectedColor = mpRectItem->pen().color();

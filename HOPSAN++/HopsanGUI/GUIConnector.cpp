@@ -944,7 +944,7 @@ void GUIConnector::setPassive()
         }
     }
 
-    this->setZValue(1);
+    this->setZValue(CONNECTOR_Z);
 }
 
 
@@ -1167,7 +1167,7 @@ void GUIConnectorLine::setActive()
             tempPen.setStyle(Qt::CustomDashLine);
             this->setPen(tempPen);
         }
-        this->mpParentGUIConnector->setZValue(1);
+        this->mpParentGUIConnector->setZValue(CONNECTOR_Z);
 }
 
 
@@ -1250,7 +1250,7 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     }
     if(mpParentGUIConnector->isConnected())
     {
-        mpParentGUIConnector->setZValue(11);
+        mpParentGUIConnector->setZValue(HOVEREDCONNECTOR_Z);
     }
     emit lineHoverEnter();
 }
@@ -1262,9 +1262,9 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!mpParentGUIConnector->mIsActive)
     {
-        mpParentGUIConnector->setZValue(1);
+        mpParentGUIConnector->setZValue(CONNECTOR_Z);
     }
-    this->mpParentGUIConnector->setZValue(1);
+    this->mpParentGUIConnector->setZValue(CONNECTOR_Z);
     emit lineHoverLeave();
 }
 

@@ -66,7 +66,7 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     this->refreshAppearance();
     this->setCenterPos(position);
     this->setIcon(gfxType);
-    this->setZValue(10);
+    this->setZValue(MODELOBJECT_Z);
     this->setSelected(startSelected);
 
         //Create the textbox containing the name
@@ -505,7 +505,7 @@ void GUIModelObject::showLosses()
         pt = transf*pt;
         mpLossesDisplay->setPos(localCenter + pt);
         mpLossesDisplay->setVisible(true);
-        mpLossesDisplay->setZValue(20);
+        mpLossesDisplay->setZValue(LOSSESDISPLAY_Z);
     }
 }
 
@@ -652,7 +652,7 @@ void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void GUIModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     GUIObject::hoverEnterEvent(event);
-    this->setZValue(12);
+    this->setZValue(HOVEREDMODELOBJECT_Z);
     this->showPorts(true);
 }
 
@@ -661,7 +661,7 @@ void GUIModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     GUIObject::hoverLeaveEvent(event);
-    this->setZValue(10);
+    this->setZValue(MODELOBJECT_Z);
     this->showPorts(false);
 }
 
