@@ -11,11 +11,11 @@
        y='0.5'
        a='0'
        name='Pmr1' />
-   <portpose x='0.'
+   <portpose x='180'
        y='0.1'
        a='0'
        name='Pthetain' />
-   <portpose x='0'
+   <portpose x='180'
        y='0.9'
        a='0'
        name='Pwin' />

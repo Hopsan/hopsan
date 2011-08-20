@@ -13,8 +13,8 @@
    height="10"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="SignalPort.svg">
+   inkscape:version="0.48.0 r9654"
+   sodipodi:docname="SignalPort_read.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -38,10 +38,10 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1274"
-     inkscape:window-height="942"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-width="1680"
+     inkscape:window-height="982"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -51,7 +51,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -62,8 +62,8 @@
      transform="translate(-356.39287,-588.82649)">
     <path
        style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       d="M 0.25 0.25 L 0.25 3.28125 L 1.96875 4.15625 L 3.65625 5 L 1.96875 5.84375 L 0.25 6.71875 L 0.25 9.75 L 5 7.375 L 9.75 5 L 5 2.625 L 0.25 0.25 z "
-       transform="translate(356.39287,588.82649)"
-       id="path3589" />
+       d="m 366.14287,589.07649 0,3.03125 -1.71875,0.875 -1.6875,0.84375 1.6875,0.84375 1.71875,0.875 0,3.03125 -4.75,-2.375 -4.75,-2.375 4.75,-2.375 4.75,-2.375 z"
+       id="path3589"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

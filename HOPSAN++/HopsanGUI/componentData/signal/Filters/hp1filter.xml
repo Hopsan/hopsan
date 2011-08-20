@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.1">
     <modelobject typename="SignalHP1Filter" displayname="First order high pass filter">
         <icon isopath="" iconrotation="ON" userpath="hp1filter.svg"/>
-        <portpose x="0" y="0.5" a="0" name="in"/>
+        <portpose x="0" y="0.5" a="180" name="in"/>
         <portpose x="1" y="0.5" a="0" name="out"/>
     </modelobject>
 </hopsanobjectappearance>

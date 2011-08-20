@@ -2,6 +2,6 @@
 <hopsanobjectappearance version="0.1">
     <modelobject typename="SignalStopSimulation" displayname="Stop simulation">
         <icon isopath="stopsimulation_user.svg" iconrotation="ON" userpath="stopsimulation_user.svg"/>
-        <portpose x="0" y="0.5" a="0" name="in"/>
+        <portpose x="0" y="0.5" a="180" name="in"/>
     </modelobject>
 </hopsanobjectappearance>

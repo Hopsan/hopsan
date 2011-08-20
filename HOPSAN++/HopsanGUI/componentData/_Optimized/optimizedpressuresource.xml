@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.1">
     <modelobject typename="HydraulicOptimizedPressureSource" displayname="Optimized Prescribed Pressure C">
         <icon isopath="../hydraulic/Sources &amp; Sinks/pressuresource_iso.svg" iconrotation="ON" userpath="../hydraulic/Sources &amp; Sinks/pressuresource_user.svg"/>
-        <portpose x="0.5" y="1" a="270" name="In"/>
+        <portpose x="0.5" y="1" a="90" name="in"/>
         <portpose x="0.5" y="0" a="90" name="P1"/>
     </modelobject>
 </hopsanobjectappearance>

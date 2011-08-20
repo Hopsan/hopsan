@@ -2,6 +2,6 @@
 <hopsanobjectappearance version="0.1">
     <modelobject typename="SignalOutputInterface" displayname="Output Interface Component">
         <icon isopath="outputinterface.svg" iconrotation="ON" userpath="outputinterface.svg"/>
-        <portpose x="0.0" y="0.5" a="0" name="in"/>
+        <portpose x="0.0" y="0.5" a="180" name="in"/>
     </modelobject>
 </hopsanobjectappearance>

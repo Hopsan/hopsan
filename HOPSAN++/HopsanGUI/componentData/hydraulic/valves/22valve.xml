@@ -5,7 +5,7 @@
         <icon isopath="22valve_iso.svg" iconrotation="ON" userpath="22valve_user.svg"/>
         <portpose x="0.8278" y="1" a="90" name="PP"/>
         <portpose x="0.8278" y="0" a="270" name="PA"/>
-        <portpose x="0" y="0.7" a="0" name="in"/>
+        <portpose x="0" y="0.7" a="180" name="in"/>
 		<portpose x="1" y="0.5" a="0" name="xv"/>
     </modelobject>
 </hopsanobjectappearance>

@@ -3,6 +3,6 @@
     <modelobject typename="MechanicForceTransformer" displayname="Force Transformer">
         <icon isopath="forcetransformer.svg" iconrotation="ON" userpath=""/>
         <portpose x="1" y="0.5" a="0" name="P1"/>
-        <portpose x="0" y="0.5" a="0" name="in"/>
+        <portpose x="0" y="0.5" a="180" name="in"/>
     </modelobject>
 </hopsanobjectappearance>

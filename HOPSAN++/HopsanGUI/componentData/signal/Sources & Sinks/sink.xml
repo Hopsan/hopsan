@@ -3,6 +3,6 @@
     <modelobject typename="SignalSink" displayname="Sink">
 		<help text="This component does nothing, but is required to plot values for non-connected ports."/>
         <icon isopath="" iconrotation="OFF" userpath="Sink.svg"/>
-        <portpose x="0.0" y="0.5" a="0" name="in"/>
+        <portpose x="0.0" y="0.5" a="180" name="in"/>
     </modelobject>
 </hopsanobjectappearance>
