@@ -1290,8 +1290,11 @@ GUIModelObjectAppearance* GUIModelObject::getAppearanceData()
 //! @brief Refreshes the appearance of the object
 void GUIModelObject::refreshAppearance()
 {
-    setIcon(mIconType);
-    setGeometry(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
+    //! @todo should make sure we only do this if we really need to resize (after icon change)
+    QPointF centerPos =  this->getCenterPos(); //Remember center pos for resize
+    this->setIcon(mIconType);
+    this->resize(mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
+    this->setCenterPos(centerPos); //Re-set center pos after resize
 
     //Resize the selection box
     //qDebug() << "mpSelectionBox->setSize: " << mpIcon->boundingRect().width() << " " << mpIcon->boundingRect().height();
