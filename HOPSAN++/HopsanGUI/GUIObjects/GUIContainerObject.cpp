@@ -534,6 +534,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
         mpTempGUIModelObject = new GUIComponent(pAppearanceData, position, rotation, this, startSelected, mGfxType);
     }
 
+    qDebug() << "load2--------: " << mpTempGUIModelObject->getCenterPos();
     //mpScene->addItem(mpTempGUIModelObject); //Need to do this earlier
 
     emit checkMessages();

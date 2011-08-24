@@ -514,6 +514,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     mLeftMouseButtonPressed = true;
 
+    QCursor apa;
+    qDebug() << "cursor pos: " << this->mapToScene(this->mapFromGlobal(apa.pos()));
+
         //No rubber band during connecting:
     if (mpContainerObject->isCreatingConnector())
     {

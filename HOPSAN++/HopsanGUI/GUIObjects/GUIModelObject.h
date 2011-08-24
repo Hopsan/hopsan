@@ -116,6 +116,7 @@ protected:
     //Protected methods
     virtual void openPropertiesDialog(){}
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QGraphicsSceneContextMenuEvent* pEvent);
+    void rotate(const qreal angle, undoStatus undoSettings = UNDO);
 
     //Reimplemented Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

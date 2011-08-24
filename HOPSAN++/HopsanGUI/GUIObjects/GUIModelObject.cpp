@@ -63,9 +63,9 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     }
 
         //Setup appearance
+    this->setIcon(gfxType);
     this->refreshAppearance();
     this->setCenterPos(position);
-    this->setIcon(gfxType);
     this->setZValue(MODELOBJECT_Z);
     this->setSelected(startSelected);
 
@@ -294,14 +294,17 @@ void GUIModelObject::setDisplayName(QString name)
 void GUIModelObject::setIcon(graphicsType gfxType)
 {
     QString iconPath;
+    qreal iconScale;
     if ( (gfxType == ISOGRAPHICS) && mGUIModelObjectAppearance.hasIcon(ISOGRAPHICS) )
     {
         iconPath = mGUIModelObjectAppearance.getFullAvailableIconPath(ISOGRAPHICS);
+        iconScale = mGUIModelObjectAppearance.getIconScale(ISOGRAPHICS);
         mIconType = ISOGRAPHICS;
     }
     else
     {
         iconPath = mGUIModelObjectAppearance.getFullAvailableIconPath(USERGRAPHICS);
+        iconScale = mGUIModelObjectAppearance.getIconScale(USERGRAPHICS);
         mIconType = USERGRAPHICS;
     }
 
@@ -316,6 +319,11 @@ void GUIModelObject::setIcon(graphicsType gfxType)
         mpIcon = new QGraphicsSvgItem(iconPath, this);
         mLastIconPath = iconPath;
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        mpIcon->setScale(iconScale);
+        this->prepareGeometryChange();
+        this->resize(mpIcon->boundingRect().width(), mpIcon->boundingRect().height());  //Resize modelobject
+        mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height()); //Resize selection box
+        this->setTransformOriginPoint(this->boundingRect().center());
     }
 
 
@@ -628,9 +636,11 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
 
-    QPointF pos = mapToScene(boundingRect().center());
+        //Save center pos in parent coordinates (same as scene coordinates for model objects)
+    QPointF cpos = this->getCenterPos();
+    //qDebug() << "-------------------------------------------scene center pos;" << this->mapToScene(this->boundingRect().center()) << " vs. " << this->geometry().center();
 
-    appendPoseTag(xmlGuiStuff,pos.x(), pos.y(), rotation(), this->mIsFlipped);
+    appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped);
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
     nametext.setAttribute("position", getNameTextPos());
     nametext.setAttribute("visible", mpNameText->isVisible());
@@ -819,8 +829,6 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
         return selectedAction;
     }
 
-
-
     //Return 0 action if any of the above actions were triggered
     return 0;
 }
@@ -926,121 +934,107 @@ void GUIModelObject::showPorts(bool visible)
 //! @brief Rotates a component 90 degrees clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stsack
 //! @see rotateTo(qreal angle);
-//! @todo try to reuse the code in rotate guiobject
 void GUIModelObject::rotate90cw(undoStatus undoSettings)
 {
-    //qDebug() << "this->boundingrect(): " << this->boundingRect();
-    //qDebug() << "this->mpIcon->boundingrect(): " << this->mpIcon->boundingRect();
-    this->setTransformOriginPoint(this->boundingRect().center());
-    this->setRotation(normDeg360(this->rotation()+90));
-
-    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
-    if (this->rotation() >= 360.0)
-    {
-        this->setRotation(0.0);
-    }
-
-
-    int tempNameTextPos = mNameTextPos;
-    //mpNameText->rotate(-90);
-    this->snapNameTextPosition(mpNameText->pos());
-    setNameTextPos(tempNameTextPos);
-
-//    for (int i = 0; i != mPortListPtrs.size(); ++i)
-//    {
-//        if(mPortListPtrs.value(i)->getPortDirection() == TOPBOTTOM)
-//            mPortListPtrs.value(i)->setPortDirection(LEFTRIGHT);
-//        else
-//            mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
-//        if (mPortListPtrs.value(i)->getPortType() == "POWERPORT")
-//        {
-//            if(this->rotation() == 0 && !mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(0);
-//            else if(this->rotation() == 0 && mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(180);
-//            else if(this->rotation() == 90 && !mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(270);
-//            else if(this->rotation() == 90 && mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(90);
-//            else if(this->rotation() == 180 && !mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(180);
-//            else if(this->rotation() == 180 && mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(0);
-//            else if(this->rotation() == 270 && !mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(90);
-//            else if(this->rotation() == 270 && mIsFlipped)
-//                mPortListPtrs.value(i)->setRotation(270);
-//        }
-//    }
-
-    //! @todo myabe use signals and slots instead
-    for (int i = 0; i != mPortListPtrs.size(); ++i)
-    {
-//        //! @todo make sure this is not needed, use the actual port heading instead
-//        if(mPortListPtrs.value(i)->getPortDirection() == TOPBOTTOM)
-//            mPortListPtrs.value(i)->setPortDirection(LEFTRIGHT);
-//        else
-//            mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
-
-        mPortListPtrs.value(i)->refreshPortOverlayPosition();
-    }
-
-    //! @todo danger real == real
-    if(!mIconRotation)
-    {
-        mpIcon->setRotation(-this->rotation());
-        if(this->rotation() == 0)
-        {
-            mpIcon->setPos(0,0);
-        }
-        else if(this->rotation() == 90)
-        {
-            mpIcon->setPos(0,this->boundingRect().height());
-        }
-        else if(this->rotation() == 180)
-        {
-            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
-        }
-        else if(this->rotation() == 270)
-        {
-            mpIcon->setPos(this->boundingRect().width(),0);
-        }
-
-        //mpIcon->setPos(this->boundingRect().center());
-    }
-
-    if(undoSettings == UNDO)
-    {
-        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), 90);
-    }
-
-    emit objectMoved();
+    this->rotate(90,undoSettings);
 }
 
 
 //! @brief Rotates a component 90 degrees clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stsack
 //! @see rotateTo(qreal angle);
-//! @todo try to reuse the code in rotate guiobject
 void GUIModelObject::rotate90ccw(undoStatus undoSettings)
 {
-    this->setTransformOriginPoint(this->boundingRect().center());
-    this->setRotation(normDeg360(this->rotation()-90));
+    this->rotate(-90,undoSettings);
+//    this->setTransformOriginPoint(this->boundingRect().center());
+//    this->setRotation(normDeg360(this->rotation()-90));
 
-    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
-    if (this->rotation() < 0.0)
-    {
-        this->setRotation(360+this->rotation());
-    }
+//    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
+//    if (this->rotation() < 0.0)
+//    {
+//        this->setRotation(360+this->rotation());
+//    }
+
+//    int tempNameTextPos = mNameTextPos;
+//    this->snapNameTextPosition(mpNameText->pos());
+//    setNameTextPos(tempNameTextPos);
+
+//    //! @todo myabe use signals and slots instead
+//    for (int i = 0; i != mPortListPtrs.size(); ++i)
+//    {
+//        mPortListPtrs.value(i)->refreshPortOverlayPosition();
+//    }
+
+//    //! @todo danger real == real
+//    if(!mIconRotation)
+//    {
+//        mpIcon->setRotation(-this->rotation());
+//        if(this->rotation() == 0)
+//        {
+//            mpIcon->setPos(0,0);
+//        }
+//        else if(this->rotation() == 90)
+//        {
+//            mpIcon->setPos(0,this->boundingRect().height());
+//        }
+//        else if(this->rotation() == 180)
+//        {
+//            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
+//        }
+//        else if(this->rotation() == 270)
+//        {
+//            mpIcon->setPos(this->boundingRect().width(),0);
+//        }
+
+//        //mpIcon->setPos(this->boundingRect().center());
+//    }
+
+//    if(undoSettings == UNDO)
+//    {
+//        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), -90);
+//    }
+
+//    emit objectMoved();
+}
+
+//! @todo try to reuse the code in rotate guiobject,
+void GUIModelObject::rotate(const qreal angle, undoStatus undoSettings)
+{
+    qDebug() << "pos f: " << this->pos() << " geometry f: " << this->geometry() << " brect f: " << this->boundingRect();
+    qDebug() << "scenePos f: " << this->scenePos() << " sceneBoundingRect: " << this->sceneBoundingRect();
+
+
+//this->prepareGeometryChange();
+
+    //qDebug() << "this->boundingrect(): " << this->boundingRect();
+    //qDebug() << "this->mpIcon->boundingrect(): " << this->mpIcon->boundingRect();
+    //this->setTransformOriginPoint(this->boundingRect().center());
+    this->setRotation(normDeg360(this->rotation()+angle));
+
+//    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
+//    if (this->rotation() >= 360.0)
+//    {
+//        this->setRotation(0.0);
+//    }
+
+    qDebug() << "pos e: " << this->pos() << " geometry e: " << this->geometry() << " brect e: " << this->boundingRect();
+    qDebug() << "scenePos e: " << this->scenePos() << " sceneBoundingRect: " << this->sceneBoundingRect();
+
+//    QPen gpen(QColor(0,255,0));
+//    QPen bpen(QColor(0,0,255));
+//    bpen.setWidthF(0.5);
+//    gpen.setWidth(1.0);
+//    this->scene()->addPolygon(this->sceneBoundingRect(), gpen);
+//    this->scene()->addPolygon(this->geometry(), bpen);
+
 
     int tempNameTextPos = mNameTextPos;
     this->snapNameTextPosition(mpNameText->pos());
     setNameTextPos(tempNameTextPos);
 
-    //! @todo myabe use signals and slots instead
-    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    for (int i=0; i < mPortListPtrs.size(); ++i)
     {
-        mPortListPtrs.value(i)->refreshPortOverlayPosition();
+        mPortListPtrs[i]->refreshPortOverlayPosition();
     }
 
     //! @todo danger real == real
@@ -1069,29 +1063,12 @@ void GUIModelObject::rotate90ccw(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), -90);
+        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
     }
 
     emit objectMoved();
+
 }
-
-
-////! @brief Slot that rotates the object to a desired angle (NOT registered in undo stack!)
-////! @param angle Angle to rotate to
-////! @see rotate(undoStatus undoSettings)
-////! @todo Add option to register this in undo stack - someone will want to do this sooner or later anyway
-//void GUIModelObject::rotateTo(qreal angle)
-//{
-//    while(this->rotation() != angle)
-//    {
-//        this->rotate(NOUNDO);
-//    }
-//}
-
-
-
-
-
 
 
 //! @brief Slot that flips the object vertically
@@ -1101,8 +1078,9 @@ void GUIModelObject::rotate90ccw(undoStatus undoSettings)
 void GUIModelObject::flipVertical(undoStatus undoSettings)
 {
     this->flipHorizontal(NOUNDO);
-    this->rotate90cw(NOUNDO);
-    this->rotate90cw(NOUNDO);
+    //this->rotate90cw(NOUNDO);
+    //this->rotate90cw(NOUNDO);
+    this->rotate(180,NOUNDO);
     if(undoSettings == UNDO)
     {
         mpParentContainerObject->getUndoStackPtr()->registerVerticalFlip(this->getName());
@@ -1115,91 +1093,41 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
 //! @see flipVertical()
 void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 {
-//    for (int i = 0; i != mPortListPtrs.size(); ++i)
-//    {
-//        if(mPortListPtrs[i]->getPortType() == "READPORT" ||  mPortListPtrs[i]->getPortType() == "WRITEPORT")
-//        {
-//            if(this->rotation() == 90 ||  this->rotation() == 270)
-//            {
-//                mPortListPtrs.value(i)->scale(1,-1);
-//                mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
-//            }
-//            else
-//            {
-//                mPortListPtrs.value(i)->scale(-1,1);
-//                mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
-//            }
-//        }
-//    }
+    //Remember center pos
+    QPointF cpos = this->getCenterPos();
+    qDebug() << "cpos f: " << cpos;
+    qDebug() << "geometry f: " << this->geometry();
 
-//    //Flip the entire widget
-//    this->scale(-1, 1);
-//    if(mIsFlipped)
-//    {
-//        this->moveBy(-this->boundingRect().width(),0);
-//        mIsFlipped = false;
-//    }
-//    else
-//    {
-//        this->moveBy(this->boundingRect().width(),0);
-//        mIsFlipped = true;
-//    }
-
-//        //"Un-flip" the ports and name text
-//    for (int i = 0; i != mPortListPtrs.size(); ++i)
-//    {
-//        if(this->rotation() == 90 ||  this->rotation() == 270)
-//        {
-//            mPortListPtrs.value(i)->scale(1,-1);
-//            mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
-//            this->mpNameText->scale(1,-1);
-//        }
-//        else
-//        {
-//            mPortListPtrs.value(i)->scale(-1,1);
-//            mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
-//            this->mpNameText->scale(-1,1);
-//        }
-//    }
-//    //this->setNameTextPos(mNameTextPos);
-//    this->fixTextPosition(mpNameText->pos());
-
-
-    //Flip the entire widget
-//    QGraphicsScale horFlip(this);
-//    horFlip.setOrigin(QVector3D(this->boundingRect().center().x(), this->boundingRect().center().y(), this->zValue()));
-//    horFlip.setXScale(-1.0);
-//    QMatrix4x4 horFlipM;
-//    horFlip.applyTo(&horFlipM);
-//    QGraphicsItem::setTransform(horFlipM.toTransform(),true);
-
-//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,transformOriginPoint: " << this->transformOriginPoint();
-//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,boundingrectcenter: " << this->boundingRect().center();
-//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,scenboundingcenter: " << this->sceneBoundingRect().center();
-
-//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,transformOriginPoint: " << this->transformOriginPoint();
-
+    //Transform
     QTransform transf;
-    transf.reset();
     transf.scale(-1.0, 1.0); //Horizontal flip matrix
-    //! @todo transformationorigin point seems to have no effect here for some reason
-    //this->setTransformOriginPoint(this->boundingRect().center()); //Make sure we transform around center point
-    this->setTransform(transf,true);
+    //this->prepareGeometryChange();
+    this->setTransform(transf,true); // transformationorigin point seems to have no effect here for some reason
+    qDebug() << "geometry e: " << this->geometry();
 
+//        QPen gpen(QColor(0,255,0));
+//        QPen bpen(QColor(0,0,255));
+//        bpen.setWidthF(2.0);
+//        gpen.setWidth(1.0);
+//        this->scene()->addPolygon(this->mapToScene(this->boundingRect()), gpen);
+//        this->scene()->addPolygon(this->geometry(), bpen);
+
+    //Reset to ccenter pos (as transform origin point was ignored)
+    this->setCenterPos(cpos);
+    qDebug() << "cpos ee: " << this->getCenterPos();
+
+    // Toggel isFlipped bool
     if(mIsFlipped)
     {
         mIsFlipped = false;
-        this->moveBy(-this->boundingRect().width(),0);
     }
     else
     {
         mIsFlipped = true;
-        this->moveBy(this->boundingRect().width(),0);
     }
 
     //Refresh port overlay and nametext
-    //! @todo myabe use signals and slots instead
-    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    for (int i=0; i < mPortListPtrs.size(); ++i)
     {
         mPortListPtrs[i]->refreshPortOverlayPosition();
     }
@@ -1293,12 +1221,7 @@ void GUIModelObject::refreshAppearance()
     //! @todo should make sure we only do this if we really need to resize (after icon change)
     QPointF centerPos =  this->getCenterPos(); //Remember center pos for resize
     this->setIcon(mIconType);
-    this->resize(mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
     this->setCenterPos(centerPos); //Re-set center pos after resize
-
-    //Resize the selection box
-    //qDebug() << "mpSelectionBox->setSize: " << mpIcon->boundingRect().width() << " " << mpIcon->boundingRect().height();
-    mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
 
     this->refreshDisplayName();
 }

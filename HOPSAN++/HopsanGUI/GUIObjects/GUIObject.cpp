@@ -29,6 +29,7 @@
 #include "../GraphicsView.h"
 #include "../Widgets/ProjectTabWidget.h"
 #include "../UndoStack.h"
+#include "Utilities/GUIUtilities.h"
 
 
 //! @todo should not pSystem and pParent be teh same ?
@@ -52,6 +53,8 @@ GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2), QPen(QColor("darkRed"),2), this);
     mpSelectionBox->setZValue(SELECTIONBOX_Z);
     mpSelectionBox->setPassive();
+    this->setGeometry(0,0,0,0);
+    this->setTransformOriginPoint(boundingRect().center());
     this->setCenterPos(pos);
     this->rotateTo(rot);
     this->setAcceptHoverEvents(true);
@@ -89,12 +92,38 @@ int GUIObject::type() const
 
 QPointF GUIObject::getCenterPos()
 {
-    return QPointF(this->pos().x()+this->boundingRect().width()/2.0, this->pos().y()+this->boundingRect().height()/2.0);
+    if (this->scene() != 0)
+    {
+        QPointF pos(this->pos().x()+this->boundingRect().width()/2.0, this->pos().y()+this->boundingRect().height()/2.0);
+        qDebug() << "get---------------" << pos << " " << this->geometry().center() << " " << this->sceneBoundingRect().center();
+        return this->sceneBoundingRect().center();
+    }
+    else
+    {
+        return QPointF(0,0);
+    }
 }
 
-void GUIObject::setCenterPos(QPointF pos)
+void GUIObject::setCenterPos(const QPointF cpos)
 {
-    this->setPos(QPointF(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0));
+    if (this->scene() != 0)
+    {
+        //qDebug() << "scenePos: " << this->scenePos();
+        //QPointF brC = this->mapToScene(this->boundingRect().center()) - this->scenePos();
+        //qDebug() << "brC in parent: " << brC << " " << " brC in local: "  << this->boundingRect().center();
+
+        QPointF posDiff = cpos - this->sceneBoundingRect().center();
+        this->setPos(this->pos()+posDiff);
+        //this->setPos(new_pos);
+        qDebug() << "set---------------" << cpos << " " << this->geometry().center() << " " << this->sceneBoundingRect().center();
+
+        //this->setPos(QPointF(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0));
+
+    }
+    else
+    {
+        setPos(cpos);
+    }
 }
 
 void GUIObject::saveToDomElement(QDomElement &/*rDomElement*/){}  //! @todo nothing for now
@@ -277,12 +306,7 @@ void GUIObject::rotateTo(qreal angle)
 void GUIObject::rotate90cw(undoStatus undoSettings)
 {
     this->setTransformOriginPoint(this->boundingRect().center());
-    this->setRotation(this->rotation()+90);
-
-    if (this->rotation() >= 359)
-    {
-        this->setRotation(0);
-    }
+    this->setRotation(normDeg360(this->rotation()+90));
 
     if(undoSettings == UNDO)
     {
@@ -298,12 +322,7 @@ void GUIObject::rotate90cw(undoStatus undoSettings)
 void GUIObject::rotate90ccw(undoStatus undoSettings)
 {
     this->setTransformOriginPoint(this->boundingRect().center());
-    this->setRotation(this->rotation()-90);
-
-    if (this->rotation() < 0)
-    {
-        this->setRotation(360+this->rotation());
-    }
+    this->setRotation(normDeg360(this->rotation()-90));
 
     if(undoSettings == UNDO)
     {
@@ -405,6 +424,8 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
 
 void GUIObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
 {
+    this->prepareGeometryChange(); //dont know if this is actually necessary but lets call it anyway
+
     qreal b = 6;
     qreal a = 6;
     x1 += -4;

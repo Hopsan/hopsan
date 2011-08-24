@@ -194,6 +194,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
 
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
+    qDebug() << "load---------: " << posX << " " << posY;
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     int textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
     //bool portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
@@ -218,6 +219,8 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
         GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPointF(posX, posY), 0, DESELECTED, nameStatus, undoSettings);
         pObj->setNameTextPos(nameTextPos);
 
+        qDebug() << "load3--------: " << pObj->getCenterPos();
+
         if (isFlipped)
         {
             pObj->flipHorizontal(undoSettings);
@@ -227,6 +230,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
             pObj->rotate90cw(undoSettings);
         }
 
+        qDebug() << "load4--------: " << pObj->getCenterPos();
 
         if (rDomElement.tagName() == HMF_SYSTEMTAG)
         {

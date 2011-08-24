@@ -51,6 +51,7 @@ public:
     QString getBasePath();
     QString getFullAvailableIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconPath(graphicsType gfxType=USERGRAPHICS);
+    qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     PortAppearanceMapT &getPortAppearanceMap();
@@ -70,6 +71,8 @@ private:
     QString mHelpText;
     QString mIconUserPath;
     QString mIconIsoPath;
+    qreal   mIconUserScale;
+    qreal   mIconIsoScale;
     QString mIconRotationBehaviour;
     QPointF mNameTextPos;
 

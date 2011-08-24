@@ -642,7 +642,7 @@ void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
     mpComponentNameField->setText(QString());
     gpMainWindow->hideHelpPopupMessage();
 
-    qDebug() << "You are hovering me!";
+    //qDebug() << "You are hovering me!";
 
     QWidget::mouseMoveEvent(event);
 }

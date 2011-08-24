@@ -140,6 +140,22 @@ QString GUIModelObjectAppearance::getIconPath(graphicsType gfxType)
     }
 }
 
+qreal GUIModelObjectAppearance::getIconScale(const graphicsType gfxType)
+{
+    if (gfxType == USERGRAPHICS)
+    {
+        return mIconUserScale;
+    }
+    else if (gfxType == ISOGRAPHICS)
+    {
+        return mIconIsoScale;
+    }
+    else
+    {
+        return 1.0; //Invalid type
+    }
+}
+
 void GUIModelObjectAppearance::makeSurePathsAbsolute()
 {
     QFileInfo iconUserFileInfo(mIconUserPath);
@@ -255,6 +271,8 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
     mIconIsoPath = xmlIcon.attribute("isopath");
     mIconUserPath = xmlIcon.attribute("userpath");
     mIconRotationBehaviour = xmlIcon.attribute("iconrotation");
+    mIconUserScale = parseAttributeQreal(xmlIcon, "userscale", 1.0);
+    mIconIsoScale = parseAttributeQreal(xmlIcon, "isoscale", 1.0);
 
     this->makeSurePathsAbsolute();
 
@@ -297,6 +315,8 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     xmlIcon.setAttribute(HMF_ISOPATHTAG, mIconIsoPath);
     xmlIcon.setAttribute(HMF_USERPATHTAG, mIconUserPath);
     xmlIcon.setAttribute(HMF_ICONROTATIONTAG, mIconRotationBehaviour);
+    xmlIcon.setAttribute("isoscale", mIconIsoScale);
+    xmlIcon.setAttribute("userscale", mIconUserScale);
     if(!mHelpText.isNull() || !mHelpPicture.isNull())
     {
         QDomElement xmlHelp = appendDomElement(xmlObject, HMF_HELPTAG);

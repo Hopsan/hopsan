@@ -54,8 +54,8 @@ public:
     virtual QString getName() {assert(false);} //Maybe sould not bee here
 
     //Position methods
-    virtual QPointF getCenterPos();
-    virtual void setCenterPos(QPointF pos);
+    QPointF getCenterPos();
+    void setCenterPos(const QPointF cpos);
 
     //Load and save methods
     virtual void saveToDomElement(QDomElement &/*rDomElement*/);
@@ -77,7 +77,7 @@ public slots:
     virtual void rotate90cw(undoStatus undoSettings=UNDO);
     virtual void rotate90ccw(undoStatus undoSettings=UNDO);
 
-    void rotateTo(qreal angle);
+    void rotateTo(qreal angle); //!< @todo should this really be public, or maybe it should, but be virtual
     void moveUp();
     void moveDown();
     void moveLeft();

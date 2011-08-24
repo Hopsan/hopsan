@@ -366,6 +366,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         this->setName(rDomElement.attribute(HMF_NAMETAG));
         QString realName = this->getName();
 
+        qDebug() << "load5--------: " << this->getCenterPos();
+
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));

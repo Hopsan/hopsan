@@ -391,6 +391,18 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
     rStop = domElement.attribute("stop").toDouble();
 }
 
+qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue)
+{
+    if (domElement.hasAttribute(attributeName))
+    {
+        return domElement.attribute(attributeName).toDouble();
+    }
+    else
+    {
+        return defaultValue;
+    }
+}
+
 
 //! @brief Converts a color to a string of syntax "R,G,B".
 QString makeRgbString(QColor color)

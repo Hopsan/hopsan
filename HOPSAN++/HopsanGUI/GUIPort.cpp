@@ -220,8 +220,12 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @todo is it necessary to be able to update orientation also?
 void GUIPort::setCenterPos(const qreal x, const qreal y)
 {
-    //Place the guiport with center in x and y, assume x and y in parent local coordinates
-    this->setPos(x-boundingRect().width()/2.0, y-boundingRect().height()/2.0);
+    //Place the guiport with center in x and y, in parent local coordinates
+//    const QPointF offset( this->mapToParent(this->boundingRect()).boundingRect().width()/2.0, this->mapToParent(this->boundingRect()).boundingRect().height()/2.0);
+//    this->setPos( x-offset.x(), y-offset.y() );
+
+    QPointF posdiff = QPointF(x,y) - this->mapToParent(this->boundingRect().center());
+    this->setPos(this->pos()+posdiff);
 }
 
 //! Conveniance function when fraction positions are known
@@ -238,8 +242,9 @@ void GUIPort::setCenterPosByFraction(qreal x, qreal y)
 //! Returns the center position in parent coordinates
 QPointF GUIPort::getCenterPos()
 {
-    // QPointF( this->boundingRect().width()/2.0, this->boundingRect().height()/2.0);
-    return this->pos() + QPointF(this->geometry().size().width()/2.0, this->geometry().size().height()/2.0);
+    //const QPointF offset( this->mapToParent(this->boundingRect()).boundingRect().width()/2.0, this->mapToParent(this->boundingRect()).boundingRect().height()/2.0);
+    //return this->pos() + offset;
+    return this->mapToParent(this->boundingRect().center());
 }
 
 //! @brief Overloaded setRotation to store rotation in appearance data
