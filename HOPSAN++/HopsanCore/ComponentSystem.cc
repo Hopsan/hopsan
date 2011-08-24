@@ -2916,8 +2916,6 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 //! @param stopT Stop time of simulation
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
-    mStop = false;
-
     mTime = startT;
 
     //Simulate

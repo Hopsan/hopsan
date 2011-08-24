@@ -40,11 +40,12 @@ namespace hopsan {
     class DLLIMPORTEXPORT CSVParser
     {
     public:
-        CSVParser(std::string filename = "Book1.csv",
-                      const char field_terminator = ';',
-                      const char line_terminator = '\n',
-                      const char enclosure_char = '"',
-                      size_t linesToSkip = 0)
+        CSVParser(bool &success,
+                  std::string filename = "Book1.csv",
+                  const char field_terminator = ';',
+                  const char line_terminator = '\n',
+                  const char enclosure_char = '"',
+                  size_t linesToSkip = 0)
         {
 
             csv_parser file_parser;
@@ -53,7 +54,7 @@ namespace hopsan {
             file_parser.set_skip_lines(linesToSkip);
 
             // Specify the file to parse
-            file_parser.init(filename.c_str());
+            success = file_parser.init(filename.c_str());
 
             // Here we tell the parser how to parse the file
             file_parser.set_enclosed_char(enclosure_char, ENCLOSURE_OPTIONAL);

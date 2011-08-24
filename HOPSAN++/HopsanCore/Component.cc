@@ -196,59 +196,85 @@ bool Parameter::evaluate(std::string &rResult)
     {
         evaluatedParameterValue = mParameterValue;
     }
-    if(mpData)
+
+    if(mType=="double")
     {
-        if(mType=="double")
+        double tmpParameterValue;
+        istringstream is(evaluatedParameterValue);
+        if(is >> tmpParameterValue)
         {
-            double tmpParameterValue;
-            istringstream is(evaluatedParameterValue);
-            if(is >> tmpParameterValue)
+            if(mpData)
             {
                 double* apa = static_cast<double*> (mpData);
                 *apa = tmpParameterValue;
             }
-            else
-            {
-                success = false;
-            }
-        }
-        else if(mType=="integer")
-        {
-            int tmpParameterValue;
-            istringstream is(evaluatedParameterValue);
-            if(is >> tmpParameterValue)
-            {
-                int* apa = static_cast<int*> (mpData);
-                *apa = tmpParameterValue;
-            }
-            else
-            {
-                success = false;
-            }
-        }
-        else if(mType=="bool")
-        {
-            bool tmpParameterValue;
-            istringstream is(evaluatedParameterValue);
-            if(is >> tmpParameterValue)
-            {
-                bool* apa = static_cast<bool*> (mpData);
-                *apa = tmpParameterValue;
-            }
-            else
-            {
-                success = false;
-            }
-        }
-        else if(mType=="string")
-        {
-            string* apa = static_cast<string*> (mpData);
-            *apa = evaluatedParameterValue;
         }
         else
         {
             success = false;
         }
+    }
+    else if(mType=="integer")
+    {
+        int tmpParameterValue;
+        istringstream is(evaluatedParameterValue);
+        if(is >> tmpParameterValue)
+        {
+            if(mpData)
+            {
+                int* apa = static_cast<int*> (mpData);
+                *apa = tmpParameterValue;
+            }
+        }
+        else
+        {
+            success = false;
+        }
+    }
+    else if(mType=="bool")
+    {
+        bool tmpParameterValue;
+        istringstream is(evaluatedParameterValue);
+        if(is >> tmpParameterValue)
+        {
+            if(mpData)
+            {
+                bool* apa = static_cast<bool*> (mpData);
+                *apa = tmpParameterValue;
+            }
+        }
+        else if(evaluatedParameterValue == "false")
+        {
+            if(mpData)
+            {
+                bool* apa = static_cast<bool*> (mpData);
+                *apa = false;
+            }
+        }
+        else if(evaluatedParameterValue == "true")
+        {
+            if(mpData)
+            {
+                bool* apa = static_cast<bool*> (mpData);
+                *apa = true;
+            }
+        }
+        else
+        {
+            success = false;
+        }
+    }
+    else if(mType=="string")
+    {
+        if(mpData)
+        {
+            string* apa = static_cast<string*> (mpData);
+            *apa = evaluatedParameterValue;
+        }
+    }
+    else
+    {
+        success = false;
     }
 
     rResult = evaluatedParameterValue;
@@ -280,19 +306,67 @@ Parameters::Parameters(Component* pParentComponent)
 bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr)
 {
     bool success = true;
+    istringstream is(parameterValue);
     //Type not decided, to be done here
-    if(type.empty())
+    if((type.empty()) || (0 == type.compare("double")))
     {
-        istringstream is(parameterValue);
         double tmpDouble;
         if(is >> tmpDouble)
         {
             type = "double";
+            success *= true;
         }
-
+        else
+        {
+            success *= false;
+        }
     }
-    Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, dataPtr, this);
-    mParameters.push_back(newParameter);
+    else if(0 == type.compare("bool"))
+    {
+        bool tmpBool;
+        if((is >> tmpBool) || (parameterValue.compare("false")) == 0 || (parameterValue.compare("true") == 0))
+        {
+            success *= true;
+        }
+        else
+        {
+            success *= false;
+        }
+    }
+    else if(0 == type.compare("integer"))
+    {
+        int tmpInt;
+        if(is >> tmpInt)
+        {
+            success *= true;
+        }
+        else
+        {
+            success *= false;
+        }
+    }
+    else if(0 == type.compare("string"))
+    {
+        std::string tmpStr;
+        if(is >> tmpStr)
+        {
+            success *= true;
+        }
+        else
+        {
+            success *= false;
+        }
+    }
+    else
+    {
+        success *= false;
+    }
+
+    if(success)
+    {
+        Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, dataPtr, this);
+        mParameters.push_back(newParameter);
+    }
 
     return success;
 }
@@ -346,7 +420,7 @@ bool Parameters::setParameter(std::string name, std::string value, std::string d
     for(size_t i=0; i<mParameters.size(); ++i) //Find the parameter among the excisting parameters
     {
         mParameters[i]->getParameter(parameterName, parameterValue, parameterDescription, parameterUnit, parameterType);
-        if(name == parameterName) //Found!
+        if((name == parameterName) && (value != parameterName)) //Found! (It cannot find itself)
         {
             Parameter *needEvaluation=0;
             success = mParameters[i]->setParameter(value, description, unit, type, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
@@ -690,6 +764,25 @@ void Component::registerParameter(const string name, const string description, c
     {
         assert(false);
     }
+}
+
+
+//! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
+void Component::registerParameter(const string name, const string description, const string unit, string &rValue)
+{
+    mParameters->addParameter(name, rValue, description, unit, "string", &rValue);
+}
+
+
+//! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
+void Component::registerParameter(const string name, const string description, const string unit, bool &rValue)
+{
+    if(rValue)
+        mParameters->addParameter(name, "true", description, unit, "bool", &rValue);
+    else
+        mParameters->addParameter(name, "false", description, unit, "bool", &rValue);
 }
 
 
