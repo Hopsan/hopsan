@@ -73,8 +73,8 @@ class ParameterLayout : public QGridLayout
     Q_OBJECT
     friend class ComponentPropertiesDialog;
 public:
-    ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
+ //   ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
+    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", QString typeName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
 
     QString getDescriptionName();
     QString getDataName();
@@ -99,7 +99,7 @@ protected:
     QString mDataName;
 
 private:
-    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0);
+    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="",  QString typeName="", GUIModelObject *pGUIModelObject=0);
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

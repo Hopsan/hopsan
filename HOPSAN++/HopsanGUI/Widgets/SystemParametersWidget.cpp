@@ -43,6 +43,7 @@
 TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget *parent)
     : QComboBox(parent)
 {
+    setSizeAdjustPolicy(QComboBox::AdjustToContents);
     mRow = row;
     mColumn = column;
     mParent = parent;
@@ -57,8 +58,11 @@ TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget
 void TypeComboBox::typeHasChanged(QString /*newType*/)
 {
     qDebug() << "aksJLKJAFLKJDFLkjsdlfkj   ";
-    mParent->setCurrentCell(mRow, mColumn);
-    mParent->changeParameter();
+    if(mRow > -1)
+    {
+        mParent->setCurrentCell(mRow, mColumn);
+        mParent->changeParameter();
+    }
 }
 
 
@@ -174,6 +178,7 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem */*item*/)
 
         //Do not do update, then crash due to the rebuild of the QTableWidgetItems
         setParameter(parName, parValue, "", "", typeName, false);
+        update();
     }
 }
 
@@ -308,9 +313,9 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
     mpNameBox = new QLineEdit(this);
     mpValueLabel = new QLabel("Value: ", this);
     mpValueBox = new QLineEdit(this);
-    mpValueBox->setValidator(new QDoubleValidator(this));
+    //mpValueBox->setValidator(new QDoubleValidator(this));
     mpTypeLabel = new QLabel("Type: ", this);
-    mpTypeBox = new TypeComboBox(0, 0, this);
+    mpTypeBox = new TypeComboBox(-1, -1, this);
     mpAddInDialogButton = new QPushButton("Set", this);
     mpDoneInDialogButton = new QPushButton("Done", this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);

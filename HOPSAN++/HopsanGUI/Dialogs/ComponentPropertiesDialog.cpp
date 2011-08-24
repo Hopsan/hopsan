@@ -125,6 +125,7 @@ void ComponentPropertiesDialog::createEditStuff()
             mvStartValueLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
                                                              qParameterValues[i],
                                                              qUnits[i],
+                                                             qTypes[i],
                                                              mpGUIComponent));
             startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
             ++nParam;
@@ -134,6 +135,7 @@ void ComponentPropertiesDialog::createEditStuff()
             mvParameterLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
                                                             qParameterValues[i],
                                                             qUnits[i],
+                                                            qTypes[i],
                                                             mpGUIComponent));
             parameterLayout->addLayout(mvParameterLayout.back(), nStV, 0);
             ++nStV;
@@ -334,23 +336,23 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
 }
 
 
-ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, double dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
+//ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, double dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
+//    : QGridLayout(parent)
+//{
+//    QString dataValueStr;
+//    dataValueStr.setNum(dataValue);
+//    commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject);
+//}
+
+
+ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, GUIModelObject *pGUIModelObject, QWidget *parent)
     : QGridLayout(parent)
 {
-    QString dataValueStr;
-    dataValueStr.setNum(dataValue);
-    commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject);
+    commonConstructorCode(dataName, descriptionName, dataValue, unitName, typeName, pGUIModelObject);
 }
 
 
-ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
-    : QGridLayout(parent)
-{
-    commonConstructorCode(dataName, descriptionName, dataValue, unitName, pGUIModelObject);
-}
-
-
-void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject)
+void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, GUIModelObject *pGUIModelObject)
 {
     mDataName = dataName;
 
@@ -376,8 +378,8 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     mDataNameLabel.adjustSize();
     mDescriptionNameLabel.setText(descriptionName);
     mDescriptionNameLabel.adjustSize();
-    mDataValuesLineEdit.setText(dataValue);
     mUnitNameLabel.setText(parseVariableUnit(unitName));
+    mDataValuesLineEdit.setText(dataValue);
 
     addWidget(&mDescriptionNameLabel, 0, 0);
     addWidget(&mDataNameLabel, 0, 1);
