@@ -72,6 +72,7 @@ QString makeRgbString(QColor color);
 void parseRgbString(QString rgb, double &red, double &green, double &blue);
 
 void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion);
+void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 
 //Save Load Definitions
 //! @todo clean up this list and give some smarter names

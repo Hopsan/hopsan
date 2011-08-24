@@ -23,6 +23,7 @@
 //$Id$
 
 #include "common.h"
+#include "version.h"
 #include "Configuration.h"
 #include "Utilities/XMLUtilities.h"
 #include "Utilities/GUIUtilities.h"
@@ -48,6 +49,7 @@ void Configuration::saveToXml()
         //Write to hopsanconfig.xml
     QDomDocument domDocument;
     QDomElement configRoot = domDocument.createElement("hopsanconfig");
+    configRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, HOPSANGUIVERSION);
     domDocument.appendChild(configRoot);
 
     QDomElement settings = appendDomElement(configRoot,"settings");
@@ -171,7 +173,7 @@ void Configuration::loadFromXml()
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
         return;
     }
-    qDebug() << "1";
+
     QDomDocument domDocument;
     QString errorStr;
     int errorLine, errorColumn;
@@ -194,6 +196,7 @@ void Configuration::loadFromXml()
         }
         else
         {
+            verifyConfigurationCompatibility(configRoot);     //Check version compatibility
             QDomElement settingsElement = configRoot.firstChildElement("settings");
 
             if(!settingsElement.firstChildElement("librarystyle").isNull())

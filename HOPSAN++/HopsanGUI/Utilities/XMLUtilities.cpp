@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+#include "../version.h"
 #include "XMLUtilities.h"
 #include <QMessageBox>
 
@@ -426,7 +427,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
 
 
 //! @brief Handles compatibility issues for elements loaded from hmf files
-//! @todo Add check for separate orifice areas in 4/3 valve
+//! @todo Add check for separate orifice areas in the rest of the valves
 void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 {
     if(hmfVersion <= 0.2)
@@ -435,5 +436,28 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
         {
             element.setAttribute("typename", "HydraulicPressureSourceC");
         }
+        if(element.attribute("typename") == "Hydraulic43Valve")     //Correct individual orifices for 4/3 valve
+        {
+            QDomElement xPaElement = appendDomElement(element, HMF_PARAMETERTAG);
+            xPaElement.setAttribute(HMF_NAMETAG, "f_pa");
+            xPaElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
+            QDomElement xPbElement = appendDomElement(element, HMF_PARAMETERTAG);
+            xPbElement.setAttribute(HMF_NAMETAG, "f_pb");
+            xPbElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
+            QDomElement xAtElement = appendDomElement(element, HMF_PARAMETERTAG);
+            xAtElement.setAttribute(HMF_NAMETAG, "f_at");
+            xAtElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
+            QDomElement xBtElement = appendDomElement(element, HMF_PARAMETERTAG);
+            xBtElement.setAttribute(HMF_NAMETAG, "f_bt");
+            xBtElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
+        }
     }
+}
+
+
+//! @brief Handles compatibility issues for xml data loaded from configuration file
+void verifyConfigurationCompatibility(QDomElement &rConfigElement)
+{
+    qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(HMF_HOPSANGUIVERSIONTAG);
+    //Nothing to do yet
 }
