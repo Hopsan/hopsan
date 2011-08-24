@@ -470,10 +470,28 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //7. Load all connectors
         QDomElement xmlConnections = rDomElement.firstChildElement(HMF_CONNECTIONS);
         xmlSubObject = xmlConnections.firstChildElement(HMF_CONNECTORTAG);
+        QList<QDomElement> failedConnections;
         while (!xmlSubObject.isNull())
         {
-            loadConnector(xmlSubObject, this, NOUNDO);
+            if(!loadConnector(xmlSubObject, this, NOUNDO))
+            {
+                failedConnections.append(xmlSubObject);
+            }
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
+        }
+        //If some connectors failed to load, it could mean that they were loaded in wrong order.
+        //Try again until they work, or abort if number of attempts are greater than maximum possible for success.
+        int stop=failedConnections.size()*(failedConnections.size()+1)/2;
+        int i=0;
+        while(!failedConnections.isEmpty())
+        {
+            if(!loadConnector(failedConnections.first(), this, NOUNDO))
+            {
+                failedConnections.append(failedConnections.first());
+            }
+            failedConnections.removeFirst();
+            ++i;
+            if(i>stop) break;
         }
 
         //8. Load favorite variables

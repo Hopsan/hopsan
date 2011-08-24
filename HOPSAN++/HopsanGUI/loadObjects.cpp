@@ -41,7 +41,7 @@
 //! @param[in] rDomElement The DOM element to load from
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Wheter or not to register undo for the operation
-void loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, undoStatus undoSettings)
+bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, undoStatus undoSettings)
 {
     // -----First read from DOM element-----
     QString startComponentName, endComponentName, startPortName, endPortName;
@@ -117,6 +117,8 @@ void loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
     {
         qDebug() << "Unsuccessful connection atempt" << endl;
     }
+
+    return success;
 }
 
 

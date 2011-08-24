@@ -40,7 +40,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
 
 GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings=UNDO);
 
-void loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, undoStatus undoSettings=UNDO);
+bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, undoStatus undoSettings=UNDO);
 
 void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 
