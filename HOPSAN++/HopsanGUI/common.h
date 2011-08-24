@@ -53,10 +53,12 @@
 //Path definitions (development)
 #define COMPONENTPATH "../HopsanGUI/componentData/"
 #define HELPPATH "../HopsanGUI/docs/html/"
+#define INCLUDEPATH "../HopsanCore/"
 
 //Path definition (release)
 //#define COMPONENTPATH "../componentData/"
 //#define HELPPATH "../Help/"
+//#define INCLUDEPATH "../Include/"
 
 //Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"

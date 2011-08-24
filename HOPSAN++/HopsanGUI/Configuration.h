@@ -68,6 +68,7 @@ public:
     QPalette getPalette();
     QFont getFont();
     QString getStyleSheet();
+    QString getLastScriptFile();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -89,6 +90,7 @@ public:
     void clearLastSessionModels();
     void setDefaultUnit(QString key, QString value);
     void addCustomUnit(QString dataname, QString unitname, double scale);
+    void setLastScriptFile(QString file);
 
 private:
     int mLibraryStyle;
@@ -113,6 +115,7 @@ private:
     QPalette mPalette;
     QFont mFont;
     QString mStyleSheet;
+    QString mLastScriptFile;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

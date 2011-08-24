@@ -75,9 +75,10 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
         PyWidget *pPyWidget = new PyWidget();
         pPyWidget->setLayout(pPyLayout);
 
+        mpScriptFileLineEdit->setText(gConfig.getLastScriptFile());
+
         setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
         setWidget(pPyWidget);//->setWidget(mpPythonConsole);
-
 }
 
 
@@ -85,15 +86,6 @@ void PyDockWidget::saveSettingsToDomElement(QDomElement &rDomElement)
 {
     QDomElement lastscript = appendDomElement(rDomElement, "lastscript");
     lastscript.setAttribute("file", mpScriptFileLineEdit->text());
-}
-
-
-void PyDockWidget::loadSettingsFromDomElement(QDomElement &rDomElement)
-{
-    QDomElement lastscript = rDomElement.firstChildElement("lastscript");
-    QString filename = lastscript.attribute("file");
-    if(!(filename.isEmpty()))
-        mpScriptFileLineEdit->setText(filename);
 }
 
 

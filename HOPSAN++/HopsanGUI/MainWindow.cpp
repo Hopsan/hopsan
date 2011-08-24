@@ -58,12 +58,13 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
+                                //! @note This is however not possible, because the gpMainWindow pointer is needed by the MainWindow constructor code.
 
     //Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
     this->setMouseTracking(true);
 
-    mpConfig = &gConfig;        //!< @todo Is this pointer variable needed?
+    mpConfig = &gConfig;
 
     //Create the message widget and its dock (must be done before everything that uses it!)
     mpMessageDock = new QDockWidget(tr("Messages"), this);
@@ -74,7 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     mpMessageWidget->checkMessages();
     mpMessageWidget->printGUIInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
-
 
     //Load configuration from settings file
     gConfig.loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
@@ -112,14 +112,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpPyDockWidget = new PyDockWidget(this, this);
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
-
-    //Update style sheet setting
-    if(!gConfig.getUseNativeStyleSheet())
-    {
-        setStyleSheet(gConfig.getStyleSheet());
-        setPalette(gConfig.getPalette());
-    }
-    qApp->setFont(gConfig.getFont());
 
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);

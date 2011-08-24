@@ -171,6 +171,7 @@ void Configuration::loadFromXml()
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
         return;
     }
+    qDebug() << "1";
     QDomDocument domDocument;
     QString errorStr;
     int errorLine, errorColumn;
@@ -305,7 +306,10 @@ void Configuration::loadFromXml()
             //Load settings to PyDockWidget in MainWindow
             QDomElement pythonElement = configRoot.firstChildElement("python");
             if(!pythonElement.isNull())
-                gpMainWindow->getPythonDock()->loadSettingsFromDomElement(pythonElement);
+            {
+                QDomElement lastScriptElement = pythonElement.firstChildElement("lastscript");
+                mLastScriptFile = lastScriptElement.attribute("file");
+            }
         }
     }
     file.close();
@@ -665,6 +669,12 @@ QString Configuration::getStyleSheet()
 }
 
 
+QString Configuration::getLastScriptFile()
+{
+    return mLastScriptFile;
+}
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -828,4 +838,11 @@ void Configuration::setDefaultUnit(QString key, QString value)
 void Configuration::addCustomUnit(QString dataname, QString unitname, double scale)
 {
     this->mCustomUnits.find(dataname).value().insert(unitname, scale);
+}
+
+
+
+void Configuration::setLastScriptFile(QString file)
+{
+    mLastScriptFile = file;
 }

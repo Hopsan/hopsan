@@ -39,7 +39,6 @@ public:
     PyDockWidget(MainWindow *pMainWindow, QWidget * parent = 0);
     QString getScriptFileName();
     void saveSettingsToDomElement(QDomElement &rDomElement);
-    void loadSettingsFromDomElement(QDomElement &rDomElement);
 
 public slots:
     void runPyScript();

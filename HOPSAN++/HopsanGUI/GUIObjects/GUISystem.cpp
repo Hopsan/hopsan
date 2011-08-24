@@ -616,7 +616,7 @@ void GUISystem::saveToWrappedCode()
 void GUISystem::createSimulinkSourceFiles()
 {
     QMessageBox::information(gpMainWindow, gpMainWindow->tr("Create Simulink Source Files"),
-                             gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console. Visual Studio compiler must be used."));
+                             gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console.\n\nVisual Studio 2008 compiler is supported, although other versions might work as well.."));
 
     QStringList inputComponents;
     QStringList inputPorts;
@@ -712,11 +712,6 @@ void GUISystem::createSimulinkSourceFiles()
     QDir saveDir;
     saveDir.setPath(savePath);
 
-    QString includePath = gExecPath;
-    includePath.chop(4);
-    includePath.append("/HopsanCore");
-    QString relIncludePath = saveDir.relativeFilePath(includePath);
-
     QFile wrapperFile;
     wrapperFile.setFileName(savePath + "/HopsanSimulink.cpp");
     if(!wrapperFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -768,33 +763,37 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "\n";
     wrapperStream << "#include \"simstruc.h\"\n";
     wrapperStream << "#include <sstream>\n";
-    wrapperStream << "#include \"" + relIncludePath + "/HopsanCore.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/Component.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentSystem.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentEssentials.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/HopsanEssentials.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/Node.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/Port.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/Nodes/Nodes.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/AuxiliarySimulationFunctions.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/CSVParser.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Delay.hpp\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/DoubleIntegratorWithDamping.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/Integrator.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/IntegratorLimited.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ludcmp.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/matrix.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ReadDataCurve.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/SecondOrderTransferFunction.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/TurbulentFlowFunction.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/ComponentUtilities/ValveHysteresis.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/HmfLoader.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/ClassFactory.hpp\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/FindUniqueName.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/HopsanCoreMessageHandler.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/CoreUtilities/LoadExternal.h\"\n";
-    wrapperStream << "#include \"" + relIncludePath + "/Components/Components.h\"\n";
+    wrapperStream << "#include \"/include/HopsanCore.h\"\n";
+    wrapperStream << "#include \"/include/Component.h\"\n";
+    wrapperStream << "#include \"/include/ComponentSystem.h\"\n";
+    wrapperStream << "#include \"/include/ComponentEssentials.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities.h\"\n";
+    wrapperStream << "#include \"/include/HopsanEssentials.h\"\n";
+    wrapperStream << "#include \"/include/Node.h\"\n";
+    wrapperStream << "#include \"/include/Port.h\"\n";
+    wrapperStream << "#include \"/include/Nodes/Nodes.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/AuxiliarySimulationFunctions.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/CSVParser.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/Delay.hpp\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/DoubleIntegratorWithDamping.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/FirstOrderTransferFunction.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/Integrator.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/IntegratorLimited.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/ludcmp.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/matrix.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/ReadDataCurve.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/SecondOrderTransferFunction.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/TurbulentFlowFunction.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/ValveHysteresis.h\"\n";
+    wrapperStream << "#include \"/include/ComponentUtilities/WhiteGaussianNoise.h\"\n";
+    wrapperStream << "#include \"/include/CoreUtilities/HmfLoader.h\"\n";
+    wrapperStream << "#include \"/include/CoreUtilities/ClassFactory.hpp\"\n";
+    wrapperStream << "#include \"/include/CoreUtilities/ClassFactoryStatusCheck.hpp\"\n";
+    wrapperStream << "#include \"/include/CoreUtilities/FindUniqueName.h\"\n";
+    wrapperStream << "#include \"/include/CoreUtilities/HopsanCoreMessageHandler.h\"\n";
+    wrapperStream << "#include \"/include/CoreUtilities/LoadExternal.h\"\n";
+    wrapperStream << "#include \"/include/Components/Components.h\"\n";
     wrapperStream << "\n";
     wrapperStream << "using namespace hopsan;\n";
     wrapperStream << "\n";
@@ -1067,7 +1066,7 @@ void GUISystem::createSimulinkSourceFiles()
     portLabelsFile.close();
 
     QTextStream compileStream(&compileFile);
-    compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp " + relIncludePath + "/Component.cc " + relIncludePath + "/ComponentSystem.cc " + relIncludePath + "/HopsanEssentials.cc " + relIncludePath + "/Node.cc " + relIncludePath + "/Port.cc " + relIncludePath + "/Components/Components.cc " + relIncludePath + "/CoreUtilities/HmfLoader.cc " + relIncludePath + "/CoreUtilities/HopsanCoreMessageHandler.cc " + relIncludePath + "/CoreUtilities/LoadExternal.cc " + relIncludePath + "/Nodes/Nodes.cc " + relIncludePath + "/ComponentUtilities/AuxiliarySimulationFunctions.cpp " + relIncludePath + "/ComponentUtilities/Delay.cc " + relIncludePath + "/ComponentUtilities/DoubleIntegratorWithDamping.cpp " + relIncludePath + "/ComponentUtilities/FirstOrderFilter.cc " + relIncludePath + "/ComponentUtilities/Integrator.cc " + relIncludePath + "/ComponentUtilities/IntegratorLimited.cc " + relIncludePath + "/ComponentUtilities/ludcmp.cc " + relIncludePath + "/ComponentUtilities/matrix.cc " + relIncludePath + "/ComponentUtilities/SecondOrderFilter.cc " + relIncludePath + "/ComponentUtilities/SecondOrderTransferFunction.cc " + relIncludePath + "/ComponentUtilities/TurbulentFlowFunction.cc " + relIncludePath + "/ComponentUtilities/ValveHysteresis.cc\n";
+    compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /include/Component.cc /include/ComponentSystem.cc /include/HopsanEssentials.cc /include/Node.cc /include/Port.cc /include/Components/Components.cc /include/CoreUtilities/HmfLoader.cc /include/CoreUtilities/HopsanCoreMessageHandler.cc /include/CoreUtilities/LoadExternal.cc /include/Nodes/Nodes.cc /include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /include/ComponentUtilities/Delay.cc /include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /include/ComponentUtilities/FirstOrderFilter.cc /include/ComponentUtilities/Integrator.cc /include/ComponentUtilities/IntegratorLimited.cc /include/ComponentUtilities/ludcmp.cc /include/ComponentUtilities/matrix.cc /include/ComponentUtilities/SecondOrderFilter.cc /include/ComponentUtilities/SecondOrderTransferFunction.cc /include/ComponentUtilities/TurbulentFlowFunction.cc /include/ComponentUtilities/ValveHysteresis.cc\n";
     compileStream << "mex -DWIN32 -DSTATICCORE -L./ -lHopsanCore HopsanSimulink.cpp\n";
     compileFile.close();
 
@@ -1078,6 +1077,84 @@ void GUISystem::createSimulinkSourceFiles()
     libFile.copy(savePath + "/HopsanCore.lib");
     QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
     expFile.copy(savePath + "/HopsanCore.exp");
+
+    saveDir.mkdir("include");
+    QFile componentH(gExecPath + QString(INCLUDEPATH) + "Component.h");
+    componentH.copy(saveDir.path() + "/include/Component.h");
+    QFile componentSystemH(gExecPath + QString(INCLUDEPATH) + "ComponentSystem.h");
+    componentSystemH.copy(saveDir.path() + "/include/ComponentSystem.h");
+    QFile componentEssentialsH(gExecPath + QString(INCLUDEPATH) + "ComponentEssentials.h");
+    componentEssentialsH.copy(saveDir.path() + "/include/ComponentEssentials.h");
+    QFile componentUtilitiesH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities.h");
+    componentUtilitiesH.copy(saveDir.path() + "/include/ComponentUtilities.h");
+    QFile hopsanCoreH(gExecPath + QString(INCLUDEPATH) + "HopsanCore.h");
+    hopsanCoreH.copy(saveDir.path() + "/include/HopsanCore.h");
+    QFile hopsanEssentialsH(gExecPath + QString(INCLUDEPATH) + "HopsanEssentials.h");
+    hopsanEssentialsH.copy(saveDir.path() + "/include/HopsanEssentials.h");
+    QFile nodeH(gExecPath + QString(INCLUDEPATH) + "Node.h");
+    nodeH.copy(saveDir.path() + "/include/Node.h");
+    QFile portH(gExecPath + QString(INCLUDEPATH) + "Port.h");
+    portH.copy(saveDir.path() + "/include/Port.h");
+
+    QDir componentsDir;
+    componentsDir.mkdir(savePath + "/include/Components");
+    QFile componentsH(gExecPath + QString(INCLUDEPATH) + "Components/Components.h");
+    componentsH.copy(saveDir.path() + "/include/Components/Components.h");
+
+    QDir componentUtilitiesDir;
+    componentUtilitiesDir.mkdir(savePath + "/include/ComponentUtilities");
+    QFile auxiliarySimulationFunctionsH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/AuxiliarySimulationFunctions.h");
+    auxiliarySimulationFunctionsH.copy(saveDir.path() + "/include/ComponentUtilities/AuxiliarySimulationFunctions.h");
+    QFile csvParserH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/CSVParser.h");
+    csvParserH.copy(saveDir.path() + "/include/ComponentUtilities/CSVParser.h");
+    QFile delayH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Delay.hpp");
+    delayH.copy(saveDir.path() + "/include/ComponentUtilities/Delay.hpp");
+    QFile doubleIntegratorWithDampingH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDamping.h");
+    doubleIntegratorWithDampingH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDamping.h");
+    QFile doubleIntegratorWithDampingAndCoulumbFrictionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
+    doubleIntegratorWithDampingAndCoulumbFrictionH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
+    QFile firstOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/FirstOrderTransferFunction.h");
+    firstOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/FirstOrderTransferFunction.h");
+    QFile integratorH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Integrator.h");
+    integratorH.copy(saveDir.path() + "/include/ComponentUtilities/Integrator.h");
+    QFile integratorLimitedH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/IntegratorLimited.h");
+    integratorLimitedH.copy(saveDir.path() + "/include/ComponentUtilities/IntegratorLimited.h");
+    QFile ludcmpH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ludcmp.h");
+    ludcmpH.copy(saveDir.path() + "/include/ComponentUtilities/ludcmp.h");
+    QFile matrixH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/matrix.h");
+    matrixH.copy(saveDir.path() + "/include/ComponentUtilities/matrix.h");
+    QFile readDataCurveH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ReadDataCurve.h");
+    readDataCurveH.copy(saveDir.path() + "/include/ComponentUtilities/ReadDataCurve.h");
+    QFile secondOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/SecondOrderTransferFunction.h");
+    secondOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/SecondOrderTransferFunction.h");
+    QFile turbulentFlowFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/TurbulentFlowFunction.h");
+    turbulentFlowFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/TurbulentFlowFunction.h");
+    QFile valveHysteresisH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ValveHysteresis.h");
+    valveHysteresisH.copy(saveDir.path() + "/include/ComponentUtilities/ValveHysteresis.h");
+    QFile whiteGaussianNoiseH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/WhiteGaussianNoise.h");
+    whiteGaussianNoiseH.copy(saveDir.path() + "/include/ComponentUtilities/WhiteGaussianNoise.h");
+
+    QDir coreUtilitiesDir;
+    coreUtilitiesDir.mkdir(savePath + "/include/CoreUtilities");
+    QFile hmfLoaderH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HmfLoader.h");
+    hmfLoaderH.copy(saveDir.path() + "/include/CoreUtilities/HmfLoader.h");
+    QFile classFactoryHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactory.hpp");
+    classFactoryHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactory.hpp");
+    QFile classFactoryStatusCheckHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactoryStatusCheck.hpp");
+    classFactoryStatusCheckHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactoryStatusCheck.hpp");
+    QFile findUniqueNameH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/FindUniqueName.h");
+    findUniqueNameH.copy(saveDir.path() + "/include/CoreUtilities/FindUniqueName.h");
+    QFile hopsanCoreMessageHandlerH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HopsanCoreMessageHandler.h");
+    hopsanCoreMessageHandlerH.copy(saveDir.path() + "/include/CoreUtilities/HopsanCoreMessageHandler.h");
+    QFile loadExternalH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/LoadExternal.h");
+    loadExternalH.copy(saveDir.path() + "/include/CoreUtilities/LoadExternal.h");
+
+    QDir nodesDir;
+    nodesDir.mkdir(savePath + "/include/Nodes");
+    QFile nodesH(gExecPath + QString(INCLUDEPATH) + "/Nodes/Nodes.h");
+    nodesH.copy(saveDir.path() + "/include/Nodes/Nodes.h");
+
+
 
 
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
