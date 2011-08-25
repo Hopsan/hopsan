@@ -492,8 +492,15 @@ void Port::setStartValue(const size_t &idx, const double &value, const size_t /*
 }
 
 
+//! @brief Disables start value for specified data type
+//! @param idx Data index of start value to be disabled
 void Port::disableStartValue(const size_t &idx)
 {
+    //The start value has already been registered as a parameter in the component, so we must unregister it. This is probably not the most beautiful solution.
+    std::stringstream name;
+    name << getPortName() << "::" << mpStartNode->mDataNames.at(idx);
+    mpComponent->unRegisterParameter(name.str());
+
     mpStartNode->mDataNames.at(idx) = "";
 }
 

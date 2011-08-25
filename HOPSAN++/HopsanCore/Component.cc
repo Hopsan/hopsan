@@ -386,8 +386,7 @@ void Parameters::deleteParameter(std::string parameterName)
         if(parameterName == name)
         {
             mParameters.erase(parIt);
-            delete (*parIt);
-            ++parIt;
+            return;     //We can return now, since there should never be multiple parameters with same name
         }
     }
 }
@@ -783,6 +782,13 @@ void Component::registerParameter(const string name, const string description, c
         mParameters->addParameter(name, "true", description, unit, "bool", &rValue);
     else
         mParameters->addParameter(name, "false", description, unit, "bool", &rValue);
+}
+
+
+//! @brief Removes a parameter value from the component
+void Component::unRegisterParameter(const string name)
+{
+    mParameters->deleteParameter(name);
 }
 
 

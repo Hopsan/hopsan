@@ -115,6 +115,7 @@ class ComponentSystem; //Forward declaration
         void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
         void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
         void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
+        void unRegisterParameter(const std::string name);
         void getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues,
                            std::vector<std::string> &descriptions, std::vector<std::string> &units, std::vector<std::string> &types);
         bool setParameterValue(const std::string name, const std::string value, bool force=0);
