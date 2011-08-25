@@ -74,9 +74,9 @@ public slots:
     virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
     virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}  //!< @todo nothing for now
     virtual void deleteMe();
-    virtual void rotate90cw(undoStatus undoSettings=UNDO);
-    virtual void rotate90ccw(undoStatus undoSettings=UNDO);
     virtual void rotate(qreal angle, undoStatus undoSettings=UNDO);
+    void rotate90cw(undoStatus undoSettings=UNDO);
+    void rotate90ccw(undoStatus undoSettings=UNDO);
 
     void moveUp();
     void moveDown();

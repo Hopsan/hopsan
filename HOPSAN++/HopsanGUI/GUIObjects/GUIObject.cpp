@@ -279,8 +279,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 
 //! @brief Slot that rotates the object to a desired angle (NOT registered in undo stack!)
 //! @param angle Angle to rotate to
-//! @see rotate(undoStatus undoSettings)
-//! @todo Add option to register this in undo stack - someone will want to do this sooner or later anyway
+//! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @todo Clean up these rotate functino and make them more similar with those in modelobject, try to share code if possible
 void GUIObject::rotate(qreal angle, undoStatus undoSettings)
 {
@@ -291,43 +290,30 @@ void GUIObject::rotate(qreal angle, undoStatus undoSettings)
     }
     this->setRotation(normDeg360(this->rotation()+angle));
 
-//    qreal target = normDeg360(this->rotation()-angle);
-//    while( normDeg360(target - this->rotation()) > 1.0 ) //!< @todo quickhack to loop untill almost exact
+    //! @todo maybe this function should be pure virtual or somthing we should never use guobjects directly
+    //! @todo undo registration will not work for guiobjects directly as they have no name
+//    if(undoSettings == UNDO)
 //    {
-//        this->rotate90cw(NOUNDO);
+//        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), 90);
 //    }
+
+    emit objectMoved();
 }
 
 //! @brief Rotates a component 90 degrees clockwise
-//! @param undoSettings Tells whether or not this shall be registered in undo stsack
-//! @see rotateTo(qreal angle);
+//! @param undoSettings Tells whether or not this shall be registered in undo stack
+//! @see rotate(qreal angle, undoStatus undoSettings)
 void GUIObject::rotate90cw(undoStatus undoSettings)
 {
-    this->setTransformOriginPoint(this->boundingRect().center());
-    this->setRotation(normDeg360(this->rotation()+90));
-
-    if(undoSettings == UNDO)
-    {
-        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), 90);
-    }
-
-    emit objectMoved();
+    this->rotate(90, undoSettings);
 }
 
 //! @brief Rotates a component 90 degrees counter-clockwise
-//! @param undoSettings Tells whether or not this shall be registered in undo stsack
-//! @see rotateTo(qreal angle);
+//! @param undoSettings Tells whether or not this shall be registered in undo stack
+//! @see rotate(qreal angle, undoStatus undoSettings)
 void GUIObject::rotate90ccw(undoStatus undoSettings)
 {
-    this->setTransformOriginPoint(this->boundingRect().center());
-    this->setRotation(normDeg360(this->rotation()-90));
-
-    if(undoSettings == UNDO)
-    {
-        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), -90);    //! @todo This will register a clockwise rotation, which will be bad...
-    }
-
-    emit objectMoved();
+    this->rotate(-90, undoSettings);
 }
 
 

@@ -29,7 +29,7 @@
 #include "../MainWindow.h"
 
 //! @todo rename GUISystemPort to ContainerPort, rename files also
-GUIContainerPort::GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+GUIContainerPort::GUIContainerPort(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     mIsSystemPort = (pParentContainer->type() == GUISYSTEM); //determine if I am a system port

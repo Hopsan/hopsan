@@ -31,7 +31,6 @@
 #include <assert.h>
 
 //Forward declarations
-class ProjectTabWidget;
 class GUIConnector;
 class GUIPort;
 class GUIContainerObject;
@@ -41,7 +40,7 @@ class GUIComponent : public GUIModelObject
     Q_OBJECT
 
 public:
-    GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
     ~GUIComponent();
 
     void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);

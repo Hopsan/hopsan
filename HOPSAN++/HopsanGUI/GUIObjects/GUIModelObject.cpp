@@ -35,8 +35,6 @@
 #include "../Configuration.h"
 #include "../MainWindow.h"
 
-#include <QSvgRenderer>
-
 //! @brief Constructor for GUI Objects
 //! @param position Initial scene coordinates where object shall be placed
 //! @param rotation Initial rotation of the object
@@ -943,23 +941,6 @@ void GUIModelObject::showPorts(bool visible)
         }
 }
 
-
-//! @brief Rotates a component 90 degrees clockwise
-//! @param undoSettings Tells whether or not this shall be registered in undo stsack
-//! @see rotateTo(qreal angle);
-void GUIModelObject::rotate90cw(undoStatus undoSettings)
-{
-    this->rotate(90, undoSettings);
-}
-
-
-//! @brief Rotates a component 90 degrees clockwise
-//! @param undoSettings Tells whether or not this shall be registered in undo stsack
-//! @see rotateTo(qreal angle);
-void GUIModelObject::rotate90ccw(undoStatus undoSettings)
-{
-    this->rotate(-90, undoSettings);
-}
 
 //! @todo try to reuse the code in rotate guiobject,
 void GUIModelObject::rotate(qreal angle, undoStatus undoSettings)

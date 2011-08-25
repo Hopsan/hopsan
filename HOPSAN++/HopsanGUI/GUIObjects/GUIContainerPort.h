@@ -32,7 +32,7 @@ class GUIContainerPort : public GUIModelObject
 {
     Q_OBJECT
 public:
-    GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
+    GUIContainerPort(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
     ~GUIContainerPort();
     QString getTypeName();
     void setDisplayName(QString name);

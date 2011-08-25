@@ -507,35 +507,21 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
     if (componentTypeName == HOPSANGUISYSTEMTYPENAME)
     {
         mpTempGUIModelObject= new GUISystem(position, rotation, pAppearanceData, this, startSelected, mGfxType);
-
-            //Disconnect new subsystem with ctrl-z and ctrl-y (they will be reconnected when entering system)
-//        //! @todo make sure if this is needed now that we have the "refresh connections function"
-//        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
-//        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
     }
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
-        mpTempGUIModelObject = new GUIContainerPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
-//        //Add appearance data for the external version of this systemport to the continer object so that the external port can be created with the creatPorts method
-//        mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance()); //! @todo maybe this should be handeled automatically inside create external port if missing
+        mpTempGUIModelObject = new GUIContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
         this->createExternalPort(mpTempGUIModelObject->getName());
         this->refreshExternalPortsAppearanceAndPosition();
     }
     else if (componentTypeName == HOPSANGUIGROUPTYPENAME)
     {
         mpTempGUIModelObject = new GUIGroup(position, rotation, pAppearanceData, this);
-        //Disconnect new subsystem with ctrl-z and ctrl-y (they will be reconnected when entering system)
-//        //! @todo make sure if this is needed now that we have the "refresh connections function"
-//        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
-//        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
     }
     else //Assume some standard component type
     {
-        mpTempGUIModelObject = new GUIComponent(pAppearanceData, position, rotation, this, startSelected, mGfxType);
+        mpTempGUIModelObject = new GUIComponent(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
-
-    qDebug() << "load2--------: " << mpTempGUIModelObject->getCenterPos();
-    //mpScene->addItem(mpTempGUIModelObject); //Need to do this earlier
 
     emit checkMessages();
 
@@ -556,8 +542,6 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
 
     mpTempGUIModelObject->setSelected(false);
     mpTempGUIModelObject->setSelected(true);
-    //this->setFocus();
-
 
     return mpTempGUIModelObject;
 }
