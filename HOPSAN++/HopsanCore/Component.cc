@@ -243,7 +243,7 @@ bool Parameter::evaluate(std::string &rResult)
                 *apa = tmpParameterValue;
             }
         }
-        else if(evaluatedParameterValue == "false")
+        else if((evaluatedParameterValue == "false") || (evaluatedParameterValue == "0"))
         {
             if(mpData)
             {
@@ -251,7 +251,7 @@ bool Parameter::evaluate(std::string &rResult)
                 *apa = false;
             }
         }
-        else if(evaluatedParameterValue == "true")
+        else if((evaluatedParameterValue == "true") || (evaluatedParameterValue == "1"))
         {
             if(mpData)
             {
@@ -324,7 +324,8 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
     else if(0 == type.compare("bool"))
     {
         bool tmpBool;
-        if((is >> tmpBool) || (parameterValue.compare("false")) == 0 || (parameterValue.compare("true") == 0))
+        if((is >> tmpBool) || (parameterValue.compare("false")) == 0 || (parameterValue.compare("true") == 0)
+                           || (parameterValue.compare("0"))     == 0 || (parameterValue.compare("1")    == 0))
         {
             success *= true;
         }
