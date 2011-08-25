@@ -200,6 +200,7 @@ void GUITextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     xmlSize.setAttribute("height", mpRectItem->rect().height());
 
     QDomElement xmlLine = appendDomElement(xmlGuiStuff, "line");
+    xmlLine.setAttribute("visible", mpRectItem->isVisible());
     xmlLine.setAttribute("width", mpRectItem->pen().width());
 
     QString style;
@@ -289,6 +290,7 @@ void GUITextBoxWidget::setBoxVisible(bool boxVisible)
 
 void GUITextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    //! @todo Make a separate file for this dialog
 
         //Open a dialog where line width and color can be selected
     mpEditDialog = new QDialog(gpMainWindow);
@@ -545,6 +547,7 @@ void GUITextBoxWidget::updateWidgetFromDialog()
                                                                               mpTextBoxInDialog->toPlainText(), mSelectedFont, mSelectedColor,
                                                                               mpRectItem->pen().width(), mpRectItem->pen().style(), mpWidthBoxInDialog->value(), selectedStyle,
                                                                               mpRectItem->isVisible(), mpShowBoxCheckBoxInDialog->isChecked());
+    mpParentContainerObject->mpParentProjectTab->hasChanged();
 
     mpTextItem->setPlainText(mpTextBoxInDialog->toPlainText());
     mpTextItem->setFont(mSelectedFont);

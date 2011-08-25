@@ -350,6 +350,7 @@ GUITextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject
     QFont font;
     QColor color;
     QString linestyle;
+    bool lineVisible;
     QPointF point;
     qreal width, height, linewidth;
 
@@ -374,6 +375,7 @@ GUITextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject
         height = sizeTag.attribute("height").toDouble();
 
         QDomElement lineTag = guiData.firstChildElement("line");
+        lineVisible = lineTag.attribute("visible").toInt();
         linewidth = lineTag.attribute("width").toDouble();
         linestyle = lineTag.attribute(HMF_STYLETAG);
     }
@@ -384,6 +386,7 @@ GUITextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject
     pWidget->setColor(color);
     pWidget->setSize(width, height);
     pWidget->setLineWidth(linewidth);
+    pWidget->setBoxVisible(lineVisible);
     if(linestyle == "solidline")
         pWidget->setLineStyle(Qt::SolidLine);
     if(linestyle == "dashline")

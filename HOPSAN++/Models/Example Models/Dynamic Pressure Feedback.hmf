@@ -4,15 +4,20 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2597.500000000001" y="2634.000000000001" zoom="0.9999999999999996"/>
+            <viewport x="2500.500000000001" y="2500.500000000001" zoom="0.9999999999999996"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="Dynamic Pressure Feedback">
-                    <icon isopath="../../../../../../../Program Files/Hopsan/Models/Example Models/subsystemtmp.svg" iconrotation="" userpath=""/>
+                    <icon isoscale="1" isopath="../../../../../../../Program Files/Hopsan/Models/Example Models/subsystemtmp.svg" iconrotation="" userscale="1" userpath=""/>
                 </modelobject>
+                <portpositions/>
             </hopsanobjectappearance>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+            </hopsanundo>
         </hopsangui>
         <simulationtime stop="5" timestep="0.0001" start="0"/>
         <parameters>
@@ -22,7 +27,7 @@
         <objects>
             <component typename="Hydraulic43Valve" name="4/3 Servo Valve">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="xv::Value"/>
                     <parameter value="0.67" name="C_q"/>
                     <parameter value="890" name="rho"/>
                     <parameter value="0.01" name="d"/>
@@ -48,7 +53,7 @@
             </component>
             <component typename="SignalGain" name="Gain_1">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                     <parameter value="0.04" name="k"/>
                 </parameters>
                 <startvalues>
@@ -61,7 +66,7 @@
             </component>
             <component typename="SignalSubtract" name="Subtract_1">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -73,7 +78,7 @@
             </component>
             <component typename="SignalSubtract" name="Subtract_2">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -85,9 +90,8 @@
             </component>
             <component typename="MechanicForceTransformer" name="Force Transformer">
                 <parameters>
-                    <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
-                    <parameter value="0.5" name="Position"/>
+                    <parameter value="0" name="P1::Velocity"/>
+                    <parameter value="0.5" name="P1::Position"/>
                     <parameter value="20" name="F"/>
                 </parameters>
                 <startvalues>
@@ -102,7 +106,7 @@
             </component>
             <component typename="SignalRoute" name="Route">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -114,11 +118,10 @@
             </component>
             <component typename="SignalSquareWave" name="Square Wave">
                 <parameters>
-                    <parameter value="0" name="Value"/>
                     <parameter value="0" name="t_start"/>
                     <parameter value="1" name="f"/>
                     <parameter value="0.1" name="y_A"/>
-                    <parameter value="0.45" name="y_0"/>
+                    <parameter value="0.5" name="y_0"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="" value="0"/>
@@ -130,7 +133,7 @@
             </component>
             <component typename="SignalGain" name="Gain">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                     <parameter value="Kpf" name="k"/>
                 </parameters>
                 <startvalues>
@@ -143,7 +146,6 @@
             </component>
             <component typename="SignalSource" name="Constant_1">
                 <parameters>
-                    <parameter value="0" name="Value"/>
                     <parameter value="0" name="y"/>
                 </parameters>
                 <startvalues>
@@ -156,7 +158,7 @@
             </component>
             <component typename="SignalSubtract" name="Subtract">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -182,20 +184,19 @@
             </component>
             <component typename="SignalSource" name="Routing">
                 <parameters>
-                    <parameter value="0" name="Value"/>
-                    <parameter value="1" name="y"/>
+                    <parameter value="2" name="y"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2657.00000000000000000000" y="2374" flipped="0" a="90"/>
+                    <pose x="2657.00000000000000000000" y="2355" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalHP1Filter" name="First order high pass filter">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                     <parameter value="w_cutoff" name="omega"/>
                     <parameter value="-1.5e+300" name="y_min"/>
                     <parameter value="1.5e+300" name="y_max"/>
@@ -210,8 +211,7 @@
             </component>
             <component typename="HydraulicTankC" name="Tank C">
                 <parameters>
-                    <parameter value="0" name="Flow"/>
-                    <parameter value="0" name="Pressure"/>
+                    <parameter value="0" name="P1::Flow"/>
                     <parameter value="100000" name="p"/>
                 </parameters>
                 <startvalues>
@@ -225,7 +225,7 @@
             </component>
             <component typename="HydraulicPressureSensor" name="Pressure Sensor_1">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -237,7 +237,7 @@
             </component>
             <component typename="HydraulicPressureSensor" name="Pressure Sensor">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -249,7 +249,7 @@
             </component>
             <component typename="MechanicPositionSensor" name="Position Sensor">
                 <parameters>
-                    <parameter value="0" name="Value"/>
+                    <parameter value="0" name="out::Value"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -261,13 +261,13 @@
             </component>
             <component typename="HydraulicCylinderC" name="Cylinder C">
                 <parameters>
-                    <parameter value="0" name="Flow"/>
-                    <parameter value="0" name="Pressure"/>
-                    <parameter value="0" name="Flow"/>
-                    <parameter value="0" name="Pressure"/>
-                    <parameter value="0" name="Velocity"/>
-                    <parameter value="0" name="Force"/>
-                    <parameter value="-0.5" name="Position"/>
+                    <parameter value="0" name="P1::Flow"/>
+                    <parameter value="0" name="P1::Pressure"/>
+                    <parameter value="0" name="P2::Flow"/>
+                    <parameter value="0" name="P2::Pressure"/>
+                    <parameter value="0" name="P3::Velocity"/>
+                    <parameter value="0" name="P3::Force"/>
+                    <parameter value="-0.5" name="P3::Position"/>
                     <parameter value="0.001" name="A_1"/>
                     <parameter value="0.001" name="A_2"/>
                     <parameter value="1" name="s_l"/>
@@ -294,8 +294,7 @@
             </component>
             <component typename="HydraulicPressureSourceC" name="Prescribed Pressure C">
                 <parameters>
-                    <parameter value="0" name="Flow"/>
-                    <parameter value="0" name="Pressure"/>
+                    <parameter value="0" name="P1::Flow"/>
                     <parameter value="2e+007" name="p"/>
                 </parameters>
                 <startvalues>
@@ -307,31 +306,30 @@
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <textwidget>
+            <textboxwidget>
                 <hopsangui>
-                    <pose x="2004" y="2412"/>
-                    <textobject fontcolor="#556b2f" text="This example model shows the benefits &#xa;of reducing oscillations in a servo system&#xa;by using dynamic pressure feedback. &#xa;&#xa;Try setting the pressure feedback gain &#xa;to zero to see the difference! The filter &#xa;is necessary to preserve stiffness, but it&#xa;can be removed to remove oscillations &#xa;further." font="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0"/>
+                    <pose x="1982" y="2382"/>
+                    <textobject fontcolor="#005500" text="This example model shows the benefits of&#xa;reducing oscillations in a servo system&#xa;by using dynamic pressure feedback.&#xa;&#xa;Try setting the pressure feedback gain &#xa;to zero to see the difference! The filter &#xa;is necessary to preserve stiffness, but it&#xa;can be removed to remove oscillations &#xa;further." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="282" height="179"/>
+                    <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
-            </textwidget>
-            <textwidget>
+            </textboxwidget>
+            <textboxwidget>
                 <hopsangui>
-                    <pose x="2231" y="2197"/>
-                    <textobject fontcolor="#556b2f" text="Example: Dynamic Pressure Feedback" font="Calibri,20,-1,5,75,0,0,0,0,0"/>
+                    <pose x="2410" y="2215"/>
+                    <textobject fontcolor="#005500" text="Example: Dynamic Pressure Feedback" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+                    <size width="421" height="41"/>
+                    <line width="2" visible="0" style="solidline"/>
                 </hopsangui>
-            </textwidget>
-            <textwidget>
+            </textboxwidget>
+            <textboxwidget>
                 <hopsangui>
-                    <pose x="2677" y="2352"/>
-                    <textobject fontcolor="#000000" text="1 = no pressure feedback&#xa;2 = static pressure feedback&#xa;3 = dynamic pressure feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
+                    <pose x="2676" y="2323"/>
+                    <textobject fontcolor="#005500" text="Feedback Switch:&#xa;1 = No Pressure Feedback&#xa;2 = Static Pressure Feedback&#xa;3 = Dynamic Pressure Feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
+                    <size width="155" height="60"/>
+                    <line width="2" visible="0" style="solidline"/>
                 </hopsangui>
-            </textwidget>
-            <boxwidget>
-                <hopsangui>
-                    <pose x="1999" y="2407"/>
-                    <size width="306" height="188"/>
-                    <line width="2" style="solidline" color="#556b2f"/>
-                </hopsangui>
-            </boxwidget>
+            </textboxwidget>
         </objects>
         <connections>
             <connect endport="P3" endcomponent="Cylinder C" startport="P1" startcomponent="Translational Mass">
@@ -581,7 +579,7 @@
             <connect endport="in1" endcomponent="Route" startport="out" startcomponent="Routing">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2657.00000000000000000000" y="2386.50000000000000000000"/>
+                        <coordinate x="2657.00000000000000000000" y="2367.50000000000000000000"/>
                         <coordinate x="2657.09999999999990905053" y="2422.00000000000000000000"/>
                     </coordinates>
                     <geometries>
