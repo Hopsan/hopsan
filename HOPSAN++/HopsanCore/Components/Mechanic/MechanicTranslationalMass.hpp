@@ -139,13 +139,13 @@ namespace hopsan {
             x2 = mFilterX.update(c1-c2);
             v2 = mFilterV.update(c1-c2 - k*x2);
 
-            if((mTime > 6) && (mTime < 6.01))
-            {
-                double apa = c1-c2;
-                stringstream ss;
-                ss << "t: " << mTime << "   c1-c2 = " << apa << "   v2 = " << v2;
-                addDebugMessage(ss.str());
-            }
+//            if((mTime > 6) && (mTime < 6.01))
+//            {
+//                double apa = c1-c2;
+//                stringstream ss;
+//                ss << "t: " << mTime << "   c1-c2 = " << apa << "   v2 = " << v2;
+//                addDebugMessage(ss.str());
+//            }
 
             if(x2<xMin)
             {
