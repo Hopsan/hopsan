@@ -88,7 +88,7 @@ namespace hopsan {
             den[1] = b1;
             den[2] = b2;
 
-            mTF2.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in));
+            mTF2.initialize(mTimestep, num, den, getStartValue(mpOut, NodeSignal::VALUE), getStartValue(mpOut, NodeSignal::VALUE));
 
             //Writes out the value for time "zero"
             (*mpND_out) = (*mpND_in);
