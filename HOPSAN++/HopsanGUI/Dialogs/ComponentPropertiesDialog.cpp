@@ -311,6 +311,8 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
         QString oldValueTxt = mpGUIComponent->getParameterValue(vParLayout[i]->getDataName());
 
         //Parameter has changed, add to undo stack and set the parameter
+        verifyNewValue(valueTxt);
+
         if(!mpGUIComponent->setParameterValue(vParLayout[i]->getDataName(), valueTxt)) //This is done as a check as well.
         {
             QMessageBox::critical(0, "Hopsan GUI",
@@ -480,5 +482,42 @@ void ParameterLayout::pickColor()
         QPalette palette( mDataValuesLineEdit.palette() );
         palette.setColor( QPalette::Text, QColor("black") );
         mDataValuesLineEdit.setPalette(palette);
+    }
+}
+
+
+
+//! @brief Verifies that a parameter value does not begin with a number but still contains illegal characters.
+//! @note This is a temporary solution. It shall be removed when parsing equations as parameters works.
+//! @param value String with parameter that shall be verified
+void ComponentPropertiesDialog::verifyNewValue(QString value)
+{
+    if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().contains(value.toStdString()))
+    {
+        return;
+    }
+
+    if(value[0].isNumber())
+    {
+        bool onlyNumbers=true;
+        for(int i=1; i<value.size(); ++i)
+        {
+            if(!value[i].isDigit() && !(value[i] == 'e') && !(value[i] == '+') && !(value[i] == '-') && !(value[i] == '.') && !(value[i] == ','))
+            {
+                onlyNumbers=false;
+            }
+            else if(value.count("e") > 1 || value.count(".") > 1 || value.count(",") > 1)
+            {
+                onlyNumbers=false;
+            }
+            else if((value[i] == '+' || value[i] == '-') && !(value[i-1] == 'e'))
+            {
+                onlyNumbers=false;
+            }
+        }
+        if(!onlyNumbers)
+        {
+           QMessageBox::warning(this, "Warning", "Parameter with value \"" + value + "\" will (probably) be truncated into a number.");
+        }
     }
 }
