@@ -38,10 +38,12 @@ GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject
 {
     //Initi variables
     mpParentContainerObject = 0;
+    mIsFlipped = false;
     mHmfTagName = HMF_OBJECTTAG;
 
     this->setParentContainerObject(pParentContainer);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
+    this->setAcceptHoverEvents(true);
 
     if (mpParentContainerObject != 0)
     {
@@ -57,8 +59,6 @@ GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject
     this->setTransformOriginPoint(boundingRect().center());
     this->setCenterPos(pos);
     this->rotateTo(rot);
-    this->setAcceptHoverEvents(true);
-    mIsFlipped = false;
     mOldPos=this->pos();
 }
 
@@ -94,8 +94,6 @@ QPointF GUIObject::getCenterPos()
 {
     if (this->scene() != 0)
     {
-        QPointF pos(this->pos().x()+this->boundingRect().width()/2.0, this->pos().y()+this->boundingRect().height()/2.0);
-        qDebug() << "get---------------" << pos << " " << this->geometry().center() << " " << this->sceneBoundingRect().center();
         return this->sceneBoundingRect().center();
     }
     else
@@ -108,17 +106,8 @@ void GUIObject::setCenterPos(const QPointF cpos)
 {
     if (this->scene() != 0)
     {
-        //qDebug() << "scenePos: " << this->scenePos();
-        //QPointF brC = this->mapToScene(this->boundingRect().center()) - this->scenePos();
-        //qDebug() << "brC in parent: " << brC << " " << " brC in local: "  << this->boundingRect().center();
-
         QPointF posDiff = cpos - this->sceneBoundingRect().center();
         this->setPos(this->pos()+posDiff);
-        //this->setPos(new_pos);
-        qDebug() << "set---------------" << cpos << " " << this->geometry().center() << " " << this->sceneBoundingRect().center();
-
-        //this->setPos(QPointF(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0));
-
     }
     else
     {

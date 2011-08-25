@@ -314,45 +314,59 @@ void GUIModelObject::setIcon(graphicsType gfxType)
         if (mpIcon != 0)
         {
             mpIcon->deleteLater(); //Shedule previous icon for deletion
+            disconnect(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)));
         }
 
-        mpIcon = new QGraphicsSvgItem(iconPath, this);
         mLastIconPath = iconPath;
-        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        mpIcon = new QGraphicsSvgItem(iconPath, this);
+        mpIcon->setTransformOriginPoint(mpIcon->mapFromParent(this->boundingRect().center()));
+        //qDebug() << "mpIcon brect: " << mpIcon->boundingRect();
         mpIcon->setScale(iconScale);
+        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        //qDebug() << "iconScale: " << iconScale << " " << mpIcon->scale();
+        //qDebug() << "mpIcon brect: " << mpIcon->boundingRect();
+
         this->prepareGeometryChange();
-        this->resize(mpIcon->boundingRect().width(), mpIcon->boundingRect().height());  //Resize modelobject
-        mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height()); //Resize selection box
+        //for some reason the bounding rect was not scaled so we sccale it manually bellow
+        this->resize(mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale);  //Resize modelobject
+        mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale); //Resize selection box
         this->setTransformOriginPoint(this->boundingRect().center());
+
+
+        if(mGUIModelObjectAppearance.getIconRotationBehaviour() == "ON")
+        {
+            mIconRotation = true;
+            mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
+        }
+        else
+        {
+            mIconRotation = false;
+            mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+            if (this->getParentContainerObject() != 0)
+            {
+                mpIcon->setScale(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor()*iconScale);
+                connect(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)), Qt::UniqueConnection);
+            }
+            //! @todo we need to dissconnect this also at some point, when swapping between systems or groups
+        }
     }
+}
 
-
-    if(mGUIModelObjectAppearance.getIconRotationBehaviour() == "ON")
-        mIconRotation = true;
-    else
-        mIconRotation = false;
-
-    if(!mIconRotation)
+void GUIModelObject::refreshIconPosition()
+{
+    //Only move when we have dissconnected the icon from transformations
+    if (!mIconRotation)
     {
-        //! @todo calulate this instead of if if if if if .......
-        //! @todo make sure that it works with flip and flop
-        mpIcon->setRotation(-this->rotation());
-        if(this->rotation() == 0)
-        {
-            mpIcon->setPos(0,0);
-        }
-        else if(this->rotation() == 90)
-        {
-            mpIcon->setPos(0,this->boundingRect().height());
-        }
-        else if(this->rotation() == 180)
-        {
-            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
-        }
-        else if(this->rotation() == 270)
-        {
-            mpIcon->setPos(this->boundingRect().width(),0);
-        }
+        mpIcon->setPos( this->mapFromScene(this->getCenterPos() - mpIcon->boundingRect().center() ));
+    }
+}
+
+void GUIModelObject::setIconZoom(const qreal zoom)
+{
+    //Only scale when we have dissconnected the icon from transformations
+    if (!mIconRotation)
+    {
+        mpIcon->setScale(mGUIModelObjectAppearance.getIconScale(mIconType)*zoom);
     }
 }
 
@@ -638,7 +652,6 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 
         //Save center pos in parent coordinates (same as scene coordinates for model objects)
     QPointF cpos = this->getCenterPos();
-    //qDebug() << "-------------------------------------------scene center pos;" << this->mapToScene(this->boundingRect().center()) << " vs. " << this->geometry().center();
 
     appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped);
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
@@ -936,7 +949,7 @@ void GUIModelObject::showPorts(bool visible)
 //! @see rotateTo(qreal angle);
 void GUIModelObject::rotate90cw(undoStatus undoSettings)
 {
-    this->rotate(90,undoSettings);
+    this->rotate(90, undoSettings);
 }
 
 
@@ -945,88 +958,22 @@ void GUIModelObject::rotate90cw(undoStatus undoSettings)
 //! @see rotateTo(qreal angle);
 void GUIModelObject::rotate90ccw(undoStatus undoSettings)
 {
-    this->rotate(-90,undoSettings);
-//    this->setTransformOriginPoint(this->boundingRect().center());
-//    this->setRotation(normDeg360(this->rotation()-90));
-
-//    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
-//    if (this->rotation() < 0.0)
-//    {
-//        this->setRotation(360+this->rotation());
-//    }
-
-//    int tempNameTextPos = mNameTextPos;
-//    this->snapNameTextPosition(mpNameText->pos());
-//    setNameTextPos(tempNameTextPos);
-
-//    //! @todo myabe use signals and slots instead
-//    for (int i = 0; i != mPortListPtrs.size(); ++i)
-//    {
-//        mPortListPtrs.value(i)->refreshPortOverlayPosition();
-//    }
-
-//    //! @todo danger real == real
-//    if(!mIconRotation)
-//    {
-//        mpIcon->setRotation(-this->rotation());
-//        if(this->rotation() == 0)
-//        {
-//            mpIcon->setPos(0,0);
-//        }
-//        else if(this->rotation() == 90)
-//        {
-//            mpIcon->setPos(0,this->boundingRect().height());
-//        }
-//        else if(this->rotation() == 180)
-//        {
-//            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
-//        }
-//        else if(this->rotation() == 270)
-//        {
-//            mpIcon->setPos(this->boundingRect().width(),0);
-//        }
-
-//        //mpIcon->setPos(this->boundingRect().center());
-//    }
-
-//    if(undoSettings == UNDO)
-//    {
-//        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), -90);
-//    }
-
-//    emit objectMoved();
+    this->rotate(-90, undoSettings);
 }
 
 //! @todo try to reuse the code in rotate guiobject,
 void GUIModelObject::rotate(const qreal angle, undoStatus undoSettings)
 {
-    qDebug() << "pos f: " << this->pos() << " geometry f: " << this->geometry() << " brect f: " << this->boundingRect();
-    qDebug() << "scenePos f: " << this->scenePos() << " sceneBoundingRect: " << this->sceneBoundingRect();
+    if(mIsFlipped)
+    {
+        this->setRotation(normDeg360(this->rotation()-angle));
+    }
+    else
+    {
+        this->setRotation(normDeg360(this->rotation()+angle));
+    }
 
-
-//this->prepareGeometryChange();
-
-    //qDebug() << "this->boundingrect(): " << this->boundingRect();
-    //qDebug() << "this->mpIcon->boundingrect(): " << this->mpIcon->boundingRect();
-    //this->setTransformOriginPoint(this->boundingRect().center());
-    this->setRotation(normDeg360(this->rotation()+angle));
-
-//    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
-//    if (this->rotation() >= 360.0)
-//    {
-//        this->setRotation(0.0);
-//    }
-
-    qDebug() << "pos e: " << this->pos() << " geometry e: " << this->geometry() << " brect e: " << this->boundingRect();
-    qDebug() << "scenePos e: " << this->scenePos() << " sceneBoundingRect: " << this->sceneBoundingRect();
-
-//    QPen gpen(QColor(0,255,0));
-//    QPen bpen(QColor(0,0,255));
-//    bpen.setWidthF(0.5);
-//    gpen.setWidth(1.0);
-//    this->scene()->addPolygon(this->sceneBoundingRect(), gpen);
-//    this->scene()->addPolygon(this->geometry(), bpen);
-
+    refreshIconPosition();
 
     int tempNameTextPos = mNameTextPos;
     this->snapNameTextPosition(mpNameText->pos());
@@ -1037,37 +984,12 @@ void GUIModelObject::rotate(const qreal angle, undoStatus undoSettings)
         mPortListPtrs[i]->refreshPortOverlayPosition();
     }
 
-    //! @todo danger real == real
-    if(!mIconRotation)
-    {
-        mpIcon->setRotation(-this->rotation());
-        if(this->rotation() == 0)
-        {
-            mpIcon->setPos(0,0);
-        }
-        else if(this->rotation() == 90)
-        {
-            mpIcon->setPos(0,this->boundingRect().height());
-        }
-        else if(this->rotation() == 180)
-        {
-            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
-        }
-        else if(this->rotation() == 270)
-        {
-            mpIcon->setPos(this->boundingRect().width(),0);
-        }
-
-        //mpIcon->setPos(this->boundingRect().center());
-    }
-
     if(undoSettings == UNDO)
     {
         mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
     }
 
     emit objectMoved();
-
 }
 
 
@@ -1078,8 +1000,6 @@ void GUIModelObject::rotate(const qreal angle, undoStatus undoSettings)
 void GUIModelObject::flipVertical(undoStatus undoSettings)
 {
     this->flipHorizontal(NOUNDO);
-    //this->rotate90cw(NOUNDO);
-    //this->rotate90cw(NOUNDO);
     this->rotate(180,NOUNDO);
     if(undoSettings == UNDO)
     {
@@ -1093,28 +1013,18 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
 //! @see flipVertical()
 void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 {
+    QTransform transf;
+    transf.scale(-1.0, 1.0);
+
     //Remember center pos
     QPointF cpos = this->getCenterPos();
-    qDebug() << "cpos f: " << cpos;
-    qDebug() << "geometry f: " << this->geometry();
-
     //Transform
-    QTransform transf;
-    transf.scale(-1.0, 1.0); //Horizontal flip matrix
-    //this->prepareGeometryChange();
     this->setTransform(transf,true); // transformationorigin point seems to have no effect here for some reason
-    qDebug() << "geometry e: " << this->geometry();
-
-//        QPen gpen(QColor(0,255,0));
-//        QPen bpen(QColor(0,0,255));
-//        bpen.setWidthF(2.0);
-//        gpen.setWidth(1.0);
-//        this->scene()->addPolygon(this->mapToScene(this->boundingRect()), gpen);
-//        this->scene()->addPolygon(this->geometry(), bpen);
-
     //Reset to ccenter pos (as transform origin point was ignored)
     this->setCenterPos(cpos);
-    qDebug() << "cpos ee: " << this->getCenterPos();
+
+    // If the icon is (not rotating) its position will be refreshed
+    refreshIconPosition();
 
     // Toggel isFlipped bool
     if(mIsFlipped)

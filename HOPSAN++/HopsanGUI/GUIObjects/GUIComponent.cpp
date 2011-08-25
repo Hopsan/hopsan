@@ -190,8 +190,8 @@ void GUIComponent::createPorts()
         QString portType = mpParentContainerObject->getCoreSystemAccessPtr()->getPortType(this->getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
 
-        qreal x = i.value().x * mpIcon->sceneBoundingRect().width();
-        qreal y = i.value().y * mpIcon->sceneBoundingRect().height();
+        qreal x = i.value().x * this->boundingRect().width();
+        qreal y = i.value().y * this->boundingRect().height();
 
         GUIPort *pNewPort = new GUIPort(i.key(), x, y, &(i.value()), this);
         mPortListPtrs.append(pNewPort);

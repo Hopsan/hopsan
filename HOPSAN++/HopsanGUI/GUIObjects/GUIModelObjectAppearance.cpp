@@ -34,6 +34,7 @@
 
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
+    mIconRotationBehaviour = "ON";
     mPortAppearanceMap.clear();
 }
 

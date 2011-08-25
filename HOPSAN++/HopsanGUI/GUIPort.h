@@ -50,7 +50,6 @@ public:
 
     GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
     ~GUIPort();
-    //virtual void refreshParentContainerSigSlotConnections();
 
     GUIContainerObject *getParentContainerObjectPtr();
     GUIModelObject *getGuiModelObject();
@@ -95,10 +94,6 @@ public slots:
     void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
     void refreshPortGraphics();
-
-//signals:
-    //void portClicked(GUIPort *item);
-    //void portMoved(GUIPort *item);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

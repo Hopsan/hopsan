@@ -139,17 +139,16 @@ qreal normDeg180(qreal deg)
 //! @brief normalises degrees to range between 0 and 360 degrees
 qreal normDeg360(qreal deg)
 {
-    while (deg > 360.0 || deg < 0.0)
+    while (deg > 360.0)
     {
-        if (deg > 360.0)
-        {
-            deg -= 360.0;
-        }
-        else
-        {
-            deg += 360.0;
-        }
+        deg -= 360.0;
     }
+
+    while (deg < 0.0)
+    {
+        deg += 360.0;
+    }
+
     return deg;
 }
 

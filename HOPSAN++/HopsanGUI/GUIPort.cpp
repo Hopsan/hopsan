@@ -95,14 +95,10 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mpPortLabel = new QGraphicsTextItem(this);
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-    //! @todo This Z value won't really do anything, right?
     mpPortLabel->setZValue(PORTLABEL_Z); //High value should be on top of everything
     mpPortLabel->hide();
     //Port label must exist and be set up before we run setDisplayName
     this->setDisplayName(mPortDisplayName);
-
-    //qDebug() << "geometry vs. brect: " << this->geometry() << " " << this->boundingRect();
-    //qDebug() << "transformoriginpoint: " << this->transformOriginPoint();
 
     //Setup overlay (if it exists)
     this->refreshPortGraphicsOverlayGraphics();
@@ -115,7 +111,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mIsMagnified = false;
 
     //Create connections to the parent container object
-    //this->refreshParentContainerSigSlotConnections();
     this->setPortOverlayScale(mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor());
 
     if(mpParentGuiModelObject->mpParentContainerObject != 0)
@@ -126,7 +121,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->setAcceptHoverEvents(true);
 
     //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
-    GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //! @todo need to be able to access this in some nicer way then ptr madness
+    GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //! @todo need to be able to access this in some nicer way then ptr madness, also in aother places
     connect(gpMainWindow->mpTogglePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(hideIfNotConnected(bool)));
     connect(pView,                              SIGNAL(zoomChange(qreal)),  this, SLOT(setPortOverlayScale(qreal)));
 }
@@ -145,14 +140,6 @@ GUIPort::~GUIPort()
     //We dont need to disconnect the permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
     //They should be disconnected automatically when the objects die
 }
-
-//void GUIPort::refreshParentContainerSigSlotConnections()
-//{
-//    //! @todo cant we solve this in some other way to avoid the need to refresh connections when moving into groups, OK for now though
-//    disconnect(this, SIGNAL(portClicked(GUIPort*)), 0, 0);
-//    connect(this, SIGNAL(portClicked(GUIPort*)), this->getParentContainerObjectPtr(), SLOT(createConnector(GUIPort*)));
-//}
-
 
 //! Magnify the port with a class mebmer factor 'mMag'. Is used i.e. at hovering over disconnected port.
 //! @param blowup says if the port should be magnified or not.
@@ -221,9 +208,6 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void GUIPort::setCenterPos(const qreal x, const qreal y)
 {
     //Place the guiport with center in x and y, in parent local coordinates
-//    const QPointF offset( this->mapToParent(this->boundingRect()).boundingRect().width()/2.0, this->mapToParent(this->boundingRect()).boundingRect().height()/2.0);
-//    this->setPos( x-offset.x(), y-offset.y() );
-
     QPointF posdiff = QPointF(x,y) - this->mapToParent(this->boundingRect().center());
     this->setPos(this->pos()+posdiff);
 }
@@ -231,10 +215,6 @@ void GUIPort::setCenterPos(const qreal x, const qreal y)
 //! Conveniance function when fraction positions are known
 void GUIPort::setCenterPosByFraction(qreal x, qreal y)
 {
-    //qDebug() << "Fraction position: " << x << " " << y;
-    //qDebug() << "parent bounding rect: " << mpParentGuiModelObject->boundingRect();
-    //qDebug() << "parent icon scene bounding rect" << mpParentGuiObject->mpIcon->sceneBoundingRect();
-
     //! @todo for now root systems may not have an icon, if icon is empty ports will end up in zero, which is OK, maybe we should always force a default icon
     this->setCenterPos(x*mpParentGuiModelObject->boundingRect().width(), y*mpParentGuiModelObject->boundingRect().height());
 }
@@ -242,8 +222,6 @@ void GUIPort::setCenterPosByFraction(qreal x, qreal y)
 //! Returns the center position in parent coordinates
 QPointF GUIPort::getCenterPos()
 {
-    //const QPointF offset( this->mapToParent(this->boundingRect()).boundingRect().width()/2.0, this->mapToParent(this->boundingRect()).boundingRect().height()/2.0);
-    //return this->pos() + offset;
     return this->mapToParent(this->boundingRect().center());
 }
 
@@ -389,58 +367,6 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
 //! @brief Refreshes the port overlay graphics and lable position
 void GUIPort::refreshPortOverlayPosition()
 {
-//    QTransform transf;
-//    QPointF pt1, pt2, pt3;
-
-    //Refresh the port label position and orientation
-//    //! @todo something wierd with the portlable it seems to be bigger than what you can see in the gui
-//    pt1 = this->mpPortLabel->boundingRect().center();
-//    transf.rotate(-(this->mpPortLabel->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
-//    if (this->mpParentGuiModelObject->isFlipped())
-//    {
-//        transf.scale(-1.0,1.0);
-//    }
-//    pt2 =  transf * pt1;
-
-    //this->mpPortLabel->setPos(pt3-pt2+QPointF(10, 10)); //! @todo This is little messy, GUIPort::magnify fucks the pos for the label a bit
-
-//    qDebug() << "Gemotry: " << this->geometry();
-//    qDebug() << "bounding rect: " << this->boundingRect();
-//    qDebug() << "Gemotry.center: " << this->geometry().center();
-//    qDebug() << "Gemotry.center in scene 0: " << this->mapToScene(this->boundingRect().center());
-//    pt1 = getGuiModelObject()->mapToScene(this->geometry().center());
-//    qDebug() << "Gemotry.center in scene 1: " << pt1;
-
-//    qDebug() << "centerPos vs. boundingRect.center: " << this->getCenterPos() << " " << this->boundingRect().center();
-
-    //pt1 = this->getCenterPos() + this->getGuiModelObject()->geometry().topLeft();
-    //qDebug() << "Gemotry.center in scene 2: " << pt1;
-
-
-
-//    qDebug() << "scenptrs: " << this->scene() << " " << this->getParentContainerObjectPtr()->getContainedScenePtr();
-//    qDebug() << "scenptrs: " << this->getGuiModelObject()->scene() << " " << this->getParentContainerObjectPtr()->getContainedScenePtr();
-//    qDebug() << "scenptrs: " << mpPortLabel->scene() << " " << this->getParentContainerObjectPtr()->getContainedScenePtr();
-
-//Graphical debugging
-//    QPen rpen(QColor(255,0,0));
-//    QPen gpen(QColor(0,255,0));
-//    QPen bpen(QColor(0,0,255));
-//    bpen.setWidthF(1.0);
-//    gpen.setWidth(1.0);
-//    rpen.setWidthF(1.0);
-//    qreal r = 1;
-//    QPointF sceneLablePt = pt1 + QPointF(10, 10);
-//    QPointF sceneLableRealPt = this->mapToScene(mpPortLabel->pos());
-//    this->getParentContainerObjectPtr()->getContainedScenePtr()->addEllipse(pt1.x()-r, pt1.y()-r,2*r,2*r,bpen)->setZValue(30);
-//    this->getParentContainerObjectPtr()->getContainedScenePtr()->addEllipse(sceneLablePt.x()-r,sceneLablePt.y()-r,2*r,2*r,rpen)->setZValue(30);
-//    r=2;
-//    this->getParentContainerObjectPtr()->getContainedScenePtr()->addEllipse(sceneLableRealPt.x()-r,sceneLableRealPt.y()-r,2*r,2*r,gpen)->setZValue(30);
-//    //this->scene()->addPolygon(mpPortLabel->mapToScene(mpPortLabel->boundingRect()), gpen);
-//    QRectF actBRect(this->mapToScene(mpPortLabel->pos()), mpPortLabel->boundingRect().size());
-//    this->scene()->addPolygon(actBRect, gpen);
-//    //this->scene()->addPolygon(mpPortLabel->sceneBoundingRect(), rpen);
-
     //Refresh the port overlay graphics positions
     if (mpCQSIconOverlay != 0)
     {
@@ -484,9 +410,6 @@ void GUIPort::refreshPortGraphics()
         }
     }
     mpPortAppearance->selectPortIcon(cqsType, getPortType(), getNodeType());
-    //qDebug() << mpPortAppearance->mMainIconPath << " " << mpPortAppearance->mCQSOverlayPath << " " << mpPortAppearance->mMultiPortOverlayPath;
-    //qDebug() << mpMainIcon << " ,,, " << mpCQSIconOverlay << " ,,, " << mpMultiPortIconOverlay;
-
 
     if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
     {
