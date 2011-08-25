@@ -607,7 +607,10 @@ QStringList Configuration::getLastSessionModels()
 //! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
 QString Configuration::getDefaultUnit(QString key)
 {
-    return this->mDefaultUnits.find(key).value();
+    if(mDefaultUnits.contains(key))
+        return this->mDefaultUnits.find(key).value();
+    else
+        return "";
 }
 
 

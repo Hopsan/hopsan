@@ -122,9 +122,12 @@ void ComponentPropertiesDialog::createEditStuff()
     {
         if(interpretedAsStartValue(qDescriptions[i]))
         {
+            QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
+            unit.prepend("[");
+            unit.append("]");
             mvStartValueLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
                                                              qParameterValues[i],
-                                                             qUnits[i],
+                                                             unit,
                                                              qTypes[i],
                                                              mpGUIComponent));
             startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
