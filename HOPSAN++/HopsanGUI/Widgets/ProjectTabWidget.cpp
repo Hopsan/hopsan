@@ -366,6 +366,8 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         //Set the tab name to the model name, efectively removing *, also mark the tab as saved
     QString tabName = mpSystem->getModelFileInfo().baseName();
     mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
+    gpMainWindow->updateRecentList();
     this->setSaved(true);
 }
 
