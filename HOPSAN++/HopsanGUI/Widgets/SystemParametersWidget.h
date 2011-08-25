@@ -59,7 +59,7 @@ public slots:
     void typeHasChanged(QString newType);
 
 protected:
-    size_t mRow, mColumn;
+    int mRow, mColumn;
     SystemParameterTableWidget *mParent;
 };
 

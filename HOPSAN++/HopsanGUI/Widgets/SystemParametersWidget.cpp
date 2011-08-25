@@ -79,7 +79,7 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
 
     mpSystemParametersTable = new SystemParameterTableWidget(0,1,this);
 
-    mpAddButton = new QPushButton(tr("&Set"), this);
+    mpAddButton = new QPushButton(tr("&Set/Add"), this);
     mpAddButton->setFixedHeight(30);
     mpAddButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mpAddButton->setAutoDefault(false);
@@ -244,8 +244,8 @@ void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, QS
         if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt, descriptionTxt, unitTxt, typeTxt)))
         {
             QMessageBox::critical(0, "Hopsan GUI",
-                                  QString("'%1' is an invalid name for a system parameter.")
-                                  .arg(name));
+                                  QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
+                                  .arg(name, valueTxt));
             return;
         }
         if(doUpdate)
@@ -316,7 +316,7 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
     //mpValueBox->setValidator(new QDoubleValidator(this));
     mpTypeLabel = new QLabel("Type: ", this);
     mpTypeBox = new TypeComboBox(-1, -1, this);
-    mpAddInDialogButton = new QPushButton("Set", this);
+    mpAddInDialogButton = new QPushButton("Set/Add", this);
     mpDoneInDialogButton = new QPushButton("Done", this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(mpAddInDialogButton, QDialogButtonBox::ActionRole);
@@ -404,6 +404,7 @@ void SystemParameterTableWidget::update()
             setItem(rowCount()-1, 0, nameItem);
             setItem(rowCount()-1, 1, valueItem);
             TypeComboBox *typeBox = new TypeComboBox(rowCount()-1, 2, this);
+            disconnect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)));
 
             for(int j=0; j<typeBox->count(); ++j)
             {
@@ -415,6 +416,7 @@ void SystemParameterTableWidget::update()
             }
 
             setCellWidget(rowCount()-1, 2, typeBox);
+            connect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
         }
         connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)), Qt::UniqueConnection);
     }
