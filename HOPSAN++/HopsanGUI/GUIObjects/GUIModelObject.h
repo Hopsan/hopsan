@@ -100,6 +100,7 @@ public slots:
     void deleteMe();
     void rotate90cw(undoStatus undoSettings = UNDO);
     void rotate90ccw(undoStatus undoSettings = UNDO);
+    void rotate(qreal angle, undoStatus undoSettings = UNDO);
     //! @todo maybe flip should work on all gui objects
     void flipVertical(undoStatus undoSettings = UNDO);
     void flipHorizontal(undoStatus undoSettings = UNDO);
@@ -116,7 +117,6 @@ protected:
     //Protected methods
     virtual void openPropertiesDialog(){}
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QGraphicsSceneContextMenuEvent* pEvent);
-    void rotate(const qreal angle, undoStatus undoSettings = UNDO);
 
     //Reimplemented Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

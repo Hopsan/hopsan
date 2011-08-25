@@ -58,7 +58,7 @@ GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject
     this->setGeometry(0,0,0,0);
     this->setTransformOriginPoint(boundingRect().center());
     this->setCenterPos(pos);
-    this->rotateTo(rot);
+    this->rotate(rot);
     mOldPos=this->pos();
 }
 
@@ -281,12 +281,21 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 //! @param angle Angle to rotate to
 //! @see rotate(undoStatus undoSettings)
 //! @todo Add option to register this in undo stack - someone will want to do this sooner or later anyway
-void GUIObject::rotateTo(qreal angle)
+//! @todo Clean up these rotate functino and make them more similar with those in modelobject, try to share code if possible
+void GUIObject::rotate(qreal angle, undoStatus undoSettings)
 {
-    while(this->rotation() != angle)
+    this->setTransformOriginPoint(this->boundingRect().center());
+    if(mIsFlipped)
     {
-        this->rotate90cw(NOUNDO);
+        angle *= -1;
     }
+    this->setRotation(normDeg360(this->rotation()+angle));
+
+//    qreal target = normDeg360(this->rotation()-angle);
+//    while( normDeg360(target - this->rotation()) > 1.0 ) //!< @todo quickhack to loop untill almost exact
+//    {
+//        this->rotate90cw(NOUNDO);
+//    }
 }
 
 //! @brief Rotates a component 90 degrees clockwise

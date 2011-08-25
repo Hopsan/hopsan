@@ -76,8 +76,8 @@ public slots:
     virtual void deleteMe();
     virtual void rotate90cw(undoStatus undoSettings=UNDO);
     virtual void rotate90ccw(undoStatus undoSettings=UNDO);
+    virtual void rotate(qreal angle, undoStatus undoSettings=UNDO);
 
-    void rotateTo(qreal angle); //!< @todo should this really be public, or maybe it should, but be virtual
     void moveUp();
     void moveDown();
     void moveLeft();

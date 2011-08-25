@@ -257,10 +257,10 @@ void UndoStack::undoOneStep()
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()-angle;
-            if(targetAngle >= 360) { targetAngle = 0; }
-            if(targetAngle < 0) { targetAngle = 270; }
-            mpParentContainerObject->getGUIModelObject(name)->rotateTo(targetAngle);
+            //double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()-angle;
+            //if(targetAngle >= 360) { targetAngle = 0; }
+            //if(targetAngle < 0) { targetAngle = 270; }
+            mpParentContainerObject->getGUIModelObject(name)->rotate(-angle, NOUNDO);
 
         }
         else if(stuffElement.attribute("what") == "verticalflip")
@@ -626,10 +626,10 @@ void UndoStack::redoOneStep()
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()+angle;
-            if(targetAngle >= 360) { targetAngle = 0; }
-            if(targetAngle < 0) { targetAngle = 270; }
-            mpParentContainerObject->getGUIModelObject(name)->rotateTo(targetAngle);
+            //double targetAngle = mpParentContainerObject->getGUIModelObject(name)->rotation()+angle;
+            //if(targetAngle >= 360) { targetAngle = 0; }
+            //if(targetAngle < 0) { targetAngle = 270; }
+            mpParentContainerObject->getGUIModelObject(name)->rotate(angle, NOUNDO);
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {

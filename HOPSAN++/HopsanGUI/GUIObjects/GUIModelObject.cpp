@@ -962,16 +962,13 @@ void GUIModelObject::rotate90ccw(undoStatus undoSettings)
 }
 
 //! @todo try to reuse the code in rotate guiobject,
-void GUIModelObject::rotate(const qreal angle, undoStatus undoSettings)
+void GUIModelObject::rotate(qreal angle, undoStatus undoSettings)
 {
     if(mIsFlipped)
     {
-        this->setRotation(normDeg360(this->rotation()-angle));
+        angle *= -1;
     }
-    else
-    {
-        this->setRotation(normDeg360(this->rotation()+angle));
-    }
+    this->setRotation(normDeg360(this->rotation()+angle));
 
     refreshIconPosition();
 
