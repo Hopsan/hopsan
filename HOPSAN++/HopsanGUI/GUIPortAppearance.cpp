@@ -45,6 +45,7 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
         {
             mMainIconPath.append("_write");
         }
+        mCQSOverlayPath.clear();
     }
     else
     {
@@ -78,6 +79,10 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
         else if (CQSType == "Q")
         {
             mCQSOverlayPath = (QString(PORTICONPATH) + "PortOverlayQ.svg");
+        }
+        else if (CQSType == "UNDEFINEDCQSTYPE")
+        {
+            mCQSOverlayPath = (QString(PORTICONPATH) + "PortOverlayUnknown.svg");
         }
         else
         {
