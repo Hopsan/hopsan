@@ -1678,17 +1678,16 @@ QStringList GUIContainerObject::getGUIModelObjectNames()
 
 //! @brief Returns the path to the icon with iso graphics.
 //! @todo should we return full path or relative
-QString GUIContainerObject::getIconPath(const graphicsType gfxType)
+QString GUIContainerObject::getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrelType)
 {
-    return mGUIModelObjectAppearance.getIconPath(gfxType);
+    return mGUIModelObjectAppearance.getIconPath(gfxType, absrelType);
 }
 
 
 //! @brief Sets the path to the icon of the specified type
-//! The path can be relative or absolute
-void GUIContainerObject::setIconPath(const QString path, const graphicsType gfxType)
+void GUIContainerObject::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrelType)
 {
-    mGUIModelObjectAppearance.setIconPath(path, gfxType);
+    mGUIModelObjectAppearance.setIconPath(path, gfxType, absrelType);
 }
 
 

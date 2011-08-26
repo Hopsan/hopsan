@@ -260,6 +260,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 
         this->refreshExternalPortsAppearanceAndPosition();
         QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOT);
+        xmlApp.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
 
         //Before we save the modelobjectappearance data we need to set the correct basepath, (we ask our parent it will know)
         if (this->getParentContainerObject() != 0)
@@ -350,7 +351,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
     {
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with Hopsan version 0.2 or older. Full compatibility is not guarnteed.");
     }
-    else if(hmfVersion != QString(HMFVERSION).toDouble() && hmfVersion != 0.0)
+    else if(hmfVersion != QString(HMF_VERSIONNUM).toDouble() && hmfVersion != 0.0)
     {
         gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with an older version of Hopsan, but versions are compatible.");
     }
@@ -1160,7 +1161,7 @@ void GUISystem::createSimulinkSourceFiles()
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
         //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMFVERSION, HOPSANGUIVERSION, "0");
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
     saveToDomElement(hmfRoot);
     const int IndentSize = 4;
     QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());

@@ -30,12 +30,8 @@
 
 //These are only used in temporary save to file
 #include <QFile>
-#include "version.h"
 
 // ========== Defines for load/save common strings ==========
-
-#define CAF_VERSION "version"
-
 #define CAF_TYPENAME "typename"
 #define CAF_TYPE "type"
 #define CAF_DISPLAYNAME "displayname"
@@ -91,12 +87,14 @@ void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &
 
 // =============================================
 
+ModelObjectIconAppearance::ModelObjectIconAppearance()
+{
+    mScale = 1.0;
+    mRotationBehaviour = "ON";
+}
+
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
-    mIconUserScale = 1.0;
-    mIconIsoScale = 1.0;
-    mIconUserRotationBehaviour = "ON";
-    mIconIsoRotationBehaviour = "ON";
     mPortAppearanceMap.clear();
 }
 
@@ -147,10 +145,8 @@ QString GUIModelObjectAppearance::getHelpText()
 //! If that is also missing return a path to the missing graphics icon
 QString GUIModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
 {
-    makeSurePathsAbsolute();
-
-    QFileInfo iconUserFileInfo(QDir(mBasePath), mIconUserPath);
-    QFileInfo iconISOFileInfo(QDir(mBasePath), mIconIsoPath);
+    QFileInfo iconUserFileInfo(mUserIconAppearance.mAbsolutePath);
+    QFileInfo iconISOFileInfo(mIsoIconAppearance.mAbsolutePath);
 
     //qDebug() << "Type: " << mTypeName << " iconUser: " << iconUserFileInfo.absoluteFilePath();
     //qDebug() << "Type: " << mTypeName << " iconISO: " << iconISOFileInfo.absoluteFilePath();
@@ -187,15 +183,29 @@ QString GUIModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
 }
 
 //! @brief Returns the path to the graphics icon of requested type, regardles of wheter it is valid or not
-QString GUIModelObjectAppearance::getIconPath(graphicsType gfxType)
+QString GUIModelObjectAppearance::getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrel)
 {
     if (gfxType == USERGRAPHICS)
     {
-        return mIconUserPath;
+        if (absrel == ABSOLUTE)
+        {
+            return mUserIconAppearance.mAbsolutePath;
+        }
+        else
+        {
+            return mUserIconAppearance.mRelativePath;
+        }
     }
     else if (gfxType == ISOGRAPHICS)
     {
-        return mIconIsoPath;
+        if (absrel == ABSOLUTE)
+        {
+            return mIsoIconAppearance.mAbsolutePath;
+        }
+        else
+        {
+            return mIsoIconAppearance.mRelativePath;
+        }
     }
     else
     {
@@ -207,11 +217,11 @@ qreal GUIModelObjectAppearance::getIconScale(const graphicsType gfxType)
 {
     if (gfxType == USERGRAPHICS)
     {
-        return mIconUserScale;
+        return mUserIconAppearance.mScale;
     }
     else if (gfxType == ISOGRAPHICS)
     {
-        return mIconIsoScale;
+        return mIsoIconAppearance.mScale;
     }
     else
     {
@@ -219,46 +229,40 @@ qreal GUIModelObjectAppearance::getIconScale(const graphicsType gfxType)
     }
 }
 
-void GUIModelObjectAppearance::makeSurePathsAbsolute()
+void GUIModelObjectAppearance::setRelativePathFromAbsolute()
 {
-    QFileInfo iconUserFileInfo(mIconUserPath);
-    QFileInfo iconIsoFileInfo(mIconIsoPath);
-
-    //Check if given filepath is absolute or relative, if relative assume relative to basepath, but don do anything if path empty (no icon specified)
-    if (iconUserFileInfo.isRelative() && !mIconUserPath.isEmpty())
-    {
-        iconUserFileInfo.setFile(QDir(mBasePath), mIconUserPath);
-        mIconUserPath = iconUserFileInfo.absoluteFilePath();
-    }
-
-    if (iconIsoFileInfo.isRelative() && !mIconIsoPath.isEmpty())
-    {
-        iconIsoFileInfo.setFile(QDir(mBasePath), mIconIsoPath);
-        mIconIsoPath = iconIsoFileInfo.absoluteFilePath();
-    }
-
-    //!< @todo maybe more paths should be manipulated
-
-
-}
-
-void GUIModelObjectAppearance::makeSurePathsRelative()
-{
-    QFileInfo iconUserFileInfo(mIconUserPath);
-    QFileInfo iconIsoFileInfo(mIconIsoPath);
+    QFileInfo absUserPath(mUserIconAppearance.mAbsolutePath);
+    QFileInfo absIsoPath(mIsoIconAppearance.mAbsolutePath);
 
     //Check if given filepath is absolute or relative, if absolute assume we want relative to basepath
-    if (iconUserFileInfo.isAbsolute())
+    if (absUserPath.isAbsolute())
     {
-        mIconUserPath = relativePath(iconUserFileInfo, QDir(mBasePath));
+        mUserIconAppearance.mRelativePath = relativePath(absUserPath, QDir(mBasePath));
     }
 
-    if (iconIsoFileInfo.isAbsolute())
+    if (absIsoPath.isAbsolute())
     {
-        mIconIsoPath = relativePath(iconIsoFileInfo, QDir(mBasePath));
+        mIsoIconAppearance.mRelativePath = relativePath(absIsoPath, QDir(mBasePath));
+    }
+}
+
+void GUIModelObjectAppearance::setAbsoultePathFromRelative()
+{
+    QFileInfo relUserPath(mUserIconAppearance.mRelativePath);
+    QFileInfo relIsoPath(mIsoIconAppearance.mRelativePath);
+
+    //Check if given filepath is absolute or relative, if relative assume relative to basepath, but don do anything if path empty (no icon specified)
+    if (!mUserIconAppearance.mRelativePath.isEmpty())
+    {
+        relUserPath.setFile(QDir(mBasePath), mUserIconAppearance.mRelativePath);
+        mUserIconAppearance.mAbsolutePath = relUserPath.absoluteFilePath();
     }
 
-    //!< @todo maybe more paths should be manipulated
+    if (!mIsoIconAppearance.mRelativePath.isEmpty())
+    {
+        relIsoPath.setFile(QDir(mBasePath), mIsoIconAppearance.mRelativePath);
+        mIsoIconAppearance.mAbsolutePath = relIsoPath.absoluteFilePath();
+    }
 
 }
 
@@ -267,11 +271,11 @@ QString GUIModelObjectAppearance::getIconRotationBehaviour(const graphicsType gf
 {
     if (gfxType == USERGRAPHICS)
     {
-        return mIconUserRotationBehaviour;
+        return mUserIconAppearance.mRotationBehaviour;
     }
     else if (gfxType == ISOGRAPHICS)
     {
-        return mIconIsoRotationBehaviour;
+        return mIsoIconAppearance.mRotationBehaviour;
     }
     else
     {
@@ -350,22 +354,19 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
         QString type = xmlIcon.attribute(CAF_TYPE);
         if (type == "iso")
         {
-            mIconIsoPath = xmlIcon.attribute(CAF_PATH);
-            mIconIsoScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
-            mIconIsoRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
+            mIsoIconAppearance.mRelativePath = xmlIcon.attribute(CAF_PATH);
+            mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
+            mIsoIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
         }
         else //!< @todo maybe elseif user and somehow give error message, for now assume user if not iso
         {
-            mIconUserPath = xmlIcon.attribute(CAF_PATH);
-            mIconUserScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
-            mIconUserRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
+            mUserIconAppearance.mRelativePath = xmlIcon.attribute(CAF_PATH);
+            mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
+            mUserIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
         }
 
         xmlIcon = xmlIcon.nextSiblingElement("icon");
     }
-
-
-    this->makeSurePathsAbsolute();
 
     QString portname;
     QDomElement xmlPorts = domElement.firstChildElement(CAF_PORTPOSITIONS);
@@ -389,12 +390,12 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
     QDomElement xmlIcon2 = domElement.firstChildElement("icon");
     if (!xmlIcon2.isNull())
     {
-        mIconIsoPath = xmlIcon2.attribute("isopath");
-        mIconUserPath = xmlIcon2.attribute("userpath");
-        mIconIsoRotationBehaviour = xmlIcon2.attribute("iconrotation");
-        mIconUserRotationBehaviour = xmlIcon2.attribute("iconrotation");
-        mIconUserScale = parseAttributeQreal(xmlIcon2, "userscale", 1.0);
-        mIconIsoScale = parseAttributeQreal(xmlIcon2, "isoscale", 1.0);
+        mIsoIconAppearance.mRelativePath = xmlIcon2.attribute("isopath");
+        mUserIconAppearance.mRelativePath = xmlIcon2.attribute("userpath");
+        mIsoIconAppearance.mRotationBehaviour = xmlIcon2.attribute("iconrotation");
+        mUserIconAppearance.mRotationBehaviour = xmlIcon2.attribute("iconrotation");
+        mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon2, "userscale", 1.0);
+        mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon2, "isoscale", 1.0);
     }
 
     // Read old style portposes, where portposes were not contained inside a common "ports" element
@@ -406,6 +407,11 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
         mPortAppearanceMap.insert(portname, portApp);
         xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
     }
+
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    //Now set absolute paths from relative and basepath
+    setAbsoultePathFromRelative();
 }
 
 //! @brief Writes the ModelObjectAppearance contents to an XML DOM Element
@@ -418,23 +424,22 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     xmlObject.setAttribute(CAF_DISPLAYNAME, mDisplayName);
 
     //  Save icon data
-    this->makeSurePathsRelative(); //We want to save paths relative the basepath, to avoid incompatibility with absolute paths between systems
     QDomElement xmlIcons = appendDomElement(xmlObject, CAF_ICONS);
     if (hasIcon(USERGRAPHICS))
     {
         QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
         xmlIcon.setAttribute(CAF_TYPE, "user");
-        xmlIcon.setAttribute(CAF_PATH, mIconUserPath);
-        xmlIcon.setAttribute(CAF_SCALE, mIconUserScale);
-        xmlIcon.setAttribute(CAF_ICONROTATION, mIconUserRotationBehaviour);
+        xmlIcon.setAttribute(CAF_PATH, mUserIconAppearance.mRelativePath);
+        xmlIcon.setAttribute(CAF_SCALE, mUserIconAppearance.mScale);
+        xmlIcon.setAttribute(CAF_ICONROTATION, mUserIconAppearance.mRotationBehaviour);
     }
     if (hasIcon(ISOGRAPHICS))
     {
         QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
         xmlIcon.setAttribute(CAF_TYPE, "iso");
-        xmlIcon.setAttribute(CAF_PATH, mIconIsoPath);
-        xmlIcon.setAttribute(CAF_SCALE, mIconIsoScale);
-        xmlIcon.setAttribute(CAF_ICONROTATION, mIconIsoRotationBehaviour);
+        xmlIcon.setAttribute(CAF_PATH, mIsoIconAppearance.mRelativePath);
+        xmlIcon.setAttribute(CAF_SCALE, mIsoIconAppearance.mScale);
+        xmlIcon.setAttribute(CAF_ICONROTATION, mIsoIconAppearance.mRotationBehaviour);
     }
 
     // Save help text and picture data
@@ -454,8 +459,6 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     {
         appendPortPoseTag(xmlPortPositions, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
     }
-
-    this->makeSurePathsAbsolute(); //Switch back to absolute paths
 }
 
 //! @brief Save Appearancedata to XML file, currently used as a test function
@@ -465,7 +468,7 @@ void GUIModelObjectAppearance::saveToXMLFile(QString filename)
     QDomDocument doc;
     QDomElement cafroot = doc.createElement(CAF_ROOT);
     doc.appendChild(cafroot);
-    cafroot.setAttribute(CAF_VERSION, CAFVERSION);
+    cafroot.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
     this->saveToDomElement(cafroot);
     const int IndentSize = 4;
     QFile xml(filename);
@@ -502,36 +505,50 @@ void GUIModelObjectAppearance::setHelpText(QString text)
 //! @brief Access method to manually set the BaseIconPath
 void GUIModelObjectAppearance::setBasePath(QString path)
 {
-    //Set new base path,
-    //We need to make sure that paths are absolute before changing this or else ther relative path will be wrong
-    this->makeSurePathsAbsolute();
     mBasePath = path;
+    setRelativePathFromAbsolute(); //Reset relative path to new basepath
 }
 
 //! @brief Access method to manually set the BasePath relative UserIconPath
-void GUIModelObjectAppearance::setIconPath(QString path, graphicsType gfxType)
+void GUIModelObjectAppearance::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel)
 {
-    if (gfxType == USERGRAPHICS)
+
+    if (absrel == ABSOLUTE)
     {
-        mIconUserPath = path;
+        if (gfxType == USERGRAPHICS)
+        {
+            mUserIconAppearance.mAbsolutePath = path;
+        }
+        else if (gfxType == ISOGRAPHICS)
+        {
+            mIsoIconAppearance.mAbsolutePath = path;
+        }
+        setRelativePathFromAbsolute();
     }
-    else if (gfxType == ISOGRAPHICS)
+    else
     {
-        mIconIsoPath = path;
+        if (gfxType == USERGRAPHICS)
+        {
+            mUserIconAppearance.mRelativePath = path;
+        }
+        else if (gfxType == ISOGRAPHICS)
+        {
+            mIsoIconAppearance.mRelativePath = path;
+        }
+        setAbsoultePathFromRelative();
     }
     //else dont do anything
-    this->makeSurePathsAbsolute();
 }
 
 void GUIModelObjectAppearance::setIconScale(const qreal scale, const graphicsType gfxType)
 {
     if (gfxType == USERGRAPHICS)
     {
-        mIconUserScale = scale;
+        mUserIconAppearance.mScale = scale;
     }
     else if (gfxType == ISOGRAPHICS)
     {
-        mIconIsoScale = scale;
+        mIsoIconAppearance.mScale = scale;
     }
     //else dont do anything
 }
@@ -540,16 +557,14 @@ void GUIModelObjectAppearance::setIconScale(const qreal scale, const graphicsTyp
 //! @brief Check if specified Icon path is availiable and icon exists
 bool GUIModelObjectAppearance::hasIcon(const graphicsType gfxType)
 {
-    this->makeSurePathsAbsolute();
-
     if (gfxType == ISOGRAPHICS)
     {
-        QFileInfo iso(mIconIsoPath);
+        QFileInfo iso(mIsoIconAppearance.mAbsolutePath);
         return iso.isFile();
     }
     else if (gfxType == USERGRAPHICS)
     {
-        QFileInfo user(mIconUserPath);
+        QFileInfo user(mUserIconAppearance.mAbsolutePath);
         return user.isFile();
     }
     else

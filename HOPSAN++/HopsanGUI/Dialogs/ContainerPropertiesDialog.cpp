@@ -54,11 +54,16 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
 
     //CQS Type
     QGroupBox *pInfoGroupBox = new QGroupBox("Info", this);
-    QHBoxLayout *pInfoLayout = new QHBoxLayout();
+    QGridLayout *pInfoLayout = new QGridLayout();
     mpCQSLabel = new QLabel("CQS-type: ", this);
     mpCQSTypeLabel = new QLabel(mpContainerObject->getTypeCQS(), this);
-    pInfoLayout->addWidget(mpCQSLabel, 0);
-    pInfoLayout->addWidget(mpCQSTypeLabel, 1);
+    pInfoLayout->addWidget(mpCQSLabel, 0, 0);
+    pInfoLayout->addWidget(mpCQSTypeLabel, 0, 1);
+    QLabel *pBasePathLabel = new QLabel("BasePath: ", this);
+    QLineEdit *pBasePathEdit = new QLineEdit(mpContainerObject->getAppearanceData()->getBasePath(), this);
+    pBasePathEdit->setReadOnly(true);
+    pInfoLayout->addWidget(pBasePathLabel, 1, 0);
+    pInfoLayout->addWidget(pBasePathEdit, 1, 1);
     pInfoGroupBox->setLayout(pInfoLayout);
 
     //Define items in the dialog box
@@ -70,10 +75,10 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
        //Icon paths
     mpUserIconLabel = new QLabel("User Icon Path:", this);
     mpIsoIconLabel = new QLabel( "ISO Icon Path:", this);
-    mpUserIconPath = new QLineEdit(mpContainerObject->getIconPath(USERGRAPHICS), this);
-    mpIsoIconPath = new QLineEdit(mpContainerObject->getIconPath(ISOGRAPHICS), this);
-    mpUserIconLabel->setMinimumWidth(100);
-    mpUserIconPath->setFixedWidth(200);
+    mpUserIconPath = new QLineEdit(mpContainerObject->getIconPath(USERGRAPHICS, ABSOLUTE), this);
+    mpIsoIconPath = new QLineEdit(mpContainerObject->getIconPath(ISOGRAPHICS, ABSOLUTE), this);
+    mpUserIconLabel->setMinimumWidth(80);
+    mpUserIconPath->setMinimumWidth(200);
     mpIsoIconBrowseButton = new QPushButton(tr("..."), this);
     mpUserIconBrowseButton = new QPushButton(tr("..."), this);
 //    mpIsoIconBrowseButton->setFixedSize(25, 22);
@@ -95,7 +100,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpUserIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, this));
     mpUserIconScaleEdit->setText(text);
     text.setNum(mpContainerObject->getAppearanceData()->getIconScale(ISOGRAPHICS));
-    mpIsoIconScaleEdit = new QLineEdit(text, this);
+    mpIsoIconScaleEdit = new QLineEdit(this);
     mpIsoIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, this));
     mpIsoIconScaleEdit->setText(text);
 
@@ -126,8 +131,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         //Startup python script file
     mpPyScriptLabel = new QLabel("Script File:", this);
     mpPyScriptPath = new QLineEdit(this);
-    mpPyScriptLabel->setFixedWidth(100);
-    mpPyScriptPath->setFixedWidth(200);
+    mpPyScriptLabel->setMinimumWidth(80);
+    mpPyScriptPath->setMinimumWidth(200);
     mpPyScriptBrowseButton = new QPushButton(tr("..."), this);
 
         //Settings Group Box
@@ -251,14 +256,14 @@ void ContainerPropertiesDialog::setValues()
     }
 
     //Set the icon paths, only update and refresh appearance if a change has occured
-    if ( mpContainerObject->getIconPath(ISOGRAPHICS) != mpIsoIconPath->text() )
+    if ( mpContainerObject->getIconPath(ISOGRAPHICS, ABSOLUTE) != mpIsoIconPath->text() )
     {
-        mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGRAPHICS);
+        mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGRAPHICS, ABSOLUTE);
         mpContainerObject->refreshAppearance();
     }
-    if ( mpContainerObject->getIconPath(USERGRAPHICS) != mpUserIconPath->text() )
+    if ( mpContainerObject->getIconPath(USERGRAPHICS, ABSOLUTE) != mpUserIconPath->text() )
     {
-        mpContainerObject->setIconPath(mpUserIconPath->text(), USERGRAPHICS);
+        mpContainerObject->setIconPath(mpUserIconPath->text(), USERGRAPHICS, ABSOLUTE);
         mpContainerObject->refreshAppearance();
     }
 

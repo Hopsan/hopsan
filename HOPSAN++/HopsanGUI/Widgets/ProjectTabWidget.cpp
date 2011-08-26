@@ -346,7 +346,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
         //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMFVERSION, HOPSANGUIVERSION, "0"); //!< @todo need to get coreversion in here somehow, maybe have a global that is set when the hopsan core is instansiated
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0"); //!< @todo need to get coreversion in here somehow, maybe have a global that is set when the hopsan core is instansiated
 
         //Save the model component hierarcy
     //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine

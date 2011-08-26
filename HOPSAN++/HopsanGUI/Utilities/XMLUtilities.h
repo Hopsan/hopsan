@@ -126,7 +126,7 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 
 #define HMF_SYSTEMAPPEARANCETAG "systemappearance"
 
-#define HMF_HMFVERSIONTAG "hmfversion"
+#define HMF_VERSIONTAG "hmfversion"
 #define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
 #define HMF_SIMULATIONTIMETAG "simulationtime"

@@ -33,8 +33,21 @@
 #include "../GUIPortAppearance.h"
 
 //Define for the root xml element name, and the element name for each component (modelobject)
+#define CAF_VERSION "version"
 #define CAF_ROOT "hopsanobjectappearance"
 #define CAF_MODELOBJECT "modelobject"
+
+enum AbsoluteRelativeT {ABSOLUTE, RELATIVE};
+
+class ModelObjectIconAppearance
+{
+public:
+    ModelObjectIconAppearance();
+    QString mRelativePath;
+    QString mAbsolutePath;
+    QString mRotationBehaviour;
+    qreal mScale;
+};
 
 class GUIModelObjectAppearance
 {
@@ -44,7 +57,7 @@ public:
     void setName(QString name);
     void setHelpText(QString text);
     void setBasePath(QString path);
-    void setIconPath(QString path, graphicsType gfxType);
+    void setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel);
     void setIconScale(const qreal scale, const graphicsType gfxType);
 
     QString getTypeName();
@@ -54,7 +67,7 @@ public:
     QString getHelpText();
     QString getBasePath();
     QString getFullAvailableIconPath(graphicsType gfxType=USERGRAPHICS);
-    QString getIconPath(graphicsType gfxType=USERGRAPHICS);
+    QString getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrel);
     qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
     QString getIconRotationBehaviour(const graphicsType gfxType=USERGRAPHICS);
     QPointF getNameTextPos();
@@ -73,12 +86,8 @@ private:
     QString mDisplayName;
     QString mHelpPicture;
     QString mHelpText;
-    QString mIconUserPath;
-    QString mIconIsoPath;
-    qreal   mIconUserScale;
-    qreal   mIconIsoScale;
-    QString mIconIsoRotationBehaviour;
-    QString mIconUserRotationBehaviour;
+    ModelObjectIconAppearance mIsoIconAppearance;
+    ModelObjectIconAppearance mUserIconAppearance;
     QPointF mNameTextPos;
 
     PortAppearanceMapT mPortAppearanceMap;
@@ -87,10 +96,8 @@ private:
     QString mBasePath;
 
     //Private help functions
-    void makeSurePathsAbsolute();
-    void makeSurePathsRelative();
-
-
+    void setRelativePathFromAbsolute();
+    void setAbsoultePathFromRelative();
 };
 
 #endif // APPEARANCEDATA_H

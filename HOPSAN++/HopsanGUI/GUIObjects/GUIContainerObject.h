@@ -97,8 +97,8 @@ public:
     void updateTempConnector(QPointF pos);
 
     //Handle container appearance
-    QString getIconPath(const graphicsType gfxType);
-    void setIconPath(const QString path, const graphicsType gfxType);
+    QString getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrelType);
+    void setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrelType);
     ContainerEdgeT findPortEdge(QPointF center, QPointF pt); //!< @todo maybe not public
     virtual void refreshAppearance();
     void refreshExternalPortsAppearanceAndPosition();
