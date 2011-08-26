@@ -55,8 +55,8 @@
 #include "qwt_plot_renderer.h"
 #include "qwt_scale_map.h"
 
-#include "../ExternalDependencies/BarChartPlotter/barchartplotter.h"
-#include "../ExternalDependencies/BarChartPlotter/axisbase.h"
+#include "Dependencies/BarChartPlotter/barchartplotter.h"
+#include "Dependencies/BarChartPlotter/axisbase.h"
 
 const double DBLMAX = std::numeric_limits<double>::max();
 

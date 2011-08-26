@@ -726,6 +726,7 @@ string Component::getTypeCQSString()
     default :
         assert("Invalid CQS Type" == 0);
     }
+    return "";           //Needed for VC compilations
 }
 
 
@@ -817,6 +818,7 @@ bool Component::doesInheritTimestep()
 {
     cout << "Warning this function doesInheritTimestep is only available on subsystem components" << endl;
     assert(false);
+    return false;       //Needed for VC compilations
 }
 
 

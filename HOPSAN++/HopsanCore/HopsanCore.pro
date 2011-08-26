@@ -15,8 +15,8 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
 # Set the rappidxml include path
-INCLUDEPATH *= $${PWD}/../ExternalDependencies/rapidxml-1.13
-INCLUDEPATH *= $${PWD}/../ExternalDependencies/libcsv_parser++-1.0.0/include/csv_parser
+INCLUDEPATH *= $${PWD}/Dependencies/rapidxml-1.13
+INCLUDEPATH *= $${PWD}/Dependencies/libcsv_parser++-1.0.0/include/csv_parser
 #--------------------------------------------------------
 
 # -------------------------------------------------
@@ -71,7 +71,7 @@ SOURCES += Port.cc \
     ComponentUtilities/ludcmp.cc \
     CoreUtilities/HmfLoader.cc \
     ComponentSystem.cc \
-    ../ExternalDependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
+    Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
     ComponentUtilities/WhiteGaussianNoise.cc \
     ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
     ComponentUtilities/SecondOrderTransferFunction.cc \
@@ -220,7 +220,7 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic43ValveNeutralToTank.hpp \
     Components/Hydraulic/Hydraulic43ValveNeutralSupplyToTank.hpp \
     Components/Hydraulic/HydraulicHose.hpp \
-    ../ExternalDependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
+    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     ComponentUtilities/ReadDataCurve.h \
     ComponentUtilities/CSVParser.h \
     ComponentUtilities/ReadDataCurve.h \

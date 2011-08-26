@@ -3,8 +3,8 @@
 
 #include <iostream>
 //#include <Qt/qdebug.h>
-#include "../../HopsanCore/ComponentEssentials.h"
-#include "../../HopsanCore/ComponentUtilities.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 #include <math.h>
 #include "matrix.h"
 

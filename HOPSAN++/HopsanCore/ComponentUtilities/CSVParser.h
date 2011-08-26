@@ -30,7 +30,7 @@
 #include "math.h"
 #include <vector>
 #include <string>
-#include "../../ExternalDependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp"
+#include "../Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp"
 #include <algorithm>
 #include <iostream>
 #include <sstream>

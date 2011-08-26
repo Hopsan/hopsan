@@ -44,7 +44,7 @@ namespace hopsan {
 
         double *mpND_in, *mpND_out;
 
-        string mDataCurveFileName;
+        std::string mDataCurveFileName;
 
         //CSVParser *myDataCurve;
 

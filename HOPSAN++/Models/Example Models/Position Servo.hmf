@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.5" y="2561" zoom="1"/>
+            <viewport x="2500.5" y="2500.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -16,20 +16,15 @@
             </hopsanobjectappearance>
             <hopsanundo>
                 <post number="-1"/>
-                <post number="0"/>
-                <post number="1"/>
-                <post number="2"/>
-                <post number="3"/>
-                <post number="4"/>
-                <post number="5"/>
-                <post number="6"/>
-                <post number="7"/>
-                <post number="8"/>
-                <post number="9"/>
-                <post number="10"/>
+                <post number="0" type="changedparameters"/>
+                <post number="1" type="changedparameters"/>
+                <post number="2" type="changedparameters"/>
+                <post number="3" type="changedparameters"/>
+                <post number="4" type="changedparameters"/>
+                <post number="5" type="changedparameters"/>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="5" timestep="0.001" start="0"/>
+        <simulationtime stop="5" timestep="0.001" start="-0.5"/>
         <parameters/>
         <objects>
             <component typename="SignalSink" name="Sink">
@@ -63,7 +58,7 @@
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
                     <startvalue portname="P1" variable="" value="0"/>
-                    <startvalue portname="P1" variable="Position" value="0.2"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
                 </startvalues>
                 <hopsangui>
                     <pose x="2798.00000000000000000000" y="2422" flipped="0" a="180"/>
@@ -171,7 +166,7 @@
                     <startvalue portname="P2" variable="Pressure" value="0"/>
                     <startvalue portname="P3" variable="Velocity" value="0"/>
                     <startvalue portname="P3" variable="Force" value="0"/>
-                    <startvalue portname="P3" variable="Position" value="-0.2"/>
+                    <startvalue portname="P3" variable="Position" value="0"/>
                 </startvalues>
                 <hopsangui>
                     <pose x="2598.00000000000000000000" y="2422" flipped="0" a="0"/>
@@ -189,10 +184,10 @@
                     <parameter value="1" name="f_at"/>
                     <parameter value="1" name="f_bt"/>
                     <parameter value="0.01" name="x_v,max"/>
-                    <parameter value="-1e-006" name="x_pa"/>
-                    <parameter value="-1e-006" name="x_pb"/>
-                    <parameter value="-1e-006" name="x_at"/>
-                    <parameter value="-1e-006" name="x_bt"/>
+                    <parameter value="1e-006" name="x_pa"/>
+                    <parameter value="1e-006" name="x_pb"/>
+                    <parameter value="1e-006" name="x_at"/>
+                    <parameter value="1e-006" name="x_bt"/>
                     <parameter value="200" name="omega_h"/>
                     <parameter value="1" name="delta_h"/>
                 </parameters>
@@ -247,7 +242,7 @@
             <component typename="SignalGain" name="Gain">
                 <parameters>
                     <parameter value="0" name="out::Value"/>
-                    <parameter value="0.027" name="k"/>
+                    <parameter value="0.015" name="k"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>

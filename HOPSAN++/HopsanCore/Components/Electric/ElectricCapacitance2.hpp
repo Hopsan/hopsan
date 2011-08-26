@@ -2,8 +2,8 @@
 #define ELECTRICCAPACITANCE2_HPP_INCLUDED
 
 #include <iostream>
-#include "../../HopsanCore/ComponentEssentials.h"
-#include "../../HopsanCore/ComponentUtilities.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 #include <math.h>
 #include "matrix.h"
 

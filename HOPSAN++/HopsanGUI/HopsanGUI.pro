@@ -51,8 +51,8 @@ unix {
     #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     # TODO: We need to add teh relative paths automatically from the path variables created above
     #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
-    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/qwt-6.0.0/lib\'
-    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../ExternalDependencies/PythonQt2.0.1/lib\'
+    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/Dependencies/qwt-6.0.0/lib\'
+    #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/Dependencies/PythonQt2.0.1/lib\'
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
 }
@@ -127,9 +127,9 @@ SOURCES += main.cpp \
     Dialogs/ContainerPortPropertiesDialog.cpp \
     Dialogs/WelcomeDialog.cpp \
     Dialogs/HelpDialog.cpp \
-    ../ExternalDependencies/BarChartPlotter/plotterbase.cpp \
-    ../ExternalDependencies/BarChartPlotter/barchartplotter.cpp \
-    ../ExternalDependencies/BarChartPlotter/axisbase.cpp
+    Dependencies/BarChartPlotter/plotterbase.cpp \
+    Dependencies/BarChartPlotter/barchartplotter.cpp \
+    Dependencies/BarChartPlotter/axisbase.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -177,9 +177,9 @@ HEADERS += MainWindow.h \
     Dialogs/ContainerPortPropertiesDialog.h \
     Dialogs/WelcomeDialog.h \
     Dialogs/HelpDialog.h \
-    ../ExternalDependencies/BarChartPlotter/plotterbase.h \
-    ../ExternalDependencies/BarChartPlotter/barchartplotter.h \
-    ../ExternalDependencies/BarChartPlotter/axisbase.h
+    Dependencies/BarChartPlotter/plotterbase.h \
+    Dependencies/BarChartPlotter/barchartplotter.h \
+    Dependencies/BarChartPlotter/axisbase.h
 
 OTHER_FILES += \
     ../hopsandefaults \
