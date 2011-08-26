@@ -387,6 +387,8 @@ void Parameters::deleteParameter(std::string parameterName)
         if(parameterName == name)
         {
             mParameters.erase(parIt);
+            //delete (*parIt); //Kolla på detta! FIXA!
+            //++parIt;
             return;     //We can return now, since there should never be multiple parameters with same name
         }
     }

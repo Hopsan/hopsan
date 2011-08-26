@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="Hydraulic22PoppetValve" displayname="2/2 Poppet Valve">
+	    <help picture="22valvehelp.svg" text="Hydraulic massless poppet valve."/>
+        <icon isopath="22poppetvalve_iso.svg" iconrotation="ON" userpath="22poppetvalve_user.svg"/>
+        <portpose x="0.5" y="1" a="90" name="PN"/>
+        <portpose x="0.9" y=".7" a="0" name="PS"/>
+        <portpose x="0.5" y="0.0" a="90" name="PC"/>
+	<portpose x="0.5" y="0.6" a="0" name="xv_out"/>
+    </modelobject>
+</hopsanobjectappearance>

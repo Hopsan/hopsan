@@ -144,7 +144,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
     //    else
     {
         //Use the setParameter method that mapps to System parameter
-        if(!parameterName.startsWith("noname subport:") && !pObject->getParameterNames().contains(parameterName) && !pObject->getParameterNames().contains("startvalue:"+parameterName))
+        if(!parameterName.startsWith("noname subport:") && !pObject->getParameterNames().contains(parameterName) && !pObject->getParameterNames().contains("startvalue:"+parameterName)) //FIXA!!! startvalue: -parametrar ska ju finnas...
         {
             gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
             return;
