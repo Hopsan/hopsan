@@ -1314,18 +1314,21 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         tempConnectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
         tempConnectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
 
-        loadConnector(tempConnectorElement, this, UNDO);
-
-        GUIConnector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
-                                                          tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
-
-            //Apply offset to connector and register it in undo stack
-        tempConnector->moveAllPoints(xOffset, yOffset);
-        tempConnector->drawConnector(true);
-        for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
+        bool sucess = loadConnector(tempConnectorElement, this, UNDO);
+        if (sucess)
         {
-            mpUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
-                                                  tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
+            //qDebug() << ",,,,,,,,,: " << tempConnectorElement.attribute("startcomponent") << " " << tempConnectorElement.attribute("startport") << " " << tempConnectorElement.attribute("endcomponent") << " " << tempConnectorElement.attribute("endport");
+            GUIConnector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
+                                                              tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
+
+                //Apply offset to connector and register it in undo stack
+            tempConnector->moveAllPoints(xOffset, yOffset);
+            tempConnector->drawConnector(true);
+            for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
+            {
+                mpUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
+                                                      tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
+            }
         }
 
         connectorElement = connectorElement.nextSiblingElement("connect");

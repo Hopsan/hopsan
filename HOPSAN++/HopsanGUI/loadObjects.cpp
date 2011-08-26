@@ -54,6 +54,7 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
     startPortName = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
     endComponentName = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
     endPortName = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
+    //qDebug() << "loadConnector: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
 
     // Read gui specific stuff
     qreal x,y;
@@ -84,8 +85,6 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
     }
 
     // -----Now establish the connection-----
-
-    //qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pContainer->getCoreSystemAccessPtr()->getRootSystemName();
     bool success = pContainer->getCoreSystemAccessPtr()->connect(startComponentName, startPortName, endComponentName, endPortName);
     if (success)
     {
