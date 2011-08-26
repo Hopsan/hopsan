@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.2">
     <modelobject typename="MyWickedVolume" displayname="MyMagicVolume">
-        <icon isopath="" iconrotation="ON" userpath="svg/volume_user.svg"/>
+        <icons>
+            <icon type="user" iconrotation="ON" path="svg/volume_user.svg" scale="1.0"/>
+        </icons>
         <portpositions>
             <portpose x="0" y="0.5" a="0" name="P1"/>
             <portpose x="1" y="0.5" a="0" name="P2"/>

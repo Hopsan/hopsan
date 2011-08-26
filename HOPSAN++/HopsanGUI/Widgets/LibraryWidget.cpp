@@ -521,16 +521,16 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
         {
             //! @todo check caf version
             QDomElement cafRoot = domDocument.documentElement();
-            if (cafRoot.tagName() != CAF_ROOTTAG)
+            if (cafRoot.tagName() != CAF_ROOT)
             {
                 QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
                                          "The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: "
-                                         + cafRoot.tagName() + "!=" + CAF_ROOTTAG);
+                                         + cafRoot.tagName() + "!=" + CAF_ROOT);
             }
             else
             {
                 //Read appearance data from the caf xml file, begin with the first
-                QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement("modelobject"); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+                QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
                 pAppearanceData->setBasePath(libDir + "/");
                 pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
             }

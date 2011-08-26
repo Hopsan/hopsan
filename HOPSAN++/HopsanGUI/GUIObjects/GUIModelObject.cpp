@@ -331,7 +331,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
         this->setTransformOriginPoint(this->boundingRect().center());
 
 
-        if(mGUIModelObjectAppearance.getIconRotationBehaviour() == "ON")
+        if(mGUIModelObjectAppearance.getIconRotationBehaviour(mIconType) == "ON")
         {
             mIconRotation = true;
             mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);

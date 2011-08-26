@@ -32,9 +32,69 @@
 #include <QFile>
 #include "version.h"
 
+// ========== Defines for load/save common strings ==========
+
+#define CAF_VERSION "version"
+
+#define CAF_TYPENAME "typename"
+#define CAF_TYPE "type"
+#define CAF_DISPLAYNAME "displayname"
+#define CAF_NAME "name"
+
+#define CAF_ICON "icon"
+#define CAF_ICONS "icons"
+#define CAF_PATH "path"
+#define CAF_ICONROTATION "iconrotation"
+#define CAF_SCALE "scale"
+
+#define CAF_HELP "help"
+#define CAF_HELPTEXT "text"
+#define CAF_HELPPICTURE "picture"
+
+#define CAF_PORTPOSITIONS "portpositions"
+#define CAF_PORTPOSE "portpose"
+
+// =============== Help Functions ===============
+
+//! @brief Special purpose function for adding a Hopsan specific XML tag containing PortPose information
+//! @param[in] rDomElement The DOM Element to append to
+//! @param[in] name The port name
+//! @param[in] x The x coordinate
+//! @param[in] y The y coordinate
+//! @param[in] th The orientaion (angle)
+void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
+{
+    QDomElement pose = appendDomElement(rDomElement, CAF_PORTPOSE);
+    pose.setAttribute(CAF_NAME,name);
+    QString xString;
+    xString.setNum(x,'f',20);
+    pose.setAttribute("x",xString);
+    QString yString;
+    yString.setNum(y,'f',20);
+    pose.setAttribute("y",yString);
+    pose.setAttribute("a",th);
+}
+
+//! @brief Special purpose function for parsing a Hopsan specific XML tag containing PortPose information
+//! @param[in] domElement The DOM Element to parse
+//! @param[out] rName The name of the port
+//! @param[out] rX The x coordinate
+//! @param[out] rY The y coordinate
+//! @param[out] rTheta The orientaion (angle)
+void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta)
+{
+    rName = domElement.attribute(CAF_NAME);
+    bool dummy;
+    parsePoseTag(domElement, rX, rY, rTheta, dummy);
+}
+
+
+// =============================================
+
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
-    mIconRotationBehaviour = "ON";
+    mIconUserRotationBehaviour = "ON";
+    mIconIsoRotationBehaviour = "ON";
     mPortAppearanceMap.clear();
 }
 
@@ -201,9 +261,21 @@ void GUIModelObjectAppearance::makeSurePathsRelative()
 }
 
 
-QString GUIModelObjectAppearance::getIconRotationBehaviour()
+QString GUIModelObjectAppearance::getIconRotationBehaviour(const graphicsType gfxType)
 {
-    return mIconRotationBehaviour;
+    if (gfxType == USERGRAPHICS)
+    {
+        return mIconUserRotationBehaviour;
+    }
+    else if (gfxType == ISOGRAPHICS)
+    {
+        return mIconIsoRotationBehaviour;
+    }
+    else
+    {
+        //Incorrect type, return something, maybe give error instead
+        return "ON";
+    }
 }
 
 QPointF GUIModelObjectAppearance::getNameTextPos()
@@ -259,48 +331,78 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
     mTypeName       = domElement.attribute(HMF_TYPETAG);
-    mDisplayName    = domElement.attribute(HMF_DISPLAYNAMETAG);
+    mDisplayName    = domElement.attribute(CAF_DISPLAYNAME);
 
-    QDomElement xmlHelp = domElement.firstChildElement("help");
+    QDomElement xmlHelp = domElement.firstChildElement(CAF_HELP);
     if(!xmlHelp.isNull())
     {
-        mHelpPicture    = xmlHelp.attribute("picture");
-        mHelpText       = xmlHelp.attribute("text");
+        mHelpPicture    = xmlHelp.attribute(CAF_HELPPICTURE);
+        mHelpText       = xmlHelp.attribute(CAF_HELPTEXT);
     }
 
-    QDomElement xmlIcon = domElement.firstChildElement("icon");
-    mIconIsoPath = xmlIcon.attribute("isopath");
-    mIconUserPath = xmlIcon.attribute("userpath");
-    mIconRotationBehaviour = xmlIcon.attribute("iconrotation");
-    mIconUserScale = parseAttributeQreal(xmlIcon, "userscale", 1.0);
-    mIconIsoScale = parseAttributeQreal(xmlIcon, "isoscale", 1.0);
+    //We assume only one icons element
+    QDomElement xmlIcons = domElement.firstChildElement(CAF_ICONS);
+    QDomElement xmlIcon = xmlIcons.firstChildElement(CAF_ICON);
+    while (!xmlIcon.isNull())
+    {
+        QString type = xmlIcon.attribute(CAF_TYPE);
+        if (type == "iso")
+        {
+            mIconIsoPath = xmlIcon.attribute(CAF_PATH);
+            mIconIsoScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
+            mIconIsoRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
+        }
+        else //!< @todo maybe elseif user and somehow give error message, for now assume user if not iso
+        {
+            mIconUserPath = xmlIcon.attribute(CAF_PATH);
+            mIconUserScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
+            mIconUserRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
+        }
+
+        xmlIcon = xmlIcon.nextSiblingElement("icon");
+    }
+
 
     this->makeSurePathsAbsolute();
 
     QString portname;
-    QDomElement xmlPorts = domElement.firstChildElement(HMF_PORTPOSITIONS);
+    QDomElement xmlPorts = domElement.firstChildElement(CAF_PORTPOSITIONS);
     while (!xmlPorts.isNull())
     {
-        QDomElement xmlPortPose = xmlPorts.firstChildElement(HMF_PORTPOSETAG);
+        QDomElement xmlPortPose = xmlPorts.firstChildElement(CAF_PORTPOSE);
         while (!xmlPortPose.isNull())
         {
             GUIPortAppearance portApp;
             parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
             mPortAppearanceMap.insert(portname, portApp);
-            xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
+            xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
         }
         // There should only be one <ports>, but lets check for more just in case
-        xmlPorts = xmlPorts.nextSiblingElement(HMF_PORTPOSITIONS);
+        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTPOSITIONS);
+    }
+
+    // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+    // Read old style icons
+    QDomElement xmlIcon2 = domElement.firstChildElement("icon");
+    if (!xmlIcon2.isNull())
+    {
+        mIconIsoPath = xmlIcon2.attribute("isopath");
+        mIconUserPath = xmlIcon2.attribute("userpath");
+        mIconIsoRotationBehaviour = xmlIcon2.attribute("iconrotation");
+        mIconUserRotationBehaviour = xmlIcon2.attribute("iconrotation");
+        mIconUserScale = parseAttributeQreal(xmlIcon2, "userscale", 1.0);
+        mIconIsoScale = parseAttributeQreal(xmlIcon2, "isoscale", 1.0);
     }
 
     // Read old style portposes, where portposes were not contained inside a common "ports" element
-    QDomElement xmlPortPose = domElement.firstChildElement(HMF_PORTPOSETAG);
+    QDomElement xmlPortPose = domElement.firstChildElement(CAF_PORTPOSE);
     while (!xmlPortPose.isNull())
     {
         GUIPortAppearance portApp;
         parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
         mPortAppearanceMap.insert(portname, portApp);
-        xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
+        xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
     }
 }
 
@@ -308,31 +410,49 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 //! @param rDomElement The DOM element to write to
 void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 {
-    QDomElement xmlObject = appendDomElement(rDomElement, HMF_MODELOBJECT);
-    xmlObject.setAttribute(HMF_TYPETAG, mTypeName);
-    xmlObject.setAttribute(HMF_DISPLAYNAMETAG, mDisplayName);
-    QDomElement xmlIcon = appendDomElement(xmlObject, HMF_ICONTAG);
+    // Save type and name data
+    QDomElement xmlObject = appendDomElement(rDomElement, CAF_MODELOBJECT);
+    xmlObject.setAttribute(CAF_TYPENAME, mTypeName);
+    xmlObject.setAttribute(CAF_DISPLAYNAME, mDisplayName);
+
+    //  Save icon data
     this->makeSurePathsRelative(); //We want to save paths relative the basepath, to avoid incompatibility with absolute paths between systems
-    xmlIcon.setAttribute(HMF_ISOPATHTAG, mIconIsoPath);
-    xmlIcon.setAttribute(HMF_USERPATHTAG, mIconUserPath);
-    xmlIcon.setAttribute(HMF_ICONROTATIONTAG, mIconRotationBehaviour);
-    xmlIcon.setAttribute("isoscale", mIconIsoScale);
-    xmlIcon.setAttribute("userscale", mIconUserScale);
-    if(!mHelpText.isNull() || !mHelpPicture.isNull())
+    QDomElement xmlIcons = appendDomElement(xmlObject, CAF_ICONS);
+    if (hasIcon(USERGRAPHICS))
     {
-        QDomElement xmlHelp = appendDomElement(xmlObject, HMF_HELPTAG);
-        if(!mHelpText.isNull())
-            xmlHelp.setAttribute(HMF_HELPTEXTTAG, mHelpText);
-        if(!mHelpPicture.isNull())
-            xmlHelp.setAttribute(HMF_HELPPICTURETAG, mHelpPicture);
+        QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
+        xmlIcon.setAttribute(CAF_TYPE, "user");
+        xmlIcon.setAttribute(CAF_PATH, mIconUserPath);
+        xmlIcon.setAttribute(CAF_SCALE, mIconUserScale);
+        xmlIcon.setAttribute(CAF_ICONROTATION, mIconUserRotationBehaviour);
+    }
+    if (hasIcon(ISOGRAPHICS))
+    {
+        QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
+        xmlIcon.setAttribute(CAF_TYPE, "iso");
+        xmlIcon.setAttribute(CAF_PATH, mIconIsoPath);
+        xmlIcon.setAttribute(CAF_SCALE, mIconIsoScale);
+        xmlIcon.setAttribute(CAF_ICONROTATION, mIconIsoRotationBehaviour);
     }
 
-    QDomElement xmlPortPositions = appendDomElement(rDomElement, HMF_PORTPOSITIONS);
+    // Save help text and picture data
+    if(!mHelpText.isNull() || !mHelpPicture.isNull())
+    {
+        QDomElement xmlHelp = appendDomElement(xmlObject, CAF_HELP);
+        if(!mHelpText.isNull())
+            xmlHelp.setAttribute(CAF_HELPTEXT, mHelpText);
+        if(!mHelpPicture.isNull())
+            xmlHelp.setAttribute(CAF_HELPPICTURE, mHelpPicture);
+    }
+
+    // Save port psoition data
+    QDomElement xmlPortPositions = appendDomElement(rDomElement, CAF_PORTPOSITIONS);
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
         appendPortPoseTag(xmlPortPositions, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
     }
+
     this->makeSurePathsAbsolute(); //Switch back to absolute paths
 }
 
@@ -341,9 +461,9 @@ void GUIModelObjectAppearance::saveToXMLFile(QString filename)
 {
     //Save to file
     QDomDocument doc;
-    QDomElement cafroot = doc.createElement(CAF_ROOTTAG);
+    QDomElement cafroot = doc.createElement(CAF_ROOT);
     doc.appendChild(cafroot);
-    cafroot.setAttribute(HMF_CAFVERSIONTAG, CAFVERSION);
+    cafroot.setAttribute(CAF_VERSION, CAFVERSION);
     this->saveToDomElement(cafroot);
     const int IndentSize = 4;
     QFile xml(filename);

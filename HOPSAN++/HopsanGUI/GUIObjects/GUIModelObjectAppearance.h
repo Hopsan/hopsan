@@ -32,6 +32,9 @@
 #include "../Utilities/XMLUtilities.h"
 #include "../GUIPortAppearance.h"
 
+//Define for the root xml element name, and the element name for each component (modelobject)
+#define CAF_ROOT "hopsanobjectappearance"
+#define CAF_MODELOBJECT "modelobject"
 
 class GUIModelObjectAppearance
 {
@@ -52,7 +55,7 @@ public:
     QString getFullAvailableIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconPath(graphicsType gfxType=USERGRAPHICS);
     qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
-    QString getIconRotationBehaviour();
+    QString getIconRotationBehaviour(const graphicsType gfxType=USERGRAPHICS);
     QPointF getNameTextPos();
     PortAppearanceMapT &getPortAppearanceMap();
     void erasePortAppearance(const QString portName);
@@ -73,7 +76,8 @@ private:
     QString mIconIsoPath;
     qreal   mIconUserScale;
     qreal   mIconIsoScale;
-    QString mIconRotationBehaviour;
+    QString mIconIsoRotationBehaviour;
+    QString mIconUserRotationBehaviour;
     QPointF mNameTextPos;
 
     PortAppearanceMapT mPortAppearanceMap;

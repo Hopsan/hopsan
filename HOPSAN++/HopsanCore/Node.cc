@@ -196,10 +196,10 @@ bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values
 //! @param [in,out] rUnits This vector will contain the units
 void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 {
-    std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
+    //std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
     for(size_t i=0; i<mDataNames.size(); ++i)
     {
-        std::cout << "mPlotBehaviour.size(): " << mPlotBehaviour.size() << std::endl;
+        //std::cout << "mPlotBehaviour.size(): " << mPlotBehaviour.size() << std::endl;
         if(mPlotBehaviour[i] == Node::PLOT)
         {
             rNames.push_back(mDataNames[i]);

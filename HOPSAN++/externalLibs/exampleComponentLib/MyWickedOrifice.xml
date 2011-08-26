@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.2">
 	<modelobject typename="MyWickedOrifice" displayname="MyWickedOrifice">
-		<icon isopath="" userpath="svg/orifice_user.svg" iconrotation="ON"/>
+	    <icons>
+            <icon type="user" path="svg/orifice_user.svg" iconrotation="ON" scale="1.0"/>
+	    </icons>
 		<portpositions>
 		    <portpose name="P1" x="1.0" y="0.5" a="0"/>
 		    <portpose name="P2" x="0.0" y="0.5" a="180"/>

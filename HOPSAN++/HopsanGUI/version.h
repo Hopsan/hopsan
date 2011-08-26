@@ -27,6 +27,6 @@
 
 #define HOPSANGUIVERSION "0.3.2"
 #define HMFVERSION "0.3"
-#define CAFVERSION "0.3"
+#define CAFVERSION "0.2"
 
 #endif // VERSION_H

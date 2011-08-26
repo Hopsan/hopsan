@@ -54,13 +54,11 @@ int parseDomIntegerNode(QDomElement);
 
 //Attribute help functions
 void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped);
-void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th);
 void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y);
 void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom);
 void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop);
 
 void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, bool &rFlipped);
-void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta);
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
 void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
 void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop);
@@ -75,7 +73,7 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 
 //Save Load Definitions
-//! @todo clean up this list and give some smarter names
+//! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use thses defines where appropriate instead of hardcoded strings
 #define HMF_ROOTTAG "hopsanmodelfile"
 #define HMF_OBJECTS "objects"
 #define HMF_OBJECTTAG "object"              //Non core Gui Object
@@ -96,20 +94,10 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 #define HMF_BOXWIDGETTAG "boxwidget"
 #define HMF_PORTSTAG "ports"
 #define HMF_NAMESTAG "names"
-#define HMF_ICONTAG "icon"
-
-#define HMF_ISOPATHTAG "isopath"
-#define HMF_USERPATHTAG "userpath"
-#define HMF_ICONROTATIONTAG "iconrotation"
-
-#define HMF_HELPTAG "help"
-#define HMF_HELPTEXTTAG "text"
-#define HMF_HELPPICTURETAG "picture"
 
 #define HMF_NAMETAG "name"
 #define HMF_TYPETAG "typename"
 #define HMF_CQSTYPETAG "cqs_type"
-#define HMF_PORTTAG "port"
 
 #define HMF_HOPSANGUITAG "hopsangui"
 #define HMF_COORDINATES "coordinates"
@@ -123,8 +111,7 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 #define HMF_SYSTEMPARAMETERTAG "globalkey"
 #define HMF_TRUETAG "true"
 #define HMF_FALSETAG "false"
-#define HMF_PORTPOSITIONS "portpositions"
-#define HMF_PORTPOSETAG "portpose"
+
 #define HMF_POSETAG "pose"
 #define HMF_VIEWPORTTAG "viewport"
 #define HMF_NAMETEXTTAG "nametext"
@@ -138,19 +125,12 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 #define HMF_CONNECTORDASHEDTAG "dashed"
 
 #define HMF_SYSTEMAPPEARANCETAG "systemappearance"
-#define CAF_ROOTTAG "hopsanobjectappearance"
-#define HMF_DISPLAYNAMETAG "displayname"
-#define HMF_ISOICONTAG "isoicon"
-#define HMF_USERICONTAG "usericon"
-#define HMF_ICONROTATIONTAG "iconrotation"
 
 #define HMF_HMFVERSIONTAG "hmfversion"
 #define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
 #define HMF_SIMULATIONTIMETAG "simulationtime"
 #define HMF_SCRIPTFILETAG "scriptfile"
-
-#define HMF_CAFVERSIONTAG "version"
 
 #define HMF_UNDO "hopsanundo"
 

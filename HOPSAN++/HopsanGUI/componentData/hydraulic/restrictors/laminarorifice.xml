@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.2">
 	<modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice">
-		<icon isopath="laminarorifice_iso.svg" userpath="laminarorifice_user.svg" iconrotation="ON"/>
-		<portpose name="P1" x="1.0" y="0.5" a="0"/>
-		<portpose name="P2" x="0.0" y="0.5" a="180"/>
-		<portpose name="Kc" x="0.5" y="0.0" a="270"/>
+	    <icons>
+		    <icon type="iso" path="laminarorifice_iso.svg" iconrotation="ON"/>
+		    <icon type="user" path="laminarorifice_user.svg" iconrotation="ON"/>
+        </icons>
+        <portpositions>
+		    <portpose name="P1" x="1.0" y="0.5" a="0"/>
+		    <portpose name="P2" x="0.0" y="0.5" a="180"/>
+		    <portpose name="Kc" x="0.5" y="0.0" a="270"/>
+		</portpositions>
 	</modelobject>
 </hopsanobjectappearance>
 

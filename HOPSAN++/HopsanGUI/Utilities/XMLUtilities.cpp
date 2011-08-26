@@ -271,25 +271,6 @@ void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool fl
     pose.setAttribute("flipped", flipped);
 }
 
-//! @brief Special purpose function for adding a Hopsan specific XML tag containing PortPose information
-//! @param[in] rDomElement The DOM Element to append to
-//! @param[in] name The port name
-//! @param[in] x The x coordinate
-//! @param[in] y The y coordinate
-//! @param[in] th The orientaion (angle)
-void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
-{
-    QDomElement pose = appendDomElement(rDomElement, HMF_PORTPOSETAG);
-    pose.setAttribute("name",name);
-    QString xString;
-    xString.setNum(x,'f',20);
-    pose.setAttribute("x",xString);
-    QString yString;
-    yString.setNum(y,'f',20);
-    pose.setAttribute("y",yString);
-    pose.setAttribute("a",th);
-}
-
 //! @brief Special purpose function for adding a Hopsan specific XML tag containing a coordinate
 //! @param[in] rDomElement The DOM Element to append to
 //! @param[in] x The x coordinate
@@ -343,19 +324,6 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, b
     rY = domElement.attribute("y").toDouble();
     rTheta = domElement.attribute("a").toDouble();
     rFlipped = (domElement.attribute("flipped") == "1");
-}
-
-//! @brief Special purpose function for parsing a Hopsan specific XML tag containing PortPose information
-//! @param[in] domElement The DOM Element to parse
-//! @param[out] rName The name of the port
-//! @param[out] rX The x coordinate
-//! @param[out] rY The y coordinate
-//! @param[out] rTheta The orientaion (angle)
-void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta)
-{
-    rName = domElement.attribute(HMF_NAMETAG);
-    bool dummy;
-    parsePoseTag(domElement, rX, rY, rTheta, dummy);
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing a coordinate

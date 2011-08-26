@@ -259,7 +259,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
         scriptFileElement.setAttribute("path", mScriptFilePath);
 
         this->refreshExternalPortsAppearanceAndPosition();
-        QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOTTAG);
+        QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOT);
 
         //Before we save the modelobjectappearance data we need to set the correct basepath, (we ask our parent it will know)
         if (this->getParentContainerObject() != 0)
@@ -370,7 +370,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-        this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
+        this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         this->setDisplayName(realName); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
         this->mNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
         this->mPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
