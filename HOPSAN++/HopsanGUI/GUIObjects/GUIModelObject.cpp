@@ -306,8 +306,8 @@ void GUIModelObject::setIcon(graphicsType gfxType)
         mIconType = USERGRAPHICS;
     }
 
-    //Avoid swappping icon if same as before
-    if (mLastIconPath != iconPath)
+    //Avoid swappping icon if same as before, we swap also if scale changes
+    if  ( (mLastIconPath != iconPath) || !fuzzySame(mLastIconScale, iconScale, 0.001) )
     {
         if (mpIcon != 0)
         {
@@ -315,21 +315,15 @@ void GUIModelObject::setIcon(graphicsType gfxType)
             disconnect(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)));
         }
 
-        mLastIconPath = iconPath;
         mpIcon = new QGraphicsSvgItem(iconPath, this);
-        mpIcon->setTransformOriginPoint(mpIcon->mapFromParent(this->boundingRect().center()));
-        //qDebug() << "mpIcon brect: " << mpIcon->boundingRect();
-        mpIcon->setScale(iconScale);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        //qDebug() << "iconScale: " << iconScale << " " << mpIcon->scale();
-        //qDebug() << "mpIcon brect: " << mpIcon->boundingRect();
+        mpIcon->setScale(iconScale);
 
         this->prepareGeometryChange();
-        //for some reason the bounding rect was not scaled so we sccale it manually bellow
         this->resize(mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale);  //Resize modelobject
         mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale); //Resize selection box
-        this->setTransformOriginPoint(this->boundingRect().center());
 
+        this->setTransformOriginPoint(this->boundingRect().center());
 
         if(mGUIModelObjectAppearance.getIconRotationBehaviour(mIconType) == "ON")
         {
@@ -347,6 +341,9 @@ void GUIModelObject::setIcon(graphicsType gfxType)
             }
             //! @todo we need to dissconnect this also at some point, when swapping between systems or groups
         }
+
+        mLastIconPath = iconPath;
+        mLastIconScale = iconScale;
     }
 }
 

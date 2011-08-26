@@ -45,6 +45,7 @@ public:
     void setHelpText(QString text);
     void setBasePath(QString path);
     void setIconPath(QString path, graphicsType gfxType);
+    void setIconScale(const qreal scale, const graphicsType gfxType);
 
     QString getTypeName();
     QString getName();

@@ -168,6 +168,13 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
+//! @brief Compare two qreals with given tolerance
+//! @return True if fabs(first-last) < eps
+bool fuzzySame(const qreal first, const qreal second, const qreal eps)
+{
+    return (fabs(first-second) < eps);
+}
+
 //! @brief Calculates the 2NORM of one point, the absoulte distance from 0,0
 qreal dist(QPointF &rPoint)
 {

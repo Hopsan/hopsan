@@ -86,7 +86,7 @@ HEADERS += win32dll.h \
     CoreUtilities/ClassFactory.hpp \
     Components/HydraulicComponentTemplate.hpp \
     Components/Components.h \
-    Components/Signal/SignalTimeDelay.hpppp \
+    Components/Signal/SignalTimeDelay.hpp \
     Components/Signal/SignalSubtract.hpp \
     Components/Signal/SignalStep.hpp \
     Components/Signal/SignalSquareWave.hpp \
@@ -244,7 +244,7 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicJLink.hpp \
     Components/Mechanic/MechanicThetaSource.hpp \
     Components/Mechanic/MechanicVehicle1D.hpp \
-    Components/Signal/SignalStepExponentialDelay.hpppp \
+    Components/Signal/SignalStepExponentialDelay.hpp \
     ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h \
     ComponentUtilities/SecondOrderTransferFunction.h \
     ComponentUtilities/FirstOrderTransferFunction.h \

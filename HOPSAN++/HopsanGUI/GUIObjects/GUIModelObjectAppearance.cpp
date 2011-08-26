@@ -93,6 +93,8 @@ void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &
 
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
+    mIconUserScale = 1.0;
+    mIconIsoScale = 1.0;
     mIconUserRotationBehaviour = "ON";
     mIconIsoRotationBehaviour = "ON";
     mPortAppearanceMap.clear();
@@ -519,6 +521,19 @@ void GUIModelObjectAppearance::setIconPath(QString path, graphicsType gfxType)
     }
     //else dont do anything
     this->makeSurePathsAbsolute();
+}
+
+void GUIModelObjectAppearance::setIconScale(const qreal scale, const graphicsType gfxType)
+{
+    if (gfxType == USERGRAPHICS)
+    {
+        mIconUserScale = scale;
+    }
+    else if (gfxType == ISOGRAPHICS)
+    {
+        mIconIsoScale = scale;
+    }
+    //else dont do anything
 }
 
 

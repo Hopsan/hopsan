@@ -140,6 +140,7 @@ protected:
     bool mIconRotation;
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;
+    qreal mLastIconScale;
 
     QList<GUIPort*> mPortListPtrs;
     QList<GUIConnector*> mGUIConnectorPtrs;

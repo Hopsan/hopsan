@@ -50,6 +50,8 @@ private:
     QLineEdit *mpUserIconPath;
     QLineEdit *mpIsoIconPath;
     QLineEdit *mpNSamplesEdit;
+    QLineEdit *mpIsoIconScaleEdit;
+    QLineEdit *mpUserIconScaleEdit;
     QCheckBox *mpIsoCheckBox;
     QCheckBox *mpDisableUndoCheckBox;
     QHBoxLayout *mpNameLayout;

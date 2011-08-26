@@ -47,6 +47,7 @@ qreal normRad(qreal rad);
 qreal dist(QPointF &rPoint);
 qreal dist(QPointF &rPoint1, QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
+bool fuzzySame(const qreal first, const qreal second, const qreal eps);
 void replaceWord(QString &string, QString before, QString after);
 QString parseVariableDescription(QString input);
 QString parseVariableUnit(QString input);

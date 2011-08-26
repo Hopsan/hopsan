@@ -52,6 +52,15 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     this->setWindowTitle("System Properties");
     this->setPalette(gConfig.getPalette());
 
+    //CQS Type
+    QGroupBox *pInfoGroupBox = new QGroupBox("Info", this);
+    QHBoxLayout *pInfoLayout = new QHBoxLayout();
+    mpCQSLabel = new QLabel("CQS-type: ", this);
+    mpCQSTypeLabel = new QLabel(mpContainerObject->getTypeCQS(), this);
+    pInfoLayout->addWidget(mpCQSLabel, 0);
+    pInfoLayout->addWidget(mpCQSTypeLabel, 1);
+    pInfoGroupBox->setLayout(pInfoLayout);
+
     //Define items in the dialog box
         //Name edit
     mpNameLayout = new QHBoxLayout();
@@ -72,6 +81,25 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpIsoIconBrowseButton->setAutoDefault(false);
     mpUserIconBrowseButton->setAutoDefault(false);
 
+        //Graphics checkboxes
+    mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"), this);
+    mpIsoCheckBox->setCheckable(true);
+    mpIsoCheckBox->setChecked(mpContainerObject->getGfxType());
+
+        //Graphics scales
+    QString text;
+    QLabel *pUserIconScaleLabel = new QLabel("User Icon Scale:", this);
+    QLabel *pIsoIconScaleLabel = new QLabel("ISO Icon Scale:", this);
+    text.setNum(mpContainerObject->getAppearanceData()->getIconScale(USERGRAPHICS));
+    mpUserIconScaleEdit = new QLineEdit(this);
+    mpUserIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, this));
+    mpUserIconScaleEdit->setText(text);
+    text.setNum(mpContainerObject->getAppearanceData()->getIconScale(ISOGRAPHICS));
+    mpIsoIconScaleEdit = new QLineEdit(text, this);
+    mpIsoIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, this));
+    mpIsoIconScaleEdit->setText(text);
+
+
         //Appearance Group Box
     mpAppearanceGroupBox = new QGroupBox("Appearance", this);
     mpAppearanceLayout = new QGridLayout(this);
@@ -83,12 +111,12 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpAppearanceLayout->addWidget(mpIsoIconLabel, 2, 0);
     mpAppearanceLayout->addWidget(mpIsoIconPath, 2, 1);
     mpAppearanceLayout->addWidget(mpIsoIconBrowseButton, 2, 2);
+    mpAppearanceLayout->addWidget(pUserIconScaleLabel, 3, 0);
+    mpAppearanceLayout->addWidget(mpUserIconScaleEdit, 3, 1);
+    mpAppearanceLayout->addWidget(pIsoIconScaleLabel, 4, 0);
+    mpAppearanceLayout->addWidget(mpIsoIconScaleEdit, 4, 1);
+    mpAppearanceLayout->addWidget(mpIsoCheckBox, 5, 0, 1, -1);
     mpAppearanceGroupBox->setLayout(mpAppearanceLayout);
-
-        //Graphics checkboxes
-    mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"), this);
-    mpIsoCheckBox->setCheckable(true);
-    mpIsoCheckBox->setChecked(mpContainerObject->getGfxType());
 
         //Undo checkbox
     mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), this);
@@ -108,7 +136,6 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpSettingsLayout->addWidget(mpPyScriptLabel, 0, 0);
     mpSettingsLayout->addWidget(mpPyScriptPath, 0, 1);
     mpSettingsLayout->addWidget(mpPyScriptBrowseButton, 0, 2);
-    mpSettingsLayout->addWidget(mpIsoCheckBox, 1, 0, 1, 2);
     mpSettingsLayout->addWidget(mpDisableUndoCheckBox, 2, 0, 1, 2);
     mpSettingsGroupBox->setLayout(mpSettingsLayout);
 
@@ -143,12 +170,6 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         mpSettingsLayout->addWidget(mpNSamplesLabel, 5, 0);
         mpSettingsLayout->addWidget(mpNSamplesEdit, 5, 1);
 
-            //CQS Type
-        mpCQSLabel = new QLabel("CQS-type: ", this);
-        mpCQSTypeLabel = new QLabel(mpContainerObject->getTypeCQS(), this);
-        mpSettingsLayout->addWidget(mpCQSLabel, 6, 0);
-        mpSettingsLayout->addWidget(mpCQSTypeLabel, 6, 1);
-
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
     }
 
@@ -182,6 +203,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
 
         //This is the main Vertical layout of the dialog
     mpMainLayout = new QVBoxLayout(this);
+    mpMainLayout->addWidget(pInfoGroupBox);
     mpMainLayout->addWidget(mpAppearanceGroupBox);
     mpMainLayout->addWidget(mpSettingsGroupBox);
     if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && !mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().isEmpty())
@@ -237,6 +259,19 @@ void ContainerPropertiesDialog::setValues()
     if ( mpContainerObject->getIconPath(USERGRAPHICS) != mpUserIconPath->text() )
     {
         mpContainerObject->setIconPath(mpUserIconPath->text(), USERGRAPHICS);
+        mpContainerObject->refreshAppearance();
+    }
+
+    //Set scale if they have changed
+    //! @todo maybe use fuzze compare utility function instead (but then we need to include utilites here)
+    if ( fabs(mpContainerObject->getAppearanceData()->getIconScale(ISOGRAPHICS) - mpIsoIconScaleEdit->text().toDouble()) > 0.001 )
+    {
+        mpContainerObject->getAppearanceData()->setIconScale(mpIsoIconScaleEdit->text().toDouble(), ISOGRAPHICS);
+        mpContainerObject->refreshAppearance();
+    }
+    if ( fabs(mpContainerObject->getAppearanceData()->getIconScale(USERGRAPHICS) - mpUserIconScaleEdit->text().toDouble()) > 0.001 )
+    {
+        mpContainerObject->getAppearanceData()->setIconScale(mpUserIconScaleEdit->text().toDouble(), USERGRAPHICS);
         mpContainerObject->refreshAppearance();
     }
 
