@@ -399,8 +399,13 @@ void GUIPort::refreshPortGraphics()
         if (getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
         {
             //If we are port in containerport model object then ask our parent system model object about cqs-type
-            //cqsType = getParentContainerObjectPtr()->getTypeCQS();
-            cqsType = "NULL"; //Dont show cqs typ internally, it will become confusing
+            cqsType = getParentContainerObjectPtr()->getTypeCQS();
+
+            //Dont show cqs typ internally, it will become confusing, only show question marks if undefined
+            if (cqsType != "UNDEFINEDCQSTYPE")
+            {
+                cqsType = "NULL";
+            }
         }
         else
         {
