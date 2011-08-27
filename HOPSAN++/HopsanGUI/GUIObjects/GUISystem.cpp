@@ -349,7 +349,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
     if(hmfVersion <= 0.2 && hmfVersion != 0.0)
     {
-        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with Hopsan version 0.2 or older. Full compatibility is not guarnteed.");
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Model file is saved with Hopsan version 0.2 or older. Full compatibility is not guaranteed.");
     }
     else if(hmfVersion != QString(HMF_VERSIONNUM).toDouble() && hmfVersion != 0.0)
     {
@@ -366,8 +366,6 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //Now load the core specific data, might need inherited function for this
         this->setName(rDomElement.attribute(HMF_NAMETAG));
         QString realName = this->getName();
-
-        qDebug() << "load5--------: " << this->getCenterPos();
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
@@ -391,7 +389,6 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         }
 
         mpParentProjectTab->getGraphicsView()->setZoomFactor(zoom);
-        //emit mpParentProjectTab->getGraphicsView()->zoomChange(zoom);
 
         qDebug() << "Center on " << x << ", " << y;
         mpParentProjectTab->getGraphicsView()->centerOn(x, y);

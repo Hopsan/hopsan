@@ -1935,24 +1935,40 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *pAction = this->buildBaseContextMenu(menu, event);
     if (pAction == loadAction)
     {
-        //! @todo use loadHMF once we have scraped teh text based stuff and only uses xml
-        //loadFromHMF();
-        QDir fileDialog;
-        QFile file;
+        QDir fileDialog; QFile file;
         QString modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
                                                              fileDialog.currentPath() + QString(MODELPATH),
                                                              tr("Hopsan Model Files (*.hmf)"));
-
-        file.setFileName(modelFilePath);
-        QDomDocument domDocument;
-        QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-        if (!hmfRoot.isNull())
+        if (!modelFilePath.isNull())
         {
-            //! @todo Check version numbers
-            //! @todo check if we could load else give error message and dont attempt to load
-            QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
-            this->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-            this->loadFromDomElement(systemElement);
+            bool doIt = true;
+            if (mGUIModelObjectMap.size() > 0)
+            {
+                QMessageBox clearAndLoadQuestionBox(QMessageBox::Warning, tr("Warning"),tr("All current contents of the system will be replaced. Do you want to continue?"), 0, 0);
+                clearAndLoadQuestionBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
+                clearAndLoadQuestionBox.addButton(tr("&No"), QMessageBox::RejectRole);
+                clearAndLoadQuestionBox.setWindowIcon(gpMainWindow->windowIcon());
+                doIt = (clearAndLoadQuestionBox.exec() == QMessageBox::AcceptRole);
+            }
+
+            if (doIt)
+            {
+                this->clearContents();
+
+                file.setFileName(modelFilePath);
+                QDomDocument domDocument;
+                QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+                if (!hmfRoot.isNull())
+                {
+                    //! @todo Check version numbers
+                    //! @todo check if we could load else give error message and dont attempt to load
+                    QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+                    this->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+                    QFileInfo fileInfo(file);
+                    this->setAppearanceDataBasePath(fileInfo.absolutePath());
+                    this->loadFromDomElement(systemElement);
+                }
+            }
         }
     }
 
