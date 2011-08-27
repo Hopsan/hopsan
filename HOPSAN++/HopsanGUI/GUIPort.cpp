@@ -104,6 +104,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->refreshPortGraphicsOverlayGraphics();
     this->setRotation(mpPortAppearance->rot);
     this->refreshPortOverlayPosition();
+    mPortAppearanceAfterLastRefresh = *mpPortAppearance; //Remember current appearance
 
     //Set default magnification
     mMag = GOLDENRATIO;
