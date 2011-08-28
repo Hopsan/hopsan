@@ -88,11 +88,12 @@ private:
     QString mHelpText;
     ModelObjectIconAppearance mIsoIconAppearance;
     ModelObjectIconAppearance mUserIconAppearance;
+    QString mDefaultMissingIconPath;
     QPointF mNameTextPos;
 
     PortAppearanceMapT mPortAppearanceMap;
 
-    //BaseDir for path strings
+    //BaseDir for relative paths
     QString mBasePath;
 
     //Private help functions

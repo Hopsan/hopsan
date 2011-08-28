@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.2">
     <modelobject typename="Subsystem" displayname="">
-        <icon isopath="" iconrotation="ON" userpath="subsystemtmp.svg"/>
+        <icons>  
+            <icon type="user" iconrotation="ON" path="subsystemDefault.svg"/>
+	    <icon type="defaultmissing" iconrotation="ON" path="subsystemDefault.svg"/>
+	</icons>
     </modelobject>
 </hopsanobjectappearance>

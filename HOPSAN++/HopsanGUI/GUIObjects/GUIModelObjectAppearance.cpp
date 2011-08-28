@@ -22,9 +22,8 @@
 //!
 //$Id$
 
-#include "qdebug.h"
-#include "../MainWindow.h"
 #include "GUIModelObjectAppearance.h"
+#include "../MainWindow.h"
 #include "../Utilities/GUIUtilities.h"
 #include "../version.h"
 
@@ -96,6 +95,7 @@ ModelObjectIconAppearance::ModelObjectIconAppearance()
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
     mPortAppearanceMap.clear();
+    mDefaultMissingIconPath = "missingcomponenticon.svg";
 }
 
 //! @brief get the type-name
@@ -177,8 +177,8 @@ QString GUIModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
     }
     else
     {
-        //No icon available use the missing graphics icon
-        return QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
+        //No icon available use the default missing icon
+        return QString(OBJECTICONPATH) + mDefaultMissingIconPath;
     }
 }
 
@@ -336,7 +336,7 @@ QString GUIModelObjectAppearance::getBasePath()
 void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
-    mTypeName       = domElement.attribute(HMF_TYPETAG);
+    mTypeName       = domElement.attribute(CAF_TYPENAME);
     mDisplayName    = domElement.attribute(CAF_DISPLAYNAME);
 
     QDomElement xmlHelp = domElement.firstChildElement(CAF_HELP);
@@ -358,14 +358,20 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
             mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
             mIsoIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
         }
-        else //!< @todo maybe elseif user and somehow give error message, for now assume user if not iso
+        else if (type == "user")
         {
             mUserIconAppearance.mRelativePath = xmlIcon.attribute(CAF_PATH);
             mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
             mUserIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
         }
+        else if (type == "defaultmissing")
+        {
+            //! @todo maye have a DefaultIconAppearance object to, an load all data
+            mDefaultMissingIconPath = xmlIcon.attribute(CAF_PATH);
+        }
+        //else ignore, maybe should give warning
 
-        xmlIcon = xmlIcon.nextSiblingElement("icon");
+        xmlIcon = xmlIcon.nextSiblingElement(CAF_ICON);
     }
 
     QString portname;

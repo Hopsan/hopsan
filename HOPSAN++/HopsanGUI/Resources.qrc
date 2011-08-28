@@ -99,5 +99,6 @@
         <file>graphics/uiicons/Hopsan-PlotCurveScale.png</file>
         <file>graphics/uiicons/Hopsan-OpenTabInNewPlotWindow.png</file>
         <file>graphics/porticons/PortOverlayUnknown.svg</file>
+        <file>graphics/objecticons/subsystemDefault.svg</file>
     </qresource>
 </RCC>
