@@ -8,15 +8,97 @@
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance>
+            <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="Dynamic Pressure Feedback">
-                    <icon isoscale="1" isopath="../../../../../../../Program Files/Hopsan/Models/Example Models/subsystemtmp.svg" iconrotation="" userscale="1" userpath=""/>
+                    <icons>
+                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="" type="user"/>
+                    </icons>
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0"/>
+                <post number="1"/>
+                <post number="2"/>
+                <post number="3"/>
+                <post number="4"/>
+                <post number="5" type="paste"/>
+                <post number="6"/>
+                <post number="7" type="alignx"/>
+                <post number="8"/>
+                <post number="9" type="alignx"/>
+                <post number="10"/>
+                <post number="11"/>
+                <post number="12"/>
+                <post number="13"/>
+                <post number="14"/>
+                <post number="15"/>
+                <post number="16"/>
+                <post number="17"/>
+                <post number="18"/>
+                <post number="19"/>
+                <post number="20"/>
+                <post number="21"/>
+                <post number="22"/>
+                <post number="23"/>
+                <post number="24"/>
+                <post number="25"/>
+                <post number="26"/>
+                <post number="27"/>
+                <post number="28"/>
+                <post number="29"/>
+                <post number="30"/>
+                <post number="31">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>0 -23</newpos>
+                        <connect endport="in2" endcomponent="Route With Three Inputs" startport="out" startcomponent="Subtract">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2487.00000000000000000000" y="2384.50000000000000000000"/>
+                                    <coordinate x="2487.00000000000000000000" y="2340.00000000000000000000"/>
+                                    <coordinate x="2644.00000000000000000000" y="2340.00000000000000000000"/>
+                                    <coordinate x="2644.00000000000000000000" y="2401.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="32"/>
+                <post number="33"/>
+                <post number="34"/>
+                <post number="35">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 -23</oldpos>
+                        <newpos>0 -31</newpos>
+                        <connect endport="in2" endcomponent="Route With Three Inputs" startport="out" startcomponent="Subtract">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2487.00000000000000000000" y="2384.50000000000000000000"/>
+                                    <coordinate x="2487.00000000000000000000" y="2332.00000000000000000000"/>
+                                    <coordinate x="2644.00000000000000000000" y="2332.00000000000000000000"/>
+                                    <coordinate x="2644.00000000000000000000" y="2401.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="36"/>
+                <post number="37"/>
+                <post number="38"/>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="5" timestep="0.0001" start="0"/>
@@ -55,6 +137,7 @@
                 <parameters>
                     <parameter value="0" name="out::Value"/>
                     <parameter value="0.04" name="k"/>
+                    <parameter value="true" name="tb"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -104,18 +187,6 @@
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="SignalRoute" name="Route">
-                <parameters>
-                    <parameter value="0" name="out::Value"/>
-                </parameters>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
-                <hopsangui>
-                    <pose x="2643.00000000000000000000" y="2442" flipped="0" a="90"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
             <component typename="SignalSquareWave" name="Square Wave">
                 <parameters>
                     <parameter value="0" name="t_start"/>
@@ -135,6 +206,7 @@
                 <parameters>
                     <parameter value="0" name="out::Value"/>
                     <parameter value="Kpf" name="k"/>
+                    <parameter value="true" name="tb"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="out" variable="Value" value="0"/>
@@ -152,7 +224,7 @@
                     <startvalue portname="out" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2553.00000000000000000000" y="2394" flipped="0" a="0"/>
+                    <pose x="2652.25000000000000000000" y="2311" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -190,7 +262,7 @@
                     <startvalue portname="out" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2657.00000000000000000000" y="2355" flipped="0" a="90"/>
+                    <pose x="2770.00000000000000000000" y="2414" flipped="0" a="180"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -205,7 +277,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2551.00000000000000000000" y="2325" flipped="0" a="0"/>
+                    <pose x="2565.00000000000000000000" y="2365.5" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -220,6 +292,18 @@
                 </startvalues>
                 <hopsangui>
                     <pose x="2511.00000000000000000000" y="2712" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalTripleRoute" name="Route With Three Inputs">
+                <parameters>
+                    <parameter value="0" name="out::Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2644.00000000000000000000" y="2414" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -324,10 +408,10 @@
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2676" y="2323"/>
+                    <pose x="2693" y="2335"/>
                     <textobject fontcolor="#005500" text="Feedback Switch:&#xa;1 = No Pressure Feedback&#xa;2 = Static Pressure Feedback&#xa;3 = Dynamic Pressure Feedback" font="Calibri,8,-1,5,50,0,0,0,0,0"/>
-                    <size width="155" height="60"/>
-                    <line width="2" visible="0" style="solidline"/>
+                    <size width="155" height="105"/>
+                    <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>
@@ -506,20 +590,6 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="First order high pass filter" startport="out" startcomponent="Subtract">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2487.00000000000000000000" y="2384.50000000000000000000"/>
-                        <coordinate x="2487.00000000000000000000" y="2325.00000000000000000000"/>
-                        <coordinate x="2526.00000000000000000000" y="2325.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Pressure Sensor">
                 <hopsangui>
                     <coordinates>
@@ -552,18 +622,6 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Route">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2643.00000000000000000000" y="2462.00000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2516.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="in2" endcomponent="Subtract_2" startport="out" startcomponent="Gain">
                 <hopsangui>
                     <coordinates>
@@ -576,11 +634,11 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in1" endcomponent="Route" startport="out" startcomponent="Routing">
+            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Route With Three Inputs">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2657.00000000000000000000" y="2367.50000000000000000000"/>
-                        <coordinate x="2657.09999999999990905053" y="2422.00000000000000000000"/>
+                        <coordinate x="2644.00000000000000000000" y="2426.50000000000000000000"/>
+                        <coordinate x="2644.00000000000000000000" y="2516.50000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -588,42 +646,66 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in2" endcomponent="Route" startport="out" startcomponent="Constant_1">
+            <connect endport="route" endcomponent="Route With Three Inputs" startport="out" startcomponent="Routing">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2565.50000000000000000000" y="2394.00000000000000000000"/>
-                        <coordinate x="2607.09219858155984184123" y="2394.00000000000000000000"/>
-                        <coordinate x="2634.73335382093819134752" y="2422.00000000000000000000"/>
+                        <coordinate x="2757.50000000000000000000" y="2414.00000000000000000000"/>
+                        <coordinate x="2660.50000000000000000000" y="2414.00000000000000000000"/>
                     </coordinates>
                     <geometries>
-                        <geometry>vertical</geometry>
                         <geometry>diagonal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in2" endcomponent="Route" startport="out" startcomponent="Subtract">
+            <connect endport="in1" endcomponent="Route With Three Inputs" startport="out" startcomponent="Constant_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2652.25000000000000000000" y="2323.50000000000000000000"/>
+                        <coordinate x="2652.25000000000000000000" y="2401.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Route With Three Inputs" startport="out" startcomponent="Subtract">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2487.00000000000000000000" y="2384.50000000000000000000"/>
-                        <coordinate x="2500.00000000000000000000" y="2364.53900709219897180446"/>
-                        <coordinate x="2612.76595744680798816262" y="2364.53900709219897180446"/>
-                        <coordinate x="2634.73335382093819134752" y="2422.00000000000000000000"/>
+                        <coordinate x="2487.00000000000000000000" y="2332.00000000000000000000"/>
+                        <coordinate x="2644.00000000000000000000" y="2332.00000000000000000000"/>
+                        <coordinate x="2644.00000000000000000000" y="2401.50000000000000000000"/>
                     </coordinates>
                     <geometries>
-                        <geometry>diagonal</geometry>
+                        <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
-                        <geometry>diagonal</geometry>
+                        <geometry>horizontal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in2" endcomponent="Route" startport="out" startcomponent="First order high pass filter">
+            <connect endport="in3" endcomponent="Route With Three Inputs" startport="out" startcomponent="First order high pass filter">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2576.00000000000000000000" y="2325.00000000000000000000"/>
-                        <coordinate x="2620.00000000000000000000" y="2325.00000000000000000000"/>
-                        <coordinate x="2634.73335382093819134752" y="2422.00000000000000000000"/>
+                        <coordinate x="2590.00000000000000000000" y="2365.50000000000000000000"/>
+                        <coordinate x="2635.75000000000000000000" y="2365.50000000000000000000"/>
+                        <coordinate x="2635.75000000000000000000" y="2401.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="out" endcomponent="Subtract" startport="in" startcomponent="First order high pass filter">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2540.00000000000000000000" y="2365.50000000000000000000"/>
+                        <coordinate x="2502.03335748862764376099" y="2365.50000000000000000000"/>
+                        <coordinate x="2487.00000000000000000000" y="2384.50000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>

@@ -269,7 +269,7 @@ void WelcomeDialog::loadExistingModel()
     gpMainWindow->mpProjectTabs->loadModel();
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
-        gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
+        //gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
         gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
         gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
         this->close();
@@ -285,7 +285,7 @@ void WelcomeDialog::loadLastSession()
     {
         gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
     }
-    gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
+    //gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
     gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();

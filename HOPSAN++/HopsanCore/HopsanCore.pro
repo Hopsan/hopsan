@@ -261,7 +261,9 @@ HEADERS += win32dll.h \
     Components/Electric/ElectricUsource.hpp \
     Components/Hydraulic/Hydraulic33ShuttleValve.hpp \
     Components/Hydraulic/Hydraulic22PoppetValve.hpp \
-    Components/Signal/SignalDualRoute.hpp
+    Components/Signal/SignalDualRoute.hpp \
+    Components/Signal/SignalTripleRoute.hpp \
+    Components/Signal/SignalQuadRoute.hpp
 
 
 OTHER_FILES += \

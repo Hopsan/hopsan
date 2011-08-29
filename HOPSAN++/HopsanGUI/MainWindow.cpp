@@ -266,7 +266,7 @@ void MainWindow::initializeWorkspace()
             }
             if(mpProjectTabs->count() != 0) // Failed loading last session models
             {
-                mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
+                //mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
             }
         }
         else
