@@ -46,8 +46,7 @@ namespace hopsan {
 
         std::string mDataCurveFileName;
 
-        bool test;
-        CSVParser *myDataCurve;
+        //CSVParser *myDataCurve;
 
     public:
         static Component *Creator()
@@ -62,45 +61,22 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            test = true;
-
             registerParameter("k", "Gain value", "[-]", mGain);
-            registerParameter("filename", "Data Curve", "", mDataCurveFileName);
-            registerParameter("tb", "TestBOOL", "", test);
+   //         registerParameter("", "Data Curve", "", mDataCurveFileName);
 
-            bool success;
-            myDataCurve = new CSVParser(success);
+            //myDataCurve = new CSVParser();
         }
 
 
         void initialize()
         {
-            if(test)
-                addWarningMessage("APAN AR HAR!");
-            bool success=true;
-            if(myDataCurve)
-            {
-                delete myDataCurve;
-                myDataCurve = new CSVParser(success, mDataCurveFileName);
-                if(!success)
-                {
-                    stringstream ss;
-                    ss << "Unable to initialize CVS file: " << mDataCurveFileName;
-                    addErrorMessage(ss.str());
-                    stopSimulation();
-                }
-            }
-            if(success)
-            {
+//            stringstream ss;
+////            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
+//            ss << mGain << "  " << myDataCurve->interpolate(mGain);
+//            addInfoMessage(ss.str());
 
-                stringstream ss;
-                //            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
-                ss << mGain << "  " << myDataCurve->interpolate(mGain);
-                addInfoMessage(ss.str());
-
-                mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
-                mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
-            }
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 

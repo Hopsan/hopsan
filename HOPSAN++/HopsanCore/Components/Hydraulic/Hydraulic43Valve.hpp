@@ -160,8 +160,8 @@ namespace hopsan {
 
             //Valve equations
             xpanom = std::max(xv-overlap_pa,0.0);
-            xpbnom = std::max(-xv-overlap_pb,0.0);
-            xatnom = std::max(-xv-overlap_at,0.0);
+            xpbnom = std::max(-xv+overlap_pb,0.0);
+            xatnom = std::max(-xv+overlap_at,0.0);
             xbtnom = std::max(xv-overlap_bt,0.0);
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
