@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SignalDualRoute" displayname="Route With Two Inputs">
+        <icon isopath="dualroute.svg" iconrotation="ON" userpath=""/>
+        <portpose x="0.5" y="0" a="270" name="route"/>
+        <portpose x="0.0" y="0.33333333333" a="180" name="in1"/>
+        <portpose x="0.0" y="0.66666666667" a="180" name="in2"/>
+        <portpose x="1.0" y="0.5" a="0" name="out"/>
+    </modelobject>
+</hopsanobjectappearance>
+

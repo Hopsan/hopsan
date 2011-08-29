@@ -740,8 +740,11 @@ void GUISystem::createSimulinkSourceFiles()
     portLabelsStream << "set_param(gcb,'Mask','on')\n";
     portLabelsStream << "set_param(gcb,'MaskDisplay','";
 
+    //How to access dialog parameters:
+    //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
+
     QTextStream wrapperStream(&wrapperFile);
-    wrapperStream << "/*-----------------------------------------------------------------------------";
+    wrapperStream << "/*-----------------------------------------------------------------------------\n";
     wrapperStream << "This source file is part of Hopsan NG\n";
     wrapperStream << "\n";
     wrapperStream << "Copyright (c) 2011\n";
@@ -791,7 +794,7 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "#include \"include/CoreUtilities/FindUniqueName.h\"\n";
     wrapperStream << "#include \"include/CoreUtilities/HopsanCoreMessageHandler.h\"\n";
     wrapperStream << "#include \"include/CoreUtilities/LoadExternal.h\"\n";
-    wrapperStream << "#include \"include/Components/Components.h\"\n";
+    //wrapperStream << "#include \"include/Components/Components.h\"\n";
     wrapperStream << "\n";
     wrapperStream << "using namespace hopsan;\n";
     wrapperStream << "\n";
@@ -1093,6 +1096,8 @@ void GUISystem::createSimulinkSourceFiles()
     nodeH.copy(saveDir.path() + "/include/Node.h");
     QFile portH(gExecPath + QString(INCLUDEPATH) + "Port.h");
     portH.copy(saveDir.path() + "/include/Port.h");
+    QFile win32dllH(gExecPath + QString(INCLUDEPATH) + "win32dll.h");
+    win32dllH.copy(saveDir.path() + "/include/win32dll.h");
 
     QDir componentsDir;
     componentsDir.mkdir(savePath + "/include/Components");
@@ -1152,6 +1157,20 @@ void GUISystem::createSimulinkSourceFiles()
     QFile nodesH(gExecPath + QString(INCLUDEPATH) + "/Nodes/Nodes.h");
     nodesH.copy(saveDir.path() + "/include/Nodes/Nodes.h");
 
+    QDir dependenciesDir;
+    dependenciesDir.mkdir(savePath + "/include/Dependencies");
+
+    QDir csvParserDir;
+    csvParserDir.mkpath(savePath + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser");
+    QFile csv_ParserH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
+    csv_ParserH.copy(saveDir.path() + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
+
+    QDir rapidXmlDir;
+    rapidXmlDir.mkdir(savePath + "/include/Dependencies/rapidxml-1.13");
+    QFile rapidXmlH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml.hpp");
+    rapidXmlH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml.hpp");
+    QFile rapidXmlUtilsH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
+    rapidXmlUtilsH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
 
 
 

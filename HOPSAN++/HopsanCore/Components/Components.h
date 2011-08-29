@@ -135,6 +135,7 @@
 #include "Signal/SignalNoiseGenerator.hpp"
 #include "Signal/SignalAdditiveNoise.hpp"
 #include "Signal/SignalStepExponentialDelay.hpp"
+#include "Signal/SignalDualRoute.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

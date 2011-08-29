@@ -168,6 +168,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("SignalNoiseGenerator", SignalNoiseGenerator::Creator);
     pComponentFactory->registerCreatorFunction("SignalAdditiveNoise", SignalAdditiveNoise::Creator);
     pComponentFactory->registerCreatorFunction("SignalStepExponentialDelay", SignalStepExponentialDelay::Creator);
+    pComponentFactory->registerCreatorFunction("SignalDualRoute", SignalDualRoute::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
 

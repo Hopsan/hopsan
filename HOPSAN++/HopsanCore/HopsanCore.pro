@@ -260,7 +260,8 @@ HEADERS += win32dll.h \
     Components/Electric/ElectricResistor.hpp \
     Components/Electric/ElectricUsource.hpp \
     Components/Hydraulic/Hydraulic33ShuttleValve.hpp \
-    Components/Hydraulic/Hydraulic22PoppetValve.hpp
+    Components/Hydraulic/Hydraulic22PoppetValve.hpp \
+    Components/Signal/SignalDualRoute.hpp
 
 
 OTHER_FILES += \
