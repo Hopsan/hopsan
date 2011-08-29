@@ -184,6 +184,7 @@ GUIConnector::~GUIConnector()
 }
 
 //! @brief A special help function, useful to call graphics refresh on connected systemports (if any)
+//! @todo maybe containers objects should handle systemport refresh after connection or disconnection instead of the connector, problems when deleting port and that delete calls delete connector that then wants to refresh the deleated port
 void GUIConnector::refreshConnectedSystemportsGraphics()
 {
     if (mpStartPort)

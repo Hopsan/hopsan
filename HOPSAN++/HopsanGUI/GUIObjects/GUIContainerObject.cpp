@@ -1054,7 +1054,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
         }
     }
 
-
+    //! @todo maybe we should let the port decide by itself if it should be visible or not insed add and removeconnection functions
     //Show the end port if it exists and if it is no longer connected
     if(endPortWasConnected)
     {
@@ -1065,6 +1065,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
         }
     }
 
+    //! @todo maybe we should let the port decide by itself if it should be visible or not insed add and removeconnection functions
     //Show the start port if it is no longer connected
     pConnector->getStartPort()->removeConnection(pConnector);
     if(!pConnector->getStartPort()->isConnected())

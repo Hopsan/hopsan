@@ -129,6 +129,9 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
 GUIPort::~GUIPort()
 {
+    //! @todo Hack, we need to mark this as 0 to avoid graphics refresh triggerd from connector deleteMe in case of subsystemport (bellow), The interaction between ports and connectors should be rewritten in a smarter way
+    mpPortAppearance = 0; //
+
     //If any connectors are present they need to be deleated also
     // We need to use while and access first element every time as Vector will be modified when connector removes itself
     //! @todo What about Undo, right now these deleations are not registerd
@@ -392,48 +395,52 @@ void GUIPort::refreshPortOverlayPosition()
 void GUIPort::refreshPortGraphics()
 {
     qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
-
-    //Systemports may change appearance depending on what is connected
-    QString cqsType;
-    if (getPortType() == "SYSTEMPORT")
+    //! @todo this if check hack is used to make sure we do not try to update appearance after appearance data has been deleted for external systemports, related to issue with ports beeing deleted call delete in connectors that call refresh in ports beeing deletet, madness!
+    //! @todo maybe we should make the ports own their own appearance instead of their parent object
+    if (mpPortAppearance != 0)
     {
-        if (getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+        //Systemports may change appearance depending on what is connected
+        QString cqsType;
+        if (getPortType() == "SYSTEMPORT")
         {
-            //If we are port in containerport model object then ask our parent system model object about cqs-type
-            cqsType = getParentContainerObjectPtr()->getTypeCQS();
-
-            //Dont show cqs typ internally, it will become confusing, only show question marks if undefined
-            if (cqsType != "UNDEFINEDCQSTYPE")
+            if (getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
             {
-                cqsType = "NULL";
+                //If we are port in containerport model object then ask our parent system model object about cqs-type
+                cqsType = getParentContainerObjectPtr()->getTypeCQS();
+
+                //Dont show cqs typ internally, it will become confusing, only show question marks if undefined
+                if (cqsType != "UNDEFINEDCQSTYPE")
+                {
+                    cqsType = "NULL";
+                }
+            }
+            else
+            {
+                //If we are external systemport then ask our model object about the cqs-type
+                cqsType = getGuiModelObject()->getTypeCQS();
+                qDebug() << "cqsType: " << cqsType;
             }
         }
-        else
+        mpPortAppearance->selectPortIcon(cqsType, getPortType(), getNodeType());
+
+        if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
         {
-            //If we are external systemport then ask our model object about the cqs-type
-            cqsType = getGuiModelObject()->getTypeCQS();
-            qDebug() << "cqsType: " << cqsType;
+            mpMainIcon->deleteLater();
+            mpMainIcon = new QGraphicsSvgItem(mpPortAppearance->mMainIconPath, this);
+            this->resize(mpMainIcon->boundingRect().width(), mpMainIcon->boundingRect().height());
+            setTransformOriginPoint(boundingRect().center());
         }
-    }
-    mpPortAppearance->selectPortIcon(cqsType, getPortType(), getNodeType());
 
-    if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
-    {
-        mpMainIcon->deleteLater();
-        mpMainIcon = new QGraphicsSvgItem(mpPortAppearance->mMainIconPath, this);
-        this->resize(mpMainIcon->boundingRect().width(), mpMainIcon->boundingRect().height());
-        setTransformOriginPoint(boundingRect().center());
-    }
+        this->refreshPortGraphicsOverlayGraphics();
 
-    this->refreshPortGraphicsOverlayGraphics();
+        //Remember current appearance so that we can check what has changed the next time, (to avoid reloading graphics)
+        mPortAppearanceAfterLastRefresh = *mpPortAppearance;
 
-    //Remember current appearance so that we can check what has changed the next time, (to avoid reloading graphics)
-    mPortAppearanceAfterLastRefresh = *mpPortAppearance;
-
-    //Make sure connected connectors are refreshed as well
-    for(int i=0; i<mConnectedConnectors.size(); ++i)
-    {
-        mConnectedConnectors[i]->drawConnector();
+        //Make sure connected connectors are refreshed as well
+        for(int i=0; i<mConnectedConnectors.size(); ++i)
+        {
+            mConnectedConnectors[i]->drawConnector();
+        }
     }
 }
 
