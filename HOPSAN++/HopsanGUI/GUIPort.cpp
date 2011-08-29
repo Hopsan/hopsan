@@ -152,13 +152,18 @@ void GUIPort::magnify(bool doMagnify)
     if( doMagnify && !mIsMagnified )
     {
         this->setScale(this->scale()*mMag);
+        //this->prepareGeometryChange();
+        //this->resize(this->size()*mMag);
 
         mIsMagnified = true; //This must be set before setPortOverlayScale
         this->setPortOverlayScale(mOverlaySetScale); //Set the scale to the same as current but this time the extra scale factor will be added
     }
     else if ( !doMagnify && mIsMagnified )
     {
+
         this->setScale(this->scale()*1.0/mMag);
+        //this->prepareGeometryChange();
+        //this->resize(this->size()*1.0/mMag);
 
         mIsMagnified = false; //This must be set before setPortOverlayScale
         this->setPortOverlayScale(mOverlaySetScale); //Set the scale to the same as current, no extra magnification will be added
@@ -339,6 +344,7 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
             mpCQSIconOverlay = new QGraphicsSvgItem(mpPortAppearance->mCQSOverlayPath, this);
             mpCQSIconOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
             mpCQSIconOverlay->setZValue(CQSVERLAY_Z);
+            //mpCQSIconOverlay->setTransformOriginPoint(mpCQSIconOverlay->boundingRect().center());
         }
     }
 
@@ -371,11 +377,28 @@ void GUIPort::refreshPortGraphicsOverlayGraphics()
 //! @brief Refreshes the port overlay graphics and lable position
 void GUIPort::refreshPortOverlayPosition()
 {
+    QPen rpen(QColor("red"));
+    QPen bpen(QColor("blue"));
+    QPen gpen(QColor("green"));
+    rpen.setWidth(2.0);
+    bpen.setWidth(1.0);
+    gpen.setWidth(0.5);
+
     //Refresh the port overlay graphics positions
     if (mpCQSIconOverlay != 0)
     {
+//        if(this->scene() != 0)
+//        {
+//            this->scene()->addRect(this->sceneBoundingRect(), rpen);
+//            this->scene()->addRect(mpCQSIconOverlay->sceneBoundingRect(), bpen);
+//        }
         // We take the port center and transform to scene, here we subtract half the overlay size to align overlay center with port center then we transform back to port coordinate system
         mpCQSIconOverlay->setPos( this->mapFromScene( mpParentGuiModelObject->mapToScene(this->getCenterPos()) - mpCQSIconOverlay->boundingRect().center() ) );
+
+//        if(this->scene() != 0)
+//        {
+//            this->scene()->addRect(mpCQSIconOverlay->sceneBoundingRect(), gpen);
+//        }
     }
     if (mpMultiPortIconOverlay != 0)
     {
@@ -432,6 +455,7 @@ void GUIPort::refreshPortGraphics()
         }
 
         this->refreshPortGraphicsOverlayGraphics();
+        //this->refreshPortOverlayPosition();
 
         //Remember current appearance so that we can check what has changed the next time, (to avoid reloading graphics)
         mPortAppearanceAfterLastRefresh = *mpPortAppearance;
