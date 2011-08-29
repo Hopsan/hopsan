@@ -337,7 +337,7 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
     mTypeName       = domElement.attribute(CAF_TYPENAME);
-    mDisplayName    = domElement.attribute(CAF_DISPLAYNAME);
+    mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mTypeName);
 
     QDomElement xmlHelp = domElement.firstChildElement(CAF_HELP);
     if(!xmlHelp.isNull())

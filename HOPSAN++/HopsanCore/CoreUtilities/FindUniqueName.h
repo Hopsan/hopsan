@@ -27,7 +27,7 @@ std::string findUniqueName(MapType &rMap, std::string name)
     //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
     if (name.empty())
     {
-        name = "Untitled";
+        name = "noName";
     }
 
     size_t ctr = 1; //The suffix number
