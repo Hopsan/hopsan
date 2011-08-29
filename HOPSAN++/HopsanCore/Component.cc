@@ -998,18 +998,6 @@ double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const doubl
     }
     portIdx = max(portIdx,0); //Avoid underflow in size_t conversion in getNodeDataPtr()
 
-//    double *pND;
-//    //! @todo Maybe we should somehow try to use the startvalue as default instead somehow, need to think about this, seems like double work right now
-//    if(pPort->isConnected())
-//    {
-//        pND = pPort->getNodeDataPtr(dataId, portIdx);
-//    }
-//    else
-//    {
-//        pND = new double(defaultValue);
-//        mDummyNDptrs.push_back(pND); //Store the pointer to dummy for automatic finilize removal
-//    }
-//    return pND;
     return pPort->getSafeNodeDataPtr(dataId, defaultValue, portIdx);
 }
 

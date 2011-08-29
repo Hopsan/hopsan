@@ -705,7 +705,15 @@ double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx)
 
 double *MultiPort::getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getSafeNodeDataPtr(idx, defaultValue);
+    //If we try to access node data for subport that does not exist then return multiport shared dummy safe ptr
+    if (portIdx >= mSubPortsVector.size())
+    {
+        return Port::getSafeNodeDataPtr(idx, defaultValue, portIdx);
+    }
+    else
+    {
+        return mSubPortsVector[portIdx]->getSafeNodeDataPtr(idx, defaultValue);
+    }
 }
 
 void MultiPort::saveLogData(std::string filename, const size_t portIdx)

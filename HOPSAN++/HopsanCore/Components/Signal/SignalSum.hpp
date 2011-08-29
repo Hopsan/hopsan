@@ -60,6 +60,12 @@ namespace hopsan {
         void initialize()
         {
             nInputs = mpMultiInPort->getNumPorts();
+            //We need at least one dummy port even if no port is connected
+            if (nInputs < 1)
+            {
+                nInputs = 1;
+            }
+
             mNDp_in_vec.resize(nInputs);
             for (size_t i=0; i<nInputs; ++i)
             {
