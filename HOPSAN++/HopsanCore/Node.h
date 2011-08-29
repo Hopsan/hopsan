@@ -122,8 +122,6 @@ namespace hopsan {
     };
 
     typedef ClassFactory<NodeTypeT, Node> NodeFactory;
-//    extern NodeFactory gCoreNodeFactory;
-//    DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr();
 }
 
 #endif // NODE_H_INCLUDED

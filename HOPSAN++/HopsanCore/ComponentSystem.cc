@@ -986,6 +986,11 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     return connect( pPort1, pPort2 );
 }
 
+ConnectionAssistant::ConnectionAssistant(ComponentSystem *pComponentSystem)
+{
+    mpComponentSystem = pComponentSystem;
+}
+
 bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
 {
     //Check if both ports have the same node type specified
@@ -1286,7 +1291,7 @@ void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 //! Connect two components with specified ports to each other, reference version
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
-    ConnectionAssistant connAssist;
+    ConnectionAssistant connAssist(this);
     Component* pComp1 = pPort1->getComponent();
     Component* pComp2 = pPort2->getComponent();
     bool sucess=false;
@@ -1436,6 +1441,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     size_t n_WritePorts = 0;
     size_t n_PowerPorts = 0;
     size_t n_SystemPorts = 0;
+    size_t n_OwnSystemPorts = 0; //Number of systemports that belong to the connecting system
     //size_t n_MultiPorts = 0;
 
     size_t n_Ccomponents = 0;
@@ -1462,12 +1468,15 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         else if ((*it)->getPortType() == SYSTEMPORT)
         {
             n_SystemPorts += 1;
+            if ((*it)->getComponent() == mpComponentSystem)
+            {
+                n_OwnSystemPorts += 1;
+            }
         }
 //        else if((*it)->getPortType() > MULTIPORT)
 //        {
 //            n_MultiPorts += 1;
 //        }
-
         if ((*it)->getComponent()->isComponentC())
         {
             n_Ccomponents += 1;
@@ -1484,7 +1493,12 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
                 n_SYScomponentQs += 1;
             }
         }
+    }
 
+    if (n_OwnSystemPorts > 1)
+    {
+        gCoreMessageHandler.addErrorMessage("Trying to connect more than two own internal systemports, this is not allowed");
+        return false;
     }
 
     //Check the kind of ports in the components subjected for connection
@@ -1757,7 +1771,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
     cout << "disconnecting " << pPort1->getComponentName() << " " << pPort1->getPortName() << "  and  " << pPort2->getComponentName() << " " << pPort2->getPortName() << endl;
 
-    ConnectionAssistant disconnAssistant;
+    ConnectionAssistant disconnAssistant(this);
     stringstream ss;
     bool success = false;
     //! @todo some more advanced error handling (are the ports really connected to each other and such)
@@ -1989,7 +2003,7 @@ bool ComponentSystem::isSimulationOk()
         return false;
     }
 
-    //Check the this systems own SystemPorts, are they connected (they must be)
+    //Check this systems own SystemPorts, are they connected (they must be)
     vector<Port*> ports = getPortPtrVector();
     for (size_t i=0; i<ports.size(); ++i)
     {
