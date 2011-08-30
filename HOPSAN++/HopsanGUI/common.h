@@ -39,6 +39,7 @@
 //Path definitions (development and release)
 #define MAINPATH "../"
 #define MODELPATH "../Models/"
+#define BACKUPPATH "../Backup/"
 #define OBJECTICONPATH ":graphics/objecticons/"
 #define ICONPATH ":graphics/uiicons/"
 #define PORTICONPATH ":graphics/porticons/"

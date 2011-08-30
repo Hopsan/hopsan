@@ -437,7 +437,9 @@ void ParameterLayout::setDataValueTxt(QString valueTxt)
 //! @brief Sets the value in the text field to the default parameter value
 void ParameterLayout::setDefaultValue()
 {
-    mDataValuesLineEdit.setText(mpGUIModelObject->getDefaultParameter(mDataName));
+    QString defaultText = mpGUIModelObject->getDefaultParameter(mDataName);
+    if(defaultText != QString())
+        mDataValuesLineEdit.setText(defaultText);
     pickColor();
 }
 

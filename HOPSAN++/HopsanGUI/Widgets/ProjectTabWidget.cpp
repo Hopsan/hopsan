@@ -317,6 +317,21 @@ void ProjectTab::collectPlotData()
 //! @see loadModel()
 void ProjectTab::saveModel(saveTarget saveAsFlag)
 {
+    // Backup old save file before saving (if old file exists)
+    if(saveAsFlag == EXISTINGFILE)
+    {
+        QFile backupFile(mpSystem->getModelFileInfo().filePath());
+        QString fileNameWithoutHmf = mpSystem->getModelFileInfo().fileName();
+        fileNameWithoutHmf.chop(4);
+        QString backupFilePath = QString(BACKUPPATH) + fileNameWithoutHmf + "_backup.hmf";
+        if(QFile::exists(backupFilePath))
+        {
+            QFile::remove(backupFilePath);
+        }
+        backupFile.copy(backupFilePath);
+    }
+
+    //Get file name in case this is a save as operation
     if((mpSystem->getModelFileInfo().filePath().isEmpty()) || (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;

@@ -214,7 +214,10 @@ int GUIComponent::type() const
 
 QString GUIComponent::getDefaultParameter(QString name)
 {
-    return mDefaultParameters.find(name).value();
+    if(mDefaultParameters.contains(name))
+        return mDefaultParameters.find(name).value();
+    else
+        return QString();
 }
 
 
