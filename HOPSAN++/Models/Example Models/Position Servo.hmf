@@ -8,23 +8,26 @@
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance>
+            <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="Position Servo">
-                    <icon isoscale="1" isopath="subsystemtmp.svg" iconrotation="" userscale="1" userpath=""/>
+                    <icons>
+                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="" type="user"/>
+                    </icons>
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
             <hopsanundo>
                 <post number="-1"/>
-                <post number="0" type="changedparameters"/>
-                <post number="1" type="changedparameters"/>
-                <post number="2" type="changedparameters"/>
-                <post number="3" type="changedparameters"/>
-                <post number="4" type="changedparameters"/>
-                <post number="5" type="changedparameters"/>
+                <post number="0"/>
+                <post number="1"/>
+                <post number="2" type="aligny"/>
+                <post number="3"/>
+                <post number="4"/>
+                <post number="5"/>
+                <post number="6" type="aligny"/>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="5" timestep="0.001" start="-0.5"/>
+        <simulationtime stop="5" timestep="0.001" start="0"/>
         <parameters/>
         <objects>
             <component typename="SignalSink" name="Sink">
@@ -52,13 +55,13 @@
             <component typename="MechanicForceTransformer" name="Force Transformer">
                 <parameters>
                     <parameter value="0" name="P1::Velocity"/>
-                    <parameter value="0" name="P1::Position"/>
+                    <parameter value="0.2" name="P1::Position"/>
                     <parameter value="10" name="F"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
                     <startvalue portname="P1" variable="" value="0"/>
-                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0.2"/>
                 </startvalues>
                 <hopsangui>
                     <pose x="2798.00000000000000000000" y="2422" flipped="0" a="180"/>
@@ -122,7 +125,7 @@
                     <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2573.00079999999979918357" y="2764" flipped="0" a="0"/>
+                    <pose x="2573.00079999999979918357" y="2763" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -235,7 +238,7 @@
                     <startvalue portname="P1" variable="" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2482.00000000000000000000" y="2763" flipped="0" a="0"/>
+                    <pose x="2481.00300000000015643309" y="2763" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -263,7 +266,7 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2577.00000000000000000000" y="2682" flipped="0" a="0"/>
+                    <pose x="2575.00000000000000000000" y="2682" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -416,7 +419,7 @@
             <connect endport="P1" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="Tank C_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2482.00000000000000000000" y="2748.50000000000000000000"/>
+                        <coordinate x="2481.00300000000015643309" y="2748.50000000000000000000"/>
                         <coordinate x="2481.00300000000015643309" y="2730.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -429,7 +432,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2573.00000000000000000000" y="2602.00000000000000000000"/>
-                        <coordinate x="2575.00079999999979918357" y="2642.00000000000000000000"/>
+                        <coordinate x="2573.00079999999979918357" y="2642.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -475,11 +478,11 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Tank C_1" startport="P2" startcomponent="Pressure Relief Valve">
+            <connect endport="xv" endcomponent="4/3 Servo Valve" startport="in" startcomponent="Sink">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2575.00079999999979918357" y="2722.00000000000000000000"/>
-                        <coordinate x="2573.00079999999979918357" y="2749.50000000000000000000"/>
+                        <coordinate x="2699.50000000000000000000" y="2515.00000000000000000000"/>
+                        <coordinate x="2642.50000000000000000000" y="2515.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -487,11 +490,11 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="xv" endcomponent="4/3 Servo Valve" startport="in" startcomponent="Sink">
+            <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Tank C_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2699.50000000000000000000" y="2515.00000000000000000000"/>
-                        <coordinate x="2642.50000000000000000000" y="2515.00000000000000000000"/>
+                        <coordinate x="2573.00079999999979918357" y="2748.50000000000000000000"/>
+                        <coordinate x="2573.00079999999979918357" y="2722.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
