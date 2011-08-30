@@ -122,7 +122,6 @@ class ComponentSystem; //Forward declaration
         void updateParameters();
         bool checkParameters(std::string &errParName);
 
-        double getDefaultParameterValue(const std::string name);
         //Start values
         double getStartValue(Port* pPort, const size_t idx);
         void setStartValue(Port* pPort, const size_t &idx, const double &value);
@@ -135,9 +134,6 @@ class ComponentSystem; //Forward declaration
         //System parent
         ComponentSystem *getSystemParent();
         size_t getModelHierarchyDepth();
-
-        //!< @todo should not be public
-        std::map<std::string, double> mDefaultParameters; //map<Name, Value>
 
         // Component type identification
         bool isComponentC();

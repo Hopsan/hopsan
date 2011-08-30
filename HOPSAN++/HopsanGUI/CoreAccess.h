@@ -92,7 +92,6 @@ public:
     QString getParameterDescription(QString componentName, QString parameterName);
     QString getParameterValue(QString componentName, QString parameterName);
 //    QString getParameterValueTxt(QString componentName, QString parameterName);
-    double getDefaultParameterValue(QString componentName, QString parameterName);
     bool setParameter(QString componentName, QString parameterName, QString value, bool force=0); //!< @todo maybe call this set parameter value
  //   bool setParameter(QString componentName, QString parameterName, QString sysParName);
 

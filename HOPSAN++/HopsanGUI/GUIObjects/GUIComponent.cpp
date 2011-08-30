@@ -50,6 +50,12 @@ GUIComponent::GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppea
     {
         connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
     }
+
+    QVector<QString> defaultParameterNames = getParameterNames();
+    for(int i=0; i<defaultParameterNames.size(); ++i)
+    {
+        mDefaultParameters.insert(defaultParameterNames.at(i), getParameterValue(defaultParameterNames.at(i)));
+    }
 }
 
 GUIComponent::~GUIComponent()
@@ -203,6 +209,12 @@ void GUIComponent::createPorts()
 int GUIComponent::type() const
 {
     return Type;
+}
+
+
+QString GUIComponent::getDefaultParameter(QString name)
+{
+    return mDefaultParameters.find(name).value();
 }
 
 

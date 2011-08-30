@@ -189,7 +189,6 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
     //Read gui specific data
     qreal posX, posY, rotation;
     bool isFlipped;
-//    QMap<QString, double> defaultParameterMap;
 
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);

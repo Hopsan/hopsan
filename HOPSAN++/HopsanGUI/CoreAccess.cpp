@@ -500,14 +500,6 @@ QString CoreSystemAccess::getParameterValue(QString componentName, QString param
     return parameterValue;
 }
 
-double CoreSystemAccess::getDefaultParameterValue(QString componentName, QString parameterName)
-{
-    double retVal = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getDefaultParameterValue(parameterName.toStdString());
-    qDebug() << "Default value for " << parameterName << " = " << retVal;
-    return retVal;
-}
-
-
 void CoreSystemAccess::deleteSystemPort(QString portname)
 {
     mpCoreComponentSystem->deleteSystemPort(portname.toStdString());

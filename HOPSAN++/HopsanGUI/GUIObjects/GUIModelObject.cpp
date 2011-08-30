@@ -539,7 +539,6 @@ bool GUIModelObject::isLossesDisplayVisible()
 }
 
 
-
 //! @brief Returns a pointer to the port with the specified name
 GUIPort *GUIModelObject::getPort(QString name)
 {

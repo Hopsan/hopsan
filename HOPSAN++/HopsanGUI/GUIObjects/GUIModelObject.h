@@ -96,6 +96,8 @@ public:
     void getLosses(double &total, double &hydraulic, double &mechanic);
     bool isLossesDisplayVisible();
 
+    virtual QString getDefaultParameter(QString name) {assert(false);}
+
 public slots:
     void deleteMe();
     void rotate(qreal angle, undoStatus undoSettings = UNDO);
@@ -163,7 +165,6 @@ protected slots:
 
 private:
     void refreshIconPosition();
-
 };
 
 

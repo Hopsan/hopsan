@@ -69,6 +69,7 @@ public:
     QFont getFont();
     QString getStyleSheet();
     QString getLastScriptFile();
+    bool getGroupMessagesByTag();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -91,6 +92,7 @@ public:
     void setDefaultUnit(QString key, QString value);
     void addCustomUnit(QString dataname, QString unitname, double scale);
     void setLastScriptFile(QString file);
+    void setGroupMessagesByTag(bool value);
 
 private:
     int mLibraryStyle;
@@ -116,6 +118,7 @@ private:
     QFont mFont;
     QString mStyleSheet;
     QString mLastScriptFile;
+    bool mGroupMessagesByTag;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

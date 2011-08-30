@@ -437,9 +437,7 @@ void ParameterLayout::setDataValueTxt(QString valueTxt)
 //! @brief Sets the value in the text field to the default parameter value
 void ParameterLayout::setDefaultValue()
 {
-    QString tempText;
-    tempText.setNum(mpGUIModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->getDefaultParameterValue(mpGUIModelObject->getName(), this->mDescriptionNameLabel.text() + this->mDataName));
-    mDataValuesLineEdit.setText(tempText);
+    mDataValuesLineEdit.setText(mpGUIModelObject->getDefaultParameter(mDataName));
     pickColor();
 }
 
@@ -471,7 +469,7 @@ void ParameterLayout::showListOfSystemParameters()
 
 void ParameterLayout::pickColor()
 {
-    if(mDataValuesLineEdit.text().toDouble() == mpGUIModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->getDefaultParameterValue(mpGUIModelObject->getName(), this->mDescriptionNameLabel.text() + this->mDataName))
+    if(mDataValuesLineEdit.text() == mpGUIModelObject->getDefaultParameter(mDataName))
     {
         QPalette palette( mDataValuesLineEdit.palette() );
         palette.setColor( QPalette::Text, QColor("gray") );

@@ -60,6 +60,7 @@ public:
 
     enum { Type = GUICOMPONENT };
     int type() const;
+    QString getDefaultParameter(QString name);
 
 private slots:
     virtual void setVisible(bool visible);
@@ -69,6 +70,7 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void openPropertiesDialog();
     void createPorts();
+    QMap<QString, QString> mDefaultParameters;
 };
 
 #endif // GUICOMPONENT_H

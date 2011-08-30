@@ -470,18 +470,6 @@ void Port::setStartValue(const size_t &idx, const double &value, const size_t /*
     if(mpStartNode)
     {
         mpStartNode->setData(idx, value);
-
-        //Overwrite the default start value with new value
-        //! @todo Make sure this works for multiports
-        std::map<std::string, double> tempMap = getComponent()->mDefaultParameters;
-        if(tempMap.find(this->getPortName() + mpStartNode->getDataName(idx)) != tempMap.end())
-        {
-            getComponent()->mDefaultParameters.find(this->getPortName() + mpStartNode->getDataName(idx))->second = value;
-        }
-        else
-        {
-            //Do something else?!
-        }
     }
     else
     {
@@ -630,19 +618,6 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
     if(getComponent()->isComponentC())
     {
         createStartNode(mNodeType);
-
-        // Skipp this if parent port is set, that is if we are a subport in a multiport
-        if (mpParentPort == 0)
-        {
-            //Copy all start values to default parameters map in component
-            std::vector<std::string> names, data;
-            mpStartNode->getDataNamesAndUnits(names, data);
-            for(size_t i=0; i<names.size(); ++i)
-            {
-                getComponent()->mDefaultParameters.insert(std::pair<std::string, double>(portname + mpStartNode->getDataName(i), mpStartNode->getData(i)));
-                std::cout << "Writing " << portname << mpStartNode->getDataName(i) << " with " << mpStartNode->getData(i) << endl;
-            }
-        }
     }
 }
 
@@ -663,11 +638,6 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 {
     mPortType = WRITEPORT;
     createStartNode(mNodeType);
-
-    //Copy start value to default parameters map in component
-    std::vector<std::string> names, data;
-    mpStartNode->getDataNamesAndUnits(names, data);
-    portOwner->mDefaultParameters.insert(std::pair<std::string, double>(portname + names.at(0), mpStartNode->getData(0)));
 }
 
 

@@ -67,6 +67,7 @@ void Configuration::saveToXml()
     appendDomValueNode(settings, "numberofthreads", mNumberOfThreads);
     appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->mpToggleNamesAction->isChecked());
     appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
+    appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -227,6 +228,9 @@ void Configuration::loadFromXml()
                 mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("togglenamesbuttonchecked"));
             if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
+            if(!settingsElement.firstChildElement("groupmessagesbytag").isNull())
+                mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
+
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -313,6 +317,8 @@ void Configuration::loadFromXml()
                 QDomElement lastScriptElement = pythonElement.firstChildElement("lastscript");
                 mLastScriptFile = lastScriptElement.attribute("file");
             }
+
+
         }
     }
     file.close();
@@ -383,6 +389,8 @@ void Configuration::loadDefaultsFromXml()
                 mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("togglenamesbuttonchecked"));
             if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
+            if(!settingsElement.firstChildElement("groupmessagesbytag").isNull())
+                mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -681,11 +689,18 @@ QString Configuration::getLastScriptFile()
 }
 
 
+bool Configuration::getGroupMessagesByTag()
+{
+    return mGroupMessagesByTag;
+}
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
 {
     this->mLibraryStyle = value;
+    saveToXml();
 }
 
 
@@ -694,18 +709,21 @@ void Configuration::setLibraryStyle(int value)
 void Configuration::setShowWelcomeDialog(bool value)
 {
     this->mShowWelcomeDialog = value;
+    saveToXml();
 }
 
 
 void Configuration::setShowPopupHelp(bool value)
 {
     this->mShowPopupHelp = value;
+    saveToXml();
 }
 
 
 void Configuration::setUseNativeStyleSheet(bool value)
 {
     this->mUseNativeStyleSheet = value;
+    saveToXml();
 }
 
 //! @brief Set function for invert wheel option
@@ -713,6 +731,7 @@ void Configuration::setUseNativeStyleSheet(bool value)
 void Configuration::setInvertWheel(bool value)
 {
     this->mInvertWheel = value;
+    saveToXml();
 }
 
 
@@ -721,6 +740,7 @@ void Configuration::setInvertWheel(bool value)
 void Configuration::setUseMultiCore(bool value)
 {
     this->mUseMulticore = value;
+    saveToXml();
 }
 
 
@@ -729,6 +749,7 @@ void Configuration::setUseMultiCore(bool value)
 void Configuration::setNumberOfThreads(size_t value)
 {
     this->mNumberOfThreads = value;
+    saveToXml();
 }
 
 
@@ -737,6 +758,7 @@ void Configuration::setNumberOfThreads(size_t value)
 void Configuration::setProgressBarStep(int value)
 {
     this->mProgressBarStep = value;
+    saveToXml();
 }
 
 
@@ -745,6 +767,7 @@ void Configuration::setProgressBarStep(int value)
 void Configuration::setEnableProgressBar(bool value)
 {
     this->mEnableProgressBar = value;
+    saveToXml();
 }
 
 
@@ -753,6 +776,7 @@ void Configuration::setEnableProgressBar(bool value)
 void Configuration::setBackgroundColor(QColor value)
 {
     this->mBackgroundColor = value;
+    saveToXml();
 }
 
 
@@ -761,6 +785,7 @@ void Configuration::setBackgroundColor(QColor value)
 void Configuration::setAntiAliasing(bool value)
 {
     this->mAntiAliasing = value;
+    saveToXml();
 }
 
 
@@ -772,6 +797,7 @@ void Configuration::addUserLib(QString value)
     {
         this->mUserLibs.append(value);
     }
+    saveToXml();
 }
 
 
@@ -780,6 +806,7 @@ void Configuration::addUserLib(QString value)
 void Configuration::removeUserLib(QString value)
 {
     mUserLibs.removeAll(value);
+    saveToXml();
 }
 
 
@@ -788,6 +815,7 @@ void Configuration::removeUserLib(QString value)
 bool Configuration::hasUserLib(QString value)
 {
     return mUserLibs.contains(value);
+    saveToXml();
 }
 
 
@@ -796,6 +824,7 @@ bool Configuration::hasUserLib(QString value)
 void Configuration::setSnapping(bool value)
 {
     this->mSnapping = value;
+    saveToXml();
 }
 
 
@@ -809,6 +838,7 @@ void Configuration::addRecentModel(QString value)
     {
         mRecentModels.pop_back();
     }
+    saveToXml();
 }
 
 
@@ -817,6 +847,7 @@ void Configuration::addRecentModel(QString value)
 void Configuration::addLastSessionModel(QString value)
 {
     mLastSessionModels.append(value);
+    saveToXml();
 }
 
 
@@ -824,6 +855,7 @@ void Configuration::addLastSessionModel(QString value)
 void Configuration::clearLastSessionModels()
 {
     mLastSessionModels.clear();
+    saveToXml();
 }
 
 
@@ -834,6 +866,7 @@ void Configuration::setDefaultUnit(QString key, QString value)
 {
     this->mDefaultUnits.remove(key);
     this->mDefaultUnits.insert(key, value);
+    saveToXml();
 }
 
 
@@ -844,6 +877,7 @@ void Configuration::setDefaultUnit(QString key, QString value)
 void Configuration::addCustomUnit(QString dataname, QString unitname, double scale)
 {
     this->mCustomUnits.find(dataname).value().insert(unitname, scale);
+    saveToXml();
 }
 
 
@@ -851,4 +885,12 @@ void Configuration::addCustomUnit(QString dataname, QString unitname, double sca
 void Configuration::setLastScriptFile(QString file)
 {
     mLastScriptFile = file;
+    saveToXml();
+}
+
+
+void Configuration::setGroupMessagesByTag(bool value)
+{
+    mGroupMessagesByTag = value;
+    saveToXml();
 }

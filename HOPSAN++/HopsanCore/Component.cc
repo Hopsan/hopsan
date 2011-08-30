@@ -796,12 +796,6 @@ void Component::unRegisterParameter(const string name)
 }
 
 
-double Component::getDefaultParameterValue(const string name)
-{
-    return mDefaultParameters.find(name)->second;
-}
-
-
 void Component::setDesiredTimestep(const double /*timestep*/)
 {
     cout << "Warning this function setDesiredTimestep is only available on subsystem components" << endl;
