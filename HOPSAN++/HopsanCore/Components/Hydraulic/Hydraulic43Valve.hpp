@@ -223,20 +223,10 @@ namespace hopsan {
                 qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
                 qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
 
-                if (xv >= 0.0)
-                {
-                    qp = -qpa;
-                    qa = qpa;
-                    qb = -qbt;
-                    qt = qbt;
-                }
-                else
-                {
-                    qp = -qpb;
-                    qa = -qat;
-                    qb = qpb;
-                    qt = qat;
-                }
+                qp = -qpa-qpb;
+                qa = qpa-qat;
+                qb = -qbt+qpb;
+                qt = qat+qbt;
 
                 pp = cp + qp*Zcp;
                 pt = ct + qt*Zct;

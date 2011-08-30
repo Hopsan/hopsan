@@ -134,16 +134,9 @@ namespace hopsan {
             //Calculate flow
             qTurb_pa.setFlowCoefficient(Kcpa);
             qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
-            if (xv >= 0.0)
-            {
-                qp = -qpa;
-                qa = qpa;
-            }
-            else
-            {
-                qp = 0;
-                qa = 0;
-            }
+
+            qp = -qpa;
+            qa = qpa;
 
             pp = cp + qp*Zcp;
             pa = ca + qa*Zca;
