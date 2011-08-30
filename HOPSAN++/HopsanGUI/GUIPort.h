@@ -104,10 +104,11 @@ protected:
     void openRightClickMenu(QPoint screenPos);
 
 protected slots:
-    void setPortOverlayScale(qreal scale);
+    void refreshPortOverlayScale(qreal scale);
 
 private:
-    void refreshPortGraphicsOverlayGraphics();
+    void refreshPortMainGraphics();
+    void refreshPortOverlayGraphics();
 
 //    QColor myLineColor;
 //    qreal myLineWidth;

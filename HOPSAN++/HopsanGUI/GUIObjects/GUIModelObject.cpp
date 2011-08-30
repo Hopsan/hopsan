@@ -997,7 +997,7 @@ void GUIModelObject::flipHorizontal(undoStatus undoSettings)
     QPointF cpos = this->getCenterPos();
     //Transform
     this->setTransform(transf,true); // transformationorigin point seems to have no effect here for some reason
-    //Reset to ccenter pos (as transform origin point was ignored)
+    //Reset to center pos (as transform origin point was ignored)
     this->setCenterPos(cpos);
 
     // If the icon is (not rotating) its position will be refreshed
