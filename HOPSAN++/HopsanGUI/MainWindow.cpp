@@ -211,6 +211,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->createActions();
     this->createToolbars();
     this->createMenus();
+
+    mpMessageWidget->loadConfig();
 }
 
 

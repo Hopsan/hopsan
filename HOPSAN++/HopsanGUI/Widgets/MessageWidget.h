@@ -42,6 +42,7 @@ public:
     void printGUIWarningMessage(QString message, QString tag=QString());
     void printGUIDebugMessage(QString message, QString tag=QString());
     QSize sizeHint() const;
+    void loadConfig();
 
 public slots:
     void clear();

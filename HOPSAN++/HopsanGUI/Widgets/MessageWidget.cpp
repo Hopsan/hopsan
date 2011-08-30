@@ -50,7 +50,7 @@ MessageWidget::MessageWidget(MainWindow *pParent)
 
     mpTextEdit->setFont(QFont(this->font().family(), 8));
 
-    mGroupByTag = false;
+    mGroupByTag = gConfig.getGroupMessagesByTag();
 
     mShowErrorMessages = true;
     mShowWarningMessages = true;
@@ -120,6 +120,16 @@ QSize MessageWidget::sizeHint() const
     //Set very small height. A minimum apperantly stops at resonable size.
     size.rheight() = 1; //pixels
     return size;
+}
+
+
+//! @brief Loads message widget settings from configuration object
+//! This is needed because messages widget must be created before configuration
+//! (so that config can print messages), which means that message widgets cannot
+//! load the config directly in the constructor.
+void MessageWidget::loadConfig()
+{
+    mpGroupByTagCheckBox->setChecked(gConfig.getGroupMessagesByTag());
 }
 
 
