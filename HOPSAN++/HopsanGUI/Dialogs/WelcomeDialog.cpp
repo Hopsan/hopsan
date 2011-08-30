@@ -121,7 +121,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
             mpRecentList->addItem(displayName.section('/', -1));
         }
     }
-    mpRecentList->setFixedHeight(4+16*mpRecentList->count());
+    mpRecentList->setFixedHeight(4+16*mpRecentList->count()/2);
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
 
     mpNewVersionButton = new QPushButton("New Version Available!");
@@ -143,13 +143,12 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpNewsLabel->setFont(tempFont);
     mpNewsLabel->setAlignment(Qt::AlignCenter);
 
-
     mpWeb = new QWebView(this);
     mpNewsLabel->hide();
     mpWeb->hide();
     connect(mpWeb, SIGNAL(loadFinished(bool)), this, SLOT(showNews(bool)));
     mpWeb->load(QUrl(QString(NEWSLINK)));
-    mpWeb->setMaximumHeight(70);
+    mpWeb->setMaximumHeight(140);
     mpWeb->setMaximumWidth(400);
     mpWeb->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     connect(mpWeb, SIGNAL(linkClicked(const QUrl &)), this, SLOT(urlClicked(const QUrl &)));
