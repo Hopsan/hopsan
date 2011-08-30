@@ -245,6 +245,9 @@ void GUIPort::setRotation(qreal angle)
 //! @param *event defines the mouse event.
 void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(!mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+        return;
+
     //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
     if (event->button() == Qt::LeftButton)
     {

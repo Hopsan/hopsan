@@ -39,6 +39,7 @@
 #include "../GUIObjects/GUISystem.h"
 #include "../Widgets/LibraryWidget.h"
 #include "../version.h"
+#include "../GUIConnector.h"
 
 //! @class ProjectTab
 //! @brief The ProjectTab class is a Widget to contain a simulation model
@@ -52,8 +53,8 @@
 ProjectTab::ProjectTab(ProjectTabWidget *parent)
     : QWidget(parent)
 {
+    mEditingEnabled = true;
     this->setPalette(gConfig.getPalette());
-
     this->setMouseTracking(true);
 
     mpParentProjectTabWidget = parent;
@@ -83,6 +84,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpGraphicsView->centerView();
 
     mLastSimulationTime = 0;
+
+    connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(triggered(bool)), this, SLOT(setEditingEnabled(bool)));
 }
 
 ProjectTab::~ProjectTab()
@@ -140,6 +143,12 @@ QuickNavigationWidget *ProjectTab::getQuickNavigationWidget()
 int ProjectTab::getLastSimulationTime()
 {
     return mLastSimulationTime;
+}
+
+
+bool ProjectTab::isEditingEnabled()
+{
+    return mEditingEnabled;
 }
 
 
@@ -296,6 +305,52 @@ void ProjectTab::save()
 void ProjectTab::saveAs()
 {
     saveModel(NEWFILE);
+}
+
+
+void ProjectTab::setEditingEnabled(bool value)
+{
+    mEditingEnabled = value;
+
+    if(!mEditingEnabled)
+    {
+        QStringList objects = mpSystem->getGUIModelObjectNames();
+        for(int i=0; i<objects.size(); ++i)
+        {
+            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, false);
+            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, false);
+
+            QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
+            grayEffect->setColor(QColor("gray"));
+            mpSystem->getGUIModelObject(objects.at(i))->setGraphicsEffect(grayEffect);
+
+            QList<GUIConnector*> connectors = mpSystem->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
+            for(int j=0; j<connectors.size(); ++j)
+            {
+                QGraphicsColorizeEffect *grayEffect2 = new QGraphicsColorizeEffect();
+                grayEffect2->setColor(QColor("gray"));
+                connectors.at(j)->setGraphicsEffect(grayEffect2);
+            }
+        }
+    }
+    else
+    {
+        QStringList objects = mpSystem->getGUIModelObjectNames();
+        for(int i=0; i<objects.size(); ++i)
+        {
+            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, true);
+            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, true);
+
+            if(mpSystem->getGUIModelObject(objects.at(i))->graphicsEffect())
+                mpSystem->getGUIModelObject(objects.at(i))->graphicsEffect()->setEnabled(false);
+
+            QList<GUIConnector*> connectors = mpSystem->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
+            for(int j=0; j<connectors.size(); ++j)
+            {
+                connectors.at(j)->graphicsEffect()->setEnabled(false);
+            }
+        }
+    }
 }
 
 

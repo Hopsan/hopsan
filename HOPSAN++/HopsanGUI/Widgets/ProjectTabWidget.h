@@ -86,13 +86,15 @@ public:
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
     int getLastSimulationTime();
-
+    bool isEditingEnabled();
     ProjectTabWidget *mpParentProjectTabWidget;
 
 public slots:
     bool simulate();
     void save();
     void saveAs();
+    void setEditingEnabled(bool value);
+
 
 private slots:
     void collectPlotData();
@@ -109,6 +111,7 @@ private:
     GraphicsView *mpGraphicsView;
     QuickNavigationWidget *mpQuickNavigationWidget;
     int mLastSimulationTime;
+    bool mEditingEnabled;
 };
 
 #endif // PROJECTTABWIDGET_H

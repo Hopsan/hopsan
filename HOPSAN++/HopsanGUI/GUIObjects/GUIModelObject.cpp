@@ -658,6 +658,9 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
+    if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+        return;
+
     QMenu menu;
     this->buildBaseContextMenu(menu, event);
 

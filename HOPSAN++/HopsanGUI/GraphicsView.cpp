@@ -126,6 +126,9 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
+    if(!mpParentProjectTab->isEditingEnabled())
+        return;
+
     //A HMF file was dropped in the graphics view, so try to open the model
     if(event->mimeData()->hasUrls())
     {
@@ -512,6 +515,9 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    if(!mpParentProjectTab->isEditingEnabled())
+        return;
+
     mLeftMouseButtonPressed = true;
 
     QCursor apa;

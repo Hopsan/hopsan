@@ -84,6 +84,9 @@ bool GUIComponent::hasPowerPorts()
 //! Event when double clicking on component icon.
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+        return;
+
     QGraphicsWidget::mouseDoubleClickEvent(event);
     //std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
