@@ -143,7 +143,7 @@ bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEval
         std::string oldValue = mParameterValue;
         mParameterValue = value;
         std::string evalResult = value;
-        success = evaluate(evalResult);
+        success = evaluate(evalResult, this);
         if(!success)
         {
             mParameterValue = oldValue;
@@ -188,11 +188,11 @@ bool Parameter::evaluate()
 //!
 //! This function is used by Parameters
 //! @see evaluate()
-bool Parameter::evaluate(std::string &rResult)
+bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
 {
     bool success = true;
     std::string evaluatedParameterValue;
-    if(!(mpParentParameters->evaluateParameter(mParameterValue, evaluatedParameterValue, mType)))
+    if(!(mpParentParameters->evaluateParameter(mParameterValue, evaluatedParameterValue, mType, ignoreMe)))
     {
         evaluatedParameterValue = mParameterValue;
     }
@@ -303,70 +303,79 @@ Parameters::Parameters(Component* pParentComponent)
 //! @param [in] type The type of the parameter e.g. double, default: ""
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @return true if success, otherwise false
-bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr)
+bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr, bool force)
 {
-    bool success = true;
-    istringstream is(parameterValue);
-    //Type not decided, to be done here
-    if((type.empty()) || (0 == type.compare("double")))
-    {
-        double tmpDouble;
-        if(is >> tmpDouble)
-        {
-            type = "double";
-            success *= true;
-        }
-        else
-        {
-            success *= false;
-        }
-    }
-    else if(0 == type.compare("bool"))
-    {
-        bool tmpBool;
-        if((is >> tmpBool) || (parameterValue.compare("false")) == 0 || (parameterValue.compare("true") == 0)
-                           || (parameterValue.compare("0"))     == 0 || (parameterValue.compare("1")    == 0))
-        {
-            success *= true;
-        }
-        else
-        {
-            success *= false;
-        }
-    }
-    else if(0 == type.compare("integer"))
-    {
-        int tmpInt;
-        if(is >> tmpInt)
-        {
-            success *= true;
-        }
-        else
-        {
-            success *= false;
-        }
-    }
-    else if(0 == type.compare("string"))
-    {
-        std::string tmpStr;
-        if(is >> tmpStr)
-        {
-            success *= true;
-        }
-        else
-        {
-            success *= false;
-        }
-    }
-    else
-    {
-        success *= false;
-    }
+    bool success = false;
+//    istringstream is(parameterValue);
+//    //Type not decided, to be done here
+//    if((type.empty()) || (0 == type.compare("double")))
+//    {
+//        double tmpDouble;
+//        if(is >> tmpDouble)
+//        {
+//            type = "double";
+//            success *= true;
+//        }
+//        else
+//        {
+//            success *= false;
+//        }
+//    }
+//    else if(0 == type.compare("bool"))
+//    {
+//        bool tmpBool;
+//        if((is >> tmpBool) || (parameterValue.compare("false")) == 0 || (parameterValue.compare("true") == 0)
+//                           || (parameterValue.compare("0"))     == 0 || (parameterValue.compare("1")    == 0))
+//        {
+//            success *= true;
+//        }
+//        else
+//        {
+//            success *= false;
+//        }
+//    }
+//    else if(0 == type.compare("integer"))
+//    {
+//        int tmpInt;
+//        if(is >> tmpInt)
+//        {
+//            success *= true;
+//        }
+//        else
+//        {
+//            success *= false;
+//        }
+//    }
+//    else if(0 == type.compare("string"))
+//    {
+//        std::string tmpStr;
+//        if(is >> tmpStr)
+//        {
+//            success *= true;
+//        }
+//        else
+//        {
+//            success *= false;
+//        }
+//    }
+//    else
+//    {
+//        success *= false;
+//    }
 
-    if(success)
+    if(!exist(parameterName))
     {
         Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, dataPtr, this);
-        mParameters.push_back(newParameter);
+        success = newParameter->evaluate();
+        if(success || force)
+        {
+            mParameters.push_back(newParameter);
+            success = true;
+        }
+        else
+        {
+            delete newParameter;
+        }
     }
 
     return success;
@@ -471,16 +480,16 @@ bool Parameters::setParameterValue(const std::string name, const std::string val
 //! @param [out] rEvaluatedParameterValue The result of the evaluation
 //! @param [in] type The type of how the parameter should be interpreted
 //! @return true if success, otherwise false
-bool Parameters::evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type)
+bool Parameters::evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe)
 {
     bool success = false;
     std::string parameterName2, parameterValue2, description2, unit2, type2;
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
         mParameters[i]->getParameter(parameterName2, parameterValue2, description2, unit2, type2);
-        if((parameterName == parameterName2) && (mParameters[i]->getType() == type))
+        if((parameterName == parameterName2) && (mParameters[i]->getType() == type) && (mParameters[i] != ignoreMe))
         {
-            success = mParameters[i]->evaluate(rEvaluatedParameterValue);
+            success = mParameters[i]->evaluate(rEvaluatedParameterValue, ignoreMe);
         }
     }
     if(!success)
@@ -508,6 +517,19 @@ bool Parameters::evaluateParameters()
         success *= mParameters[i]->evaluate();
     }
     return success;
+}
+
+
+bool Parameters::exist(std::string parameterName)
+{
+    std::string parameterName2, parameterValue, description, unit, type;
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        mParameters[i]->getParameter(parameterName2, parameterValue, description, unit, type);
+        if(parameterName2 == parameterName)
+            return true;
+    }
+    return false;
 }
 
 

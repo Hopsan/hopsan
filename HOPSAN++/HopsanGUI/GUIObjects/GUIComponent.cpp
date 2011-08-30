@@ -253,24 +253,24 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
         }*/
     }
 
-    //Save start values
-    QDomElement xmlStartValues = appendDomElement(rDomElement, HMF_STARTVALUES);
-    QVector<QString> startValueNames;
-    QVector<QString> startValueValuesTxt;
-    QVector<QString> dummy;
-    QList<GUIPort*>::iterator portIt;
-    for(portIt = mPortListPtrs.begin(); portIt != mPortListPtrs.end(); ++portIt)
-    {
-        mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getPortName(), startValueNames, startValueValuesTxt, dummy);
-        if((!startValueNames.empty()))
-        {
-            for(int i = 0; i < startValueNames.size(); ++i)
-            {
-                QDomElement xmlStartValue = appendDomElement(xmlStartValues, "startvalue");
-                xmlStartValue.setAttribute("portname", (*portIt)->getPortName());
-                xmlStartValue.setAttribute("variable", startValueNames[i]);
-                xmlStartValue.setAttribute("value", startValueValuesTxt[i]);
-            }
-        }
-    }
+    //Save start values //Is not needed, start values are saved as ordinary parameters! This code snippet can probably be removed.
+//    QDomElement xmlStartValues = appendDomElement(rDomElement, HMF_STARTVALUES);
+//    QVector<QString> startValueNames;
+//    QVector<QString> startValueValuesTxt;
+//    QVector<QString> dummy;
+//    QList<GUIPort*>::iterator portIt;
+//    for(portIt = mPortListPtrs.begin(); portIt != mPortListPtrs.end(); ++portIt)
+//    {
+//        mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getPortName(), startValueNames, startValueValuesTxt, dummy);
+//        if((!startValueNames.empty()))
+//        {
+//            for(int i = 0; i < startValueNames.size(); ++i)
+//            {
+//                QDomElement xmlStartValue = appendDomElement(xmlStartValues, "startvalue");
+//                xmlStartValue.setAttribute("portname", (*portIt)->getPortName());
+//                xmlStartValue.setAttribute("variable", startValueNames[i]);
+//                xmlStartValue.setAttribute("value", startValueValuesTxt[i]);
+//            }
+//        }
+//    }
 }

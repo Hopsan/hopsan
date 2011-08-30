@@ -638,7 +638,7 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
 
 
 
-bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString description, QString unit, QString type)
+bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString description, QString unit, QString type, bool force)
 {
     bool success = true;
 //    //Makes sure name is not a number and not empty
@@ -650,9 +650,9 @@ bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString d
 //    }
 //    else
     {
-        if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString())))
+        if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), force)))
         {
-            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString());
+            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), 0, force);
         }
     }
     return success;

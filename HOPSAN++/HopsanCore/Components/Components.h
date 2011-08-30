@@ -58,6 +58,7 @@
 #include "Hydraulic/HydraulicFlowSensor.hpp"
 #include "Hydraulic/HydraulicPowerSensor.hpp"
 #include "Hydraulic/HydraulicCylinderC.hpp"
+#include "Hydraulic/HydraulicCylinderCMultiports.hpp"
 #include "Hydraulic/HydraulicCylinderQ.hpp"
 #include "Hydraulic/HydraulicPressureReliefValve.hpp"
 #include "Hydraulic/HydraulicPressureReducingValve.hpp"
@@ -138,6 +139,7 @@
 #include "Signal/SignalDualRoute.hpp"
 #include "Signal/SignalTripleRoute.hpp"
 #include "Signal/SignalQuadRoute.hpp"
+#include "Signal/SignalBETest.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

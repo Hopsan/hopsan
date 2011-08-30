@@ -114,7 +114,7 @@ public:
     QString reserveUniqueName(QString desiredName);
     void unReserveUniqueName(QString name);
 
-    bool setSystemParameter(QString name, QString value, QString description="", QString unit="", QString type="");
+    bool setSystemParameter(QString name, QString value, QString description="", QString unit="", QString type="", bool force=false);
     QString getSystemParameter(QString name);
     bool hasSystemParameter(QString name);
     void removeSystemParameter(QString name);

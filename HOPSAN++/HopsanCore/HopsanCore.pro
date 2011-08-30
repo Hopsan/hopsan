@@ -134,6 +134,7 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicFixedDisplacementPump.hpp \
     Components/Hydraulic/HydraulicCylinderQ.hpp \
     Components/Hydraulic/HydraulicCylinderC.hpp \
+    Components/Hydraulic/HydraulicCylinderCMultiports.hpp \
     Components/Hydraulic/HydraulicCheckValve.hpp \
     Components/Hydraulic/HydraulicAckumulator.hpp \
     Components/Hydraulic/Hydraulic43Valve.hpp \
@@ -263,7 +264,8 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic22PoppetValve.hpp \
     Components/Signal/SignalDualRoute.hpp \
     Components/Signal/SignalTripleRoute.hpp \
-    Components/Signal/SignalQuadRoute.hpp
+    Components/Signal/SignalQuadRoute.hpp \
+    Components/Signal/SignalBETest.hpp
 
 
 OTHER_FILES += \

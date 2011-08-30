@@ -143,7 +143,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
     //    else
     {
         //Use the setParameter method that mapps to System parameter
-        if(!parameterName.startsWith("noname subport:") && !pObject->getParameterNames().contains(parameterName) && !pObject->getParameterNames().contains("startvalue:"+parameterName)) //FIXA!!! startvalue: -parametrar ska ju finnas...
+        if(!parameterName.startsWith("noname subport:") && !pObject->getParameterNames().contains(parameterName))
         {
             gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
             return;
@@ -308,7 +308,7 @@ void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pContaine
     QString value = rDomElement.attribute(HMF_VALUETAG);
     QString type = rDomElement.attribute(HMF_TYPETAG);
 
-    pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value, "", "", type);
+    pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value, "", "", type, true);
 
 }
 
