@@ -94,6 +94,7 @@ namespace hopsan {
             x1 = (*mpND_x1);
             v1 = (*mpND_v1);
             x2 = (*mpND_x2);
+            v2 = (*mpND_v2);
 
             mLength = x1+x2;
 
