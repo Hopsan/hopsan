@@ -121,7 +121,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
             mpRecentList->addItem(displayName.section('/', -1));
         }
     }
-    mpRecentList->setFixedHeight(4+16*mpRecentList->count()/2);
+    mpRecentList->setFixedHeight(std::min(4+(16*mpRecentList->count()),4+16*5));
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
 
     mpNewVersionButton = new QPushButton("New Version Available!");
