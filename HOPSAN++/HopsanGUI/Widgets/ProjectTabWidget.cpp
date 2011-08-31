@@ -59,6 +59,24 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     mpParentProjectTabWidget = parent;
     mpQuickNavigationWidget = new QuickNavigationWidget(this);
+
+    mpExternalSystemWidget = new QWidget(this);
+    QLabel *pExternalSystemLabel = new QLabel("<font color='darkred'>External Subsystem (editing disabled)</font>", mpExternalSystemWidget);
+    QFont tempFont = pExternalSystemLabel->font();
+    tempFont.setPixelSize(18);
+    tempFont.setBold(true);
+    pExternalSystemLabel->setFont(tempFont);
+    pExternalSystemLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    QPushButton *pOpenExternalSystemButton = new QPushButton("Edit in new tab");
+    pOpenExternalSystemButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    connect(pOpenExternalSystemButton, SIGNAL(clicked()), this, SLOT(openCurrentContainerInNewTab()));
+    QHBoxLayout *pExternalSystemLayout = new QHBoxLayout();
+    pExternalSystemLayout->addWidget(pExternalSystemLabel);
+    pExternalSystemLayout->addStretch(1);
+    pExternalSystemLayout->addWidget(pOpenExternalSystemButton);
+    mpExternalSystemWidget->setLayout(pExternalSystemLayout);
+    mpExternalSystemWidget->hide();
+
     mpSystem = new GUISystem(this, 0);
 
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
@@ -79,14 +97,14 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     tabLayout->setSpacing(0);
     tabLayout->addWidget(mpQuickNavigationWidget);
     tabLayout->addWidget(mpGraphicsView);
+    tabLayout->addWidget(mpExternalSystemWidget);
     //this->setLayout(tabLayout);
 
     mpGraphicsView->centerView();
 
     mLastSimulationTime = 0;
-
-    connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(triggered(bool)), this, SLOT(setEditingEnabled(bool)));
 }
+
 
 ProjectTab::~ProjectTab()
 {
@@ -308,23 +326,30 @@ void ProjectTab::saveAs()
 }
 
 
+void ProjectTab::setExternalSystem(bool value)
+{
+    setEditingEnabled(!value);
+    mpExternalSystemWidget->setVisible(value);
+}
+
+
 void ProjectTab::setEditingEnabled(bool value)
 {
     mEditingEnabled = value;
 
     if(!mEditingEnabled)
     {
-        QStringList objects = mpSystem->getGUIModelObjectNames();
+        QStringList objects = mpGraphicsView->getContainerPtr()->getGUIModelObjectNames();
         for(int i=0; i<objects.size(); ++i)
         {
-            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, false);
-            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, false);
+            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, false);
 
             QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
             grayEffect->setColor(QColor("gray"));
-            mpSystem->getGUIModelObject(objects.at(i))->setGraphicsEffect(grayEffect);
+            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setGraphicsEffect(grayEffect);
 
-            QList<GUIConnector*> connectors = mpSystem->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
+            QList<GUIConnector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
             for(int j=0; j<connectors.size(); ++j)
             {
                 QGraphicsColorizeEffect *grayEffect2 = new QGraphicsColorizeEffect();
@@ -332,23 +357,39 @@ void ProjectTab::setEditingEnabled(bool value)
                 connectors.at(j)->setGraphicsEffect(grayEffect2);
             }
         }
+
+        QList<GUIWidget*> widgetList = mpGraphicsView->getContainerPtr()->getGUIWidgets();
+        for(int w=0; w<widgetList.size(); ++w)
+        {
+            QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
+            grayEffect->setColor(QColor("gray"));
+            widgetList.at(w)->setGraphicsEffect(grayEffect);
+        }
     }
     else
     {
-        QStringList objects = mpSystem->getGUIModelObjectNames();
+        QStringList objects = mpGraphicsView->getContainerPtr()->getGUIModelObjectNames();
         for(int i=0; i<objects.size(); ++i)
         {
-            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, true);
-            mpSystem->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, true);
+            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-            if(mpSystem->getGUIModelObject(objects.at(i))->graphicsEffect())
-                mpSystem->getGUIModelObject(objects.at(i))->graphicsEffect()->setEnabled(false);
+            if(mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->graphicsEffect())
+                mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->graphicsEffect()->setEnabled(false);
 
-            QList<GUIConnector*> connectors = mpSystem->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
+            QList<GUIConnector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
             for(int j=0; j<connectors.size(); ++j)
             {
-                connectors.at(j)->graphicsEffect()->setEnabled(false);
+                if(connectors.at(j)->graphicsEffect())
+                    connectors.at(j)->graphicsEffect()->setEnabled(false);
             }
+        }
+
+        QList<GUIWidget*> widgetList = mpGraphicsView->getContainerPtr()->getGUIWidgets();
+        for(int w=0; w<widgetList.size(); ++w)
+        {
+            if(widgetList.at(w)->graphicsEffect())
+                widgetList.at(w)->graphicsEffect()->setEnabled(false);
         }
     }
 }
@@ -363,6 +404,32 @@ void ProjectTab::collectPlotData()
 
     //Tell container to do the job
     this->mpGraphicsView->getContainerPtr()->collectPlotData();
+}
+
+
+//! @brief Opens current container in new tab
+//! Used for opening external subsystems for editing. If current container is not external, it will
+//! iterate through parent containers until it finds one that is.
+void ProjectTab::openCurrentContainerInNewTab()
+{
+    GUIContainerObject *pContainer = mpGraphicsView->getContainerPtr();
+
+    while(true)
+    {
+        if(pContainer == mpSystem)
+        {
+            break;
+        }
+        else if(!pContainer->isExternal())
+        {
+            pContainer = pContainer->getParentContainerObject();
+        }
+        else
+        {
+            mpParentProjectTabWidget->loadModel(pContainer->getModelFileInfo().filePath());
+            break;
+        }
+    }
 }
 
 
@@ -702,7 +769,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     //Make sure file not already open
     for(int t=0; t!=this->count(); ++t)
     {
-        if(this->getContainer(t)->getModelFileInfo().filePath() == fileInfo.filePath())
+        if(this->getSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath())
         {
             QMessageBox::StandardButton reply;
             reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));

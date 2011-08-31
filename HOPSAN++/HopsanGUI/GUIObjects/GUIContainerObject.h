@@ -134,7 +134,9 @@ public:
     QFileInfo getModelFileInfo();
     void setScriptFile(QString path);
     QString getScriptFile();
+
     QStringList getGUIModelObjectNames();
+    QList<GUIWidget *> getGUIWidgets();
 
     //Numbered sections methods
     void selectSection(int no, bool append=false);
@@ -211,6 +213,10 @@ public slots:
     void showLosses(bool show);
     void showLossesFromDialog();
     void hideLosses();
+
+    //External/internal subsystems
+    bool isAncestorOfExternalSubsystem();
+    bool isExternal();
 
 signals:
 

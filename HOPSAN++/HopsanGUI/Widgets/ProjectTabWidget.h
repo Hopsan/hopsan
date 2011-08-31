@@ -93,11 +93,13 @@ public slots:
     bool simulate();
     void save();
     void saveAs();
+    void setExternalSystem(bool value);
     void setEditingEnabled(bool value);
 
 
 private slots:
     void collectPlotData();
+    void openCurrentContainerInNewTab();
 
 signals:
     void checkMessages();
@@ -110,6 +112,7 @@ private:
     GUISystem *mpSystem;
     GraphicsView *mpGraphicsView;
     QuickNavigationWidget *mpQuickNavigationWidget;
+    QWidget *mpExternalSystemWidget;
     int mLastSimulationTime;
     bool mEditingEnabled;
 };

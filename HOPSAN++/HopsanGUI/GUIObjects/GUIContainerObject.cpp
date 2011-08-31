@@ -1564,6 +1564,7 @@ void GUIContainerObject::hidePorts(bool doIt)
 }
 
 
+
 //! @brief Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
 //! @see redo()
 //! @see clearUndo()
@@ -1678,6 +1679,19 @@ QStringList GUIContainerObject::getGUIModelObjectNames()
         retval.append(it.value()->getName());
     }
     return retval;
+}
+
+
+//! @brief Returns a list with pointers to GUI widgets
+QList<GUIWidget *> GUIContainerObject::getGUIWidgets()
+{
+    QList<GUIWidget *> list;
+    QMap<size_t, GUIWidget *>::iterator it;
+    for(it=mWidgetMap.begin(); it!=mWidgetMap.end(); ++it)
+    {
+        list.append(it.value());
+    }
+    return list;
 }
 
 //! @brief Returns the path to the icon with iso graphics.
@@ -2069,6 +2083,10 @@ void GUIContainerObject::enterContainer()
     refreshInternalContainerPortGraphics();
 
     this->collectPlotData();
+
+    mpParentProjectTab->setExternalSystem((this->isExternal() &&
+                                           this != mpParentProjectTab->getSystem()) ||
+                                           this->isAncestorOfExternalSubsystem());
 }
 
 //! @brief Exit a container object and maks its the view represent its parents contents.
@@ -2078,6 +2096,10 @@ void GUIContainerObject::exitContainer()
     //Go back to parent system
     mpParentProjectTab->getGraphicsView()->setScene(this->mpParentContainerObject->getContainedScenePtr());
     mpParentProjectTab->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
+
+    mpParentProjectTab->setExternalSystem((mpParentContainerObject->isExternal() &&
+                                           mpParentContainerObject != mpParentProjectTab->getSystem()) ||
+                                           mpParentContainerObject->isAncestorOfExternalSubsystem());
 
         //Disconnect this system and connect parent system with undo and redo actions
 //    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
@@ -2420,6 +2442,28 @@ void GUIContainerObject::hideLosses()
     }
 }
 
+
+bool GUIContainerObject::isAncestorOfExternalSubsystem()
+{
+    if(this == mpParentProjectTab->getSystem())
+    {
+        return false;
+    }
+    else if(this->isExternal())
+    {
+        return true;
+    }
+    else
+    {
+        return mpParentContainerObject->isAncestorOfExternalSubsystem();
+    }
+}
+
+
+bool GUIContainerObject::isExternal()
+{
+    return !mModelFileInfo.filePath().isEmpty();
+}
 
 //! @brief Returns time vector for specified plot generation.
 //! @param generation Generation to fetch time vector from
