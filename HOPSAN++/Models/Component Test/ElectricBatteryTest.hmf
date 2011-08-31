@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+    <system typename="Subsystem" name="ElectricBatteryTest">
+        <hopsangui>
+            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2500.5" y="2500" zoom="1"/>
+            <ports hidden="0"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.2">
+                <modelobject typename="Subsystem" displayname="ElectricBatteryTest">
+                    <icons/>
+                </modelobject>
+                <portpositions/>
+            </hopsanobjectappearance>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1"/>
+            </hopsanundo>
+        </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="ElectricResistor" name="ElectricResistor">
+                <parameters>
+                    <parameter value="0.1" name="Conduct"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2441.00000000000000000000" y="2331" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="ElectricCapacitance2" name="ElectricCapacitance2">
+                <parameters>
+                    <parameter value="0" name="Pel1::Voltage"/>
+                    <parameter value="0" name="Pel1::Current"/>
+                    <parameter value="0" name="Pel2::Voltage"/>
+                    <parameter value="0" name="Pel2::Current"/>
+                    <parameter value="0.0001" name="Cc"/>
+                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0.001" name="timestep"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="Pel1" variable="Voltage" value="0"/>
+                    <startvalue portname="Pel1" variable="Current" value="0"/>
+                    <startvalue portname="Pel2" variable="Voltage" value="0"/>
+                    <startvalue portname="Pel2" variable="Current" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2323.00000000000000000000" y="2352" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="ElectricBattery" name="ElectricBattery">
+                <parameters>
+                    <parameter value="0" name="Psoc::Value"/>
+                    <parameter value="0" name="Pubatt::Value"/>
+                    <parameter value="0.01" name="cond"/>
+                    <parameter value="12" name="unom"/>
+                    <parameter value="41" name="capacity"/>
+                    <parameter value="0.1" name="kappa"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="Pubatt" variable="Value" value="0"/>
+                    <startvalue portname="Psoc" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2231.00000000000000000000" y="2422" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="ElectricGround" name="ElectricGround">
+                <parameters>
+                    <parameter value="0" name="Pel1::Voltage"/>
+                    <parameter value="0" name="Pel1::Current"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="Pel1" variable="Voltage" value="0"/>
+                    <startvalue portname="Pel1" variable="Current" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2467.00000000000000000000" y="2387" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="Pel1" endcomponent="ElectricBattery" startport="Pel1" startcomponent="ElectricCapacitance2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2302.50000000000000000000" y="2330.73710073710071810638"/>
+                        <coordinate x="2231.00000000000000000000" y="2330.73710073710071810638"/>
+                        <coordinate x="2231.00000000000000000000" y="2400.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="ElectricResistor" startport="Pel2" startcomponent="ElectricCapacitance2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2343.50000000000000000000" y="2330.73710073710071810638"/>
+                        <coordinate x="2372.00000000000000000000" y="2330.73710073710071810638"/>
+                        <coordinate x="2372.00000000000000000000" y="2331.00000000000000000000"/>
+                        <coordinate x="2415.00000000000000000000" y="2331.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="ElectricResistor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2467.00000000000000000000" y="2331.00000000000000000000"/>
+                        <coordinate x="2467.00000000000000000000" y="2331.00000000000000000000"/>
+                        <coordinate x="2467.00000000000000000000" y="2380.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
