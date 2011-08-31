@@ -2941,7 +2941,11 @@ void PlotCurve::setGeneration(int generation)
     if(mpParentPlotTab->mVectorX.size() == 0)
         mTimeVector = mpContainerObject->getTimeVector(mGeneration, mComponentName, mPortName);
     else
+    {
+        mpParentPlotTab->mVectorX = mpContainerObject->getPlotData(mGeneration, mpParentPlotTab->mVectorXComponent,
+                                                                   mpParentPlotTab->mVectorXPortName, mpParentPlotTab->mVectorXDataName);
         mTimeVector = mpParentPlotTab->mVectorX;
+    }
 
     updateCurve();
     mpParentPlotTab->update();
