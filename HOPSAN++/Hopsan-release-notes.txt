@@ -1,18 +1,133 @@
 Hopsan Release Notes
 
 
+
 --Known issues--
 
 - Some compatibility issues exist between version 0.3.0 and older versions, because some components were discarded. 
   These will not appear when loading the models. Some parameter names was also changed, these parameters will be reset.
 - All components are not completely validated
-- Align and rotate functions does not work for text widgets and box widgets
-- In Windows Vista and Windows 7, it is strongly advisible to NOT save any files in the program installation directory. 
-  Windows will actually save them in a completely different and hidden folder, so that the saved files will be very difficult to find.
 
 
 
 -- Version History --
+
+0.4.0
+- Added tools for transfer function analysis (Bode plots, Nyquist plots and FFT)
+- Added support for exporting models to Simulink
+- A backup of the model file is now always created before saving
+- Made it possible to drag-n-drop copy a component by holding shift key and draging
+- Made it possible to drag components only vertically or horizontally with ctrl key
+- Made the sink component work like a scope; it plots all connected ports when double-clicking
+- Added an alternative view mode for the library
+- Made it possible to unload external libraries without restarting program
+- Line width in component graphics was reduced slightly
+- Arithmetic components are now shown in blue
+- Improved descriptions and help pictures for filter and transfer function components
+- Independent arithmetic components parallelized in multi-threaded simulation
+- Subsystems can now have individual time steps (always an even multiple of parent systems time step)
+- Decreased saving/loading/closing time significantly for large models
+- Added help popup messages
+- Made it possible to hide all arithmetic components in a model
+- It is now possible to copy/paste system ports
+- Toolbars can now be placed on right or left side of the workspace
+- Empty plot windows are now closed automatically when discarding their last plot curve
+- Combined text and box widget into a text box widget
+- Program settings are now saved to configuration file every time a setting has changed
+- Made it possible to scale SVG object icons
+- External subsystems can no longer be edited directly, they need to be opened in a new tab
+- Configuration file now remembers the "group by tag" setting in message widget
+- Adjusted size of welcome dialog, to see more of the recent news
+- Fixed crash when loading models with non-existing components
+- Fixed numerical issues with initialization of second order transfer function
+- Corrected wrong parameter order in filter components
+- Fixed crash when deleting connected system ports
+- Fixed errenous width of connector lines
+- Made integrator component use output start value for initialization
+- Made models load at correct viewport position when loading last session models
+- When saving models for the first time, they are now added to recent models list
+- Added a warning message before truncating errenous parameter values
+- Made subsystem clear the old contents before loading from external file
+- Made subsystems remember their icon when saving/loading
+- Made it impossible to simulate when a component uses a non-existing system parameter
+- Made several fixes to port graphic issues
+- Made start values show correct units in parameter dialog
+- Made welcome dialog remain if user clicks cancel in "open" dialog
+- New components: Input/output interfaces for Simulink connection
+- New component: 2/2 Poppet Valve
+- New component: Gaussian Noise Generator
+- New component: Additive Gaussian Noise
+- New component: General First Order Transfer Function
+- New component: Rotating Inertia With Coulumb Friction
+- New component: Route With Two Inputs
+- New component: Route With Three Inputs
+- New component: Route With Four Inputs
+- Removed component: Route
+
+0.3.5
+- Fixed crash when copy/paste subsystem connected to internal container port
+- Fixed crash when plotting from inside subsystems
+- Fixed crash when readports on some signal components with multiports were not connected
+- Fixed crash when deleting internal systemport that was externally connected
+- Fixed issue with special X-axes in plots not being updated to new generations
+
+0.3.4
+- Fixed important error in calculation of position in mass components
+- Fixed order of parameters in filter utilities and components
+- Fixed containerport graphics remaining blank on internal or external connections
+- Added all greek letters as special symbols for parameter names
+- Changed model folder to Documents/Hopsan/Models
+- New component: General first order transfer function
+
+
+0.3.3
+- Corrected errenous filter algorithms for several mechanic components
+- Fixed crash when closing the last project tab when a plot window is open
+- Recent models are now sorted in correct chronlogical order
+- Fixed issues with warning message for disabling undo appearing in wrong situations
+- Fixed crash when performing copy/paste operations on subsystems that has been opened
+- Renaming component now also updates the component name in the lists in the plot window
+- Fixed issue with wrong plot tab being closed when clicking close button
+- Fixed cosmetical problems due to saving/loading models
+- Fixed crash when simulating if a connector has been removed but a plot window with it is still open
+- Made it possible to undo/redo adding/deleting subsystems
+- Fixed crashes with custom components attempting to access non-connected ports
+- Fixed issue with signal connectors not getting arrows when connected to system ports
+- Fixed correct color on connectors between systems or systems and multiports
+
+0.3.2
+- Improved welcome screen with latest news and check for new versions
+- Library now gives a debug message when a component is loaded
+- The component properties window for components now shows the component's type name
+- Port label background is now a little wider
+- A warning message is now given when CQS type of a system is invalidated
+- Fixed crash when trying to plot generations of a component from before it was added
+- Corrected wrong error message when looping subsystems
+- Fixed bug that made ports invisible after aborting connection with escape key
+- Fixed crash when trying to plot after loading model by double-clicking on its file
+- Made subsystem ports appear at the same order as their placement position inside the system
+- Fixed crash when attempting to loop two system signal ports that internally are connected to each other
+- Connector graphics is not updated when subsystem ports switch places
+- Made it possible to undo creating/removing container ports
+- Fixed crash when removing the contents of a looped signal subsystem and later trying to remove the remaning external connector
+- Fixed crash when internally removing systemport that is externally connected
+
+0.3.1
+- Plot window now resizes automatically to 70% of screen size
+- Lists and curve info boxes in plot window are hided by default on small screen resolutions
+- Exported PNGs from plot window now always get the same pixel size as the plot in the program
+- Cosmetic improvements to container port properties dialog
+- Container port properties dialog can now be opened by double-clicking a container port
+- Fixed minor cosmetic bug in plot window (list names were not hidden when the lists were)
+- Corrected the cavitation checks in pumps and motors, so that oil can never flow from a volume with zero pressure
+- Added oil density as a parameter in all components that depends on it (used to be hard coded)
+- Fixed wrong parameter name in 4/3 servo valve
+- New component: Hydraulic Hose
+- New component: Pilot Controlled Check Valve
+- New component: Pilot Closable Check Valve
+- New component: Check Valve With Orifice
+- New component: 4/3 Servo Valve With Neutral Position Open To Tank
+- New component: 4/3 Servo Valve With Supply Open To Tank At Neutral Position
 
 0.3.0
 - Subsystems are now fully implemented
