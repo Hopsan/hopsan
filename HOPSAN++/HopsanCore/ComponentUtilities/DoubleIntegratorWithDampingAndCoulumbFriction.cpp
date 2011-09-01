@@ -78,7 +78,7 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::integrate(double u)
         {
             ue = u-mUk;
         }
-        else if(ues>(u+mUs))
+        else if(ues>=(u+mUs))
         {
             ue = u+mUk;
         }
