@@ -13,7 +13,7 @@
    height="100"
    id="svg2847"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="ElectricMotor.svg">
   <defs
      id="defs2849">
@@ -40,15 +40,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.7"
-     inkscape:cx="32.721151"
+     inkscape:cx="0.4238537"
      inkscape:cy="60.482861"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1369"
+     inkscape:window-width="1276"
      inkscape:window-height="697"
-     inkscape:window-x="181"
-     inkscape:window-y="127"
+     inkscape:window-x="81"
+     inkscape:window-y="126"
      inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true">
@@ -80,7 +80,7 @@
        width="38.951344"
        height="8.9488573"
        x="-427.23569"
-       y="528.62805"
+       y="527.87018"
        transform="scale(-1,1)" />
     <ellipse
        cx="18.8438"

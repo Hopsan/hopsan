@@ -13,7 +13,7 @@
    height="103.51453"
    id="svg2847"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="ElectricMotorGear.svg">
   <defs
      id="defs2849">
@@ -40,12 +40,12 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.7"
-     inkscape:cx="32.221148"
+     inkscape:cx="-0.076149297"
      inkscape:cy="62.240121"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1369"
+     inkscape:window-width="1276"
      inkscape:window-height="697"
      inkscape:window-x="22"
      inkscape:window-y="34"
@@ -65,7 +65,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -80,7 +80,7 @@
        width="67.029564"
        height="8.6486979"
        x="-455.46399"
-       y="528.77814"
+       y="528.02026"
        transform="scale(-1,1)" />
     <ellipse
        cx="18.8438"
@@ -94,7 +94,7 @@
        sodipodi:rx="18.8438"
        sodipodi:ry="18.8438"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.97467887;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:3.375;stroke-dasharray:none"
-       transform="matrix(-1.538969,0,0,1.5389678,396.33673,499.9978)"
+       transform="matrix(-1.538969,0,0,1.5389678,396.33673,499.99779)"
        d="m 37.687599,21.018499 c 0,10.407144 -8.436656,18.8438 -18.843799,18.8438 C 8.4366564,39.862299 0,31.425643 0,21.018499 0,10.611356 8.4366564,2.1746998 18.8438,2.1746998 c 10.407143,0 18.843799,8.4366562 18.843799,18.8437992 z" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.49999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -108,19 +108,20 @@
        inkscape:connector-curvature="0" />
     <path
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 354.83671,544.84459 0,-25 12.5,12.5 12.5,-12.5 0,25"
+       d="m 354.83671,544.84458 0,-25 12.5,12.5 12.5,-12.5 0,25"
        id="path3104"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
     <rect
        transform="scale(-1,1)"
-       y="513.26837"
+       y="512.32886"
        x="-446.96893"
        height="40.031479"
        width="42.092625"
        id="rect2823"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.375;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       ry="5.4054055" />
+       ry="5.4054055"
+       rx="5.4054055" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot2841"
@@ -132,37 +133,41 @@
            height="58.083771"
            x="74.751289"
            y="31.814703" /></flowRegion><flowPara
-         id="flowPara2847"></flowPara></flowRoot>    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="408.36334"
-       y="544.83716"
-       id="text3631"><tspan
-         sodipodi:role="line"
-         x="408.36334"
+         id="flowPara2847" /></flowRoot>    <g
+       id="g3001"
+       transform="translate(-0.96025276,0.94063568)">
+      <text
+         id="text3631"
          y="544.83716"
-         style="font-size:16px"
-         id="tspan3633">box</tspan><tspan
-         sodipodi:role="line"
          x="408.36334"
-         y="564.83716"
-         style="font-size:16px"
-         id="tspan3635" /></text>
-    <text
-       id="text3637"
-       y="529.4317"
-       x="408.36334"
-       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       xml:space="preserve"><tspan
-         id="tspan3639"
-         style="font-size:16px"
+         style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           id="tspan3633"
+           style="font-size:16px"
+           y="544.83716"
+           x="408.36334"
+           sodipodi:role="line">box</tspan><tspan
+           id="tspan3635"
+           style="font-size:16px"
+           y="564.83716"
+           x="408.36334"
+           sodipodi:role="line" /></text>
+      <text
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         x="408.55865"
          y="529.4317"
-         x="408.36334"
-         sodipodi:role="line">Gear</tspan><tspan
-         id="tspan3641"
-         style="font-size:16px"
-         y="549.4317"
-         x="408.36334"
-         sodipodi:role="line" /></text>
+         id="text3637"><tspan
+           sodipodi:role="line"
+           x="408.55865"
+           y="529.4317"
+           style="font-size:16px"
+           id="tspan3639">Gear</tspan><tspan
+           sodipodi:role="line"
+           x="408.55865"
+           y="549.4317"
+           style="font-size:16px"
+           id="tspan3641" /></text>
+    </g>
   </g>
 </svg>

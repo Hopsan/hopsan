@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="MechanicTorqueTransformer" displayname="Torque Transformer">
+    <modelobject typename="MechanicTorqueTransformer" displayname="Torque Source">
         <icon isopath="torquetransformer.svg" iconrotation="ON" userpath=""/>
         <portpose x="0" y="0.5" a="180" name="in"/>
         <portpose x="1" y="0.5" a="0" name="P1"/>
