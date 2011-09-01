@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2540.5" y="2618" zoom="1"/>
+            <viewport x="2541.5" y="2873.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -73,6 +73,11 @@
                 <post number="52"/>
                 <post number="53"/>
                 <post number="54"/>
+                <post number="55" type="changedparameters"/>
+                <post number="56"/>
+                <post number="57"/>
+                <post number="58"/>
+                <post number="59"/>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
@@ -239,13 +244,13 @@
             <component typename="MechanicForceTransformer" name="Force Transformer_2">
                 <parameters>
                     <parameter value="0" name="P1::Velocity"/>
-                    <parameter value="0" name="P1::Position"/>
+                    <parameter value=".2" name="P1::Position"/>
                     <parameter value="100" name="F"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Velocity" value="0"/>
                     <startvalue portname="P1" variable="" value="0"/>
-                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0.2"/>
                 </startvalues>
                 <hopsangui>
                     <pose x="2466.60000000000036379788" y="2881" flipped="1" a="0"/>
@@ -355,14 +360,14 @@
             <textboxwidget>
                 <hopsangui>
                     <pose x="2572" y="2830"/>
-                    <textobject fontcolor="#556b2f" text="Startvalue on position cannot be set" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="242" height="100"/>
+                    <textobject fontcolor="#556b2f" text="Much to oscillative compared to the auto generated model" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="389" height="100"/>
                     <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2605" y="2392"/>
+                    <pose x="2605" y="2393"/>
                     <textobject fontcolor="#556b2f" text="Much to oscillative compared to the auto generated model" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                     <size width="389" height="100"/>
                     <line width="2" visible="1" style="solidline"/>
