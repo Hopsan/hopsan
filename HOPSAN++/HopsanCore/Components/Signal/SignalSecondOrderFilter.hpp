@@ -66,10 +66,10 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("k", "Gain", "[-]", mK);
-            registerParameter("omega_num", "Numerator break frequency", "[rad/s]", mWnum);
-            registerParameter("delta_num", "Numerator damp coefficient", "[-]", mDnum);
-            registerParameter("omega_den", "Denominator break frequency", "[rad/s]", mWden);
-            registerParameter("delta_den", "Denominator damp coefficient", "[-]", mDden);
+            registerParameter("omega_1", "Numerator break frequency", "[rad/s]", mWnum);
+            registerParameter("delta_1", "Numerator damp coefficient", "[-]", mDnum);
+            registerParameter("omega_2", "Denominator break frequency", "[rad/s]", mWden);
+            registerParameter("delta_2", "Denominator damp coefficient", "[-]", mDden);
             registerParameter("y_min", "Lower output limit", "[-]", mMin);
             registerParameter("y_max", "Upper output limit", "[-]", mMax);
         }
@@ -83,12 +83,12 @@ namespace hopsan {
             double num[3];
             double den[3];
 
-            num[0] = mK/(mWnum*mWnum);
+            num[2] = mK/(mWnum*mWnum);
             num[1] = mK*2.0*mDnum/mWnum;
-            num[2] = mK;
-            den[0] = 1.0/pow(mWden, 2);
+            num[0] = mK;
+            den[2] = 1.0/pow(mWden, 2);
             den[1] = 2.0*mDden/mWden;
-            den[2] = 1.0;
+            den[0] = 1.0;
 
             mTF2.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
 
