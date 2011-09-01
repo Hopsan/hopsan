@@ -170,6 +170,7 @@
 #include "Mechanic/MechanicJLink.hpp"
 #include "Mechanic/MechanicThetaSource.hpp"
 #include "Mechanic/MechanicVehicle1D.hpp"
+#include "Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp"
 
 /* Electric Components */
 #include "Electric/ElectricBattery.hpp"

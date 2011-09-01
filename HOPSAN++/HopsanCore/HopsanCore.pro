@@ -265,7 +265,8 @@ HEADERS += win32dll.h \
     Components/Signal/SignalDualRoute.hpp \
     Components/Signal/SignalTripleRoute.hpp \
     Components/Signal/SignalQuadRoute.hpp \
-    Components/Signal/SignalBETest.hpp
+    Components/Signal/SignalBETest.hpp \
+    Components/Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp
 
 
 OTHER_FILES += \
