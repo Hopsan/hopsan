@@ -98,7 +98,11 @@ MainWindow::MainWindow(QWidget *parent)
     this->move(x, y);       //Move window to center of screen
 
     //Set name and icon of main window
+#ifdef DEVELOPMENT
+    this->setWindowTitle("Hopsan (development version)");
+#else
     this->setWindowTitle("Hopsan");
+#endif
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
 
     //Set dock widget corner owner

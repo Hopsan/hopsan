@@ -27,6 +27,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+//Development flag
+#define DEVELOPMENT
+
 //Numerical definitions
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
@@ -50,16 +53,15 @@
 #else
 #define DATAPATH gExecPath
 #endif
-
-//Path definitions (development)
+#ifdef DEVELOPMENT
 #define COMPONENTPATH "../HopsanGUI/componentData/"
 #define HELPPATH "../HopsanGUI/docs/html/"
 #define INCLUDEPATH "../HopsanCore/"
-
-//Path definition (release)
-//#define COMPONENTPATH "../componentData/"
-//#define HELPPATH "../Help/"
-//#define INCLUDEPATH "../Include/"
+#else
+#define COMPONENTPATH "../componentData/"
+#define HELPPATH "../Help/"
+#define INCLUDEPATH "../Include/"
+#endif
 
 //Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
