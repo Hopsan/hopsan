@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2364.5" y="2498" zoom="1"/>
+            <viewport x="2540.5" y="2618" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -68,6 +68,11 @@
                 <post number="47"/>
                 <post number="48"/>
                 <post number="49"/>
+                <post number="50"/>
+                <post number="51"/>
+                <post number="52"/>
+                <post number="53"/>
+                <post number="54"/>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
@@ -357,17 +362,17 @@
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2604" y="2392"/>
-                    <textobject fontcolor="#556b2f" text="Much to oscillative compaer to the iterative model" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="336" height="100"/>
+                    <pose x="2605" y="2392"/>
+                    <textobject fontcolor="#556b2f" text="Much to oscillative compared to the auto generated model" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="389" height="100"/>
                     <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
                     <pose x="2593" y="2659"/>
-                    <textobject fontcolor="#556b2f" text="Iterative model" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="107" height="100"/>
+                    <textobject fontcolor="#556b2f" text="Auto generated model" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="153" height="100"/>
                     <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
