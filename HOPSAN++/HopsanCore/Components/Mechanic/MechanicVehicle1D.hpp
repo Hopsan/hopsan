@@ -138,11 +138,11 @@ public:
         mpPfr=addWritePort("Pfr","NodeSignal", Port::NOTREQUIRED);
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("Mc", "Vehicle inertia at", "kg", mMc);
-        registerParameter("cfr", "C roll. resist.coeff.", "N/N", mcfr);
-        registerParameter("CdA", "effective front area", "m2", mCdA);
-        registerParameter("rwheel", "wheel radius", "m", mrwheel);
-        registerParameter("rho", "air density", "kg/m3", mrho);
+        registerParameter("M_c", "Vehicle Inertia", "kg", mMc);
+        registerParameter("c_fr", "C Roll. Resist.Coeff.", "N/N", mcfr);
+        registerParameter("C_dA", "Effective Front Area", "m^2", mCdA);
+        registerParameter("r_wheel", "Wheel Radius", "m", mrwheel);
+        registerParameter("rho", "Air Density", "kg/m3", mrho);
      }
 
     void initialize()

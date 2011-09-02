@@ -82,7 +82,7 @@ public:
         //Add outputVariables ports to the component
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("win", "Angular Velocity", "rad/s", mwin);
+        registerParameter("omega", "Angular Velocity", "rad/s", mwin);
      }
 
      void initialize()

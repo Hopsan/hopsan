@@ -131,16 +131,16 @@ public:
         //Add outputVariables ports to the component
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("JL", "Equivalent inertia at node 2", "kgm2", mJL);
-        registerParameter("BL", "Visc friction coeff. at node 2", "Ns/rad", \
+        registerParameter("J_L", "Equivalent inertia at node 2", "kgm2", mJL);
+        registerParameter("B_L", "Visc friction coeff. at node 2", "Ns/rad", \
 mBL);
-        registerParameter("link", "Link length x1/sin(thetarot2)", "", \
+        registerParameter("L_link", "Link length x1/sin(thetarot2)", "", \
 mlink);
-        registerParameter("x0", "x position for zero angle", "", mx0);
-        registerParameter("theta0", "link angle for zero angle", "", \
+        registerParameter("x_0", "x position for zero angle", "", mx0);
+        registerParameter("theta_0", "link angle for zero angle", "", \
 mtheta0);
-        registerParameter("thetamin", "Min angle", "rad", mthetamin);
-        registerParameter("thetamax", "Max angle", "rad", mthetamax);
+        registerParameter("theta_min", "Min angle", "rad", mthetamin);
+        registerParameter("theta_max", "Max angle", "rad", mthetamax);
      }
 
     void initialize()
