@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="MechanicAngularVelocityTransformer" displayname="Angular Velocity Source">
-        <icon isopath="angularvelocitytransformer.svg" iconrotation="ON" userpath=""/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
-        <portpose x="1.0" y="0.5" a="0" name="out"/>
-    </modelobject>
+  <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
+    <icon isopath="angularvelocitytransformer.svg" iconrotation="ON" userpath="" />
+    <portpose x="0" y="0.4" a="180" name="thetain" />
+    <portpose x="0" y="0.6" a="180" name="win" />
+    <portpose x="1.0" y="0.5" a="0" name="Pmr1" />
+  </modelobject>
 </hopsanobjectappearance>
