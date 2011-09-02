@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="HydraulicDummyC" displayname="C-Type Benchmark Component">
-        <icon isopath="dummyC.svg" iconrotation="ON" userpath=""/>
-		<help text="This is a benchmark component of C-type. The time it take to simulate it is proportional to the input signal. Output signal does nothing." picture="turtle.png"/>
-        <portpose x="1" y="0.5" a="0" name="P1"/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
-    </modelobject>
-</hopsanobjectappearance>
