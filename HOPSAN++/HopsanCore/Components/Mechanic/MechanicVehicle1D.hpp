@@ -145,7 +145,7 @@ public:
         registerParameter("rho", "Air Density", "kg/m3", mrho);
      }
 
-    void initialize()
+     void initialize()
      {
         //Read port variable pointers from nodes
         //Port Pmr1

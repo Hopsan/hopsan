@@ -966,7 +966,10 @@ void GUIModelObject::rotate(qreal angle, undoStatus undoSettings)
         mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
     }
 
-    emit objectMoved();
+    for(int i=0; i<mGUIConnectorPtrs.size(); ++i)
+    {
+        mGUIConnectorPtrs.at(i)->drawConnector(true);
+    }
 }
 
 
