@@ -266,8 +266,10 @@ HEADERS += win32dll.h \
     Components/Signal/SignalTripleRoute.hpp \
     Components/Signal/SignalQuadRoute.hpp \
     Components/Signal/SignalBETest.hpp \
-    Components/Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp
+    Components/Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp \
+    Components/Hydraulic/HydraulicMultiTankC.hpp
 
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
+

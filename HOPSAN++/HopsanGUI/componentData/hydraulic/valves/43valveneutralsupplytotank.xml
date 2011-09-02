@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="Hydraulic43ValveNeutralSupplyToTank" displayname="4/3 Servo Valve With Supploy Open To Tank At Neutral Position">
-		<help text="Hydraulic proportional servo valve with supploy port open to tank in neutral position, with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction."/>
-        <icon isopath="43valveneutralsupplytotank_iso.svg" iconrotation="ON" userpath="43valveneutralsupplytotank_user.svg"/>
-        <portpose x="0.5624" y="1" a="90" name="PP"/>
-        <portpose x="0.5624" y="0" a="270" name="PA"/>
-        <portpose x="0.6885" y="0" a="270" name="PB"/>
-        <portpose x="0.6885" y="1" a="90" name="PT"/>
-        <portpose x="0" y="0.7" a="180" name="in"/>
-		<portpose x="1" y="0.5" a="0" name="xv"/>
-    </modelobject>
+  <modelobject typename="Hydraulic43ValveNeutralSupplyToTank" displayname="4/3 Valve With Supply Open To Tank At Neutral Position">
+    <help text="Hydraulic proportional directional valve with supploy port open to tank in neutral position, with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction." />
+    <icon isopath="43valveneutralsupplytotank_iso.svg" iconrotation="ON" userpath="43valveneutralsupplytotank_user.svg" />
+    <portpose x="0.5624" y="1" a="90" name="PP" />
+    <portpose x="0.5624" y="0" a="270" name="PA" />
+    <portpose x="0.6885" y="0" a="270" name="PB" />
+    <portpose x="0.6885" y="1" a="90" name="PT" />
+    <portpose x="0" y="0.7" a="180" name="in" />
+    <portpose x="1" y="0.5" a="0" name="xv" />
+  </modelobject>
 </hopsanobjectappearance>

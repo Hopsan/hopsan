@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
-    <modelobject typename="MechanicVehicle1D" displayname="MechanicVehicle1D">
-        <icon isopath="MechanicVehicle1D.svg" iconrotation="ON" userpath="MechanicVehicle1D.svg"/>
-        <portpose x=".2" y="1" a="180" name="Pmr1"/>
-        <portpose x=".8" y="1" a="180" name="Pmr2"/>
-    </modelobject>
-</hopsanobjectappearance>

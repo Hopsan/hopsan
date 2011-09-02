@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="Hydraulic22Valve" displayname="2/2 Servo Valve">
-	    <help picture="22valvehelp.svg" text="Hydraulic flow control valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified."/>
-        <icon isopath="22valve_iso.svg" iconrotation="ON" userpath="22valve_user.svg"/>
-        <portpose x="0.8278" y="1" a="90" name="PP"/>
-        <portpose x="0.8278" y="0" a="270" name="PA"/>
-        <portpose x="0" y="0.7" a="180" name="in"/>
-		<portpose x="1" y="0.5" a="0" name="xv"/>
-    </modelobject>
+  <modelobject typename="Hydraulic22Valve" displayname="2/2 Directional Valve">
+    <help picture="22valvehelp.svg" text="Hydraulic flow control valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified." />
+    <icon isopath="22valve_iso.svg" iconrotation="ON" userpath="22valve_user.svg" />
+    <portpose x="0.8278" y="1" a="90" name="PP" />
+    <portpose x="0.8278" y="0" a="270" name="PA" />
+    <portpose x="0" y="0.7" a="180" name="in" />
+    <portpose x="1" y="0.5" a="0" name="xv" />
+  </modelobject>
 </hopsanobjectappearance>

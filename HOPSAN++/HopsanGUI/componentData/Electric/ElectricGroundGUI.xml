@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="ElectricGround" displayname="ElectricGround">
-        <icon isopath="ElectricGround.svg" iconrotation="ON" userpath="ElectricGround.svg"/>
-        <portpose x="0.5" y="0" a="90" name="Pel1"/>
-    </modelobject>
+  <modelobject typename="ElectricGround" displayname="Ground">
+    <icon isopath="ElectricGround.svg" iconrotation="ON" userpath="ElectricGround.svg" />
+    <portpose x="0.5" y="0" a="90" name="Pel1" />
+  </modelobject>
 </hopsanobjectappearance>
