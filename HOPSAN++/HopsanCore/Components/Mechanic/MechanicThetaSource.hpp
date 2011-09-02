@@ -54,6 +54,8 @@ private:
      double *mpND_win;
      //outputVariables pointers
 
+    Integrator mInt;
+
 public:
      static Component *Creator()
      {
@@ -68,42 +70,33 @@ public:
         : ComponentQ(name)
      {
         mNstep=9;
-        mthetain = thetain;
         mwin = win;
 
         //Add ports to the component
         mpPmr1=addPowerPort("Pmr1","NodeMechanicRotational");
 
         //Add inputVariables ports to the component
-        mpPthetain=addReadPort("Pthetain","NodeSignal", Port::NOTREQUIRED);
-        mpPwin=addReadPort("Pwin","NodeSignal", Port::NOTREQUIRED);
+        mpPthetain=addReadPort("thetain","NodeSignal", Port::NOTREQUIRED);
+        mpPwin=addReadPort("win","NodeSignal", Port::NOTREQUIRED);
 
         //Add outputVariables ports to the component
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("thetain", "angle", "rad", mthetain);
-        registerParameter("win", "rotational speed", "rad/s", mwin);
+        registerParameter("win", "Angular Velocity", "rad/s", mwin);
      }
 
-    void initialize()
+     void initialize()
      {
         //Read port variable pointers from nodes
         //Port Pmr1
-        mpND_tormr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::TORQUE);
-        mpND_thetamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGLE);
-        mpND_wmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGULARVELOCITY);
-        mpND_cmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::WAVEVARIABLE);
-        mpND_Zcmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::CHARIMP);
-        mpND_eqInertiamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::EQINERTIA);
+        mpND_tormr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::TORQUE);
+        mpND_thetamr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::ANGLE);
+        mpND_wmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::ANGULARVELOCITY);
+        mpND_cmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::WAVEVARIABLE);
+        mpND_Zcmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::CHARIMP);
+        mpND_eqInertiamr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::EQINERTIA);
         //Read inputVariables pointers from nodes
-        mpND_thetain=getSafeNodeDataPtr(mpPthetain, \
-NodeSignal::VALUE,mthetain);
+        mpND_thetain=getSafeNodeDataPtr(mpPthetain, NodeSignal::VALUE,mthetain);
         mpND_win=getSafeNodeDataPtr(mpPwin, NodeSignal::VALUE,mwin);
         //Read outputVariable pointers from nodes
 
@@ -122,11 +115,27 @@ NodeSignal::VALUE,mthetain);
 
         //Read outputVariables from nodes
 
-
-
         //Initialize delays
+
+
+        mInt.initialize(mTimestep, wmr1, thetamr1);
+
+
+        if(mpPthetain->isConnected() && !mpPwin->isConnected())
+        {
+            stringstream ss;
+            ss << "Angle input is connected but angular velocity is constant, kinematic relationsship must be manually enforced.";
+            addWarningMessage(ss.str());
+        }
+        else if(mpPthetain->isConnected() && mpPwin->isConnected())
+        {
+            stringstream ss;
+            ss << "Both angle and velocity inputs are connected, kinematic relationsship must be manually enforced.";
+            addWarningMessage(ss.str());
+        }
      }
-    void simulateOneTimestep()
+
+     void simulateOneTimestep()
      {
         //Read variables from nodes
         //Port Pmr1
@@ -140,8 +149,17 @@ NodeSignal::VALUE,mthetain);
         //LocalExpressions
 
         //Expressions
-        double thetamr1 = thetain;
         double wmr1 = win;
+        double thetamr1;
+        if(mpPthetain->isConnected())
+        {
+            thetamr1 = thetain;
+        }
+        else
+        {
+            thetamr1 = mInt.update(wmr1);
+        }
+        tormr1 = cmr1 + Zcmr1*wmr1;
 
         //Write new values to nodes
         //Port Pmr1

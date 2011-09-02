@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <hopsanobjectappearance version="0.1">
-    <modelobject typename="MechanicVelocityTransformer" displayname="Velocity Source">
-        <icon isopath="velocitytransformer.svg" iconrotation="ON" userpath=""/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
-    </modelobject>
+  <modelobject typename="MechanicVelocityTransformer" displayname="Position &amp; Velocity Source">
+    <icon isopath="velocitytransformer.svg" iconrotation="ON" userpath="" />
+    <portpose x="0" y="0" a="180" name="xin" />
+    <portpose x="0" y="1" a="180" name="vin" />
+    <portpose x="1" y="0.5" a="0" name="Pm1" />
+    <help text="Applies specified position and velocity. Parameter values will be used if their corresponding input port is not connected. If velocity is connected but not position, the position will be integrated from the velocity. Connecting both inputs simultaneously or connecting only position input is possible, but the kinematic relationship between position and velocity must then be enforced manually." />
+  </modelobject>
 </hopsanobjectappearance>
