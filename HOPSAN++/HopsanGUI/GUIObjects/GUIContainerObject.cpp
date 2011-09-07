@@ -2313,7 +2313,7 @@ void GUIContainerObject::showLossesFromDialog()
     //We should not be here if there is no plot data, but let's check to be sure
     if(mPlotData.isEmpty())
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Attempted to calculate losses for a model that has not been simulated.");
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
         return;
     }
 

@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="59.962009"
-   height="24.472107"
+   width="24.89407"
+   height="25.131947"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="ElectricISource.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -54,6 +54,19 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <marker
+       style="overflow:visible"
+       id="TriangleOutL-4"
+       orient="auto"
+       refY="0"
+       refX="0">
+      <path
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         id="path8118-0"
+         transform="scale(0.8,0.8)"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         inkscape:connector-curvature="0" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -65,17 +78,17 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.0000002"
-     inkscape:cx="26.651875"
-     inkscape:cy="-9.1422382"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="156.63729"
+     inkscape:cy="11.33357"
      inkscape:document-units="px"
      inkscape:current-layer="g2994"
      showgrid="false"
-     inkscape:window-width="1140"
-     inkscape:window-height="742"
-     inkscape:window-x="1491"
-     inkscape:window-y="34"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1680"
+     inkscape:window-height="982"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
      fit-margin-top="0"
@@ -84,19 +97,19 @@
      fit-margin-bottom="0">
     <sodipodi:guide
        orientation="0,1"
-       position="17.558375,16.08751"
+       position="62.755408,0.82761575"
        id="guide3163" />
     <sodipodi:guide
        orientation="1,0"
-       position="10.620874,20.321885"
+       position="55.817907,5.0619908"
        id="guide3165" />
     <sodipodi:guide
        orientation="1,0"
-       position="40.641729,21.491354"
+       position="85.838762,6.2314598"
        id="guide3173" />
     <sodipodi:guide
        orientation="0,1"
-       position="-5.1513091,4.3638608"
+       position="40.045724,-10.896033"
        id="guide3177" />
   </sodipodi:namedview>
   <metadata
@@ -115,23 +128,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-455.50801,-487.33666)">
+     transform="translate(-410.31098,-471.41693)">
     <g
        id="g2994"
        transform="matrix(0,1,-1,0,978.30752,20.807525)">
-      <path
-         id="path2385"
-         d="m 478.7652,463.44329 0,44.02102"
-         style="fill:none;stroke:#000000;stroke-width:1.21158111;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.83333325;stroke-opacity:1;stroke-dasharray:none"
-         inkscape:connector-curvature="0" />
-      <rect
-         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.72816503;stroke-miterlimit:3.83333325;stroke-opacity:0.99404764;stroke-dasharray:none"
-         id="rect2824"
-         width="53.21331"
-         height="22.743942"
-         x="-521.93542"
-         y="467.39322"
-         transform="matrix(0,-1,1,0,0,0)" />
       <text
          xml:space="preserve"
          style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
@@ -154,18 +154,37 @@
            id="tspan2909"
            x="13.749999"
            y="15.25336" /></text>
-      <text
-         xml:space="preserve"
-         style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-         x="-518.44086"
-         y="482.20035"
-         id="text2912"
-         transform="matrix(0,-1,1,0,0,0)"><tspan
-           sodipodi:role="line"
-           id="tspan2914"
-           x="-518.44086"
-           y="482.20035"
-           style="font-size:12px">I-Source</tspan></text>
+      <path
+         sodipodi:type="arc"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.72473335;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="path3000"
+         sodipodi:cx="-59.499996"
+         sodipodi:cy="-11.652891"
+         sodipodi:rx="14.749999"
+         sodipodi:ry="12.374999"
+         d="m -44.749997,-11.652891 a 14.749999,12.374999 0 1 1 -29.499998,0 14.749999,12.374999 0 1 1 29.499998,0 z"
+         transform="matrix(0,-0.79661022,0.94949502,0,474.23974,508.1512)" />
+      <path
+         id="path2385"
+         d="m 463.17538,550.74615 0,13.50039"
+         style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.83333325;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
+      <path
+         sodipodi:type="star"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         id="path2422-4"
+         sodipodi:sides="3"
+         sodipodi:cx="3.9285715"
+         sodipodi:cy="4.1964326"
+         sodipodi:r1="2.1961381"
+         sodipodi:r2="1.0980691"
+         sodipodi:arg1="0.52359878"
+         sodipodi:arg2="1.5707963"
+         inkscape:flatsided="true"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         d="m 5.8304829,5.2945017 -3.8038229,0 1.9019115,-3.2942073 z"
+         transform="matrix(1.7181884,0.00213134,-0.0028579,2.8323961,456.44048,539.81916)" />
     </g>
   </g>
 </svg>

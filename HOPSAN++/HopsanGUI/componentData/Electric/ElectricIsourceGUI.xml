@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.1">
   <modelobject typename="ElectricIsource" displayname="Ideal Current Source">
     <icon isopath="ElectricIsource.svg" iconrotation="ON" userpath="ElectricIsource.svg" />
-    <portpose x="1" y="0.5" a="180" name="Pel1" />
-    <portpose x="0" y="0.5" a="0" name="Piin" />
+    <portpose x="1" y="0.5" a="0" name="Pel1" />
+    <portpose x="0" y="0.5" a="180" name="Piin" />
   </modelobject>
 </hopsanobjectappearance>
