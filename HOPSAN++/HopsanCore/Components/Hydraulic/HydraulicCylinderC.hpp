@@ -53,7 +53,7 @@ class HydraulicCylinderC : public ComponentC
         //Node data pointers
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1,
                *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
-               *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3;
+               *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3, *mpND_me;
 
         //Ports
         Port *mpP1, *mpP2, *mpP3;
@@ -87,7 +87,7 @@ class HydraulicCylinderC : public ComponentC
             registerParameter("A_1", "Piston Area 1", "[m^2]", A1);
             registerParameter("A_2", "Piston Area 2", "[m^2]", A2);
             registerParameter("s_l", "Stroke", "[m]", sl);
-            registerParameter("m_e", "Equivalent Load Mass", "[kg]", me);
+//            registerParameter("m_e", "Equivalent Load Mass", "[kg]", me);
             registerParameter("V_1", "Dead Volume in Chamber 1", "[m^3]", V01);
             registerParameter("V_2", "Dead Volume in Chamber 2", "[m^3]", V02);
             registerParameter("B_p", "Viscous Friction", "[Ns/m]", bp);
@@ -115,6 +115,7 @@ class HydraulicCylinderC : public ComponentC
             mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::VELOCITY);
             mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WAVEVARIABLE);
             mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CHARIMP);
+            mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EQMASS);
 
             //Declare local variables;
             double p1, q1, p2, q2, f3, x3, v3;
@@ -129,6 +130,7 @@ class HydraulicCylinderC : public ComponentC
             f3 = (*mpND_f3);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
+            me = (*mpND_me);
 
             //Limit end of stroke limitations
             CxLim = 0;
@@ -137,8 +139,10 @@ class HydraulicCylinderC : public ComponentC
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V01+A2*(sl+x3);
-            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
-            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
+
+            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*1.0); //me is not written to node yet.
+            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*1.0);
+
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
@@ -195,6 +199,7 @@ class HydraulicCylinderC : public ComponentC
             f3 = (*mpND_f3);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
+            me = (*mpND_me);
 
             //Leakage flow
             qLeak = cLeak*(cl1-cl2)/(1+cLeak*(Zc1+Zc2));
@@ -206,8 +211,16 @@ class HydraulicCylinderC : public ComponentC
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V01+A2*(sl+x3);
-            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
-            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
+            if(0 < me)
+            {
+                V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
+                V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
+            }
+            else
+            {
+                addErrorMessage("The equivalent mass 'me' has to be greater than 0.");
+                stopSimulation();
+            }
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 

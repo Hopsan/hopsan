@@ -66,6 +66,8 @@ namespace hopsan {
             mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
             mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+
+            simulateOneTimestep();
         }
 
 
