@@ -85,36 +85,41 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
     }
 
     // -----Now establish the connection-----
-    bool success = pContainer->getCoreSystemAccessPtr()->connect(startComponentName, startPortName, endComponentName, endPortName);
-    if (success)
+    bool success=false;
+    GUIPort *startPort = pContainer->getGUIModelObject(startComponentName)->getPort(startPortName);
+    GUIPort *endPort = pContainer->getGUIModelObject(endComponentName)->getPort(endPortName);
+    if ((startPort != 0) && (endPort != 0))
     {
-        //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
-        //! @todo Need some error handling here to avoid crash if components or ports do not exist
-        GUIPort *startPort = pContainer->getGUIModelObject(startComponentName)->getPort(startPortName);
-        GUIPort *endPort = pContainer->getGUIModelObject(endComponentName)->getPort(endPortName);
-
-        GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, pointVector, pContainer, geometryList);
-        pContainer->getContainedScenePtr()->addItem(pTempConnector);
-
-        //Hide connected ports
-        startPort->hide();
-        endPort->hide();
-
-        pTempConnector->setDashed(isDashed);
-
-        QObject::connect(startPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-        QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-        pContainer->rememberSubConnector(pTempConnector);
-
-        if(undoSettings == UNDO)
+        success = pContainer->getCoreSystemAccessPtr()->connect(startComponentName, startPortName, endComponentName, endPortName);
+        if (success)
         {
-            pContainer->getUndoStackPtr()->registerAddedConnector(pTempConnector);
+            //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
+            GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, pointVector, pContainer, geometryList);
+            pContainer->getContainedScenePtr()->addItem(pTempConnector);
+
+            //Hide connected ports
+            startPort->hide();
+            endPort->hide();
+
+            pTempConnector->setDashed(isDashed);
+
+            QObject::connect(startPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+            QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+
+            pContainer->rememberSubConnector(pTempConnector);
+
+            if(undoSettings == UNDO)
+            {
+                pContainer->getUndoStackPtr()->registerAddedConnector(pTempConnector);
+            }
         }
     }
-    else
+    if (!success)
     {
-        qDebug() << "Unsuccessful connection atempt" << endl;
+        QString str;
+        str = QString("Failed to load connector between: ") + startComponentName + QString("->") + startPortName
+            + QString(" and ") + endComponentName + QString("->") + endPortName;
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage(str, "FailedLoadConnector");
     }
 
     return success;
