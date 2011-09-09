@@ -37,7 +37,7 @@ namespace hopsan {
         double m, B, k, xMin, xMax;
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;  //Node data pointers
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
         double mNumX[3], mNumV[2];
         double mDenX[3], mDenV[2];
@@ -81,12 +81,14 @@ namespace hopsan {
             mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
 
             mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
             mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
             mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS);
 
             //Initialization
             f1 = (*mpND_f1);
@@ -111,6 +113,9 @@ namespace hopsan {
 
             mFilterX.initialize(mTimestep, mNumX, mDenX, f1-f2, x2);
             mFilterV.initialize(mTimestep, mNumV, mDenV, f1-f2 - k*x2, v2);
+
+            (*mpND_me1) = m;
+            (*mpND_me2) = m;
 
             //Print debug message if velocities do not match
             if((*mpND_v1) != -(*mpND_v2))
@@ -140,13 +145,13 @@ namespace hopsan {
             x2 = mFilterX.update(c1-c2);
             v2 = mFilterV.update(c1-c2 - k*x2);
 
-//            if((mTime > 6) && (mTime < 6.01))
-//            {
-//                double apa = c1-c2;
-//                stringstream ss;
-//                ss << "t: " << mTime << "   c1-c2 = " << apa << "   v2 = " << v2;
-//                addDebugMessage(ss.str());
-//            }
+            if((mTime > 6) && (mTime < 6.01))
+            {
+                double apa = c1-c2;
+             //   stringstream ss;
+             //   ss << "t: " << mTime << "   c1-c2 = " << apa << "   v2 = " << v2;
+            //    addDebugMessage(ss.str());
+            }
 
             if(x2<xMin)
             {
@@ -175,6 +180,9 @@ namespace hopsan {
             (*mpND_f2) = f2;
             (*mpND_x2) = x2;
             (*mpND_v2) = v2;
+            (*mpND_me1) = m;
+            (*mpND_me2) = m;
+
 
 //            if((mTime>.5) && (mTime<.5001))
 //            {

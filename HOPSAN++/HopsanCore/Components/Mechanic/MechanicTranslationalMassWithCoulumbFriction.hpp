@@ -43,7 +43,7 @@ namespace hopsan {
         double m, B, fs, fk, xMin, xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
         double mLength;                                                                                     //This length is not accesible by the user, it is set from the start values by the c-components in the ends
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;  //Node data pointers
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;  //Node data pointers
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
         //DoubleIntegratorWithDamping mIntegrator;                                                            //External functions
         double mNum[3];
@@ -91,12 +91,14 @@ namespace hopsan {
             mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
 
             mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
             mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
             mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS);
 
             f1 = (*mpND_f1);
             x1 = (*mpND_x1);
@@ -117,6 +119,9 @@ namespace hopsan {
 //            mFilter.initialize(mTimestep, mNum, mDen, -f1, -v1);
 //            mInt.initialize(mTimestep, -v1, -x1+mLength);
             mIntegrator.initialize(mTimestep, 0, m, fs, fk, 0, 0, 0);
+
+            (*mpND_me1) = m;
+            (*mpND_me2) = m;
 
             //Print debug message if start velocities doe not match
             if((*mpND_v1) != -(*mpND_v2))

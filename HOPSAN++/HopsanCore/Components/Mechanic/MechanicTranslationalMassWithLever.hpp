@@ -44,6 +44,8 @@ namespace hopsan {
 
         MechanicTranslationalMassWithLever(const std::string name) : ComponentQ(name)
         {
+            //! @todo set eqmass to some good values, should consider lever.
+
             //Set member attributes
             L1 = 1;
             L2 = 1;
