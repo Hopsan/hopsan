@@ -1214,7 +1214,7 @@ void GUISystem::createSimulinkSourceFiles()
     }
     j=nTotalOutputs-1;
     wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Debug output signal\n";
-    portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG''); \n";
+    portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG'')'); \n";
     wrapperStream << "    ssSetNumSampleTimes(S, 1);\n\n";
     wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n\n";
     wrapperStream << "    std::string hmfFilePath = \"" << mModelFileInfo.fileName() << "\";\n";
@@ -1358,7 +1358,6 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "\n";
     wrapperFile.close();
 
-    portLabelsStream << "')\n";
     portLabelsStream << "set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n";
     portLabelsStream << "set_param(gcb,'Name','" << this->getName() << "')";
     portLabelsFile.close();
