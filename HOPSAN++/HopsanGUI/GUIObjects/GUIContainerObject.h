@@ -36,6 +36,7 @@ class ProjectTab;
 class UndoStack;
 class MainWindow;
 class QGraphicsScene;
+class GUIPort;
 
 class GUIContainerObject : public GUIModelObject
 {
@@ -62,7 +63,8 @@ public:
     //GUIModelObject methods
     GUIModelObject *addGUIModelObject(QString typeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
-    GUIModelObject *getGUIModelObject(QString name);
+    GUIModelObject *getGUIModelObject(const QString modelObjectName);
+    GUIPort *getGUIModelObjectPort(const QString modelObjectName, const QString portName);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool hasGUIModelObject(QString name);

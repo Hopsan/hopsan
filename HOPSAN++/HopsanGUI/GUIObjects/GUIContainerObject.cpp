@@ -940,14 +940,32 @@ QList<GUIModelObject *> GUIContainerObject::getSelectedGUIModelObjectPtrs()
 }
 
 
-//! @brief Returns a pointer to the component with specified name.
-GUIModelObject *GUIContainerObject::getGUIModelObject(QString name)
+//! @brief Returns a pointer to the component with specified name, 0 if not found
+GUIModelObject *GUIContainerObject::getGUIModelObject(const QString modelObjectName)
 {
-    if(!mGUIModelObjectMap.contains(name))
+    GUIModelObjectMapT::Iterator moit = mGUIModelObjectMap.find(modelObjectName);
+    if (moit != mGUIModelObjectMap.end())
     {
-        assert("Request for pointer to non-existing component" == 0);
+        return moit.value();
     }
-    return mGUIModelObjectMap.find(name).value();
+    else
+    {
+        return 0;
+    }
+}
+
+//! @brief Get the port of a sub model object, returns 0 if modelobject or port not found
+GUIPort *GUIContainerObject::getGUIModelObjectPort(const QString modelObjectName, const QString portName)
+{
+    GUIModelObject *pModelObject = this->getGUIModelObject(modelObjectName);
+    if (pModelObject != 0)
+    {
+        return pModelObject->getPort(portName);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
@@ -1562,6 +1580,7 @@ void GUIContainerObject::hidePorts(bool doIt)
     mPortsHidden = !doIt;
     //mpParentProjectTab->hasChanged();
 }
+
 
 
 

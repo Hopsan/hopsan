@@ -86,8 +86,8 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
 
     // -----Now establish the connection-----
     bool success=false;
-    GUIPort *startPort = pContainer->getGUIModelObject(startComponentName)->getPort(startPortName);
-    GUIPort *endPort = pContainer->getGUIModelObject(endComponentName)->getPort(endPortName);
+    GUIPort *startPort = pContainer->getGUIModelObjectPort(startComponentName, startPortName);
+    GUIPort *endPort = pContainer->getGUIModelObjectPort(endComponentName, endPortName);
     if ((startPort != 0) && (endPort != 0))
     {
         success = pContainer->getCoreSystemAccessPtr()->connect(startComponentName, startPortName, endComponentName, endPortName);
