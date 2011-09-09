@@ -32,7 +32,8 @@
 #include <complex>
 
 #include "GUIUtilities.h"
-
+#include "MainWindow.h"
+#include "common.h"
 
 using namespace std;
 
@@ -417,4 +418,122 @@ void reduceVectorSize(QVector<double> &vector, int newSize)
     {
         tempVector.append(vector.at(oldSize/newSize*i));
     }
+}
+
+
+void removeDir(QString path)
+{
+    QDir dir;
+    dir.setPath(path);
+    Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+    {
+        if (info.isDir())
+        {
+            removeDir(info.absoluteFilePath());
+        }
+        else
+        {
+            QFile::remove(info.absoluteFilePath());
+        }
+    }
+    dir.rmdir(path);
+}
+
+
+void copyIncludeFilesToDir(QString path)
+{
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkdir("include");
+    QFile componentH(gExecPath + QString(INCLUDEPATH) + "Component.h");
+    componentH.copy(saveDir.path() + "/include/Component.h");
+    QFile componentSystemH(gExecPath + QString(INCLUDEPATH) + "ComponentSystem.h");
+    componentSystemH.copy(saveDir.path() + "/include/ComponentSystem.h");
+    QFile componentEssentialsH(gExecPath + QString(INCLUDEPATH) + "ComponentEssentials.h");
+    componentEssentialsH.copy(saveDir.path() + "/include/ComponentEssentials.h");
+    QFile componentUtilitiesH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities.h");
+    componentUtilitiesH.copy(saveDir.path() + "/include/ComponentUtilities.h");
+    QFile hopsanCoreH(gExecPath + QString(INCLUDEPATH) + "HopsanCore.h");
+    hopsanCoreH.copy(saveDir.path() + "/include/HopsanCore.h");
+    QFile hopsanEssentialsH(gExecPath + QString(INCLUDEPATH) + "HopsanEssentials.h");
+    hopsanEssentialsH.copy(saveDir.path() + "/include/HopsanEssentials.h");
+    QFile nodeH(gExecPath + QString(INCLUDEPATH) + "Node.h");
+    nodeH.copy(saveDir.path() + "/include/Node.h");
+    QFile portH(gExecPath + QString(INCLUDEPATH) + "Port.h");
+    portH.copy(saveDir.path() + "/include/Port.h");
+    QFile win32dllH(gExecPath + QString(INCLUDEPATH) + "win32dll.h");
+    win32dllH.copy(saveDir.path() + "/include/win32dll.h");
+
+    QDir componentsDir;
+    componentsDir.mkdir(saveDir.path() + "/include/Components");
+    QFile componentsH(gExecPath + QString(INCLUDEPATH) + "Components/Components.h");
+    componentsH.copy(saveDir.path() + "/include/Components/Components.h");
+
+    QDir componentUtilitiesDir;
+    componentUtilitiesDir.mkdir(saveDir.path() + "/include/ComponentUtilities");
+    QFile auxiliarySimulationFunctionsH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/AuxiliarySimulationFunctions.h");
+    auxiliarySimulationFunctionsH.copy(saveDir.path() + "/include/ComponentUtilities/AuxiliarySimulationFunctions.h");
+    QFile csvParserH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/CSVParser.h");
+    csvParserH.copy(saveDir.path() + "/include/ComponentUtilities/CSVParser.h");
+    QFile delayH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Delay.hpp");
+    delayH.copy(saveDir.path() + "/include/ComponentUtilities/Delay.hpp");
+    QFile doubleIntegratorWithDampingH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDamping.h");
+    doubleIntegratorWithDampingH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDamping.h");
+    QFile doubleIntegratorWithDampingAndCoulumbFrictionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
+    doubleIntegratorWithDampingAndCoulumbFrictionH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
+    QFile firstOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/FirstOrderTransferFunction.h");
+    firstOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/FirstOrderTransferFunction.h");
+    QFile integratorH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Integrator.h");
+    integratorH.copy(saveDir.path() + "/include/ComponentUtilities/Integrator.h");
+    QFile integratorLimitedH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/IntegratorLimited.h");
+    integratorLimitedH.copy(saveDir.path() + "/include/ComponentUtilities/IntegratorLimited.h");
+    QFile ludcmpH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ludcmp.h");
+    ludcmpH.copy(saveDir.path() + "/include/ComponentUtilities/ludcmp.h");
+    QFile matrixH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/matrix.h");
+    matrixH.copy(saveDir.path() + "/include/ComponentUtilities/matrix.h");
+    QFile readDataCurveH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ReadDataCurve.h");
+    readDataCurveH.copy(saveDir.path() + "/include/ComponentUtilities/ReadDataCurve.h");
+    QFile secondOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/SecondOrderTransferFunction.h");
+    secondOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/SecondOrderTransferFunction.h");
+    QFile turbulentFlowFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/TurbulentFlowFunction.h");
+    turbulentFlowFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/TurbulentFlowFunction.h");
+    QFile valveHysteresisH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ValveHysteresis.h");
+    valveHysteresisH.copy(saveDir.path() + "/include/ComponentUtilities/ValveHysteresis.h");
+    QFile whiteGaussianNoiseH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/WhiteGaussianNoise.h");
+    whiteGaussianNoiseH.copy(saveDir.path() + "/include/ComponentUtilities/WhiteGaussianNoise.h");
+
+    QDir coreUtilitiesDir;
+    coreUtilitiesDir.mkdir(saveDir.path() + "/include/CoreUtilities");
+    QFile hmfLoaderH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HmfLoader.h");
+    hmfLoaderH.copy(saveDir.path() + "/include/CoreUtilities/HmfLoader.h");
+    QFile classFactoryHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactory.hpp");
+    classFactoryHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactory.hpp");
+    QFile classFactoryStatusCheckHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactoryStatusCheck.hpp");
+    classFactoryStatusCheckHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactoryStatusCheck.hpp");
+    QFile findUniqueNameH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/FindUniqueName.h");
+    findUniqueNameH.copy(saveDir.path() + "/include/CoreUtilities/FindUniqueName.h");
+    QFile hopsanCoreMessageHandlerH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HopsanCoreMessageHandler.h");
+    hopsanCoreMessageHandlerH.copy(saveDir.path() + "/include/CoreUtilities/HopsanCoreMessageHandler.h");
+    QFile loadExternalH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/LoadExternal.h");
+    loadExternalH.copy(saveDir.path() + "/include/CoreUtilities/LoadExternal.h");
+
+    QDir nodesDir;
+    nodesDir.mkdir(saveDir.path() + "/include/Nodes");
+    QFile nodesH(gExecPath + QString(INCLUDEPATH) + "/Nodes/Nodes.h");
+    nodesH.copy(saveDir.path() + "/include/Nodes/Nodes.h");
+
+    QDir dependenciesDir;
+    dependenciesDir.mkdir(saveDir.path() + "/include/Dependencies");
+
+    QDir csvParserDir;
+    csvParserDir.mkpath(saveDir.path() + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser");
+    QFile csv_ParserH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
+    csv_ParserH.copy(saveDir.path() + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
+
+    QDir rapidXmlDir;
+    rapidXmlDir.mkdir(saveDir.path() + "/include/Dependencies/rapidxml-1.13");
+    QFile rapidXmlH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml.hpp");
+    rapidXmlH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml.hpp");
+    QFile rapidXmlUtilsH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
+    rapidXmlUtilsH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
 }

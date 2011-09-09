@@ -93,6 +93,7 @@ public:
     QAction *mpSaveAction;
     QAction *mpSaveAsAction;
     QAction *mpExportToSimulinkAction;
+    QAction *mpExportToFMUAction;
     QAction *mpCloseAction;
     QAction *mpUndoAction;
     QAction *mpRedoAction;

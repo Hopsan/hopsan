@@ -549,7 +549,7 @@ void MainWindow::createActions()
     connect(mpSaveToWrappedCodeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
 
     mpCreateSimulinkWrapperAction = new QAction(this);
-    mpCreateSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));
+    //mpCreateSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));
     this->addAction(mpCreateSimulinkWrapperAction);
     connect(mpCreateSimulinkWrapperAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 
@@ -689,8 +689,12 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpExportPDFAction);
     //! @note Action and menu shouldn't be here, but it doesn't work otherwise because the menus are created after the toolbars
     mpExportToSimulinkAction = new QAction(tr("Export to Simulink S-function Source Files"), this);
+    mpExportToFMUAction = new QAction(tr("Export to Functional Mock-up Unit (FMU)"), this);
     mpExportMenu = new QMenu("Export Model");
     mpExportMenu->addAction(mpExportToSimulinkAction);
+#ifdef DEVELOPMENT
+    mpExportMenu->addAction(mpExportToFMUAction);
+#endif
     mpExportButton = new QToolButton(mpFileToolBar);
     mpExportButton->setToolTip("Export");
     mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Export.png"));
@@ -749,6 +753,7 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(mpFlipVerticalAction);
 
     connect(mpExportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
+    connect(mpExportToFMUAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
 }
 
 

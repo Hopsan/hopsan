@@ -60,6 +60,7 @@ public slots:
     void loadModel(QString modelFileName);
     void tabChanged();
     void saveCurrentModelToWrappedCode();
+    void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
 

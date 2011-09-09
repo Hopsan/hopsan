@@ -551,7 +551,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
 void GUISystem::saveToWrappedCode()
 {
-        //Open file dialog and initialize the file stream
+    //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;
     QFileInfo fileInfo;
@@ -608,6 +608,316 @@ void GUISystem::saveToWrappedCode()
     fileStream << "initComponents();";
 
     file.close();
+}
+
+
+
+void GUISystem::createFMUSourceFiles()
+{
+    QStringList outputVariables;
+    QStringList outputComponents;
+    QStringList outputPorts;
+    QList<int> outputDatatypes;
+
+    GUIModelObjectMapT::iterator it;
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    {
+        if(it.value()->getTypeName() == "SignalOutputInterface")
+        {
+            outputVariables.append(it.value()->getName().remove(' '));
+            outputComponents.append(it.value()->getName());
+            outputPorts.append("in");
+            outputDatatypes.append(0);
+        }
+    }
+
+    QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f004}";  //!< @todo How is this ID defined?
+
+    //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString savePath;
+    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
+                                                    fileDialogSaveDir.currentPath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+    QDir saveDir;
+    saveDir.setPath(savePath);
+
+    QFile modelSourceFile;
+    QString modelName = getModelFileInfo().fileName();
+    modelName.chop(4);
+    modelSourceFile.setFileName(savePath + "/" + modelName + ".c");
+    if(!modelSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open " + modelName + ".c for writing.");
+        return;
+    }
+
+    QFile modelDescriptionFile;
+    modelDescriptionFile.setFileName(savePath + "/ModelDescription.xml");
+    if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open ModelDescription.xml for writing.");
+        return;
+    }
+
+    QFile fmuHeaderFile;
+    fmuHeaderFile.setFileName(savePath + "/HopsanFMU.h");
+    if(!fmuHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanFMU.h for writing.");
+        return;
+    }
+
+    QFile fmuSourceFile;
+    fmuSourceFile.setFileName(savePath + "/HopsanFMU.cpp");
+    if(!fmuSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanFMU.cpp for writing.");
+        return;
+    }
+
+    QFile clBatchFile;
+    clBatchFile.setFileName(savePath + "/compile.bat");
+    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open compile.bat for writing.");
+        return;
+    }
+
+    //! @todo Create model description file
+    QTextStream modelDescriptionStream(&modelDescriptionFile);
+    modelDescriptionStream << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";       //!< @todo Encoding, should it be UTF-8?
+    modelDescriptionStream << "<fmiModelDescription\n";
+    modelDescriptionStream << "  fmiVersion=\"1.0\"\n";
+    modelDescriptionStream << "  modelName=\"" << modelName << "\"\n";               //!< @todo What's the difference between name and identifier?
+    modelDescriptionStream << "  modelIdentifier=\"" << modelName << "\"\n";
+    modelDescriptionStream << "  guid=\"" << ID << "\"\n";
+    modelDescriptionStream << "  numberOfContinuousStates=\"" << outputVariables.size() << "\"\n";
+    modelDescriptionStream << "  numberOfEventIndicators=\"0\">\n";
+    modelDescriptionStream << "<ModelVariables>\n";
+    for(int i=0; i<outputVariables.size(); ++i)
+    {
+        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(i) << "\" valueReference=\"0\" description=\"output variable\">\n";
+        modelDescriptionStream << "     <Real start=\"0\" fixed=\"false\"/>\n";
+        modelDescriptionStream << "  </ScalarVariable>\n";
+    }
+    modelDescriptionStream << "</ModelVariables>\n";
+    modelDescriptionStream << "</fmiModelDescription>\n";
+    modelDescriptionFile.close();
+
+    //! @todo Create model source file
+    QTextStream modelSourceStream(&modelSourceFile);
+    modelSourceStream << "// Define class name and unique id\n";
+    modelSourceStream << "    #define MODEL_IDENTIFIER " << modelName << "\n";
+    modelSourceStream << "    #define MODEL_GUID \"" << ID << "\"\n\n";
+    modelSourceStream << "    // Define model size\n";
+    modelSourceStream << "    #define NUMBER_OF_REALS " << outputVariables.size() << "\n";
+    modelSourceStream << "    #define NUMBER_OF_INTEGERS 0\n";
+    modelSourceStream << "    #define NUMBER_OF_BOOLEANS 0\n";
+    modelSourceStream << "    #define NUMBER_OF_STRINGS 0\n";
+    modelSourceStream << "    #define NUMBER_OF_STATES "<< outputVariables.size() << "\n";        //!< Does number of variables equal number of states?
+    modelSourceStream << "    #define NUMBER_OF_EVENT_INDICATORS 0\n\n";
+    modelSourceStream << "    // Include fmu header files, typedefs and macros\n";
+    modelSourceStream << "    #include \"fmuTemplate.h\"\n";
+    modelSourceStream << "    #include \"HopsanFMU.h\"\n\n";
+    modelSourceStream << "    // Define all model variables and their value references\n";
+    for(int i=0; i<outputVariables.size(); ++i)
+        modelSourceStream << "    #define " << outputVariables.at(i) << "_ " << i << "\n\n";
+    modelSourceStream << "    // Define state vector as vector of value references\n";
+    for(int i=0; i<outputVariables.size(); ++i)
+        modelSourceStream << "    #define STATES { " << outputVariables.at(i) << "_ }\n\n";
+    modelSourceStream << "    //Set start values\n";
+    modelSourceStream << "    void setStartValues(ModelInstance *comp) \n";
+    modelSourceStream << "    {\n";
+    for(int i=0; i<outputVariables.size(); ++i)
+        modelSourceStream << "        r(" << outputVariables.at(i) << "_) = 0;\n";        //!< Fix start value handling
+    modelSourceStream << "    }\n\n";
+    modelSourceStream << "    //Initialize\n";
+    modelSourceStream << "    void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)\n";
+    modelSourceStream << "    {\n";
+    modelSourceStream << "        initializeHopsanWrapper();\n";
+    modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
+    modelSourceStream << "        eventInfo->nextEventTime       = 1 + comp->time;\n";
+    modelSourceStream << "    }\n\n";
+    modelSourceStream << "    //Return all variables of real type\n";
+    modelSourceStream << "    fmiReal getReal(ModelInstance* comp, fmiValueReference vr)\n";
+    modelSourceStream << "    {\n";
+    modelSourceStream << "        switch (vr) \n";
+    modelSourceStream << "       {\n";
+    for(int i=0; i<outputVariables.size(); ++i)
+        modelSourceStream << "           case " << outputVariables.at(i) << "_: return getVariable(\"" << outputComponents.at(i) << "\", \"" << outputPorts.at(i) << "\", " << outputDatatypes.at(i) << ");\n";
+    modelSourceStream << "            default: return 1;\n";
+    modelSourceStream << "       }\n";
+    modelSourceStream << "    }\n\n";
+    modelSourceStream << "    //Update at time event\n";
+    modelSourceStream << "    void eventUpdate(ModelInstance* comp, fmiEventInfo* eventInfo)\n";
+    modelSourceStream << "    {\n";
+    modelSourceStream << "        simulateOneStep();\n";
+    modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
+    modelSourceStream << "        eventInfo->nextEventTime       = 1 + comp->time;\n";
+    modelSourceStream << "    }\n\n";
+    modelSourceStream << "    // Include code that implements the FMI based on the above definitions\n";
+    modelSourceStream << "    #include \"fmuTemplate.c\"\n";
+    modelSourceFile.close();
+
+    QTextStream fmuHeaderStream(&fmuHeaderFile);
+    fmuHeaderStream << "#ifndef HOPSANFMU_H\n";
+    fmuHeaderStream << "#define HOPSANFMU_H\n\n";
+    fmuHeaderStream << "#ifdef WRAPPERCOMPILATION\n";
+    fmuHeaderStream << "    #define DLLEXPORT __declspec(dllexport)\n";
+    fmuHeaderStream << "    extern \"C\" {\n";
+    fmuHeaderStream << "#else\n";
+    fmuHeaderStream << "    #define DLLEXPORT\n";
+    fmuHeaderStream << "#endif\n\n";
+    fmuHeaderStream << "DLLEXPORT void initializeHopsanWrapper();\n";
+    fmuHeaderStream << "DLLEXPORT void simulateOneStep();\n";
+    fmuHeaderStream << "DLLEXPORT double getVariable(char* component, char* port, size_t idx);\n\n";
+    fmuHeaderStream << "#ifdef WRAPPERCOMPILATION\n";
+    fmuHeaderStream << "}\n";
+    fmuHeaderStream << "#endif\n\n";
+    fmuHeaderStream << "#endif // HOPSANFMU_H\n";
+    fmuHeaderFile.close();
+
+    QTextStream fmuSourceStream(&fmuSourceFile);
+    fmuSourceStream << "#include <iostream>\n";
+    fmuSourceStream << "#include \"HopsanFMU.h\"\n";
+    fmuSourceStream << "#include \"include/HopsanCore.h\"\n";
+    fmuSourceStream << "#include \"include/HopsanEssentials.h\"\n";
+    fmuSourceStream << "#include \"include/ComponentEssentials.h\"\n";
+    fmuSourceStream << "#include \"include/ComponentUtilities.h\"\n";
+    fmuSourceStream << "#include \"include/CoreUtilities/HmfLoader.h\"\n\n";
+    fmuSourceStream << "static double time=0;\n";
+    fmuSourceStream << "static hopsan::ComponentSystem *spCoreComponentSystem;\n";
+    fmuSourceStream << "static std::vector<string> sComponentNames;\n\n";
+    fmuSourceStream << "void initializeHopsanWrapper()\n";
+    fmuSourceStream << "{\n";
+    fmuSourceStream << "    std::string hmfFilePath = \"" << modelName << ".hmf\";\n";
+    fmuSourceStream << "    hopsan::HmfLoader coreHmfLoader;\n";
+    fmuSourceStream << "    double startT;      //Dummy variable\n";
+    fmuSourceStream << "    double stopT;       //Dummy variable\n";
+    fmuSourceStream << "    spCoreComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
+    fmuSourceStream << "    spCoreComponentSystem->setDesiredTimestep(0.001);\n";
+    fmuSourceStream << "    spCoreComponentSystem->initializeComponentsOnly();\n";
+    fmuSourceStream << "}\n\n";
+    fmuSourceStream << "void simulateOneStep()\n";
+    fmuSourceStream << "{\n";
+    fmuSourceStream << "    if(spCoreComponentSystem->isSimulationOk())\n";
+    fmuSourceStream << "    {\n";
+    fmuSourceStream << "        double timestep = spCoreComponentSystem->getDesiredTimeStep();\n";
+    fmuSourceStream << "        spCoreComponentSystem->simulate(time, time+timestep);\n";
+    fmuSourceStream << "        time = time+timestep;\n";
+    fmuSourceStream << "    }\n";
+    fmuSourceStream << "    else\n";
+    fmuSourceStream << "    {\n";
+    fmuSourceStream << "        cout << \"Simulation failed!\";\n";
+    fmuSourceStream << "    }\n";
+    fmuSourceStream << "}\n\n";
+    fmuSourceStream << "double getVariable(char* component, char* port, size_t idx)\n";
+    fmuSourceStream << "{\n";
+    fmuSourceStream << "    return spCoreComponentSystem->getComponent(component)->getPort(port)->readNode(idx);\n";
+    fmuSourceStream << "}\n";
+    fmuSourceFile.close();
+
+    QTextStream clBatchStream(&clBatchFile);
+    clBatchStream << "echo Compiling Visual Studio libraries...\n";
+    clBatchStream << "if defined VS90COMNTOOLS (call \"%VS90COMNTOOLS%\\vsvars32.bat\") else ^\n";
+    clBatchStream << "if defined VS80COMNTOOLS (call \"%VS80COMNTOOLS%\\vsvars32.bat\")\n";
+    clBatchStream << "cl -LD -nologo -DWIN32 -DWRAPPERCOMPILATION HopsanFMU.cpp /I \. /I \include\HopsanCore.h HopsanCore.lib\n";
+    clBatchFile.close();
+
+    //Copy binaries to export directory
+    QFile dllFile(gExecPath + "/../binVC/HopsanCore.dll");
+    dllFile.copy(savePath + "/HopsanCore.dll");
+    QFile libFile(gExecPath + "/../binVC/HopsanCore.lib");
+    libFile.copy(savePath + "/HopsanCore.lib");
+    QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
+    expFile.copy(savePath + "/HopsanCore.exp");
+
+    //Copy include files to export directory
+    copyIncludeFilesToDir(savePath);
+
+    //Save model to hmf in export directory
+    //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
+    QDomDocument domDocument;
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
+    saveToDomElement(hmfRoot);
+    const int IndentSize = 4;
+    QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
+    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        return;
+    }
+    QTextStream out(&xmlhmf);
+    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+    domDocument.save(out, IndentSize);
+
+    //Execute HopsanFMU compile script
+    QProcess p;
+    p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compile.bat");
+    p.waitForFinished();
+
+    //Copy FMI compilation files to export directory
+    QFile buildFmuFile(gExecPath + "/../ThirdParty/fmi/build_fmu.bat");
+    buildFmuFile.copy(savePath + "/build_fmu.bat");
+    QFile fmuModelFunctionsHFile(gExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
+    fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
+    QFile fmiModelTypesHFile(gExecPath + "/../ThirdParty/fmi/fmiModelTypes.h");
+    fmiModelTypesHFile.copy(savePath + "/fmiModelTypes.h");
+    QFile fmiTemplateCFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.c");
+    fmiTemplateCFile.copy(savePath + "/fmuTemplate.c");
+    QFile fmiTemplateHFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
+    fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
+
+    //Execute HMU compile script
+    p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me bodetest");
+    p.waitForFinished();
+
+    saveDir.mkpath("fmu/binaries/win32");
+    QFile modelDllFile(savePath + "/" + modelName + ".dll");
+    modelDllFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".dll");
+    QFile modelLibFile(savePath + "/" + modelName + ".lib");
+    modelLibFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".lib");
+    dllFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.dll");
+    libFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.lib");
+    QFile hopsanFMUdllFile(savePath + "/HopsanFMU.dll");
+    hopsanFMUdllFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.dll");
+    QFile hopsanFMUlibFile(savePath + "/HopsanFMU.lib");
+    hopsanFMUlibFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.lib");
+    QFile modelFile(savePath + "/" + modelName + ".hmf");
+    modelFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".hmf");
+    modelDescriptionFile.copy(savePath + "/fmu/ModelDescription.xml");
+
+
+    QString fmuFileName = savePath + "/" + modelName + ".fmu";
+
+    p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/");
+    p.waitForFinished();
+    qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/";
+
+    //Clean up temporary files
+    saveDir.setPath(savePath);
+    saveDir.remove("compile.bat");
+    saveDir.remove("HopsanFMU.cpp");
+    saveDir.remove("HopsanFMU.obj");
+    //saveDir.remove("HopsanFMU.lib");
+    //saveDir.remove("HopsanCore.lib");
+    saveDir.remove("HopsanCore.exp");
+    saveDir.remove("build_fmu.bat");
+    saveDir.remove("fmiModelFunctions.h");
+    saveDir.remove("fmiModelTypes.h");
+    saveDir.remove("fmuTemplate.c");
+    saveDir.remove("fmuTemplate.h");
+    saveDir.remove(modelName + ".c");
+    saveDir.remove(modelName + ".exp");
+    //saveDir.remove(modelName + ".lib");
+    saveDir.remove(modelName + ".obj");
+    saveDir.remove("HopsanFMU.exp");
+    saveDir.remove("HopsanFMU.h");
+    removeDir(savePath + "/include");
+    removeDir(savePath + "/fmu");
 }
 
 
@@ -745,8 +1055,7 @@ void GUISystem::createSimulinkSourceFiles()
 
     QTextStream wrapperStream(&wrapperFile);
     wrapperStream << "/*-----------------------------------------------------------------------------\n";
-    wrapperStream << "This source file is part of Hopsan NG\n";
-    wrapperStream << "\n";
+    wrapperStream << "This source file is part of Hopsan NG\n\n";
     wrapperStream << "Copyright (c) 2011\n";
     wrapperStream << "Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,\n";
     wrapperStream << "Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack\n";
@@ -757,11 +1066,9 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "Mechatronic Systems (Flumes) at Linköping University. Modifying, using or\n";
     wrapperStream << "redistributing any part of this file is prohibited without explicit\n";
     wrapperStream << "permission from the copyright holders.\n";
-    wrapperStream << "-----------------------------------------------------------------------------*/\n";
-    wrapperStream << "\n";
+    wrapperStream << "-----------------------------------------------------------------------------*/\n\n";
     wrapperStream << "#define S_FUNCTION_NAME HopsanSimulink\n";
-    wrapperStream << "#define S_FUNCTION_LEVEL 2\n";
-    wrapperStream << "\n";
+    wrapperStream << "#define S_FUNCTION_LEVEL 2\n\n";
     wrapperStream << "#include \"simstruc.h\"\n";
     wrapperStream << "#include <sstream>\n";
     wrapperStream << "#include \"include/HopsanCore.h\"\n";
@@ -794,20 +1101,16 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "#include \"include/CoreUtilities/FindUniqueName.h\"\n";
     wrapperStream << "#include \"include/CoreUtilities/HopsanCoreMessageHandler.h\"\n";
     wrapperStream << "#include \"include/CoreUtilities/LoadExternal.h\"\n";
-    //wrapperStream << "#include \"include/Components/Components.h\"\n";
-    wrapperStream << "\n";
-    wrapperStream << "using namespace hopsan;\n";
-    wrapperStream << "\n";
-    wrapperStream << "ComponentSystem* pComponentSystem;\n";
-    wrapperStream << "\n";
+    //wrapperStream << "#include \"include/Components/Components.h\"\n\n";
+    wrapperStream << "using namespace hopsan;\n\n";
+    wrapperStream << "ComponentSystem* pComponentSystem;\n\n";
     wrapperStream << "static void mdlInitializeSizes(SimStruct *S)\n";
     wrapperStream << "{\n";
     wrapperStream << "    ssSetNumSFcnParams(S, 0);\n";
     wrapperStream << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))\n";
     wrapperStream << "    {\n";
     wrapperStream << "        return;\n";
-    wrapperStream << "    }\n";
-    wrapperStream << "\n";
+    wrapperStream << "    }\n\n";
     wrapperStream << "    //Define S-function input signals\n";
     wrapperStream << "    if (!ssSetNumInputPorts(S," << nTotalInputsString << ")) return;				//Number of input signals\n";
     int i,j;
@@ -911,20 +1214,16 @@ void GUISystem::createSimulinkSourceFiles()
     }
     j=nTotalOutputs-1;
     wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Debug output signal\n";
-    portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG''); ";
-    wrapperStream << "\n";
-    wrapperStream << "    ssSetNumSampleTimes(S, 1);\n";
-    wrapperStream << "\n";
-    wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n";
-    wrapperStream << "\n";
+    portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG''); \n";
+    wrapperStream << "    ssSetNumSampleTimes(S, 1);\n\n";
+    wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n\n";
     wrapperStream << "    std::string hmfFilePath = \"" << mModelFileInfo.fileName() << "\";\n";
     wrapperStream << "    hopsan::HmfLoader coreHmfLoader;\n";
     wrapperStream << "    double startT = ssGetTStart(S);\n";
     wrapperStream << "    double stopT = ssGetTFinal(S);\n";
     wrapperStream << "    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
     wrapperStream << "    pComponentSystem->setDesiredTimestep(0.001);\n";
-    wrapperStream << "    pComponentSystem->initializeComponentsOnly();\n";
-    wrapperStream << "\n";
+    wrapperStream << "    pComponentSystem->initializeComponentsOnly();\n\n";
     wrapperStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                               //Run the port label script\n";
     wrapperStream << "}\n";
     wrapperStream << "\n";
@@ -932,13 +1231,11 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "{\n";
     wrapperStream << "    ssSetSampleTime(S, 0, 0.001);\n";
     wrapperStream << "    ssSetOffsetTime(S, 0, 0.0);\n";
-    wrapperStream << "}\n";
-    wrapperStream << "\n";
+    wrapperStream << "}\n\n";
     wrapperStream << "static void mdlOutputs(SimStruct *S, int_T tid)\n";
     wrapperStream << "{\n";
     wrapperStream << "    //S-function input signals\n";
-    wrapperStream << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
-    wrapperStream << "\n";
+    wrapperStream << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n\n";
     wrapperStream << "    //S-function output signals\n";
     for(int i=0; i<nTotalOutputs; ++i)
     {
@@ -1079,100 +1376,7 @@ void GUISystem::createSimulinkSourceFiles()
     QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
     expFile.copy(savePath + "/HopsanCore.exp");
 
-    saveDir.mkdir("include");
-    QFile componentH(gExecPath + QString(INCLUDEPATH) + "Component.h");
-    componentH.copy(saveDir.path() + "/include/Component.h");
-    QFile componentSystemH(gExecPath + QString(INCLUDEPATH) + "ComponentSystem.h");
-    componentSystemH.copy(saveDir.path() + "/include/ComponentSystem.h");
-    QFile componentEssentialsH(gExecPath + QString(INCLUDEPATH) + "ComponentEssentials.h");
-    componentEssentialsH.copy(saveDir.path() + "/include/ComponentEssentials.h");
-    QFile componentUtilitiesH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities.h");
-    componentUtilitiesH.copy(saveDir.path() + "/include/ComponentUtilities.h");
-    QFile hopsanCoreH(gExecPath + QString(INCLUDEPATH) + "HopsanCore.h");
-    hopsanCoreH.copy(saveDir.path() + "/include/HopsanCore.h");
-    QFile hopsanEssentialsH(gExecPath + QString(INCLUDEPATH) + "HopsanEssentials.h");
-    hopsanEssentialsH.copy(saveDir.path() + "/include/HopsanEssentials.h");
-    QFile nodeH(gExecPath + QString(INCLUDEPATH) + "Node.h");
-    nodeH.copy(saveDir.path() + "/include/Node.h");
-    QFile portH(gExecPath + QString(INCLUDEPATH) + "Port.h");
-    portH.copy(saveDir.path() + "/include/Port.h");
-    QFile win32dllH(gExecPath + QString(INCLUDEPATH) + "win32dll.h");
-    win32dllH.copy(saveDir.path() + "/include/win32dll.h");
-
-    QDir componentsDir;
-    componentsDir.mkdir(savePath + "/include/Components");
-    QFile componentsH(gExecPath + QString(INCLUDEPATH) + "Components/Components.h");
-    componentsH.copy(saveDir.path() + "/include/Components/Components.h");
-
-    QDir componentUtilitiesDir;
-    componentUtilitiesDir.mkdir(savePath + "/include/ComponentUtilities");
-    QFile auxiliarySimulationFunctionsH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/AuxiliarySimulationFunctions.h");
-    auxiliarySimulationFunctionsH.copy(saveDir.path() + "/include/ComponentUtilities/AuxiliarySimulationFunctions.h");
-    QFile csvParserH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/CSVParser.h");
-    csvParserH.copy(saveDir.path() + "/include/ComponentUtilities/CSVParser.h");
-    QFile delayH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Delay.hpp");
-    delayH.copy(saveDir.path() + "/include/ComponentUtilities/Delay.hpp");
-    QFile doubleIntegratorWithDampingH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDamping.h");
-    doubleIntegratorWithDampingH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDamping.h");
-    QFile doubleIntegratorWithDampingAndCoulumbFrictionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
-    doubleIntegratorWithDampingAndCoulumbFrictionH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
-    QFile firstOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/FirstOrderTransferFunction.h");
-    firstOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/FirstOrderTransferFunction.h");
-    QFile integratorH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Integrator.h");
-    integratorH.copy(saveDir.path() + "/include/ComponentUtilities/Integrator.h");
-    QFile integratorLimitedH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/IntegratorLimited.h");
-    integratorLimitedH.copy(saveDir.path() + "/include/ComponentUtilities/IntegratorLimited.h");
-    QFile ludcmpH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ludcmp.h");
-    ludcmpH.copy(saveDir.path() + "/include/ComponentUtilities/ludcmp.h");
-    QFile matrixH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/matrix.h");
-    matrixH.copy(saveDir.path() + "/include/ComponentUtilities/matrix.h");
-    QFile readDataCurveH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ReadDataCurve.h");
-    readDataCurveH.copy(saveDir.path() + "/include/ComponentUtilities/ReadDataCurve.h");
-    QFile secondOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/SecondOrderTransferFunction.h");
-    secondOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/SecondOrderTransferFunction.h");
-    QFile turbulentFlowFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/TurbulentFlowFunction.h");
-    turbulentFlowFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/TurbulentFlowFunction.h");
-    QFile valveHysteresisH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ValveHysteresis.h");
-    valveHysteresisH.copy(saveDir.path() + "/include/ComponentUtilities/ValveHysteresis.h");
-    QFile whiteGaussianNoiseH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/WhiteGaussianNoise.h");
-    whiteGaussianNoiseH.copy(saveDir.path() + "/include/ComponentUtilities/WhiteGaussianNoise.h");
-
-    QDir coreUtilitiesDir;
-    coreUtilitiesDir.mkdir(savePath + "/include/CoreUtilities");
-    QFile hmfLoaderH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HmfLoader.h");
-    hmfLoaderH.copy(saveDir.path() + "/include/CoreUtilities/HmfLoader.h");
-    QFile classFactoryHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactory.hpp");
-    classFactoryHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactory.hpp");
-    QFile classFactoryStatusCheckHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactoryStatusCheck.hpp");
-    classFactoryStatusCheckHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactoryStatusCheck.hpp");
-    QFile findUniqueNameH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/FindUniqueName.h");
-    findUniqueNameH.copy(saveDir.path() + "/include/CoreUtilities/FindUniqueName.h");
-    QFile hopsanCoreMessageHandlerH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HopsanCoreMessageHandler.h");
-    hopsanCoreMessageHandlerH.copy(saveDir.path() + "/include/CoreUtilities/HopsanCoreMessageHandler.h");
-    QFile loadExternalH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/LoadExternal.h");
-    loadExternalH.copy(saveDir.path() + "/include/CoreUtilities/LoadExternal.h");
-
-    QDir nodesDir;
-    nodesDir.mkdir(savePath + "/include/Nodes");
-    QFile nodesH(gExecPath + QString(INCLUDEPATH) + "/Nodes/Nodes.h");
-    nodesH.copy(saveDir.path() + "/include/Nodes/Nodes.h");
-
-    QDir dependenciesDir;
-    dependenciesDir.mkdir(savePath + "/include/Dependencies");
-
-    QDir csvParserDir;
-    csvParserDir.mkpath(savePath + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser");
-    QFile csv_ParserH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
-    csv_ParserH.copy(saveDir.path() + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
-
-    QDir rapidXmlDir;
-    rapidXmlDir.mkdir(savePath + "/include/Dependencies/rapidxml-1.13");
-    QFile rapidXmlH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml.hpp");
-    rapidXmlH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml.hpp");
-    QFile rapidXmlUtilsH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
-    rapidXmlUtilsH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
-
-
+    copyIncludeFilesToDir(savePath);
 
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
         //Save xml document

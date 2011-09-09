@@ -864,6 +864,11 @@ void ProjectTabWidget::saveCurrentModelToWrappedCode()
 }
 
 
+void ProjectTabWidget::createFMUFromCurrentModel()
+{
+    qobject_cast<GUISystem*>(getCurrentContainer())->createFMUSourceFiles();
+}
+
 
 void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 {

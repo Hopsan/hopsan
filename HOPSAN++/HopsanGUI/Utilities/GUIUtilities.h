@@ -54,5 +54,7 @@ QString parseVariableUnit(QString input);
 QVector< std::complex<double> > realToComplex(QVector<double> realVector);
 void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
+void removeDir(QString path);
+void copyIncludeFilesToDir(QString path);
 
 #endif // GUIUTILITIES_H

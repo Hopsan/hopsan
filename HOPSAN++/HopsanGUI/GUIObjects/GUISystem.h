@@ -65,6 +65,7 @@ public:
     void setModelFileInfo(QFile &rFile);
 
     void saveToWrappedCode();
+    void createFMUSourceFiles();
     void createSimulinkSourceFiles();
 
     QVector<QString> getParameterNames();
