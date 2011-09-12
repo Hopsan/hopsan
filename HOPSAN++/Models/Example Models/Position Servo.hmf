@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.5" y="2500.5" zoom="1"/>
+            <viewport x="2501" y="2501" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -18,13 +18,24 @@
             </hopsanobjectappearance>
             <hopsanundo>
                 <post number="-1"/>
-                <post number="0"/>
-                <post number="1"/>
-                <post number="2" type="aligny"/>
-                <post number="3"/>
-                <post number="4"/>
-                <post number="5"/>
-                <post number="6" type="aligny"/>
+                <post number="0" type="changedparameters"/>
+                <post number="1" type="changedparameters"/>
+                <post number="2" type="changedparameters"/>
+                <post number="3" type="changedparameters"/>
+                <post number="4" type="changedparameters"/>
+                <post number="5" type="changedparameters"/>
+                <post number="6" type="changedparameters"/>
+                <post number="7" type="changedparameters"/>
+                <post number="8" type="changedparameters"/>
+                <post number="9" type="changedparameters"/>
+                <post number="10" type="changedparameters"/>
+                <post number="11" type="changedparameters"/>
+                <post number="12" type="changedparameters"/>
+                <post number="13" type="changedparameters"/>
+                <post number="14" type="changedparameters"/>
+                <post number="15" type="changedparameters"/>
+                <post number="16" type="changedparameters"/>
+                <post number="17" type="changedparameters"/>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="5" timestep="0.001" start="0"/>
@@ -32,7 +43,6 @@
         <objects>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
-                <startvalues/>
                 <hopsangui>
                     <pose x="2712.00000000000000000000" y="2515" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -41,12 +51,11 @@
             <component typename="MechanicTranslationalMass" name="Translational Mass">
                 <parameters>
                     <parameter value="100" name="m"/>
-                    <parameter value="100" name="B"/>
+                    <parameter value="0" name="B"/>
                     <parameter value="0" name="k"/>
                     <parameter value="0" name="x_min"/>
                     <parameter value="1" name="x_max"/>
                 </parameters>
-                <startvalues/>
                 <hopsangui>
                     <pose x="2710.00000000000000000000" y="2422" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -58,11 +67,6 @@
                     <parameter value="0.2" name="P1::Position"/>
                     <parameter value="10" name="F"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="P1" variable="Velocity" value="0"/>
-                    <startvalue portname="P1" variable="" value="0"/>
-                    <startvalue portname="P1" variable="Position" value="0.2"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2798.00000000000000000000" y="2422" flipped="0" a="180"/>
                     <nametext position="0" visible="0"/>
@@ -77,15 +81,7 @@
                     <parameter value="0.3" name="alpha"/>
                     <parameter value="0" name="noname subport::Flow"/>
                     <parameter value="0" name="noname subport::Pressure"/>
-                    <parameter value="0" name="noname subport::Flow"/>
-                    <parameter value="0" name="noname subport::Pressure"/>
-                    <parameter value="0" name="noname subport::Flow"/>
-                    <parameter value="0" name="noname subport::Pressure"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="Pressure" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2573.00000000000000000000" y="2602" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
@@ -95,9 +91,6 @@
                 <parameters>
                     <parameter value="0" name="out::Value"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2388.00000000000000000000" y="2525" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -109,7 +102,6 @@
                     <parameter value="5e-005" name="D_p"/>
                     <parameter value="1e-012" name="C_l,p"/>
                 </parameters>
-                <startvalues/>
                 <hopsangui>
                     <pose x="2466.00000000000000000000" y="2680" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -120,10 +112,6 @@
                     <parameter value="0" name="P1::Flow"/>
                     <parameter value="100000" name="p"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2573.00079999999979918357" y="2763" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -135,9 +123,6 @@
                     <parameter value="0.5" name="y_A"/>
                     <parameter value="1" name="t_step"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="out" variable="" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2304.00000000000000000000" y="2525" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -158,19 +143,10 @@
                     <parameter value="100" name="m_e"/>
                     <parameter value="0.0003" name="V_1"/>
                     <parameter value="0.0003" name="V_2"/>
-                    <parameter value="100" name="B_p"/>
+                    <parameter value="0" name="B_p"/>
                     <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="1e-011" name="c_leak"/>
+                    <parameter value="0" name="c_leak"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="Pressure" value="0"/>
-                    <startvalue portname="P2" variable="Flow" value="0"/>
-                    <startvalue portname="P2" variable="Pressure" value="0"/>
-                    <startvalue portname="P3" variable="Velocity" value="0"/>
-                    <startvalue portname="P3" variable="Force" value="0"/>
-                    <startvalue portname="P3" variable="Position" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2598.00000000000000000000" y="2422" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -187,16 +163,13 @@
                     <parameter value="1" name="f_at"/>
                     <parameter value="1" name="f_bt"/>
                     <parameter value="0.01" name="x_v,max"/>
-                    <parameter value="1e-006" name="x_pa"/>
-                    <parameter value="1e-006" name="x_pb"/>
-                    <parameter value="1e-006" name="x_at"/>
-                    <parameter value="1e-006" name="x_bt"/>
+                    <parameter value="1e-4" name="x_pa"/>
+                    <parameter value="1e-4" name="x_pb"/>
+                    <parameter value="1e-4" name="x_at"/>
+                    <parameter value="1e-4" name="x_bt"/>
                     <parameter value="200" name="omega_h"/>
                     <parameter value="1" name="delta_h"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="xv" variable="Value" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2563.00000000000000000000" y="2515" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -207,10 +180,6 @@
                     <parameter value="0" name="P1::Flow"/>
                     <parameter value="100000" name="p"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2593.00000000000000000000" y="2554" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -220,9 +189,6 @@
                 <parameters>
                     <parameter value="0" name="out::Value"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2766.00000000000000000000" y="2367" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -233,10 +199,6 @@
                     <parameter value="0" name="P1::Flow"/>
                     <parameter value="100000" name="p"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="P1" variable="Flow" value="0"/>
-                    <startvalue portname="P1" variable="" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2481.00300000000015643309" y="2763" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -245,11 +207,8 @@
             <component typename="SignalGain" name="Gain">
                 <parameters>
                     <parameter value="0" name="out::Value"/>
-                    <parameter value="0.015" name="k"/>
+                    <parameter value="0.007" name="k"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="out" variable="Value" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2436.00000000000000000000" y="2525" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -264,7 +223,6 @@
                     <parameter value="0.01" name="q_nom"/>
                     <parameter value="0" name="p_h"/>
                 </parameters>
-                <startvalues/>
                 <hopsangui>
                     <pose x="2575.00000000000000000000" y="2682" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
