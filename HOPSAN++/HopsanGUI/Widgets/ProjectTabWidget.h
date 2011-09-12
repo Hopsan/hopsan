@@ -89,6 +89,7 @@ public:
     int getLastSimulationTime();
     bool isEditingEnabled();
     ProjectTabWidget *mpParentProjectTabWidget;
+    GraphicsView *mpGraphicsView;
 
 public slots:
     bool simulate();
@@ -111,7 +112,6 @@ private:
 
     bool mIsSaved;
     GUISystem *mpSystem;
-    GraphicsView *mpGraphicsView;
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWidget;
     int mLastSimulationTime;

@@ -70,6 +70,10 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
         //Create the textbox containing the name
     mpNameText = new GUIModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
+    if(this->mpParentContainerObject != 0)
+    {
+        this->setNameTextScale(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->getZoomFactor());
+    }
     this->setNameTextPos(0); //Set initial name text position
     if(pParentContainer != 0 && pParentContainer->areNamesHidden())
     {
