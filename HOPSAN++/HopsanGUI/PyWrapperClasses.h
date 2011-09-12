@@ -221,7 +221,11 @@ public slots:
 
     bool simulate(MainWindow* o)
     {
-        return o->mpProjectTabs->getCurrentTab()->simulate();
+        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
+        o->mpConfig->setEnableProgressBar(false);
+        bool success = o->mpProjectTabs->getCurrentTab()->simulate();
+        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
+        return success;
     }
 
     double getParameter(MainWindow* o, const QString& compName, const QString& parName)
