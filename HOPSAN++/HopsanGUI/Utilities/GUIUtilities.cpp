@@ -345,7 +345,7 @@ QVector< complex<double> > realToComplex(QVector<double> realVector)
 //! @param data Vector with data
 void FFT(QVector< complex<double> > &data)
 {
-    unsigned long n = data.size();       // n = data.size()
+    unsigned long n = data.size();
 
     qDebug() << "FFT of vector with size " << n;
 
@@ -418,6 +418,8 @@ void reduceVectorSize(QVector<double> &vector, int newSize)
     {
         tempVector.append(vector.at(oldSize/newSize*i));
     }
+
+    vector = tempVector;
 }
 
 

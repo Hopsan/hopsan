@@ -746,15 +746,38 @@ void PlotWindow::createBodePlotFromDialog()
 
 void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax)
 {
-    //! @todo Make sure data vector is 2^n
+    //Create temporary real vectors
+    QVector<double> realYvector = pInputCurve->getDataVector();
+    QVector<double> realXvector = pOutputCurve->getDataVector();
 
-    //Create a complex vector
-    QVector< std::complex<double> > Y = realToComplex(pInputCurve->getDataVector());
-    QVector< std::complex<double> > X = realToComplex(pOutputCurve->getDataVector());
+    //Abort and inform user if vectors are not of same size
+    if(realXvector.size() != realYvector.size())
+    {
+        QMessageBox::warning(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
+                             "Input and output vector must be of same size.");
+        return;
+    }
 
-    //Apply the fourier transform
-    FFT(Y);
+    //Reduce vector size if they are not equal to an even potential of 2, and inform user
+    int n = pow(2, int(log2(realXvector.size())));
+    if(n != realXvector.size())     //Vector is not an exact potential, so reduce it
+    {
+        QString oldString, newString;
+        oldString.setNum(realXvector.size());
+        newString.setNum(n);
+        QMessageBox::information(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
+                                 "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
+        reduceVectorSize(realXvector, n);
+        reduceVectorSize(realYvector, n);
+    }
+
+    //Create complex vectors
+    QVector< std::complex<double> > Y = realToComplex(realYvector);
+    QVector< std::complex<double> > X = realToComplex(realXvector);
+
+    //Apply the fourier transforms
     FFT(X);
+    FFT(Y);
 
     //Divide the fourier transform elementwise and take their absolute value
     QVector< std::complex<double> > G;
@@ -2499,14 +2522,17 @@ void PlotTab::dragMoveEvent(QDragMoveEvent *event)
     if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && getNumberOfCurves(FIRSTPLOT) >= 1)
     {
         mpHoverRect->setGeometry(getPlot()->canvas()->x()+9, getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10, getPlot()->canvas()->width(), getPlot()->canvas()->height()/2);
+        mpParentPlotWindow->showHelpPopupMessage("Replace X-axis with selected variable.");
     }
     else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
     {
         mpHoverRect->setGeometry(getPlot()->canvas()->x()+9, getPlot()->canvas()->y()+9, getPlot()->canvas()->width()/2, getPlot()->canvas()->height());
+        mpParentPlotWindow->showHelpPopupMessage("Add selected variable to left Y-axis.");
     }
     else
     {
         mpHoverRect->setGeometry(getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2, getPlot()->canvas()->y()+9, getPlot()->canvas()->width()/2, getPlot()->canvas()->height());
+        mpParentPlotWindow->showHelpPopupMessage("Add selected variable to right Y-axis.");
     }
     QWidget::dragMoveEvent(event);
 }
@@ -2771,8 +2797,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mDataVector = mpContainerObject->getPlotData(generation, componentName, portName, dataName);
     mTimeVector = mpContainerObject->getTimeVector(generation, componentName, portName);
 
-    qDebug() << "mDataVector = " << mDataVector;
-    qDebug() << "mTimeVector = " << mTimeVector;
+    //qDebug() << "mDataVector = " << mDataVector;
+    //qDebug() << "mTimeVector = " << mTimeVector;
 
         //Create the actual curve
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
