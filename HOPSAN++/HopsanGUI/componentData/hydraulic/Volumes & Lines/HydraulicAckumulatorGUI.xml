@@ -1,0 +1,22 @@
+<hopsanobjectappearance version='0.1'>
+ 
+ <modelobject typename='HydraulicAckumulator'
+     displayname='HydraulicAckumulator'>
+  
+  <icon isopath='ackumulator_iso.svg'
+      iconrotation='ON'
+      userpath='ackumulator_user.svg'/>
+   <portpose x='0.5'
+       y='1'
+       a='90'
+       name='P1' />
+   <portpose x='0.5'
+       y='0'
+       a='270'
+       name='PVa' />
+   <portpose x='1'
+       y='0.5'
+       a='0'
+       name='Ppa' />
+</modelobject>
+</hopsanobjectappearance>
