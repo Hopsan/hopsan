@@ -1,0 +1,485 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     16218,        476]
+NotebookOptionsPosition[     14404,        418]
+NotebookOutlinePosition[     14826,        434]
+CellTagsIndexPosition[     14783,        431]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData["+"], "Input",
+ CellChangeTimes->{3.523285651734375*^9}],
+
+Cell[CellGroupData[{
+
+Cell["Aircraft System Components", "Title",
+ CellChangeTimes->{{3.52242986153125*^9, 3.5224298620625*^9}}],
+
+Cell["Fuel Tank", "Subtitle",
+ CellChangeTimes->{{3.522430363453125*^9, 3.522430369625*^9}}],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG02.mx"}]], "Input",
+ PageWidth->WindowWidth,
+ CellChangeTimes->{{3.5039042069364696`*^9, 3.5039042084051447`*^9}, 
+   3.5039043176026783`*^9, {3.503905207466113*^9, 3.5039052078411083`*^9}, {
+   3.5039109774941587`*^9, 3.5039109827285337`*^9}, 3.51854719303125*^9, {
+   3.521780725765625*^9, 3.521780744375*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Aero\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<FuelTank\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "brief", "=", "\"\<Calulates the mass of remaining fuel in tank\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFile", "[", 
+   RowBox[{"domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ResetComponentVariables", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.522429929546875*^9, 3.522429972765625*^9}, {
+  3.5224301489375*^9, 3.522430155421875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "  ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+     "massfuel0", ",", "0.", ",", "double", ",", "\"\<kg/s\>\"", ",", 
+      "\"\<The intitial fuel mass\>\""}], "}"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.522430004390625*^9, 3.522430004390625*^9}, 
+   3.5224300528125*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "  ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+     "massflow", ",", "0.", ",", "double", ",", "\"\<kg/s\>\"", ",", 
+      "\"\<Mass flow rate\>\""}], "}"}], "\n", "\t\t\t\t", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52242999471875*^9, 3.52242999471875*^9}, 
+   3.522430053078125*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "  ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "massfuel", ",", "0.", ",", "double", ",", "\"\<kg\>\"", ",", 
+       "\"\<Fuel mass\>\""}], "}"}], ",", "\n", "\t\t\t\t\t", 
+     RowBox[{"{", 
+      RowBox[{
+      "consfuel", ",", "0.", ",", "double", ",", "\"\<kg\>\"", ",", 
+       "\"\<Consumed fuel mass\>\""}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.522429987234375*^9, 3.522429987234375*^9}, {
+  3.522430053296875*^9, 3.522430053515625*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDa", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Der", "[", "consfuel", "]"}], "-", "massflow"}], "}"}], 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{3.52328838171875*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"boudaryEquations", " ", "=", " ", 
+   RowBox[{"{", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.522430069765625*^9, 3.522430069765625*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", " ", "=", " ", 
+   RowBox[{"{", "consfuel", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52243007746875*^9, 3.522430082921875*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"expressions", " ", "=", 
+  RowBox[{"{", "\n", "\t\t", 
+   RowBox[{"{", 
+    RowBox[{"massfuel", ",", 
+     RowBox[{"LimitReal", "[", 
+      RowBox[{
+       RowBox[{"massfuel0", "-", "consfuel"}], ",", "0.", ",", "massfuel0"}], 
+      "]"}]}], "}"}], "\n", "\t\t", "}"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{"massfuel", ",", 
+    RowBox[{"LimitReal", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "consfuel"}], "+", "massfuel0"}], ",", "0.`", ",", 
+      "massfuel0"}], "]"}]}], "}"}], "}"}]], "Output",
+ CellChangeTimes->{3.5224301621875*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"variableLimits", "=", 
+  RowBox[{"{", 
+   RowBox[{"{", 
+    RowBox[{"consfuel", ",", "0", ",", "massfuel0"}], "}"}], "}"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{"consfuel", ",", "0", ",", "massfuel0"}], "}"}], "}"}]], "Output",
+ CellChangeTimes->{3.522430162203125*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(\\\"Untitled-1\\\" \
+\[LeftDoubleBracket] 1 \[RightDoubleBracket]\\)\[NoBreak] is longer than \
+depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\
+\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.52243016221875*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(\\\"Untitled-1\\\" \
+\[LeftDoubleBracket] 2 \[RightDoubleBracket]\\)\[NoBreak] is longer than \
+depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\
+\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.52243016225*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"StringJoin", "::", "string"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"String expected at position \[NoBreak]\\!\\(2\\)\[NoBreak] \
+in \[NoBreak]\\!\\(\\\"Untitled-1[[1]]/\\\" <> \\(\\(\\\"Untitled-1\\\" \
+\[LeftDoubleBracket] 2 \[RightDoubleBracket]\\)\\)\\)\[NoBreak]. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/StringJoin\\\", ButtonNote -> \
+\\\"StringJoin::string\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.522430162640625*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"StringJoin", "::", "string"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"String expected at position \[NoBreak]\\!\\(2\\)\[NoBreak] \
+in \[NoBreak]\\!\\(\\\"Untitled-1[[1]]/\\\" <> \\(\\(\\\"Untitled-1\\\" \
+\[LeftDoubleBracket] 2 \[RightDoubleBracket]\\)\\)\\)\[NoBreak]. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/StringJoin\\\", ButtonNote -> \
+\\\"StringJoin::string\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.522430162640625*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Array", "::", "ilsmn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Single or list of non-negative machine-sized integers \
+expected at position \[NoBreak]\\!\\(2\\)\[NoBreak] of \[NoBreak]\\!\\(Array[\
+\\(\\(a, \\(\\({\\({0}\\)}\\)\\), \\(\\({0}\\)\\)\\)\\)]\\)\[NoBreak]. \\!\\(\
+\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/ilsmn\\\", \
+ButtonNote -> \\\"Array::ilsmn\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.522430162828125*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.5`\\)\[NoBreak] in \[NoBreak]\\!\\(\\\"x\
+\\\" \[Rule] 0.5`\\)\[NoBreak] is not a valid value for an attribute in an \
+XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.522430162890625*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.522430162890625*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Jet Engine", "Subtitle",
+ CellChangeTimes->{{3.522430442609375*^9, 3.522430450578125*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Aero\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<JetEngine\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "brief", "=", "\"\<Calulates the mass of remaining fuel in tank\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentQ\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFile", "[", 
+   RowBox[{"domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ResetComponentVariables", "[", "]"}]}], "Input",
+ CellChangeTimes->{{3.52243043575*^9, 3.522430437953125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"uin", ",", "double", ",", "\"\<Throttle setting 0-1\>\""}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"altitude", ",", "double", ",", "\"\<Altitude [m]\>\""}], "}"}],
+      ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"speed", ",", "double", ",", "\"\<Air speed [m/s]\>\""}], 
+      "}"}]}], "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.5224305394375*^9, 3.5224305394375*^9}, {
+   3.52243058465625*^9, 3.5224305981875*^9}, 3.52328822021875*^9, {
+   3.5232883535*^9, 3.523288359328125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"thrustmax", ",", "double", ",", "\"\<Max thrust [N]\>\""}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "SFC", ",", "double", ",", 
+       "\"\<Nominal specific fuel consumption\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"BR", ",", "double", ",", "\"\<Bypass ratio\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"thau", ",", "double", ",", "\"\<Engine time constant\>\""}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "Cspeed", ",", "double", ",", "\"\<thrust-speed coefficient\>\""}], 
+      "}"}]}], "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.522430544015625*^9, 3.522430601609375*^9}, {
+   3.522431017015625*^9, 3.5224310198125*^9}, 3.52328822196875*^9, {
+   3.52328833575*^9, 3.5232883406875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"thrust", ",", "double", ",", "\"\<Thrust [N]\>\""}], "}"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"mfuel", ",", "double", ",", "\"\<Burnt fuel amount\>\""}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "Shspeed", ",", "double", ",", "\"\<Engine shaft speed [rad/sec]\>\""}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "qmfuel", ",", "double", ",", "\"\<Fuel, mass flow [kg/s]\>\""}], 
+      "}"}]}], "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.5224305513125*^9, 3.522430551328125*^9}, {
+   3.5224305858125*^9, 3.522430586890625*^9}, {3.522430995046875*^9, 
+   3.522431007625*^9}, 3.523288224421875*^9, 3.523288345421875*^9}],
+
+Cell[BoxData[
+ RowBox[{"thruste0", "=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"thrustmax", "*", "uin"}], ")"}], "/", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"thau", " ", "s"}], "+", "1"}], ")"}]}]}]], "Input",
+ CellChangeTimes->{{3.52243070378125*^9, 3.522430703796875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"thrustexpr", "=", 
+  RowBox[{"ExplicitTDForm", "[", 
+   RowBox[{"thrust", ",", "thruste0", ",", "h"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.52243071153125*^9, 3.52243071153125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDa", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"thrust", "-", "thruste0"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"mfuel", "-", 
+      RowBox[{"qmfuele", "/", "s"}]}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52243075090625*^9, 3.522430787703125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Shspeede", "=", 
+  RowBox[{"Cspeed", "*", "thrust"}]}]], "Input",
+ CellChangeTimes->{{3.52243072115625*^9, 3.52243072115625*^9}}],
+
+Cell[BoxData[
+ RowBox[{"qmfuele", "=", 
+  RowBox[{"SFC", "*", "thrust"}]}]], "Input",
+ CellChangeTimes->{{3.52243071571875*^9, 3.52243071571875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"systemVariables", "=", 
+  RowBox[{"{", 
+   RowBox[{"thrust", ",", "mfuel"}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.522430812890625*^9, 3.5224308593125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"Shspeed", ",", "Shspeede"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"qmfuel", ",", "qmfuele"}], "}"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52243073240625*^9, 3.52243073240625*^9}, {
+   3.5224309366875*^9, 3.522430975828125*^9}, 3.52328836871875*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{715, 775},
+WindowMargins->{{119, Automatic}, {Automatic, -7}},
+FrontEndVersion->"8.0 for Microsoft Windows (32-bit) (November 7, 2010)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "NaturalColor.nb", 
+  CharacterEncoding -> "WindowsANSI"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[557, 20, 69, 1, 41, "Input"],
+Cell[CellGroupData[{
+Cell[651, 25, 106, 1, 65, "Title"],
+Cell[760, 28, 92, 1, 23, "Subtitle"],
+Cell[855, 31, 374, 6, 41, "Input"],
+Cell[1232, 39, 919, 25, 202, "Input"],
+Cell[2154, 66, 354, 9, 41, "Input"],
+Cell[2511, 77, 365, 10, 62, "Input"],
+Cell[2879, 89, 557, 14, 62, "Input"],
+Cell[3439, 105, 262, 8, 41, "Input"],
+Cell[3704, 115, 177, 4, 41, "Input"],
+Cell[3884, 121, 187, 4, 41, "Input"],
+Cell[CellGroupData[{
+Cell[4096, 129, 306, 8, 82, "Input"],
+Cell[4405, 139, 300, 9, 40, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4742, 153, 159, 4, 41, "Input"],
+Cell[4904, 159, 164, 4, 40, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5105, 168, 63, 1, 41, "Input"],
+Cell[5171, 171, 523, 11, 21, "Message"],
+Cell[5697, 184, 520, 11, 21, "Message"],
+Cell[6220, 197, 579, 11, 21, "Message"],
+Cell[6802, 210, 579, 11, 21, "Message"],
+Cell[7384, 223, 584, 11, 21, "Message"],
+Cell[7971, 236, 573, 11, 39, "Message"],
+Cell[8547, 249, 458, 10, 21, "Message"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9042, 264, 96, 1, 23, "Subtitle"],
+Cell[9141, 267, 869, 24, 202, "Input"],
+Cell[10013, 293, 711, 16, 122, "Input"],
+Cell[10727, 311, 983, 25, 162, "Input"],
+Cell[11713, 338, 860, 21, 142, "Input"],
+Cell[12576, 361, 281, 8, 41, "Input"],
+Cell[12860, 371, 209, 4, 41, "Input"],
+Cell[13072, 377, 344, 8, 82, "Input"],
+Cell[13419, 387, 153, 3, 41, "Input"],
+Cell[13575, 392, 149, 3, 41, "Input"],
+Cell[13727, 397, 183, 4, 41, "Input"],
+Cell[13913, 403, 463, 11, 102, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
