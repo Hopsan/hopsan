@@ -85,6 +85,10 @@
 #include "Hydraulic/HydraulicPilotControlledCheckValve.hpp"
 #include "Hydraulic/HydraulicPilotClosableCheckValve.hpp"
 
+#include "Hydraulic/HydraulicPressureReliefValveTolerance.hpp"
+#include "Hydraulic/HydraulicCylinderCTolerance.hpp"
+#include "Hydraulic/HydraulicHoseTolerance.hpp"
+
 
 /* Signal Components */
 #include "Signal/SignalAbsoluteValue.hpp"

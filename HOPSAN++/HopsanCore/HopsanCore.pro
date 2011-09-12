@@ -267,9 +267,17 @@ HEADERS += win32dll.h \
     Components/Signal/SignalQuadRoute.hpp \
     Components/Signal/SignalBETest.hpp \
     Components/Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp \
-    Components/Hydraulic/HydraulicMultiTankC.hpp
+    Components/Hydraulic/HydraulicMultiTankC.hpp \
+    Components/Hydraulic/HydraulicPressureReliefValveTolerance.hpp \
+    Components/Hydraulic/HydraulicCylinderC - Copy.hpp \
+    Components/Hydraulic/HydraulicCylinderCTolerance.hpp \
+    Components/Hydraulic/HydraulicHoseTolerance.hpp
 
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
+
+
+
+
 

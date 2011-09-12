@@ -58,7 +58,7 @@ namespace hopsan {
 
         HydraulicPressureReliefValve() : ComponentQ()
         {
-            pref = 2000000;
+            pref = 20000000;
             tao = 0.01;
             Kcs = 0.00000001;
             Kcf = 0.00000001;
