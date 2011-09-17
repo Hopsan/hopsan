@@ -4,8 +4,7 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
-#include "math.h"
-#include "matrix.h"
+#include <math.h>
 
 //!
 //! @file HydraulicAckumulator.hpp
