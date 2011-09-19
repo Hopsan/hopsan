@@ -27,7 +27,7 @@
 
 #include "../common.h"
 #include "HopsanCore.h"
-#include "CoreAccess.h"
+#include "../CoreAccess.h"
 
 #include <QListWidget>
 #include <QStringList>

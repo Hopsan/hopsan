@@ -31,6 +31,7 @@
 #include <QTextStream>
 #include <QPoint>
 #include <QFileInfo>
+#include <QRadioButton>
 
 #include "GUIContainerObject.h"
 #include "../common.h"
@@ -82,6 +83,9 @@ public slots:
     void updateStopTime();
     void updateSimulationParametersInToolBar();
 
+private slots:
+    void createFMUSourceFilesFromDialog();
+
 signals:
 
 protected:
@@ -100,6 +104,9 @@ private:
 
     QString mLoadType;
     CoreSystemAccess *mpCoreSystemAccess;
+
+    QRadioButton *mpExportFmuGccRadioButton;
+    QRadioButton *mpExportFmuMsvcRadioButton;
 };
 
 #endif // GUISYSTEM_H

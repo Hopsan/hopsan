@@ -611,9 +611,41 @@ void GUISystem::saveToWrappedCode()
 }
 
 
-
 void GUISystem::createFMUSourceFiles()
 {
+    QDialog *pExportFmuDialog = new QDialog(gpMainWindow);
+    pExportFmuDialog->setWindowTitle("Export to Functional Mockup Interface");
+
+    QLabel *pExportFmuLabel = new QLabel(gpMainWindow->tr("This will create a Functional Mockup Unit of\ncurrent model. Please choose compiler:"), pExportFmuDialog);
+
+    mpExportFmuGccRadioButton = new QRadioButton(gpMainWindow->tr("GCC"), pExportFmuDialog);
+    mpExportFmuGccRadioButton->setChecked(true);
+    mpExportFmuMsvcRadioButton = new QRadioButton(gpMainWindow->tr("Microsoft Visual C"), pExportFmuDialog);
+
+    QPushButton *pOkButton = new QPushButton("Okay", pExportFmuDialog);
+    QPushButton *pCancelButton = new QPushButton("Cancel", pExportFmuDialog);
+
+    QGridLayout *pExportFmuLayout = new QGridLayout(pExportFmuDialog);
+    pExportFmuLayout->addWidget(pExportFmuLabel,            0, 0, 1, 2);
+    pExportFmuLayout->addWidget(mpExportFmuGccRadioButton,  1, 0, 1, 2);
+    pExportFmuLayout->addWidget(mpExportFmuMsvcRadioButton, 2, 0, 1, 2);
+    pExportFmuLayout->addWidget(pOkButton,                  3, 0, 1, 1);
+    pExportFmuLayout->addWidget(pCancelButton,              3, 1, 1, 1);
+
+    pExportFmuDialog->setLayout(pExportFmuLayout);
+
+    pExportFmuDialog->show();
+
+    connect(pOkButton,      SIGNAL(clicked()), this,                SLOT(createFMUSourceFilesFromDialog()));
+    connect(pOkButton,      SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
+    connect(pCancelButton,  SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
+}
+
+
+void GUISystem::createFMUSourceFilesFromDialog()
+{
+    bool gccCompiler = mpExportFmuGccRadioButton->isChecked();
+
     QStringList outputVariables;
     QStringList outputComponents;
     QStringList outputPorts;
@@ -687,7 +719,6 @@ void GUISystem::createFMUSourceFiles()
         return;
     }
 
-    //! @todo Create model description file
     QTextStream modelDescriptionStream(&modelDescriptionFile);
     modelDescriptionStream << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";       //!< @todo Encoding, should it be UTF-8?
     modelDescriptionStream << "<fmiModelDescription\n";
@@ -708,7 +739,6 @@ void GUISystem::createFMUSourceFiles()
     modelDescriptionStream << "</fmiModelDescription>\n";
     modelDescriptionFile.close();
 
-    //! @todo Create model source file
     QTextStream modelSourceStream(&modelSourceFile);
     modelSourceStream << "// Define class name and unique id\n";
     modelSourceStream << "    #define MODEL_IDENTIFIER " << modelName << "\n";
@@ -718,7 +748,7 @@ void GUISystem::createFMUSourceFiles()
     modelSourceStream << "    #define NUMBER_OF_INTEGERS 0\n";
     modelSourceStream << "    #define NUMBER_OF_BOOLEANS 0\n";
     modelSourceStream << "    #define NUMBER_OF_STRINGS 0\n";
-    modelSourceStream << "    #define NUMBER_OF_STATES "<< outputVariables.size() << "\n";        //!< Does number of variables equal number of states?
+    modelSourceStream << "    #define NUMBER_OF_STATES "<< outputVariables.size() << "\n";        //!< @todo Does number of variables equal number of states?
     modelSourceStream << "    #define NUMBER_OF_EVENT_INDICATORS 0\n\n";
     modelSourceStream << "    // Include fmu header files, typedefs and macros\n";
     modelSourceStream << "    #include \"fmuTemplate.h\"\n";
@@ -822,19 +852,43 @@ void GUISystem::createFMUSourceFiles()
     fmuSourceFile.close();
 
     QTextStream clBatchStream(&clBatchFile);
+    //! @todo Ship Mingw with Hopsan, or check if it exists in system and inform user if it does not.
+    if(gccCompiler)
+    {
+        clBatchStream << "g++ -DWRAPPERCOMPILATION -c HopsanFMU.cpp\n";
+        clBatchStream << "g++ -shared -o HopsanFMU.dll HopsanFMU.o -L./ -lHopsanCore";
+    }
+    else
+    {
     clBatchStream << "echo Compiling Visual Studio libraries...\n";
     clBatchStream << "if defined VS90COMNTOOLS (call \"%VS90COMNTOOLS%\\vsvars32.bat\") else ^\n";
     clBatchStream << "if defined VS80COMNTOOLS (call \"%VS80COMNTOOLS%\\vsvars32.bat\")\n";
     clBatchStream << "cl -LD -nologo -DWIN32 -DWRAPPERCOMPILATION HopsanFMU.cpp /I \. /I \include\HopsanCore.h HopsanCore.lib\n";
+    }
+
+
+
     clBatchFile.close();
 
     //Copy binaries to export directory
-    QFile dllFile(gExecPath + "/../binVC/HopsanCore.dll");
-    dllFile.copy(savePath + "/HopsanCore.dll");
-    QFile libFile(gExecPath + "/../binVC/HopsanCore.lib");
-    libFile.copy(savePath + "/HopsanCore.lib");
-    QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
-    expFile.copy(savePath + "/HopsanCore.exp");
+    QFile dllFile;
+    QFile libFile;
+    QFile expFile;
+    if(gccCompiler)
+    {
+        dllFile.setFileName(gExecPath + "HopsanCore.dll");
+        dllFile.copy(savePath + "/HopsanCore.dll");
+    }
+    else
+    {
+        dllFile.setFileName(gExecPath + "/../binVC/HopsanCore.dll");
+        dllFile.copy(savePath + "/HopsanCore.dll");
+        libFile.setFileName(gExecPath + "/../binVC/HopsanCore.lib");
+        libFile.copy(savePath + "/HopsanCore.lib");
+        expFile.setFileName(gExecPath + "/../binVC/HopsanCore.exp");
+        expFile.copy(savePath + "/HopsanCore.exp");
+    }
+
 
     //Copy include files to export directory
     copyIncludeFilesToDir(savePath);
@@ -860,7 +914,15 @@ void GUISystem::createFMUSourceFiles()
     p.waitForFinished();
 
     //Copy FMI compilation files to export directory
-    QFile buildFmuFile(gExecPath + "/../ThirdParty/fmi/build_fmu.bat");
+    QFile buildFmuFile;
+    if(gccCompiler)
+    {
+        buildFmuFile.setFileName(gExecPath + "/../ThirdParty/fmi/build_fmu_gcc.bat");
+    }
+    else
+    {
+        buildFmuFile.setFileName(gExecPath + "/../ThirdParty/fmi/build_fmu_vc.bat");
+    }
     buildFmuFile.copy(savePath + "/build_fmu.bat");
     QFile fmuModelFunctionsHFile(gExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
     fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
@@ -881,7 +943,10 @@ void GUISystem::createFMUSourceFiles()
     QFile modelLibFile(savePath + "/" + modelName + ".lib");
     modelLibFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".lib");
     dllFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.dll");
-    libFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.lib");
+    if(!gccCompiler)
+    {
+        libFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.lib");
+    }
     QFile hopsanFMUdllFile(savePath + "/HopsanFMU.dll");
     hopsanFMUdllFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.dll");
     QFile hopsanFMUlibFile(savePath + "/HopsanFMU.lib");
