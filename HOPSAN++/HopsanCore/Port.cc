@@ -796,7 +796,7 @@ PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Comp
 //! Adds a subport to a powermultiport
 Port* PowerMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( createPort(POWERPORT, mNodeType, "noname subport", 0, this) );
+    mSubPortsVector.push_back( createPort(POWERPORT, mNodeType, "noname_subport", 0, this) );
     return mSubPortsVector.back();
 }
 
@@ -808,7 +808,7 @@ ReadMultiPort::ReadMultiPort(std::string node_type, std::string portname, Compon
 //! Adds a subport to a readmultiport
 Port* ReadMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( createPort(READPORT, mNodeType, "noname subport", 0, this) );
+    mSubPortsVector.push_back( createPort(READPORT, mNodeType, "noname_subport", 0, this) );
     return mSubPortsVector.back();
 }
 

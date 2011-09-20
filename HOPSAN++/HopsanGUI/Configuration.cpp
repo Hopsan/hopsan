@@ -149,7 +149,7 @@ void Configuration::saveToXml()
     const int IndentSize = 4;
     if(!QDir(DATAPATH).exists())
         QDir().mkdir(DATAPATH);
-    QFile xmlsettings(DATAPATH + "hopsanconfig.xml");
+    QFile xmlsettings(QString(DATAPATH) + QString("hopsanconfig.xml"));
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         qDebug() << "Failed to open file for writing: " << gExecPath+QString(MAINPATH) << "settings.xml";
@@ -167,7 +167,7 @@ void Configuration::loadFromXml()
     loadDefaultsFromXml();
 
     //Read from hopsanconfig.xml
-    QFile file(DATAPATH + "hopsanconfig.xml");
+    QFile file(QString(DATAPATH) + QString("hopsanconfig.xml"));
     qDebug() << "Reading config from " << file.fileName();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {

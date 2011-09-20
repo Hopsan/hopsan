@@ -148,7 +148,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
     //    else
     {
         //Use the setParameter method that mapps to System parameter
-        if(!parameterName.startsWith("noname subport:") && !pObject->getParameterNames().contains(parameterName))
+        if(!parameterName.startsWith("noname_subport:") && !pObject->getParameterNames().contains(parameterName))
         {
             gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
             return;
