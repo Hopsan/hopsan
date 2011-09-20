@@ -83,7 +83,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pContributorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContributorsText = new QLabel();
-    pContributorsText->setText("Alessandro Dell'Amico, Ingo Staack, Karl Pettersson, Mikael Axin, Petter Krus\n");
+    pContributorsText->setText("Alessandro Dell'Amico, Ingo Staack, Isak Demir, Karl Pettersson, Mikael Axin, Petter Krus\n");
     pContributorsText->setWordWrap(true);
     pContributorsText->setAlignment(Qt::AlignCenter);
 

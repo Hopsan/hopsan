@@ -459,8 +459,8 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         QDir fileDialogSaveDir;
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                             fileDialogSaveDir.currentPath() + QString(MODELPATH),
-                                                             tr("Hopsan Model Files (*.hmf)"));
+                                                     QString(MODELPATH),
+                                                     tr("Hopsan Model Files (*.hmf)"));
 
         if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
         {
@@ -733,7 +733,7 @@ void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
-                                                         fileDialogOpenDir.currentPath() + QString(MODELPATH),
+                                                         QString(MODELPATH),
                                                          tr("Hopsan Model Files (*.hmf)"));
     if(!modelFileName.isEmpty())
     {
