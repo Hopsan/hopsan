@@ -187,6 +187,16 @@ NodeMechanicRotational::EQINERTIA);
 
         //Read outputVariables from nodes
 
+        //Write new values to nodes
+        //Port Pm1
+        double eqMassm1 = (mJL*Power(Sec(thetamr2),2))/Power(mlink,2);
+        double eqInertiamr2 = mJL;
+
+        (*mpND_eqMassm1)=eqMassm1;
+        //Port Pmr2
+
+        (*mpND_eqInertiamr2)=eqInertiamr2;
+        //outputVariables
 
 
         //Initialize delays
@@ -306,6 +316,7 @@ delayedPart[2][2],mthetamin,mthetamax))/(4.*mJL);
         double xm1 = mx0 - mlink*Sin(thetamr2);
         double eqMassm1 = (mJL*Power(Sec(thetamr2),2))/Power(mlink,2);
         double eqInertiamr2 = mJL;
+
 
         //Calculate the delayed parts
         delayParts1[1] = (mTimestep*tormr2 - 2*mJL*wmr2 + mBL*mTimestep*wmr2 \
