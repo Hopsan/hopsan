@@ -72,6 +72,7 @@ HmfLoader::HmfLoader()
 ComponentSystem* HmfLoader::loadModel(string filename, double &rStartTime, double &rStopTime)
 {
     cout << "Loading from file: " << filename << endl;
+    //! @todo do not crash if file is missing, send error message
     rapidxml::file<> hmfFile(filename.c_str());
 
     rapidxml::xml_document<> doc;
@@ -176,26 +177,6 @@ void HmfLoader::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSys
                 pComp->setParameterValue(paramName, val);
             }
             pParam = pParam->next_sibling();
-        }
-    }
-
-    //Load startvalues
-    rapidxml::xml_node<> *pStartValues = pComponentNode->first_node("startvalues");
-    if (pStartValues)
-    {
-        rapidxml::xml_node<> *pStartValue = pStartValues->first_node();
-        while (pStartValue != 0)
-        {
-            if (strcmp(pStartValue->name(), "startvalue")==0)
-            {
-                string portName = readStringAttribute(pStartValue, "portname", "ERROR_NO_PARTNAME_GIVEN");
-                string variableName = readStringAttribute(pStartValue, "variable", "ERROR_NO_PARTNAME_GIVEN");
-                double val = readDoubleAttribute(pStartValue, "value", 0);
-
-                //! @todo how do I transfrom variable name into variable index?
-                //pComp->setStartValue();
-            }
-            pStartValue = pStartValue->next_sibling();
         }
     }
 }

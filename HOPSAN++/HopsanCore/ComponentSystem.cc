@@ -76,259 +76,6 @@ Parameters &ComponentSystem::getSystemParameters()
 }
 
 
-//<<<<<<< .mine
-//=======
-
-////! @brief Adds a new System parameter to the system or change the vaÃ¶lue of an existing one
-////!
-////! A parameter is added but has no ponters to values.
-////! Or if there exist a parameter with this name the value is changed and the ponters are unchanged.
-////! The parameter is then mapped to one or more doubles with the mapParameter method.
-////! @param[in] sysParName is the name of the new System parameter.
-////! @param[in] value is the value of the System parameter.
-////! @see mapParameter(std::string sysParName, double *mappedValue)
-////! @return true if a it went OK, false otherwise
-//bool SystemParameters::add(std::string sysParName, double value)
-//{
-//    //This is a QD for handling negative values...
-//    if(sysParName.at(0) == '-')
-//        return false;
-//    //This is a QD for handling negative values...
-
-//    if(mSystemParameters.count(sysParName) > 0)
-//    //sysParName is already present, change its value
-//    {
-//        mSystemParameters[sysParName].first = value;
-//        update(sysParName);
-
-//        //This is a QD for handling negative values...
-//        std::ostringstream oss;
-//        oss << "-" << sysParName;
-//        std::string negSysParName = oss.str();
-//        mSystemParameters[negSysParName].first = -value;
-//        update(negSysParName);
-//        //This is a QD for handling negative values...
-//    }
-//    else
-//    //sysParName is not present, create a new one
-//    {
-//        SystemParameter sysPar;
-//        sysPar.first = value;
-//        mSystemParameters[sysParName] = sysPar;
-
-//        //This is a QD for handling negative values...
-//        std::ostringstream oss;
-//        oss << "-" << sysParName;
-//        std::string negSysParName = oss.str();
-//        SystemParameter negSysPar;
-//        negSysPar.first = -value;
-//        mSystemParameters[negSysParName] = negSysPar;
-//        //This is a QD for handling negative values...
-//    }
-//    return true;
-//}
-
-////! @brief Read the value of System parameter
-////!
-////! @param[in] sysParName is the name of the new System parameter.
-////! @param[out] value is the value of the System parameter.
-////! @return true if a post with sysParName exsited, false otherwise
-//bool SystemParameters::getValue(std::string sysParName, double &value)
-//{
-////std::map<std::string, SystemParameter>::iterator it;
-////for(it = mSystemParameters.begin(); it != mSystemParameters.end(); ++it)
-////{
-////    std::cout << it->first << mSystemParameters.count(sysParName) << std::endl;
-////}
-//    if(mSystemParameters.count(sysParName))
-//    {
-//        value = mSystemParameters[sysParName].first;
-//        return true;
-//    }
-//    else
-//        return false;
-//}
-
-////! @brief Get a map with System parameter names as keys and their values as values
-////!
-////! @return a map with keys: System parameter names, values: System parameter values
-//std::map<std::string, double> SystemParameters::getSystemParameterMap()
-//{
-//    std::map<std::string, double> sysPar;
-//    std::map<std::string, SystemParameter>::iterator map_it;
-//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-//    {
-//        //Create a new map with only the name and value (no pointers)
-//        //This is a QD for handling negative values...
-//        //Do not count if it start with '-' because then there is this special hack!
-//        if(map_it->first.at(0) != '-')
-//        //This is a QD for handling negative values...
-//        {
-//            sysPar[map_it->first] = map_it->second.first;
-//        }
-//    }
-//    return sysPar;
-//}
-
-////! @brief Finds out if a double has a reference in the System parameters
-////!
-////! @param[in] mappedValue is a pointer to a double.
-////! @return the name of the System parameter which is mapped to the input, an empty std::string if its not.
-//std::string SystemParameters::findOccurrence(double *mappedValue)
-//{
-//    std::string sysParName ="";
-//    std::list<double*>::iterator list_it;
-//    std::map<std::string, SystemParameter>::iterator map_it;
-//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-//    {
-//        //Go through all pointers to see if mappedValue are present somewhere
-//        for(list_it = map_it->second.second.begin(); list_it != map_it->second.second.end(); ++list_it)
-//        {
-//            if(*list_it == mappedValue)
-//            {
-//                sysParName = map_it->first;
-//            }
-//        }
-//    }
-//    return sysParName;
-//}
-
-////! @brief Delete a System parameter
-////!
-////! @param[in] sysParName the System parameter to be deleted.
-//void SystemParameters::erase(std::string sysParName)
-//{
-//    mSystemParameters.erase(sysParName);
-
-//    //This is a QD for handling negative values...
-//    std::ostringstream oss;
-//    oss << "-" << sysParName;
-//    std::string negSysParName = oss.str();
-//    mSystemParameters.erase(negSysParName);
-//    //This is a QD for handling negative values...
-//}
-
-////! @brief Maps a double to a System parameter
-////!
-////! After this method has been ran the SystemParameter object have a pointer
-////! stored to the double and can write the System parameter value to it directly
-////! without the knoledge of the "double owner".
-////! If the sysParName does not exist in the SystemParameters nothing will happen.
-////!
-////! @param[in] sysParName is the name of the System parameter which should point to the double.
-////! @param[in] mappedValue is a pointer to a double.
-////! @return true if a it went OK, false otherwise
-////! @see unMapParameter(std::string sysParName, double *mappedValue)
-//bool SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
-//{
-//    bool success = false;
-//    //If mappedValue is in the map somwhere else it is removed first
-//    unMapParameter(mappedValue);
-
-//    std::map<std::string, SystemParameter>::iterator it;
-//    it = mSystemParameters.find(sysParName);
-//    //If the sysParName exists in the mappedValue is added, if not nothing happens
-//    if(it != mSystemParameters.end())
-//    {
-//        it->second.second.push_back(mappedValue);
-//        //the System parameter value is written to the mappedValue
-//        *mappedValue = it->second.first;
-//        success = true;
-//    }
-//    return success;
-//}
-
-////! @brief Unmaps a double from a System parameter
-////!
-////! This method removes the pointer to the mappedValue from the SystemParameters.
-////! After this is ran the double is free from the SystemParameters
-////!
-////! @param[in] sysParName is the name of the System parameter which should point to the double.
-////! @param[in] mappedValue is a pointer to a double.
-////! @see MapParameter(std::string sysParName, double *mappedValue)
-//void SystemParameters::unMapParameter(std::string sysParName, double *mappedValue)
-//{
-//    std::list<double*>::iterator list_it, remove_it;
-//    bool found = false;
-//    //Go through all mapped values for the System parameter sysParName
-//    for(list_it = mSystemParameters[sysParName].second.begin(); list_it !=mSystemParameters[sysParName].second.end(); ++list_it)
-//    {
-//        //If it is found it is saved to be removed
-//        if(*list_it == mappedValue)
-//        {
-//            remove_it = list_it;
-//            found = true;
-//        }
-//    }
-//    if((mSystemParameters.count(sysParName)) && found)
-//    {
-//        //remove the occurance of the mappedValue
-//        mSystemParameters[sysParName].second.erase(remove_it);
-//    }
-//}
-
-////! @brief Unmaps a double from a System parameter
-////!
-////! This method removes the pointer to the mappedValue from the SystemParameters.
-////! After this is ran the double is free from the SystemParameters
-////!
-////! @param[in] mappedValue is a pointer to a double.
-////! @see MapParameter(std::string sysParName, double *mappedValue)
-//void SystemParameters::unMapParameter(double *mappedValue)
-//{
-//    std::map<std::string, SystemParameter>::iterator map_it;
-//    //Go through all mapped values for all the System parameters
-//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-//    {
-//        //remove the pointer for the mappedValue in System parameters
-//        unMapParameter(map_it->first, mappedValue);
-//    }
-//}
-
-////! @brief Write the all System parameters values to the doubles that they points to.
-//void SystemParameters::update()
-//{
-//    std::map<std::string, SystemParameter>::iterator map_it;
-//    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
-//    {
-//        //Write the System parameter value to all pointer addresses
-//        update(map_it->first);
-//    }
-//}
-
-////! @brief Write the System parameter value to the doubles that sysParName points to.
-////!
-////! @param[in] sysParName the System parameter to update
-////! @return true if a it went OK, false otherwise
-//bool SystemParameters::update(std::string sysParName)
-//{
-//    bool success = false;
-//    std::list<double*>::iterator list_it;
-//    if(mSystemParameters.count(sysParName) > 0)
-//    {
-//        for(list_it = mSystemParameters[sysParName].second.begin(); list_it != mSystemParameters[sysParName].second.end(); ++list_it)
-//        {
-//            //Write the System parameter value to all pointer addresses for sysParName
-//            *(*list_it) = mSystemParameters[sysParName].first;
-//        }
-//        success = true;
-//    }
-//    return success;
-//}
-
-
-////! @brief Get a reference to the System parameters
-////!
-////! Use this method to manipulate the System parameters, e.g. getSystemParameters().add("myNewSysPar", 42.0);
-////!
-////! @returns A reference to the System parameters
-//SystemParameters &ComponentSystem::getSystemParameters()
-//{
-//    return this->mSystemParameters;
-//}
-
-
-//>>>>>>> .r2999
 void ComponentSystem::addComponents(vector<Component*> components)
 {
     std::vector<Component *>::iterator itx;
@@ -942,8 +689,7 @@ void ComponentSystem::determineCQSType()
 //! Connect two commponents string version
 bool ComponentSystem::connect(string compname1, string portname1, string compname2, string portname2)
 {
-    Port* pPort1;
-    Port* pPort2;
+    Port *pPort1, *pPort2;
 
     //First some error checking
     stringstream ss; //Error string stream
@@ -1011,7 +757,6 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
     }
 
     //Create an instance of the node specified in nodespecifications
-    //Node* pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
     Node* pNode = HopsanEssentials::getInstance()->createNode(pPort1->getNodeType());
 
     // Check so the ports can be connected
@@ -1048,7 +793,6 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
 bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode)
 {
     std::cout << "-----------------------------mergeOrJoinNodeConnection" << std::endl;
-    //! @todo no isok check is performed (not checks at all are performed)
     Port *pMergeFrom, *pMergeTo;
     assert(pPort1->isConnected() || pPort2->isConnected());
 
@@ -1080,7 +824,7 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
     Node *pKeepNode = pMergeTo->getNodePtr();
     Node *pDiscardNode = pMergeFrom->getNodePtr();
 
-    //Check for very rare occurance, (Looping a subsystem, and connecting a out port to a in port hwo are actually directly connected to each other)
+    //Check for very rare occurance, (Looping a subsystem, and connecting an out port to an in port that are actually directly connected to each other)
     //assert(pKeepNode != pDiscardNode);
     if (pKeepNode == pDiscardNode)
     {
@@ -1244,7 +988,7 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
         pPortToBecomeEmpty->eraseConnectedPort(pPortToKeep);
         pPortToKeep->eraseConnectedPort(pPortToBecomeEmpty);
 
-        determineWhereToStoreNodeAndStoreIt(pKeepNode); //Relocaate the node if necessary
+        determineWhereToStoreNodeAndStoreIt(pKeepNode); //Relocate the node if necessary
     }
     //Else we seems to be unmerging, create a new node for the "other side" of the broken connection
     else
@@ -1252,7 +996,6 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
         //! @todo maybe make sure that the ports are really systemports to avoid code misstakes
         //Lets keep the node from port1 and create a copy for port two
         Node* pNode1 = pPort1->getNodePtr();
-        //Node* pNode2 = gCoreNodeFactory.createInstance(pNode1->getNodeType());
         Node* pNode2 = HopsanEssentials::getInstance()->createNode(pNode1->getNodeType());
 
         pNode1->mPortPtrs.clear(); //Clear all port knowledge from the port, we will reset it bellow
@@ -1275,6 +1018,11 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
 }
 
 
+ConnectionAssistant::ConnectionAssistant(ComponentSystem *pComponentSystem)
+{
+    mpComponentSystem = pComponentSystem;
+}
+
 //! Helpfunction that clears the nodetype in empty systemports, It will not clear the type if the port is not empty or if the port is not a systemport
 void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 {
@@ -1287,7 +1035,7 @@ void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 //! Connect two components with specified ports to each other, reference version
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
-    ConnectionAssistant connAssist;
+    ConnectionAssistant connAssist(this);
     Component* pComp1 = pPort1->getComponent();
     Component* pComp2 = pPort2->getComponent();
     bool sucess=false;
@@ -1298,8 +1046,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //Prevent connection with self
     if (pPort1 == pPort2)
     {
-        ss << "You can not connect a port to it self";
-        gCoreMessageHandler.addErrorMessage(ss.str(), "selfconnection");
+        gCoreMessageHandler.addErrorMessage("You can not connect a port to it self", "selfconnection");
         return false;
     }
 
@@ -1316,15 +1063,13 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //! @todo What will happend with multiports
     if (pPort1->isConnectedTo(pPort2))
     {
-        ss << "These two ports are already connected to each other";
-        gCoreMessageHandler.addErrorMessage(ss.str(), "allreadyconnected");
+        gCoreMessageHandler.addErrorMessage("These two ports are already connected to each other", "allreadyconnected");
         return false;
     }
 
     if (!connAssist.ensureNotCrossConnecting(pPort1, pPort2))
     {
-        ss << "You can not cross-connect between systems";
-        gCoreMessageHandler.addErrorMessage(ss.str(), "crossconnection");
+        gCoreMessageHandler.addErrorMessage("You can not cross-connect between systems", "crossconnection");
         return false;
     }
 
@@ -1333,8 +1078,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     {
         if ( (!pPort1->isConnected()) && (!pPort2->isConnected()) )
         {
-            ss << "You are not allowed to connect two blank systemports to each other";
-            gCoreMessageHandler.addErrorMessage(ss.str());
+            gCoreMessageHandler.addErrorMessage("You are not allowed to connect two blank systemports to each other");
             return false;
         }
     }
@@ -1405,7 +1149,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         connAssist.ifMultiportCleanupAfterConnect(pPort2, pMultiPort2, sucess);
     }
 
-    //Abbort conenction if there was a connect failure
+    //Abbort connection if there was a connect failure
     if (!sucess)
     {
         return false;
@@ -1437,7 +1181,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     size_t n_WritePorts = 0;
     size_t n_PowerPorts = 0;
     size_t n_SystemPorts = 0;
-    //size_t n_OwnSystemPorts = 0; //Number of systemports that belong to the connecting system
+    size_t n_OwnSystemPorts = 0; //Number of systemports that belong to the connecting system
     //size_t n_MultiPorts = 0;
 
     size_t n_Ccomponents = 0;
@@ -1464,6 +1208,10 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         else if ((*it)->getPortType() == SYSTEMPORT)
         {
             n_SystemPorts += 1;
+            if ((*it)->getComponent() == mpComponentSystem)
+            {
+                n_OwnSystemPorts += 1;
+            }
         }
 //        else if((*it)->getPortType() > MULTIPORT)
 //        {
@@ -1568,7 +1316,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 
     //  Check if there are some problems with the connection
 
-    if ((n_PowerPorts > 0) && (n_SystemPorts > 1))
+    if ((n_PowerPorts > 0) && (n_OwnSystemPorts > 1))
     {
         gCoreMessageHandler.addErrorMessage("Trying to connect one powerport to two systemports, this is not allowed");
         return false;
@@ -1763,7 +1511,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
     cout << "disconnecting " << pPort1->getComponentName() << " " << pPort1->getPortName() << "  and  " << pPort2->getComponentName() << " " << pPort2->getPortName() << endl;
 
-    ConnectionAssistant disconnAssistant;
+    ConnectionAssistant disconnAssistant(this);
     stringstream ss;
     bool success = false;
     //! @todo some more advanced error handling (are the ports really connected to each other and such)

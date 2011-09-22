@@ -37,6 +37,8 @@ namespace hopsan {
     class ConnectionAssistant
     {
     public:
+        ConnectionAssistant(ComponentSystem *pComponentSystem);
+
         bool createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
         bool mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
         bool deleteNodeConnection(Port *pPort1, Port *pPort2);
@@ -57,6 +59,7 @@ namespace hopsan {
     private:
         void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
         Port* findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort);
+        ComponentSystem *mpComponentSystem; //The system to assist
     };
 
     class DLLIMPORTEXPORT ComponentSystem :public Component
