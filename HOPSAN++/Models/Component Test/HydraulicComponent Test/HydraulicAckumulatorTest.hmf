@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+    <system typename="Subsystem" name="HydraulicAckumulatorTest">
+        <hopsangui>
+            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2406.5" y="2468" zoom="1"/>
+            <ports hidden="0"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.2">
+                <modelobject typename="Subsystem" displayname="HydraulicAckumulatorTest">
+                    <icons>
+                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
+                </modelobject>
+                <portpositions/>
+            </hopsanobjectappearance>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1"/>
+                <post number="2"/>
+                <post number="3"/>
+                <post number="4"/>
+                <post number="5"/>
+                <post number="6"/>
+                <post number="7"/>
+                <post number="8"/>
+                <post number="9"/>
+                <post number="10"/>
+                <post number="11"/>
+                <post number="12"/>
+                <post number="13"/>
+                <post number="14"/>
+                <post number="15"/>
+                <post number="16"/>
+                <post number="17"/>
+                <post number="18"/>
+                <post number="19"/>
+            </hopsanundo>
+        </hopsangui>
+        <simulationtime stop="20" timestep="0.001" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="HydraulicAckumulator" name="Gas Accumulator_1">
+                <parameters>
+                    <parameter value="0" name="PVa::Value"/>
+                    <parameter value="0" name="Ppa::Value"/>
+                    <parameter value="1e+007" name="p0"/>
+                    <parameter value="0.001" name="V0"/>
+                    <parameter value="1e-008" name="Kca"/>
+                    <parameter value="1.2" name="kappa"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2378.00000000000000000000" y="2491" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSineWave" name="Sine Wave">
+                <parameters>
+                    <parameter value="0" name="t_start"/>
+                    <parameter value=".1" name="f"/>
+                    <parameter value="1e-4" name="y_A"/>
+                    <parameter value="0" name="y_offset"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2169.00000000000000000000" y="2593" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2467.00000000000000000000" y="2491" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
+                <parameters>
+                    <parameter value="0" name="P1::Flow"/>
+                    <parameter value="1e5" name="P1::Pressure"/>
+                    <parameter value="0.003" name="V"/>
+                    <parameter value="1e+009" name="Beta_e"/>
+                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0" name="noname subport::Flow"/>
+                    <parameter value="0" name="noname subport::Pressure"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2366.00000000000000000000" y="2592" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2302.00000000000000000000" y="2644" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source">
+                <parameters>
+                    <parameter value="0.001" name="q"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2238.00000000000000000000" y="2593" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalIntegrator2" name="Integrator">
+                <parameters>
+                    <parameter value="0" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2227.00000000000000000000" y="2644" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_2">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2469.00000000000000000000" y="2572" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_3">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2469.00000000000000000000" y="2415" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2074" y="2298"/>
+                    <textobject fontcolor="#556b2f" text="The characteristics is obtained by plotting the accumulator pressure pa (or node pressure p1) &#xa;against the integrated flow (or ackumulator oil volume Va)" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="617" height="50"/>
+                    <line width="2" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P1" startcomponent="Q-type Flow Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2250.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2366.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2366.00000000000000000000" y="2592.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-type Flow Source" startport="out" startcomponent="Sine Wave">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2181.50000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2206.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2206.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2226.00000000000000000000" y="2593.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Sine Wave">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2181.50000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2189.50000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2189.50000000000000000000" y="2644.00000000000000000000"/>
+                        <coordinate x="2209.50000000000000000000" y="2644.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Integrator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2244.50000000000000000000" y="2644.00000000000000000000"/>
+                        <coordinate x="2289.50000000000000000000" y="2644.00000000000000000000"/>
+                        <coordinate x="2289.50000000000000000000" y="2644.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P1" startcomponent="Gas Accumulator_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2378.00000000000000000000" y="2536.00000000000000000000"/>
+                        <coordinate x="2378.00000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2366.00000000000000000000" y="2592.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="PVa" startcomponent="Gas Accumulator_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2378.00000000000000000000" y="2446.00000000000000000000"/>
+                        <coordinate x="2378.00000000000000000000" y="2572.00000000000000000000"/>
+                        <coordinate x="2456.50000000000000000000" y="2572.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Ppa" startcomponent="Gas Accumulator_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2398.00000000000000000000" y="2491.00000000000000000000"/>
+                        <coordinate x="2454.50000000000000000000" y="2491.00000000000000000000"/>
+                        <coordinate x="2454.50000000000000000000" y="2491.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_3" startport="PVa" startcomponent="Gas Accumulator_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2378.00000000000000000000" y="2446.00000000000000000000"/>
+                        <coordinate x="2378.00000000000000000000" y="2415.00000000000000000000"/>
+                        <coordinate x="2456.50000000000000000000" y="2415.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

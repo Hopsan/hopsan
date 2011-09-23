@@ -2,7 +2,23 @@
 <hopsanobjectappearance version="0.1">
   <modelobject typename="MechanicVehicle1D" displayname="1D Road Vehicle">
     <icon isopath="MechanicVehicle1D.svg" iconrotation="ON" userpath="MechanicVehicle1D.svg" />
-    <portpose x=".2" y="1" a="180" name="Pmr1" />
-    <portpose x=".8" y="1" a="180" name="Pmr2" />
+    <portpose x=".2" y="1" a="90" name="Pmr1" />
+    <portpose x=".8" y="1" a="90" name="Pmr2" />
+    <portpose x='1'        
+       y='0.5'
+       a='0'
+       name='Pvc' />
+   <portpose x='1'
+       y='0.6'
+       a='0'
+       name='Pxc' />
+   <portpose x='1'
+       y='0.7'
+       a='0'
+       name='Pfd' />
+   <portpose x='1'
+       y='0.8'
+       a='0'
+       name='Pfr' />
   </modelobject>
 </hopsanobjectappearance>

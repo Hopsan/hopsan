@@ -105,6 +105,8 @@ HEADERS += win32dll.h \
     Components/Signal/SignalIntegratorLimited.hpp \
     Components/Signal/SignalIntegrator2.hpp \
     Components/Signal/SignalIntegrator.hpp \
+    Components/Signal/SignalPIlead.hpp \
+    Components/Signal/SignalAttitude.hpp \
     Components/Signal/SignalHysteresis.hpp \
     Components/Signal/SignalGain.hpp \
     Components/Signal/SignalFirstOrderFilter.hpp \

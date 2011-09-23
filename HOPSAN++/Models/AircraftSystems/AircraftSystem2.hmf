@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="15.00000000000000000000" y="10" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2395.6485160599" y="2607.605522313527" zoom="0.8421519210665187"/>
+            <viewport x="2107.5" y="2449.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -9382,6 +9382,12 @@
                         <newpos>2128.25 2508.55</newpos>
                     </stuff>
                 </post>
+                <post number="291">
+                    <stuff what="movedobject" name="AircraftActuatuators">
+                        <oldpos>2113.25 2498.55</oldpos>
+                        <newpos>2114.25 2497.55</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="50" timestep="0.01" start="0"/>
@@ -9697,7 +9703,7 @@
             </component>
             <system typename="Subsystem" external_path="AircraftActuatuators.hmf" name="AircraftActuatuators">
                 <hopsangui>
-                    <pose x="2158.24815784370730398223" y="2528.5484210088911823" flipped="0" a="0"/>
+                    <pose x="2129.24815784370730398223" y="2507.5484210088907275" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                     <hopsanundo>
                         <post number="-1"/>
@@ -14440,8 +14446,8 @@
             <connect endport="Pa1l" endcomponent="AeroAircraft6DOF" startport="ContainerPort_9" startcomponent="AircraftActuatuators">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2188.24815784370730398223" y="2515.21508767555769736646"/>
-                        <coordinate x="2226.00000000000000000000" y="2515.21508767555769736646"/>
+                        <coordinate x="2159.24815784370730398223" y="2494.21508767555724261911"/>
+                        <coordinate x="2226.00000000000000000000" y="2494.21508767555724261911"/>
                         <coordinate x="2226.00000000000000000000" y="2460.33340300000008937786"/>
                         <coordinate x="2250.99999999999954525265" y="2460.33340300000008937786"/>
                         <coordinate x="2250.99999999999954525265" y="2460.70827141740801380365"/>
@@ -14458,8 +14464,8 @@
             <connect endport="Pa1r" endcomponent="AeroAircraft6DOF" startport="ContainerPort_8" startcomponent="AircraftActuatuators">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2188.24815784370730398223" y="2521.88175434222466719802"/>
-                        <coordinate x="2232.00000000000000000000" y="2521.88175434222466719802"/>
+                        <coordinate x="2159.24815784370730398223" y="2500.88175434222421245067"/>
+                        <coordinate x="2232.00000000000000000000" y="2500.88175434222421245067"/>
                         <coordinate x="2232.00000000000000000000" y="2491.66659699999991062214"/>
                         <coordinate x="2250.99999999999954525265" y="2491.66659699999991062214"/>
                         <coordinate x="2250.99999999999954525265" y="2495.54146541740783504792"/>
@@ -14476,8 +14482,8 @@
             <connect endport="Pa2l" endcomponent="AeroAircraft6DOF" startport="ContainerPort_7" startcomponent="AircraftActuatuators">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2188.24815784370730398223" y="2528.54842100889118228224"/>
-                        <coordinate x="2250.99999999999954525265" y="2528.54842100889118228224"/>
+                        <coordinate x="2159.24815784370730398223" y="2507.54842100889072753489"/>
+                        <coordinate x="2250.99999999999954525265" y="2507.54842100889072753489"/>
                         <coordinate x="2250.99999999999954525265" y="2530.37486841740792442579"/>
                     </coordinates>
                     <geometries>
@@ -14490,8 +14496,8 @@
             <connect endport="Pa2r" endcomponent="AeroAircraft6DOF" startport="ContainerPort_6" startcomponent="AircraftActuatuators">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2188.24815784370730398223" y="2535.21508767555769736646"/>
-                        <coordinate x="2231.00000000000000000000" y="2535.21508767555769736646"/>
+                        <coordinate x="2159.24815784370730398223" y="2514.21508767555724261911"/>
+                        <coordinate x="2231.00000000000000000000" y="2514.21508767555724261911"/>
                         <coordinate x="2231.00000000000000000000" y="2563.33340300000008937786"/>
                         <coordinate x="2250.99999999999954525265" y="2563.33340300000008937786"/>
                         <coordinate x="2250.99999999999954525265" y="2565.20827141740801380365"/>
@@ -14508,8 +14514,8 @@
             <connect endport="Pfin" endcomponent="AeroAircraft6DOF" startport="ContainerPort_5" startcomponent="AircraftActuatuators">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2188.24815784370730398223" y="2541.88175434222466719802"/>
-                        <coordinate x="2225.00000000000000000000" y="2541.88175434222466719802"/>
+                        <coordinate x="2159.24815784370730398223" y="2520.88175434222421245067"/>
+                        <coordinate x="2225.00000000000000000000" y="2520.88175434222421245067"/>
                         <coordinate x="2225.00000000000000000000" y="2596.66659699999991062214"/>
                         <coordinate x="2250.99999999999954525265" y="2596.66659699999991062214"/>
                         <coordinate x="2250.99999999999954525265" y="2600.04146541740783504792"/>
@@ -14528,8 +14534,8 @@
                     <coordinates>
                         <coordinate x="1971.50000000000000000000" y="2507.80000000000018189894"/>
                         <coordinate x="2096.00000000000000000000" y="2507.80000000000018189894"/>
-                        <coordinate x="2096.00000000000000000000" y="2515.21508767555769736646"/>
-                        <coordinate x="2128.24815784370730398223" y="2515.21508767555769736646"/>
+                        <coordinate x="2096.00000000000000000000" y="2494.21508767555724261911"/>
+                        <coordinate x="2099.24815784370730398223" y="2494.21508767555724261911"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -14544,8 +14550,8 @@
                     <coordinates>
                         <coordinate x="1971.50000000000000000000" y="2520.59999999999990905053"/>
                         <coordinate x="2096.00000000000000000000" y="2520.59999999999990905053"/>
-                        <coordinate x="2096.00000000000000000000" y="2521.88175434222466719802"/>
-                        <coordinate x="2128.24815784370730398223" y="2521.88175434222466719802"/>
+                        <coordinate x="2096.00000000000000000000" y="2500.88175434222421245067"/>
+                        <coordinate x="2099.24815784370730398223" y="2500.88175434222421245067"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -14560,8 +14566,8 @@
                     <coordinates>
                         <coordinate x="1971.50000000000000000000" y="2533.40000000000009094947"/>
                         <coordinate x="2096.00000000000000000000" y="2533.40000000000009094947"/>
-                        <coordinate x="2096.00000000000000000000" y="2528.54842100889118228224"/>
-                        <coordinate x="2128.24815784370730398223" y="2528.54842100889118228224"/>
+                        <coordinate x="2096.00000000000000000000" y="2507.54842100889072753489"/>
+                        <coordinate x="2099.24815784370730398223" y="2507.54842100889072753489"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -14576,8 +14582,8 @@
                     <coordinates>
                         <coordinate x="1971.50000000000000000000" y="2533.40000000000009094947"/>
                         <coordinate x="2096.00000000000000000000" y="2533.40000000000009094947"/>
-                        <coordinate x="2096.00000000000000000000" y="2535.21508767555769736646"/>
-                        <coordinate x="2128.24815784370730398223" y="2535.21508767555769736646"/>
+                        <coordinate x="2096.00000000000000000000" y="2514.21508767555724261911"/>
+                        <coordinate x="2099.24815784370730398223" y="2514.21508767555724261911"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -14592,8 +14598,8 @@
                     <coordinates>
                         <coordinate x="1971.50000000000000000000" y="2546.19999999999981810106"/>
                         <coordinate x="2096.00000000000000000000" y="2546.19999999999981810106"/>
-                        <coordinate x="2096.00000000000000000000" y="2541.88175434222466719802"/>
-                        <coordinate x="2128.24815784370730398223" y="2541.88175434222466719802"/>
+                        <coordinate x="2096.00000000000000000000" y="2520.88175434222421245067"/>
+                        <coordinate x="2099.24815784370730398223" y="2520.88175434222421245067"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>

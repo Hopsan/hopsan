@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+    <system typename="Subsystem" name="ElectricInductanceTest">
+        <hopsangui>
+            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2390.448227947314" y="2483.506015225164" zoom="1.187434208703792"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.2">
+                <modelobject typename="Subsystem" displayname="ElectricInductanceTest">
+                    <icons/>
+                </modelobject>
+                <portpositions/>
+            </hopsanobjectappearance>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1"/>
+                <post number="2"/>
+            </hopsanundo>
+        </hopsangui>
+        <simulationtime stop="1" timestep="0.001" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="SignalRamp" name="Ramp">
+                <parameters>
+                    <parameter value="0" name="y_0"/>
+                    <parameter value="1" name="y_A"/>
+                    <parameter value="0.04" name="t_start"/>
+                    <parameter value="0.1" name="t_end"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2135.26544413225929019973" y="2516.6834173418687897" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="ElectricUsource" name="ElectricUsource">
+                <parameters>
+                    <parameter value="0" name="Pel1::Voltage"/>
+                    <parameter value="0" name="Pel1::Current"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2204.00000000000000000000" y="2517.2865808938759073" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="ElectricGround" name="ElectricGround">
+                <parameters>
+                    <parameter value="0" name="Pel1::Voltage"/>
+                    <parameter value="0" name="Pel1::Current"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2323.26278463146809372120" y="2531.1058230527987689" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="ElectricInductance" name="ElectricInductance">
+                <parameters>
+                    <parameter value="0.1" name="Induct"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2270.00000000000000000000" y="2479" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="Puin" endcomponent="ElectricUsource" startport="out" startcomponent="Ramp">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2147.76544413225929019973" y="2516.68341734186878966284"/>
+                        <coordinate x="2175.50000000000000000000" y="2516.68341734186878966284"/>
+                        <coordinate x="2175.50000000000000000000" y="2517.28658089387590734987"/>
+                        <coordinate x="2195.00000000000000000000" y="2517.28658089387590734987"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="ElectricInductance" startport="Pel1" startcomponent="ElectricUsource">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2204.00000000000000000000" y="2492.78658089387590734987"/>
+                        <coordinate x="2204.00000000000000000000" y="2481.06976744186067662667"/>
+                        <coordinate x="2244.50000000000000000000" y="2481.06976744186067662667"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="ElectricInductance">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2295.50000000000000000000" y="2481.06976744186067662667"/>
+                        <coordinate x="2323.26278463146809372120" y="2481.06976744186067662667"/>
+                        <coordinate x="2323.26278463146809372120" y="2524.10582305279876891291"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

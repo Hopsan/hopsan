@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+    <system typename="Subsystem" name="MechanicVehicleTest">
+        <hopsangui>
+            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2500.5" y="2500.5" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.2">
+                <modelobject typename="Subsystem" displayname="MechanicVehicleTest">
+                    <icons>
+                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
+                </modelobject>
+                <portpositions/>
+            </hopsanobjectappearance>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1"/>
+                <post number="2"/>
+                <post number="3"/>
+                <post number="4"/>
+                <post number="5"/>
+                <post number="6"/>
+                <post number="7"/>
+                <post number="8"/>
+                <post number="9"/>
+                <post number="10"/>
+                <post number="11"/>
+                <post number="12"/>
+                <post number="13" type="changedparameters"/>
+                <post number="14" type="changedparameters"/>
+                <post number="15"/>
+                <post number="16"/>
+                <post number="17"/>
+                <post number="18"/>
+                <post number="19"/>
+                <post number="20"/>
+                <post number="21"/>
+                <post number="22"/>
+                <post number="23" type="changedparameters"/>
+                <post number="24"/>
+                <post number="25"/>
+                <post number="26"/>
+                <post number="27">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>21 6</newpos>
+                        <connect endport="Pmr1" endcomponent="1D Road Vehicle" startport="P1" startcomponent="Torque Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2334.50000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2424.09999999999990905053" y="2582.00000000000000000000"/>
+                                    <coordinate x="2424.09999999999990905053" y="2555.00000000000000000000"/>
+                                    <coordinate x="2424.09999999999990905053" y="2555.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="28">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-18 0</newpos>
+                        <connect endport="Pmr2" endcomponent="1D Road Vehicle" startport="P1" startcomponent="Torque Source_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2335.50000000000000000000" y="2632.00000000000000000000"/>
+                                    <coordinate x="2558.90000000000009094947" y="2632.00000000000000000000"/>
+                                    <coordinate x="2558.90000000000009094947" y="2555.00000000000000000000"/>
+                                    <coordinate x="2557.90000000000009094947" y="2555.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="29"/>
+                <post number="30"/>
+                <post number="31"/>
+                <post number="32"/>
+                <post number="33">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-52 0</newpos>
+                        <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Ramp">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2170.50000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2587.50000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2587.50000000000000000000" y="2612.00000000000000000000"/>
+                                    <coordinate x="2655.50000000000000000000" y="2612.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="34"/>
+                <post number="35"/>
+                <post number="36"/>
+                <post number="37"/>
+                <post number="38"/>
+            </hopsanundo>
+        </hopsangui>
+        <simulationtime stop="500" timestep="0.01" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="SignalRamp" name="Ramp">
+                <parameters>
+                    <parameter value="0" name="y_0"/>
+                    <parameter value="300" name="y_A"/>
+                    <parameter value="1" name="t_start"/>
+                    <parameter value="2" name="t_end"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2158.00000000000000000000" y="2582" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2760.00000000000000000000" y="2469" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTorqueTransformer" name="Torque Source">
+                <parameters>
+                    <parameter value="0" name="P1::Angular Velocity"/>
+                    <parameter value="0" name="P1::Angle"/>
+                    <parameter value="300" name="T"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2311.00000000000000000000" y="2582" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2760.00000000000000000000" y="2505" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTorqueTransformer" name="Torque Source_1">
+                <parameters>
+                    <parameter value="0" name="P1::Angular Velocity"/>
+                    <parameter value="0" name="P1::Angle"/>
+                    <parameter value="0" name="T"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2312.00000000000000000000" y="2632" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_2">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2759.00000000000000000000" y="2582" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain">
+                <parameters>
+                    <parameter value="0" name="out::Value"/>
+                    <parameter value="1" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2633.00000000000000000000" y="2582" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicVehicle1D" name="1D Road Vehicle">
+                <parameters>
+                    <parameter value="0" name="Pvc::Value"/>
+                    <parameter value="0" name="Pxc::Value"/>
+                    <parameter value="0" name="Pfd::Value"/>
+                    <parameter value="0" name="Pfr::Value"/>
+                    <parameter value="1000" name="M_c"/>
+                    <parameter value="0.01" name="c_fr"/>
+                    <parameter value="0.5" name="C_dA"/>
+                    <parameter value="1" name="r_wheel"/>
+                    <parameter value="1.25" name="rho"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2491.00000000000000000000" y="2493" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="in" endcomponent="Sink_1" startport="Pxc" startcomponent="1D Road Vehicle">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2602.50000000000000000000" y="2505.40000000000009094947"/>
+                        <coordinate x="2697.00000000000000000000" y="2505.40000000000009094947"/>
+                        <coordinate x="2697.00000000000000000000" y="2505.00000000000000000000"/>
+                        <coordinate x="2747.50000000000000000000" y="2505.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="Pfd" startcomponent="1D Road Vehicle">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2602.50000000000000000000" y="2530.19999999999981810106"/>
+                        <coordinate x="2704.00000000000000000000" y="2530.19999999999981810106"/>
+                        <coordinate x="2704.00000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2746.50000000000000000000" y="2582.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="Pfr" startcomponent="1D Road Vehicle">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2602.50000000000000000000" y="2542.59999999999990905053"/>
+                        <coordinate x="2676.00000000000000000000" y="2542.59999999999990905053"/>
+                        <coordinate x="2676.00000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2746.50000000000000000000" y="2582.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Torque Source" startport="out" startcomponent="Ramp">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2170.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2267.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2267.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2287.50000000000000000000" y="2582.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Ramp">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2170.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2587.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2587.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2620.50000000000000000000" y="2582.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Gain">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2645.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2719.00000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2719.00000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2746.50000000000000000000" y="2582.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pmr2" endcomponent="1D Road Vehicle" startport="P1" startcomponent="Torque Source_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2335.50000000000000000000" y="2632.00000000000000000000"/>
+                        <coordinate x="2557.90000000000009094947" y="2632.00000000000000000000"/>
+                        <coordinate x="2557.90000000000009094947" y="2555.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pmr1" endcomponent="1D Road Vehicle" startport="P1" startcomponent="Torque Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2334.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2424.09999999999990905053" y="2582.00000000000000000000"/>
+                        <coordinate x="2424.09999999999990905053" y="2555.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Pvc" startcomponent="1D Road Vehicle">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2602.50000000000000000000" y="2493.00000000000000000000"/>
+                        <coordinate x="2693.00000000000000000000" y="2493.00000000000000000000"/>
+                        <coordinate x="2693.00000000000000000000" y="2469.00000000000000000000"/>
+                        <coordinate x="2747.50000000000000000000" y="2469.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
