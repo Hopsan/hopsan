@@ -161,7 +161,7 @@ namespace hopsan {
 
             //Internal mechanical port
             cx1 = mArea1*c1 - mArea2*c2;
-            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
+            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2;
 
             //Piston
             posden [1] = mBl+Zx1+Zx3;
