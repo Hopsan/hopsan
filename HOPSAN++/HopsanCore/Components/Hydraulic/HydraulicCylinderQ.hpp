@@ -64,7 +64,7 @@ namespace hopsan {
         double mKl;
         double mTao;
         SecondOrderTransferFunction mPositionFilter;
-        SecondOrderTransferFunction mVelocityFilter;
+        FirstOrderTransferFunction mVelocityFilter;
         double posnum[3], posden[3], velnum[3], velden[3];
         double p1, q1, c1, Zc1, p2, q2, c2, Zc2, v1, cx1, Zx1, f3, x3, v3, cx3, Zx3;
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_f3, *mpND_x3, *mpND_v3, *mpND_cx3, *mpND_Zx3;
@@ -133,17 +133,15 @@ namespace hopsan {
             posnum[1] = 0.0;
             posnum[2] = 0.0;
             posden[0] = mKl;
-            posden[1] = mBl+Zx1+Zx3;
+            posden[1] = mBl;
             posden[2] = mMass;
-            velnum[0] = 0.0;
-            velnum[1] = 1.0;
-            velnum[2] = 0.0;
-            velden[0] = 1.0;
-            velden[1] = mTao;
-            velden[2] = 0.0;
+            velnum[0] = 1.0;
+            velnum[1] = 0.0;
+            velden[0] = mBl;
+            velden[1] = mMass;
 
-            mPositionFilter.initialize(mTimestep, posnum, posden, cx3, x3, 0.0, mStroke);
-            mVelocityFilter.initialize(mTimestep, velnum, velden, x3, v3);
+            mPositionFilter.initialize(mTimestep, posnum, posden, 0, x3, 0.0, mStroke);
+            mVelocityFilter.initialize(mTimestep, velnum, velden, 0, v3);
         }
 
 
@@ -164,16 +162,15 @@ namespace hopsan {
             Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2;
 
             //Piston
-            posden [1] = mBl+Zx1+Zx3;
-            mPositionFilter.setNumDen(posnum, posden);
-            mPositionFilter.update(cx1-cx3);
-            x3 = mPositionFilter.value();
-
-            mVelocityFilter.update(x3);
-            v3 = mVelocityFilter.value();
+            posden[1] = mBl+Zx1+Zx3;
+            velden[0] = mBl+Zx1+Zx3;
+            mPositionFilter.setDen(posden);
+            mVelocityFilter.setDen(velden);
+            x3 = mPositionFilter.update(cx1-cx3);
+            v3 = mVelocityFilter.update(cx1-cx3 - mKl*x3);
 
             v1 = -v3;
-            f3 = cx3 + Zc2*v3;
+            f3 = cx3 + Zx3*v3;
 
             //Volumes
             q1 = mArea1*v1;
