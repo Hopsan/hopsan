@@ -100,5 +100,6 @@
         <file>graphics/uiicons/Hopsan-OpenTabInNewPlotWindow.png</file>
         <file>graphics/porticons/PortOverlayUnknown.svg</file>
         <file>graphics/objecticons/subsystemDefault.svg</file>
+        <file>graphics/uiicons/hmf.ico</file>
     </qresource>
 </RCC>

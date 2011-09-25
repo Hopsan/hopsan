@@ -153,6 +153,7 @@ private slots:
     void updatePlotActionButton(bool);
     void updateSystemParametersActionButton(bool);
     void showToolBarHelpPopup();
+    void openExampleModel();
 
 private:
     //Methods that adjusts simulation parameters if they are illegal
@@ -198,6 +199,7 @@ private:
     QMenu *mpRecentMenu;
     QMenu *mpHelpMenu;
     QMenu *mpExportMenu;
+    QMenu *mpExamplesMenu;
 
     //Buttons
     QToolButton *mpExportButton;

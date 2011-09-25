@@ -664,6 +664,7 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
 
     mpHelpMenu->addAction(mpHelpAction);
+    mpHelpMenu->addMenu(mpExamplesMenu);
     mpHelpMenu->addAction(mpWebsiteAction);
     mpHelpMenu->addAction(mpNewVersionsAction);
     mpHelpMenu->addAction(mpAboutAction);
@@ -751,6 +752,18 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(mpRotateLeftAction);
     mpToolsToolBar->addAction(mpFlipHorizontalAction);
     mpToolsToolBar->addAction(mpFlipVerticalAction);
+
+    mpExamplesMenu = new QMenu("Example Models");
+    QAction *pTempAction;
+    QStringList exampleModels;
+    exampleModels << "Dynamic Pressure Feedback" << "Hydrostatic Transmission" << "Load Sensing System" << "Pressure Controlled Pump" << "Position Servo" << "Pressure Relief Valve Characteristics";
+    for(int i=0; i<exampleModels.size(); ++i)
+    {
+        pTempAction = new QAction(exampleModels.at(i), this);
+        pTempAction->setIcon(QIcon(QString(ICONPATH) + "hmf.ico"));
+        mpExamplesMenu->addAction(pTempAction);
+        connect(pTempAction, SIGNAL(triggered()), this, SLOT(openExampleModel()));
+    }
 
     connect(mpExportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
     connect(mpExportToFMUAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
@@ -848,6 +861,18 @@ void MainWindow::showToolBarHelpPopup()
 }
 
 
+void MainWindow::openExampleModel()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+    {
+        QString modelPath = QString(MODELPATH) + "Example Models/" +action->text() + ".hmf";
+        qDebug() << "Trying to open " << modelPath;
+        mpProjectTabs->loadModel(modelPath);
+    }
+}
+
+
 //! @brief Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
@@ -919,6 +944,7 @@ void MainWindow::updateRecentList()
             {
                 QAction *tempAction;
                 tempAction = mpRecentMenu->addAction(gConfig.getRecentModels().at(i));
+                tempAction->setIcon(QIcon(QString(ICONPATH) + "hmf.ico"));
                 disconnect(mpRecentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
                 connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));
             }

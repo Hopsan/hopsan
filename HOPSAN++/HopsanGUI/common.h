@@ -41,8 +41,6 @@
 
 //Path definitions (development and release)
 #define MAINPATH "../"
-#define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Models/"
-#define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Backup/"
 #define OBJECTICONPATH ":graphics/objecticons/"
 #define ICONPATH ":graphics/uiicons/"
 #define PORTICONPATH ":graphics/porticons/"
@@ -54,10 +52,14 @@
 #define DATAPATH MAINPATH
 #endif
 #ifdef DEVELOPMENT
+#define MODELPATH "../Models/"
+#define BACKUPPATH "../Backup/"
 #define COMPONENTPATH "../HopsanGUI/componentData/"
 #define HELPPATH "../HopsanGUI/docs/html/"
 #define INCLUDEPATH "../HopsanCore/"
 #else
+#define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
+#define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
 #define COMPONENTPATH "../componentData/"
 #define HELPPATH "../Help/"
 #define INCLUDEPATH "../Include/"

@@ -77,27 +77,23 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     mpNativeStyleSheetCheckBox = new QCheckBox(tr("Use Native Style Sheet"));
     mpNativeStyleSheetCheckBox->setCheckable(true);
-    mpNativeStyleSheetCheckBox->setChecked(gConfig.getUseNativeStyleSheet());
+
 
     mpShowWelcomeDialogCheckBox = new QCheckBox(tr("Show Welcome Dialog"));
     mpShowWelcomeDialogCheckBox->setCheckable(true);
-    mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
 
     mpShowPopupHelpCheckBox = new QCheckBox(tr("Show Popup Help Messages"));
     mpShowPopupHelpCheckBox->setCheckable(true);
-    mpShowPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
+
 
     mpAntiAliasingCheckBox = new QCheckBox(tr("Use Anti-Aliasing"));
     mpAntiAliasingCheckBox->setCheckable(true);
-    mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
 
     mpInvertWheelCheckBox = new QCheckBox(tr("Invert Mouse Wheel"));
     mpInvertWheelCheckBox->setCheckable(true);
-    mpInvertWheelCheckBox->setChecked(gConfig.getInvertWheel());
 
     mpSnappingCheckBox = new QCheckBox(tr("Auto Snap Components"));
     mpSnappingCheckBox->setCheckable(true);
-    mpSnappingCheckBox->setChecked(gConfig.getSnapping());
 
     mpInterfaceGroupBox = new QGroupBox(tr("Interface"));
     mpInterfaceLayout = new QGridLayout;
@@ -114,7 +110,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
         //Simulation Options
     mpEnableProgressBarCheckBox = new QCheckBox(tr("Enable Simulation Progress Bar"));
     mpEnableProgressBarCheckBox->setCheckable(true);
-    mpEnableProgressBarCheckBox->setChecked(gConfig.getEnableProgressBar());
 
     mpProgressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
     mpProgressBarLabel->setEnabled(gConfig.getEnableProgressBar());
@@ -122,21 +117,15 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpProgressBarSpinBox->setMinimum(1);
     mpProgressBarSpinBox->setMaximum(5000);
     mpProgressBarSpinBox->setSingleStep(10);
-    mpProgressBarSpinBox->setValue(gConfig.getProgressBarStep());
-    mpProgressBarSpinBox->setEnabled(gConfig.getEnableProgressBar());
 
     mpUseMulticoreCheckBox = new QCheckBox(tr("Use Multi-Threaded Simulation"));
     mpUseMulticoreCheckBox->setCheckable(true);
-    mpUseMulticoreCheckBox->setChecked(gConfig.getUseMulticore());
 
     mpThreadsLabel = new QLabel(tr("Number of Simulation Threads \n(0 = Auto Detect)"));
-    mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
     mpThreadsSpinBox = new QSpinBox();
     mpThreadsSpinBox->setMinimum(0);
     mpThreadsSpinBox->setMaximum(1000000);
     mpThreadsSpinBox->setSingleStep(1);
-    mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
-    mpThreadsSpinBox->setEnabled(gConfig.getUseMulticore());
 
     //mpThreadsWarningLabel = new QLabel(tr("Caution! Choosing more threads than the number of processor cores may be unstable on some systems."));
     //mpThreadsWarningLabel->setWordWrap(true);
@@ -174,8 +163,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpAngleUnitComboBox = new QComboBox();
     mpAngularVelocityUnitLabel = new QLabel(tr("Default Angular Velocity Unit"));
     mpAngularVelocityUnitComboBox = new QComboBox();
-
-    this->updateCustomUnits();
 
     mpAddValueUnitButton = new QPushButton("Add Custom Value Unit", this);
     mpAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit", this);
@@ -301,7 +288,7 @@ void OptionsDialog::updateValues()
     gConfig.setDefaultUnit("Velocity", mpVelocityUnitComboBox->currentText());
     gConfig.setDefaultUnit("Torque", mpTorqueUnitComboBox->currentText());
     gConfig.setDefaultUnit("Angle", mpAngleUnitComboBox->currentText());
-    gConfig.setDefaultUnit("AngularVelocity", mpAngularVelocityUnitComboBox->currentText());
+    gConfig.setDefaultUnit("Angular Velocity", mpAngularVelocityUnitComboBox->currentText());
     gConfig.saveToXml();
 
     this->accept();
@@ -360,6 +347,7 @@ void OptionsDialog::show()
     mpBackgroundColorButton->setStyleSheet(buttonStyle);
     mPickedBackgroundColor = gConfig.getBackgroundColor();
 
+    mpNativeStyleSheetCheckBox->setChecked(gConfig.getUseNativeStyleSheet());
     mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
     mpShowPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
     mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
@@ -368,9 +356,11 @@ void OptionsDialog::show()
     mpEnableProgressBarCheckBox->setChecked(gConfig.getEnableProgressBar());
     mpProgressBarSpinBox->setValue(gConfig.getProgressBarStep());
     mpProgressBarSpinBox->setEnabled(gConfig.getEnableProgressBar());
+    mpThreadsSpinBox->setEnabled(gConfig.getUseMulticore());
     mpUseMulticoreCheckBox->setChecked(gConfig.getUseMulticore());
     mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
-    mpThreadsSpinBox->setEnabled(gConfig.getUseMulticore());
+    mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
+    updateCustomUnits();
 
     QDialog::show();
 }
