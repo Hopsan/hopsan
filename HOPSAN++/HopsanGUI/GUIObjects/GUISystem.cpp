@@ -431,14 +431,15 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
                     xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
                 }
 
-//                //Load start values //Is not needed, start values are saved as ordinary parameters! This code snippet can probably be removed.
-//                QDomElement xmlStartValues = xmlSubObject.firstChildElement(HMF_STARTVALUES);
-//                QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
-//                while (!xmlStartValue.isNull())
-//                {
-//                    loadStartValue(xmlStartValue, pObj, NOUNDO);
-//                    xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
-//                }
+                //! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats
+                //Load start values //Is not needed, start values are saved as ordinary parameters! This code snippet can probably be removed.
+                QDomElement xmlStartValues = xmlSubObject.firstChildElement(HMF_STARTVALUES);
+                QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
+                while (!xmlStartValue.isNull())
+                {
+                    loadStartValue(xmlStartValue, pObj, NOUNDO);
+                    xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
+                }
             }
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }

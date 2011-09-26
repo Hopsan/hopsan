@@ -1277,15 +1277,6 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
             xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
         }
 
-            //Apply start values
-        QDomElement xmlStartValues = objectElement.firstChildElement(HMF_STARTVALUES);
-        QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
-        while (!xmlStartValue.isNull())
-        {
-            loadStartValue(xmlStartValue, pObj, NOUNDO);
-            xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
-        }
-
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();
         pObj->moveBy(xOffset, yOffset);

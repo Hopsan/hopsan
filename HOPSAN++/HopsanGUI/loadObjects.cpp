@@ -158,7 +158,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 }
 
 
-//! @brief xml version
+//! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats
 void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
 {
     QString portName = rDomElement.attribute("portname");
