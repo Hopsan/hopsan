@@ -96,14 +96,6 @@ QString addQuotes(QString str)
     return str;
 }
 
-////! @brief This function returns the relative absolute path
-////! @param [in] pathtochange The absolute path that you want to change
-////! @param [in] basedir The absolute directory path of the base directory
-////! @returns The realtive pathtochange, relative to basepath
-//QString relativePath(QString pathtochange, QDir basedir)
-//{
-//    return basedir.relativeFilePath(pathtochange);
-//}
 
 //! @brief This function returns the relative absolute path
 //! @param [in] pathtochange The absolute path that you want to change
@@ -120,70 +112,76 @@ QString relativePath(QFileInfo pathtochange, QDir basedir)
 }
 
 //! @brief Utility function to convert degrees to radians
-qreal deg2rad(qreal deg)
+qreal deg2rad(const qreal deg)
 {
     return deg*M_PI/180.0;
 }
 
 //! @brief Utility function to convert degrees to radians
-qreal rad2deg(qreal rad)
+qreal rad2deg(const qreal rad)
 {
     return rad*180.0/M_PI;
 }
 
 //! @brief normalises degrees to range between -180 and 180 degrees
-qreal normDeg180(qreal deg)
+qreal normDeg180(const qreal deg)
 {
     return rad2deg(normRad(deg2rad(deg)));
 }
 
-//! @brief normalises degrees to range between 0 and 360 degrees
+//! @brief normalises degrees to range between 0 and 359.999 degrees, 360.0 will be converted to 0
+//! @todo potential danger comparing floats like this
 qreal normDeg360(qreal deg)
 {
-    qDebug() << deg;
-    while (deg > 360.0)
-    {
-        deg -= 360.0;
-        qDebug() << deg << " -360.0";
-    }
-
     while (deg < 0.0)
     {
         deg += 360.0;
-        qDebug() << "+360.0";
     }
 
-    return deg;
+    //If 360 (or very close) then set to zero
+    while (deg >= 359.999)
+    {
+        deg -= 360.0;
+    }
+
+    return fabs(deg); //Make sure we return positive (close to 0 if we have rounding issus that takes us bellow zero)
 }
 
 //! @brief normalises radinas to range between -PI and PI degrees
-qreal normRad(qreal rad)
+qreal normRad(const qreal rad)
 {
     return qAtan2(qCos(rad),qSin(rad));
 }
 
 
 //! @brief Calculates the distance between two points
-double dist(double x1,double y1, double x2, double y2)
+double dist(const double x1, const double y1, const double x2, const double y2)
 {
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
 //! @brief Compare two qreals with given tolerance
 //! @return True if fabs(first-last) < eps
-bool fuzzySame(const qreal first, const qreal second, const qreal eps)
+bool fuzzyEqual(const qreal first, const qreal second, const qreal eps)
 {
     return (fabs(first-second) < eps);
 }
 
+//! @brief Check if first+eps is less then second, convenient to make usre float comparison works on all platforms
+//! @return True if first+eps < second
+bool fuzzyLT(const qreal first, const qreal second, const qreal eps)
+{
+    return (first+eps) < second;
+}
+
 //! @brief Calculates the 2NORM of one point, the absoulte distance from 0,0
-qreal dist(QPointF &rPoint)
+qreal dist(const QPointF &rPoint)
 {
     return sqrt( rPoint.x()*rPoint.x() + rPoint.y()*rPoint.y() );
 }
 
 //! @brief Calculates the distance between two points
-qreal dist(QPointF &rPoint1, QPointF &rPoint2)
+qreal dist(const QPointF &rPoint1, const QPointF &rPoint2)
 {
     qreal x = rPoint1.x() - rPoint2.x();
     qreal y = rPoint1.y() - rPoint2.y();

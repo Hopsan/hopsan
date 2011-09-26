@@ -605,14 +605,10 @@ bool GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<QString> 
 
 PortDirectionT GUIPort::getPortDirection()
 {
-    qreal scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation();
-    while(scene_angle > 359)
-    {
-        scene_angle -= 360;
-    }
-    //! @todo Danger comparing qreals with ==
-    //qDebug() << "scene_angle = " << scene_angle;
-    if( (scene_angle == 0) || (scene_angle == 180) )
+    //! @todo will this work if parentguimodelobject is flipped
+    qreal scene_angle = normDeg360( this->mpParentGuiModelObject->rotation() + this->rotation() );
+
+    if ( fuzzyEqual(scene_angle, 0, 1.0) || fuzzyEqual(scene_angle, 180, 1.0) )
     {
         //qDebug() << "Returning LEFTRIGHT";
         return LEFTRIGHT;

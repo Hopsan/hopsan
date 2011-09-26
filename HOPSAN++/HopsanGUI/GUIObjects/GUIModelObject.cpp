@@ -311,7 +311,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     }
 
     //Avoid swappping icon if same as before, we swap also if scale changes
-    if  ( (mLastIconPath != iconPath) || !fuzzySame(mLastIconScale, iconScale, 0.001) )
+    if  ( (mLastIconPath != iconPath) || !fuzzyEqual(mLastIconScale, iconScale, 0.001) )
     {
         if (mpIcon != 0)
         {

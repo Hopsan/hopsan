@@ -33,6 +33,7 @@
 #include "MainWindow.h"
 #include "UndoStack.h"
 #include "Widgets/MessageWidget.h"
+#include "Utilities/GUIUtilities.h"
 
 #include <QMap>
 
@@ -192,13 +193,15 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
     QString name = rDomElement.attribute(HMF_NAMETAG);
 
     //Read gui specific data
-    qreal posX, posY, rotation;
+    qreal posX, posY, target_rotation;
     bool isFlipped;
 
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
+    parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, target_rotation, isFlipped);
+    target_rotation = normDeg360(target_rotation); //Make sure target rotation between 0 and 359.999
+
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
-    int textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
+    int nameTextVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
     //bool portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
     //bool namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
 
@@ -209,7 +212,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
         appearanceData.setName(name);
 
         nameVisibility nameStatus;
-        if(textVisible)
+        if(nameTextVisible)
         {
             nameStatus = NAMEVISIBLE;
         }
@@ -221,13 +224,16 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
         GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPointF(posX, posY), 0, DESELECTED, nameStatus, undoSettings);
         pObj->setNameTextPos(nameTextPos);
 
+        //First set flip (before rotate, Important!)
+        //! @todo For now If flipped than we need to rotate in wrong direction also, saving saves flipped rotation angle i think but changing save and load would couse old models to load incorrectly
         if (isFlipped)
         {
             pObj->flipHorizontal(undoSettings);
+            pObj->rotate(-target_rotation, undoSettings); //This assumes object created with initial rotation 0 in addGuiModelObject above
         }
-        while(pObj->rotation() != rotation)
+        else
         {
-            pObj->rotate90cw(undoSettings);
+            pObj->rotate(target_rotation, undoSettings); //This assumes object created with initial rotation 0 in addGuiModelObject above
         }
 
         if (rDomElement.tagName() == HMF_SYSTEMTAG)
@@ -287,7 +293,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
     }
     else
     {
-        qDebug() << "loadGUIObj Some errer happend pAppearanceData == 0";
+        qDebug() << "loadGUIObj Some error happend pAppearanceData == 0";
         //! @todo Some error message
         return 0;
     }
