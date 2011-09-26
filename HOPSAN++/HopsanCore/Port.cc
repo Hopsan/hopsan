@@ -465,11 +465,18 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 //! @brief Set the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @param[in] value is the start value that should be written
-void Port::setStartValue(const size_t &idx, const double &value, const size_t /*portIdx*/)
+void Port::setStartValue(const size_t &idx, double &value, const size_t /*portIdx*/)
 {
     if(mpStartNode)
     {
         mpStartNode->setData(idx, value);
+
+        vector<string> dataNames, units;
+        mpStartNode->getDataNamesAndUnits(dataNames, units);
+        stringstream ssName, ssDesc;
+        ssDesc << "startvalue:" << "Port " << getPortName();
+        ssName << getPortName() << "::" << dataNames[idx];
+        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[idx], value);
     }
     else
     {

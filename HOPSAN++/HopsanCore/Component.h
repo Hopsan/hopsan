@@ -125,7 +125,7 @@ class ComponentSystem; //Forward declaration
 
         //Start values
         double getStartValue(Port* pPort, const size_t idx);
-        void setStartValue(Port* pPort, const size_t &idx, const double &value);
+        void setStartValue(Port* pPort, const size_t &idx, double value);
         void disableStartValue(Port* pPort, const size_t &idx);
 
         //Ports

@@ -780,6 +780,9 @@ void Component::stopSimulation()
 //! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
+    if(mParameters->exist(name))
+        mParameters->deleteParameter(name);     //Remove parameter if it is already registered
+
     stringstream ss;
     if(ss << rValue)
     {
@@ -796,6 +799,9 @@ void Component::registerParameter(const string name, const string description, c
 //! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, string &rValue)
 {
+    if(mParameters->exist(name))
+        mParameters->deleteParameter(name);     //Remove parameter if it is already registered
+
     mParameters->addParameter(name, rValue, description, unit, "string", &rValue);
 }
 
@@ -804,6 +810,9 @@ void Component::registerParameter(const string name, const string description, c
 //! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, bool &rValue)
 {
+    if(mParameters->exist(name))
+        mParameters->deleteParameter(name);     //Remove parameter if it is already registered
+
     if(rValue)
         mParameters->addParameter(name, "true", description, unit, "bool", &rValue);
     else
@@ -1149,7 +1158,7 @@ double Component::getStartValue(Port* pPort, const size_t idx)
 //! @param[in] pPort is the port which should be written to
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @param[in] value is the start value that should be written
-void Component::setStartValue(Port* pPort, const size_t &idx, const double &value)
+void Component::setStartValue(Port* pPort, const size_t &idx, double value)
 {
     std::stringstream ss;
     ss << getName() << "::setStartValue";

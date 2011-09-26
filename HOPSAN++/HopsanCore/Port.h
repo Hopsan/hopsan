@@ -74,7 +74,7 @@ namespace hopsan {
         virtual bool setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx=0);
 
         virtual double getStartValue(const size_t idx, const size_t portIdx=0);
-        virtual void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
+        virtual void setStartValue(const size_t &idx, double &value, const size_t portIdx=0);
         virtual void disableStartValue(const size_t &idx);
 
         virtual bool isConnected();
