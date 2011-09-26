@@ -110,7 +110,7 @@ void GUIContainerObject::connectMainWindowActions()
 
     connect(gpMainWindow->mpTogglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
-    connect(gpMainWindow->mpDisableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoEnabled(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpDisableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoDisabled(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpCutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
     connect(gpMainWindow->mpCopyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
     connect(gpMainWindow->mpPasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
@@ -141,7 +141,7 @@ void GUIContainerObject::disconnectMainWindowActions()
 
     disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,      SLOT(toggleNames(bool)));
     disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
-    disconnect(gpMainWindow->mpDisableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoEnabled(bool)));
+    disconnect(gpMainWindow->mpDisableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoDisabled(bool)));
     disconnect(gpMainWindow->mpCutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->mpCopyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
     disconnect(gpMainWindow->mpPasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
@@ -1841,12 +1841,18 @@ void GUIContainerObject::removeOneConnectorLine(QPointF pos)
 }
 
 
+void GUIContainerObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
+{
+    setUndoEnabled(!disabled, dontAskJustDoIt);
+}
+
+
 //! @brief Disables the undo function for the current model.
 //! @param enabled Tells whether or not to enable the undo stack
 //! @param dontAskJustDoIt If true, the warning box will not appear
 void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 {
-    if(enabled)
+    if(!enabled)
     {
         bool doIt=true;
         if (!dontAskJustDoIt)

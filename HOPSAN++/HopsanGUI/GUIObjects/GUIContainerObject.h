@@ -185,6 +185,7 @@ public slots:
     void undo();
     void redo();
     void clearUndo();
+    void setUndoDisabled(bool disabled, bool dontAskJustDoIt=false);
     void setUndoEnabled(bool enabled, bool dontAskJustDoIt=false);
     bool isUndoEnabled();
     void updateMainWindowButtons();
