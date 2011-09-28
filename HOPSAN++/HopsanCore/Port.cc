@@ -465,7 +465,7 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 //! @brief Set the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @param[in] value is the start value that should be written
-void Port::setStartValue(const size_t &idx, double &value, const size_t /*portIdx*/)
+void Port::setStartValue(const size_t idx, const double value, const size_t /*portIdx*/)
 {
     if(mpStartNode)
     {
@@ -476,7 +476,7 @@ void Port::setStartValue(const size_t &idx, double &value, const size_t /*portId
         stringstream ssName, ssDesc;
         ssDesc << "startvalue:" << "Port " << getPortName();
         ssName << getPortName() << "::" << dataNames[idx];
-        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[idx], value);
+        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[idx], *mpStartNode->getDataPtr(idx));
     }
     else
     {
@@ -489,7 +489,7 @@ void Port::setStartValue(const size_t &idx, double &value, const size_t /*portId
 
 //! @brief Disables start value for specified data type
 //! @param idx Data index of start value to be disabled
-void Port::disableStartValue(const size_t &idx)
+void Port::disableStartValue(const size_t idx)
 {
     //The start value has already been registered as a parameter in the component, so we must unregister it. This is probably not the most beautiful solution.
     std::stringstream name;

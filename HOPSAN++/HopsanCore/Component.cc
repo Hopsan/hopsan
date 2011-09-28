@@ -1158,7 +1158,7 @@ double Component::getStartValue(Port* pPort, const size_t idx)
 //! @param[in] pPort is the port which should be written to
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @param[in] value is the start value that should be written
-void Component::setStartValue(Port* pPort, const size_t &idx, double value)
+void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 {
     std::stringstream ss;
     ss << getName() << "::setStartValue";
@@ -1167,7 +1167,7 @@ void Component::setStartValue(Port* pPort, const size_t &idx, double value)
 }
 
 
-void Component::disableStartValue(Port *pPort, const size_t &idx)
+void Component::disableStartValue(Port *pPort, const size_t idx)
 {
     pPort->disableStartValue(idx);
 }

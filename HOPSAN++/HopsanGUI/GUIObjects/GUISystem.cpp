@@ -830,7 +830,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuSourceStream << "    double startT;      //Dummy variable\n";
     fmuSourceStream << "    double stopT;       //Dummy variable\n";
     fmuSourceStream << "    spCoreComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
-    fmuSourceStream << "    spCoreComponentSystem->setDesiredTimestep(0.001);\n";
+    fmuSourceStream << "    spCoreComponentSystem->setDesiredTimestep(0.001);\n";           //!< @todo Time step should not be hard coded
     fmuSourceStream << "    spCoreComponentSystem->initializeComponentsOnly();\n";
     fmuSourceStream << "}\n\n";
     fmuSourceStream << "void simulateOneStep()\n";
@@ -877,7 +877,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     QFile expFile;
     if(gccCompiler)
     {
-        dllFile.setFileName(gExecPath + "HopsanCore.dll");
+        dllFile.setFileName(gExecPath + "HopsanCore_d.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
     }
     else

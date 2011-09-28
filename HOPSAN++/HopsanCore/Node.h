@@ -52,7 +52,7 @@ namespace hopsan {
     public:
         //The user should never bother about Nodes
         void logData(const double time);  //Public because simlation threads must be able to log data
-        void setData(const size_t &data_type, const double &data);
+        void setData(const size_t data_type, const double data);
         Component *getWritePortComponentPtr();
 
     protected:

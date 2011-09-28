@@ -30,6 +30,7 @@
 
 #ifdef WIN32
 #include "windows.h"
+#include "../win32dll.h"
 #else
 #include "dlfcn.h"
 #endif

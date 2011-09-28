@@ -77,10 +77,15 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
     mpLoadExternalButton->setIconSize(QSize(24,24));
     mpLoadExternalButton->setToolTip(tr("Load External Library"));
+    mpLoadFmuButton = new QToolButton();
+    mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadFmuButton->setIconSize(QSize(24,24));
+    mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU)"));
 
     connect(mpTreeViewButton, SIGNAL(clicked()), this, SLOT(setListView()));
     connect(mpDualViewButton, SIGNAL(clicked()), this, SLOT(setDualView()));
     connect(mpLoadExternalButton, SIGNAL(clicked()), this, SLOT(addExternalLibrary()));
+    connect(mpLoadFmuButton, SIGNAL(clicked()), this, SLOT(importFmu()));
 
     mpGrid = new QGridLayout(this);
     mpGrid->addWidget(mpTree,               0,0,1,5);
@@ -89,9 +94,9 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpGrid->addWidget(mpTreeViewButton,     3,0,1,1);
     mpGrid->addWidget(mpDualViewButton,     3,1,1,1);
     mpGrid->addWidget(mpLoadExternalButton, 3,2,1,1);
+    mpGrid->addWidget(mpLoadFmuButton,      3,3,1,1);
     mpGrid->setContentsMargins(4,4,4,4);
     mpGrid->setHorizontalSpacing(0);
-
 
     setLayout(mpGrid);
     this->setMouseTracking(true);
@@ -439,8 +444,43 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Library " + libDir + " is already loaded!");
     }
+}
 
 
+void LibraryWidget::importFmu()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Import Functional Mockup Unit (FMU)"),
+                                          gExecPath + "/../",
+                                          tr("Functional Mockup Unit (*.fmu)"));
+
+    QFileInfo fmuFileInfo = QFile(filePath);
+
+    QDir zipDir = QDir(gExecPath + "../ThirdParty/7z");
+    qDebug() << "zipDir = " << zipDir.path();
+    fmuFileInfo.setFile(zipDir.relativeFilePath(filePath));
+
+    QString fmuName = fmuFileInfo.fileName();
+    fmuName.chop(4);
+
+    if(!QDir(gExecPath + "../import").exists())
+        QDir().mkdir(gExecPath + "../import");
+
+    if(!QDir(gExecPath + "../import/FMU").exists())
+        QDir().mkdir(gExecPath + "../import/FMU");
+
+    if(!QDir(gExecPath + "../import/FMU/" + fmuName).exists());
+        QDir().mkdir(gExecPath + "../import/FMU/" + fmuName);
+
+    QString fmuPath = gExecPath + "../import/FMU/" + fmuName;
+
+    QProcess p;
+    p.setWorkingDirectory(zipDir.path());
+    QString command = "\"7z.exe\" e \"" + fmuFileInfo.filePath() + "\" -o\"../../import/FMU/" + fmuName + "\"";
+    p.start("cmd.exe", QStringList() << "/c" << command);
+    p.waitForFinished();
+    qDebug() << command;
+    QByteArray result = p.readAll();
+    qDebug() << result.data();
 }
 
 
@@ -449,6 +489,7 @@ void LibraryWidget::addExternalLibrary(QString libDir)
 //! @todo Why do we need this?
 void LibraryWidget::loadExternalLibrary(QString libDir)
 {
+    qDebug() << "LOADING Library dir " << libDir;
     loadLibrary(libDir, true);
 }
 
@@ -458,9 +499,15 @@ void LibraryWidget::loadExternalLibrary(QString libDir)
 //! @param pParentTree Current contents tree node
 void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree)
 {
-    QDir libDirObject(libDir);
-    QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
+    qDebug() << "loadLibraryFolder() " << libDir;
 
+    QDir libDirObject(libDir);
+    if(!libDirObject.exists() && gConfig.hasUserLib(libDir))
+    {
+        gConfig.removeUserLib(libDir);      //Remove user lib if it does not exist
+    }
+
+    QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
         // Load DLL or SO files
     QStringList filters;
@@ -480,7 +527,8 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     gpMainWindow->mpMessageWidget->checkMessages();
 
 
-        // Load XML files and recursively load subfolders
+        // Load XML files and recursively load subfolder
+    qDebug() << "Adding tree entry: " << libName;
     LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
     pTree->mLibDir = libDir;
 
@@ -523,9 +571,10 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
             QDomElement cafRoot = domDocument.documentElement();
             if (cafRoot.tagName() != CAF_ROOT)
             {
-                QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
-                                         "The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: "
-                                         + cafRoot.tagName() + "!=" + CAF_ROOT);
+                //QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
+//                                         "The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: "
+//                                         + cafRoot.tagName() + "!=" + CAF_ROOT);
+                gpMainWindow->mpMessageWidget->printGUIWarningMessage("The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
             }
             else
             {
@@ -569,6 +618,16 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
 
         //Close file
         file.close();
+    }
+
+    //Make sure empty external libraries are not loaded (because they would become invisible and not removeable)
+    if(pTree->isEmpty())
+    {
+        pParentTree->removeChild(libName);
+        if(gConfig.hasUserLib(libDir))
+        {
+            gConfig.removeUserLib(libDir);
+        }
     }
 }
 

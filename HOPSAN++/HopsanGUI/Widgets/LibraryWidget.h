@@ -72,6 +72,7 @@ public:
 
 public slots:
     void addExternalLibrary(QString libDir = QString());
+    void importFmu();
     void setGfxType(graphicsType gfxType);
     void setListView();
     void setDualView();
@@ -94,6 +95,7 @@ private:
     QToolButton *mpTreeViewButton;
     QToolButton *mpDualViewButton;
     QToolButton *mpLoadExternalButton;
+    QToolButton *mpLoadFmuButton;
     QGridLayout *mpGrid;
     int mViewMode;
     CoreLibraryAccess *mpCoreAccess;

@@ -84,7 +84,7 @@ NodeTypeT &Node::getNodeType()
 //! @param [in] data_type Identifier for the typ of node data to set
 //! @param [in] data The data value
 //!
-void Node::setData(const size_t &data_type, const double &data)
+void Node::setData(const size_t data_type, const double data)
 {
     mDataVector[data_type] = data;
 }
