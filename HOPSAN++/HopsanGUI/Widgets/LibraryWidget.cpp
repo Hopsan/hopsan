@@ -531,6 +531,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     qDebug() << "Adding tree entry: " << libName;
     LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
     pTree->mLibDir = libDir;
+    libName = pTree->mName;
 
     //Append subnodes recursively
     libDirObject.setFilter(QDir::AllDirs);
@@ -781,13 +782,23 @@ bool LibraryContentsTree::isEmpty()
 //! @returns Pointer to the new child node
 LibraryContentsTree *LibraryContentsTree::addChild(QString name)
 {
-    if(!findChild(name))
+
+    if(findChild(name))
     {
-        LibraryContentsTree *pNewChild = new LibraryContentsTree(name);
-        mChildNodesPtrs.append(pNewChild);
-        return pNewChild;
+        QString newName = name.append("_0");
+        int i=1;
+        while(findChild(newName))
+        {
+            QString num;
+            num.setNum(i);
+            newName.chop(1);
+            newName.append(num);
+            ++i;
+        }
     }
-    return 0;
+    LibraryContentsTree *pNewChild = new LibraryContentsTree(name);
+    mChildNodesPtrs.append(pNewChild);
+    return pNewChild;
 }
 
 //! @brief Removes specified child node from the node
