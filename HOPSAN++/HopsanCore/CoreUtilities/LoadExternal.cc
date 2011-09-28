@@ -26,7 +26,10 @@
 #include "../Component.h"
 #include "../Node.h"
 #include "ClassFactoryStatusCheck.hpp"
+#include "version.h"
+
 #include <sstream>
+#include <cstring>
 
 #ifdef WIN32
 #include "windows.h"
@@ -34,6 +37,7 @@
 #else
 #include "dlfcn.h"
 #endif
+
 
 using namespace std;
 using namespace hopsan;
@@ -43,10 +47,11 @@ using namespace hopsan;
 //!This function loads a library with given path
 bool LoadExternal::load(string libpath)
 {
-    //typedef void (*register_contents_t)(ComponentFactory::FactoryPairVectorT *factory_vector_ptr);
     typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
-    typedef const char* (*get_hopsan_info_t)();
-//! @todo Write some message output if DLL/SO fails to load or similar
+    typedef void (*get_hopsan_info_t)(HopsanExternalLibInfoT *pHopsanExternalLibInfo);
+
+    bool hopsanInfoExists = true; //!< @todo temporary variable, remove later
+
 #ifdef WIN32
     HINSTANCE lib_ptr;
 
@@ -82,20 +87,14 @@ bool LoadExternal::load(string libpath)
 
     //Now get the version hopsan core was compiled against
     get_hopsan_info_t get_hopsan_info = (get_hopsan_info_t)GetProcAddress(lib_ptr, "get_hopsan_info");
-
     if (!get_hopsan_info)
     {
-        #warning for 0.5.0 release, mak sure we run this check and abort / return ERROR
+        #warning for 0.5.0 release, make sure we run this check and abort / return ERROR
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << GetLastError();
         gCoreMessageHandler.addDebugMessage(ss.str());
 //        return false;
-    }
-    else
-    {
-        stringstream ss;
-        ss << "External lib compiled against HopsanCore version: " << get_hopsan_info();
-        gCoreMessageHandler.addDebugMessage(ss.str());
+        hopsanInfoExists = false;
     }
 
     //Now load the register function
@@ -125,9 +124,24 @@ bool LoadExternal::load(string libpath)
         ss << "Succes (probably) opening external lib: " << libpath;
         gCoreMessageHandler.addDebugMessage(ss.str());
     }
+
+    //Now get the version hopsan core was compiled against
+    get_hopsan_info_t get_hopsan_info = (get_hopsan_info_t)dlsym(lib_ptr, "get_hopsan_info");
+    char *dlsym_error = dlerror();
+
+    if (dlsym_error)
+    {
+        #warning for 0.5.0 release, make sure we run this check and abort / return ERROR
+        stringstream ss;
+        ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << dlsym_error;
+        gCoreMessageHandler.addDebugMessage(ss.str());
+//        return false;
+        hopsanInfoExists = false;
+    }
+
     //Now load the register function
     register_contents_t register_contents = (register_contents_t)dlsym(lib_ptr, "register_contents");
-    const char *dlsym_error = dlerror();
+    dlsym_error = dlerror();
     if (dlsym_error)
     {
         stringstream ss;
@@ -138,6 +152,36 @@ bool LoadExternal::load(string libpath)
 
 #endif
 
+    if (hopsanInfoExists)
+    {
+        HopsanExternalLibInfoT externalLibInfo;
+        get_hopsan_info(&externalLibInfo);
+
+        stringstream ss;
+        ss << "ExternalLib: " << libpath <<  " compiled against HopsanCore: " << externalLibInfo.hopsanCoreVersion; /* << " " << externalLibInfo.debugReleaseCompiled << " version";*/
+        gCoreMessageHandler.addDebugMessage(ss.str());
+
+        //Now check if we are compiled against correct version number
+        if ( strcmp(externalLibInfo.hopsanCoreVersion, HOPSANCOREVERSION) != 0 )
+        {
+            stringstream ss;
+            ss << "External lib: " << libpath << " compiled against wrong HopsanCore version: " << externalLibInfo.hopsanCoreVersion << ", current version is: " << HOPSANCOREVERSION;
+            gCoreMessageHandler.addErrorMessage(ss.str());
+            return false;
+        }
+
+        //Now check if we are compiled against correct debug release version
+        if ( strcmp(externalLibInfo.debugReleaseCompiled, HOPSANDEBUGRELEASECOMPILED) != 0 )
+        {
+            stringstream ss;
+            ss << "ExternalLib: " << libpath << " compiled against other HopsanCore Debug or Release version: " << externalLibInfo.debugReleaseCompiled << " You may run into problems!";
+            //! @todo this is not working
+            //gCoreMessageHandler.addWarningMessage(ss.str());
+            //return false;
+        }
+    }
+
+    //! @todo if we abort loading in code above we must remember to run dlclose or similar on the dll handle, right now we do not do that
     register_contents(mpComponentFactory, mpNodeFactory);
 
     //Check for register errors and status

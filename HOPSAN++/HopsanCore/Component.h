@@ -27,12 +27,20 @@
 
 #include "Node.h"
 #include "Port.h"
-//#include "CoreUtilities/ClassFactory.hpp"
 #include "win32dll.h"
 #include <string>
 #include <map>
 
 namespace hopsan {
+
+#pragma pack(push, 1)
+typedef struct HopsanExternalLibInfo
+{
+    char* hopsanCoreVersion;
+    char* debugReleaseCompiled; //!< @todo bad name should reflect that it is the core that was debug release, maybe we should have our own stauts also
+
+}HopsanExternalLibInfoT;
+#pragma pack(pop)
 
 class Component;
 class Parameters;

@@ -20,6 +20,13 @@ INCLUDEPATH *= $${PWD}/Dependencies/libcsv_parser++-1.0.0/include/csv_parser
 #--------------------------------------------------------
 
 # -------------------------------------------------
+# Non platform specific HopsanCore options
+# -------------------------------------------------
+CONFIG(debug, debug|release) {
+  DEFINES *= DEBUGCOMPILING
+}
+
+# -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
