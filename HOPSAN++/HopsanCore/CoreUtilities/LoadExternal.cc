@@ -44,6 +44,7 @@ bool LoadExternal::load(string libpath)
 {
     //typedef void (*register_contents_t)(ComponentFactory::FactoryPairVectorT *factory_vector_ptr);
     typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
+    typedef const char* (*get_hopsan_info_t)();
 //! @todo Write some message output if DLL/SO fails to load or similar
 #ifdef WIN32
     HINSTANCE lib_ptr;
@@ -77,6 +78,25 @@ bool LoadExternal::load(string libpath)
         ss << "Succes (probably) opening external lib: " << libpath;
         gCoreMessageHandler.addDebugMessage(ss.str());
     }
+
+    //Now get the version hopsan core was compiled against
+    get_hopsan_info_t get_hopsan_info = (get_hopsan_info_t)GetProcAddress(lib_ptr, "get_hopsan_info");
+
+    if (!get_hopsan_info)
+    {
+        #warning for 0.5.0 release, mak sure we run this check and abort / return ERROR
+        stringstream ss;
+        ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << GetLastError();
+        gCoreMessageHandler.addDebugMessage(ss.str());
+//        return false;
+    }
+    else
+    {
+        stringstream ss;
+        ss << "External lib compiled against HopsanCore version: " << get_hopsan_info();
+        gCoreMessageHandler.addDebugMessage(ss.str());
+    }
+
     //Now load the register function
     register_contents_t register_contents = (register_contents_t)GetProcAddress(lib_ptr, "register_contents");
     if (!register_contents)

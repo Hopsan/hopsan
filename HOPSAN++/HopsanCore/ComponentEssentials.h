@@ -20,6 +20,7 @@
 #include "Nodes/Nodes.h"
 #include "Component.h"
 #include "Port.h"
+#include "version.h"
 
 
 #endif // COMPONENTESSENTIALS_H_INCLUDED

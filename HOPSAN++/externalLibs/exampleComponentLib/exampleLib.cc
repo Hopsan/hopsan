@@ -40,3 +40,8 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFac
     // ========== Register Custom Nodes (if any) ==========
 
 }
+
+extern "C" DLLEXPORT const char* get_hopsan_info()
+{
+    return HOPSANCOREVERSION;
+}
