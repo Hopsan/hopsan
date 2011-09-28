@@ -35,11 +35,10 @@ namespace hopsan {
     class DLLIMPORTEXPORT LoadExternal
     {
     private:
-        ComponentFactory* mpComponentFactory;
-        NodeFactory* mpNodeFactory;
+        ComponentFactory *mpComponentFactory;
+        NodeFactory *mpNodeFactory;
 
     public:
-        //LoadExternal();
         bool load(std::string libpath);
         void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
     };

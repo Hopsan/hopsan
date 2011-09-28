@@ -26,7 +26,7 @@
 #include "../Component.h"
 #include "../Node.h"
 #include "ClassFactoryStatusCheck.hpp"
-#include <iostream>
+#include <sstream>
 
 #ifdef WIN32
 #include "windows.h"
@@ -38,12 +38,6 @@ using namespace std;
 using namespace hopsan;
 
 //! @todo maybe the LoadExternal class is unnecessary, contents are only used in hopsan essentials, could maybe move stuff there
-
-//!LoadExternal Constructor
-//LoadExternal::LoadExternal()
-//{
-//    //ctor
-//}
 
 //!This function loads a library with given path
 bool LoadExternal::load(string libpath)
@@ -72,21 +66,24 @@ bool LoadExternal::load(string libpath)
 
     if (!lib_ptr)
     {
-        cout << "Error opening external lib: " << libpath << endl;
-        //cout << dlerror() << endl;
+        stringstream ss;
+        ss << "Error opening external lib: " << libpath << " Error: " << GetLastError();
+        gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
-        //exit(-1);
     }
     else
     {
-        cout << "Succes (probably) opening external lib: " << libpath << endl;
+        stringstream ss;
+        ss << "Succes (probably) opening external lib: " << libpath;
+        gCoreMessageHandler.addDebugMessage(ss.str());
     }
     //Now load the register function
     register_contents_t register_contents = (register_contents_t)GetProcAddress(lib_ptr, "register_contents");
     if (!register_contents)
     {
-        cout << "Cannot load symbol 'register_contents': " << GetLastError() << endl;
-        //dlclose(handle);
+        stringstream ss;
+        ss << "Cannot load symbol 'register_contents' for: " << libpath << " Error: " << GetLastError();
+        gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
     }
 #else
@@ -96,22 +93,25 @@ bool LoadExternal::load(string libpath)
     //lib_ptr = dlopen(libpath.c_str(), RTLD_LAZY);
     if (!lib_ptr)
     {
-        cout << "Error opening external lib: " << libpath << endl;
-        cout << dlerror() << endl;
+        stringstream ss;
+        ss << "Error opening external lib: " << libpath << " Error: " << dlerror();
+        gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
-        //exit(-1);
     }
     else
     {
-        cout << "Succes (probably) opening external lib: " << libpath << endl;
+        stringstream ss;
+        ss << "Succes (probably) opening external lib: " << libpath;
+        gCoreMessageHandler.addDebugMessage(ss.str());
     }
     //Now load the register function
     register_contents_t register_contents = (register_contents_t)dlsym(lib_ptr, "register_contents");
     const char *dlsym_error = dlerror();
     if (dlsym_error)
     {
-        cout << "Cannot load symbol 'register_contents': " << dlsym_error << endl;
-        //dlclose(handle);
+        stringstream ss;
+        ss << "Cannot load symbol 'register_contents' for: " << libpath << " Error: " << dlsym_error;
+        gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
     }
 
