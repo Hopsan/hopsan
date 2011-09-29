@@ -208,6 +208,7 @@ void MessageWidget::appendOneMessage(GUIMessage msg)
         }
         else        //Message is not tagged, or group by tag setting is not active
         {
+            mSubsequentTags = 1;
             setMessageColor(msg.type);
             mpTextEdit->append("[" + msg.time + "] " + msg.message);
             mLastTag =msg.tag;
