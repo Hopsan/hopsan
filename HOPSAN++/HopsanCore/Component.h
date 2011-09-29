@@ -37,7 +37,7 @@ namespace hopsan {
 typedef struct HopsanExternalLibInfo
 {
     char* hopsanCoreVersion;
-    char* debugReleaseCompiled; //!< @todo bad name should reflect that it is the core that was debug release, maybe we should have our own stauts also
+    char* libCompiledDebugRelease;
 
 }HopsanExternalLibInfoT;
 #pragma pack(pop)

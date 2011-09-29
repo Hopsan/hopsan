@@ -158,7 +158,7 @@ bool LoadExternal::load(string libpath)
         get_hopsan_info(&externalLibInfo);
 
         stringstream ss;
-        ss << "ExternalLib: " << libpath <<  " compiled against HopsanCore: " << externalLibInfo.hopsanCoreVersion; /* << " " << externalLibInfo.debugReleaseCompiled << " version";*/
+        ss << "ExternalLib: " << libpath <<  " compiled as: " << externalLibInfo.libCompiledDebugRelease << " against HopsanCore: " << externalLibInfo.hopsanCoreVersion;
         gCoreMessageHandler.addDebugMessage(ss.str());
 
         //Now check if we are compiled against correct version number
@@ -171,12 +171,11 @@ bool LoadExternal::load(string libpath)
         }
 
         //Now check if we are compiled against correct debug release version
-        if ( strcmp(externalLibInfo.debugReleaseCompiled, HOPSANDEBUGRELEASECOMPILED) != 0 )
+        if ( strcmp(externalLibInfo.libCompiledDebugRelease, DEBUGRELEASECOMPILED) != 0 )
         {
             stringstream ss;
-            ss << "ExternalLib: " << libpath << " compiled against other HopsanCore Debug or Release version: " << externalLibInfo.debugReleaseCompiled << " You may run into problems!";
-            //! @todo this is not working
-            //gCoreMessageHandler.addWarningMessage(ss.str());
+            ss << "ExternalLib: " << libpath << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << DEBUGRELEASECOMPILED << ", You may run into problems!";
+            gCoreMessageHandler.addWarningMessage(ss.str());
             //return false;
         }
     }

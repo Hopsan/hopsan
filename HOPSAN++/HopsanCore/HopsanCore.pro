@@ -25,6 +25,9 @@ INCLUDEPATH *= $${PWD}/Dependencies/libcsv_parser++-1.0.0/include/csv_parser
 CONFIG(debug, debug|release) {
   DEFINES *= DEBUGCOMPILING
 }
+CONFIG(release, debug|release) {
+  DEFINES *= RELEASECOMPILING
+}
 
 # -------------------------------------------------
 # Platform specific additional project options

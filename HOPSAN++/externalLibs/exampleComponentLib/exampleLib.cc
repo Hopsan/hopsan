@@ -44,6 +44,5 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFac
 extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
 {
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
-    pHopsanExternalLibInfo->debugReleaseCompiled = (char*)HOPSANDEBUGRELEASECOMPILED;
-
+    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
 }
