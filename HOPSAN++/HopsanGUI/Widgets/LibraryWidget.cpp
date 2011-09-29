@@ -94,7 +94,9 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpGrid->addWidget(mpTreeViewButton,     3,0,1,1);
     mpGrid->addWidget(mpDualViewButton,     3,1,1,1);
     mpGrid->addWidget(mpLoadExternalButton, 3,2,1,1);
+#ifdef DEVELOPMENT
     mpGrid->addWidget(mpLoadFmuButton,      3,3,1,1);
+#endif
     mpGrid->setContentsMargins(4,4,4,4);
     mpGrid->setHorizontalSpacing(0);
 
