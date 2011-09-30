@@ -27,6 +27,8 @@ If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "Coc
   -# Place the ex: PythonQt2.0.1 directory in HopsanGUI\\Dependencies, qmake will search for it there
 -# Go to the PythonQt directory and open the PythonQt project
   -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in common.prf (We need both a debug and a release build)
+  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
+  -# In python.prf, replace the line unix:PYTHON_VERSION=2.6 with your version of Python
   -# DEACTIVATE shadow build in both debug and release config
   -# Build the PythonQt project, if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
 -# In the HopsanGUI project. Go to the project tab and add the following variable:\n
