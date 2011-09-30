@@ -14,7 +14,7 @@ QT -= core \
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
-# Set the rappidxml include path
+# Set the rappidxml and csv_parser include paths
 INCLUDEPATH *= $${PWD}/Dependencies/rapidxml-1.13
 INCLUDEPATH *= $${PWD}/Dependencies/libcsv_parser++-1.0.0/include/csv_parser
 #--------------------------------------------------------
@@ -233,7 +233,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic43ValveNeutralToTank.hpp \
     Components/Hydraulic/Hydraulic43ValveNeutralSupplyToTank.hpp \
     Components/Hydraulic/HydraulicHose.hpp \
-    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     ComponentUtilities/ReadDataCurve.h \
     ComponentUtilities/CSVParser.h \
     ComponentUtilities/ReadDataCurve.h \
@@ -284,10 +283,13 @@ HEADERS += win32dll.h \
     #Components/Hydraulic/HydraulicCylinderC - Copy.hpp \
     #Components/Hydraulic/HydraulicCylinderCTolerance.hpp \
     #Components/Hydraulic/HydraulicHoseTolerance.hpp
+    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp
 
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
+
+
 
 
 

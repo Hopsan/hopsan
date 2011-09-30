@@ -27,7 +27,6 @@
 #ifndef TURBULENTFLOWFUNCTION_H_INCLUDED
 #define TURBULENTFLOWFUNCTION_H_INCLUDED
 
-#include <deque>
 #include "../win32dll.h"
 
 namespace hopsan {

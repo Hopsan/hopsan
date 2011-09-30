@@ -26,14 +26,12 @@
 #define CVSPARSER_H_INCLUDED
 
 #include "../win32dll.h"
-#include "assert.h"
-#include "math.h"
+#include "csv_parser.hpp"
+
 #include <vector>
 #include <string>
-#include "../Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp"
-#include <algorithm>
-#include <iostream>
 #include <sstream>
+#include <algorithm>
 
 namespace hopsan {
 
@@ -85,8 +83,8 @@ namespace hopsan {
                     for (i = 0; i < row.size(); i++)
                     {
                         std::istringstream is;
-                        string s = row[i];
-                        replace(s.begin(), s.end(), ',', '.');
+                        std::string s = row[i];
+                        std::replace(s.begin(), s.end(), ',', '.');
                         is.str(s);
                         double d;
                         is >> d;

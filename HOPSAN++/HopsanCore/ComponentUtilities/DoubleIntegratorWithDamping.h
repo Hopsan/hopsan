@@ -25,9 +25,7 @@
 #ifndef DOUBLEINTEGRATORWITHDAMPING_H_INCLUDED
 #define DOUBLEINTEGRATORWITHDAMPING_H_INCLUDED
 
-#include <deque>
 #include "../win32dll.h"
-#include "Delay.hpp"
 
 namespace hopsan {
 
