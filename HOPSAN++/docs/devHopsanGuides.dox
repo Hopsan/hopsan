@@ -1,13 +1,13 @@
 /*!
-\page hopsan-developer Hopsan Developer Guides
+\page devHopsanGuides Hopsan Developer Guides
 
 -# \subpage devHowtoBuildDocumentation \n
--# \subpage requirements-qt \n
+-# \subpage devBaseRequirements \n
 -# \subpage devHopsanCoreRequirements \n
 -# \subpage devHopsanGuiRequirements \n
 -# \subpage devHopsanCLIRequirements \n
 -# \subpage devBuildHopsan \n
--# \subpage coding-conventions \n
+-# \subpage devCodingConventions \n
 -# \subpage devSubversionAutoProps \n
 
 */

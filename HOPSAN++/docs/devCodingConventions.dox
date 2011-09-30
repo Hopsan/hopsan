@@ -1,5 +1,5 @@
 /*!
-\page coding-conventions Hopsan Coding Conventions
+\page devCodingConventions Hopsan Coding Conventions
 The following coding conventions are to be used both in HopsanCore and HopsanGUI.
 
 \section bracket-style Bracket Style

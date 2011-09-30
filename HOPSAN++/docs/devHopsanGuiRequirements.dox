@@ -16,7 +16,7 @@ todo
 \subsection qwt-windows Windows (minGW and VC++)
 -# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
 -# Unpack into the HopsanGUI\\Dependencies directory
--# Build the qwt project (it seems to be possible to use shadowbuild)
+-# Build the qwt project with qtcreator (you can use shadowbuild)
 -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
 
 \section pythonqt Build/Install PythonQt 
@@ -48,17 +48,19 @@ PYTHON_LIB  = c:\\Python26\\libs
 -# Add the  C:\\Users\\petno25\\Downloads\\PythonQt2.0.1\\lib (or whatever your path is) to the PATH variable in your HopsanGui build environment
 
 \subsection pythonqt-windows-mingw Windows (with MinGW)
--# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
+-# Download and install Python 2.6 or 2.7 (for better compatibility with external python tools use 2.6) that can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
 -# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN repository, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
   -# Make sure that PythonQt2.0.1 is located in the HopsanGUI\\Dependencies folder in the HopsanNg project
 -# Open QT Creator and the PythonQT project.
   -# Go to the project tab and add the following variables in BOTH Debug and Release mode:\n
-PYTHON_PATH = c:\\Python26 \n
-PYTHON_LIB  = c:\\Python26\\libs
-  -# DEACTIVATE shadow build in both debug and release config
-  -# PythonQt uses wired includes, you will need to add the PythonQt/src dir to the INCLUDEPATH, one way to do this is to add (your own version of): "INCLUDEPATH += C:\Users\petno25\Desktop\subversion\HOPSAN++MinGW\HopsanGUI\Dependencies\PythonQt2.0.1\src" to the common.prf file. 
-  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in common.prf (We need both a debug and a release build)
+PYTHON_PATH = c:\\Python26 or c:\\Python27 \n
+PYTHON_LIB  = c:\\Python26\\libs or c:\\Python27\\libs
+  -# DEACTIVATE shadow build in both debug and release config under the projects tab
+  -# PythonQt uses strange includes, you will need to add the PythonQt/src dir to the INCLUDEPATH, one way to do this is to add (your own version of): "INCLUDEPATH += C:\Users\petno25\Desktop\subversion\HOPSAN++MinGW\HopsanGUI\Dependencies\PythonQt2.0.1\src" to the common.prf file. 
+  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all" only, in common.prf (We need both a debug and a release build)
   -# Change the \#ifdef WIN32 in the code in file "PythonQtConversion.cpp" row 676 and 1041 to something else e.g. apaWIN32 so it is NOT true when you compile. 
+  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
+  -# In the file 'python.prf' make sure that "win32:PYTHON_VERSION=26" is correct, 26 or 27 depending on your python version\n
   -# In the file 'python.prf' Change the row:\n
 "win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib",  to:\n
 "win32:LIBS += -L$(PYTHON_LIB) -lpython$${PYTHON_VERSION}"
@@ -68,7 +70,7 @@ PYTHON_LIB  = c:\\Python26\\libs
   -# In the file 'pythonQt_QtAll.prf' Change the row:\n
 "win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib",  to:\n
 "win32::LIBS += -L$$PWD/../lib/ -lPythonQt_QtAll$${DEBUG_EXT}"
-  -# Build PythonQt in release and debug mode. (Both will be build at once if you have selected that in common.prf)
+-# Build PythonQt in release and debug mode. (Both will be build at once if you have selected that in common.prf)
 
 \subsection pythonqt-windows-mingw_old Windows (with MinGW) OLD VERSION (Try the one above first)
 Some useful information can be found at <a href="http://www.emmestech.com/moron_guides/moron1.html" target="_blank">http://www.emmestech.com/moron_guides/moron1.html</a> and <a href="http://www.mingw.org/wiki/FAQ" target="_blank">http://www.mingw.org/wiki/FAQ</a>
