@@ -1,4 +1,4 @@
-/*-----------------------------------------------------------------------------
+﻿/*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
@@ -84,7 +84,7 @@ namespace hopsan {
             registerParameter("V_2", "Volume at port 2", "[m^3]", v2);
             registerParameter("D_m", "Displacement", "[m^3/rev]", dp);
             registerParameter("C_l,m", "Leakage coefficient", "[]", cim);
-            registerParameter("B_m", "Viscous friction coefficient", "[Pa]", bm);
+            registerParameter("B_m", "Viscous friction coefficient", "[Nms/rad]", bm);
 
             setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
             setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
