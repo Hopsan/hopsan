@@ -670,7 +670,14 @@ QPalette Configuration::getPalette()
 
 QFont Configuration::getFont()
 {
+    //! @note Embedded truetype fonts does not seem to work in Linux, so ignore them
+#ifdef WIN32
     return mFont;
+#else
+    QFont tempFont = qApp->font();
+    tempFont.setPointSize(mFont.pointSize());
+    return tempFont;
+#endif
 }
 
 
