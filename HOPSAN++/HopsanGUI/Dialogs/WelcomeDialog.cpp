@@ -328,9 +328,13 @@ void WelcomeDialog::showNews(bool loadedSuccessfully)
         mpNewsLabel->setVisible(loadedSuccessfully);
         mpWeb->setVisible(loadedSuccessfully);
 
-        QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversion").value();
+        QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
+        webVersionString.remove('.');
         double webVersion = webVersionString.toDouble();
-        double thisVersion = QString(HOPSANGUIVERSION).left(3).toDouble();
+        QString thisVersionString = QString(HOPSANGUIVERSION);
+        thisVersionString.remove('.');
+        double thisVersion = thisVersionString.toDouble();
+        webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
         mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
         mpNewVersionButton->setVisible(webVersion>thisVersion);
     }
