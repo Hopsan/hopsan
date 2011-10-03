@@ -461,6 +461,8 @@ void copyIncludeFilesToDir(QString path)
     nodeH.copy(saveDir.path() + "/include/Node.h");
     QFile portH(gExecPath + QString(INCLUDEPATH) + "Port.h");
     portH.copy(saveDir.path() + "/include/Port.h");
+    QFile versionH(gExecPath + QString(INCLUDEPATH) + "version.h");
+    versionH.copy(saveDir.path() + "/include/version.h");
     QFile win32dllH(gExecPath + QString(INCLUDEPATH) + "win32dll.h");
     win32dllH.copy(saveDir.path() + "/include/win32dll.h");
 
