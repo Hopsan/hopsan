@@ -313,11 +313,16 @@ GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget*
 //! @brief Loads a SystemParameter from the supplied load data
 //! @param[in] rDomElement The SystemParameter DOM element to load from
 //! @param[in] pContainer The Container Object to load into
-void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pContainer)
+void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, GUIContainerObject* pContainer)
 {
     QString name = rDomElement.attribute(HMF_NAMETAG);
     QString value = rDomElement.attribute(HMF_VALUETAG);
     QString type = rDomElement.attribute(HMF_TYPETAG);
+
+    if(hmfVersion <= 0.3 && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
+    {
+        type = "double";
+    }
 
     pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value, "", "", type, true);
 

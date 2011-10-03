@@ -405,7 +405,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
         while (!xmlSubObject.isNull())
         {
-            loadSystemParameter(xmlSubObject, this);
+            loadSystemParameter(xmlSubObject, hmfVersion, this);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
         }
 
