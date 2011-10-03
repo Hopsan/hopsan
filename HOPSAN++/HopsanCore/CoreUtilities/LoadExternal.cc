@@ -89,7 +89,7 @@ bool LoadExternal::load(string libpath)
     get_hopsan_info_t get_hopsan_info = (get_hopsan_info_t)GetProcAddress(lib_ptr, "get_hopsan_info");
     if (!get_hopsan_info)
     {
-        //#warning for 0.5.0 release, make sure we run this check and abort / return ERROR
+        //#warning for 0.5.0 release, mak sure we run this check and abort / return ERROR
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << GetLastError();
         gCoreMessageHandler.addDebugMessage(ss.str());

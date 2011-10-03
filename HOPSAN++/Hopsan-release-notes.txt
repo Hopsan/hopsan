@@ -11,6 +11,22 @@ Hopsan Release Notes
 
 
 -- Version History --
+0.4.1
+- Fixed: Options dialog now resets its values next time after pressing cancel
+- Fixed: Made default start values for components work again
+- Fixed: Made some important corrections to equations in Q-type cylinder
+- Fixed: External libraries with no components are no longer loaded (they turned out "invisible" and could not be unloaded)
+- Fixed: Crash when loading two external libraries with same name
+- Fixed: "Similar messages" counter did not reset between different message types
+- Fixed: Undo stack is now enabled by default (may require re-saving old models)
+- Fixed: Backwards compatibility for loading older .hmf files, where parameters could only be real numbers
+- Fixed: Crash when loading connection from model files where components or ports are missing or have had their names manually altered
+- Fixed: Restored possibility to load old style startvalue settings from hmf files (will still be saved in new format)
+- Fixed: Rare occurance of endless loop when loading and setting rotation angle for model objects from hmf files
+- Fixed: Made sure error message reporting and debug messages for external component lib loading works. Now you will actually get a message if external lib fails to load.
+- Fixed: Wrong parameter units in some components
+
+- Feature: Added initial capability to get compile info from external libs when loading, (optional implementation for now, will be mandatory in the future)
 
 0.4.0
 - Added tools for transfer function analysis (Bode plots, Nyquist plots and FFT)
@@ -39,6 +55,7 @@ Hopsan Release Notes
 - Configuration file now remembers the "group by tag" setting in message widget
 - Adjusted size of welcome dialog, to see more of the recent news
 - Fixed crash when loading models with non-existing components
+- Fixed crash when simulating from Python console with progress bar activated
 - Fixed numerical issues with initialization of second order transfer function
 - Corrected wrong parameter order in filter components
 - Fixed crash when deleting connected system ports

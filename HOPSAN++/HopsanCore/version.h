@@ -24,7 +24,7 @@
 #elif defined  RELEASECOMPILING
 #define DEBUGRELEASECOMPILED "RELEASE"
 #else
-#warning You must specify Debug or Release compiling by defining DEBUGCOMPILING or RELEASECOMPILING
+//#warning You must specify Debug or Release compiling by defining DEBUGCOMPILING or RELEASECOMPILING
 #define DEBUGRELEASECOMPILED "UNDEFINED"
 #endif
 
