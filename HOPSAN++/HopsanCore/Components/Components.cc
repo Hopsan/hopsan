@@ -122,6 +122,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
 
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicOverCenterValve", HydraulicOverCenterValve::Creator);
 
 
     //Signal components
