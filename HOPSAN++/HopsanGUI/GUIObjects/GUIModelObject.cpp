@@ -50,6 +50,7 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     mpIcon = 0;
     mpNameText = 0;
     mTextOffset = 5.0;
+    mDragCopying = false;
 
         //Set the hmf save tag name
     mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
@@ -662,13 +663,17 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
+    QGraphicsItem::contextMenuEvent(event);
+
+    qDebug() << "contextMenuEvent()";
+
     if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
         return;
 
     QMenu menu;
     this->buildBaseContextMenu(menu, event);
 
-    QGraphicsItem::contextMenuEvent(event);
+
 }
 
 
@@ -715,8 +720,41 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mousePressEvent(event);
 
-    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isShiftKeyPressed())
+    qDebug() << "mousePressEvent(), button = " << event->button();
+
+    if(event->button() == Qt::RightButton)
     {
+        mDragCopying = true;
+    }
+
+//    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isShiftKeyPressed())
+//    {
+//        mpParentContainerObject->deselectAll();
+//        this->select();
+//        mpParentContainerObject->copySelected(mpParentContainerObject->getDragCopyStackPtr());
+
+//        QMimeData *mimeData = new QMimeData;
+//        mimeData->setText("HOPSANDRAGCOPY");
+
+//        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->getGraphicsView());
+//        drag->setMimeData(mimeData);
+//        drag->setPixmap(QIcon(QPixmap(this->mGUIModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
+//        drag->setHotSpot(QPoint(20, 20));
+//        drag->exec(Qt::CopyAction | Qt::MoveAction);
+//    }
+
+}
+
+
+void GUIModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseMoveEvent(event);
+
+    qDebug() << "mouseMoveEvent(), button = " << event->button();
+
+    if(mpParentContainerObject != 0 && mDragCopying)
+    {
+        qDebug() << "Drag copying";
         mpParentContainerObject->deselectAll();
         this->select();
         mpParentContainerObject->copySelected(mpParentContainerObject->getDragCopyStackPtr());
@@ -729,12 +767,19 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         drag->setPixmap(QIcon(QPixmap(this->mGUIModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
         drag->setHotSpot(QPoint(20, 20));
         drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+        mDragCopying = false;
     }
 }
+
 
 //! @brief Defines what happens if a mouse key is released while hovering an object
 void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    mDragCopying = false;
+
+    qDebug() << "mouseReleaseEvent()";
+
     QList<GUIModelObject *>::iterator it;
 
         //Loop through all selected objects and register changed positions in undo stack
