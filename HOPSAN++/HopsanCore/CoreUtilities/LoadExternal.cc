@@ -26,7 +26,7 @@
 #include "../Component.h"
 #include "../Node.h"
 #include "ClassFactoryStatusCheck.hpp"
-#include "version.h"
+#include "../version.h"
 
 #include <sstream>
 #include <cstring>

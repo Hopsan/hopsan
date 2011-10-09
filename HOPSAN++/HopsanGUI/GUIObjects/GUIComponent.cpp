@@ -91,12 +91,23 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     //std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
     //If this is a sink component that has plot data, plot it instead of showing the dialog
-    if(this->getTypeName() == "SignalSink" && this->getPort("in") != 0 && this->mpParentContainerObject->getAllPlotData().size() > 0)   //Not very nice code, but a nice feature...
+    if(this->getTypeName() == "SignalSink" && this->getPort("in")->isConnected() && this->mpParentContainerObject->getAllPlotData().size() > 0)   //Not very nice code, but a nice feature...
     {
         PlotWindow *pPlotWindow = getPort("in")->getConnectedPorts().first()->plot("Value");
         for(int i=1; (i<getPort("in")->getConnectedPorts().size() && pPlotWindow != 0); ++i)
         {
-            getPort("in")->getConnectedPorts().at(i)->plotToPlotWindow(pPlotWindow, "Value");
+            if(!pPlotWindow)
+            {
+                pPlotWindow = getPort("in")->getConnectedPorts().at(i)->plot("Value");
+            }
+            else
+            {
+                getPort("in")->getConnectedPorts().at(i)->plotToPlotWindow(pPlotWindow, "Value");
+            }
+        }
+        if(!pPlotWindow)
+        {
+            openPropertiesDialog();
         }
     }
     else

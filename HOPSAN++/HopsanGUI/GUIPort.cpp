@@ -554,8 +554,23 @@ PlotWindow *GUIPort::plot(QString dataName, QString dataUnit)
 }
 
 
+//! @brief Plots specified data curve to specified plot window
+//! @param pPlotWindow Pointer to plot window to add curve to
+//! @param dataName Name of the data variable to plot
+//! @param dataUnit Desired data unit (empty = use default)
 void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit)
 {
+    //Make sure plot data exists
+    QPair<QVector<double>, QVector<double> > vectors;
+    mpParentGuiModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(mpParentGuiModelObject->getName(), this->getPortName(), dataName, vectors);
+
+    QVector<double> xVector = vectors.first;
+    QVector<double> yVector = vectors.second;
+
+    if((xVector.isEmpty()) || (yVector.isEmpty()))
+        return;         //Return if it does not
+
+    //Add new curve to the plot window
     pPlotWindow->addPlotCurve(mpParentGuiModelObject->mpParentContainerObject->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit);
 }
 
