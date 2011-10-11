@@ -125,8 +125,6 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->getStartTimeLineEdit(), SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
     connect(gpMainWindow->getTimeStepLineEdit(),  SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()), Qt::UniqueConnection);
     connect(gpMainWindow->getFinishTimeLineEdit(),SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()), Qt::UniqueConnection);
-
-    //getCurrentContainer()->updateUndoStatus();
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
@@ -420,7 +418,6 @@ void GUIContainerObject::createExternalPort(QString portName)
             //The external port already seems to exist, lets update it incase something has changed
             //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
             pPort->refreshPortGraphics();
-            pPort->refreshPortOverlayPosition();
             qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
         }
     }
@@ -2055,41 +2052,19 @@ void GUIContainerObject::clearContents()
 //! @brief Enters a container object and maks the view represent it contents.
 void GUIContainerObject::enterContainer()
 {
-    //First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
-    //this->deselectAll(); //! @todo maybe this should be a signal
-    //! @todo there is apperantly a deselect all guiwidgets also that is not in deselect all, has nothing to do with this code though
-    //this->deselect();
+    // First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
-    //Show this scene
+    // Show this scene
     mpParentProjectTab->getGraphicsView()->setScene(getContainedScenePtr());
     mpParentProjectTab->getGraphicsView()->setContainerPtr(this);
     mpParentProjectTab->getQuickNavigationWidget()->addOpenContainer(this);
 
-        //Disconnect parent system and connect new system with actions
-//    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
-//    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
-//    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
-//    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
-//    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
-//    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
-//    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
-//    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
-//    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
-      mpParentContainerObject->disconnectMainWindowActions();
+    // Disconnect parent system and connect new system with actions
+    mpParentContainerObject->disconnectMainWindowActions();
+    this->connectMainWindowActions();
 
-//    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
-//    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
-//    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
-//    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
-//    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
-//    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
-//    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
-//    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
-//    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
-      this->connectMainWindowActions();
-
-        //Update plot widget and undo widget to new container
+    //Update plot widget and undo widget to new container
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
