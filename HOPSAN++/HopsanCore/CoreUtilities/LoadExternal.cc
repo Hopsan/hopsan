@@ -32,8 +32,9 @@
 #include <cstring>
 
 #ifdef WIN32
-#include "windows.h"
+#define _WIN32_WINNT 0x0502
 #include "../win32dll.h"
+#include "Windows.h"
 #else
 #include "dlfcn.h"
 #endif
@@ -68,7 +69,17 @@ bool LoadExternal::load(string libpath)
 //End of 64-bit
 
 //Use this for 32-bit compilation
-    lib_ptr = LoadLibrary(libpath.c_str());
+
+    //Calculate path without filename
+    string libdir = libpath;
+    while(libdir.at(libdir.size()-1) != '/')
+    {
+        libdir.erase(libdir.size()-1, 1);
+    }
+
+    SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies
+    lib_ptr = LoadLibrary(libpath.c_str()); //Load the dll
+
 //End of 32-bit
 
     if (!lib_ptr)
@@ -85,6 +96,8 @@ bool LoadExternal::load(string libpath)
         gCoreMessageHandler.addDebugMessage(ss.str());
     }
 
+    bool isHopsanComponentLib=true;
+
     //Now get the version hopsan core was compiled against
     get_hopsan_info_t get_hopsan_info = (get_hopsan_info_t)GetProcAddress(lib_ptr, "get_hopsan_info");
     if (!get_hopsan_info)
@@ -93,7 +106,7 @@ bool LoadExternal::load(string libpath)
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << GetLastError();
         gCoreMessageHandler.addDebugMessage(ss.str());
-//        return false;
+        //isHopsanComponentLib=false;
         hopsanInfoExists = false;
     }
 
@@ -104,6 +117,12 @@ bool LoadExternal::load(string libpath)
         stringstream ss;
         ss << "Cannot load symbol 'register_contents' for: " << libpath << " Error: " << GetLastError();
         gCoreMessageHandler.addErrorMessage(ss.str());
+        isHopsanComponentLib=false;
+    }
+
+    if(!isHopsanComponentLib)
+    {
+        //FreeLibrary(lib_ptr);
         return false;
     }
 #else
@@ -125,6 +144,8 @@ bool LoadExternal::load(string libpath)
         gCoreMessageHandler.addDebugMessage(ss.str());
     }
 
+    bool isHopsanComponentLib=true;
+
     //Now get the version hopsan core was compiled against
     get_hopsan_info_t get_hopsan_info = (get_hopsan_info_t)dlsym(lib_ptr, "get_hopsan_info");
     char *dlsym_error = dlerror();
@@ -135,7 +156,7 @@ bool LoadExternal::load(string libpath)
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << dlsym_error;
         gCoreMessageHandler.addDebugMessage(ss.str());
-//        return false;
+        //isHopsanComponentLib = false;
         hopsanInfoExists = false;
     }
 
@@ -147,6 +168,12 @@ bool LoadExternal::load(string libpath)
         stringstream ss;
         ss << "Cannot load symbol 'register_contents' for: " << libpath << " Error: " << dlsym_error;
         gCoreMessageHandler.addErrorMessage(ss.str());
+        isHopsanComponentLib=false;
+    }
+
+    if(!isHopsanComponentLib)
+    {
+        dlclose(lib_ptr);
         return false;
     }
 
