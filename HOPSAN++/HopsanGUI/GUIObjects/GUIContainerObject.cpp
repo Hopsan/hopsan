@@ -116,10 +116,10 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->mpPasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
     connect(gpMainWindow->mpAlignXAction,         SIGNAL(triggered()),        this,     SLOT(alignX()), Qt::UniqueConnection);
     connect(gpMainWindow->mpAlignYAction,         SIGNAL(triggered()),        this,     SLOT(alignY()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpRotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateRight()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpRotateLeftAction,     SIGNAL(triggered()),        this,     SLOT(rotateLeft()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpFlipHorizontalAction, SIGNAL(triggered()),        this,     SLOT(flipHorizontal()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpFlipVerticalAction,   SIGNAL(triggered()),        this,     SLOT(flipVertical()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpRotateRightAction,    SIGNAL(triggered()),        this,     SLOT(rotateSubObjects90cw()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpRotateLeftAction,     SIGNAL(triggered()),        this,     SLOT(rotateSubObjects90ccw()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpFlipHorizontalAction, SIGNAL(triggered()),        this,     SLOT(flipSubObjectsHorizontal()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpFlipVerticalAction,   SIGNAL(triggered()),        this,     SLOT(flipSubObjectsVertical()), Qt::UniqueConnection);
     connect(gpMainWindow->mpPropertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
     connect(gpMainWindow->getStartTimeLineEdit(), SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
@@ -145,10 +145,10 @@ void GUIContainerObject::disconnectMainWindowActions()
     disconnect(gpMainWindow->mpPasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
     disconnect(gpMainWindow->mpAlignXAction,          SIGNAL(triggered()),        this,    SLOT(alignX()));
     disconnect(gpMainWindow->mpAlignYAction,          SIGNAL(triggered()),        this,    SLOT(alignY()));
-    disconnect(gpMainWindow->mpRotateRightAction,     SIGNAL(triggered()),        this,    SLOT(rotateRight()));
-    disconnect(gpMainWindow->mpRotateLeftAction,      SIGNAL(triggered()),        this,    SLOT(rotateLeft()));
-    disconnect(gpMainWindow->mpFlipHorizontalAction,  SIGNAL(triggered()),        this,    SLOT(flipHorizontal()));
-    disconnect(gpMainWindow->mpFlipVerticalAction,    SIGNAL(triggered()),        this,    SLOT(flipVertical()));
+    disconnect(gpMainWindow->mpRotateRightAction,     SIGNAL(triggered()),        this,    SLOT(rotateSubObjects90cw()));
+    disconnect(gpMainWindow->mpRotateLeftAction,      SIGNAL(triggered()),        this,    SLOT(rotateSubObjects90ccw()));
+    disconnect(gpMainWindow->mpFlipHorizontalAction,  SIGNAL(triggered()),        this,    SLOT(flipSubObjectsHorizontal()));
+    disconnect(gpMainWindow->mpFlipVerticalAction,    SIGNAL(triggered()),        this,    SLOT(flipSubObjectsVertical()));
     disconnect(gpMainWindow->mpPropertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
 
     disconnect(gpMainWindow->getStartTimeLineEdit(),   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
@@ -1498,7 +1498,7 @@ void GUIContainerObject::selectSection(int no, bool append)
 //! @param no Number of section
 void GUIContainerObject::assignSection(int no)
 {
-    if(!isObjectSelected()) return;
+    if(!isSubObjectSelected()) return;
     while(mSection.size()<no+1)
     {
         QList<GUIModelObject *> dummyList;
@@ -1600,7 +1600,7 @@ void GUIContainerObject::clearUndo()
 
 
 //! @brief Returns true if at least one GUIObject is selected
-bool GUIContainerObject::isObjectSelected()
+bool GUIContainerObject::isSubObjectSelected()
 {
     return (mSelectedGUIModelObjectsList.size() > 0);
 }
@@ -2084,7 +2084,8 @@ void GUIContainerObject::enterContainer()
 void GUIContainerObject::exitContainer()
 {
     this->deselectAll();
-    //Go back to parent system
+
+    // Go back to parent system
     mpParentProjectTab->getGraphicsView()->setScene(this->mpParentContainerObject->getContainedScenePtr());
     mpParentProjectTab->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
 
@@ -2092,34 +2093,8 @@ void GUIContainerObject::exitContainer()
                                            mpParentContainerObject != mpParentProjectTab->getSystem()) ||
                                            mpParentContainerObject->isAncestorOfExternalSubsystem());
 
-        //Disconnect this system and connect parent system with undo and redo actions
-//    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
-//    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
-//    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
-//    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
-//    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
-//    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
-//    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
-//    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
-//    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
+    // Disconnect this system and connect parent system with undo and redo actions
     this->disconnectMainWindowActions();
-
-//    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
-//    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
-//    connect(gpMainWindow->toggleNamesAction,    SIGNAL(triggered(bool)),    mpParentContainerObject,     SLOT(toggleNames(bool)));
-//    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
-//    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
-//    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
-//    connect(gpMainWindow->alignXAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignX()));
-//    connect(gpMainWindow->alignYAction,         SIGNAL(triggered()),        mpParentContainerObject,     SLOT(alignY()));
-//    connect(gpMainWindow->rotateRightAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateRight()));
-//    connect(gpMainWindow->rotateLeftAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(rotateLeft()));
-//    connect(gpMainWindow->flipHorizontalAction, SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipHorizontal()));
-//    connect(gpMainWindow->flipVerticalAction,   SIGNAL(triggered()),        mpParentContainerObject,     SLOT(flipVertical()));
-//    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
-//    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
-//    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
-//    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
     mpParentContainerObject->connectMainWindowActions();
 
         //Update plot widget and undo widget to new container
@@ -2129,7 +2104,7 @@ void GUIContainerObject::exitContainer()
     gpMainWindow->mpUndoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
     gpMainWindow->mpRedoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
 
-        //Refresh external port appearance
+    // Refresh external port appearance
     //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal
     this->refreshExternalPortsAppearanceAndPosition();
 
@@ -2138,50 +2113,50 @@ void GUIContainerObject::exitContainer()
 
 
 //! @brief Rotates all selected objects right (clockwise)
-void GUIContainerObject::rotateRight()
+void GUIContainerObject::rotateSubObjects90cw()
 {
-    if(this->isObjectSelected())
+    if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
+        emit rotateSelectedObjectsRight();
     }
-    emit rotateSelectedObjectsRight();
 }
 
 
 //! @brief Rotates all selected objects left (counter-clockwise)
-void GUIContainerObject::rotateLeft()
+void GUIContainerObject::rotateSubObjects90ccw()
 {
-    if(this->isObjectSelected())
+    if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
+        emit rotateSelectedObjectsLeft();
     }
-    emit rotateSelectedObjectsLeft();
 }
 
 
 //! @brief Flips selected contained objects horizontally
-void GUIContainerObject::flipHorizontal()
+void GUIContainerObject::flipSubObjectsHorizontal()
 {
-    if(this->isObjectSelected())
+    if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
+        emit flipSelectedObjectsHorizontal();
     }
-    emit flipSelectedObjectsHorizontal();
 }
 
 
 //! @brief Flips selected contained objects vertically
-void GUIContainerObject::flipVertical()
+void GUIContainerObject::flipSubObjectsVertical()
 {
-    if(this->isObjectSelected())
+    if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
         mpParentProjectTab->hasChanged();
+        emit flipSelectedObjectsVertical();
     }
-    emit flipSelectedObjectsVertical();
 }
 
 

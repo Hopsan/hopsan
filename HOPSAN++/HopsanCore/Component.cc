@@ -389,6 +389,7 @@ void Parameters::deleteParameter(std::string parameterName)
 {
     std::string name, value, description, unit, type;
 
+    //! @todo We should use find instead to find iterator to object to delete, while find result is != .end() we delete and erase
     std::vector<Parameter*>::iterator parIt;
     for(parIt = mParameters.begin(); (parIt != mParameters.end()) && (!mParameters.empty()); ++parIt)
     {
@@ -396,6 +397,7 @@ void Parameters::deleteParameter(std::string parameterName)
         if(parameterName == name)
         {
             mParameters.erase(parIt);
+            //! @todo Probably memmory leek here as no delete is performed
             //delete (*parIt); //Kolla på detta! FIXA!
             //++parIt;
             return;     //We can return now, since there should never be multiple parameters with same name
@@ -993,6 +995,7 @@ void Component::deletePort(const string name)
     if (it != mPortPtrMap.end())
     {
         mPortPtrMap.erase(it);
+        //! @todo maybe we should also delete the actual port here to avoid memmory leeks
         cout << "===================Erasing Port: " << name << endl;
     }
     else

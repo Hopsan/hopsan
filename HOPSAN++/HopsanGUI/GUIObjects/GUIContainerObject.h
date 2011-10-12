@@ -71,7 +71,7 @@ public:
     void rememverSelectedGUIModelObject(GUIModelObject *object);
     void forgetSelectedGUIModelObject(GUIModelObject *object);
     QList<GUIModelObject *> getSelectedGUIModelObjectPtrs();
-    bool isObjectSelected();
+    bool isSubObjectSelected();
 
     //GUIWidgets methods
     GUITextBoxWidget *addTextBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
@@ -204,10 +204,10 @@ public slots:
     void exitContainer();
 
     //Rotate and flip slots
-    void rotateRight();
-    void rotateLeft();
-    void flipHorizontal();
-    void flipVertical();
+    void rotateSubObjects90cw();
+    void rotateSubObjects90ccw();
+    void flipSubObjectsHorizontal();
+    void flipSubObjectsVertical();
 
     //Plot data slots
     void collectPlotData();

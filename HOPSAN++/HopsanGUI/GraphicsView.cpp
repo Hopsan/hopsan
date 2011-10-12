@@ -314,7 +314,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_Delete)
     {
-        if(mpContainerObject->isObjectSelected() || mpContainerObject->isConnectorSelected())
+        if(mpContainerObject->isSubObjectSelected() || mpContainerObject->isConnectorSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
             mpParentProjectTab->hasChanged();
@@ -407,7 +407,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if(ctrlPressed && event->key() == Qt::Key_Up)
     {
-        if(mpContainerObject->isObjectSelected())
+        if(mpContainerObject->isSubObjectSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
         }
@@ -416,7 +416,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if(ctrlPressed && event->key() == Qt::Key_Down)
     {
-        if(mpContainerObject->isObjectSelected())
+        if(mpContainerObject->isSubObjectSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
             mpParentProjectTab->hasChanged();
@@ -426,7 +426,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if(ctrlPressed && event->key() == Qt::Key_Left)
     {
-        if(mpContainerObject->isObjectSelected())
+        if(mpContainerObject->isSubObjectSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
         }
@@ -435,7 +435,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if(ctrlPressed && event->key() == Qt::Key_Right)
     {
-        if(mpContainerObject->isObjectSelected())
+        if(mpContainerObject->isSubObjectSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
             mpParentProjectTab->hasChanged();

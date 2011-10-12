@@ -220,8 +220,6 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
             connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
@@ -238,8 +236,6 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
             disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
             disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlE()), this, SLOT(rotate90ccw()));
             disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
             disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
