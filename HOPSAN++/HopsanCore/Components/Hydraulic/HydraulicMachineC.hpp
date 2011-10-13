@@ -269,7 +269,6 @@ namespace hopsan {
             (*mpND_Zc1) = Zc1;
             (*mpND_c2) = c2;
             (*mpND_Zc2) = Zc2;
-            (*mpND_t3) = t3;
             (*mpND_c3) = c3;
             (*mpND_Zx3) = Zx3;
         }

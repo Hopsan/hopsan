@@ -76,7 +76,7 @@ bool LoadExternal::load(string libpath)
     {
         libdir.erase(libdir.size()-1, 1);
     }
-
+    getCoreMessageHandlerPtr()->addDebugMessage(libdir.c_str());
     SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies
     lib_ptr = LoadLibrary(libpath.c_str()); //Load the dll
 

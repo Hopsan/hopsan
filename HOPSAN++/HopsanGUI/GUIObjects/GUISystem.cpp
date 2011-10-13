@@ -664,12 +664,14 @@ void GUISystem::createFMUSourceFilesFromDialog()
         }
     }
 
-    QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f004}";  //!< @todo How is this ID defined?
+    int random = rand() % 1000;
+    QString randomString = QString().setNum(random);
+    QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f"+randomString+"}";  //!< @todo How is this ID defined?
 
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
+    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
                                                     fileDialogSaveDir.currentPath(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
@@ -732,7 +734,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelDescriptionStream << "<ModelVariables>\n";
     for(int i=0; i<outputVariables.size(); ++i)
     {
-        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(i) << "\" valueReference=\"0\" description=\"output variable\">\n";
+        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(i) << "\" valueReference=\"0\" description=\"output variable\" causality=\"output\">\n";
         modelDescriptionStream << "     <Real start=\"0\" fixed=\"false\"/>\n";
         modelDescriptionStream << "  </ScalarVariable>\n";
     }
@@ -769,9 +771,9 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelSourceStream << "    //Initialize\n";
     modelSourceStream << "    void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)\n";
     modelSourceStream << "    {\n";
-    modelSourceStream << "        initializeHopsanWrapper();\n";
+    modelSourceStream << "        initializeHopsanWrapper(\""+modelName+".hmf\");\n";
     modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
-    modelSourceStream << "        eventInfo->nextEventTime       = 1 + comp->time;\n";
+    modelSourceStream << "        eventInfo->nextEventTime       = 0.0005 + comp->time;\n";
     modelSourceStream << "    }\n\n";
     modelSourceStream << "    //Return all variables of real type\n";
     modelSourceStream << "    fmiReal getReal(ModelInstance* comp, fmiValueReference vr)\n";
@@ -788,7 +790,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelSourceStream << "    {\n";
     modelSourceStream << "        simulateOneStep();\n";
     modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
-    modelSourceStream << "        eventInfo->nextEventTime       = 1 + comp->time;\n";
+    modelSourceStream << "        eventInfo->nextEventTime       = 0.0005 + comp->time;\n";      //!< @todo Hardcoded timestep
     modelSourceStream << "    }\n\n";
     modelSourceStream << "    // Include code that implements the FMI based on the above definitions\n";
     modelSourceStream << "    #include \"fmuTemplate.c\"\n";
@@ -803,7 +805,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuHeaderStream << "#else\n";
     fmuHeaderStream << "    #define DLLEXPORT\n";
     fmuHeaderStream << "#endif\n\n";
-    fmuHeaderStream << "DLLEXPORT void initializeHopsanWrapper();\n";
+    fmuHeaderStream << "DLLEXPORT void initializeHopsanWrapper(char* filename);\n";
     fmuHeaderStream << "DLLEXPORT void simulateOneStep();\n";
     fmuHeaderStream << "DLLEXPORT double getVariable(char* component, char* port, size_t idx);\n\n";
     fmuHeaderStream << "#ifdef WRAPPERCOMPILATION\n";
@@ -823,13 +825,12 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuSourceStream << "static double time=0;\n";
     fmuSourceStream << "static hopsan::ComponentSystem *spCoreComponentSystem;\n";
     fmuSourceStream << "static std::vector<string> sComponentNames;\n\n";
-    fmuSourceStream << "void initializeHopsanWrapper()\n";
+    fmuSourceStream << "void initializeHopsanWrapper(char* filename)\n";
     fmuSourceStream << "{\n";
-    fmuSourceStream << "    std::string hmfFilePath = \"" << modelName << ".hmf\";\n";
     fmuSourceStream << "    hopsan::HmfLoader coreHmfLoader;\n";
     fmuSourceStream << "    double startT;      //Dummy variable\n";
     fmuSourceStream << "    double stopT;       //Dummy variable\n";
-    fmuSourceStream << "    spCoreComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
+    fmuSourceStream << "    spCoreComponentSystem = coreHmfLoader.loadModel(filename, startT, stopT);\n";
     fmuSourceStream << "    spCoreComponentSystem->setDesiredTimestep(0.001);\n";           //!< @todo Time step should not be hard coded
     fmuSourceStream << "    spCoreComponentSystem->initializeComponentsOnly();\n";
     fmuSourceStream << "}\n\n";
@@ -935,7 +936,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
     //Execute HMU compile script
-    p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me bodetest");
+    p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me " + modelName);
     p.waitForFinished();
 
     saveDir.mkpath("fmu/binaries/win32");
@@ -964,26 +965,26 @@ void GUISystem::createFMUSourceFilesFromDialog()
     qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/";
 
     //Clean up temporary files
-    saveDir.setPath(savePath);
-    saveDir.remove("compile.bat");
-    saveDir.remove("HopsanFMU.cpp");
-    saveDir.remove("HopsanFMU.obj");
-    //saveDir.remove("HopsanFMU.lib");
-    //saveDir.remove("HopsanCore.lib");
-    saveDir.remove("HopsanCore.exp");
-    saveDir.remove("build_fmu.bat");
-    saveDir.remove("fmiModelFunctions.h");
-    saveDir.remove("fmiModelTypes.h");
-    saveDir.remove("fmuTemplate.c");
-    saveDir.remove("fmuTemplate.h");
-    saveDir.remove(modelName + ".c");
-    saveDir.remove(modelName + ".exp");
-    //saveDir.remove(modelName + ".lib");
-    saveDir.remove(modelName + ".obj");
-    saveDir.remove("HopsanFMU.exp");
-    saveDir.remove("HopsanFMU.h");
-    removeDir(savePath + "/include");
-    removeDir(savePath + "/fmu");
+//    saveDir.setPath(savePath);
+//    saveDir.remove("compile.bat");
+//    saveDir.remove("HopsanFMU.cpp");
+//    saveDir.remove("HopsanFMU.obj");
+//    //saveDir.remove("HopsanFMU.lib");
+//    //saveDir.remove("HopsanCore.lib");
+//    saveDir.remove("HopsanCore.exp");
+//    saveDir.remove("build_fmu.bat");
+//    saveDir.remove("fmiModelFunctions.h");
+//    saveDir.remove("fmiModelTypes.h");
+//    saveDir.remove("fmuTemplate.c");
+//    saveDir.remove("fmuTemplate.h");
+//    saveDir.remove(modelName + ".c");
+//    saveDir.remove(modelName + ".exp");
+//    //saveDir.remove(modelName + ".lib");
+//    saveDir.remove(modelName + ".obj");
+//    saveDir.remove("HopsanFMU.exp");
+//    saveDir.remove("HopsanFMU.h");
+//    removeDir(savePath + "/include");
+//    removeDir(savePath + "/fmu");
 }
 
 
