@@ -791,6 +791,9 @@ void LibraryWidget::importFmu()
     fmuComponentHppStream << "            simulateFMU();\n\n";
     fmuComponentHppStream << "            //write output value\n";
     fmuComponentHppStream << "            ScalarVariable** vars = mFMU.modelDescription->modelVariables;\n";
+    fmuComponentHppStream << "            double value;\n";
+    fmuComponentHppStream << "            ScalarVariable* sv;\n";
+    fmuComponentHppStream << "            fmiValueReference vr;\n";
     //! @todo Add support for input variables
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
@@ -800,9 +803,9 @@ void LibraryWidget::importFmu()
         numStr.setNum(i);
         if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
         {
-            fmuComponentHppStream << "            double value;\n";
-            fmuComponentHppStream << "            ScalarVariable* sv = vars["+numStr+"];\n";
-            fmuComponentHppStream << "            fmiValueReference vr = getValueReference(sv);\n";
+
+            fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
             fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
             fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n";
         }
@@ -968,9 +971,17 @@ void LibraryWidget::importFmu()
             fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
         }
         else if(varElement.attribute("causality") == "input")
-            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"0.0\" y=\"0.5\" a=\"180\"/>\n";
+        {
+            inputPos += inputPosStep;
+            numStr2.setNum(inputPos);
+            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+        }
         else if(varElement.attribute("causality") == "output")
-            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"1.0\" y=\"0.5\" a=\"0\"/>\n";
+        {
+            outputPos += outputPosStep;
+            numStr2.setNum(outputPos);
+            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+        }
         ++i;
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }

@@ -637,14 +637,16 @@ void GUISystem::createFMUSourceFiles()
 
     pExportFmuDialog->show();
 
-    connect(pOkButton,      SIGNAL(clicked()), this,                SLOT(createFMUSourceFilesFromDialog()));
     connect(pOkButton,      SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
+    connect(pOkButton,      SIGNAL(clicked()), this,                SLOT(createFMUSourceFilesFromDialog()));
     connect(pCancelButton,  SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
 }
 
 
 void GUISystem::createFMUSourceFilesFromDialog()
 {
+
+
     bool gccCompiler = mpExportFmuGccRadioButton->isChecked();
 
     QStringList outputVariables;
@@ -664,6 +666,8 @@ void GUISystem::createFMUSourceFilesFromDialog()
         }
     }
 
+
+
     int random = rand() % 1000;
     QString randomString = QString().setNum(random);
     QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f"+randomString+"}";  //!< @todo How is this ID defined?
@@ -676,6 +680,16 @@ void GUISystem::createFMUSourceFilesFromDialog()
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+
+    QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
+    progressBar.show();
+    progressBar.setMaximum(10);
+    progressBar.setWindowModality(Qt::WindowModal);
+    progressBar.setWindowTitle(tr("Creating FMU"));
+    progressBar.setMaximum(20);
+    progressBar.setValue(0);
+
 
     QDir saveDir;
     saveDir.setPath(savePath);
@@ -722,6 +736,9 @@ void GUISystem::createFMUSourceFilesFromDialog()
         return;
     }
 
+    progressBar.setLabelText("Writing ModelDescription.xml");
+    progressBar.setValue(1);
+
     QTextStream modelDescriptionStream(&modelDescriptionFile);
     modelDescriptionStream << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";       //!< @todo Encoding, should it be UTF-8?
     modelDescriptionStream << "<fmiModelDescription\n";
@@ -734,13 +751,19 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelDescriptionStream << "<ModelVariables>\n";
     for(int i=0; i<outputVariables.size(); ++i)
     {
-        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(i) << "\" valueReference=\"0\" description=\"output variable\" causality=\"output\">\n";
+        QString refString = QString().setNum(i);
+        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(i) << "\" valueReference=\""+refString+"\" description=\"output variable\" causality=\"output\">\n";
         modelDescriptionStream << "     <Real start=\"0\" fixed=\"false\"/>\n";
         modelDescriptionStream << "  </ScalarVariable>\n";
     }
     modelDescriptionStream << "</ModelVariables>\n";
     modelDescriptionStream << "</fmiModelDescription>\n";
     modelDescriptionFile.close();
+
+
+    progressBar.setLabelText("Writing " + modelName + ".c");
+    progressBar.setValue(2);
+
 
     QTextStream modelSourceStream(&modelSourceFile);
     modelSourceStream << "// Define class name and unique id\n";
@@ -760,8 +783,11 @@ void GUISystem::createFMUSourceFilesFromDialog()
     for(int i=0; i<outputVariables.size(); ++i)
         modelSourceStream << "    #define " << outputVariables.at(i) << "_ " << i << "\n\n";
     modelSourceStream << "    // Define state vector as vector of value references\n";
-    for(int i=0; i<outputVariables.size(); ++i)
-        modelSourceStream << "    #define STATES { " << outputVariables.at(i) << "_ }\n\n";
+    modelSourceStream << "    #define STATES { ";
+    modelSourceStream << outputVariables.at(0) << "_";
+    for(int i=1; i<outputVariables.size(); ++i)
+        modelSourceStream << ", " << outputVariables.at(i) << "_";
+    modelSourceStream << " }\n\n";
     modelSourceStream << "    //Set start values\n";
     modelSourceStream << "    void setStartValues(ModelInstance *comp) \n";
     modelSourceStream << "    {\n";
@@ -796,6 +822,11 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelSourceStream << "    #include \"fmuTemplate.c\"\n";
     modelSourceFile.close();
 
+
+    progressBar.setLabelText("Writing HopsanFMU.h");
+    progressBar.setValue(4);
+
+
     QTextStream fmuHeaderStream(&fmuHeaderFile);
     fmuHeaderStream << "#ifndef HOPSANFMU_H\n";
     fmuHeaderStream << "#define HOPSANFMU_H\n\n";
@@ -813,6 +844,11 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuHeaderStream << "#endif\n\n";
     fmuHeaderStream << "#endif // HOPSANFMU_H\n";
     fmuHeaderFile.close();
+
+
+    progressBar.setLabelText("Writing HopsanFMU.cpp");
+    progressBar.setValue(5);
+
 
     QTextStream fmuSourceStream(&fmuSourceFile);
     fmuSourceStream << "#include <iostream>\n";
@@ -853,6 +889,11 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuSourceStream << "}\n";
     fmuSourceFile.close();
 
+
+    progressBar.setLabelText("Writing compile.bat");
+    progressBar.setValue(6);
+
+
     QTextStream clBatchStream(&clBatchFile);
     //! @todo Ship Mingw with Hopsan, or check if it exists in system and inform user if it does not.
     if(gccCompiler)
@@ -867,10 +908,12 @@ void GUISystem::createFMUSourceFilesFromDialog()
     clBatchStream << "if defined VS80COMNTOOLS (call \"%VS80COMNTOOLS%\\vsvars32.bat\")\n";
     clBatchStream << "cl -LD -nologo -DWIN32 -DWRAPPERCOMPILATION HopsanFMU.cpp /I \. /I \include\HopsanCore.h HopsanCore.lib\n";
     }
-
-
-
     clBatchFile.close();
+
+
+    progressBar.setLabelText("Copying binary files");
+    progressBar.setValue(7);
+
 
     //Copy binaries to export directory
     QFile dllFile;
@@ -892,8 +935,17 @@ void GUISystem::createFMUSourceFilesFromDialog()
     }
 
 
+    progressBar.setLabelText("Copying include files");
+    progressBar.setValue(8);
+
+
     //Copy include files to export directory
     copyIncludeFilesToDir(savePath);
+
+
+    progressBar.setLabelText("Writing "+modelName+".hmf");
+    progressBar.setValue(9);
+
 
     //Save model to hmf in export directory
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
@@ -910,10 +962,21 @@ void GUISystem::createFMUSourceFilesFromDialog()
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
 
+
+    progressBar.setLabelText("Compiling HopsanFMU.dll");
+    progressBar.setValue(11);
+
+
+
     //Execute HopsanFMU compile script
     QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compile.bat");
     p.waitForFinished();
+
+
+    progressBar.setLabelText("Copying compilation files");
+    progressBar.setValue(14);
+
 
     //Copy FMI compilation files to export directory
     QFile buildFmuFile;
@@ -935,9 +998,19 @@ void GUISystem::createFMUSourceFilesFromDialog()
     QFile fmiTemplateHFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
-    //Execute HMU compile script
+
+    progressBar.setLabelText("Compiling "+modelName+".dll");
+    progressBar.setValue(15);
+
+
+    //Execute FMU compile script
     p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me " + modelName);
     p.waitForFinished();
+
+
+    progressBar.setLabelText("Sorting files");
+    progressBar.setValue(18);
+
 
     saveDir.mkpath("fmu/binaries/win32");
     QFile modelDllFile(savePath + "/" + modelName + ".dll");
@@ -957,12 +1030,22 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".hmf");
     modelDescriptionFile.copy(savePath + "/fmu/ModelDescription.xml");
 
-
     QString fmuFileName = savePath + "/" + modelName + ".fmu";
+
+
+    progressBar.setLabelText("Compressing files");
+    progressBar.setValue(19);
+
+
 
     p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/");
     p.waitForFinished();
     qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/";
+
+
+    progressBar.setLabelText("Cleaning up");
+    progressBar.setValue(20);
+
 
     //Clean up temporary files
 //    saveDir.setPath(savePath);
@@ -992,6 +1075,28 @@ void GUISystem::createSimulinkSourceFiles()
 {
     QMessageBox::information(gpMainWindow, gpMainWindow->tr("Create Simulink Source Files"),
                              gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console.\n\nVisual Studio 2008 compiler is supported, although other versions might work as well.."));
+
+
+
+        //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString savePath;
+    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
+                                                    fileDialogSaveDir.currentPath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+
+    QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
+    progressBar.show();
+    progressBar.setMaximum(10);
+    progressBar.setWindowModality(Qt::WindowModal);
+    progressBar.setWindowTitle(tr("Creating Simulink Source Files"));
+    progressBar.setMaximum(10);
+    progressBar.setValue(0);
+
+
 
     QStringList inputComponents;
     QStringList inputPorts;
@@ -1074,18 +1179,14 @@ void GUISystem::createSimulinkSourceFiles()
     nTotalOutputsString.setNum(nTotalOutputs);
 
 
-        //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
-    QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
-                                                    fileDialogSaveDir.currentPath(),
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
-    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
-
     qDebug() << "Selected path: " << savePath;
     QDir saveDir;
-    saveDir.setPath(savePath);
+    saveDir.setPath(savePath);    
+
+
+    progressBar.setValue(2);
+    progressBar.setLabelText("Generating files");
+
 
     QFile wrapperFile;
     wrapperFile.setFileName(savePath + "/HopsanSimulink.cpp");
@@ -1113,9 +1214,18 @@ void GUISystem::createSimulinkSourceFiles()
     }
 
 
+    progressBar.setValue(3);
+    progressBar.setLabelText("Writing HopsanSimulinkPortLabels.m");
+
+
     QTextStream portLabelsStream(&portLabelsFile);
     portLabelsStream << "set_param(gcb,'Mask','on')\n";
     portLabelsStream << "set_param(gcb,'MaskDisplay','";
+
+
+    progressBar.setValue(4);
+    progressBar.setLabelText("Writing HopsanSimulink.cpp");
+
 
     //How to access dialog parameters:
     //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
@@ -1215,6 +1325,7 @@ void GUISystem::createSimulinkSourceFiles()
         portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicRotationalQComponents.at(i) << ".w''); ";
     }
     tot+=nMechanicRotationalQ*2;
+    progressBar.setValue(5);
     for(i=0; i<nMechanicRotationalC; ++i)
     {
         j=tot+i*2;
@@ -1317,6 +1428,7 @@ void GUISystem::createSimulinkSourceFiles()
     }
     wrapperStream << "\n";
     wrapperStream << "    //Equations\n";
+    progressBar.setValue(6);
     for(int i=0; i<nTotalOutputs; ++i)
     {
         wrapperStream << "    double output" << i << ";\n";
@@ -1429,10 +1541,19 @@ void GUISystem::createSimulinkSourceFiles()
     portLabelsStream << "set_param(gcb,'Name','" << this->getName() << "')";
     portLabelsFile.close();
 
+
+    progressBar.setValue(7);
+    progressBar.setLabelText("Writing HopsanSimulinkCompile.m");
+
+
     QTextStream compileStream(&compileFile);
     compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /include/Component.cc /include/ComponentSystem.cc /include/HopsanEssentials.cc /include/Node.cc /include/Port.cc /include/Components/Components.cc /include/CoreUtilities/HmfLoader.cc /include/CoreUtilities/HopsanCoreMessageHandler.cc /include/CoreUtilities/LoadExternal.cc /include/Nodes/Nodes.cc /include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /include/ComponentUtilities/Delay.cc /include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /include/ComponentUtilities/FirstOrderFilter.cc /include/ComponentUtilities/Integrator.cc /include/ComponentUtilities/IntegratorLimited.cc /include/ComponentUtilities/ludcmp.cc /include/ComponentUtilities/matrix.cc /include/ComponentUtilities/SecondOrderFilter.cc /include/ComponentUtilities/SecondOrderTransferFunction.cc /include/ComponentUtilities/TurbulentFlowFunction.cc /include/ComponentUtilities/ValveHysteresis.cc\n";
     compileStream << "mex -DWIN32 -DSTATICCORE -L./ -lHopsanCore HopsanSimulink.cpp\n";
     compileFile.close();
+
+
+    progressBar.setValue(8);
+    progressBar.setLabelText("Copying Visual Studio binaries");
 
 
     QFile dllFile(gExecPath + "/../binVC/HopsanCore.dll");
@@ -1442,7 +1563,17 @@ void GUISystem::createSimulinkSourceFiles()
     QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
     expFile.copy(savePath + "/HopsanCore.exp");
 
+
+    progressBar.setValue(9);
+    progressBar.setLabelText("Copying include files");
+
+
     copyIncludeFilesToDir(savePath);
+
+
+    progressBar.setValue(10);
+    progressBar.setLabelText("Writing " + mModelFileInfo.fileName() + " .hmf");
+
 
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
         //Save xml document
