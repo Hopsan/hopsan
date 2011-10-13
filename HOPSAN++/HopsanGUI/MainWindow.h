@@ -92,6 +92,7 @@ public:
     QAction *mpOpenAction;
     QAction *mpSaveAction;
     QAction *mpSaveAsAction;
+    QAction *mpImportFMUAction;
     QAction *mpExportToSimulinkAction;
     QAction *mpExportToFMUAction;
     QAction *mpCloseAction;
@@ -198,10 +199,12 @@ private:
     QMenu *mpPlotMenu;
     QMenu *mpRecentMenu;
     QMenu *mpHelpMenu;
+    QMenu *mpImportMenu;
     QMenu *mpExportMenu;
     QMenu *mpExamplesMenu;
 
     //Buttons
+    QToolButton *mpImportButton;
     QToolButton *mpExportButton;
 
     //Toolbar items

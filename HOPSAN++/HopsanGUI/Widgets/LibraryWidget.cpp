@@ -75,7 +75,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpDualViewButton->setIconSize(QSize(24,24));
     mpDualViewButton->setToolTip(tr("Dual List View"));
     mpLoadExternalButton = new QToolButton();
-    mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadLibrary.png"));
     mpLoadExternalButton->setIconSize(QSize(24,24));
     mpLoadExternalButton->setToolTip(tr("Load External Library"));
     mpLoadFmuButton = new QToolButton();

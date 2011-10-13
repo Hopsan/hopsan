@@ -624,6 +624,7 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpSaveAsAction);
     mpFileMenu->addMenu(mpRecentMenu);
     mpFileMenu->addSeparator();
+    mpFileMenu->addMenu(mpImportMenu);
     mpFileMenu->addMenu(mpExportMenu);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpLoadLibsAction);
@@ -689,8 +690,20 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpSaveAsAction);
     mpFileToolBar->addAction(mpExportPDFAction);
     //! @note Action and menu shouldn't be here, but it doesn't work otherwise because the menus are created after the toolbars
+    mpImportFMUAction = new QAction(tr("Import Functional Mock-up Unit (FMU)"), this);
     mpExportToSimulinkAction = new QAction(tr("Export to Simulink S-function Source Files"), this);
     mpExportToFMUAction = new QAction(tr("Export to Functional Mock-up Unit (FMU)"), this);
+    mpImportMenu = new QMenu("Import");
+    mpImportMenu->addAction(mpImportFMUAction);
+    mpImportButton = new QToolButton(mpFileToolBar);
+    mpImportButton->setToolTip("Import");
+    mpImportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Import.png"));
+    mpImportButton->setMenu(mpImportMenu);
+    mpImportButton->setPopupMode(QToolButton::InstantPopup);
+#ifdef DEVELOPMENT
+    mpFileToolBar->addWidget(mpImportButton);
+#endif
+
     mpExportMenu = new QMenu("Export Model");
     mpExportMenu->addAction(mpExportToSimulinkAction);
 #ifdef DEVELOPMENT
@@ -765,6 +778,7 @@ void MainWindow::createToolbars()
         connect(pTempAction, SIGNAL(triggered()), this, SLOT(openExampleModel()));
     }
 
+    connect(mpImportFMUAction, SIGNAL(triggered()), mpLibrary, SLOT(importFmu()));
     connect(mpExportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
     connect(mpExportToFMUAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
 }

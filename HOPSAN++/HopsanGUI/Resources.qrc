@@ -101,5 +101,7 @@
         <file>graphics/porticons/PortOverlayUnknown.svg</file>
         <file>graphics/objecticons/subsystemDefault.svg</file>
         <file>graphics/uiicons/hmf.ico</file>
+        <file>graphics/uiicons/Hopsan-Import.png</file>
+        <file>graphics/uiicons/Hopsan-LoadLibrary.png</file>
     </qresource>
 </RCC>
