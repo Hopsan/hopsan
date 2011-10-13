@@ -303,7 +303,7 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
     QAction *tempAction;
     for(int i=0; i<parameterNames.size(); ++i)
     {
-        tempAction = menu.addAction(QString("Plot "+parameterNames[i]+" ["+parameterUnits[i]+"]"));
+        tempAction = menu.addAction(QString("Plot "+parameterNames[i]+" ["+gConfig.getDefaultUnit(parameterNames[i])+"]"));
         parameterActions.append(tempAction);
     }
 
