@@ -44,6 +44,8 @@ unix {
     # TODO: We need to add teh relative paths automatically from the path variables created above
     #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/../lib\'
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
+
+    LIBS *= -lrt
 }
 win32 {
 

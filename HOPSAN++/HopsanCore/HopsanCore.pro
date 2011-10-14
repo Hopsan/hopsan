@@ -50,7 +50,7 @@ win32 {
     #--------------------------------------------------------
 }
 unix { 
-    LIBS += -ltbb
+    LIBS += -ltbb -ldl
     INCLUDEPATH += /usr/include/tbb/
 }
 

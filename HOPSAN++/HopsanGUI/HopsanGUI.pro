@@ -5,7 +5,6 @@
 # Global project options
 # -------------------------------------------------
 include( HopsanGuiBuild.prf )
-#include( ../HopsanCore/HopsanCoreBuild.prf )
 
 TARGET = HopsanGUI
 TEMPLATE = app
@@ -65,10 +64,6 @@ win32 {
     PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
     INCLUDEPATH += $${PYTHON_PATH}/include
     LIBS += -L$${PYTHON_PATH}/libs
-
-    #Ugly quick hack to make sure tbb is avilable at runtime when running gui
-    #d = $$setTBBWindowsPathInfo($$(TBB_PATH), $$DESTDIR)
-    #LIBS *= $$magic_hopsan_libpath
 }
 
 #Debug output
