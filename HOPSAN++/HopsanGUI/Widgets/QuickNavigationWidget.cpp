@@ -81,7 +81,7 @@ void QuickNavigationWidget::gotoContainerAndCloseSubcontainers(int id)
 //! @brief Determines if the widget should be visible or not
 void QuickNavigationWidget::refreshVisible()
 {
-    //qDebug() << "PushButtons.size(): " << this->mPushButtonPtrs.size();
+    ////qDebug() << "PushButtons.size(): " << this->mPushButtonPtrs.size();
     if (this->mPushButtonPtrs.size() > 0)
     {
         this->show();
