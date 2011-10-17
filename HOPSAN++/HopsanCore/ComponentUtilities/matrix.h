@@ -30,7 +30,7 @@
 #define __MATRIX_H
 #include <string>
 #include <assert.h>
-#include "../win32dll.h"
+#include "win32dll.h"
 
 namespace hopsan {
 

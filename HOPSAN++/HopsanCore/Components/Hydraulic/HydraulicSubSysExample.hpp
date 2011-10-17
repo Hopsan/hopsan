@@ -25,9 +25,9 @@
 #ifndef HYDRAULICSUBSYSEXAMPLE_HPP_INCLUDED
 #define HYDRAULICSUBSYSEXAMPLE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentSystem.h"
-#include "../Components.h"
+#include "ComponentEssentials.h"
+#include "Components/Components.h"
+#include "ComponentSystem.h"
 
 namespace hopsan {
 
@@ -47,10 +47,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicSubSysExample("SubSysExample");
+            return new HydraulicSubSysExample();
         }
 
-        HydraulicSubSysExample(const std::string name) : ComponentSystem(name)
+        HydraulicSubSysExample() : ComponentSystem()
         {
             volumeL = new HydraulicVolume("volumeL");
             orificeC = new HydraulicLaminarOrifice("orificeC");

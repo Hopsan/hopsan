@@ -25,7 +25,7 @@
 #ifndef SIGNALROUTE_HPP_INCLUDED
 #define SIGNALROUTE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #include <vector>
 
 namespace hopsan {

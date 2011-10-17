@@ -13,6 +13,12 @@ QT -= core \
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
+
+#--------------------------------------------------
+# Add the include path to our self, (HopsanCore)
+INCLUDEPATH *= $${PWD}/
+#--------------------------------------------------
+
 #--------------------------------------------------------
 # Set the rappidxml and csv_parser include paths
 INCLUDEPATH *= $${PWD}/Dependencies/rapidxml-1.13

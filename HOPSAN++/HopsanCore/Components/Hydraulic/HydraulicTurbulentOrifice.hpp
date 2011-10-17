@@ -26,8 +26,8 @@
 #ifndef HYDRAULICTURBULENTORIFICE_HPP_INCLUDED
 #define HYDRAULICTURBULENTORIFICE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 #include "math.h"
 
 namespace hopsan {

@@ -25,8 +25,8 @@
 #ifndef SIGNALOR_HPP_INCLUDED
 #define SIGNALOR_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

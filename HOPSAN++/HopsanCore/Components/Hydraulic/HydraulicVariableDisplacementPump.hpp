@@ -19,7 +19,7 @@
 #define HYDRAULICVARIABLEDISPLACEMENTPUMP_HPP_INCLUDED
 
 #include <iostream>
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #define M_PI       3.14159265358979323846
 
 namespace hopsan {

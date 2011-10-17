@@ -25,7 +25,7 @@
 #ifndef SIGNALUNDEFINEDCONNECTION_HPP_INCLUDED
 #define SIGNALUNDEFINEDCONNECTION_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

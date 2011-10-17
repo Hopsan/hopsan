@@ -18,7 +18,7 @@
 #ifndef MECHANICFORCETRANSFORMER_HPP_INCLUDED
 #define MECHANICFORCETRANSFORMER_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

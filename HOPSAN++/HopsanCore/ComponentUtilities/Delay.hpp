@@ -25,7 +25,7 @@
 #ifndef DELAY_HPP_INCLUDED
 #define DELAY_HPP_INCLUDED
 
-#include "../win32dll.h"
+#include "win32dll.h"
 #include "assert.h"
 #include "math.h"
 #include <vector>

@@ -10,8 +10,8 @@
 #ifndef SIGNALNOISEGENERATOR_HPP_INCLUDED
 #define SIGNALNOISEGENERATOR_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

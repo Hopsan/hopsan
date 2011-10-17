@@ -27,7 +27,7 @@
 
 #include <queue>
 #include <string>
-#include "../win32dll.h"
+#include "win32dll.h"
 
 namespace hopsan {
 

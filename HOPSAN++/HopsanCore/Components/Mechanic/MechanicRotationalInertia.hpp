@@ -10,8 +10,8 @@
 #ifndef MECHANICROTATIONALINERTIA_HPP_INCLUDED
 #define MECHANICROTATIONALINERTIA_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

@@ -25,7 +25,7 @@
 #ifndef SIGNALSUBTRACT_HPP_INCLUDED
 #define SIGNALSUBTRACT_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

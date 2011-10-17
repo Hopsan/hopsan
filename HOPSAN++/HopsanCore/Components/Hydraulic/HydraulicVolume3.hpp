@@ -25,7 +25,7 @@
 #ifndef HYDRAULICVOLUME3_HPP_INCLUDED
 #define HYDRAULICVOLUME3_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

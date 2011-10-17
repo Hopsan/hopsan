@@ -25,8 +25,8 @@
 #ifndef SIGNALSTOPSIMULATION_HPP_INCLUDED
 #define SIGNALSTOPSIMULATION_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

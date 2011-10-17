@@ -25,7 +25,7 @@
 #ifndef SIGNALSUM_HPP_INCLUDED
 #define SIGNALSUM_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #include <vector>
 #include <sstream>
 

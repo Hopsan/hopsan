@@ -26,7 +26,7 @@
 #define INTEGRATOR_H_INCLUDED
 
 #include <deque>
-#include "../win32dll.h"
+#include "win32dll.h"
 #include "Delay.hpp"
 
 namespace hopsan {

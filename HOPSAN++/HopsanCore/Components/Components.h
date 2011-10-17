@@ -196,7 +196,7 @@
 #include "Electric/ElectricUsource.hpp"
 
 
-#include "../Component.h"
+#include "Component.h"
 
 namespace hopsan {
 

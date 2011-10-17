@@ -23,17 +23,17 @@
 //$Id$
 
 #include "LoadExternal.h"
-#include "../Component.h"
-#include "../Node.h"
+#include "Component.h"
+#include "Node.h"
 #include "ClassFactoryStatusCheck.hpp"
-#include "../version.h"
+#include "version.h"
 
 #include <sstream>
 #include <cstring>
 
 #ifdef WIN32
 #define _WIN32_WINNT 0x0502
-#include "../win32dll.h"
+#include "win32dll.h"
 #include "Windows.h"
 #else
 #include "dlfcn.h"

@@ -25,7 +25,7 @@
 #ifndef SIGNALSINK_HPP_INCLUDED
 #define SIGNALSINK_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

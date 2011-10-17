@@ -39,7 +39,7 @@
 #ifndef SIGNALRAMP_HPP_INCLUDED
 #define SIGNALRAMP_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

@@ -25,7 +25,7 @@
 #ifndef MECHANICTORSIONALSPRING_HPP_INCLUDED
 #define MECHANICTORSIONALSPRING_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

@@ -28,8 +28,8 @@
 #define HYDRAULICPRESSURECONTROLLEDPUMP_HPP_INCLUDED
 
 #include <iostream>
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 #include <math.h>
 #define M_PI       3.14159265358979323846
 

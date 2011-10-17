@@ -25,8 +25,8 @@
 #ifndef SIGNALHP2FILTER_HPP_INCLUDED
 #define SIGNALHP2FILTER_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

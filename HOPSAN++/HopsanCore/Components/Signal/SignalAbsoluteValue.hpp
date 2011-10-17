@@ -25,7 +25,7 @@
 #ifndef SIGNALABSOLUTEVALUE_HPP_INCLUDED
 #define SIGNALABSOLUTEVALUE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

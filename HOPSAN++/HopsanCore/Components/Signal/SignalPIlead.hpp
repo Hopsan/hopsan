@@ -1,8 +1,8 @@
 #ifndef SIGNALPILEAD_HPP_INCLUDED
 #define SIGNALPILEAD_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 #include <math.h>
 #include "matrix.h"
 

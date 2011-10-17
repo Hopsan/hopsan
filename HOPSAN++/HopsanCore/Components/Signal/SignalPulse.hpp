@@ -34,7 +34,7 @@
 #ifndef SIGNALPULSE_HPP_INCLUDED
 #define SIGNALPULSE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

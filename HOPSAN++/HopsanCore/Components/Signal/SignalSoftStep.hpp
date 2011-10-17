@@ -40,7 +40,7 @@
 #ifndef SIGNALSOFTSTEP_HPP_INCLUDED
 #define SIGNALSOFTSTEP_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #include "math.h"
 
 namespace hopsan {

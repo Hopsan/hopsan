@@ -25,7 +25,7 @@
 #ifndef MECHANICTORQUETRANSFORMER_HPP_INCLUDED
 #define MECHANICTORQUETRANSFORMER_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

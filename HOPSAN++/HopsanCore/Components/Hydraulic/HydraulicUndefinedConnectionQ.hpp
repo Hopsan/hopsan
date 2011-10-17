@@ -26,7 +26,7 @@
 #define HYDRAULICUNDEFINEDCONNECTIONQ_HPP_INCLUDED
 
 #include <iostream>
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

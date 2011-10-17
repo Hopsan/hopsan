@@ -25,7 +25,7 @@
 #ifndef SIGNALTRIPLEROUTE_HPP_INCLUDED
 #define SIGNALTRIPLEROUTE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #include <vector>
 
 namespace hopsan {

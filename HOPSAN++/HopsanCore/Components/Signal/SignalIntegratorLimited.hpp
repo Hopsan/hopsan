@@ -25,8 +25,8 @@
 #ifndef SIGNALINTEGRATORLIMITED_HPP_INCLUDED
 #define SIGNALINTEGRATORLIMITED_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

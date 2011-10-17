@@ -25,7 +25,7 @@
 #ifndef SIGNALGREATERTHAN_HPP_INCLUDED
 #define SIGNALGREATERTHAN_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

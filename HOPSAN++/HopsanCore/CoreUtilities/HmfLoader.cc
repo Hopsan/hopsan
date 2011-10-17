@@ -26,8 +26,8 @@
 #include <cassert>
 #include <cstring>
 #include "HmfLoader.h"
-#include "../HopsanEssentials.h"
-#include "../ComponentSystem.h"
+#include "HopsanEssentials.h"
+#include "ComponentSystem.h"
 
 using namespace std;
 using namespace hopsan;

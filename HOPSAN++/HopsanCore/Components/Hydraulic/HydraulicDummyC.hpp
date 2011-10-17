@@ -18,7 +18,7 @@
 #ifndef HYDRAULICDUMMYC_HPP_INCLUDED
 #define HYDRAULICDUMMYC_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

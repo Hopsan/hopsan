@@ -45,7 +45,7 @@
 #ifndef VALVEHYSTERESIS_H_INCLUDED
 #define VALVEHYSTERESIS_H_INCLUDED
 
-#include "../win32dll.h"
+#include "win32dll.h"
 
 namespace hopsan {
 

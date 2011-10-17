@@ -25,7 +25,7 @@
 #ifndef READDATACURVE_H_INCLUDED
 #define READDATACURVE_H_INCLUDED
 
-#include "../win32dll.h"
+#include "win32dll.h"
 #include "assert.h"
 #include "math.h"
 #include <vector>

@@ -25,7 +25,7 @@
 #ifndef HYDRAULICVOLUMEMULTIPORT_HPP_INCLUDED
 #define HYDRAULICVOLUMEMULTIPORT_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #include <vector>
 #include <sstream>
 #include <iostream>

@@ -25,7 +25,7 @@
 #ifndef MECHANICINTERFACEQ_HPP_INCLUDED
 #define MECHANICINTERFACEQ_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

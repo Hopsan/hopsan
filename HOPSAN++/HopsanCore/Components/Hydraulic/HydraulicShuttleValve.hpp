@@ -25,7 +25,7 @@
 #ifndef HYDRAULICSHUTTLEVALVE_HPP_INCLUDED
 #define HYDRAULICSHUTTLEVALVE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

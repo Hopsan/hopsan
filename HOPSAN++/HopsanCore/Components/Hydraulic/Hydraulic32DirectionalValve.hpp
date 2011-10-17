@@ -27,8 +27,8 @@
 #define pi 3.14159
 
 #include <iostream>
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

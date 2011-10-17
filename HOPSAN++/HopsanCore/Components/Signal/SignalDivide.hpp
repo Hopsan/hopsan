@@ -25,7 +25,7 @@
 #ifndef SIGNALDIVIDE_HPP_INCLUDED
 #define SIGNALDIVIDE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

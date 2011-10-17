@@ -31,8 +31,8 @@
 
 #include <sstream>
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -334,8 +334,8 @@ class HydraulicCylinderC : public ComponentC
 
 //#include <sstream>
 
-//#include "../../ComponentEssentials.h"
-//#include "../../ComponentUtilities.h"
+//#include "ComponentEssentials.h"
+//#include "ComponentUtilities.h"
 
 //namespace hopsan {
 
@@ -732,8 +732,8 @@ class HydraulicCylinderC : public ComponentC
 
 //#include <sstream>
 
-//#include "../../ComponentEssentials.h"
-//#include "../../ComponentUtilities.h"
+//#include "ComponentEssentials.h"
+//#include "ComponentUtilities.h"
 
 //namespace hopsan {
 

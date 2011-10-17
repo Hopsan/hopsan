@@ -26,7 +26,7 @@
 #define HYDRAULICMULTIPRESSURESOURCEC_HPP_INCLUDED
 
 #include <vector>
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

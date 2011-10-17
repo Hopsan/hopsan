@@ -25,7 +25,7 @@
 #ifndef SIGNALDUMMY_HPP_INCLUDED
 #define SIGNALDUMMY_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

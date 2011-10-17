@@ -25,7 +25,7 @@
 #ifndef WHITEGAUSSIANNOISE_H_INCLUDED
 #define WHITEGAUSSIANNOISE_H_INCLUDED
 
-#include "../win32dll.h"
+#include "win32dll.h"
 #include <math.h>
 
 namespace hopsan {

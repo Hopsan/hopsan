@@ -25,7 +25,7 @@
 
 #ifndef AUXILIARYSIMULATIONFUNCTIONS_H
 #define AUXILIARYSIMULATIONFUNCTIONS_H
-#include "../win32dll.h"
+#include "win32dll.h"
 
 namespace hopsan {
 extern "C" {

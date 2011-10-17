@@ -25,7 +25,7 @@
 #ifndef SIGNALMULTIPLY_HPP_INCLUDED
 #define SIGNALMULTIPLY_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

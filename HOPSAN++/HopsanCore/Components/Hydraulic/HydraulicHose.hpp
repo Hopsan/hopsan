@@ -28,8 +28,8 @@
 #define HYDRAULICHOSE_HPP_INCLUDED
 
 #include <iostream>
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 
 namespace hopsan {
 

@@ -2,8 +2,8 @@
 #define MECHANICVEHICLE1D_HPP_INCLUDED
 
 #include <iostream>
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 #include <math.h>
 #include "matrix.h"
 

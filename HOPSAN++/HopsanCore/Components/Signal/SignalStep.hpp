@@ -35,7 +35,7 @@
 #ifndef SIGNALSTEP_HPP_INCLUDED
 #define SIGNALSTEP_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

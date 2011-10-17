@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include "../win32dll.h"
+#include "win32dll.h"
 #include <math.h>
 #include "WhiteGaussianNoise.h"
 #include <stdlib.h>

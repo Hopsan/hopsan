@@ -25,7 +25,7 @@
 #ifndef SIGNALPOWER_HPP_INCLUDED
 #define SIGNALPOWER_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #include <math.h>
 
 namespace hopsan {

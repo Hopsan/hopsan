@@ -25,8 +25,8 @@
 #ifndef SIGNALGAIN_HPP_INCLUDED
 #define SIGNALGAIN_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
-#include "../../ComponentUtilities.h"
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
 #include <algorithm>
 
 namespace hopsan {

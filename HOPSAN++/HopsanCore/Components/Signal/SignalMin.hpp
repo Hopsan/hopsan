@@ -25,7 +25,7 @@
 #ifndef SIGNALMIN_HPP_INCLUDED
 #define SIGNALMIN_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 #include <vector>
 
 namespace hopsan {
