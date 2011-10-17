@@ -787,14 +787,31 @@ void LibraryWidget::importFmu()
     fmuComponentHppStream << "        }\n\n";
     fmuComponentHppStream << "        void simulateOneTimestep()\n";
     fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            //run simulation\n";
-    fmuComponentHppStream << "            simulateFMU();\n\n";
-    fmuComponentHppStream << "            //write output value\n";
     fmuComponentHppStream << "            ScalarVariable** vars = mFMU.modelDescription->modelVariables;\n";
     fmuComponentHppStream << "            double value;\n";
     fmuComponentHppStream << "            ScalarVariable* sv;\n";
-    fmuComponentHppStream << "            fmiValueReference vr;\n";
-    //! @todo Add support for input variables
+    fmuComponentHppStream << "            fmiValueReference vr;\n\n";
+    fmuComponentHppStream << "            //write input values\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        QString numStr;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
+        {
+
+            fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            value = (*mpND_in"+numStr+");\n";
+            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+        }
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuComponentHppStream << "            //run simulation\n";
+    fmuComponentHppStream << "            simulateFMU();\n\n";
+    fmuComponentHppStream << "            //write back output values\n";
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
@@ -807,7 +824,7 @@ void LibraryWidget::importFmu()
             fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
             fmuComponentHppStream << "            vr = getValueReference(sv);\n";
             fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n";
+            fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
         }
         ++i;
         varElement = varElement.nextSiblingElement("ScalarVariable");
@@ -1247,11 +1264,21 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     #endif
     libDirObject.setNameFilters(filters);
     QStringList libList = libDirObject.entryList();
+    bool success=false;
     for (int i = 0; i < libList.size(); ++i)
     {
         QString filename = libDir + "/" + libList.at(i);
         qDebug() << "Trying to load: " << filename << " in Core";
-        mpCoreAccess->loadComponent(filename);
+        if(mpCoreAccess->loadComponent(filename))
+        {
+            success=true;
+        }
+    }
+    if(!success && libList.size()>0)
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage(libDirObject.path() + ": Could not find any working Hopsan library in specified folder!");
+        gpMainWindow->mpMessageWidget->checkMessages();
+        return;     //No point in continuing since no library was found
     }
     gpMainWindow->mpMessageWidget->checkMessages();
 
@@ -1279,6 +1306,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     libDirObject.setFilter(QDir::NoFilter);
     libDirObject.setNameFilters(filters);   //Set the name filter
 
+    //! @todo Reusing variable libList for xml files as well is not nice programming. Make an xmlList object instead!
     libList  = libDirObject.entryList();    //Create a list with all name of the files in dir libDir
     for (int i = 0; i < libList.size(); ++i)        //Iterate over the file names
     {
@@ -1304,7 +1332,8 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
                 //QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
 //                                         "The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: "
 //                                         + cafRoot.tagName() + "!=" + CAF_ROOT);
-                gpMainWindow->mpMessageWidget->printGUIWarningMessage("The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                continue;
             }
             else
             {
@@ -1324,6 +1353,8 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
                                      .arg(file.fileName()));
 
             //! @todo give smart warning message, this is not an xml file
+
+            continue;
         }
         //! @todo maybe use the convenient helpfunction for the stuff above (open file and check xml and root tagname) now that we have one
 

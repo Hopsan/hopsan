@@ -85,14 +85,14 @@ bool LoadExternal::load(string libpath)
     if (!lib_ptr)
     {
         stringstream ss;
-        ss << "Error opening external lib: " << libpath << " Error: " << GetLastError();
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        ss << "Error opening external library: " << libpath << " Error: " << GetLastError();
+        gCoreMessageHandler.addDebugMessage(ss.str());
         return false;
     }
     else
     {
         stringstream ss;
-        ss << "Succes (probably) opening external lib: " << libpath;
+        ss << "Success (probably) opening external library: " << libpath;
         gCoreMessageHandler.addDebugMessage(ss.str());
     }
 
@@ -116,7 +116,7 @@ bool LoadExternal::load(string libpath)
     {
         stringstream ss;
         ss << "Cannot load symbol 'register_contents' for: " << libpath << " Error: " << GetLastError();
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        gCoreMessageHandler.addDebugMessage(ss.str());
         isHopsanComponentLib=false;
     }
 

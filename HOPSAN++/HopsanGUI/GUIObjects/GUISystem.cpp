@@ -645,16 +645,79 @@ void GUISystem::createFMUSourceFiles()
 
 void GUISystem::createFMUSourceFilesFromDialog()
 {
+    //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString savePath;
+    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
+                                                    fileDialogSaveDir.currentPath(),
+                                                    QFileDialog::ShowDirsOnly
+                                                    | QFileDialog::DontResolveSymlinks);
+    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+    QDir saveDir;
+    saveDir.setPath(savePath);
+
+    if(!saveDir.entryList().isEmpty())
+    {
+        QMessageBox msgBox;
+        msgBox.setWindowIcon(gpMainWindow->windowIcon());
+        msgBox.setText(QString("Folder is not empty!"));
+        msgBox.setInformativeText("Are you sure you want to export files here?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+
+        int answer = msgBox.exec();
+        if(answer == QMessageBox::No)
+        {
+            return;
+        }
+    }
 
 
+    QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
+    progressBar.show();
+    progressBar.setMaximum(10);
+    progressBar.setWindowModality(Qt::WindowModal);
+    progressBar.setWindowTitle(tr("Creating FMU"));
+    progressBar.setMaximum(20);
+    progressBar.setValue(0);
+
+
+    //Tells if user selected the gcc compiler or not (= visual studio)
     bool gccCompiler = mpExportFmuGccRadioButton->isChecked();
 
+
+    //Write the FMU ID
+    int random = rand() % 1000;
+    QString randomString = QString().setNum(random);
+    QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f"+randomString+"}";  //!< @todo How is this ID defined?
+
+
+    //Collect information about input ports
+    QStringList inputVariables;
+    QStringList inputComponents;
+    QStringList inputPorts;
+    QList<int> inputDatatypes;
+
+    GUIModelObjectMapT::iterator it;
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    {
+        if(it.value()->getTypeName() == "SignalInputInterface")
+        {
+            inputVariables.append(it.value()->getName().remove(' '));
+            inputComponents.append(it.value()->getName());
+            inputPorts.append("out");
+            inputDatatypes.append(0);
+        }
+    }
+
+
+    //Collect information about output ports
     QStringList outputVariables;
     QStringList outputComponents;
     QStringList outputPorts;
     QList<int> outputDatatypes;
 
-    GUIModelObjectMapT::iterator it;
     for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SignalOutputInterface")
@@ -667,33 +730,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     }
 
 
-
-    int random = rand() % 1000;
-    QString randomString = QString().setNum(random);
-    QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f"+randomString+"}";  //!< @todo How is this ID defined?
-
-    //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
-    QString savePath;
-    savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
-                                                    fileDialogSaveDir.currentPath(),
-                                                    QFileDialog::ShowDirsOnly
-                                                    | QFileDialog::DontResolveSymlinks);
-    if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
-
-
-    QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
-    progressBar.show();
-    progressBar.setMaximum(10);
-    progressBar.setWindowModality(Qt::WindowModal);
-    progressBar.setWindowTitle(tr("Creating FMU"));
-    progressBar.setMaximum(20);
-    progressBar.setValue(0);
-
-
-    QDir saveDir;
-    saveDir.setPath(savePath);
-
+    //Create file objects for all files that shall be created
     QFile modelSourceFile;
     QString modelName = getModelFileInfo().fileName();
     modelName.chop(4);
@@ -746,13 +783,21 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelDescriptionStream << "  modelName=\"" << modelName << "\"\n";               //!< @todo What's the difference between name and identifier?
     modelDescriptionStream << "  modelIdentifier=\"" << modelName << "\"\n";
     modelDescriptionStream << "  guid=\"" << ID << "\"\n";
-    modelDescriptionStream << "  numberOfContinuousStates=\"" << outputVariables.size() << "\"\n";
+    modelDescriptionStream << "  numberOfContinuousStates=\"" << inputVariables.size() + outputVariables.size() << "\"\n";
     modelDescriptionStream << "  numberOfEventIndicators=\"0\">\n";
     modelDescriptionStream << "<ModelVariables>\n";
-    for(int i=0; i<outputVariables.size(); ++i)
+    int i, j;
+    for(i=0; i<inputVariables.size(); ++i)
     {
         QString refString = QString().setNum(i);
-        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(i) << "\" valueReference=\""+refString+"\" description=\"output variable\" causality=\"output\">\n";
+        modelDescriptionStream << "  <ScalarVariable name=\"" << inputVariables.at(i) << "\" valueReference=\""+refString+"\" description=\"input variable\" causality=\"input\">\n";
+        modelDescriptionStream << "     <Real start=\"0\" fixed=\"false\"/>\n";
+        modelDescriptionStream << "  </ScalarVariable>\n";
+    }
+    for(j=0; j<outputVariables.size(); ++j)
+    {
+        QString refString = QString().setNum(i+j);
+        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(j) << "\" valueReference=\""+refString+"\" description=\"output variable\" causality=\"output\">\n";
         modelDescriptionStream << "     <Real start=\"0\" fixed=\"false\"/>\n";
         modelDescriptionStream << "  </ScalarVariable>\n";
     }
@@ -770,29 +815,46 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelSourceStream << "    #define MODEL_IDENTIFIER " << modelName << "\n";
     modelSourceStream << "    #define MODEL_GUID \"" << ID << "\"\n\n";
     modelSourceStream << "    // Define model size\n";
-    modelSourceStream << "    #define NUMBER_OF_REALS " << outputVariables.size() << "\n";
+    modelSourceStream << "    #define NUMBER_OF_REALS " << inputVariables.size() + outputVariables.size() << "\n";
     modelSourceStream << "    #define NUMBER_OF_INTEGERS 0\n";
     modelSourceStream << "    #define NUMBER_OF_BOOLEANS 0\n";
     modelSourceStream << "    #define NUMBER_OF_STRINGS 0\n";
-    modelSourceStream << "    #define NUMBER_OF_STATES "<< outputVariables.size() << "\n";        //!< @todo Does number of variables equal number of states?
+    modelSourceStream << "    #define NUMBER_OF_STATES "<< inputVariables.size() + outputVariables.size() << "\n";        //!< @todo Does number of variables equal number of states?
     modelSourceStream << "    #define NUMBER_OF_EVENT_INDICATORS 0\n\n";
     modelSourceStream << "    // Include fmu header files, typedefs and macros\n";
     modelSourceStream << "    #include \"fmuTemplate.h\"\n";
     modelSourceStream << "    #include \"HopsanFMU.h\"\n\n";
     modelSourceStream << "    // Define all model variables and their value references\n";
-    for(int i=0; i<outputVariables.size(); ++i)
-        modelSourceStream << "    #define " << outputVariables.at(i) << "_ " << i << "\n\n";
+    for(i=0; i<inputVariables.size(); ++i)
+        modelSourceStream << "    #define " << inputVariables.at(i) << "_ " << i << "\n\n";
+    for(j=0; j<outputVariables.size(); ++j)
+        modelSourceStream << "    #define " << outputVariables.at(j) << "_ " << j+i << "\n\n";
     modelSourceStream << "    // Define state vector as vector of value references\n";
     modelSourceStream << "    #define STATES { ";
-    modelSourceStream << outputVariables.at(0) << "_";
-    for(int i=1; i<outputVariables.size(); ++i)
-        modelSourceStream << ", " << outputVariables.at(i) << "_";
+    i=0;
+    j=0;
+    if(!inputVariables.isEmpty())
+    {
+        modelSourceStream << inputVariables.at(0) << "_";
+        ++i;
+    }
+    else if(!outputVariables.isEmpty())
+    {
+        modelSourceStream << outputVariables.at(0) << "_";
+        ++j;
+    }
+    for(; i<inputVariables.size(); ++i)
+        modelSourceStream << ", " << inputVariables.at(i) << "_";
+    for(; j<outputVariables.size(); ++j)
+        modelSourceStream << ", " << outputVariables.at(j) << "_";
     modelSourceStream << " }\n\n";
     modelSourceStream << "    //Set start values\n";
     modelSourceStream << "    void setStartValues(ModelInstance *comp) \n";
     modelSourceStream << "    {\n";
-    for(int i=0; i<outputVariables.size(); ++i)
-        modelSourceStream << "        r(" << outputVariables.at(i) << "_) = 0;\n";        //!< Fix start value handling
+    for(i=0; i<inputVariables.size(); ++i)
+        modelSourceStream << "        r(" << inputVariables.at(i) << "_) = 0;\n";        //!< Fix start value handling
+    for(j=0; j<outputVariables.size(); ++j)
+        modelSourceStream << "        r(" << outputVariables.at(j) << "_) = 0;\n";        //!< Fix start value handling
     modelSourceStream << "    }\n\n";
     modelSourceStream << "    //Initialize\n";
     modelSourceStream << "    void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)\n";
@@ -801,14 +863,27 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
     modelSourceStream << "        eventInfo->nextEventTime       = 0.0005 + comp->time;\n";
     modelSourceStream << "    }\n\n";
-    modelSourceStream << "    //Return all variables of real type\n";
+    modelSourceStream << "    //Return variable of real type\n";
     modelSourceStream << "    fmiReal getReal(ModelInstance* comp, fmiValueReference vr)\n";
     modelSourceStream << "    {\n";
     modelSourceStream << "        switch (vr) \n";
     modelSourceStream << "       {\n";
-    for(int i=0; i<outputVariables.size(); ++i)
-        modelSourceStream << "           case " << outputVariables.at(i) << "_: return getVariable(\"" << outputComponents.at(i) << "\", \"" << outputPorts.at(i) << "\", " << outputDatatypes.at(i) << ");\n";
+    for(i=0; i<inputVariables.size(); ++i)
+        modelSourceStream << "           case " << inputVariables.at(i) << "_: return getVariable(\"" << inputComponents.at(i) << "\", \"" << inputPorts.at(i) << "\", " << inputDatatypes.at(i) << ");\n";
+    for(j=0; j<outputVariables.size(); ++j)
+        modelSourceStream << "           case " << outputVariables.at(j) << "_: return getVariable(\"" << outputComponents.at(j) << "\", \"" << outputPorts.at(j) << "\", " << outputDatatypes.at(j) << ");\n";
     modelSourceStream << "            default: return 1;\n";
+    modelSourceStream << "       }\n";
+    modelSourceStream << "    }\n\n";
+    modelSourceStream << "    void setReal(ModelInstance* comp, fmiValueReference vr, fmiReal value)\n";
+    modelSourceStream << "    {\n";
+    modelSourceStream << "        switch (vr) \n";
+    modelSourceStream << "       {\n";
+    for(i=0; i<inputVariables.size(); ++i)
+        modelSourceStream << "           case " << inputVariables.at(i) << "_: setVariable(\"" << inputComponents.at(i) << "\", \"" << inputPorts.at(i) << "\", " << inputDatatypes.at(i) << ", value);\n";
+    for(j=0; j<outputVariables.size(); ++j)
+        modelSourceStream << "           case " << outputVariables.at(j) << "_: setVariable(\"" << outputComponents.at(j) << "\", \"" << outputPorts.at(j) << "\", " << outputDatatypes.at(j) << ", value);\n";
+    modelSourceStream << "            default: return;\n";
     modelSourceStream << "       }\n";
     modelSourceStream << "    }\n\n";
     modelSourceStream << "    //Update at time event\n";
@@ -839,6 +914,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuHeaderStream << "DLLEXPORT void initializeHopsanWrapper(char* filename);\n";
     fmuHeaderStream << "DLLEXPORT void simulateOneStep();\n";
     fmuHeaderStream << "DLLEXPORT double getVariable(char* component, char* port, size_t idx);\n\n";
+    fmuHeaderStream << "DLLEXPORT void setVariable(char* component, char* port, size_t idx, double value);\n\n";
     fmuHeaderStream << "#ifdef WRAPPERCOMPILATION\n";
     fmuHeaderStream << "}\n";
     fmuHeaderStream << "#endif\n\n";
@@ -852,6 +928,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
 
     QTextStream fmuSourceStream(&fmuSourceFile);
     fmuSourceStream << "#include <iostream>\n";
+    fmuSourceStream << "#include <assert.h>\n";
     fmuSourceStream << "#include \"HopsanFMU.h\"\n";
     fmuSourceStream << "#include \"include/HopsanCore.h\"\n";
     fmuSourceStream << "#include \"include/HopsanEssentials.h\"\n";
@@ -886,6 +963,11 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuSourceStream << "double getVariable(char* component, char* port, size_t idx)\n";
     fmuSourceStream << "{\n";
     fmuSourceStream << "    return spCoreComponentSystem->getComponent(component)->getPort(port)->readNode(idx);\n";
+    fmuSourceStream << "}\n\n";
+    fmuSourceStream << "void setVariable(char* component, char* port, size_t idx, double value)\n";
+    fmuSourceStream << "{\n";
+    fmuSourceStream << "    assert(spCoreComponentSystem->getComponent(component)->getPort(port) != 0);\n";
+    fmuSourceStream << "    return spCoreComponentSystem->getComponent(component)->getPort(port)->writeNode(idx, value);\n";
     fmuSourceStream << "}\n";
     fmuSourceFile.close();
 
@@ -894,19 +976,21 @@ void GUISystem::createFMUSourceFilesFromDialog()
     progressBar.setValue(6);
 
 
+    //Write the compilation script file
     QTextStream clBatchStream(&clBatchFile);
-    //! @todo Ship Mingw with Hopsan, or check if it exists in system and inform user if it does not.
     if(gccCompiler)
     {
+        //! @todo Ship Mingw with Hopsan, or check if it exists in system and inform user if it does not.
         clBatchStream << "g++ -DWRAPPERCOMPILATION -c HopsanFMU.cpp\n";
         clBatchStream << "g++ -shared -o HopsanFMU.dll HopsanFMU.o -L./ -lHopsanCore";
     }
     else
     {
-    clBatchStream << "echo Compiling Visual Studio libraries...\n";
-    clBatchStream << "if defined VS90COMNTOOLS (call \"%VS90COMNTOOLS%\\vsvars32.bat\") else ^\n";
-    clBatchStream << "if defined VS80COMNTOOLS (call \"%VS80COMNTOOLS%\\vsvars32.bat\")\n";
-    clBatchStream << "cl -LD -nologo -DWIN32 -DWRAPPERCOMPILATION HopsanFMU.cpp /I \. /I \include\HopsanCore.h HopsanCore.lib\n";
+        //! @todo Check that Visual Studio is installed, and warn user if not
+        clBatchStream << "echo Compiling Visual Studio libraries...\n";
+        clBatchStream << "if defined VS90COMNTOOLS (call \"%VS90COMNTOOLS%\\vsvars32.bat\") else ^\n";
+        clBatchStream << "if defined VS80COMNTOOLS (call \"%VS80COMNTOOLS%\\vsvars32.bat\")\n";
+        clBatchStream << "cl -LD -nologo -DWIN32 -DWRAPPERCOMPILATION HopsanFMU.cpp /I \. /I \include\HopsanCore.h HopsanCore.lib\n";
     }
     clBatchFile.close();
 
