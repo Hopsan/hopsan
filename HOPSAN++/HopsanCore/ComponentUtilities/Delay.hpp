@@ -58,7 +58,7 @@ namespace hopsan {
             mSize = delaySteps+1;
 
             mpArray = new double[mSize];
-            //std:Cout << "DelayBuffer, size: " << delaySteps << ", mSize: " << mSize << ", init_value: " << init_value << std::endl;
+            std::cout << "DelayBuffer, size: " << delaySteps << ", mSize: " << mSize << ", init_value: " << init_value << std::endl;
 
             //! @todo use c++ vector to init, or some smarter init
             for (size_t i=0; i<mSize; ++i)

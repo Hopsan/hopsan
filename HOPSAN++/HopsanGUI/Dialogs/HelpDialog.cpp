@@ -48,7 +48,7 @@ HelpDialog::HelpDialog(MainWindow *parent)
     this->setWindowTitle("Hopsan User Guide");
 
     mpHelp = new QWebView(this);
-    //qDebug() << gExecPath << QString(HELPPATH) << "hopsan-user.html";
+    qDebug() << gExecPath << QString(HELPPATH) << "hopsan-user.html";
     mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "hopsan-user.html"));
 
     mpOkButton = new QPushButton(tr("&Close"));

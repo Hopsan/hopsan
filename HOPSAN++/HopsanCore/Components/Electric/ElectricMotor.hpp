@@ -104,7 +104,7 @@ private:
 public:
      static Component *Creator()
      {
-        //std:Cout << "running ElectricMotor creator" << std::endl;
+        std::cout << "running ElectricMotor creator" << std::endl;
         return new ElectricMotor("Motor");
      }
 

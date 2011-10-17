@@ -42,7 +42,7 @@ private:
 public:
      static Component *Creator()
      {
-        //std:Cout << "running ElectricGround creator" << std::endl;
+        std::cout << "running ElectricGround creator" << std::endl;
         return new ElectricGround("Ground");
      }
 

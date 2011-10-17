@@ -58,7 +58,7 @@ private:
 public:
      static Component *Creator()
      {
-        //std:Cout << "running ElectricCapacitance2 creator" << std::endl;
+        std::cout << "running ElectricCapacitance2 creator" << std::endl;
         return new ElectricCapacitance2("Capacitance2");
      }
 
@@ -116,8 +116,8 @@ mtimestep);
         double cel1r = cel1 + 2*iel1*Zcel1;
         double cel1rf= cel1r;
         double cel2rf = cel2r;
-        ////qDebug() << "cel1" << cel1 << "cel2" << cel2 << "cel1r" << cel1r << "cel2r" << cel2r << "Zcel1" << Zcel1 << "Zcel2" << Zcel2;
-        ////qDebug() << "cel1rf" << cel1rf << "cel2rf" << cel2rf;
+        //qDebug() << "cel1" << cel1 << "cel2" << cel2 << "cel1r" << cel1r << "cel2r" << cel2r << "Zcel1" << Zcel1 << "Zcel2" << Zcel2;
+        //qDebug() << "cel1rf" << cel1rf << "cel2rf" << cel2rf;
 
         //Initialize delays
         mDelaycel2rf.initialize(mNstep,cel2rf);

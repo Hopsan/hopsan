@@ -42,7 +42,7 @@ using namespace hopsan;
 ////vvv The function to be run at SEGFAULT, see below. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
 //void terminate (int /*param*/)
 //{
-//    //std:Cout << "Terminating program because of SEGFAULT, putz..." << std::endl;
+//    std::cout << "Terminating program because of SEGFAULT, putz..." << std::endl;
 //    exit(1);
 //    //Maybe have a global message tracker to write ino in on whats going on that could be used to ptint here?!
 //}

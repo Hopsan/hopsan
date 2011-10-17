@@ -320,7 +320,7 @@ void GUIObject::rotate90ccw(undoStatus undoSettings)
 //! @see moveRight()
 void GUIObject::moveUp()
 {
-    ////qDebug() << "Move up!";
+    //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
     mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
 }

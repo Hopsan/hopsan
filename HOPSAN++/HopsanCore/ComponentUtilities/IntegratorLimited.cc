@@ -92,7 +92,7 @@ double IntegratorLimited::update(double u)
     //Bilinear transform is used
 
     double y = mDelayY + mTimeStep/2.0*(u + mDelayU);
-    ////cout << "mMin: " << mMin << " mMax: " << mMax << " y: " << y << endl;
+    //cout << "mMin: " << mMin << " mMax: " << mMax << " y: " << y << endl;
     if (y > mMax)
     {
         mDelayY = mMax;

@@ -194,7 +194,7 @@ namespace hopsan {
         }
 */
             if ((mTime>tid1) && (mTime<tid2) && (debug > 0.5))
-                //std:Cout << this->getName() << ": " << std::endl << "mTime: " << mTime << "   p1: " << p1 << "   c1: " << c1 << "   Zc1: " << Zc1  << "   q1: " << q1 << "   p2: " << p2  << "   c2: " << c2 << "   Zc2: " << Zc2  << "   q2: " << q2 << "   x0: " << x0 << std::endl;
+                std::cout << this->getName() << ": " << std::endl << "mTime: " << mTime << "   p1: " << p1 << "   c1: " << c1 << "   Zc1: " << Zc1  << "   q1: " << q1 << "   p2: " << p2  << "   c2: " << c2 << "   Zc2: " << Zc2  << "   q2: " << q2 << "   x0: " << x0 << std::endl;
             //Write new values to nodes
 
             mpP1->writeNode(NodeHydraulic::PRESSURE, p1);

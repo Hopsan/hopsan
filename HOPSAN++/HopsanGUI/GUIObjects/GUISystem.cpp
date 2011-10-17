@@ -57,7 +57,7 @@ GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
 GUISystem::~GUISystem()
 {
     this->setUndoEnabled(false, true); //The last true means DONT ASK
-    ////qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";
     //First remove all contents
     this->clearContents();
 
@@ -91,17 +91,17 @@ void GUISystem::commonConstructorCode()
     if (this->mpParentContainerObject == 0)
     {
         //Create root system
-        //qDebug() << "creating ROOT access system";
+        qDebug() << "creating ROOT access system";
         mpCoreSystemAccess = new CoreSystemAccess();
         this->setName("RootSystem");
-        ////qDebug() << "the core root system name: " << mpCoreSystemAccess->getRootSystemName();
+        //qDebug() << "the core root system name: " << mpCoreSystemAccess->getRootSystemName();
     }
     else
     {
         //Create subsystem
-        //qDebug() << "creating subsystem and setting name in " << mpParentContainerObject->getCoreSystemAccessPtr()->getRootSystemName();
+        qDebug() << "creating subsystem and setting name in " << mpParentContainerObject->getCoreSystemAccessPtr()->getRootSystemName();
         mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName()));
-        //qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentContainerObject->getName();
+        qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentContainerObject->getName();
         mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentContainerObject->getCoreSystemAccessPtr());
     }
 
@@ -279,7 +279,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 //! @param[in] rDomElement The DOM Element to save to
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
-    ////qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
+    //qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
     QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
 
     //! @todo maybe use enums instead of strings
@@ -390,7 +390,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
         mpParentProjectTab->getGraphicsView()->setZoomFactor(zoom);
 
-        //qDebug() << "Center on " << x << ", " << y;
+        qDebug() << "Center on " << x << ", " << y;
         mpParentProjectTab->getGraphicsView()->centerOn(x, y);
         //! @todo load viewport and pose and stuff
 
@@ -961,7 +961,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuSourceStream << "    }\n";
     fmuSourceStream << "    else\n";
     fmuSourceStream << "    {\n";
-    fmuSourceStream << "        //cout << \"Simulation failed!\";\n";
+    fmuSourceStream << "        cout << \"Simulation failed!\";\n";
     fmuSourceStream << "    }\n";
     fmuSourceStream << "}\n\n";
     fmuSourceStream << "double getVariable(char* component, char* port, size_t idx)\n";
@@ -1129,7 +1129,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
 
     p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
     p.waitForFinished();
-    //qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/";
+    qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";
 
 
     progressBar.setLabelText("Cleaning up");
@@ -1268,7 +1268,7 @@ void GUISystem::createSimulinkSourceFiles()
     nTotalOutputsString.setNum(nTotalOutputs);
 
 
-    //qDebug() << "Selected path: " << savePath;
+    qDebug() << "Selected path: " << savePath;
     QDir saveDir;
     saveDir.setPath(savePath);    
 

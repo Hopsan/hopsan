@@ -47,7 +47,7 @@ private:
 public:
      static Component *Creator()
      {
-        //std:Cout << "running ElectricUsource creator" << std::endl;
+        std::cout << "running ElectricUsource creator" << std::endl;
         return new ElectricUsource("Usource");
      }
 
