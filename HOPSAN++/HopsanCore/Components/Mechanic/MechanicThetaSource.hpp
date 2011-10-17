@@ -59,7 +59,7 @@ private:
 public:
      static Component *Creator()
      {
-        std:://cout << "running MechanicThetaSource creator" << std::endl;
+        std::cout << "running MechanicThetaSource creator" << std::endl;
         return new MechanicThetaSource("ThetaSource");
      }
 

@@ -187,7 +187,7 @@ void GUIModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
     tWH.setX(fabs(tWH.x()));
     tWH.setY(fabs(tWH.y()));
 
-    ////qDebug() <<  " width: " << this->boundingRect().width() << "height: " << this->boundingRect().height()  << " lWH: " << localWH << " tWH: " << tWH;
+    //qDebug() <<  " width: " << this->boundingRect().width() << "height: " << this->boundingRect().height()  << " lWH: " << localWH << " tWH: " << tWH;
     //Now we transforme the name text posistions
     //pt0 = top, pt1 = bottom, pts relative loacal center on object
     pt0.rx() = -mpNameText->boundingRect().width()/2.0;
@@ -196,20 +196,20 @@ void GUIModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
     pt1.rx() = -mpNameText->boundingRect().width()/2.0;
     pt1.ry() = tWH.y()/2.0 + mTextOffset;
 
-    //    //qDebug() << "pt0: " << pt0;
-    //    //qDebug() << "pt1: " << pt1;
+    //    qDebug() << "pt0: " << pt0;
+    //    qDebug() << "pt1: " << pt1;
     pt0 = transf * pt0;
     pt1 =  transf * pt1;
-    //    //qDebug() << "tpt0: " << pt0;
-    //    //qDebug() << "tpt1: " << pt1;
+    //    qDebug() << "tpt0: " << pt0;
+    //    qDebug() << "tpt1: " << pt1;
 
     //Store transformed positions relative current local origo
     rPts.append(localCenter+pt0);
     rPts.append(localCenter+pt1);
 
-//    //qDebug() << "rPts0: " << rPts[0];
-//    //qDebug() << "rPts1: " << rPts[1];
-//    //qDebug() << "\n";
+//    qDebug() << "rPts0: " << rPts[0];
+//    qDebug() << "rPts1: " << rPts[1];
+//    qDebug() << "\n";
 }
 
 
@@ -547,7 +547,7 @@ bool GUIModelObject::isLossesDisplayVisible()
 //! @brief Returns a pointer to the port with the specified name
 GUIPort *GUIModelObject::getPort(QString name)
 {
-    ////qDebug() << "Trying to find GUIPort with name: " << name;
+    //qDebug() << "Trying to find GUIPort with name: " << name;
     //! @todo use a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
@@ -555,9 +555,9 @@ GUIPort *GUIModelObject::getPort(QString name)
         {
             return mPortListPtrs[i];
         }
-        ////qDebug() << mPortListPtrs[i]->getName() << " != " << name;
+        //qDebug() << mPortListPtrs[i]->getName() << " != " << name;
     }
-    //qDebug() << "Did NOT find GUIPort with name: " << name << " in: " << this->getName() << " returning NULL ptr";
+    qDebug() << "Did NOT find GUIPort with name: " << name << " in: " << this->getName() << " returning NULL ptr";
 
     return 0;
 }
@@ -567,7 +567,7 @@ GUIPort *GUIModelObject::getPort(QString name)
 //! @param name Name of the parameter to return value from
 QString GUIModelObject::getParameterValue(QString /*name*/)
 {
-    ////cout << "This function should only be available in GUIComponent" << endl;
+    //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
     return 0;
 }
@@ -577,7 +577,7 @@ QString GUIModelObject::getParameterValue(QString /*name*/)
 ////! @param name Name of the parameter to return value from
 //QString GUIModelObject::getParameterValueTxt(QString /*name*/)
 //{
-//    ////cout << "This function should only be available in GUIComponent" << endl;
+//    //cout << "This function should only be available in GUIComponent" << endl;
 //    assert(false);
 //    return "";
 //}
@@ -586,7 +586,7 @@ QString GUIModelObject::getParameterValue(QString /*name*/)
 //! @brief Virtual function that returns a vector with the names of the parameteres in the object
 QVector<QString> GUIModelObject::getParameterNames()
 {
-    ////cout << "This function should only be available in GUIComponent" << endl;
+    //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
     return QVector<QString>();
 }
@@ -597,7 +597,7 @@ QVector<QString> GUIModelObject::getParameterNames()
 //! @param valueTxt System parameter
 bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, bool /*force*/)
 {
-    ////cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
+    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
 }
 
@@ -607,7 +607,7 @@ bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, b
 //! @param variable Name of the parameter to return value from
 QString GUIModelObject::getStartValueTxt(QString portName, QString variable)
 {
-    ////cout << "This function should only be available in GUIComponent" << endl;
+    //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
     return "";
 }
@@ -618,7 +618,7 @@ QString GUIModelObject::getStartValueTxt(QString portName, QString variable)
 //! @param sysParName System parameter name
 bool GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QString /*sysParName*/)
 {
-    ////cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
+    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
     return false;
 }
@@ -665,7 +665,7 @@ void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QGraphicsItem::contextMenuEvent(event);
 
-    //qDebug() << "contextMenuEvent()";
+    qDebug() << "contextMenuEvent()";
 
     if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
         return;
@@ -720,7 +720,7 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mousePressEvent(event);
 
-    //qDebug() << "mousePressEvent(), button = " << event->button();
+    qDebug() << "mousePressEvent(), button = " << event->button();
 
     if(event->button() == Qt::RightButton)
     {
@@ -750,11 +750,11 @@ void GUIModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseMoveEvent(event);
 
-    //qDebug() << "mouseMoveEvent(), button = " << event->button();
+    qDebug() << "mouseMoveEvent(), button = " << event->button();
 
     if(mpParentContainerObject != 0 && mDragCopying)
     {
-        //qDebug() << "Drag copying";
+        qDebug() << "Drag copying";
         mpParentContainerObject->deselectAll();
         this->select();
         mpParentContainerObject->copySelected(mpParentContainerObject->getDragCopyStackPtr());
@@ -778,7 +778,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     mDragCopying = false;
 
-    //qDebug() << "mouseReleaseEvent()";
+    qDebug() << "mouseReleaseEvent()";
 
     QList<GUIModelObject *>::iterator it;
 
@@ -1136,7 +1136,7 @@ QString GUIModelObject::getTypeName()
 
 void GUIModelObject::deleteMe()
 {
-    ////qDebug() << "deleteMe in " << this->getName();
+    //qDebug() << "deleteMe in " << this->getName();
     mpParentContainerObject->deleteGUIModelObject(this->getName());
 }
 

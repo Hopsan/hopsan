@@ -57,27 +57,27 @@ namespace hopsan {
         //! @brief Used to register creator functions
         _Key registerCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
         {
-            //std:://cout << "Registering: " << idKey << std::endl;
-            //std:://cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
+            //std::cout << "Registering: " << idKey << std::endl;
+            //std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
             std::pair<typename FactoryMapT::iterator, bool> rc;
             rc = mFactoryMap.insert(FactoryPairT(idKey, classCreator));
             if (!rc.second)
             {
-                //std:://cout << "Warning! You are trying to register a Key value that already exist. This registration will be ignored, Key: " << idKey << std::endl;
+                //std::cout << "Warning! You are trying to register a Key value that already exist. This registration will be ignored, Key: " << idKey << std::endl;
                 mRegStatusVector.push_back(std::pair<_Key, int>(idKey, ALLREADYREGISTERED));
             }
             else
             {
                 mRegStatusVector.push_back(std::pair<_Key, int>(idKey, REGISTEREDOK));
             }
-            //std:://cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
+            //std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
             return idKey;
         }
 
         //! @brief Creates an instance based on the key using creator function (if registered)
         _Base* createInstance(_Key idKey)
         {
-            //std:://cout << "Create: Size: " << mFactoryMap.size() << std::endl;
+            //std::cout << "Create: Size: " << mFactoryMap.size() << std::endl;
             typename FactoryMapT::iterator it = mFactoryMap.find(idKey);
             if (it != mFactoryMap.end())
             {
@@ -87,7 +87,7 @@ namespace hopsan {
                 }
             }
             mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NOTREGISTERED));
-            //std:://cout << "Warning key: " << idKey << " not found!" << std::endl;
+            //std::cout << "Warning key: " << idKey << " not found!" << std::endl;
             return NULL;
         }
 
@@ -111,13 +111,13 @@ namespace hopsan {
             rc = mFactoryMap.erase(idKey);
             if (rc > 0)
             {
-                //std:://cout << "Sucessfully unregistered: " << idKey << std::endl;
+                //std::cout << "Sucessfully unregistered: " << idKey << std::endl;
                 //! @todo Do we need a status message here to ??
             }
             else
             {
                 mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NOTREGISTERED));
-                //std:://cout << "Failed to unregister: " << idKey << std::endl;
+                //std::cout << "Failed to unregister: " << idKey << std::endl;
             }
         }
 

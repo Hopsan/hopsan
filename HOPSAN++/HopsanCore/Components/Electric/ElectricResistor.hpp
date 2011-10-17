@@ -66,7 +66,7 @@ private:
 public:
      static Component *Creator()
      {
-        std:://cout << "running ElectricResistor creator" << std::endl;
+        std::cout << "running ElectricResistor creator" << std::endl;
         return new ElectricResistor("Resistor");
      }
 

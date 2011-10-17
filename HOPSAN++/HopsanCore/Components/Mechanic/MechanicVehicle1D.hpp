@@ -96,7 +96,7 @@ private:
 public:
      static Component *Creator()
      {
-        std:://cout << "running MechanicVehicle1D creator" << std::endl;
+        std::cout << "running MechanicVehicle1D creator" << std::endl;
         return new MechanicVehicle1D("Vehicle1D");
      }
 

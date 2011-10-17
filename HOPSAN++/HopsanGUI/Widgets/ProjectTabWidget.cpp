@@ -108,7 +108,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
 ProjectTab::~ProjectTab()
 {
-    ////qDebug() << "projectTab destructor";
+    //qDebug() << "projectTab destructor";
     //First make sure that we go to the top level system, we dont want to be inside a subsystem while it is beeing deleted
     this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
     //Now delete the root system, all subcontents will be automatically removed by the mpSystem destructor
@@ -120,7 +120,7 @@ ProjectTab::~ProjectTab()
 //! e.g. a component added or a connection has changed.
 void ProjectTab::hasChanged()
 {
-    ////qDebug() << "hasChanged()";
+    //qDebug() << "hasChanged()";
     if (mIsSaved)
     {
         QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
@@ -216,7 +216,7 @@ bool ProjectTab::simulate()
         return false;
     }
 
-    //qDebug() << "Initializing simulation: " << startTime << nSteps << finishTime;
+    qDebug() << "Initializing simulation: " << startTime << nSteps << finishTime;
 
         //Ask core to initialize simulation
     InitializationThread actualInitialization(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, nSamples, this);
@@ -682,7 +682,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     }
 
     //Disconnect signals
-    //std:://cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
+    //std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
     //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
     disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(resetZoom()));
     disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomIn()));
@@ -760,7 +760,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     QFile file(modelFileName);   //Create a QFile object
     if(!file.exists())
     {
-        //qDebug() << "File not found: " + file.fileName();
+        qDebug() << "File not found: " + file.fileName();
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("File not found: " + file.fileName());
         return;
     }

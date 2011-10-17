@@ -148,8 +148,8 @@ QString GUIModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
     QFileInfo iconUserFileInfo(mUserIconAppearance.mAbsolutePath);
     QFileInfo iconISOFileInfo(mIsoIconAppearance.mAbsolutePath);
 
-    ////qDebug() << "Type: " << mTypeName << " iconUser: " << iconUserFileInfo.absoluteFilePath();
-    ////qDebug() << "Type: " << mTypeName << " iconISO: " << iconISOFileInfo.absoluteFilePath();
+    //qDebug() << "Type: " << mTypeName << " iconUser: " << iconUserFileInfo.absoluteFilePath();
+    //qDebug() << "Type: " << mTypeName << " iconISO: " << iconISOFileInfo.absoluteFilePath();
 
     // We want USERICON and have USERICON
     if ( (gfxType == USERGRAPHICS) && iconUserFileInfo.isFile() )
@@ -307,7 +307,7 @@ void GUIModelObjectAppearance::erasePortAppearance(const QString portName)
     }
     else
     {
-        //qDebug() << "GUIModelObjectAppearance, ERROR: specified portappearance could not be found in the map: " << portName;
+        qDebug() << "GUIModelObjectAppearance, ERROR: specified portappearance could not be found in the map: " << portName;
     }
 }
 
@@ -480,7 +480,7 @@ void GUIModelObjectAppearance::saveToXMLFile(QString filename)
     QFile xml(filename);
     if (!xml.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        //qDebug() << "Failed to open file for writing: " << xml.fileName();
+        qDebug() << "Failed to open file for writing: " << xml.fileName();
         return;
     }
     QTextStream out(&xml);
