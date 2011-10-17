@@ -105,7 +105,7 @@ QString relativePath(QFileInfo pathtochange, QDir basedir)
 {
     if (!pathtochange.isAbsolute())
     {
-        qDebug() << "pathtochange is not absolute in relativePath utility function, need to handle this nicer";
+        //qDebug() << "pathtochange is not absolute in relativePath utility function, need to handle this nicer";
         return "";
     }
     return basedir.relativeFilePath(pathtochange.absoluteFilePath());
@@ -221,7 +221,7 @@ QString parseVariableDescription(QString input)
     replaceWord(input,  "Theta",        QObject::trUtf8("Θ"));
     replaceWord(input,  "Lambda",       QObject::trUtf8("Λ"));
     replaceWord(input,  "Xi",           QObject::trUtf8("Ξ"));
-    replaceWord(input,  "Pi",           QObject::trUtf8("Π"));
+    replaceWord(input,  "Pi",           QObject::trUtf8("� "));
     replaceWord(input,  "Sigma",        QObject::trUtf8("Σ"));
     replaceWord(input,  "Phi",          QObject::trUtf8("Φ"));
     replaceWord(input,  "Psi",          QObject::trUtf8("Ψ"));
@@ -345,7 +345,7 @@ void FFT(QVector< complex<double> > &data)
 {
     unsigned long n = data.size();
 
-    qDebug() << "FFT of vector with size " << n;
+    //qDebug() << "FFT of vector with size " << n;
 
     unsigned long mmax, m, j, istep, i;
     double wtemp, wr, wpr, wpi, wi, theta;

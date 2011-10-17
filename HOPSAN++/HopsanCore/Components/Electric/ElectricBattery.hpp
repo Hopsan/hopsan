@@ -71,7 +71,7 @@ private:
 public:
      static Component *Creator()
      {
-        std::cout << "running ElectricBattery creator" << std::endl;
+        std:://cout << "running ElectricBattery creator" << std::endl;
         return new ElectricBattery("Battery");
      }
 

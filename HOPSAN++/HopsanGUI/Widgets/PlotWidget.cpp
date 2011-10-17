@@ -100,7 +100,7 @@ QString PlotParameterItem::getDataUnit()
 PlotParameterTree::PlotParameterTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
-    qDebug() << "Creating PlotParameterTree!";
+    //qDebug() << "Creating PlotParameterTree!";
 
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
@@ -331,14 +331,14 @@ void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
 //! @brief Defines the right-click menu in the parameter tree
 void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 {
-    qDebug() << "contextMenuEvent()";
+    //qDebug() << "contextMenuEvent()";
 
     PlotParameterItem *item;
 
     //! @todo Dumb check that assumes component tree items to be bold and parameter items to be not bold
     if(currentItem() != 0 && !currentItem()->font(0).bold())
     {
-        qDebug() << "currentItem() is ok!";
+        //qDebug() << "currentItem() is ok!";
 
         item = dynamic_cast<PlotParameterItem *>(currentItem());
         QStringList parameterDescription;
@@ -405,7 +405,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 PlotWidget::PlotWidget(MainWindow *parent)
         : QWidget(parent)
 {
-    qDebug() << "Creating PlotWidget!";
+    //qDebug() << "Creating PlotWidget!";
 
     //mpParentMainWindow = parent;
 

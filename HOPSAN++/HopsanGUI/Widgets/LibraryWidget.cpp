@@ -306,7 +306,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 
     mpList->clear();
 
-    qDebug() << "1";
+    //qDebug() << "1";
 
     //Add components
     for(int i=0; i<tree->mComponentPtrs.size(); ++i)        //Add own components
@@ -318,7 +318,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
         tempItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         mpList->addItem(tempItem);
     }
-    qDebug() << "2";
+    //qDebug() << "2";
     for(int j=0; j<tree->mChildNodesPtrs.size(); ++j)       //Add components from child libraries too
     {
         for(int i=0; i<tree->mChildNodesPtrs.at(j)->mComponentPtrs.size(); ++i)
@@ -331,7 +331,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
             mpList->addItem(tempItem);
         }
     }
-    qDebug() << "3";
+    //qDebug() << "3";
 
     connect(mpList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(initializeDrag(QListWidgetItem*)), Qt::UniqueConnection);
 }
@@ -874,7 +874,7 @@ void LibraryWidget::importFmu()
     fmuComponentHppStream << "            h = LoadLibraryA(dllPath.c_str());\n";
     fmuComponentHppStream << "            if (!h)\n";
     fmuComponentHppStream << "            {\n";
-    //fmuComponentHppStream << "                qDebug() << QString(\"error: Could not load dll\\n\");\n";
+    //fmuComponentHppStream << "                //qDebug() << QString(\"error: Could not load dll\\n\");\n";
     fmuComponentHppStream << "                success = false; // failure\n";
     fmuComponentHppStream << "                return success;\n";
     fmuComponentHppStream << "            }\n";
@@ -1256,7 +1256,7 @@ void LibraryWidget::importFmu()
 //! @todo Why do we need this?
 void LibraryWidget::loadExternalLibrary(QString libDir)
 {
-    qDebug() << "LOADING Library dir " << libDir;
+    //qDebug() << "LOADING Library dir " << libDir;
     loadLibrary(libDir, true);
 }
 
@@ -1266,7 +1266,7 @@ void LibraryWidget::loadExternalLibrary(QString libDir)
 //! @param pParentTree Current contents tree node
 void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree)
 {
-    qDebug() << "loadLibraryFolder() " << libDir;
+    //qDebug() << "loadLibraryFolder() " << libDir;
 
     QDir libDirObject(libDir);
     if(!libDirObject.exists() && gConfig.hasUserLib(libDir))
@@ -1289,7 +1289,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     for (int i = 0; i < libList.size(); ++i)
     {
         QString filename = libDir + "/" + libList.at(i);
-        qDebug() << "Trying to load: " << filename << " in Core";
+        //qDebug() << "Trying to load: " << filename << " in Core";
         if(mpCoreAccess->loadComponent(filename))
         {
             success=true;
@@ -1305,7 +1305,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
 
 
         // Load XML files and recursively load subfolder
-    qDebug() << "Adding tree entry: " << libName;
+    //qDebug() << "Adding tree entry: " << libName;
     LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
     pTree->mLibDir = libDir;
     libName = pTree->mName;
@@ -1483,7 +1483,7 @@ void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
     mpComponentNameField->setText(QString());
     gpMainWindow->hideHelpPopupMessage();
 
-    //qDebug() << "You are hovering me!";
+    ////qDebug() << "You are hovering me!";
 
     QWidget::mouseMoveEvent(event);
 }

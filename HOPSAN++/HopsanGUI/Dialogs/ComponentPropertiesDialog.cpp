@@ -173,7 +173,7 @@ void ComponentPropertiesDialog::createEditStuff()
         mvStartValueLayout.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
     }
 
-    //qDebug() << "after parnames";
+    ////qDebug() << "after parnames";
 
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpOkButton = new QPushButton(tr("&Ok"), this);
@@ -277,7 +277,7 @@ void ComponentPropertiesDialog::createEditStuff()
 void ComponentPropertiesDialog::okPressed()
 {
     mpGUIComponent->getParentContainerObject()->renameGUIModelObject(mpGUIComponent->getName(), mpNameEdit->text());
-    //qDebug() << mpNameEdit->text();
+    ////qDebug() << mpNameEdit->text();
 
     setParametersAndStartValues();
 }
@@ -289,7 +289,7 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
 {
     if(setValuesToSystem(mvParameterLayout) && setValuesToSystem(mvStartValueLayout))
     {
-        std::cout << "Parameters and start values updated." << std::endl;
+        std:://cout << "Parameters and start values updated." << std::endl;
         this->close();
     }
 }

@@ -57,7 +57,7 @@ TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget
 
 void TypeComboBox::typeHasChanged(QString /*newType*/)
 {
-    qDebug() << "aksJLKJAFLKJDFLkjsdlfkj   ";
+    //qDebug() << "aksJLKJAFLKJDFLkjsdlfkj   ";
     if(mRow > -1)
     {
         mParent->setCurrentCell(mRow, mColumn);
@@ -146,7 +146,7 @@ void SystemParameterTableWidget::keyPressEvent(QKeyEvent *event)
     QTableWidget::keyPressEvent(event);
     if(event->key() == Qt::Key_Delete)
     {
-        qDebug() << "Delete current System Parameter Widget Items";
+        //qDebug() << "Delete current System Parameter Widget Items";
         removeSelectedParameters();
     }
 }
@@ -295,7 +295,7 @@ void SystemParameterTableWidget::removeSelectedParameters()
 
         for(int j=0; j<parametersToRemove.size(); ++j)
         {
-            qDebug() << "Removing: " << parametersToRemove[j];
+            //qDebug() << "Removing: " << parametersToRemove[j];
             gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
         }
     }
@@ -353,7 +353,7 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 void SystemParameterTableWidget::addParameter()
 {
-    qDebug() << mpTypeBox->currentText();
+    //qDebug() << mpTypeBox->currentText();
     setParameter(mpNameBox->text(), mpValueBox->text(), "", "", mpTypeBox->currentText());
     gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
 }

@@ -83,7 +83,7 @@ namespace hopsan {
                 if(WAVEVARIABLE==i)
                 {
                     pNode->setData(i, mDataVector[PRESSURE]);
-                    std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
+                    std:://cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
                 }
                 //! todo Maybe also write CHARIMP?
             }
@@ -123,7 +123,7 @@ namespace hopsan {
                 if(WAVEVARIABLE==i)
                 {
                     pNode->setData(i, mDataVector[PRESSURE]);
-                    std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
+                    std:://cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
                 }
                 //! todo Maybe also write CHARIMP?
             }

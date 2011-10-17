@@ -83,7 +83,7 @@ private:
 public:
      static Component *Creator()
      {
-        std::cout << "running ElectricIcontroller creator" << std::endl;
+        std:://cout << "running ElectricIcontroller creator" << std::endl;
         return new ElectricIcontroller("Icontroller");
      }
 

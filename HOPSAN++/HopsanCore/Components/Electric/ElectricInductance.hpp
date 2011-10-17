@@ -67,7 +67,7 @@ private:
 public:
      static Component *Creator()
      {
-        std::cout << "running ElectricInductance creator" << std::endl;
+        std:://cout << "running ElectricInductance creator" << std::endl;
         return new ElectricInductance("Inductance");
      }
 
