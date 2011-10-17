@@ -95,7 +95,7 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
 //! @brief Destructor for container object
 GUIContainerObject::~GUIContainerObject()
 {
-    qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
+    //qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
 //! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
@@ -164,7 +164,7 @@ GUIContainerObject::ContainerEdgeT GUIContainerObject::findPortEdge(QPointF cent
 {
     //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
     QPointF diff = pt-center;
-    //qDebug() << "=============The Diff: " << diff;
+    ////qDebug() << "=============The Diff: " << diff;
 
     //If only one sysport default to left side
     //! @todo Do this smarter later and take into account port orientation, or position relative all other components, need to extend this function a bit for that though
@@ -175,7 +175,7 @@ GUIContainerObject::ContainerEdgeT GUIContainerObject::findPortEdge(QPointF cent
 
     //Determine on what edge the port should be placed based on the angle from the center point
     qreal angle = normRad(qAtan2(diff.x(), diff.y()));
-    //qDebug() << "angle: " << rad2deg(angle);
+    ////qDebug() << "angle: " << rad2deg(angle);
     if (fabs(angle) <= M_PI_4)
     {
         return RIGHTEDGE;
@@ -219,7 +219,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     }
     //! @todo Find out if it is possible to ask the scene or view for this information instead of calulating it ourselves
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
-    //qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
+    ////qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
 
     QMap<qreal, GUIPort*> leftEdge, rightEdge, topEdge, bottomEdge;
     for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
@@ -230,7 +230,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
             //            this->getContainedScenePtr()->addLine(line); //debug-grej
 
             ContainerEdgeT edge = findPortEdge(center, moit.value()->getCenterPos());
-            //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
+            ////qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
             //Make sure we dont screw up in the code and forget to rename or create external ports on internal rename or create
             assert(this->getPort(moit.value()->getName()) != 0);
@@ -389,7 +389,7 @@ void GUIContainerObject::createExternalPort(QString portName)
         GUIPort *pPort = this->getPort(it.key());
         if ( pPort == 0 )
         {
-            qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
+            //qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
 
             //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
             QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
@@ -398,7 +398,7 @@ void GUIContainerObject::createExternalPort(QString portName)
 
             qreal x = it.value().x;
             qreal y = it.value().y;
-            qDebug() << "x,y: " << x << " " << y;
+            //qDebug() << "x,y: " << x << " " << y;
 
             if (this->type() == GUIGROUP)
             {
@@ -418,13 +418,13 @@ void GUIContainerObject::createExternalPort(QString portName)
             //The external port already seems to exist, lets update it incase something has changed
             //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
             pPort->refreshPortGraphics();
-            qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
+            //qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
         }
     }
     else
     {
         //This should never happen
-        qDebug() << "Could not find portappearance info for port: " << portName << " in: " << this->getName();
+        //qDebug() << "Could not find portappearance info for port: " << portName << " in: " << this->getName();
         assert(false);
     }
 }
@@ -435,7 +435,7 @@ void GUIContainerObject::createExternalPort(QString portName)
 //! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
 void GUIContainerObject::removeExternalPort(QString portName)
 {
-    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
+    ////qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
     QList<GUIPort*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
@@ -448,7 +448,7 @@ void GUIContainerObject::removeExternalPort(QString portName)
             break;
         }
     }
-    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
+    ////qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
 }
 
 
@@ -600,9 +600,9 @@ GUITextBoxWidget *GUIContainerObject::addTextBoxWidget(QPointF position, undoSta
 {
     GUITextBoxWidget *pTempTextBoxWidget;
     pTempTextBoxWidget = new GUITextBoxWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
-    qDebug() << "Creating widget, index = " << pTempTextBoxWidget->getWidgetIndex();
+    //qDebug() << "Creating widget, index = " << pTempTextBoxWidget->getWidgetIndex();
     mWidgetMap.insert(mHighestWidgetIndex, pTempTextBoxWidget);
-    qDebug() << "Inserting widget in map, index = " << mHighestWidgetIndex;
+    //qDebug() << "Inserting widget in map, index = " << mHighestWidgetIndex;
     ++mHighestWidgetIndex;
     if(undoSettings == UNDO)
     {
@@ -636,7 +636,7 @@ void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSetting
 //! @param objectName is the name of the componenet to delete
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
-    //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
+    ////qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
     this->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
 
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
@@ -654,7 +654,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
         //Register removal of model object in undo stack
         this->mpUndoStack->registerDeletedObject(it.value());
         //emit componentChanged(); //!< @todo Why do we need to emit this signal after regestering in undostack
-        //qDebug() << "Emitting!";
+        ////qDebug() << "Emitting!";
     }
 
 
@@ -673,7 +673,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     }
     else
     {
-        //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
+        ////qDebug() << "In delete GUIObject: could not find object with name " << objectName;
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
     emit checkMessages();
@@ -697,32 +697,32 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
                 //Erase old record
             mGUIModelObjectMap.erase(it);
                 //Set new name, first in core then in gui object
-            //qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
+            ////qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
             switch (obj_ptr->type())
             {
             case GUICOMPONENT:
-                //qDebug() << "GUICOMPONENT";
+                ////qDebug() << "GUICOMPONENT";
             case GUISYSTEM :
-                //qDebug() << "GUISYSTEM";
+                ////qDebug() << "GUISYSTEM";
                 modNewName = this->getCoreSystemAccessPtr()->renameSubComponent(oldName, newName);
                 break;
             case GUICONTAINERPORT : //!< @todo What will happen when we try to rename a groupport
-                //qDebug() << "GUISYSTEMPORT";
+                ////qDebug() << "GUISYSTEMPORT";
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
                 renameExternalPort(oldName, modNewName);
                 break;
             //default :
-                //qDebug() << "default";
+                ////qDebug() << "default";
                     //No Core rename action
             }
-            //qDebug() << "modNewName: " << modNewName;
+            ////qDebug() << "modNewName: " << modNewName;
             obj_ptr->setDisplayName(modNewName);
                 //Re insert
             mGUIModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
         }
         else
         {
-            //qDebug() << "Old name: " << oldName << " not found";
+            ////qDebug() << "Old name: " << oldName << " not found";
             //! @todo Maybe we should give the user a message?
         }
 
@@ -832,7 +832,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
     //Add the internal connectors
     for (int i=0; i<internalConnectors.size(); ++i)
     {
-        qDebug() << "___Adding internalConnection";
+        //qDebug() << "___Adding internalConnection";
         //Make previous parent container forget about the connector
         internalConnectors[i]->getParentContainer()->forgetSubConnector(internalConnectors[i]);
 
@@ -845,7 +845,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
     //Add the transit connectors and create group ports
     for (int i=0; i<transitConnectors.size(); ++i)
     {
-        qDebug() << "___Adding transitConnection";
+        //qDebug() << "___Adding transitConnection";
         QPointF portpos;
         bool endPortIsTransitPort = false;
         if (rModelObjectList.contains(transitConnectors[i]->getStartPort()->getGuiModelObject()))
@@ -1193,7 +1193,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
     QList<GUIModelObject *>::iterator it;
     for(it = mSelectedGUIModelObjectsList.begin(); it!=mSelectedGUIModelObjectsList.end(); ++it)
     {
-        qDebug() << "Copying " << (*it)->getName();
+        //qDebug() << "Copying " << (*it)->getName();
         (*it)->saveToDomElement(*copyRoot);
     }
 
@@ -1254,7 +1254,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QCursor cursor;
     QPointF newCenter = mpParentProjectTab->getGraphicsView()->mapToScene(mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos()));
 
-    qDebug() << "Pasting at " << newCenter;
+    //qDebug() << "Pasting at " << newCenter;
 
     double xOffset = newCenter.x() - oldCenter.x();
     double yOffset = newCenter.y() - oldCenter.y();
@@ -1324,7 +1324,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         bool sucess = loadConnector(tempConnectorElement, this, UNDO);
         if (sucess)
         {
-            //qDebug() << ",,,,,,,,,: " << tempConnectorElement.attribute("startcomponent") << " " << tempConnectorElement.attribute("startport") << " " << tempConnectorElement.attribute("endcomponent") << " " << tempConnectorElement.attribute("endport");
+            ////qDebug() << ",,,,,,,,,: " << tempConnectorElement.attribute("startcomponent") << " " << tempConnectorElement.attribute("startport") << " " << tempConnectorElement.attribute("endcomponent") << " " << tempConnectorElement.attribute("endport");
             GUIConnector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
                                                               tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
 
@@ -1435,8 +1435,8 @@ QPointF GUIContainerObject::getCenterPointFromSelection()
 void GUIContainerObject::groupSelected(QPointF pt)
 {
     gpMainWindow->mpMessageWidget->printGUIWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
-    qDebug() << "pos where we want to create group: " << pt;
-    qDebug() << "In group selected";
+    //qDebug() << "pos where we want to create group: " << pt;
+    //qDebug() << "In group selected";
 
     //Copy the selected objects, the lists will be cleared by addGuiobject and we need to keep this information
     QList<GUIModelObject*> modelObjects = mSelectedGUIModelObjectsList;
@@ -1594,7 +1594,7 @@ void GUIContainerObject::redo()
 //! @see redo()
 void GUIContainerObject::clearUndo()
 {
-    qDebug() << "before mUndoStack->clear(); in GUIContainerObject: " << this->getName();
+    //qDebug() << "before mUndoStack->clear(); in GUIContainerObject: " << this->getName();
     mpUndoStack->clear();
 }
 
@@ -2029,7 +2029,7 @@ void GUIContainerObject::clearContents()
     GUIModelObjectMapT::iterator mit;
     QMap<size_t, GUIWidget *>::iterator wit;
 
-    qDebug() << "Clearing model objects in " << getName();
+    //qDebug() << "Clearing model objects in " << getName();
     //We cant use for loop over iterators as the maps are modified on each delete (and iterators invalidated)
     mit=mGUIModelObjectMap.begin();
     while (mit!=mGUIModelObjectMap.end())
@@ -2039,7 +2039,7 @@ void GUIContainerObject::clearContents()
         mit=mGUIModelObjectMap.begin();
     }
 
-    qDebug() << "Clearing widget objects in " << getName();
+    //qDebug() << "Clearing widget objects in " << getName();
     wit=mWidgetMap.begin();
     while (wit!=mWidgetMap.end())
     {
@@ -2191,7 +2191,7 @@ void GUIContainerObject::collectPlotData()
 //                    timeVectorObtained = true;
 //                }
 
-                //qDebug() << "Inserting: " << moit.value()->getName() << ", " << (*pit)->getName() << ", " << (*nit);
+                ////qDebug() << "Inserting: " << moit.value()->getName() << ", " << (*pit)->getName() << ", " << (*nit);
             }
             portMap.insert((*pit)->getPortName(), variableMap);
         }
@@ -2446,8 +2446,8 @@ QVector<double> GUIContainerObject::getTimeVector(int generation, QString compon
 //! @param dataName Name of physical quantity of the variable
 QVector<double> GUIContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
 {
-    //qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
-    //qDebug() << "Size of data: " << mPlotData.size();
+    ////qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
+    ////qDebug() << "Size of data: " << mPlotData.size();
     return mPlotData.at(generation).find(componentName).value().find(portName).value().find(dataName).value().second;
 }
 

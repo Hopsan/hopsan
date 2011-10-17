@@ -40,7 +40,7 @@ std::string findUniqueName(MapType &rMap, std::string name)
             if (foundpos+1 < name.size())
             {
                 unsigned char nr = name.at(foundpos+1);
-                //cout << "nr after _: " << nr << endl;
+                ////cout << "nr after _: " << nr << endl;
                 //Check the ascii code for the charachter
                 if ((nr >= 48) && (nr <= 57))
                 {
@@ -49,7 +49,7 @@ std::string findUniqueName(MapType &rMap, std::string name)
                 }
             }
         }
-        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+        ////cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
 
         //add new suffix
         std::stringstream suffix;
@@ -57,9 +57,9 @@ std::string findUniqueName(MapType &rMap, std::string name)
         name.append("_");
         name.append(suffix.str());
         ++ctr;
-        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+        ////cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
-    //cout << name << endl;
+    ////cout << name << endl;
 
     return name;
 }
@@ -84,7 +84,7 @@ std::string findUniqueName(MapType &rMap, std::string name)
 //            if (foundpos+1 < name.size())
 //            {
 //                unsigned char nr = name.at(foundpos+1);
-//                //cout << "nr after _: " << nr << endl;
+//                ////cout << "nr after _: " << nr << endl;
 //                //Check the ascii code for the charachter
 //                if ((nr >= 48) && (nr <= 57))
 //                {
@@ -93,7 +93,7 @@ std::string findUniqueName(MapType &rMap, std::string name)
 //                }
 //            }
 //        }
-//        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+//        ////cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
 
 //        //add new suffix
 //        stringstream suffix;
@@ -101,9 +101,9 @@ std::string findUniqueName(MapType &rMap, std::string name)
 //        name.append("_");
 //        name.append(suffix.str());
 //        ++ctr;
-//        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+//        ////cout << "ctr: " << ctr << " appended tempname: " << name << endl;
 //    }
-//    //cout << name << endl;
+//    ////cout << name << endl;
 //    return name;
 //}
 
@@ -127,7 +127,7 @@ std::string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &
             if (foundpos+1 < name.size())
             {
                 unsigned char nr = name.at(foundpos+1);
-                //cout << "nr after _: " << nr << endl;
+                ////cout << "nr after _: " << nr << endl;
                 //Check the ascii code for the charachter
                 if ((nr >= 48) && (nr <= 57))
                 {
@@ -136,7 +136,7 @@ std::string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &
                 }
             }
         }
-        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+        ////cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
 
         //add new suffix
         std::stringstream suffix;
@@ -144,9 +144,9 @@ std::string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &
         name.append("_");
         name.append(suffix.str());
         ++ctr;
-        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+        ////cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
-    //cout << name << endl;
+    ////cout << name << endl;
     return name;
 }
 

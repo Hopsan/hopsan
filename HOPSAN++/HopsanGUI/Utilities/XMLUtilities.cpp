@@ -426,6 +426,6 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 //! @brief Handles compatibility issues for xml data loaded from configuration file
 void verifyConfigurationCompatibility(QDomElement &rConfigElement)
 {
-    qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(HMF_HOPSANGUIVERSIONTAG);
+    //qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(HMF_HOPSANGUIVERSIONTAG);
     //Nothing to do yet
 }

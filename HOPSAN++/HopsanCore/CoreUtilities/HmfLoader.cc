@@ -71,7 +71,7 @@ HmfLoader::HmfLoader()
 //! @todo Update this code
 ComponentSystem* HmfLoader::loadModel(string filename, double &rStartTime, double &rStopTime)
 {
-    cout << "Loading from file: " << filename << endl;
+    //cout << "Loading from file: " << filename << endl;
     //! @todo do not crash if file is missing, send error message
     rapidxml::file<> hmfFile(filename.c_str());
 
@@ -97,7 +97,7 @@ ComponentSystem* HmfLoader::loadModel(string filename, double &rStartTime, doubl
     }
     else
     {
-        cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
+        //cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         assert(false);
         return 0;
     }
@@ -158,9 +158,9 @@ void HmfLoader::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSys
 
     Component *pComp = HopsanEssentials::getInstance()->CreateComponent(typeName);
     pComp->setName(displayName);
-    //cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
+    ////cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
     pSystem->addComponent(pComp);
-    //cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
+    ////cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
 
     //Load parameters
     rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");

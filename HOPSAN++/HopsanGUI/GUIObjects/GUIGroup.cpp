@@ -80,7 +80,7 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 GUIGroup::GUIGroup(QPointF position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer)
     :   GUIContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, pParentContainer, pParentContainer)
 {
-    qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
+    //qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
     //Set the hmf save tag name
     mHmfTagName = HMF_GROUPTAG;
 
@@ -94,16 +94,16 @@ GUIGroup::GUIGroup(QPointF position, qreal rotation, const GUIModelObjectAppeara
 
 GUIGroup::~GUIGroup()
 {
-    qDebug() << ",,,,,,,,,GuiGroupDestructor";
+    //qDebug() << ",,,,,,,,,GuiGroupDestructor";
     //First remove all contents
     this->clearContents();
     //Now unregister my name in core (instead of delete in core as I am not a core obejct)
     this->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
-//    qDebug() << "GUIGroup destructor";
+//    //qDebug() << "GUIGroup destructor";
 //    GUISystem::GUIModelObjectMapT::iterator itm;
 //    for(itm = mpParentContainerObject->mGUIModelObjectMap.begin(); itm != mpParentContainerObject->mGUIModelObjectMap.end(); ++itm)
 //    {
-//        qDebug() << "GUIObjectMap: " << itm.key();
+//        //qDebug() << "GUIObjectMap: " << itm.key();
 //    }
 
 
@@ -118,13 +118,13 @@ GUIGroup::~GUIGroup()
 
 //        if(pGUIComponent)
 //        {
-//            qDebug() << "Add this to parent scene: " << pGUIComponent->getName();
+//            //qDebug() << "Add this to parent scene: " << pGUIComponent->getName();
 //            //mpParentScene->addItem(pGUIComponent);
 //            this->mpParentContainerObject->getContainedScenePtr()->addItem(pGUIComponent);
 //        }
 //        //mpParentScene->addItem((*it));
 //    }
-//    qDebug() << "mpParentSystem->deleteGUIModelObject(this->getName()), getName:" << this->getName();
+//    //qDebug() << "mpParentSystem->deleteGUIModelObject(this->getName()), getName:" << this->getName();
 //    //delete getContainedScenePtr();
 }
 
@@ -212,7 +212,7 @@ GUIGroup::~GUIGroup()
 ////    //Draw a cross in the center of the scene (just for debugging)
 //////    getContainedScenePtr()->addLine(-10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), 10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
 //////    getContainedScenePtr()->addLine(10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), -10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
-//////    qDebug() << "Center: " << sceneCenterPointF << getContainedScenePtr()->sceneRect();
+//////    //qDebug() << "Center: " << sceneCenterPointF << getContainedScenePtr()->sceneRect();
 
 ////    //Adjusts the size of the group component icon
 ////    double scale = 1.0;//.75*min(getContainedScenePtr()->sceneRect().width()/this->boundingRect().width(),getContainedScenePtr()->sceneRect().height()/this->boundingRect().height());
@@ -287,7 +287,7 @@ GUIGroup::~GUIGroup()
 ////        double x, y;
 ////        calcSubsystemPortPosition(b, h, vinkel, x, y);
 
-////        qDebug() << portName << " vinkel: " << tan(vinkel) << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
+////        //qDebug() << portName << " vinkel: " << tan(vinkel) << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
 ////        //Make ports on the group system icon
 ////        GUIPortAppearance portAppearance;
 ////        portAppearance.selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
@@ -375,7 +375,7 @@ void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //    PortAppearanceMapT::iterator i;
 //    for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
 //    {
-//        qDebug() << "DEBUG: " << i.key();
+//        //qDebug() << "DEBUG: " << i.key();
 //        qreal x = i.value().x;
 //        qreal y = i.value().y;
 

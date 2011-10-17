@@ -88,7 +88,7 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         return;
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
-    //std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
+    ////std:Cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
     //If this is a sink component that has plot data, plot it instead of showing the dialog
     if(this->getTypeName() == "SignalSink" && this->getPort("in")->isConnected() && this->mpParentContainerObject->getAllPlotData().size() > 0)   //Not very nice code, but a nice feature...
