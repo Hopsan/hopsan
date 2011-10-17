@@ -539,18 +539,37 @@ void LibraryWidget::importFmu()
     }
 
 
-
-    //Copy hmf file to bin directory
-    //! @todo Temporary solution to move hmf file to bin directory
-    QFile hmfFile;
-    hmfFile.setFileName(fmuDir.path() + "/" + fmuName + ".hmf");
-    if(hmfFile.exists())
+    //Move all resource files to FMU directory
+    QDir resDir = QDir::cleanPath(fmuDir.path() + "/resources");
+    QFileInfoList resFiles = resDir.entryInfoList(QDir::Files);
+    for(int i=0; i<resFiles.size(); ++i)
     {
-        hmfFile.copy(gExecPath + fmuName + ".hmf");
-        hmfFile.remove();
-        hmfFile.setFileName(gExecPath + fmuName + ".hmf");
-        gpMainWindow->mpMessageWidget->printGUIInfoMessage("Copying " + hmfFile.fileName() + " to " + gExecPath + fmuName + ".hmf");
+        QFile tempFile;
+        tempFile.setFileName(resFiles.at(i).filePath());
+        tempFile.copy(fmuDir.path() + "/" + resFiles.at(i).fileName());
+        gpMainWindow->mpMessageWidget->printGUIInfoMessage("Copying " + tempFile.fileName() + " to " + fmuDir.path() + "/" + resFiles.at(i).fileName());
+        tempFile.remove();
     }
+
+
+    QStringList filters;
+    filters << "*.hmf";
+    fmuDir.setNameFilters(filters);
+    QStringList hmfList = fmuDir.entryList();
+    for (int i = 0; i < hmfList.size(); ++i)
+    {
+        QFile hmfFile;
+        hmfFile.setFileName(fmuDir.path() + "/" + hmfList.at(i));
+        if(hmfFile.exists())
+        {
+            hmfFile.copy(gExecPath + hmfList.at(i));
+            hmfFile.remove();
+            hmfFile.setFileName(gExecPath + hmfList.at(i));
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage("Copying " + hmfFile.fileName() + " to " + gExecPath + hmfList.at(i));
+        }
+    }
+    fmuDir.setFilter(QDir::NoFilter);
+
 
 
     progressBar.setValue(2.5);
@@ -800,11 +819,13 @@ void LibraryWidget::importFmu()
         numStr.setNum(i);
         if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
         {
-
-            fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            value = (*mpND_in"+numStr+");\n";
-            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
+            fmuComponentHppStream << "            {\n";
+            fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
+            fmuComponentHppStream << "                vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
+            fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentHppStream << "            }\n";
         }
         ++i;
         varElement = varElement.nextSiblingElement("ScalarVariable");

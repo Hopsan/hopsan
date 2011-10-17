@@ -800,6 +800,7 @@ void Configuration::setAntiAliasing(bool value)
 //! @param value Path to the new library
 void Configuration::addUserLib(QString value)
 {
+    value.replace("\\","/");
     if(!mUserLibs.contains(value))
     {
         this->mUserLibs.append(value);
@@ -812,6 +813,7 @@ void Configuration::addUserLib(QString value)
 //! @param value Path to the library that is to be removed
 void Configuration::removeUserLib(QString value)
 {
+    value.replace("\\","/");
     mUserLibs.removeAll(value);
     saveToXml();
 }
@@ -821,8 +823,8 @@ void Configuration::removeUserLib(QString value)
 //! @param value Path to the library
 bool Configuration::hasUserLib(QString value)
 {
+    value.replace("\\","/");
     return mUserLibs.contains(value);
-    saveToXml();
 }
 
 

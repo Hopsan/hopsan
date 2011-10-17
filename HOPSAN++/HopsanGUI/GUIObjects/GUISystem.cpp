@@ -656,9 +656,10 @@ void GUISystem::createFMUSourceFilesFromDialog()
 
     QDir saveDir;
     saveDir.setPath(savePath);
-
+    saveDir.setFilter(QDir::NoDotAndDotDot);
     if(!saveDir.entryList().isEmpty())
     {
+        qDebug() << saveDir.entryList();
         QMessageBox msgBox;
         msgBox.setWindowIcon(gpMainWindow->windowIcon());
         msgBox.setText(QString("Folder is not empty!"));
@@ -672,6 +673,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
             return;
         }
     }
+    saveDir.setFilter(QDir::NoFilter);
 
 
     QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
@@ -734,6 +736,8 @@ void GUISystem::createFMUSourceFilesFromDialog()
     QFile modelSourceFile;
     QString modelName = getModelFileInfo().fileName();
     modelName.chop(4);
+    QString realModelName = modelName;          //Actual model name (used for hmf file)
+    modelName.replace(" ", "_");        //Replace white spaces with underscore, to avoid problems
     modelSourceFile.setFileName(savePath + "/" + modelName + ".c");
     if(!modelSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -859,7 +863,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     modelSourceStream << "    //Initialize\n";
     modelSourceStream << "    void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)\n";
     modelSourceStream << "    {\n";
-    modelSourceStream << "        initializeHopsanWrapper(\""+modelName+".hmf\");\n";
+    modelSourceStream << "        initializeHopsanWrapper(\""+realModelName+".hmf\");\n";
     modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
     modelSourceStream << "        eventInfo->nextEventTime       = 0.0005 + comp->time;\n";
     modelSourceStream << "    }\n\n";
@@ -1027,7 +1031,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     copyIncludeFilesToDir(savePath);
 
 
-    progressBar.setLabelText("Writing "+modelName+".hmf");
+    progressBar.setLabelText("Writing "+realModelName+".hmf");
     progressBar.setValue(9);
 
 
@@ -1097,6 +1101,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
 
 
     saveDir.mkpath("fmu/binaries/win32");
+    saveDir.mkpath("fmu/resources");
     QFile modelDllFile(savePath + "/" + modelName + ".dll");
     modelDllFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".dll");
     QFile modelLibFile(savePath + "/" + modelName + ".lib");
@@ -1110,8 +1115,8 @@ void GUISystem::createFMUSourceFilesFromDialog()
     hopsanFMUdllFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.dll");
     QFile hopsanFMUlibFile(savePath + "/HopsanFMU.lib");
     hopsanFMUlibFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.lib");
-    QFile modelFile(savePath + "/" + modelName + ".hmf");
-    modelFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".hmf");
+    QFile modelFile(savePath + "/" + realModelName + ".hmf");
+    modelFile.copy(savePath + "/fmu/resources/" + realModelName + ".hmf");
     modelDescriptionFile.copy(savePath + "/fmu/ModelDescription.xml");
 
     QString fmuFileName = savePath + "/" + modelName + ".fmu";
@@ -1122,9 +1127,9 @@ void GUISystem::createFMUSourceFilesFromDialog()
 
 
 
-    p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/");
+    p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
     p.waitForFinished();
-    qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/";
+    qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";
 
 
     progressBar.setLabelText("Cleaning up");
