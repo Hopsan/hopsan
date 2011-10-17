@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.2">
-    <modelobject typename="MyWickedVolume" displayname="MyMagicVolume">
+    <modelobject typename="MyExampleVolume" displayname="MyExampleVolume">
         <icons>
             <icon type="user" iconrotation="ON" path="svg/volume_user.svg" scale="1.0"/>
         </icons>

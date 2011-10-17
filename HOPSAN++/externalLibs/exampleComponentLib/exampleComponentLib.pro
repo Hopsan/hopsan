@@ -3,22 +3,22 @@
 # -------------------------------------------------
 
 # QT -= core gui, means that we should not link the default qt libs into the component
-# Template = lib, means that we want to build a library (dll)
+# Template = lib, means that we want to build a library (.dll or .so)
 QT -= core gui
 TEMPLATE = lib
 
-# The name of the compiled dll, (.dll will be added automatically)
+# The name of the compiled lib, (.dll or .so will be added automatically)
 # Change this to the name of YOUR lib
-TARGET = exampleLib
+TARGET = exampleComponentLib
 
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build
 DESTDIR = $${PWD}/
 
-# A location to search for the Hopsan include files, by specifying the path here, you dont need to do this everywhere in all of your component hpp files
+# The location to search for the Hopsan include files, by specifying the path here, you dont need to do this everywhere in all of your component .hpp files
 # You can also add additional paths for eg. your own Utility functions
 INCLUDEPATH *= $${PWD}/../../HopsanCore
 
-# The location of the HopsanCore dll file, needed to link against when compiling your library
+# The location of the HopsanCore .dll or .so file, needed to link against when compiling your library
 LIBS *= -L$${PWD}/../../bin
 
 # Special options for deug and release mode
@@ -36,10 +36,10 @@ CONFIG(release, debug|release) {
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    exampleLib.cc
+    exampleComponentLib.cc
 
 HEADERS += \
-    component_code/MyWickedOrifice.hpp \
-    component_code/MyWickedVolume.hpp
+    component_code/MyExampleVolume.hpp \
+    component_code/MyExampleOrifice.hpp
 
 OTHER_FILES +=

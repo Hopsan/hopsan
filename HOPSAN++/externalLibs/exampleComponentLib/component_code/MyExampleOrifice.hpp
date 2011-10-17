@@ -13,46 +13,56 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-#ifndef MYWICKEDORIFICE_H
-#define MYWICKEDORIFICE_H
+// Header guard to avoid inclusion of the same code twice
+#ifndef MYEXAMPLEORIFICE_H
+#define MYEXAMPLEORIFICE_H
 
+// Include the necessary header files from Hopsan
 #include "ComponentEssentials.h"
 
+// Put your component class inside the hopsan namespace (optional)
 namespace hopsan {
 
-    //!
-    //! @brief A hydraulic laminar orifice component
-    //! @ingroup HydraulicComponents
-    //!
-    class MyWickedOrifice : public ComponentQ
+    // Define a new Class that inherits from ComponentC, ComponentQ or ComponentS
+    // This depends on the type of component you want to create, a C, Q or signal component
+    class MyExampleOrifice : public ComponentQ
     {
     private:
+        // Private member variables
         double mKc;
         Port *mpP1, *mpP2;
 
     public:
+        // The creator function that is registered when a component lib is loaded into Hopsan
         static Component *Creator()
         {
-            return new MyWickedOrifice();
+            return new MyExampleOrifice();
         }
 
-        MyWickedOrifice() : ComponentQ()
+        // The Constructor function that is run immediately when a new object of the class is created
+        // Use this function to set initial member variable values, and to register Ports, Parameters and Startvalues
+        MyExampleOrifice() : ComponentQ()
         {
+            // Set initial member variable values
             mKc = 1.0e-11;
 
+            // Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
+            // Register component parameters that can be changed by the user
             registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
         }
 
-
+        // The initialize function is called ONCE before simulation begins
+        // In this function you can read or write from/to nodes
         void initialize()
         {
             //Nothing to initialize
         }
 
-
+        // The simulateOneTimestep() function is called ONCE every time step
+        // This function contains the actual component simulation equations
         void simulateOneTimestep()
         {
             //Get variable values from nodes
@@ -73,7 +83,13 @@ namespace hopsan {
             mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
             mpP2->writeNode(NodeHydraulic::FLOW, q2);
         }
+
+        // The finalize function is called ONCE after simulation ends
+        // Use this function to clean up after yourself (if needed)
+        //void finalize()
+        //{
+        //}
     };
 }
 
-#endif // MYWICKEDORIFICE_H
+#endif // MYEXAMPLEORIFICE_H
