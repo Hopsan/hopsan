@@ -113,6 +113,7 @@ Component* HopsanEssentials::CreateComponent(const string &rString)
     if (pComp)
     {
         pComp->setTypeName(rString);
+        pComp->setName(rString);
     }
     else
     {

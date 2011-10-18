@@ -170,12 +170,11 @@ class ComponentSystem; //Forward declaration
     protected:
         //==========Protected member functions==========
         //Constructor - Destructor
-        Component(std::string name="Component");
+        Component();
 
         //Virtual functions
         virtual void simulateOneTimestep();
         virtual void finalize();
-        //virtual void secretFinalize();
         virtual void setTimestep(const double timestep);
 
         //Stop a running simulation
@@ -232,26 +231,39 @@ class ComponentSystem; //Forward declaration
     class DLLIMPORTEXPORT ComponentSignal :public Component
     {
     protected:
-        ComponentSignal(std::string name="");
+#ifdef __GNUC__
+        ComponentSignal(std::string name)  __attribute__ ((deprecated));
+#else
+        ComponentSignal(std::string name); //No warning for msvc
+#endif
+        ComponentSignal();
     };
 
 
     class DLLIMPORTEXPORT ComponentC :public Component
     {
     protected:
-        ComponentC(std::string name="");
+#ifdef __GNUC__
+        ComponentC(std::string name)  __attribute__ ((deprecated));
+#else
+        ComponentC(std::string name); //No warning for msvc
+#endif
+        ComponentC();
     };
 
 
     class DLLIMPORTEXPORT ComponentQ :public Component
     {
     protected:
-        ComponentQ(std::string name="");
+#ifdef __GNUC__
+        ComponentQ(std::string name) __attribute__ ((deprecated));
+#else
+        ComponentQ(std::string name); //No warning for msvc
+#endif
+        ComponentQ();
     };
 
     typedef ClassFactory<std::string, Component> ComponentFactory;
-    //extern ComponentFactory gCoreComponentFactory;
-    //DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr();
 }
 
 #endif // COMPONENT_H_INCLUDED

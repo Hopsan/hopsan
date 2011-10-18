@@ -69,7 +69,7 @@ namespace hopsan {
     public:
         //==========Public functions==========
         //Constructor - Destructor
-        ComponentSystem(std::string name="ComponentSystem");
+        ComponentSystem();
 
         //Set the subsystem CQS type
         void setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet=false);
@@ -175,7 +175,6 @@ namespace hopsan {
         std::vector<Component*> mComponentUndefinedptrs;
 
         std::vector<Node*> mSubNodePtrs;
-        //NodeFactory mpNodeFactory;
 
         bool volatile mStop;
 //Finns i Component        Parameters *mSystemParameters;

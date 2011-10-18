@@ -45,9 +45,10 @@ using namespace hopsan;
 
 
 //Constructor
-ComponentSystem::ComponentSystem(string name) : Component(name)
+ComponentSystem::ComponentSystem() : Component()
 {
     mTypeName = "ComponentSystem";
+    mName = mTypeName; //Make sure intial name is same as typename
     mIsComponentSystem = true;
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;

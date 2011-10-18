@@ -562,9 +562,12 @@ bool Parameters::checkParameters(std::string &errParName)
 
 
 //Constructor
-Component::Component(string name)
+Component::Component()
 {
-    mName = name;
+    //!< @todo dont know if these should be commented or not, actually waste of time setting the strings they will be overwritten very soon. Could be good for debugging though.
+    //mTypeName = "NoTypeNameSet";
+    //mName = "NoNameSet";
+
     mTimestep = 0.001;
 
     mIsComponentSystem = false;
@@ -659,18 +662,6 @@ void Component::finalize()
     //cout << "Warning! You should implement your own finalize() method" << endl;
     //assert(false);
 }
-
-////! @brief A finilize method that contains stuff that the user should not need to care about
-////! @todo OK I admit, the name is kind of bad
-//void Component::secretFinalize()
-//{
-//    //delete any created dummy node data variables created and then clear the pointer storage vector
-//    for (size_t i=0; i<mDummyNDptrs.size(); ++i)
-//    {
-//        delete mDummyNDptrs[i];
-//    }
-//    mDummyNDptrs.clear();
-//}
 
 
 //! @brief Set the desired component name
@@ -1194,12 +1185,6 @@ size_t Component::getModelHierarchyDepth()
 }
 
 
-//constructor ComponentSignal
-ComponentSignal::ComponentSignal(string name) : Component(name)
-{
-    mTypeCQS = Component::S;
-}
-
 Component::~Component()
 {
     //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted component.
@@ -1243,14 +1228,38 @@ void Component::loadStartValuesFromSimulation()
 
 
 //constructor ComponentC
-ComponentC::ComponentC(string name) : Component(name)
+ComponentC::ComponentC(string name) : Component()
+{
+    mTypeCQS = Component::C;
+}
+
+//constructor ComponentC
+ComponentC::ComponentC() : Component()
 {
     mTypeCQS = Component::C;
 }
 
 
 //Constructor ComponentQ
-ComponentQ::ComponentQ(string name) : Component(name)
+ComponentQ::ComponentQ(string name) : Component()
 {
     mTypeCQS = Component::Q;
+}
+
+//Constructor ComponentQ
+ComponentQ::ComponentQ() : Component()
+{
+    mTypeCQS = Component::Q;
+}
+
+//constructor ComponentSignal
+ComponentSignal::ComponentSignal(string name) : Component()
+{
+    mTypeCQS = Component::S;
+}
+
+//constructor ComponentSignal
+ComponentSignal::ComponentSignal() : Component()
+{
+    mTypeCQS = Component::S;
 }
