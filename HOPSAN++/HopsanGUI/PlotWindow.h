@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -74,10 +74,6 @@ signals:
 
 public slots:
     void addPlotTab(QString requestedName=QString());
-    void updateLists();
-    void updatePortList();
-    void updateVariableList();
-    void addPlotCurveFromBoxes();
     void close();
     void updatePalette();
     void createPlotWindowFromTab();
@@ -112,8 +108,8 @@ private:
     QAction *mpBackgroundColorButton;
     QAction *mpNewWindowFromTabButton;
     QAction *mpResetXVectorButton;
-    QAction *mpShowListsButton;
-    QAction *mpShowCurvesButton;
+    QAction *mpShowCurveInfoButton;
+    QAction *mpShowPlotWidgetButton;
     QAction *mpBodePlotButton;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
@@ -125,12 +121,6 @@ private:
     QAction *mpExportPngAction;
 
     PlotTabWidget *mpPlotTabs;
-    QLabel *mpComponentsLabel;
-    QLabel *mpPortsLabel;
-    QLabel *mpVariablesLabel;
-    QListWidget *mpComponentList;
-    QListWidget *mpPortList;
-    QListWidget *mpVariableList;
 
     QMap<QRadioButton *, PlotCurve *> mBodeInputButtonToCurveMap;
     QMap<QRadioButton *, PlotCurve *> mBodeOutputButtonToCurveMap;
@@ -151,20 +141,9 @@ private:
     QCheckBox *mpLogScaleCheckBox;
     QCheckBox *mpPowerSpectrumCheckBox;
     PlotCurve *mpFrequencyAnalysisCurve;
-};
 
-
-class VariableListWidget : public QListWidget
-{
-    Q_OBJECT
-public:
-    VariableListWidget(PlotWindow *parentPlotWindow, QWidget *parent=0);
-
-protected:
-    virtual void mouseMoveEvent(QMouseEvent *event);
-
-private:
-    PlotWindow *mpParentPlotWindow;
+    QWidget *mpPlotInfoWidget;
+    QVBoxLayout *mpPlotInfoLayout;
 };
 
 
@@ -180,6 +159,7 @@ public:
     PlotCurve *mpParentPlotCurve;
 
 private:
+    QLabel *mpTitle;
     QToolButton *mpColorBlob;
     QToolButton *mpPreviousButton;
     QToolButton *mpNextButton;
@@ -334,7 +314,7 @@ public:
     QString getCurveName();
     HopsanPlotCurveType getCurveType();
     QwtPlotCurve *getCurvePtr();
-    QDockWidget *getPlotInfoDockWidget();
+    //QDockWidget *getPlotInfoDockWidget();
     QString getComponentName();
     QString getPortName();
     QString getDataName();
@@ -383,7 +363,6 @@ private:
     QColor mLineColor;
     int mLineWidth;
     int mAxisY;
-    QDockWidget *mpPlotInfoDockWidget;
     PlotInfoBox *mpPlotInfoBox;
     bool mAutoUpdate;
     double mScaleX;

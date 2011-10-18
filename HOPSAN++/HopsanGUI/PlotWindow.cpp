@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -165,19 +165,19 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpBackgroundColorButton->setShortcut(QKeySequence("c"));
     connect(mpBackgroundColorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpShowListsButton = new QAction(this);
-    mpShowListsButton->setCheckable(true);
-    mpShowListsButton->setChecked(true);
-    mpShowListsButton->setToolTip("Toggle Parameter Lists");
-    mpShowListsButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
-    connect(mpShowListsButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpShowCurveInfoButton = new QAction(this);
+    mpShowCurveInfoButton->setCheckable(true);
+    mpShowCurveInfoButton->setChecked(true);
+    mpShowCurveInfoButton->setToolTip("Toggle Parameter Lists");
+    mpShowCurveInfoButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
+    connect(mpShowCurveInfoButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpShowCurvesButton = new QAction(this);
-    mpShowCurvesButton->setCheckable(true);
-    mpShowCurvesButton->setChecked(true);
-    mpShowCurvesButton->setToolTip("Toggle Curve Controls");
-    mpShowCurvesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurves.png"));
-    connect(mpShowCurvesButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpShowPlotWidgetButton = new QAction(this);
+    mpShowPlotWidgetButton->setCheckable(true);
+    mpShowPlotWidgetButton->setChecked(true);
+    mpShowPlotWidgetButton->setToolTip("Toggle Curve Controls");
+    mpShowPlotWidgetButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurves.png"));
+    connect(mpShowPlotWidgetButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpNewWindowFromTabButton = new QAction(this);
     mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
@@ -208,8 +208,8 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpToolBar->addAction(mpResetXVectorButton);
     mpToolBar->addAction(mpBodePlotButton);
     mpToolBar->addSeparator();
-    mpToolBar->addAction(mpShowListsButton);
-    mpToolBar->addAction(mpShowCurvesButton);
+    mpToolBar->addAction(mpShowCurveInfoButton);
+    mpToolBar->addAction(mpShowPlotWidgetButton);
     mpToolBar->addAction(mpNewWindowFromTabButton);
     mpToolBar->setMouseTracking(true);
 
@@ -217,28 +217,6 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
     mpPlotTabs = new PlotTabWidget(this);
     this->addPlotTab();
-    mpComponentsLabel = new QLabel(tr("Components"));
-    QFont boldFont = mpComponentsLabel->font();
-    boldFont.setBold(true);
-    mpComponentsLabel->setFont(boldFont);
-    mpComponentsLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    mpPortsLabel = new QLabel(tr("Ports"));
-    mpPortsLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    mpPortsLabel->setFont(boldFont);
-    mpVariablesLabel = new QLabel(tr("Variables"));
-    mpVariablesLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    mpVariablesLabel->setFont(boldFont);
-
-    mpComponentList = new QListWidget(this);
-    mpComponentList->setMaximumHeight(100);
-    mpComponentList->setPalette(QPalette(QColor("black"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("dimgray"), QColor("white")));
-
-    mpPortList = new QListWidget(this);
-    mpPortList->setMaximumHeight(100);
-    mpPortList->setPalette(QPalette(QColor("black"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("dimgray"), QColor("white")));
-
-    mpVariableList = new VariableListWidget(this);
-    mpVariableList->setMaximumHeight(100);
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
@@ -266,64 +244,53 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpHelpPopupTimer = new QTimer(this);
     connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
 
+    mpPlotInfoLayout = new QVBoxLayout();
+    mpPlotInfoWidget = new QWidget();
+    mpPlotInfoWidget->setLayout(mpPlotInfoLayout);
+    mpPlotInfoWidget->hide();
+
     this->setDockOptions(QMainWindow::AllowNestedDocks);
 
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpPlotTabs,0,0,4,4);
-    mpLayout->addWidget(mpComponentsLabel,4,0);
-    mpLayout->addWidget(mpPortsLabel,4,1);
-    mpLayout->addWidget(mpVariablesLabel,4,2);
-    mpLayout->addWidget(mpComponentList,5,0);
-    mpLayout->addWidget(mpPortList,5,1);
-    mpLayout->addWidget(mpVariableList,5,2);
+    mpLayout->addWidget(mpPlotTabs,0,0,2,4);
     mpLayout->addWidget(mpHelpPopup, 0,0,1,4);
+    mpLayout->addWidget(mpPlotInfoWidget, 2, 0, 1, 4);
 
     //Set the correct position of the help popup message in the central widget
     mpLayout->setColumnMinimumWidth(0,5);
     mpLayout->setColumnStretch(0,0);
-    mpLayout->setColumnStretch(1,0);
-    mpLayout->setColumnStretch(2,0);
-    mpLayout->setColumnStretch(3,1);
+    mpLayout->setColumnStretch(1,1);
     mpLayout->setRowMinimumHeight(0,25);
     mpLayout->setRowStretch(0,0);
-    mpLayout->setRowStretch(1,0);
-    mpLayout->setRowStretch(2,1);
-    mpLayout->setRowStretch(3,0);
-    mpLayout->setRowStretch(4,0);
+    mpLayout->setRowStretch(1,1);
+    mpLayout->setRowStretch(2,0);
 
     QWidget *pCentralWidget = new QWidget(this);
     pCentralWidget->setLayout(mpLayout);
     this->setCentralWidget(pCentralWidget);
 
-    // Populate boxes
-    updateLists();
+    PlotWidget *pLocalPlotWidget = new PlotWidget(gpMainWindow);
+    QDockWidget *pPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
+    pPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, pPlotWidgetDock);
+    pPlotWidgetDock->setWidget(pLocalPlotWidget);
+    pLocalPlotWidget->mpPlotParameterTree->updateList();
 
         //Establish signal and slots connections
-    connect(mpNewPlotButton,                                        SIGNAL(triggered()),                                            this,               SLOT(addPlotTab()));
-    connect(mpLoadFromXmlButton,                                    SIGNAL(triggered()),                                            this,               SLOT(loadFromXml()));
-    connect(mpSaveButton,                                           SIGNAL(triggered()),                                            this,               SLOT(saveToXml()));
-    connect(mpBodePlotButton,                                       SIGNAL(triggered()),                                            this,               SLOT(createBodePlot()));
-    connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpComponentList,    SLOT(setVisible(bool)));
-    connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpPortList,         SLOT(setVisible(bool)));
-    connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpVariableList,     SLOT(setVisible(bool)));
-    connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpComponentsLabel,  SLOT(setVisible(bool)));
-    connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpPortsLabel,       SLOT(setVisible(bool)));
-    connect(mpShowListsButton,                                      SIGNAL(toggled(bool)),                                          mpVariablesLabel,   SLOT(setVisible(bool)));
-    connect(mpNewWindowFromTabButton,                               SIGNAL(triggered()),                                            this,               SLOT(createPlotWindowFromTab()));
-    connect(mpComponentList,                                        SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updatePortList()));
-    connect(gpMainWindow->mpProjectTabs,                            SIGNAL(currentChanged(int)),                                    this,               SLOT(updateLists()));
-    connect(gpMainWindow->mpProjectTabs->getCurrentContainer(),     SIGNAL(componentChanged()),                                     this,               SLOT(updateLists()));
-    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),           SIGNAL(simulationFinished()),                                   this,               SLOT(updateLists()),    Qt::UniqueConnection);
-    connect(mpPortList,                                             SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,               SLOT(updateVariableList()));
-    connect(mpVariableList,                                         SIGNAL(itemDoubleClicked(QListWidgetItem*)),                    this,               SLOT(addPlotCurveFromBoxes()));
-    connect(gpMainWindow->getOptionsDialog(),                       SIGNAL(paletteChanged()),                                       this,               SLOT(updatePalette()));
+    connect(mpNewPlotButton,                    SIGNAL(triggered()),        this,               SLOT(addPlotTab()));
+    connect(mpLoadFromXmlButton,                SIGNAL(triggered()),        this,               SLOT(loadFromXml()));
+    connect(mpSaveButton,                       SIGNAL(triggered()),        this,               SLOT(saveToXml()));
+    connect(mpBodePlotButton,                   SIGNAL(triggered()),        this,               SLOT(createBodePlot()));
+    connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),        this,               SLOT(createPlotWindowFromTab()));
+    connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),   this,               SLOT(updatePalette()));
+    connect(mpShowPlotWidgetButton,             SIGNAL(toggled(bool)),      pPlotWidgetDock,    SLOT(setVisible(bool)));
 
 
         //Hide lists and curve areas by default if screen size is small
     if(sh*sw <= 800*1280)
     {
-        mpShowListsButton->toggle();
-        mpShowCurvesButton->toggle();
+        mpShowCurveInfoButton->toggle();
+        //mpShowCurvesButton->toggle();
     }
 
     this->setMouseTracking(true);
@@ -363,77 +330,6 @@ void PlotWindow::addPlotTab(QString requestedName)
     mpPlotTabs->addTab(mpNewTab, tabName);
 
     mpPlotTabs->setCurrentIndex(mpPlotTabs->count()-1);
-}
-
-
-//! @brief Updates the lists at the bottom of the plot window
-void PlotWindow::updateLists()
-{
-    if(gpMainWindow->mpProjectTabs->count() == 0) return;
-
-        //Disconnect update functions from item change slots, to prevent new updates before this one is finished
-    disconnect(mpComponentList,     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updatePortList()));
-    disconnect(mpPortList,          SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updateVariableList()));
-
-        //Clear everything from the lists
-    mpVariableList->clear();
-    mpPortList->clear();
-    mpComponentList->clear();
-
-        //Fetch new data and add to the lists
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
-    if(!plotData.isEmpty())
-    {
-        mpComponentList->addItems(plotData.last().keys());
-        mpComponentList->setCurrentItem(mpComponentList->item(0));
-        updatePortList();
-    }
-
-        //Connect this slot with simulation finished signal from plot tab (in case it has changed)
-    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),   SIGNAL(simulationFinished()),   this,   SLOT(updateLists()),    Qt::UniqueConnection);
-
-        //Reconnect update functions
-    connect(mpComponentList,     SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updatePortList()));
-    connect(mpPortList,          SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),  this,   SLOT(updateVariableList()));
-}
-
-
-//! @brief Updates the port list
-void PlotWindow::updatePortList()
-{
-    if(mpComponentList->count() == 0) { return; }
-
-    disconnect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
-
-    mpPortList->clear();
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
-    mpPortList->addItems(plotData.last().find(mpComponentList->currentItem()->text()).value().keys());
-    mpPortList->setCurrentItem(mpPortList->item(0));
-    mpPortList->sortItems();
-
-    updateVariableList();
-
-    connect(mpPortList, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), this, SLOT(updateVariableList()));
-}
-
-
-//! @brief Updates the variable list
-void PlotWindow::updateVariableList()
-{
-    if(mpComponentList->count() == 0 || mpPortList->count() == 0) { return; }
-
-    mpVariableList->clear();
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > plotData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData();
-    mpVariableList->addItems(plotData.last().find(mpComponentList->currentItem()->text()).value().find(mpPortList->currentItem()->text()).value().keys());
-    mpVariableList->setCurrentItem(mpVariableList->item(0));
-    mpVariableList->sortItems();
-}
-
-
-void PlotWindow::addPlotCurveFromBoxes()
-{
-    this->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData().size()-1,
-                       mpComponentList->currentItem()->text(), mpPortList->currentItem()->text(), mpVariableList->currentItem()->text(), "", QwtPlot::yLeft);
 }
 
 
@@ -945,11 +841,11 @@ void PlotWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Reset X-vector to simulation time.");
     }
-    else if(pHoveredAction == mpShowListsButton)
+    else if(pHoveredAction == mpShowCurveInfoButton)
     {
         showHelpPopupMessage("Show/hide variable lists.");
     }
-    else if(pHoveredAction == mpShowCurvesButton)
+    else if(pHoveredAction == mpShowPlotWidgetButton)
     {
         showHelpPopupMessage("Show/hide plot curve control panel.");
     }
@@ -1017,35 +913,6 @@ void PlotWindow::createPlotWindowFromTab()
 }
 
 
-//! @brief Constructor for variable list widget
-//! @param parentPlotWindow Pointer to plot window
-//! @param parent Pointer to parent widget
-VariableListWidget::VariableListWidget(PlotWindow *parentPlotWindow, QWidget *parent)
-    : QListWidget(parent)
-{
-    this->setDragEnabled(true);
-    mpParentPlotWindow = parentPlotWindow;
-}
-
-
-//! @brief Initializes drag operations from variable list widget
-void VariableListWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    if (!(event->buttons() & Qt::LeftButton) || mpParentPlotWindow->mpVariableList->count() == 0)
-    {
-        return;
-    }
-
-    QString mimeText;
-    mimeText = QString("HOPSANPLOTDATA " + addQuotes(mpParentPlotWindow->mpComponentList->currentItem()->text()) + " " + addQuotes(mpParentPlotWindow->mpPortList->currentItem()->text()) + " " + addQuotes(mpParentPlotWindow->mpVariableList->currentItem()->text()));
-    QDrag *drag = new QDrag(this);
-    QMimeData *mimeData = new QMimeData;
-    mimeData->setText(mimeText);
-    drag->setMimeData(mimeData);
-    drag->exec();
-}
-
-
 //! @brief Constructor for plot info box
 //! @param pParentPlotCurve pointer to parent plot curve
 //! @param parent Pointer to parent widget
@@ -1053,6 +920,8 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     : QWidget(parent)
 {
     mpParentPlotCurve = pParentPlotCurve;
+
+    mpTitle = new QLabel(pParentPlotCurve->mComponentName+", "+pParentPlotCurve->mPortName+", "+pParentPlotCurve->mDataName+" ["+pParentPlotCurve->mDataUnit+"]",this);
 
     mpColorBlob = new QToolButton(this);
     QColor color = mpParentPlotCurve->mLineColor;
@@ -1124,17 +993,35 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
     mpCloseButton->setFixedSize(20, 20);
 
+    QLabel *pDummy = new QLabel((" "), this);
+
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpColorBlob,                0,  0);
-    mpLayout->addWidget(mpGenerationLabel,          0,  1);
-    mpLayout->addWidget(mpPreviousButton,           0,  2);
-    mpLayout->addWidget(mpNextButton,               0,  3);
-    mpLayout->addWidget(mpSizeSpinBox,              0,  4);
-    mpLayout->addWidget(mpCloseButton,              0,  5);
-    mpLayout->addWidget(mpFrequencyAnalysisButton,  1,  1);
-    mpLayout->addWidget(mpColorButton,              1,  2);
-    mpLayout->addWidget(mpScaleButton,              1,  3);
-    mpLayout->addWidget(mpAutoUpdateCheckBox,       1,  4,  1,  2);
+    mpLayout->addWidget(mpTitle,                    0,  1);
+    mpLayout->addWidget(mpGenerationLabel,          0,  2);
+    mpLayout->addWidget(mpPreviousButton,           0,  3);
+    mpLayout->addWidget(mpNextButton,               0,  4);
+    mpLayout->addWidget(mpAutoUpdateCheckBox,       0,  5);
+    mpLayout->addWidget(mpFrequencyAnalysisButton,  0,  6);
+    mpLayout->addWidget(mpScaleButton,              0,  7);
+    mpLayout->addWidget(mpSizeSpinBox,              0,  8);
+    mpLayout->addWidget(mpColorButton,              0,  9);
+    mpLayout->addWidget(mpCloseButton,              0,  10);
+    mpLayout->addWidget(pDummy,                     0,  11);
+
+
+    mpLayout->setColumnStretch(0, 0);
+    mpLayout->setColumnStretch(1, 0);
+    mpLayout->setColumnStretch(2, 0);
+    mpLayout->setColumnStretch(3, 0);
+    mpLayout->setColumnStretch(4, 0);
+    mpLayout->setColumnStretch(5, 0);
+    mpLayout->setColumnStretch(6, 0);
+    mpLayout->setColumnStretch(7, 0);
+    mpLayout->setColumnStretch(8, 0);
+    mpLayout->setColumnStretch(9, 0);
+    mpLayout->setColumnStretch(10, 0);
+    mpLayout->setColumnStretch(11, 1);
 
     setLayout(mpLayout);
 
@@ -1425,14 +1312,6 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
     mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
     mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
-    mpParentPlotWindow->mpShowListsButton->setChecked(false);
-    mpParentPlotWindow->mpComponentList->setVisible(false);
-    mpParentPlotWindow->mpPortList->setVisible(false);
-    mpParentPlotWindow->mpVariableList->setVisible(false);
-    mpParentPlotWindow->mpComponentsLabel->setVisible(false);
-    mpParentPlotWindow->mpPortsLabel->setVisible(false);
-    mpParentPlotWindow->mpVariablesLabel->setVisible(false);
-
 
     for(int i=0; i<2; ++i)
     {
@@ -1524,7 +1403,6 @@ void PlotTab::addCurve(PlotCurve *curve, HopsanPlotID plotID)
     mpPlot[plotID]->replot();
     curve->setLineColor(mCurveColors.first());
     curve->setLineWidth(2);
-    mpParentPlotWindow->addDockWidget(Qt::RightDockWidgetArea, curve->getPlotInfoDockWidget());
 
     mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
 }
@@ -2812,13 +2690,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     updatePlotInfoBox();
     mpPlotInfoBox->mpSizeSpinBox->setValue(2);
 
-    mpPlotInfoDockWidget = new QDockWidget(mComponentName+", "+mPortName+", "+mDataName+" ["+mDataUnit+"]", mpParentPlotTab->mpParentPlotWindow);
-    mpPlotInfoDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
-    mpPlotInfoDockWidget->setMaximumHeight(100);
-    mpPlotInfoDockWidget->setWidget(mpPlotInfoBox);
-    mpPlotInfoDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    mpPlotInfoDockWidget->setMinimumWidth(mpPlotInfoDockWidget->windowTitle().length()*6);
-    mpPlotInfoDockWidget->hide();
+    mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
 
     if(curveType != PORTVARIABLE)
     {
@@ -2834,7 +2706,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
     connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
     connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoDockVisibility()));
-    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurvesButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoDockVisibility()));
+    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoDockVisibility()));
     connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
@@ -2850,9 +2722,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 PlotCurve::~PlotCurve()
 {
     mpContainerObject->decrementOpenPlotCurves();
-    mpPlotInfoDockWidget->hide();
     delete(mpPlotInfoBox);
-    delete(mpPlotInfoDockWidget);
+    //delete(mpPlotInfoDockWidget);
 }
 
 
@@ -2893,11 +2764,11 @@ QwtPlotCurve *PlotCurve::getCurvePtr()
 }
 
 
-//! @brief Returns a pointer to the plot info dock of a plot curve
-QDockWidget *PlotCurve::getPlotInfoDockWidget()
-{
-    return mpPlotInfoDockWidget;
-}
+////! @brief Returns a pointer to the plot info dock of a plot curve
+//QDockWidget *PlotCurve::getPlotInfoDockWidget()
+//{
+//    return mpPlotInfoDockWidget;
+//}
 
 
 //! @brief Returns the name of the component a plot curve is created from
@@ -3214,13 +3085,20 @@ void PlotCurve::updateScaleFromDialog()
 //! Changes visibility depending on whether or not the tab is currently open, and whether or not the hide plot info dock setting is activated.
 void PlotCurve::updatePlotInfoDockVisibility()
 {
-    if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurvesButton->isChecked())
+    if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton->isChecked())
     {
-        mpPlotInfoDockWidget->show();
+        //mpParentPlotTab->mpParentPlotWindow->addDockWidget(Qt::BottomDockWidgetArea, mpPlotInfoDockWidget, Qt::Vertical);
+        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
+        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->show();
     }
     else
     {
-        mpPlotInfoDockWidget->hide();
+        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->removeWidget(mpPlotInfoBox);
+        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        if(mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->isEmpty())
+        {
+            mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
+        }
     }
 }
 
