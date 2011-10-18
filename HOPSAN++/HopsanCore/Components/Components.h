@@ -151,6 +151,9 @@
 #include "Signal/SignalTripleRoute.hpp"
 #include "Signal/SignalQuadRoute.hpp"
 #include "Signal/SignalBETest.hpp"
+#include "Signal/SignalSin.hpp"
+#include "Signal/SignalCos.hpp"
+#include "Signal/SignalTan.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

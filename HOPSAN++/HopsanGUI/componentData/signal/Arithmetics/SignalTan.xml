@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.2">
+	<modelobject typename="SignalTan" displayname="Tan">
+	    <icons>
+            <icon type="user" path="tan.svg" iconrotation="ON" scale="1.0"/>
+	    </icons>
+		<portpositions>
+		    <portpose name="out" x="1.0" y="0.5" a="0"/>
+		    <portpose name="in" x="0.0" y="0.5" a="180"/>
+		</portpositions>
+	</modelobject>
+</hopsanobjectappearance>

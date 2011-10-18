@@ -289,11 +289,19 @@ HEADERS += win32dll.h \
     #Components/Hydraulic/HydraulicCylinderC - Copy.hpp \
     #Components/Hydraulic/HydraulicCylinderCTolerance.hpp \
     #Components/Hydraulic/HydraulicHoseTolerance.hpp
-    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp
+    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
+    Components/Signal/SignalTan.hpp \
+    Components/Signal/SignalSin.hpp \
+    Components/Signal/SignalCos.hpp
 
 
 OTHER_FILES += \
-    HopsanCoreBuild.prf
+    HopsanCoreBuild.prf \
+    Components/Signal/SignalTan.xml \
+    Components/Signal/SignalSin.xml \
+    Components/Signal/SignalCos.xml
+
+
 
 
 
