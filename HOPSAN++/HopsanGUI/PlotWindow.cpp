@@ -1868,13 +1868,53 @@ void PlotTab::exportToMatlab()
         fileStream << "]\n";
     }
 
+        //Cycle plot curves
+    for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
+    {
+        fileStream << "x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << "=[";                                         //Write time/X vector
+        if(mHasSpecialXAxis)
+        {
+            for(int j=0; j<mVectorX.size(); ++j)
+            {
+                if(j>0) fileStream << ",";
+                fileStream << mVectorX[j];
+            }
+        }
+        else
+        {
+            for(int j=0; j<mPlotCurvePtrs[SECONDPLOT][i]->getTimeVector().size(); ++j)
+            {
+                if(j>0) fileStream << ",";
+                fileStream << mPlotCurvePtrs[SECONDPLOT][i]->getTimeVector()[j];
+            }
+        }
+        fileStream << "]\n";
+
+        fileStream << "y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << "=[";                                             //Write data vector
+        for(int k=0; k<mPlotCurvePtrs[SECONDPLOT][i]->getDataVector().size(); ++k)
+        {
+            if(k>0) fileStream << ",";
+            fileStream << mPlotCurvePtrs[SECONDPLOT][i]->getDataVector()[k];
+        }
+        fileStream << "]\n";
+    }
+
         //Write plot functions
     QStringList matlabColors;
     matlabColors << "r" << "g" << "b" << "c" << "m" << "y";
     fileStream << "hold on\n";
+    fileStream << "subplot(2,1,1)\n";
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
         fileStream << "plot(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->getCurvePtr()->pen().width() << ")\n";
+    }
+    if(mPlotCurvePtrs[SECONDPLOT].size() > 0)
+    {
+        fileStream << "subplot(2,1,2)\n";
+        for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
+        {
+            fileStream << "plot(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->getCurvePtr()->pen().width() << ")\n";
+        }
     }
 
     file.close();
