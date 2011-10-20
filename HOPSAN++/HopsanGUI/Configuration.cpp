@@ -68,6 +68,7 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "togglenamesbuttonchecked", gpMainWindow->mpToggleNamesAction->isChecked());
     appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
     appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
+    appendDomIntegerNode(settings, "generationlimit", mGenerationLimit);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -230,6 +231,8 @@ void Configuration::loadFromXml()
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
             if(!settingsElement.firstChildElement("groupmessagesbytag").isNull())
                 mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
+            if(!settingsElement.firstChildElement("generationlimit").isNull())
+                mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
 
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -391,6 +394,8 @@ void Configuration::loadDefaultsFromXml()
                 mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
             if(!settingsElement.firstChildElement("groupmessagesbytag").isNull())
                 mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
+            if(!settingsElement.firstChildElement("generationlimit").isNull())
+                mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -702,6 +707,12 @@ bool Configuration::getGroupMessagesByTag()
 }
 
 
+int Configuration::getGenerationLimit()
+{
+    return mGenerationLimit;
+}
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -901,5 +912,12 @@ void Configuration::setLastScriptFile(QString file)
 void Configuration::setGroupMessagesByTag(bool value)
 {
     mGroupMessagesByTag = value;
+    saveToXml();
+}
+
+
+void Configuration::setGenerationLimit(int value)
+{
+    mGenerationLimit = value;
     saveToXml();
 }

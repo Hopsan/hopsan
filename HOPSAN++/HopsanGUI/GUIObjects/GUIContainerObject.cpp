@@ -44,6 +44,7 @@
 #include "GUIContainerPort.h"
 #include "GUIWidgets.h"
 #include "GUISystem.h"
+#include "Configuration.h"
 
 #include <limits>
 #include <QDomElement>
@@ -2197,10 +2198,12 @@ void GUIContainerObject::collectPlotData()
         }
         componentMap.insert(moit.value()->getName(), portMap);
     }
-    if(!componentMap.isEmpty())
+    if(!componentMap.isEmpty())     //Don't insert a generation if no plot data was collected (= model is empty)
     {
         mPlotData.append(componentMap);
     }
+
+    limitPlotGenerations();
 }
 
 
@@ -2548,4 +2551,15 @@ QString GUIContainerObject::getPlotAlias(QString componentName, QString portName
         if(it.value() == variableDescription) return it.key();
     }
     return QString();
+}
+
+
+//! @brief Removes oldest plot generation until number of generation is within specified limit.
+//! @todo Update open plot windows somehow (may not be necessary)
+void GUIContainerObject::limitPlotGenerations()
+{
+    while(mPlotData.size() > gConfig.getGenerationLimit())
+    {
+        mPlotData.removeFirst();
+    }
 }

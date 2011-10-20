@@ -31,6 +31,7 @@
 #include "../GraphicsView.h"
 #include "../Widgets/PlotWidget.h"
 #include "../Configuration.h"
+#include "../GUIObjects/GUIContainerObject.h"
 
 class ProjectTabWidget;
 
@@ -145,6 +146,13 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     //mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
     mpSimulationGroupBox->setLayout(mpSimulationLayout);
 
+    mpGenerationLimitLabel = new QLabel(tr("Limit number of plot generations to"));
+    mpGenerationLimitLabel->setEnabled(gConfig.getEnableProgressBar());
+    mpGenerationLimitSpinBox = new QSpinBox();
+    mpGenerationLimitSpinBox->setMinimum(1);
+    mpGenerationLimitSpinBox->setMaximum(5000000);
+    mpGenerationLimitSpinBox->setSingleStep(1);
+
     mpValueUnitLabel = new QLabel(tr("Default Value Unit"));
     mpValueUnitComboBox = new QComboBox();
     mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
@@ -176,33 +184,35 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     mpPlottingGroupBox = new QGroupBox(tr("Plotting"));
     mpPlottingLayout = new QGridLayout;
-    mpPlottingLayout->addWidget(mpValueUnitLabel, 0, 0);
-    mpPlottingLayout->addWidget(mpValueUnitComboBox, 0, 1);
-    mpPlottingLayout->addWidget(mpAddValueUnitButton, 0, 2);
-    mpPlottingLayout->addWidget(mpPressureUnitLabel, 1, 0);
-    mpPlottingLayout->addWidget(mpPressureUnitComboBox, 1, 1);
-    mpPlottingLayout->addWidget(mpAddPressureUnitButton, 1, 2);
-    mpPlottingLayout->addWidget(mpFlowUnitLabel, 2, 0);
-    mpPlottingLayout->addWidget(mpFlowUnitComboBox, 2, 1);
-    mpPlottingLayout->addWidget(mpAddFlowUnitButton, 2, 2);
-    mpPlottingLayout->addWidget(mpForceUnitLabel, 3, 0);
-    mpPlottingLayout->addWidget(mpForceUnitComboBox, 3, 1);
-    mpPlottingLayout->addWidget(mpAddForceUnitButton, 3, 2);
-    mpPlottingLayout->addWidget(mpPositionUnitLabel, 4, 0);
-    mpPlottingLayout->addWidget(mpPositionUnitComboBox, 4, 1);
-    mpPlottingLayout->addWidget(mpAddPositionUnitButton, 4, 2);
-    mpPlottingLayout->addWidget(mpVelocityUnitLabel, 5, 0);
-    mpPlottingLayout->addWidget(mpVelocityUnitComboBox, 5, 1);
-    mpPlottingLayout->addWidget(mpAddVelocityUnitButton, 5, 2);
-    mpPlottingLayout->addWidget(mpTorqueUnitLabel, 6, 0);
-    mpPlottingLayout->addWidget(mpTorqueUnitComboBox, 6, 1);
-    mpPlottingLayout->addWidget(mpAddTorqueUnitButton, 6, 2);
-    mpPlottingLayout->addWidget(mpAngleUnitLabel, 7, 0);
-    mpPlottingLayout->addWidget(mpAngleUnitComboBox, 7, 1);
-    mpPlottingLayout->addWidget(mpAddAngleUnitButton, 7, 2);
-    mpPlottingLayout->addWidget(mpAngularVelocityUnitLabel, 8, 0);
-    mpPlottingLayout->addWidget(mpAngularVelocityUnitComboBox, 8, 1);
-    mpPlottingLayout->addWidget(mpAddAngularVelocityUnitButton, 8, 2);
+    mpPlottingLayout->addWidget(mpGenerationLimitLabel,             0, 0, 1, 2);
+    mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,           0, 1, 1, 2);
+    mpPlottingLayout->addWidget(mpValueUnitLabel,                   1, 0);
+    mpPlottingLayout->addWidget(mpValueUnitComboBox,                1, 1);
+    mpPlottingLayout->addWidget(mpAddValueUnitButton,               1, 2);
+    mpPlottingLayout->addWidget(mpPressureUnitLabel,                2, 0);
+    mpPlottingLayout->addWidget(mpPressureUnitComboBox,             2, 1);
+    mpPlottingLayout->addWidget(mpAddPressureUnitButton,            2, 2);
+    mpPlottingLayout->addWidget(mpFlowUnitLabel,                    3, 0);
+    mpPlottingLayout->addWidget(mpFlowUnitComboBox,                 3, 1);
+    mpPlottingLayout->addWidget(mpAddFlowUnitButton,                3, 2);
+    mpPlottingLayout->addWidget(mpForceUnitLabel,                   4, 0);
+    mpPlottingLayout->addWidget(mpForceUnitComboBox,                4, 1);
+    mpPlottingLayout->addWidget(mpAddForceUnitButton,               4, 2);
+    mpPlottingLayout->addWidget(mpPositionUnitLabel,                5, 0);
+    mpPlottingLayout->addWidget(mpPositionUnitComboBox,             5, 1);
+    mpPlottingLayout->addWidget(mpAddPositionUnitButton,            5, 2);
+    mpPlottingLayout->addWidget(mpVelocityUnitLabel,                6, 0);
+    mpPlottingLayout->addWidget(mpVelocityUnitComboBox,             6, 1);
+    mpPlottingLayout->addWidget(mpAddVelocityUnitButton,            6, 2);
+    mpPlottingLayout->addWidget(mpTorqueUnitLabel,                  7, 0);
+    mpPlottingLayout->addWidget(mpTorqueUnitComboBox,               7, 1);
+    mpPlottingLayout->addWidget(mpAddTorqueUnitButton,              7, 2);
+    mpPlottingLayout->addWidget(mpAngleUnitLabel,                   8, 0);
+    mpPlottingLayout->addWidget(mpAngleUnitComboBox,                8, 1);
+    mpPlottingLayout->addWidget(mpAddAngleUnitButton,               8, 2);
+    mpPlottingLayout->addWidget(mpAngularVelocityUnitLabel,         9, 0);
+    mpPlottingLayout->addWidget(mpAngularVelocityUnitComboBox,      9, 1);
+    mpPlottingLayout->addWidget(mpAddAngularVelocityUnitButton,     9, 2);
     mpPlottingGroupBox->setLayout(mpPlottingLayout);
 
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
@@ -280,6 +290,11 @@ void OptionsDialog::updateValues()
     gConfig.setProgressBarStep(mpProgressBarSpinBox->value());
     gConfig.setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
     gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
+    gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
+    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)       //Loop through all containers and reduce their plot data
+    {
+        gpMainWindow->mpProjectTabs->getContainer(i)->limitPlotGenerations();
+    }
     gConfig.setDefaultUnit("Value", mpValueUnitComboBox->currentText());
     gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
     gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());

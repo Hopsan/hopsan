@@ -120,6 +120,7 @@ public:
     void undefinePlotAlias(QString alias);
     QStringList getPlotVariableFromAlias(QString alias);
     QString getPlotAlias(QString componentName, QString portName, QString dataName);
+    void limitPlotGenerations();
 
     //Undo/redo methods
     UndoStack *getUndoStackPtr();

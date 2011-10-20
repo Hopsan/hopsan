@@ -92,6 +92,8 @@ private:
     QGroupBox *mpSimulationGroupBox;
     QGridLayout *mpSimulationLayout;
 
+    QLabel *mpGenerationLimitLabel;
+    QSpinBox *mpGenerationLimitSpinBox;
     QLabel *mpValueUnitLabel;
     QComboBox *mpValueUnitComboBox;
     QPushButton *mpAddValueUnitButton;

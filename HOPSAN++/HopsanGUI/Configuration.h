@@ -70,6 +70,7 @@ public:
     QString getStyleSheet();
     QString getLastScriptFile();
     bool getGroupMessagesByTag();
+    int getGenerationLimit();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -93,6 +94,7 @@ public:
     void addCustomUnit(QString dataname, QString unitname, double scale);
     void setLastScriptFile(QString file);
     void setGroupMessagesByTag(bool value);
+    void setGenerationLimit(int value);
 
 private:
     int mLibraryStyle;
@@ -119,6 +121,7 @@ private:
     QString mStyleSheet;
     QString mLastScriptFile;
     bool mGroupMessagesByTag;
+    int mGenerationLimit;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };
