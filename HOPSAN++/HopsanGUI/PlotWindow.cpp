@@ -61,9 +61,9 @@
 const double DBLMAX = std::numeric_limits<double>::max();
 
 //! @brief Constructor for the plot window, where plots are displayed.
-//! @param plotParameterTree is a pointer to the parameter tree from where the plot window was created
+//! @param plotVariableTree is a pointer to the variable tree from where the plot window was created
 //! @param parent is a pointer to the main window
-PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
+PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     : QMainWindow(parent)
 
 {
@@ -84,7 +84,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     int y = (sh - h)/2;
     move(x, y);       //Move plot window to center of screen
 
-    mpPlotParameterTree = plotParameterTree;
+    mpPlotVariableTree = plotVariableTree;
 
         //Create the toolbar and its buttons
     mpToolBar = new QToolBar(this);
@@ -168,7 +168,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpShowCurveInfoButton = new QAction(this);
     mpShowCurveInfoButton->setCheckable(true);
     mpShowCurveInfoButton->setChecked(true);
-    mpShowCurveInfoButton->setToolTip("Toggle Parameter Lists");
+    mpShowCurveInfoButton->setToolTip("Toggle Variable Lists");
     mpShowCurveInfoButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
     connect(mpShowCurveInfoButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
@@ -269,12 +269,12 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     pCentralWidget->setLayout(mpLayout);
     this->setCentralWidget(pCentralWidget);
 
-    PlotWidget *pLocalPlotWidget = new PlotWidget(gpMainWindow);
+    PlotTreeWidget *pLocalPlotWidget = new PlotTreeWidget(gpMainWindow);
     QDockWidget *pPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
     pPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, pPlotWidgetDock);
     pPlotWidgetDock->setWidget(pLocalPlotWidget);
-    pLocalPlotWidget->mpPlotParameterTree->updateList();
+    pLocalPlotWidget->mpPlotVariableTree->updateList();
 
         //Establish signal and slots connections
     connect(mpNewPlotButton,                    SIGNAL(triggered()),        this,               SLOT(addPlotTab()));
@@ -380,7 +380,7 @@ void PlotWindow::addPlotCurve(int generation, QString componentName, QString por
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelPath, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve);
-    pTempCurve->updatePlotInfoDockVisibility();
+    pTempCurve->updatePlotInfoVisibility();
 }
 
 
@@ -529,7 +529,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getGeneration(), mpFrequencyAnalysisCurve->getComponentName(), mpFrequencyAnalysisCurve->getPortName(), mpFrequencyAnalysisCurve->getDataName(), mpFrequencyAnalysisCurve->getDataUnit(), mpFrequencyAnalysisCurve->getAxisY(), mpFrequencyAnalysisCurve->getContainerObjectPtr()->getModelFileInfo().filePath(), getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
     getCurrentPlotTab()->addCurve(pNewCurve);
     pNewCurve->toFrequencySpectrum();
-    pNewCurve->updatePlotInfoDockVisibility();
+    pNewCurve->updatePlotInfoVisibility();
     //! @todo Make logged axis an option for user
     if(mpLogScaleCheckBox->isChecked())
     {
@@ -733,13 +733,13 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
                                         getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
     pNyquistCurve1->setData(vIm, vRe);
-    pNyquistCurve1->updatePlotInfoDockVisibility();
+    pNyquistCurve1->updatePlotInfoVisibility();
     PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
                                         pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
                                         getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
     pNyquistCurve2->setData(vImNeg, vRe);
-    pNyquistCurve2->updatePlotInfoDockVisibility();
+    pNyquistCurve2->updatePlotInfoVisibility();
     getCurrentPlotTab()->getPlot()->replot();
     getCurrentPlotTab()->rescaleToCurves();
 
@@ -749,14 +749,14 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     getCurrentPlotTab()->addCurve(pGainCurve);
     pGainCurve->setData(vBodeGain, F);
-    pGainCurve->updatePlotInfoDockVisibility();
+    pGainCurve->updatePlotInfoVisibility();
 
     PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
                                           pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
                                           getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     getCurrentPlotTab()->addCurve(pPhaseCurve, SECONDPLOT);
     pPhaseCurve->setData(vBodePhase, F);
-    pPhaseCurve->updatePlotInfoDockVisibility();
+    pPhaseCurve->updatePlotInfoVisibility();
 
     getCurrentPlotTab()->showPlot(SECONDPLOT, true);
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->replot();
@@ -889,7 +889,7 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::close()
 {
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->reportClosedPlotWindow(this);
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->reportClosedPlotWindow(this);
     QMainWindow::close();
 }
 
@@ -904,7 +904,7 @@ void PlotWindow::updatePalette()
 //! @brief Creates a new plot window and adds the curves from current plot tab
 void PlotWindow::createPlotWindowFromTab()
 {
-    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
+    PlotWindow *pPlotWindow = new PlotWindow(mpPlotVariableTree, gpMainWindow);
     pPlotWindow->show();
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
@@ -930,14 +930,14 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     greenString.setNum(color.green());
     blueString.setNum(color.blue());
     QString buttonStyle;
-    buttonStyle.append("QToolButton			{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:pressed   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:checked		{ border: 1px solid gray;               border-style: inset;    border-radius: 5px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:checked   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:unchecked   	{ border: 1px solid gray;               border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton			{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton:hover:pressed   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton:hover		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton:checked		{ border: 1px solid gray;               border-style: inset;    border-radius: 0px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton:hover:checked   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append("QToolButton:hover:unchecked   	{ border: 1px solid gray;               border-style: outset;   border-radius: 0px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
     mpColorBlob->setStyleSheet(buttonStyle);
 
     mpColorBlob->setFixedSize(20, 20);
@@ -2705,8 +2705,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
     connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
     connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
-    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoDockVisibility()));
-    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoDockVisibility()));
+    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoVisibility()));
+    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoVisibility()));
     connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
@@ -3083,7 +3083,7 @@ void PlotCurve::updateScaleFromDialog()
 
 //! @brief Shows or hides plot info dock
 //! Changes visibility depending on whether or not the tab is currently open, and whether or not the hide plot info dock setting is activated.
-void PlotCurve::updatePlotInfoDockVisibility()
+void PlotCurve::updatePlotInfoVisibility()
 {
     if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton->isChecked())
     {

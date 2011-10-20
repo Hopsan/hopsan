@@ -163,7 +163,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         //Check if dropped item is a plot data string, and attempt to open a plot window if so
         else if(text.startsWith("HOPSANPLOTDATA"))
         {
-            gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(text.section("\"", 1, 1), text.section("\"", 3, 3), text.section("\"", 5, 5), ""/*text.section("\"", 7, 7)*/);
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(text.section("\"", 1, 1), text.section("\"", 3, 3), text.section("\"", 5, 5), ""/*text.section("\"", 7, 7)*/);
             return;
         }
 

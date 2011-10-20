@@ -278,7 +278,7 @@ public slots:
 
     void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
     {
-        o->mpPlotWidget->mpPlotParameterTree->getPlotWindow(windowNumber)->addPlotCurve(generation, compName, portName, dataName);
+        o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowNumber)->addPlotCurve(generation, compName, portName, dataName);
     }
 
     int getSimulationTime(MainWindow* o)

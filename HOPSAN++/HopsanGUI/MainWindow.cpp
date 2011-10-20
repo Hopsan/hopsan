@@ -244,7 +244,7 @@ void MainWindow::initializeWorkspace()
     }
 
     //Create the plot widget, only once! :)
-    mpPlotWidget = new PlotWidget(this);
+    mpPlotWidget = new PlotTreeWidget(this);
 
     //File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)

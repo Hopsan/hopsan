@@ -567,7 +567,7 @@ void GUIContainerObject::setFavoriteVariable(QString componentName, QString port
     {
         mFavoriteVariables.append(tempParameter);
     }
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
 
     mpParentProjectTab->hasChanged();
 }
@@ -583,7 +583,7 @@ void GUIContainerObject::removeFavoriteVariableByComponentName(QString component
         if((*it).at(0) == componentName)
         {
             mFavoriteVariables.removeAll((*it));
-            gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
             return;
         }
     }
@@ -2065,7 +2065,7 @@ void GUIContainerObject::enterContainer()
     this->connectMainWindowActions();
 
     //Update plot widget and undo widget to new container
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
@@ -2098,7 +2098,7 @@ void GUIContainerObject::exitContainer()
     mpParentContainerObject->connectMainWindowActions();
 
         //Update plot widget and undo widget to new container
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();
     gpMainWindow->mpUndoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
@@ -2392,7 +2392,7 @@ void GUIContainerObject::showLossesFromDialog()
     pItemModel->setVerticalHeaderLabels(QStringList() << "Added" << "Losses");
     pItemModel->setHorizontalHeaderLabels(componentNames);
 
-    PlotWindow *pPlotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotParameterTree, gpMainWindow);
+    PlotWindow *pPlotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
     pPlotWindow->getCurrentPlotTab()->setTabName("Energy Losses");
     pPlotWindow->addBarChart(pItemModel);
     pPlotWindow->show();

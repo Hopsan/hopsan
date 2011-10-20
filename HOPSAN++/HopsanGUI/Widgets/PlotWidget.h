@@ -62,14 +62,14 @@
 class MainWindow;
 class GUIContainerObject;
 class PlotWindow;
-class PlotWidget;
-class PlotParameterTree;
+class PlotTreeWidget;
+class PlotVariableTree;
 
 
-class PlotParameterItem : public QTreeWidgetItem
+class PlotVariableTreeItem : public QTreeWidgetItem
 {
 public:
-    PlotParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent = 0);
+    PlotVariableTreeItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent = 0);
     QString getComponentName();
     QString getPortName();
     QString getDataName();
@@ -83,13 +83,13 @@ private:
 };
 
 
-class PlotParameterTree : public QTreeWidget
+class PlotVariableTree : public QTreeWidget
 {
     Q_OBJECT
     friend class PlotWindow;
-    friend class PlotWidget;
+    friend class PlotTreeWidget;
 public:
-    PlotParameterTree(MainWindow *parent = 0);
+    PlotVariableTree(MainWindow *parent = 0);
     PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *getPlotWindow(int number);
@@ -110,17 +110,17 @@ public slots:
     PlotWindow *createPlotWindow(QTreeWidgetItem *item);
 
 private:
-    QList<QStringList> mAvailableParameters;
+    QList<QStringList> mAvailableVariables;
     QList<PlotWindow *> mOpenPlotWindows;
 };
 
 
-class PlotWidget : public QWidget
+class PlotTreeWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PlotWidget(MainWindow *parent = 0);
-    PlotParameterTree *mpPlotParameterTree;
+    PlotTreeWidget(MainWindow *parent = 0);
+    PlotVariableTree *mpPlotVariableTree;
 
 public slots:
     void loadFromXml();

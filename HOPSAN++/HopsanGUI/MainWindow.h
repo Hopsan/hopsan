@@ -36,7 +36,7 @@ class QGraphicsScene;
 class LibraryWidget;
 class OptionsDialog;
 class MessageWidget;
-class PlotWidget;
+class PlotTreeWidget;
 class PyDockWidget;
 class SystemParametersWidget;
 class Configuration;
@@ -82,7 +82,7 @@ public:
     ProjectTabWidget *mpProjectTabs;
     LibraryWidget *mpLibrary;
     MessageWidget *mpMessageWidget;
-    PlotWidget *mpPlotWidget;
+    PlotTreeWidget *mpPlotWidget;
     PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)

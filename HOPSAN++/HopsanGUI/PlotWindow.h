@@ -42,8 +42,8 @@
 #include "Dependencies/BarChartPlotter/axisbase.h"
 
 class MainWindow;
-class PlotParameterTree;
-class PlotWidget;
+class PlotVariableTree;
+class PlotTreeWidget;
 class GUISystem;
 class PlotTabWidget;
 class PlotTab;
@@ -53,13 +53,13 @@ class PlotCurve;
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
-    friend class PlotWidget;                //! @todo Should plot window really be friend with everything?
+    friend class PlotTreeWidget;                //! @todo Should plot window really be friend with everything?
     friend class VariableListWidget;
     friend class PlotTabWidget;
     friend class PlotTab;
     friend class PlotCurve;
 public:
-    PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
+    PlotWindow(PlotVariableTree *PlotVariableTree, MainWindow *parent);
     void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath = QString());
     void addBarChart(QStandardItemModel *pItemModel);
     void setGeneration(int gen);
@@ -92,7 +92,7 @@ protected:
 
 private:
     QGridLayout *mpLayout;
-    PlotParameterTree *mpPlotParameterTree;
+    PlotVariableTree *mpPlotVariableTree;
     QPointF dragStartPosition;
 
     QToolBar *mpToolBar;
@@ -334,7 +334,7 @@ public slots:
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
     void openScaleDialog();
-    void updatePlotInfoDockVisibility();
+    void updatePlotInfoVisibility();
     void updateScaleFromDialog();
     void updateToNewGeneration();
     void updatePlotInfoBox();

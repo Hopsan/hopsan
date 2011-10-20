@@ -547,7 +547,7 @@ PlotWindow *GUIPort::plot(QString dataName, QString dataUnit)
 {
     if(this->isConnected())
     {
-        return gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit);
+        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit);
     }
 
     return 0;       //Fail!

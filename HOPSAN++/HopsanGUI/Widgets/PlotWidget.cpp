@@ -44,13 +44,13 @@
 #include "../Configuration.h"
 
 
-//! @brief Constructor for the parameter items in the parameter tree
-//! @param componentName Name of the component where the parameter is located
-//! @param portName Name of the port where the parameter is located
-//! @param dataName Name of the parameter
-//! @param dataUnit Name of the unit of the parameter
+//! @brief Constructor for the variable items in the variable tree
+//! @param componentName Name of the component where the variable is located
+//! @param portName Name of the port where the variable is located
+//! @param dataName Name of the variable
+//! @param dataUnit Name of the unit of the variable
 //! @param parent Pointer to a tree widget item, not used
-PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent)
+PlotVariableTreeItem::PlotVariableTreeItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent)
         : QTreeWidgetItem(parent)
 {
     mComponentName = componentName;
@@ -67,40 +67,40 @@ PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QS
 }
 
 
-//! @brief Returns the name of the component where the parameter is located
-QString PlotParameterItem::getComponentName()
+//! @brief Returns the name of the component where the variable is located
+QString PlotVariableTreeItem::getComponentName()
 {
     return mComponentName;
 }
 
 
-//! @brief Returns the name of the port where the parameter is located
-QString PlotParameterItem::getPortName()
+//! @brief Returns the name of the port where the variable is located
+QString PlotVariableTreeItem::getPortName()
 {
     return mPortName;
 }
 
 
-//! @brief Returns the name of the parameter
-QString PlotParameterItem::getDataName()
+//! @brief Returns the name of the variable
+QString PlotVariableTreeItem::getDataName()
 {
     return mDataName;
 }
 
 
-//! @brief Returns the name of the unit of the parameter
-QString PlotParameterItem::getDataUnit()
+//! @brief Returns the name of the unit of the variable
+QString PlotVariableTreeItem::getDataUnit()
 {
     return mDataUnit;
 }
 
 
-//! @brief Constructor for the parameter tree widget
+//! @brief Constructor for the variable tree widget
 //! @param parent Pointer to the main window
-PlotParameterTree::PlotParameterTree(MainWindow *parent)
+PlotVariableTree::PlotVariableTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
-    qDebug() << "Creating PlotParameterTree!";
+    qDebug() << "Creating PlotVariableTree!";
 
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
@@ -123,10 +123,10 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
 }
 
 
-//! @brief Updates the parameter tree to the available components and parameters in the current tab.
-void PlotParameterTree::updateList()
+//! @brief Updates the variable tree to the available components and variables in the current tab.
+void PlotVariableTree::updateList()
 {
-    mAvailableParameters.clear();
+    mAvailableVariables.clear();
     this->clear();
 
     if(gpMainWindow->mpProjectTabs->count() == 0)     //Check so that at least one project tab exists
@@ -136,7 +136,7 @@ void PlotParameterTree::updateList()
 
     mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
     QTreeWidgetItem *tempComponentItem;     //Tree item for components
-    PlotParameterItem *tempPlotParameterItem;       //Tree item for parameters - reimplemented so they can store information about the parameter
+    PlotVariableTreeItem *tempPlotVariableTreeItem;       //Tree item for variables - reimplemented so they can store information about the variable
 
     QVector<double> time;
     bool timeVectorRetained = false;
@@ -159,9 +159,9 @@ void PlotParameterTree::updateList()
             //If the port is not connected it has nothing to plot
             if((*itp)->isConnected())
             {
-                QVector<QString> parameterNames;
-                QVector<QString> parameterUnits;
-                gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getPortName(), parameterNames, parameterUnits);
+                QVector<QString> variableNames;
+                QVector<QString> variableUnits;
+                gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getPortName(), variableNames, variableUnits);
                 if(!timeVectorRetained)
                 {
                     time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getPortName()));
@@ -169,17 +169,17 @@ void PlotParameterTree::updateList()
                 }
                 if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
                 {
-                    for(int i = 0; i!=parameterNames.size(); ++i)
+                    for(int i = 0; i!=variableNames.size(); ++i)
                     {
-                        parameterUnits[i] = gConfig.getDefaultUnit(parameterNames[i]);
-                        tempPlotParameterItem = new PlotParameterItem(pComponent->getName(), (*itp)->getPortName(), parameterNames[i], parameterUnits[i], tempComponentItem);
-                        tempComponentItem->addChild(tempPlotParameterItem);
-                        QStringList parameterDescription;
-                        parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getPortName() << parameterNames[i] << parameterUnits[i];
-                        mAvailableParameters.append(parameterDescription);
-                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(parameterDescription))
+                        variableUnits[i] = gConfig.getDefaultUnit(variableNames[i]);
+                        tempPlotVariableTreeItem = new PlotVariableTreeItem(pComponent->getName(), (*itp)->getPortName(), variableNames[i], variableUnits[i], tempComponentItem);
+                        tempComponentItem->addChild(tempPlotVariableTreeItem);
+                        QStringList variableDescription;
+                        variableDescription << (*itp)->getGuiModelObjectName() << (*itp)->getPortName() << variableNames[i] << variableUnits[i];
+                        mAvailableVariables.append(variableDescription);
+                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(variableDescription))
                         {
-                            tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
+                            tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
                         }
                     }
                 }
@@ -197,18 +197,18 @@ void PlotParameterTree::updateList()
 
         if(!componentName.isEmpty())
         {
-            tempPlotParameterItem = new PlotParameterItem(componentName, portName, dataName, dataUnit);
-            tempPlotParameterItem->setText(0, tempPlotParameterItem->text(0).prepend(" " + componentName + ", "));
-            tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
-            this->addTopLevelItem(tempPlotParameterItem);
-            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)));
+            tempPlotVariableTreeItem = new PlotVariableTreeItem(componentName, portName, dataName, dataUnit);
+            tempPlotVariableTreeItem->setText(0, tempPlotVariableTreeItem->text(0).prepend(" " + componentName + ", "));
+            tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
+            this->addTopLevelItem(tempPlotVariableTreeItem);
+            tempPlotVariableTreeItem->setDisabled(!mAvailableVariables.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)));
         }
     }
 
         //Remove no longer existing favorite variables
     for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().size(); ++i)
     {
-        if(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)))
+        if(!mAvailableVariables.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)))
         {
            // gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getFavoriteVariables().at(i));
         }
@@ -226,37 +226,37 @@ void PlotParameterTree::updateList()
 
 //! @brief Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
 //! @param *item Pointer to the tree widget item whos arrays will be looked up from the map and plotted
-PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
+PlotWindow *PlotVariableTree::createPlotWindow(QTreeWidgetItem *item)
 {
     //! @todo This is a kind of dumb check; it assumes that component items have bold font and variables not.
     if(!item->font(0).bold() && !item->isDisabled())     //Top level items cannot be plotted (they represent the components)
     {
-        //QTreeWidgetItem must be casted to a PlotParameterItem. This is a necessary because double click event can not know which kind of tree item is clicked.
-        PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
+        //QTreeWidgetItem must be casted to a PlotVariableTreeItem. This is a necessary because double click event can not know which kind of tree item is clicked.
+        PlotVariableTreeItem *tempItem = dynamic_cast<PlotVariableTreeItem *>(item);
         return createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), ""/*tempItem->getDataUnit()*/);
     }
     return 0; //! @todo Should this return 0?
 }
 
 
-PlotWindow *PlotParameterTree::getPlotWindow(int number)
+PlotWindow *PlotVariableTree::getPlotWindow(int number)
 {
     return mOpenPlotWindows.at(number);
 }
 
 
-void PlotParameterTree::reportClosedPlotWindow(PlotWindow *window)
+void PlotVariableTree::reportClosedPlotWindow(PlotWindow *window)
 {
     mOpenPlotWindows.removeAll(window);
 }
 
 
-//! @brief Creates a new plot window from specified component and parameter.
-//! @param componentName Name of the component where the port with the parameter is located
-//! @param portName Name of the port where the parameter is located
-//! @param dataName Name of the parameter
-//! @param dataUnit Name of the unit of the parameter
-PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
+//! @brief Creates a new plot window from specified component and variable.
+//! @param componentName Name of the component where the port with the variable is located
+//! @param portName Name of the port where the variable is located
+//! @param dataName Name of the variable
+//! @param dataUnit Name of the unit of the variable
+PlotWindow *PlotVariableTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     //QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
     QPair<QVector<double>, QVector<double> > vectors;
@@ -278,7 +278,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString p
 }
 
 
-PlotWindow *PlotParameterTree::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit)
+PlotWindow *PlotVariableTree::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
@@ -289,7 +289,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QVector<double> xVector, QVector
 
 
 //! @brief Defines what happens when clicking in the variable list. Used to initiate drag operations.
-void PlotParameterTree::mousePressEvent(QMouseEvent *event)
+void PlotVariableTree::mousePressEvent(QMouseEvent *event)
 {
     gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
     QTreeWidget::mousePressEvent(event);
@@ -300,7 +300,7 @@ void PlotParameterTree::mousePressEvent(QMouseEvent *event)
 
 
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
-void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
+void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
 {
     gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
     if (!(event->buttons() & Qt::LeftButton))
@@ -312,8 +312,8 @@ void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    PlotParameterItem *item;
-    item = dynamic_cast<PlotParameterItem *>(currentItem());
+    PlotVariableTreeItem *item;
+    item = dynamic_cast<PlotVariableTreeItem *>(currentItem());
 
     if(item != 0)
     {
@@ -328,21 +328,21 @@ void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-//! @brief Defines the right-click menu in the parameter tree
-void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
+//! @brief Defines the right-click menu in the variable tree
+void PlotVariableTree::contextMenuEvent(QContextMenuEvent *event)
 {
     qDebug() << "contextMenuEvent()";
 
-    PlotParameterItem *item;
+    PlotVariableTreeItem *item;
 
-    //! @todo Dumb check that assumes component tree items to be bold and parameter items to be not bold
+    //! @todo Dumb check that assumes component tree items to be bold and variable items to be not bold
     if(currentItem() != 0 && !currentItem()->font(0).bold())
     {
         qDebug() << "currentItem() is ok!";
 
-        item = dynamic_cast<PlotParameterItem *>(currentItem());
-        QStringList parameterDescription;
-        parameterDescription << item->getComponentName() << item->getPortName() << item->getDataName() << item->getDataUnit();
+        item = dynamic_cast<PlotVariableTreeItem *>(currentItem());
+        QStringList variableDescription;
+        variableDescription << item->getComponentName() << item->getPortName() << item->getDataName() << item->getDataUnit();
         QMenu menu;
 
         QAction *defineAliasAction = 0;
@@ -360,7 +360,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
         }
 
 
-        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(parameterDescription))
+        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(variableDescription))
         {
             addToFavoritesAction = menu.addAction(QString("Add Favorite Variable"));
         }
@@ -388,12 +388,12 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 
         if(selectedAction == addToFavoritesAction)
         {
-            gpMainWindow->mpProjectTabs->getCurrentContainer()->setFavoriteVariable(parameterDescription.at(0), parameterDescription.at(1), parameterDescription.at(2), parameterDescription.at(3));
+            gpMainWindow->mpProjectTabs->getCurrentContainer()->setFavoriteVariable(variableDescription.at(0), variableDescription.at(1), variableDescription.at(2), variableDescription.at(3));
         }
 
         if(selectedAction == removeFromFavoritesAction)
         {
-           gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().removeAll(parameterDescription);
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().removeAll(variableDescription);
            this->updateList();
         }
     }
@@ -402,14 +402,10 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 
 //! @brief Constructor the main plot widget, which contains the tree with variables
 //! @param parent Pointer to the main window
-PlotWidget::PlotWidget(MainWindow *parent)
+PlotTreeWidget::PlotTreeWidget(MainWindow *parent)
         : QWidget(parent)
 {
-    qDebug() << "Creating PlotWidget!";
-
-    //mpParentMainWindow = parent;
-
-    mpPlotParameterTree = new PlotParameterTree(gpMainWindow);
+    mpPlotVariableTree = new PlotVariableTree(gpMainWindow);
 
     mpLoadButton = new QPushButton(tr("&Load Plot Window from XML"), this);
     mpLoadButton->setAutoDefault(false);
@@ -419,7 +415,7 @@ PlotWidget::PlotWidget(MainWindow *parent)
     mpLoadButton->setFont(tempFont);
 
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpPlotParameterTree,0,0,1,1);
+    mpLayout->addWidget(mpPlotVariableTree,0,0,1,1);
     mpLayout->addWidget(mpLoadButton, 1, 0, 1, 1);
     mpLayout->setContentsMargins(4,4,4,4);
 
@@ -428,7 +424,7 @@ PlotWidget::PlotWidget(MainWindow *parent)
 
 
 //! Loads a plot window from a specified .hpw file. Loads the actual plot data from a .xml file.
-void PlotWidget::loadFromXml()
+void PlotTreeWidget::loadFromXml()
 {
     QDir fileDialogOpenDir;
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load Plot Window Description From XML"),
@@ -469,7 +465,7 @@ void PlotWidget::loadFromXml()
     }
 
         //Create new plot window
-    PlotWindow *pPlotWindow = new PlotWindow(mpPlotParameterTree, gpMainWindow);
+    PlotWindow *pPlotWindow = new PlotWindow(mpPlotVariableTree, gpMainWindow);
     pPlotWindow->show();
 
         //Add plot tabs
