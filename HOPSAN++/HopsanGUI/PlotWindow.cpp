@@ -993,7 +993,7 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
     mpCloseButton->setFixedSize(20, 20);
 
-    QLabel *pDummy = new QLabel((" "), this);
+    QLabel *pDummy = new QLabel((" "), this);       //This is used to avoid "stretching" the icons with the window
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpColorBlob,                0,  0);

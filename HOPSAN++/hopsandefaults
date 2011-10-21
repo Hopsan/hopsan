@@ -17,6 +17,7 @@
         <toggleportsbuttonchecked>true</toggleportsbuttonchecked>
         <groupmessagesbytag>true</groupmessagesbytag>
         <generationlimit>100</generationlimit>
+        <loadmodeldir/>
     </settings>
     <style>
         <penstyle width="1" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="Iso"/>

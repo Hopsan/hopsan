@@ -1966,10 +1966,14 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         QDir fileDialog; QFile file;
         QString modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                             fileDialog.currentPath() + QString(MODELPATH),
+                                                             gConfig.getLoadModelDir(),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (!modelFilePath.isNull())
         {
+            file.setFileName(modelFilePath);
+            QFileInfo fileInfo(file);
+            gConfig.setLoadModelDir(fileInfo.absolutePath());
+
             bool doIt = true;
             if (mGUIModelObjectMap.size() > 0)
             {
@@ -1984,7 +1988,6 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             {
                 this->clearContents();
 
-                file.setFileName(modelFilePath);
                 QDomDocument domDocument;
                 QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
                 if (!hmfRoot.isNull())

@@ -301,12 +301,11 @@ void ContainerPropertiesDialog::setValues()
 //! @brief Slot that opens a file dialog where user can select a user icon for the system
 void ContainerPropertiesDialog::browseUser()
 {
-    QDir fileDialogOpenDir;
-    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
-                                                         fileDialogOpenDir.currentPath() + QString(MODELPATH));
-    if (!modelFileName.isEmpty())
+    QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
+                                                        QDir().currentPath() + QString(MODELPATH));
+    if (!iconFileName.isEmpty())
     {
-        mpUserIconPath->setText(modelFileName);
+        mpUserIconPath->setText(iconFileName);
     }
 }
 
@@ -315,11 +314,11 @@ void ContainerPropertiesDialog::browseUser()
 void ContainerPropertiesDialog::browseIso()
 {
     QDir fileDialogOpenDir;
-    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
-                                                         fileDialogOpenDir.currentPath() + QString(MODELPATH));
-    if (!modelFileName.isEmpty())
+    QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
+                                                        fileDialogOpenDir.currentPath() + QString(MODELPATH));
+    if (!iconFileName.isEmpty())
     {
-        mpIsoIconPath->setText(modelFileName);
+        mpIsoIconPath->setText(iconFileName);
     }
 }
 

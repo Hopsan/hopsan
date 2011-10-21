@@ -71,6 +71,7 @@ public:
     QString getLastScriptFile();
     bool getGroupMessagesByTag();
     int getGenerationLimit();
+    QString getLoadModelDir();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -95,6 +96,7 @@ public:
     void setLastScriptFile(QString file);
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
+    void setLoadModelDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -122,6 +124,7 @@ private:
     QString mLastScriptFile;
     bool mGroupMessagesByTag;
     int mGenerationLimit;
+    QString mLoadModelDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

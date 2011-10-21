@@ -69,6 +69,7 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
     appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
     appendDomIntegerNode(settings, "generationlimit", mGenerationLimit);
+    appendDomTextNode(settings, "loadmodeldir", mLoadModelDir);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -233,7 +234,8 @@ void Configuration::loadFromXml()
                 mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
             if(!settingsElement.firstChildElement("generationlimit").isNull())
                 mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
-
+            if(!settingsElement.firstChildElement("loadmodeldir").isNull())
+                mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -396,6 +398,8 @@ void Configuration::loadDefaultsFromXml()
                 mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
             if(!settingsElement.firstChildElement("generationlimit").isNull())
                 mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
+            if(!settingsElement.firstChildElement("loadmodeldir").isNull())
+                mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -713,6 +717,16 @@ int Configuration::getGenerationLimit()
 }
 
 
+QString Configuration::getLoadModelDir()
+{
+    if(mLoadModelDir.isEmpty())
+    {
+        return gExecPath+QString(MODELPATH);
+    }
+    return mLoadModelDir;
+}
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -920,4 +934,10 @@ void Configuration::setGenerationLimit(int value)
 {
     mGenerationLimit = value;
     saveToXml();
+}
+
+
+void Configuration::setLoadModelDir(QString value)
+{
+    mLoadModelDir = value;
 }
