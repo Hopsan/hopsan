@@ -69,7 +69,7 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(GUIComponent *pGUIComponent
 //! and start values. The start values are registred and stored in the same container.
 //! But, a start value is taged by "startvalue:" in the description.
 bool ComponentPropertiesDialog::interpretedAsStartValue(QString &parameterDescription)
-{
+{    
     QString startValueString = "startvalue:";
     bool res=false;
     if(parameterDescription.contains(startValueString, Qt::CaseInsensitive))
@@ -122,16 +122,24 @@ void ComponentPropertiesDialog::createEditStuff()
     {
         if(interpretedAsStartValue(qDescriptions[i]))
         {
-            QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
-            unit.prepend("[");
-            unit.append("]");
-            mvStartValueLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
-                                                             qParameterValues[i],
-                                                             unit,
-                                                             qTypes[i],
-                                                             mpGUIComponent));
-            startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
-            ++nParam;
+            QString portName = qDescriptions[i];
+            portName.remove("Port ");
+            QString portType = mpGUIComponent->getPort(portName)->getPortType();
+            qDebug() << "The port type is " << portType;
+            if((portType != "MULTIPORT") && (portType != "POWERMULTIPORT") && (portType != "READMULTIPORT"))
+            {
+                qDebug() << "Doing it!";
+                QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
+                unit.prepend("[");
+                unit.append("]");
+                mvStartValueLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
+                                                                 qParameterValues[i],
+                                                                 unit,
+                                                                 qTypes[i],
+                                                                 mpGUIComponent));
+                startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
+                ++nParam;
+            }
         }
         else
         {
