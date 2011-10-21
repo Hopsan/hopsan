@@ -1781,7 +1781,8 @@ bool ComponentSystem::isSimulationOk()
             }
             else if( ports[i]->isConnected() )
             {
-                if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
+                if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1 && ports[i]->getNodePtr()->getNumberOfPortsByType(READPORT) == 0)
+
                 {
                     gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
                     return false;
