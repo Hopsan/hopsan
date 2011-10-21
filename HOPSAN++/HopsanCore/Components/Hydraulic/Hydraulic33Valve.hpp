@@ -136,6 +136,7 @@ namespace hopsan {
             Zca = (*mpND_Zca);
             xvin = (*mpND_xvin);
 
+            limitValue(xvin, -xvmax, xvmax);
             filter.update(xvin);
             xv = filter.value();
 

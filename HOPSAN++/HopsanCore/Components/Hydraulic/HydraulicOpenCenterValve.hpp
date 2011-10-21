@@ -180,6 +180,7 @@ namespace hopsan {
             Zcc2 = (*mpND_Zcc2);
             xvin  = (*mpND_xvin);
 
+            limitValue(xvin, -xvmax, xvmax);
             filter.update(xvin);
             xv = filter.value();
 

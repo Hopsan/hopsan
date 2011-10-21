@@ -124,6 +124,7 @@ namespace hopsan {
             xvin = (*mpND_xvin);
 
             //Dynamics of spool position (second order low pass filter)
+            limitValue(xvin, 0, xvmax);
             filter.update(xvin);
             xv = filter.value();
 
