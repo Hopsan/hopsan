@@ -32,7 +32,7 @@ namespace hopsan {
     private:
         double k;
         double v1, c1, lastc1, v2, c2, lastc2, Zc;
-        double *mpND_v1, *mpND_c1, *mpND_Zc1, *mpND_v2, *mpND_c2, *mpND_Zc2;
+        double *mpND_f1, *mpND_f2, *mpND_v1, *mpND_c1, *mpND_Zc1, *mpND_v2, *mpND_c2, *mpND_Zc2;
         Port *mpP1, *mpP2;
 
     public:
@@ -57,6 +57,8 @@ namespace hopsan {
 
         void initialize()
         {
+            mpND_f1 =  getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_f2 =  getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
             mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
@@ -66,6 +68,9 @@ namespace hopsan {
 
             Zc = k*mTimestep;
 
+            //! @todo Is this correct? Ask Petter!
+            //(*mpND_c1) = (*mpND_f2)+2.0*Zc*(*mpND_v2);
+            //(*mpND_c2) = (*mpND_f1)+2.0*Zc*(*mpND_v1);
             (*mpND_Zc1) = Zc;
             (*mpND_Zc2) = Zc;
         }
