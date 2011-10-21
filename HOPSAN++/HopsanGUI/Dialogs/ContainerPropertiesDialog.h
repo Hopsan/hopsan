@@ -76,6 +76,8 @@ private:
     QHBoxLayout *mpCQSLayout;
     QLabel *mpCQSLabel;
     QLabel *mpCQSTypeLabel;
+    QVBoxLayout *mpScrollLayout;
+    QWidget *mpPrimaryWidget;
     QVBoxLayout *mpMainLayout;
     QDialogButtonBox *mpButtonBox;
     QPushButton *mpCancelButton;

@@ -3,3 +3,6 @@ TEMPLATE = subdirs
 CONFIG += ordered
 SUBDIRS = HopsanCore HopsanGUI HopsanCLI
 
+CONFIG += DEBUG
+QMAKE_CXXFLAGS_DEBUG += -pg
+QMAKE_LFLAGS_DEBUG += -pg

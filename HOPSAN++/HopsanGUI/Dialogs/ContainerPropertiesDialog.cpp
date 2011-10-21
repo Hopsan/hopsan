@@ -207,13 +207,13 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     }
 
         //This is the main Vertical layout of the dialog
-    mpMainLayout = new QVBoxLayout(this);
-    mpMainLayout->addWidget(pInfoGroupBox);
-    mpMainLayout->addWidget(mpAppearanceGroupBox);
-    mpMainLayout->addWidget(mpSettingsGroupBox);
+    mpScrollLayout = new QVBoxLayout(this);
+    mpScrollLayout->addWidget(pInfoGroupBox);
+    mpScrollLayout->addWidget(mpAppearanceGroupBox);
+    mpScrollLayout->addWidget(mpSettingsGroupBox);
     if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && !mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().isEmpty())
     {
-        mpMainLayout->addWidget(mpSystemParametersGroupBox);
+        mpScrollLayout->addWidget(mpSystemParametersGroupBox);
     }
 
         //Done and Cancel Buttons
@@ -223,7 +223,35 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpDoneButton->setDefault(true);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpDoneButton, QDialogButtonBox::ActionRole);
-    mpMainLayout->addWidget(mpButtonBox, 0, Qt::AlignHCenter);
+    mpScrollLayout->addWidget(mpButtonBox, 0, Qt::AlignHCenter);
+
+    mpPrimaryWidget = new QWidget();
+    mpPrimaryWidget->setLayout(mpScrollLayout);
+    mpPrimaryWidget->setPalette(gConfig.getPalette());
+
+    QScrollArea *pScrollArea = new QScrollArea(this);
+    pScrollArea->setWidget(mpPrimaryWidget);
+    pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    QGridLayout *pPrimaryLayout = new QGridLayout(this);
+    pPrimaryLayout->addWidget(pScrollArea);
+    setLayout(pPrimaryLayout);
+
+    mpPrimaryWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    mpScrollLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    pPrimaryLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+    pScrollArea->setFixedHeight(std::min(mpPrimaryWidget->height()+3, maxHeight));
+    if(pScrollArea->minimumHeight() == maxHeight)
+    {
+        pScrollArea->setMinimumWidth(mpPrimaryWidget->width()+19);
+    }
+    else
+    {
+        pScrollArea->setMinimumWidth(mpPrimaryWidget->width()+3);
+    }
+    pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     //Create connections
     connect(mpCancelButton,         SIGNAL(clicked()), this, SLOT(close()));
