@@ -197,7 +197,6 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
 void Port::setNode(Node* pNode, const size_t /*portIdx*/)
 {
     mpNode = pNode;
-    //mIsConnected = true; //!< @todo do we really need this bool, we can compare pointer != 0 instead
 }
 
 
@@ -247,17 +246,21 @@ vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
 
 void Port::createStartNode(NodeTypeT nodeType)
 {
-    mpStartNode = HopsanEssentials::getInstance()->createNode(nodeType);
+    mpStartNode = HopsanEssentials::getInstance()->createNode(nodeType); //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
 
-    vector<string> dataNames, units;
-    mpStartNode->getDataNamesAndUnits(dataNames, units);
-
-    for(size_t i = 0; i < dataNames.size(); ++i)
+    // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected
+    if (mpParentPort == 0)
     {
-        stringstream ssName, ssDesc;
-        ssDesc << "startvalue:" << "Port " << getPortName();
-        ssName << getPortName() << "::" << dataNames[i];
-        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[i], *(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(dataNames[i]))));
+        vector<string> dataNames, units;
+        mpStartNode->getDataNamesAndUnits(dataNames, units);
+
+        for(size_t i = 0; i < dataNames.size(); ++i)
+        {
+            stringstream ssName, ssDesc;
+            ssDesc << "startvalue:" << "Port " << getPortName();
+            ssName << getPortName() << "::" << dataNames[i];
+            getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[i], *(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(dataNames[i]))));
+        }
     }
 }
 

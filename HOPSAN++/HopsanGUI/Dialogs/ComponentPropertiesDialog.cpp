@@ -122,13 +122,13 @@ void ComponentPropertiesDialog::createEditStuff()
     {
         if(interpretedAsStartValue(qDescriptions[i]))
         {
-            QString portName = qDescriptions[i];
-            portName.remove("Port ");
-            QString portType = mpGUIComponent->getPort(portName)->getPortType();
-            qDebug() << "The port type is " << portType;
-            if((portType != "MULTIPORT") && (portType != "POWERMULTIPORT") && (portType != "READMULTIPORT"))
-            {
-                qDebug() << "Doing it!";
+//            QString portName = qDescriptions[i];
+//            portName.remove("Port ");
+//            QString portType = mpGUIComponent->getPort(portName)->getPortType();
+//            qDebug() << "The port type is " << portType;
+//            if((portType != "MULTIPORT") && (portType != "POWERMULTIPORT") && (portType != "READMULTIPORT"))
+//            {
+//                qDebug() << "Doing it!";
                 QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
                 unit.prepend("[");
                 unit.append("]");
@@ -139,7 +139,7 @@ void ComponentPropertiesDialog::createEditStuff()
                                                                  mpGUIComponent));
                 startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
                 ++nParam;
-            }
+//            }
         }
         else
         {
