@@ -474,12 +474,13 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
     {
         mpStartNode->setData(idx, value);
 
-        vector<string> dataNames, units;
-        mpStartNode->getDataNamesAndUnits(dataNames, units);
-        stringstream ssName, ssDesc;
-        ssDesc << "startvalue:" << "Port " << getPortName();
-        ssName << getPortName() << "::" << dataNames[idx];
-        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[idx], *mpStartNode->getDataPtr(idx));
+        //! @todo I commented the code bellow to avoid previously dissabled startvalues from reapearing after simulation wher setStartValue was called, I hope this does not screw something up
+//        vector<string> dataNames, units;
+//        mpStartNode->getDataNamesAndUnits(dataNames, units);
+//        stringstream ssName, ssDesc;
+//        ssDesc << "startvalue:" << "Port " << getPortName();
+//        ssName << getPortName() << "::" << dataNames[idx];
+//        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[idx], *mpStartNode->getDataPtr(idx));
     }
     else
     {
