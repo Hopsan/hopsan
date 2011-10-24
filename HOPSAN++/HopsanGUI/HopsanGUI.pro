@@ -125,7 +125,8 @@ SOURCES += main.cpp \
     Dialogs/HelpDialog.cpp \
     Dependencies/BarChartPlotter/plotterbase.cpp \
     Dependencies/BarChartPlotter/barchartplotter.cpp \
-    Dependencies/BarChartPlotter/axisbase.cpp
+    Dependencies/BarChartPlotter/axisbase.cpp \
+    Dialogs/OptimizationDialog.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -175,8 +176,11 @@ HEADERS += MainWindow.h \
     Dialogs/HelpDialog.h \
     Dependencies/BarChartPlotter/plotterbase.h \
     Dependencies/BarChartPlotter/barchartplotter.h \
-    Dependencies/BarChartPlotter/axisbase.h
+    Dependencies/BarChartPlotter/axisbase.h \
+    Dialogs/OptimizationDialog.h
 
 OTHER_FILES += \
     ../hopsandefaults \
     HopsanGuiBuild.prf
+
+
