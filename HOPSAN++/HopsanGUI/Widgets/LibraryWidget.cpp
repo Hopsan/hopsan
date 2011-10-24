@@ -657,7 +657,7 @@ void LibraryWidget::importFmu()
     fmuComponentHppStream << "#include <string.h>\n";
     fmuComponentHppStream << "#include <assert.h>\n";
     fmuComponentHppStream << "#ifdef WIN32\n";
-    fmuComponentHppStream << "#include \<windows.h>\n";
+    fmuComponentHppStream << "#include <windows.h>\n";
     fmuComponentHppStream << "#endif\n\n";
     fmuComponentHppStream << "void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,\n";
     fmuComponentHppStream << "               fmiString category, fmiString message, ...){}\n\n";
@@ -1443,13 +1443,13 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
     QMenu menu;
 
-    QAction *pOpenContainingFolder;
+    QAction *pOpenContainingFolder = new QAction(this);
     if(pTree->mName != "External Libraries")
     {
         pOpenContainingFolder = menu.addAction("Open Containing Folder");
     }
 
-    QAction *pUnloadLibraryFolder;
+    QAction *pUnloadLibraryFolder = new QAction(this);
     if(pItem->parent() != 0 && pItem->parent()->text(0) == "External Libraries")
     {
         pUnloadLibraryFolder = menu.addAction("Unload External Library");

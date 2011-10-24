@@ -366,28 +366,25 @@ GUITextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject
     //Read gui specific stuff
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
 
-    if(!guiData.isNull())   //! @todo What if it is null?!
-    {
-        QDomElement textobjectTag = guiData.firstChildElement("textobject");
-        text = textobjectTag.attribute("text");
-        font.fromString(textobjectTag.attribute("font"));
-        color.setNamedColor(textobjectTag.attribute("fontcolor"));
+    QDomElement textobjectTag = guiData.firstChildElement("textobject");
+    text = textobjectTag.attribute("text");
+    font.fromString(textobjectTag.attribute("font"));
+    color.setNamedColor(textobjectTag.attribute("fontcolor"));
 
-        QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
-        QPointF tempPoint;
-        tempPoint.setX(poseTag.attribute("x").toDouble());
-        tempPoint.setY(poseTag.attribute("y").toDouble());
-        point = tempPoint.toPoint();
+    QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
+    QPointF tempPoint;
+    tempPoint.setX(poseTag.attribute("x").toDouble());
+    tempPoint.setY(poseTag.attribute("y").toDouble());
+    point = tempPoint.toPoint();
 
-        QDomElement sizeTag = guiData.firstChildElement("size");
-        width = sizeTag.attribute("width").toDouble();
-        height = sizeTag.attribute("height").toDouble();
+    QDomElement sizeTag = guiData.firstChildElement("size");
+    width = sizeTag.attribute("width").toDouble();
+    height = sizeTag.attribute("height").toDouble();
 
-        QDomElement lineTag = guiData.firstChildElement("line");
-        lineVisible = lineTag.attribute("visible").toInt();
-        linewidth = lineTag.attribute("width").toDouble();
-        linestyle = lineTag.attribute(HMF_STYLETAG);
-    }
+    QDomElement lineTag = guiData.firstChildElement("line");
+    lineVisible = lineTag.attribute("visible").toInt();
+    linewidth = lineTag.attribute("width").toDouble();
+    linestyle = lineTag.attribute(HMF_STYLETAG);
 
     GUITextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NOUNDO);
     pWidget->setText(text);

@@ -40,10 +40,12 @@
 #include "Dialogs/AboutDialog.h"
 #include "Dialogs/HelpDialog.h"
 #include "Dialogs/WelcomeDialog.h"
+#include "Dialogs/OptimizationDialog.h"
 
 #include "UndoStack.h"
 #include "Configuration.h"
 #include "CopyStack.h"
+#include "Utilities/GUIUtilities.h"
 
 //! @todo maybe we can make sure that we dont need to include these here
 #include "GraphicsView.h"
@@ -110,6 +112,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
+    mpOptimizationDialog = new OptimizationDialog(this);
     mpHelpDialog = new HelpDialog(this);
 
     //Create the Python widget
@@ -437,6 +440,12 @@ void MainWindow::createActions()
     mpSimulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
     connect(mpSimulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
+    mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+O)"));
+    mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
+    connect(mpOptimizeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    connect(mpOptimizeAction, SIGNAL(triggered()), mpOptimizationDialog, SLOT(open()));
+
     mpPlotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
     mpPlotAction->setCheckable(true);
@@ -637,6 +646,9 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
+#ifdef DEVELOPMENT
+    mpSimulationMenu->addAction(mpOptimizeAction);
+#endif
     mpSimulationMenu->addAction(mpPlotAction);
     mpSimulationMenu->addAction(mpShowLossesAction);
 
@@ -726,6 +738,9 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpFinishTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
+#ifdef DEVELOPMENT
+    mpSimToolBar->addAction(mpOptimizeAction);
+#endif
     mpSimToolBar->addAction(mpPlotAction);
     mpSimToolBar->addAction(mpShowLossesAction);
     mpSimToolBar->addAction(mpPropertiesAction);
@@ -860,6 +875,10 @@ void MainWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Starts a new simlation of current model.");
     }
+    else if(pHoveredAction == mpOptimizeAction)
+    {
+        showHelpPopupMessage("Open optimization dialog to initialize numerical optimization.");
+    }
     else if(pHoveredAction == mpPlotAction)
     {
         showHelpPopupMessage("Opens the list with all available plot variables from current model.");
@@ -920,6 +939,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpTimeStepLineEdit->setEnabled(!noTabs);
     mpFinishTimeLineEdit->setEnabled(!noTabs);
     mpSimulateAction->setEnabled(!noTabs);
+    mpOptimizeAction->setEnabled(!noTabs);
     mpPlotAction->setEnabled(!noTabs);
     mpPropertiesAction->setEnabled(!noTabs);
     mpOpenSystemParametersAction->setEnabled(!noTabs);

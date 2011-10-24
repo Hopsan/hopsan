@@ -44,6 +44,7 @@ class CopyStack;
 class AboutDialog;
 class WelcomeDialog;
 class HelpDialog;
+class OptimizationDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -105,6 +106,7 @@ public:
     QAction *mpCopyAction;
     QAction *mpPasteAction;
     QAction *mpSimulateAction;
+    QAction *mpOptimizeAction;
     QAction *mpPlotAction;
     QAction *mpLoadLibsAction;
     QAction *mpPropertiesAction;
@@ -170,6 +172,7 @@ private:
     WelcomeDialog *mpWelcomeDialog;
     AboutDialog *mpAboutDialog;
     HelpDialog *mpHelpDialog;
+    OptimizationDialog *mpOptimizationDialog;
 
     //Simulation setup line edits
     QLineEdit *mpStartTimeLineEdit;
