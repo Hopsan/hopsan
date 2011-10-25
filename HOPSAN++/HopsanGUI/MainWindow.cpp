@@ -237,8 +237,14 @@ MainWindow::~MainWindow()
 //! All startup events that does not involve creating the main window and its widgets/dialogs belongs here.
 void MainWindow::initializeWorkspace()
 {
-    //Load default and user specified libraries
-    QString componentPath = gExecPath + QString(COMPONENTPATH);
+    // Load HopsanGui built in secret components
+    //! @todo this is handled kind of ugly, but OK for now
+    QString componentPath = OBJECTICONPATH;
+    componentPath.chop(1);
+    mpLibrary->loadHiddenSecretDir(componentPath);
+
+    // Load default and user specified libraries
+    componentPath = gExecPath + QString(COMPONENTPATH);
     componentPath.chop(1);
     mpLibrary->loadLibrary(componentPath);
     for(int i=0; i<gConfig.getUserLibs().size(); ++i)
@@ -246,10 +252,10 @@ void MainWindow::initializeWorkspace()
         mpLibrary->loadExternalLibrary(gConfig.getUserLibs().at(i));
     }
 
-    //Create the plot widget, only once! :)
+    // Create the plot widget, only once! :)
     mpPlotWidget = new PlotTreeWidget(this);
 
-    //File association - ignore everything else and open the specified file if there is a hmf file in the argument list
+    // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
     {
         if(qApp->arguments().at(i).endsWith(".hmf"))
@@ -784,6 +790,7 @@ void MainWindow::createToolbars()
     mpExamplesMenu = new QMenu("Example Models");
     QAction *pTempAction;
     QStringList exampleModels;
+    //! @todo not hardcoded, should load from the file tree directly
     exampleModels << "Dynamic Pressure Feedback" << "Hydrostatic Transmission" << "Load Sensing System" << "Pressure Controlled Pump" << "Position Servo" << "Pressure Relief Valve Characteristics";
     for(int i=0; i<exampleModels.size(); ++i)
     {

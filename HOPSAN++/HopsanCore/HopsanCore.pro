@@ -292,7 +292,8 @@ HEADERS += win32dll.h \
     Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     Components/Signal/SignalTan.hpp \
     Components/Signal/SignalSin.hpp \
-    Components/Signal/SignalCos.hpp
+    Components/Signal/SignalCos.hpp \
+    Components/DummyComponent.hpp
 
 
 OTHER_FILES += \
@@ -300,6 +301,7 @@ OTHER_FILES += \
     Components/Signal/SignalTan.xml \
     Components/Signal/SignalSin.xml \
     Components/Signal/SignalCos.xml
+
 
 
 

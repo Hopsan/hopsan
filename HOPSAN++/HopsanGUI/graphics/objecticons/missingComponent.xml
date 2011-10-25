@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.2">
+	<modelobject typename="MissingComponent" displayname="MissingComponent">
+	    <icons>
+            <icon type="user" path="missingcomponent.svg" iconrotation="ON" scale="1.0"/>
+	    </icons>
+	</modelobject>
+</hopsanobjectappearance>

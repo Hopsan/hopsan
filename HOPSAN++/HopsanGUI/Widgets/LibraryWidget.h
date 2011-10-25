@@ -62,6 +62,7 @@ public:
     void loadLibrary(QString libDir, bool external = false);
     void loadExternalLibrary(QString libDir);
     void loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree=0);
+    void loadHiddenSecretDir(QString dir);
 
     GUIModelObjectAppearance *getAppearanceData(QString componentType);
     QSize sizeHint() const;
@@ -88,6 +89,7 @@ private slots:
 
 private:
     LibraryContentsTree *mpContentsTree;
+    LibraryContentsTree *mpSecretHiddenContentsTree;
 
     QTreeWidget *mpTree;
 

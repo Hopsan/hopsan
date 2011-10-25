@@ -50,6 +50,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 {
     mpCoreAccess = new CoreLibraryAccess();
     mpContentsTree = new LibraryContentsTree();
+    mpSecretHiddenContentsTree = new LibraryContentsTree();
 
     //mpTree = new LibraryTreeWidget(this);
     mpTree = new QTreeWidget(this);
@@ -1260,6 +1261,81 @@ void LibraryWidget::loadExternalLibrary(QString libDir)
     loadLibrary(libDir, true);
 }
 
+//! @brief Load contents (xml files) of dir into SecretHidden library map that is not vissible in the libary
+//! @todo Lots of duplicate code in this function and otehr load function, should try to break out common sub help functions
+void LibraryWidget::loadHiddenSecretDir(QString dir)
+{
+    QDir libDirObject(dir);
+
+    // Append components
+    QStringList filters;
+    filters << "*.xml";                     //Create the name filter
+    libDirObject.setFilter(QDir::NoFilter);
+    libDirObject.setNameFilters(filters);   //Set the name filter
+
+    QStringList xmlList  = libDirObject.entryList();    //Create a list with all name of the files in dir libDir
+    for (int i=0; i<xmlList.size(); ++i)        //Iterate over the file names
+    {
+        QString filename = dir + "/" + xmlList.at(i);
+        QFile file(filename);   //Create a QFile object
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file or not a text file: " + filename);
+            continue;
+        }
+
+        GUIModelObjectAppearance *pAppearanceData = new GUIModelObjectAppearance;
+
+        QDomDocument domDocument;        //Read appearance from file, First check if xml
+        QString errorStr;
+        int errorLine, errorColumn;
+        if (domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+        {
+            //! @todo check caf version
+            QDomElement cafRoot = domDocument.documentElement();
+            if (cafRoot.tagName() != CAF_ROOT)
+            {
+                gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                continue;
+            }
+            else
+            {
+                //Read appearance data from the caf xml file, begin with the first
+                QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file
+                pAppearanceData->setBasePath(dir + "/");
+                pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
+            }
+        }
+        else
+        {
+            gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan ComponentAppearance Data file.");
+            continue;
+        }
+
+        bool success = true;
+        //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
+        if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
+        {
+            //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
+                //Check that component is registered in core
+            success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
+            if (!success)
+            {
+                gpMainWindow->mpMessageWidget->printGUIWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+            }
+        }
+
+        if (success)
+        {
+            mpSecretHiddenContentsTree->addComponent(pAppearanceData);
+        }
+
+        //Close file
+        file.close();
+    }
+
+}
+
 
 //! @brief Recursive function that searches through subdirectories and adds components to the library contents tree
 //! @param libDir Current directory
@@ -1528,10 +1604,19 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
 //! @param componentType Type name of the component
 GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
 {
-    if(!mpContentsTree->findComponent(componentType))
-        return 0;
-    else
-        return mpContentsTree->findComponent(componentType)->getAppearanceData();
+    LibraryComponent* pLibComp = mpContentsTree->findComponent(componentType);
+    if(pLibComp == 0)
+    {
+        // If we cant find in ordinary tree, then try the secret hidden tree
+        pLibComp = mpSecretHiddenContentsTree->findComponent(componentType);
+        if (pLibComp == 0)
+        {
+            // Nothing found return NULL ptr
+            return 0;
+        }
+    }
+    // If we found something then return appearance data
+    return pLibComp->getAppearanceData();
 }
 
 

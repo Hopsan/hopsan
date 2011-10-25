@@ -418,7 +418,12 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             if(pObj == NULL)
             {
-                gpMainWindow->mpMessageWidget->printGUIErrorMessage("Model contains components from a library that has not been included.");
+                gpMainWindow->mpMessageWidget->printGUIErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
+                                                                    xmlSubObject.attribute(HMF_TYPETAG) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
+
+                // Insert missing component dummy instead
+                xmlSubObject.setAttribute(HMF_TYPETAG, "MissingComponent");
+                pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             }
             else
             {

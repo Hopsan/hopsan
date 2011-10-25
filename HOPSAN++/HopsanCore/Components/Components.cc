@@ -227,4 +227,8 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("ElectricMotorGear", ElectricMotorGear::Creator);
     pComponentFactory->registerCreatorFunction("ElectricResistor", ElectricResistor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricUsource", ElectricUsource::Creator);
+
+    // Special component
+    pComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
+
 }

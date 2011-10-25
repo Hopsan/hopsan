@@ -198,8 +198,11 @@
 #include "Electric/ElectricResistor.hpp"
 #include "Electric/ElectricUsource.hpp"
 
+/* Special Component */
+#include "DummyComponent.hpp"
 
-#include "Component.h"
+
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

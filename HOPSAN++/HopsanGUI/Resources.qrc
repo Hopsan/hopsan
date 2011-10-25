@@ -104,5 +104,7 @@
         <file>graphics/uiicons/Hopsan-Import.png</file>
         <file>graphics/uiicons/Hopsan-LoadLibrary.png</file>
         <file>graphics/uiicons/Hopsan-Optimize.png</file>
+        <file>graphics/objecticons/missingComponent.xml</file>
+        <file>graphics/objecticons/missingcomponent.svg</file>
     </qresource>
 </RCC>
