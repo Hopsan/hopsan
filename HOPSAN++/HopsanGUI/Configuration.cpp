@@ -23,7 +23,7 @@
 //$Id$
 
 #include "common.h"
-#include "version.h"
+#include "version_gui.h"
 #include "Configuration.h"
 #include "Utilities/XMLUtilities.h"
 #include "Utilities/GUIUtilities.h"

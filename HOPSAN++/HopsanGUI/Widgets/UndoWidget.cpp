@@ -24,12 +24,12 @@
 
 #include <QtGui>
 
-#include "../UndoStack.h"
-#include "../MainWindow.h"
+#include "UndoStack.h"
+#include "MainWindow.h"
 #include "ProjectTabWidget.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../GUIObjects/GUIContainerObject.h"
-#include "../common.h"
+#include "Utilities/GUIUtilities.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "common.h"
 
 
 //! @class UndoWidget

@@ -31,12 +31,12 @@
 #include <QHBoxLayout>
 #include <QDialogButtonBox>
 
-#include "../GUIObjects/GUIContainerObject.h"
-#include "../GUIObjects/GUISystem.h"
-#include "../MainWindow.h"
-#include "../Widgets/LibraryWidget.h"
-#include "../Configuration.h"
-#include "../Widgets/ProjectTabWidget.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUISystem.h"
+#include "MainWindow.h"
+#include "Widgets/LibraryWidget.h"
+#include "Configuration.h"
+#include "Widgets/ProjectTabWidget.h"
 
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container

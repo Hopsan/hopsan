@@ -23,9 +23,9 @@
 //!
 
 #include "MessageWidget.h"
-#include "../MainWindow.h"
-#include "../CoreAccess.h"
-#include "../Configuration.h"
+#include "MainWindow.h"
+#include "CoreAccess.h"
+#include "Configuration.h"
 #include <QDateTime>
 
 using namespace hopsan;

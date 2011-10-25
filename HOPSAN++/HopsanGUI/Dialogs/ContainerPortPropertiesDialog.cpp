@@ -30,9 +30,9 @@
 #include <QDialogButtonBox>
 #include <QGroupBox>
 
-#include "../GUIObjects/GUIContainerPort.h"
-#include "../GUIObjects/GUIContainerObject.h"
-#include "../Configuration.h"
+#include "GUIObjects/GUIContainerPort.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "Configuration.h"
 
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container

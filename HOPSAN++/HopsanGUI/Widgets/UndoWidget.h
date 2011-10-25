@@ -33,7 +33,7 @@
 
 #include <QDomElement>
 #include <QDomDocument>
-#include "../MainWindow.h"
+#include "MainWindow.h"
 
     //Forward Declarations
 class MainWindow;

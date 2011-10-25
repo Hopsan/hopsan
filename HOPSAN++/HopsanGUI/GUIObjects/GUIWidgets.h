@@ -30,7 +30,7 @@
 #include <assert.h>
 
 #include "GUIObject.h"
-#include "../common.h"
+#include "common.h"
 
 #include <QTextEdit>
 #include <QLabel>

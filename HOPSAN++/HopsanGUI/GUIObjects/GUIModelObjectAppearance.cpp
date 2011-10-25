@@ -23,9 +23,9 @@
 //$Id$
 
 #include "GUIModelObjectAppearance.h"
-#include "../MainWindow.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../version.h"
+#include "MainWindow.h"
+#include "Utilities/GUIUtilities.h"
+#include "version_gui.h"
 
 //These are only used in temporary save to file
 #include <QFile>

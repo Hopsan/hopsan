@@ -13,8 +13,6 @@ DESTDIR = $${PWD}/../bin
 QT += svg xml
 QT += core gui webkit
 
-CONFIG += console #Use this for consol app support (cout output, you aslo need to run in consol but hopsan seems slow)
-
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
@@ -39,6 +37,11 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore
 LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Set our own HopsanGUI Include Path
+INCLUDEPATH *= $${PWD}/
 #--------------------------------------------------------
 
 # -------------------------------------------------
@@ -66,6 +69,10 @@ win32 {
     PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
     INCLUDEPATH += $${PYTHON_PATH}/include
     LIBS += -L$${PYTHON_PATH}/libs
+
+    CONFIG(debug, debug|release) {
+        CONFIG += console #Use this for consol app support (cout output, you aslo need to run in consol but hopsan seems slow)
+    }
 }
 
 #Debug output
@@ -140,7 +147,7 @@ HEADERS += MainWindow.h \
     Widgets/MessageWidget.h \
     SimulationThread.h \
     InitializationThread.h \
-    version.h \
+    version_gui.h \
     Dialogs/OptionsDialog.h \
     UndoStack.h \
     CoreAccess.h \

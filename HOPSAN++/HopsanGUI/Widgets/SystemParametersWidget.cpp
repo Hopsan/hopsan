@@ -33,11 +33,11 @@
 #include <QWidget>
 #include <QDialog>
 
-#include "../MainWindow.h"
+#include "MainWindow.h"
 #include "SystemParametersWidget.h"
 #include "ProjectTabWidget.h"
-#include "../GUIObjects/GUISystem.h"
-#include "../common.h"
+#include "GUIObjects/GUISystem.h"
+#include "common.h"
 
 
 TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget *parent)

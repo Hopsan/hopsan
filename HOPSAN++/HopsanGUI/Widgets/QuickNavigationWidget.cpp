@@ -23,7 +23,7 @@
 //$Id$
 
 #include "QuickNavigationWidget.h"
-#include "../GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUIContainerObject.h"
 
 #include <QHBoxLayout>
 #include <QGroupBox>

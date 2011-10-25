@@ -22,19 +22,19 @@
 //!
 //$Id$
 
-#include "WelcomeDialog.h"
-#include "../MainWindow.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../Configuration.h"
-#include "../GraphicsView.h"
 #include <QPixmap>
 #include <QColor>
 #include <QWebView>
 #include <QWebFrame>
 #include <QColorGroup>
 
-#include "../common.h"
-#include "../version.h"
+#include "WelcomeDialog.h"
+#include "MainWindow.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "Configuration.h"
+#include "GraphicsView.h"
+#include "common.h"
+#include "version_gui.h"
 
 
 //! @class WelcomeDialog

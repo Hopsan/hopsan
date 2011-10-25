@@ -32,8 +32,8 @@
 #include <complex>
 
 #include "GUIUtilities.h"
-#include "../MainWindow.h"
-#include "../common.h"
+#include "MainWindow.h"
+#include "common.h"
 
 using namespace std;
 

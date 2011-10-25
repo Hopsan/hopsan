@@ -22,13 +22,13 @@
 //!
 //$Id$
 
-#include "../common.h"
+#include "common.h"
 
 #include "GUIWidgets.h"
 #include "GUISystem.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../MainWindow.h"
-#include "../UndoStack.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "MainWindow.h"
+#include "UndoStack.h"
 
 #include <QLabel>
 #include <QDialog>

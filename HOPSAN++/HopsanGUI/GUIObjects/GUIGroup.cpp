@@ -28,23 +28,23 @@
 #include <QVector>
 #include <QtGui> //!< @todo maybe only need qtfile dialog
 
-#include "../common.h"
+#include "common.h"
 
 #include "GUISystem.h"
 #include "GUIContainerObject.h"
 #include "GUIComponent.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../MainWindow.h"
-#include "../Dialogs/ComponentPropertiesDialog.h"
-#include "../GUIPort.h"
-#include "../GUIConnector.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../UndoStack.h"
-#include "../Widgets/MessageWidget.h"
-#include "../GraphicsView.h"
-#include "../Widgets/LibraryWidget.h"
-#include "../loadObjects.h"
-#include "../CopyStack.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "MainWindow.h"
+#include "Dialogs/ComponentPropertiesDialog.h"
+#include "GUIPort.h"
+#include "GUIConnector.h"
+#include "Utilities/GUIUtilities.h"
+#include "UndoStack.h"
+#include "Widgets/MessageWidget.h"
+#include "GraphicsView.h"
+#include "Widgets/LibraryWidget.h"
+#include "loadObjects.h"
+#include "CopyStack.h"
 
 using namespace std;
 

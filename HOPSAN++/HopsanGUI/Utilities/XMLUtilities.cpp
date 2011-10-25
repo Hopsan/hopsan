@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include "../version.h"
+#include "version_gui.h"
 #include "XMLUtilities.h"
 #include <QMessageBox>
 

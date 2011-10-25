@@ -28,7 +28,7 @@
 #include<QGraphicsScene>
 
 #include "GUIContainerObject.h"
-#include "../common.h"
+#include "common.h"
 #include <assert.h>
 
 class ProjectTabWidget;

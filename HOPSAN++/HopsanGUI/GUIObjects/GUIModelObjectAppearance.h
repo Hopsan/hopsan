@@ -27,10 +27,10 @@
 
 #include <QString>
 #include <QPointF>
-#include "../common.h"
+#include "common.h"
 
-#include "../Utilities/XMLUtilities.h"
-#include "../GUIPortAppearance.h"
+#include "Utilities/XMLUtilities.h"
+#include "GUIPortAppearance.h"
 
 //Define for the root xml element name, and the element name for each component (modelobject)
 #define CAF_VERSION "version"

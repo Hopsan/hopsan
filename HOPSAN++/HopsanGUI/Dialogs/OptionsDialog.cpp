@@ -26,12 +26,12 @@
 #include <QDebug>
 
 #include "OptionsDialog.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../MainWindow.h"
-#include "../GraphicsView.h"
-#include "../Widgets/PlotWidget.h"
-#include "../Configuration.h"
-#include "../GUIObjects/GUIContainerObject.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "MainWindow.h"
+#include "GraphicsView.h"
+#include "Widgets/PlotWidget.h"
+#include "Configuration.h"
+#include "GUIObjects/GUIContainerObject.h"
 
 class ProjectTabWidget;
 

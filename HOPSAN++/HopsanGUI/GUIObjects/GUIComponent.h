@@ -26,8 +26,8 @@
 #define GUICOMPONENT_H
 
 #include "GUIModelObject.h"
-#include "../common.h"
-#include "../Utilities/XMLUtilities.h"
+#include "common.h"
+#include "Utilities/XMLUtilities.h"
 #include <assert.h>
 
 //Forward declarations

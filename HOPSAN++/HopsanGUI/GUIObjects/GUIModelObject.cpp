@@ -25,15 +25,15 @@
 #include "GUIModelObject.h"
 
 #include "GUISystem.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../GraphicsView.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../GUIConnector.h"
-#include "../GUIPort.h"
-#include "../Widgets/MessageWidget.h"
-#include "../UndoStack.h"
-#include "../Configuration.h"
-#include "../MainWindow.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "GraphicsView.h"
+#include "Utilities/GUIUtilities.h"
+#include "GUIConnector.h"
+#include "GUIPort.h"
+#include "Widgets/MessageWidget.h"
+#include "UndoStack.h"
+#include "Configuration.h"
+#include "MainWindow.h"
 
 //! @brief Constructor for GUI Objects
 //! @param position Initial scene coordinates where object shall be placed

@@ -24,9 +24,9 @@
 
 #include "GUIContainerPort.h"
 #include "GUIContainerObject.h"
-#include "../GUIPort.h"
-#include "../Dialogs/ContainerPortPropertiesDialog.h"
-#include "../MainWindow.h"
+#include "GUIPort.h"
+#include "Dialogs/ContainerPortPropertiesDialog.h"
+#include "MainWindow.h"
 
 //! @todo rename GUISystemPort to ContainerPort, rename files also
 GUIContainerPort::GUIContainerPort(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)

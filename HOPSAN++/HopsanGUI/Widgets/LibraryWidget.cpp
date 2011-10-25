@@ -26,14 +26,14 @@
 #include <QtGui>
 
 #include "LibraryWidget.h"
-#include "../MainWindow.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../GUIObjects/GUIContainerObject.h"
+#include "MainWindow.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "MessageWidget.h"
-#include "../GUIObjects/GUIModelObjectAppearance.h"
-#include "../Configuration.h"
-#include "../common.h"
-#include "../Utilities/GUIUtilities.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
+#include "Configuration.h"
+#include "common.h"
+#include "Utilities/GUIUtilities.h"
 
 using namespace std;
 using namespace hopsan;

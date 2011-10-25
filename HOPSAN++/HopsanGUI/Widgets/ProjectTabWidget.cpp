@@ -29,17 +29,17 @@
 #include "ProjectTabWidget.h"
 #include "MessageWidget.h"
 
-#include "../MainWindow.h"
-#include "../GraphicsView.h"
-#include "../InitializationThread.h"
-#include "../SimulationThread.h"
-#include "../ProgressBarThread.h"
-#include "../Configuration.h"
-#include "../Utilities/XMLUtilities.h"
-#include "../GUIObjects/GUISystem.h"
-#include "../Widgets/LibraryWidget.h"
-#include "../version.h"
-#include "../GUIConnector.h"
+#include "MainWindow.h"
+#include "GraphicsView.h"
+#include "InitializationThread.h"
+#include "SimulationThread.h"
+#include "ProgressBarThread.h"
+#include "Configuration.h"
+#include "Utilities/XMLUtilities.h"
+#include "GUIObjects/GUISystem.h"
+#include "Widgets/LibraryWidget.h"
+#include "version_gui.h"
+#include "GUIConnector.h"
 
 //! @class ProjectTab
 //! @brief The ProjectTab class is a Widget to contain a simulation model

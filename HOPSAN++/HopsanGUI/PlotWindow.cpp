@@ -47,7 +47,7 @@
 #include "GraphicsView.h"
 #include "Configuration.h"
 #include "loadObjects.h"
-#include "version.h"
+#include "version_gui.h"
 
 #include "qwt_scale_engine.h"
 #include "qwt_symbol.h"

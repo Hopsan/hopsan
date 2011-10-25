@@ -25,7 +25,7 @@
 #include <QDebug>
 #include <QFontDatabase>
 #include "MainWindow.h"
-#include "version.h"
+#include "version_gui.h"
 #include "common.h"
 
 #include "Widgets/PlotWidget.h"

@@ -22,10 +22,9 @@
 //!
 //$Id$
 
-#include <iostream>
-#include <cassert>
-#include <math.h>
-//#include "../HopsanCore.h"
+//#include <iostream>
+//#include <cassert>
+//#include <math.h>
 #include "IntegratorLimited.h"
 
 using namespace hopsan;

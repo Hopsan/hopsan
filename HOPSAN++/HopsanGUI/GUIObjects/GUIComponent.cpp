@@ -26,10 +26,10 @@
 
 #include "GUIComponent.h"
 #include "GUIContainerObject.h"
-#include "../Dialogs/ComponentPropertiesDialog.h"
-#include "../GUIPort.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../GraphicsView.h"
+#include "Dialogs/ComponentPropertiesDialog.h"
+#include "GUIPort.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "GraphicsView.h"
 
 GUIComponent::GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)

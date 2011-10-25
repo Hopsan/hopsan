@@ -23,13 +23,12 @@
 //$Id$
 
 #include "AboutDialog.h"
-#include "../MainWindow.h"
+#include "MainWindow.h"
+#include "common.h"
+#include "version_gui.h"
+
 #include <QPixmap>
 #include <QColor>
-
-#include "../common.h"
-#include "../version.h"
-
 
 //! @class AboutDialog
 //! @brief A class for displaying the "About Hopsan" dialog

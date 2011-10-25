@@ -23,19 +23,19 @@
 //$Id$
 
 #include "GUISystem.h"
-#include "../MainWindow.h"
-#include "../GraphicsView.h"
-#include "../CoreAccess.h"
-#include "../loadObjects.h"
-#include "../GUIConnector.h"
-#include "../UndoStack.h"
-#include "../version.h"
-#include "../Widgets/LibraryWidget.h"
-#include "../Widgets/MessageWidget.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../Dialogs/ContainerPropertiesDialog.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../Widgets/PyDockWidget.h"
+#include "MainWindow.h"
+#include "GraphicsView.h"
+#include "CoreAccess.h"
+#include "loadObjects.h"
+#include "GUIConnector.h"
+#include "UndoStack.h"
+#include "version_gui.h"
+#include "Widgets/LibraryWidget.h"
+#include "Widgets/MessageWidget.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "Dialogs/ContainerPropertiesDialog.h"
+#include "Utilities/GUIUtilities.h"
+#include "Widgets/PyDockWidget.h"
 
 GUISystem::GUISystem(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)

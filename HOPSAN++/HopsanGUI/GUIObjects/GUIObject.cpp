@@ -26,10 +26,10 @@
 
 #include "GUIObject.h"
 #include "GUIContainerObject.h"
-#include "../GraphicsView.h"
-#include "../Widgets/ProjectTabWidget.h"
-#include "../UndoStack.h"
-#include "../Utilities/GUIUtilities.h"
+#include "GraphicsView.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "UndoStack.h"
+#include "Utilities/GUIUtilities.h"
 
 
 //! @todo should not pSystem and pParent be teh same ?

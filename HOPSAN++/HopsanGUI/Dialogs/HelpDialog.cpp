@@ -22,14 +22,14 @@
 //!
 //$Id$
 
-#include "../MainWindow.h"
-#include "HelpDialog.h"
 #include <QWebView>
 #include <QGridLayout>
 #include <QPushButton>
 
-#include "../common.h"
-#include "../version.h"
+#include "MainWindow.h"
+#include "HelpDialog.h"
+#include "common.h"
+#include "version_gui.h"
 
 
 //! @class HelpDialog

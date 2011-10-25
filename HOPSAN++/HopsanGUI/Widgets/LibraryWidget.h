@@ -25,9 +25,9 @@
 #ifndef LIBRARYWIDGET_H
 #define LIBRARYWIDGET_H
 
-#include "../common.h"
+#include "common.h"
 #include "HopsanCore.h"
-#include "../CoreAccess.h"
+#include "CoreAccess.h"
 
 #include <QListWidget>
 #include <QStringList>

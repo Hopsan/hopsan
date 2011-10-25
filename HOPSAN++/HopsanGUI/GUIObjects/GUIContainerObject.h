@@ -28,8 +28,8 @@
 #include "GUIModelObject.h"
 #include "GUIComponent.h"
 #include "GUIWidgets.h"
-#include "../CopyStack.h"
-#include "../CoreAccess.h"
+#include "CopyStack.h"
+#include "CoreAccess.h"
 
 //Forward Declarations
 class ProjectTab;

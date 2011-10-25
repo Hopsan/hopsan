@@ -30,7 +30,7 @@
 #include <QPen>
 
 #include <cassert>
-#include "../common.h"
+#include "common.h"
 
 class QDomElement;
 class GUIObjectSelectionBox;

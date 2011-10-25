@@ -27,7 +27,7 @@
 
 #include <QtGui>
 
-#include "../MainWindow.h"
+#include "MainWindow.h"
 
 class GUIModelObject;
 class GUIComponent;
