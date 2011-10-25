@@ -30,6 +30,11 @@ INCLUDEPATH *= $${PWD}/Dependencies/tclap-1.2.0/include
 #--------------------------------------------------------
 
 #--------------------------------------------------------
+# Set the TicToc include path
+INCLUDEPATH *= $${PWD}/../Utilities
+#--------------------------------------------------------
+
+#--------------------------------------------------------
 # Set hopsan core paths
 INCLUDEPATH *= $${PWD}/../HopsanCore
 LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}

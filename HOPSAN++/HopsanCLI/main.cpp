@@ -19,7 +19,7 @@
 #include <string>
 
 #include <tclap/CmdLine.h>
-#include "../Utilities/TicToc.h"
+#include "TicToc.hpp"
 
 
 using namespace std;
@@ -56,11 +56,18 @@ int main(int argc, char *argv[])
         }
 
         TicToc initTimer("InitializeTime");
-        pRootSystem->initialize(startTime, stopTime);
+        bool initSuccess = pRootSystem->initialize(startTime, stopTime);
         initTimer.TocPrint();
-        TicToc simuTimer("SimulationTime");
-        pRootSystem->simulate(startTime, stopTime);
-        simuTimer.TocPrint();
+        if (initSuccess)
+        {
+            TicToc simuTimer("SimulationTime");
+            pRootSystem->simulate(startTime, stopTime);
+            simuTimer.TocPrint();
+        }
+        else
+        {
+            cout << "Initialize failed, Simulation aborted!" << endl;
+        }
 
         cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
         while (HopsanEssentials::getInstance()->checkMessage() > 0)
