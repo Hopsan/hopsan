@@ -1857,7 +1857,7 @@ void PlotTab::exportToMatlab()
                 fileStream << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
             }
         }
-        fileStream << "]\n";
+        fileStream << "];\n";
 
         fileStream << "y" << i << "=[";                                             //Write data vector
         for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
@@ -1865,7 +1865,7 @@ void PlotTab::exportToMatlab()
             if(k>0) fileStream << ",";
             fileStream << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
         }
-        fileStream << "]\n";
+        fileStream << "];\n";
     }
 
         //Cycle plot curves
@@ -1888,7 +1888,7 @@ void PlotTab::exportToMatlab()
                 fileStream << mPlotCurvePtrs[SECONDPLOT][i]->getTimeVector()[j];
             }
         }
-        fileStream << "]\n";
+        fileStream << "];\n";
 
         fileStream << "y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << "=[";                                             //Write data vector
         for(int k=0; k<mPlotCurvePtrs[SECONDPLOT][i]->getDataVector().size(); ++k)
@@ -1896,7 +1896,7 @@ void PlotTab::exportToMatlab()
             if(k>0) fileStream << ",";
             fileStream << mPlotCurvePtrs[SECONDPLOT][i]->getDataVector()[k];
         }
-        fileStream << "]\n";
+        fileStream << "];\n";
     }
 
         //Write plot functions
