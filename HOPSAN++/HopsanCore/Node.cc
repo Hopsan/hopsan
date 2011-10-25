@@ -60,20 +60,18 @@ Node::Node(size_t datalength)
     mPlotBehaviour.resize(datalength, Node::PLOT);
 
     //Set log specific variables
-    mLogSpaceAllocated = false;
-    mLogCtr = 0;
-    //Default log node allways
-    mDoLog = true;
-    mLogTimeDt = 0.0;
+    disableLog();       //Default log node dissabled
+    mLogTimeDt = -1.0;
     mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
     mLogSlots = 0;
+    mLogCtr = 0;
 }
 
 
 //!
 //! @brief returns the node type
 //!
-NodeTypeT &Node::getNodeType()
+const NodeTypeT Node::getNodeType() const
 {
     return mNodeType;
 }
@@ -95,21 +93,11 @@ void Node::setData(const size_t data_type, const double data)
 //! @param [in] data_type Identifier for the type of node data to get
 //! @return The data value
 //!
-double Node::getData(const size_t data_type)
+const double Node::getData(const size_t data_type) const
 {
     return mDataVector[data_type];
 }
 
-
-//!
-//! @brief get data reference from node, (Dont us this function, It may be removed)
-//! @param [in] data_type Identifier for the type of node data to get
-//! @return A reference to the data value
-//!
-double &Node::getDataRef(const size_t data_type)
-{
-    return mDataVector[data_type];
-}
 
 double *Node::getDataPtr(const size_t data_type)
 {
@@ -131,6 +119,7 @@ void Node::setDataCharacteristics(size_t id, string name, string unit, Node::PLO
 
 //! Get a specific data name
 //! @param [in] id This is the ENUM data id
+//! @todo Maybe we should merge  getDataName(size_t id) and getDataUnit(size_t id) to one function
 string Node::getDataName(size_t id)
 {
     return mDataNames[id];
@@ -139,6 +128,7 @@ string Node::getDataName(size_t id)
 
 //! Get a specific data unit
 //! @param [in] id This is the ENUM data id
+//! @todo Maybe we should merge  getDataName(size_t id) and getDataUnit(size_t id) to one function
 string Node::getDataUnit(size_t id)
 {
     return mDataUnits[id];
@@ -165,8 +155,10 @@ int Node::getDataIdFromName(const string name)
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rValues This vector will contain the values
 //! @param [in,out] rUnits This vector will contain the units
+//! @todo we should be able to select if we want ALL data or only those that are taged as PLOT (really bad name by the way)
 void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
 {
+    //! @todo should we not clear the vectors first to make sure they are empty
     for(size_t i=0; i<mDataNames.size(); ++i)
     {
         if(mPlotBehaviour[i] == Node::PLOT)
@@ -194,6 +186,7 @@ bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values
 //! Get all data names and units
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
+//! @todo we should be able to select if we want ALL data or only those that are taged as PLOT (really bad name by the way)
 void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 {
     //std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
@@ -242,79 +235,104 @@ void Node::setSpecialStartValues(Node */*pNode*/)
 
 
 //! This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
-//! @param [in] nSamples The desired number of log data samples
-void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime)
+//! @param [in] nSamples The desired number of log data samples, <=0 (disableLog)
+void Node::setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime)
 {
-    //make sure we dont try to log more samples than we will simulate
-    //! @todo may need som rounding tricks here
-
-    start = max(start, 0.0);  // Do not log data for negative time
-
-    if ( ((stop - start) / sampletime) < nSamples )
+    if (nSamples > 0)
     {
-        mLogSlots = ((stop - start) / sampletime);
-        std::stringstream ss;
-        ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mLogSlots;
-        gCoreMessageHandler.addWarningMessage(ss.str(), "toofewsamples");
+        enableLog();
+
+        start = max(start, 0.0);  // Do not log data for negative time
+
+        // Make sure we dont try to log more samples than we will simulate
+        //! @todo may need som rounding tricks here
+        if ( ((stop - start) / sampletime) < nSamples )
+        {
+            mLogSlots = ((stop - start) / sampletime);
+            std::stringstream ss;
+            ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mLogSlots;
+            gCoreMessageHandler.addWarningMessage(ss.str(), "toofewsamples");
+        }
+        else
+        {
+            mLogSlots = nSamples;
+        }
+
+        mLogTimeDt = (stop - start) / double(mLogSlots);
+        mLastLogTime = start-mLogTimeDt;
     }
     else
     {
-        mLogSlots = nSamples;
+        disableLog();
     }
-
-    mLogTimeDt = (stop - start) / (double)mLogSlots;
-    mLastLogTime = start-mLogTimeDt;
 }
 
 
 //! This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time
-//! @param [in] factor The timestep skip factor
+//! @param [in] factor The timestep skip factor, minimum 1.0, but if < 0 then disableLog
 void Node::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
 {
-    //! @todo maybe only use integer factors
-    //make sure factor is not less then 1.0
-    factor = max(1.0, factor);
-    mLogTimeDt = sampletime * factor;
-    mLastLogTime = start-mLogTimeDt;
-    mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
+    if (factor > 0)
+    {
+        enableLog();
+        //! @todo maybe only use integer factors
+        //make sure factor is not less then 1.0
+        factor = max(1.0, factor);
+        mLogTimeDt = sampletime * factor;
+        mLastLogTime = start-mLogTimeDt;
+        mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
+    }
+    else
+    {
+        disableLog();
+    }
 }
 
 
 //! This function will set the number of log data slots for preallocation and logDt
-//! @param [in] log_dt The desired log timestep
+//! @param [in] log_dt The desired log timestep, if log_dt < 0 then disableLog
 void Node::setLogSettingsSampleTime(double log_dt, double start, double stop,  double sampletime)
 {
-    //! @todo make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc
-    mLogTimeDt = log_dt;
-    mLastLogTime = start-mLogTimeDt;
-    mLogSlots = (size_t)((stop-start)/log_dt+0.5); //Round to nearest
+    if (log_dt > 0)
+    {
+        enableLog();
+        // Make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc)
+        log_dt = max(sampletime,log_dt);
+        mLogTimeDt = log_dt;
+        mLastLogTime = start-mLogTimeDt;
+        mLogSlots = (size_t)((stop-start)/log_dt+0.5); //Round to nearest
+    }
+    else
+    {
+        disableLog();
+    }
 }
 
-//void Node::preAllocateLogSpace(const size_t nSlots)
-//{
-//    size_t data_size = mDataVector.size();
-//    mTimeStorage.resize(nSlots);
-//    mDataStorage.resize(nSlots, vector<double>(data_size));
-//
-//    cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
-//    mLogSpaceAllocated = true;
-//
-//    //Make sure the ctr is 0 if we simulate teh same model several times in a row
-//    mLogCtr = 0;
-//}
 
 //! Pre allocate memory for the needed amount of log data
-void Node::preAllocateLogSpace()
+bool Node::preAllocateLogSpace()
 {
-    size_t data_size = mDataVector.size();
-    mTimeStorage.resize(mLogSlots);
-    mDataStorage.resize(mLogSlots, vector<double>(data_size));
+    // The size of the data vector, how much data do we need to log each time step in this node
+    const size_t data_size = mDataVector.size();
 
-    cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
-    mLogSpaceAllocated = true;
-
-    //Make sure the ctr is 0 if we simulate the same model several times in a row
+    // Make sure the ctr is 0 if we simulate the same model several times in a row
     mLogCtr = 0;
+
+    // Now try to allocate log memmory
+    try
+    {
+        mTimeStorage.resize(mLogSlots);
+        mDataStorage.resize(mLogSlots, vector<double>(data_size));
+        cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
+        return true;
+    }
+    catch (exception &e)
+    {
+        cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
+        gCoreMessageHandler.addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
+        mDoLog = false;
+        return false;
+    }
 }
 
 
@@ -324,28 +342,23 @@ void Node::logData(const double time)
     if (mDoLog)
     {
         //! @todo Danger comparing doubles
-        //! @todo Mayb can use mLogTimeDt = -1 (or similar) instead of bool to avoid extra comparison
         //! @todo is this correct, Subtract a tenth of logDt to avoid numerical problem with double >= double
         if (time >= mLastLogTime+mLogTimeDt-mLogTimeDt/10.0)
         {
-            if (mLogSpaceAllocated)
+            //cout << "mLogCtr: " << mLogCtr << endl;
+            //! @todo this if check should not be needed if everything else is working
+            if (mLogCtr < mTimeStorage.size())
             {
-                //cout << "mLogCtr: " << mLogCtr << endl;
-                //! @todo this if check should not be needed if everything else is working
-                if (mLogCtr < mTimeStorage.size())
-                {
-                    mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
-                    mDataStorage[mLogCtr] = mDataVector;
-                }
-                ++mLogCtr;
-            }
-            else
+                mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
+                mDataStorage[mLogCtr] = mDataVector;
+            }else
             {
-                //! @todo for now always append
-                mTimeStorage.push_back(time);   //We log the "real"  simulation time for the sample
-                mDataStorage.push_back(mDataVector);
+                stringstream ss;
+                ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
+                gCoreMessageHandler.addWarningMessage(ss.str());
             }
-            //mLastLogTime = time;
+            ++mLogCtr;
+
             mLastLogTime = mLastLogTime+mLogTimeDt; //Can not use "real" time directly as this may mean that not all log slots will be filled
         }
     }
@@ -424,7 +437,7 @@ void Node::setPort(Port *pPort)
 }
 
 
-//! Removes a port poniter from this node
+//! @brief Removes a port poniter from this node, NOT delete only remove
 //! @param [in] pPort The port pointer to be removed
 void Node::removePort(Port *pPort)
 {
@@ -493,13 +506,8 @@ int Node::getNumberOfPortsByType(int type)
     return n_Ports;
 }
 
+//! @brief Returns a pointer to the ComponentSystem that own this Node
 ComponentSystem *Node::getOwnerSystem()
 {
     return mpOwnerSystem;
 }
-
-//NodeFactory hopsan::gCoreNodeFactory;
-//DLLIMPORTEXPORT NodeFactory* hopsan::getCoreNodeFactoryPtr()
-//{
-//    return &gCoreNodeFactory;
-//}

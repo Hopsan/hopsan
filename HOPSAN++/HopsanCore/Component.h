@@ -221,14 +221,13 @@ class ComponentSystem; //Forward declaration
         std::string mName;
         std::string mTypeName;
         Parameters *mParameters;
-        //std::vector<double*> mDummyNDptrs; //This vector is used by components to store dummy NodeData pointers that are created for non connected optional ports
         PortPtrMapT mPortPtrMap;
         double mMeasuredTime;
     };
 
 
 
-    class DLLIMPORTEXPORT ComponentSignal :public Component
+    class DLLIMPORTEXPORT ComponentSignal : public Component
     {
     protected:
 #ifdef __GNUC__
@@ -240,7 +239,7 @@ class ComponentSystem; //Forward declaration
     };
 
 
-    class DLLIMPORTEXPORT ComponentC :public Component
+    class DLLIMPORTEXPORT ComponentC : public Component
     {
     protected:
 #ifdef __GNUC__
@@ -252,7 +251,7 @@ class ComponentSystem; //Forward declaration
     };
 
 
-    class DLLIMPORTEXPORT ComponentQ :public Component
+    class DLLIMPORTEXPORT ComponentQ : public Component
     {
     protected:
 #ifdef __GNUC__

@@ -103,6 +103,9 @@ namespace hopsan {
         bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         bool disconnect(Port *pPort1, Port *pPort2);
 
+        // Convenience functions for enable and dissable data logging
+        void setAllNodesDoLogData(const bool logornot);
+
         //initialize and simulate
         bool isSimulationOk();
         void loadStartValues();

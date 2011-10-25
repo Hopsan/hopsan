@@ -58,23 +58,21 @@ namespace hopsan {
     protected:
         //Protected member functions
         Node(size_t datalength);
-        NodeTypeT &getNodeType();
+        const NodeTypeT getNodeType() const;
 
         enum PLOTORNOT {PLOT, NOPLOT};
 
         void copyNodeVariables(Node *pNode);
         virtual void setSpecialStartValues(Node *pNode);
 
-        void setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime);
+        void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
         void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
         void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
-        //void preAllocateLogSpace(const size_t nSlots);
-        void preAllocateLogSpace();
+        bool preAllocateLogSpace();
         void saveLogData(std::string filename);
 
         //void setData is now public!
-        double getData(const size_t data_type);
-        double &getDataRef(const size_t data_type);
+        const double getData(const size_t data_type) const;
         double *getDataPtr(const size_t data_type);
 
         void setDataCharacteristics(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);

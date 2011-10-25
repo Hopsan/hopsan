@@ -239,6 +239,7 @@ bool ProjectTab::simulate()
             if (progressBar.wasCanceled())
             {
                 mpSystem->getCoreSystemAccessPtr()->stop();
+                //! @todo we must be able to check if simulation aborted from other place not only if we press abort button
             }
         }
         progressBar.setValue(i);
@@ -247,7 +248,7 @@ bool ProjectTab::simulate()
     actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
     actualInitialization.quit();
 
-
+    //! @todo we should not start simulation if init was aborted/stoped from inside hopsan core, dont just look at the progress bar button
         //Ask core to execute (and finalize) simulation
     QTime simTimer;
     if (!progressBar.wasCanceled())
@@ -280,6 +281,7 @@ bool ProjectTab::simulate()
                if (progressBar.wasCanceled())
                {
                   mpSystem->getCoreSystemAccessPtr()->stop();
+                  //! @todo we must be able to check if simulation aborted from other place not only if we press abort button
                }
             }
             progressThread.quit();

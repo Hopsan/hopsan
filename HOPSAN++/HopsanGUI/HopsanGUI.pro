@@ -13,6 +13,8 @@ DESTDIR = $${PWD}/../bin
 QT += svg xml
 QT += core gui webkit
 
+CONFIG += console #Use this for consol app support (cout output, you aslo need to run in consol but hopsan seems slow)
+
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------

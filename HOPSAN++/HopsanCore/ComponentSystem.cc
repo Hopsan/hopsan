@@ -490,19 +490,26 @@ void ComponentSystem::removeSubNode(Node* node_ptr)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples)
 {
     cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
+    bool success = true;
 
-    //Allocate memory for subnodes
+    // Allocate log data memory for subnodes
     vector<Node*>::iterator it;
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
-        if (mStop)
+        // Abort if we are told to stop or if memmory allocation fails
+        if (mStop || !success)
             break;
 
-        //! @todo this is an ugly quit hack test
+        // Prepare the node log data allocation and determine if loggings should be on
+        //! @todo Waht if we want to use one of the other ways of setting logsample time steps
         (*it)->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
-        //(*it)->setLogSettingsSkipFactor(1, startT, stopT, mTimestep);
-        //(*it)->preAllocateLogSpace(needed_slots);
-        (*it)->preAllocateLogSpace();
+        success = (*it)->preAllocateLogSpace();
+    }
+
+    // If we faild to allocate log memory then stop
+    if (!success)
+    {
+        mStop = true;
     }
 }
 
@@ -1730,6 +1737,38 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
     }
 }
 
+//! @brief Determines if all subnodes and subsystems subnodes should log data, Turn ALL ON or OFF
+//! @todo name of this function is bad, this is a toggle function
+void ComponentSystem::setAllNodesDoLogData(const bool logornot)
+{
+    // Do this systems nodes
+    if (logornot)
+    {
+        for (size_t i=0; i<mSubNodePtrs.size(); ++i)
+        {
+            mSubNodePtrs[i]->enableLog();
+        }
+    }
+    else
+    {
+        for (size_t i=0; i<mSubNodePtrs.size(); ++i)
+        {
+            mSubNodePtrs[i]->disableLog();
+        }
+    }
+
+    // Do all subsystems
+    SubComponentMapT::iterator scit;
+    for (scit=mSubComponentMap.begin(); scit!=mSubComponentMap.end(); ++scit)
+    {
+        if (scit->second->isComponentSystem())
+        {
+            //!< @todo maybe should use static cast (quicker) or overloaded function in Component instead of casting
+            dynamic_cast<ComponentSystem*>(scit->second)->setAllNodesDoLogData(logornot);
+        }
+    }
+}
+
 
 //! @brief Checks that everything is OK before simulation
 bool ComponentSystem::isSimulationOk()
@@ -1873,6 +1912,10 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
 
     //preAllocate local logspace
     this->preAllocateLogSpace(startT, stopT, nSamples);
+
+    // If we failed allocation then abort
+    if (mStop)
+        return;
 
     adjustTimestep(mComponentSignalptrs);
     adjustTimestep(mComponentCptrs);
@@ -2271,7 +2314,6 @@ private:
 //! @param nDesiredThreads Desired amount of simulation threads
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads)
 {
-    mStop = false;
     mTime = startT;
     double stopTsafe = stopT - mTimestep/2.0;                   //Calculate the "actual" stop time
                                                                 //Minus half a timestep is here to ensure that no numerical issues occur
