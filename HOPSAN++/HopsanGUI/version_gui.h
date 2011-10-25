@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   version.h
+//! @file   version_gui.h
 //! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-01-01
 //!
@@ -22,11 +22,11 @@
 //!
 //$Id$
 
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef VERSION_GUI_H
+#define VERSION_GUI_H
 
 #define HOPSANGUIVERSION "0.4.0"
 #define HMF_VERSIONNUM "0.4"
 #define CAF_VERSIONNUM "0.2"
 
-#endif // VERSION_H
+#endif // VERSION_GUI_H
