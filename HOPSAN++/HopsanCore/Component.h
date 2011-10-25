@@ -106,7 +106,6 @@ class ComponentSystem; //Forward declaration
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
         virtual bool initialize(const double startT, const double stopT, const size_t nSamples);
-        virtual bool initializeComponentsOnly();
         virtual void simulate(const double startT, const double Ts);
         virtual void finalize(const double startT, const double Ts);
         virtual void setDesiredTimestep(const double timestep);

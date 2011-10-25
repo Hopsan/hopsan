@@ -460,11 +460,12 @@ void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qP
     }
 }
 
-QVector<QString> CoreSystemAccess::getParameterNames(QString componentName)
+QStringList CoreSystemAccess::getParameterNames(QString componentName)
 {
     std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
     mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
-    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits;
+    QStringList qParameterNames;
+    QVector<QString> qParameterValues, qDescriptions, qUnits;
     for(size_t i=0; i<parameterNames.size(); ++i)
     {
         qParameterNames.push_back(QString::fromStdString(parameterNames[i]));

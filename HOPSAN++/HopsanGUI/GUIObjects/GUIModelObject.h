@@ -66,7 +66,7 @@ public:
     QString getHelpText();
 
     //Parameter methods
-    virtual QVector<QString> getParameterNames();
+    virtual QStringList getParameterNames();
     virtual QString getParameterUnit(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual QString getParameterDescription(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual QString getParameterValue(QString name);

@@ -51,7 +51,7 @@ GUIComponent::GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppea
         connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
     }
 
-    QVector<QString> defaultParameterNames = getParameterNames();
+    QStringList defaultParameterNames = getParameterNames();
     for(int i=0; i<defaultParameterNames.size(); ++i)
     {
         mDefaultParameters.insert(defaultParameterNames.at(i), getParameterValue(defaultParameterNames.at(i)));
@@ -134,7 +134,7 @@ void GUIComponent::getParameters(QVector<QString> &qParameterNames, QVector<QStr
 
 
 //! @brief Get a vector with the names of the available parameters
-QVector<QString> GUIComponent::getParameterNames()
+QStringList GUIComponent::getParameterNames()
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
 }

@@ -87,7 +87,7 @@ public:
     bool setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> startDataValues);
 
     void getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
-    QVector<QString> getParameterNames(QString componentName);
+    QStringList getParameterNames(QString componentName);
     QString getParameterUnit(QString componentName, QString parameterName);
     QString getParameterDescription(QString componentName, QString parameterName);
     QString getParameterValue(QString componentName, QString parameterName);

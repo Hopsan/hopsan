@@ -591,14 +591,6 @@ bool Component::initialize(const double /*startT*/, const double /*stopT*/, cons
 }
 
 
-bool Component::initializeComponentsOnly()
-{
-    cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
-    assert(false);
-    return false;
-}
-
-
 void Component::getParameters(vector<string> &parameterNames, vector<string> &parameterValues, vector<string> &descriptions, vector<string> &units, vector<string> &types)
 {
     mParameters->getParameters(parameterNames, parameterValues, descriptions, units, types);

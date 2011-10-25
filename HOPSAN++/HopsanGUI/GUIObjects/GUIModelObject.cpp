@@ -584,11 +584,11 @@ QString GUIModelObject::getParameterValue(QString /*name*/)
 
 
 //! @brief Virtual function that returns a vector with the names of the parameteres in the object
-QVector<QString> GUIModelObject::getParameterNames()
+QStringList GUIModelObject::getParameterNames()
 {
     //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
-    return QVector<QString>();
+    return QStringList();
 }
 
 

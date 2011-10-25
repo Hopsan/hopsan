@@ -143,7 +143,7 @@ QString GUISystem::getTypeCQS()
 
 //! @brief get The parameter names of this system
 //! @returns A QVector containing the parameter names
-QVector<QString> GUISystem::getParameterNames()
+QStringList GUISystem::getParameterNames()
 {
     return mpCoreSystemAccess->getParameterNames(this->getName());
 }
@@ -949,7 +949,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     fmuSourceStream << "    double stopT;       //Dummy variable\n";
     fmuSourceStream << "    spCoreComponentSystem = coreHmfLoader.loadModel(filename, startT, stopT);\n";
     fmuSourceStream << "    spCoreComponentSystem->setDesiredTimestep(0.001);\n";           //!< @todo Time step should not be hard coded
-    fmuSourceStream << "    spCoreComponentSystem->initializeComponentsOnly();\n";
+    fmuSourceStream << "    spCoreComponentSystem->initialize(0,10,0);\n";
     fmuSourceStream << "}\n\n";
     fmuSourceStream << "void simulateOneStep()\n";
     fmuSourceStream << "{\n";
@@ -1490,7 +1490,7 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "    double stopT = ssGetTFinal(S);\n";
     wrapperStream << "    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
     wrapperStream << "    pComponentSystem->setDesiredTimestep(0.001);\n";
-    wrapperStream << "    pComponentSystem->initializeComponentsOnly();\n\n";
+    wrapperStream << "    pComponentSystem->initialize(0,10,0);\n\n";
     wrapperStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                               //Run the port label script\n";
     wrapperStream << "}\n";
     wrapperStream << "\n";

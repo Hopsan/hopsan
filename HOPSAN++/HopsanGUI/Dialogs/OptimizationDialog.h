@@ -46,10 +46,21 @@ class OptimizationDialog : public QDialog
 public:
     OptimizationDialog(MainWindow *parent = 0);
 
+public slots:
+    virtual void open();
+
+private slots:
+    void updateOutputBox();
+
 private:
+    QTreeWidget *mpParametersList;
+
+    QTextEdit *mpOutputBox;
+
     QPushButton *mpCancelButton;
     QPushButton *mpApplyButton;
-    QPushButton *mpOkButton;
+    QPushButton *mpGenerateButton;
+    QPushButton *mpRunButton;
     QDialogButtonBox *mpButtonBox;
 
     QGridLayout *mpLayout;

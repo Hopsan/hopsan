@@ -69,7 +69,7 @@ public:
     void createFMUSourceFiles();
     void createSimulinkSourceFiles();
 
-    QVector<QString> getParameterNames();
+    QStringList getParameterNames();
 
     CoreSystemAccess* getCoreSystemAccessPtr();
     GUIContainerObject *getParentContainerObject();

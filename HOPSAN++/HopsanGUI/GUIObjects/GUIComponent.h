@@ -45,7 +45,7 @@ public:
 
     void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     bool hasPowerPorts();
-    QVector<QString> getParameterNames();
+    QStringList getParameterNames();
     QString getParameterUnit(QString name);
     QString getParameterDescription(QString name);
     QString getParameterValue(QString name);
