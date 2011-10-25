@@ -43,10 +43,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalAdd("Add");
+            return new SignalAdd();
         }
 
-        SignalAdd(const std::string name) : ComponentSignal(name)
+        SignalAdd() : ComponentSignal()
         {
 
             mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);

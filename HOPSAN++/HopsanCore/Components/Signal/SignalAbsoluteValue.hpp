@@ -43,10 +43,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalAbsoluteValue("AbsoluteValue");
+            return new SignalAbsoluteValue();
         }
 
-        SignalAbsoluteValue(const std::string name) : ComponentSignal(name)
+        SignalAbsoluteValue() : ComponentSignal()
         {
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);

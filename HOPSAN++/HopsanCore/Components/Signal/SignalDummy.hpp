@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalDummy("Dummy");
+            return new SignalDummy();
         }
 
-        SignalDummy(const std::string name) : ComponentSignal(name)
+        SignalDummy() : ComponentSignal()
         {
 
             mpIn = addReadPort("in", "NodeSignal");

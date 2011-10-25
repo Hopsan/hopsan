@@ -39,10 +39,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalDeadZone("DeadZone");
+            return new SignalDeadZone();
             }
 
-        SignalDeadZone(const std::string name) : ComponentSignal(name)
+        SignalDeadZone() : ComponentSignal()
         {
             mStartDead = -1.0;
             mEndDead = 1.0;

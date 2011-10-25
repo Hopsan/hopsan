@@ -47,10 +47,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalHysteresis("Hysteresis");
+            return new SignalHysteresis();
         }
 
-        SignalHysteresis(const std::string name) : ComponentSignal(name)
+        SignalHysteresis() : ComponentSignal()
         {
             mHysteresisWidth = 1.0;
 

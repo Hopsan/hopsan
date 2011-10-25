@@ -51,10 +51,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalGain("Gain");
+            return new SignalGain();
         }
 
-        SignalGain(const std::string name) : ComponentSignal(name)
+        SignalGain() : ComponentSignal()
         {
             mGain = 1.0;
 

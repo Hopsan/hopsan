@@ -45,10 +45,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalPower("Power");
+            return new SignalPower();
         }
 
-        SignalPower(const std::string name) : ComponentSignal(name)
+        SignalPower() : ComponentSignal()
         {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

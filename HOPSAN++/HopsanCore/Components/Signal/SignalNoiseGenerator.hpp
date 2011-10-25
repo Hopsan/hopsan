@@ -31,10 +31,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalNoiseGenerator("NoiseGenerator");
+            return new SignalNoiseGenerator();
         }
 
-        SignalNoiseGenerator(const std::string name) : ComponentSignal(name)
+        SignalNoiseGenerator() : ComponentSignal()
         {
             y = 1.0;
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

@@ -31,10 +31,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalAdditiveNoise("AdditiveNoise");
+            return new SignalAdditiveNoise();
         }
 
-        SignalAdditiveNoise(const std::string name) : ComponentSignal(name)
+        SignalAdditiveNoise() : ComponentSignal()
         {
             y = 1.0;
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
