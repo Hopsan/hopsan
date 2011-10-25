@@ -110,8 +110,8 @@ namespace hopsan {
         bool isSimulationOk();
         void loadStartValues();
         void loadStartValuesFromSimulation();
-        void initialize(const double startT, const double stopT, const size_t nSamples=2048);
-        void initializeComponentsOnly();
+        bool initialize(const double startT, const double stopT, const size_t nSamples=2048);
+        bool initializeComponentsOnly();
         void simulateMultiThreadedOld(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0);
         #ifdef USETBB
@@ -133,7 +133,7 @@ namespace hopsan {
         double getDesiredTimeStep();
 
         //Stop a running init or simulation
-        void stop();
+        void stopSimulation();
 
         #ifdef USETBB
         tbb::mutex *mpStopMutex;
@@ -179,7 +179,7 @@ namespace hopsan {
 
         std::vector<Node*> mSubNodePtrs;
 
-        bool volatile mStop;
+        bool volatile mStopSimulation;
 //Finns i Component        Parameters *mSystemParameters;
     };
 }

@@ -181,7 +181,7 @@ double CoreSystemAccess::getCurrentTime()
 
 void CoreSystemAccess::stop()
 {
-    mpCoreComponentSystem->stop();
+    mpCoreComponentSystem->stopSimulation();
 }
 
 QString CoreSystemAccess::getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator)
@@ -387,9 +387,9 @@ bool CoreSystemAccess::isSimulationOk()
 }
 
 
-void CoreSystemAccess::initialize(double mStartTime, double mFinishTime, size_t nSamples)
+bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSamples)
 {
-    mpCoreComponentSystem->initialize(mStartTime, mFinishTime, nSamples);
+    return mpCoreComponentSystem->initialize(mStartTime, mFinishTime, nSamples);
 }
 
 

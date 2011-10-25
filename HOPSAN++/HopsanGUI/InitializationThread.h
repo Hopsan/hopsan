@@ -35,9 +35,7 @@ class InitializationThread : public QThread
 {
 public:
     InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ProjectTab *parent);
-
-    ProjectTab *mpParentProjectTab;
-    CoreSystemAccess *mpGUIRootSystem;
+    const bool wasInitSuccessful() const;
 
 protected:
     void run();
@@ -46,7 +44,10 @@ private:
     double mStartTime;
     double mFinishTime;
     size_t mSamples;
+    bool mInitSuccessful;
 
+    ProjectTab *mpParentProjectTab;
+    CoreSystemAccess *mpGUIRootSystem;
 };
 
 #endif // INITIALIZATIONTHREAD_H

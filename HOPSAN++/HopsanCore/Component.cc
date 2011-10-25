@@ -583,16 +583,19 @@ Component::Component()
 
 
 //! Virtual Function, base version which gives you an error if you try to use it.
-void Component::initialize(const double /*startT*/, const double /*stopT*/, const size_t /*nSamples*/)
+bool Component::initialize(const double /*startT*/, const double /*stopT*/, const size_t /*nSamples*/)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
     assert(false);
+    return false;
 }
 
 
-void Component::initializeComponentsOnly()
+bool Component::initializeComponentsOnly()
 {
+    cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
     assert(false);
+    return false;
 }
 
 
@@ -762,7 +765,7 @@ void Component::stopSimulation()
     #ifdef USETBB
     mpSystemParent->mpStopMutex->lock();
     #endif
-    this->getSystemParent()->stop();
+    this->getSystemParent()->stopSimulation();
     #ifdef USETBB
     mpSystemParent->mpStopMutex->unlock();
     #endif

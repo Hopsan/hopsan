@@ -196,7 +196,6 @@ void ProjectTab::setSaved(bool value)
 //! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
 bool ProjectTab::simulate()
 {
-
     MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 
     mpSystem->updateStartTime();
@@ -220,8 +219,7 @@ bool ProjectTab::simulate()
 
         //Ask core to initialize simulation
     InitializationThread actualInitialization(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, nSamples, this);
-    actualInitialization.start();
-    actualInitialization.setPriority(QThread::HighestPriority);
+    actualInitialization.start(QThread::HighestPriority);
 
     ProgressBarThread progressThread(this);
     QProgressDialog progressBar(tr("Initializing simulation..."), tr("&Abort initialization"), 0, 0, this);
@@ -239,64 +237,66 @@ bool ProjectTab::simulate()
             if (progressBar.wasCanceled())
             {
                 mpSystem->getCoreSystemAccessPtr()->stop();
-                //! @todo we must be able to check if simulation aborted from other place not only if we press abort button
             }
         }
         progressBar.setValue(i);
     }
 
-    actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+    actualInitialization.wait(); //Make sure actualSimulation does not go out of scope during simulation
     actualInitialization.quit();
+    const bool initSuccess = actualInitialization.wasInitSuccessful();
 
-    //! @todo we should not start simulation if init was aborted/stoped from inside hopsan core, dont just look at the progress bar button
-        //Ask core to execute (and finalize) simulation
     QTime simTimer;
-    if (!progressBar.wasCanceled())
+    if (initSuccess)
     {
-        if(gConfig.getUseMulticore())
-            gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Multi Threaded Simulation");
-        else
-            gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Single Threaded Simulation");
-
-
-        simTimer.start();
-        SimulationThread actualSimulation(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, this);
-        actualSimulation.start();
-        actualSimulation.setPriority(QThread::HighestPriority);
-            //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
-        //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
-
-        if(gConfig.getEnableProgressBar())
+        //! @todo we should not start simulation if init was aborted/stoped from inside hopsan core, dont just look at the progress bar button
+        //Ask core to execute (and finalize) simulation
+        if (!progressBar.wasCanceled())
         {
-            progressBar.setLabelText(tr("Running simulation..."));
-            progressBar.setCancelButtonText(tr("&Abort simulation"));
-            progressBar.setMinimum(0);
-            progressBar.setMaximum(nSteps);
-            while (actualSimulation.isRunning())
-            {
-               progressThread.start();
-               progressThread.setPriority(QThread::LowestPriority);
-               progressThread.wait();
-               progressBar.setValue((size_t)(mpSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
-               if (progressBar.wasCanceled())
-               {
-                  mpSystem->getCoreSystemAccessPtr()->stop();
-                  //! @todo we must be able to check if simulation aborted from other place not only if we press abort button
-               }
-            }
-            progressThread.quit();
-            progressBar.setValue((size_t)(mpSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
-        }
+            if(gConfig.getUseMulticore())
+                gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Multi Threaded Simulation");
+            else
+                gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Single Threaded Simulation");
 
-        actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
-        actualSimulation.quit();
-        //emit checkMessages();
+            simTimer.start();
+            SimulationThread actualSimulation(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, this);
+            actualSimulation.start();
+            actualSimulation.setPriority(QThread::HighestPriority);
+            //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
+            //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
+
+            if(gConfig.getEnableProgressBar())
+            {
+                progressBar.setLabelText(tr("Running simulation..."));
+                progressBar.setCancelButtonText(tr("&Abort simulation"));
+                progressBar.setMinimum(0);
+                progressBar.setMaximum(nSteps);
+                while (actualSimulation.isRunning())
+                {
+                    progressThread.start();
+                    progressThread.setPriority(QThread::LowestPriority);
+                    progressThread.wait();
+                    progressBar.setValue((size_t)(mpSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
+                    if (progressBar.wasCanceled())
+                    {
+                        mpSystem->getCoreSystemAccessPtr()->stop();
+                    }
+                }
+                progressThread.quit();
+                progressBar.setValue((size_t)(mpSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
+            }
+
+            actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+            actualSimulation.quit();
+            //emit checkMessages();
+        }
     }
 
+    //! @todo we should be able to see if simulation was actaully completet successfully not only check the progress bar button
     QString timeString;
     timeString.setNum(simTimer.elapsed());
     mLastSimulationTime = simTimer.elapsed();
-    if (progressBar.wasCanceled())
+    if (progressBar.wasCanceled() || !initSuccess)
     {
         pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' was terminated!"))));
     }
@@ -308,7 +308,7 @@ bool ProjectTab::simulate()
     }
     emit checkMessages();
 
-    return !(progressBar.wasCanceled());
+    return (!progressBar.wasCanceled() && initSuccess);
 }
 
 

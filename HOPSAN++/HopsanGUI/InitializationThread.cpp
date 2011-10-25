@@ -53,11 +53,17 @@ InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, dou
 
 }
 
+//! @brief Check if initialize was successful
+const bool InitializationThread::wasInitSuccessful() const
+{
+    return mInitSuccessful;
+}
+
 
 //! Implements the task for the thread.
 void InitializationThread::run()
 {
-    mpGUIRootSystem->initialize(mStartTime, mFinishTime, mSamples);
+    mInitSuccessful = mpGUIRootSystem->initialize(mStartTime, mFinishTime, mSamples);
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

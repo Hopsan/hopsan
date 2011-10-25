@@ -65,9 +65,9 @@ double ComponentSystem::getDesiredTimeStep()
 
 //! Sets a bool which is looked at in initialization and simulation loops.
 //! This method can be used by users e.g. GUIs to stop an started initializatiion/simulation process
-void ComponentSystem::stop()
+void ComponentSystem::stopSimulation()
 {
-    mStop = true;
+    mStopSimulation = true;
 }
 
 
@@ -497,7 +497,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
         // Abort if we are told to stop or if memmory allocation fails
-        if (mStop || !success)
+        if (mStopSimulation || !success)
             break;
 
         // Prepare the node log data allocation and determine if loggings should be on
@@ -509,7 +509,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     // If we faild to allocate log memory then stop
     if (!success)
     {
-        mStop = true;
+        mStopSimulation = true;
     }
 }
 
@@ -1905,17 +1905,19 @@ void ComponentSystem::loadStartValuesFromSimulation()
 //! @param startT Start time of simlation
 //! @param stopT Stop time of simlation
 //! @param nSamples Number of log samples
-void ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
+bool ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
 {
     cout << "Initializing SubSystem: " << this->mName << endl;
-    mStop = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
+    mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     //preAllocate local logspace
     this->preAllocateLogSpace(startT, stopT, nSamples);
 
     // If we failed allocation then abort
-    if (mStop)
-        return;
+    if (mStopSimulation)
+    {
+        return false;
+    }
 
     adjustTimestep(mComponentSignalptrs);
     adjustTimestep(mComponentCptrs);
@@ -1930,8 +1932,11 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     //Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        if (mStop)
-            break;
+        if (mStopSimulation)
+        {
+            return false;
+        }
+
         mComponentSignalptrs[s]->updateParameters();
 
         if (mComponentSignalptrs[s]->isComponentSystem())
@@ -1947,8 +1952,11 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     //C components
     for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
-        if (mStop)
-            break;
+        if (mStopSimulation)
+        {
+            return false;
+        }
+
         mComponentCptrs[c]->updateParameters();
 
         if (mComponentCptrs[c]->isComponentSystem())
@@ -1964,8 +1972,11 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
     //Q components
     for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
-        if (mStop)
-            break;
+        if (mStopSimulation)
+        {
+            return false;
+        }
+
         mComponentQptrs[q]->updateParameters();
 
         if (mComponentQptrs[q]->isComponentSystem())
@@ -1977,16 +1988,21 @@ void ComponentSystem::initialize(const double startT, const double stopT, const 
             mComponentQptrs[q]->initialize();
         }
     }
+
+    //! @todo how should we handle if inidividual component fail to initialize
+
+    // We seems to have initialized successfully
+    return true;
 }
 
 
 //! @brief Does all initialization except log space allocation.
 //! Used in export functions to other environment. For some reason this is necessary.
 //! @todo Find a better solution
-void ComponentSystem::initializeComponentsOnly()
+bool ComponentSystem::initializeComponentsOnly()
 {
     cout << "Initializing SubSystem: " << this->mName << endl;
-    mStop = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
+    mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     adjustTimestep(mComponentSignalptrs);
     adjustTimestep(mComponentCptrs);
@@ -2000,8 +2016,10 @@ void ComponentSystem::initializeComponentsOnly()
     //Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        if (mStop)
-            break;
+        if (mStopSimulation)
+        {
+            return false;
+        }
 
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
@@ -2016,8 +2034,10 @@ void ComponentSystem::initializeComponentsOnly()
     //C components
     for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
-        if (mStop)
-            break;
+        if (mStopSimulation)
+        {
+            return false;
+        }
 
         if (mComponentCptrs[c]->isComponentSystem())
         {
@@ -2032,8 +2052,10 @@ void ComponentSystem::initializeComponentsOnly()
     //Q components
     for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
-        if (mStop)
-            break;
+        if (mStopSimulation)
+        {
+            return false;
+        }
 
         if (mComponentQptrs[q]->isComponentSystem())
         {
@@ -2044,6 +2066,11 @@ void ComponentSystem::initializeComponentsOnly()
             mComponentQptrs[q]->initialize();
         }
     }
+
+    //! @todo how should we handle if inidividual component fail to initialize
+
+    // We seems to have initialized successfully
+    return true;
 }
 
 
@@ -2717,7 +2744,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     //Simulate
     double stopTsafe = stopT - mTimestep/2.0; //minus half a timestep is here to ensure that no numerical issues occure
 
-    while ((mTime < stopTsafe) && (!mStop))
+    while ((mTime < stopTsafe) && (!mStopSimulation))
     {
         //! @todo maybe use iterators instead
         //Signal components

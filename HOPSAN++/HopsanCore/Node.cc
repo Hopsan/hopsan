@@ -117,21 +117,12 @@ void Node::setDataCharacteristics(size_t id, string name, string unit, Node::PLO
 }
 
 
-//! Get a specific data name
+//! Get a specific data name and unit
 //! @param [in] id This is the ENUM data id
-//! @todo Maybe we should merge  getDataName(size_t id) and getDataUnit(size_t id) to one function
-string Node::getDataName(size_t id)
+void Node::getDataNameAndUnit(const size_t id, std::string &rName, std::string &rUnit)
 {
-    return mDataNames[id];
-}
-
-
-//! Get a specific data unit
-//! @param [in] id This is the ENUM data id
-//! @todo Maybe we should merge  getDataName(size_t id) and getDataUnit(size_t id) to one function
-string Node::getDataUnit(size_t id)
-{
-    return mDataUnits[id];
+    rName = mDataNames[id];
+    rUnit = mDataUnits[id];
 }
 
 
@@ -312,27 +303,32 @@ void Node::setLogSettingsSampleTime(double log_dt, double start, double stop,  d
 //! Pre allocate memory for the needed amount of log data
 bool Node::preAllocateLogSpace()
 {
-    // The size of the data vector, how much data do we need to log each time step in this node
-    const size_t data_size = mDataVector.size();
-
-    // Make sure the ctr is 0 if we simulate the same model several times in a row
-    mLogCtr = 0;
-
-    // Now try to allocate log memmory
-    try
+    // Dont try to allocate if we are not going to log
+    if (mDoLog)
     {
-        mTimeStorage.resize(mLogSlots);
-        mDataStorage.resize(mLogSlots, vector<double>(data_size));
-        cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
-        return true;
+        // The size of the data vector, how much data do we need to log each time step in this node
+        const size_t data_size = mDataVector.size();
+
+        // Make sure the ctr is 0 if we simulate the same model several times in a row
+        mLogCtr = 0;
+
+        // Now try to allocate log memmory
+        try
+        {
+            mTimeStorage.resize(mLogSlots);
+            mDataStorage.resize(mLogSlots, vector<double>(data_size));
+            cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
+            return true;
+        }
+        catch (exception &e)
+        {
+            cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
+            gCoreMessageHandler.addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
+            mDoLog = false;
+            return false;
+        }
     }
-    catch (exception &e)
-    {
-        cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
-        gCoreMessageHandler.addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
-        mDoLog = false;
-        return false;
-    }
+    return true; //Success allocating nothing
 }
 
 
@@ -481,6 +477,7 @@ bool Node::isConnectedToPort(Port *pPort)
 void Node::enableLog()
 {
     mDoLog = true;
+    cout << "enableLog" << endl;
 }
 
 
@@ -488,6 +485,10 @@ void Node::enableLog()
 void Node::disableLog()
 {
     mDoLog = false;
+    cout << "disableLog" << endl;
+    // If log dissabled then free memory if something has been previously allocated
+    mTimeStorage.clear();
+    mDataStorage.clear();
 }
 
 

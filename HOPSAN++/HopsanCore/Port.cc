@@ -143,7 +143,7 @@ double Port::readNode(const size_t idx, const size_t /*portIdx*/)
         std::stringstream ss;
         ss << "Attempted to call readNode() for non-connected port \"" << this->getPortName() << "\".";
         mpComponent->addErrorMessage(ss.str());
-        mpComponent->getSystemParent()->stop();     //Read attempt from non-connected port; abort simulation and give error message
+        mpComponent->getSystemParent()->stopSimulation();     //Read attempt from non-connected port; abort simulation and give error message
         return 0;
     }
     else
@@ -304,8 +304,7 @@ void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rU
 {
     if (mpNode != 0)
     {
-        rName = mpNode->getDataName(dataid);
-        rUnit = mpNode->getDataUnit(dataid);
+        mpNode->getDataNameAndUnit(dataid, rName, rUnit);
     }
     else
     {

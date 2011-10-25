@@ -105,7 +105,8 @@ class ComponentSystem; //Forward declaration
         //Virtual functions
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
-        virtual void initialize(const double startT, const double stopT, const size_t nSamples);
+        virtual bool initialize(const double startT, const double stopT, const size_t nSamples);
+        virtual bool initializeComponentsOnly();
         virtual void simulate(const double startT, const double Ts);
         virtual void finalize(const double startT, const double Ts);
         virtual void setDesiredTimestep(const double timestep);
@@ -165,7 +166,6 @@ class ComponentSystem; //Forward declaration
 
         //Temporarily made public for RT-simulation
         virtual void initialize(); //! @todo Default values are hard set
-        virtual void initializeComponentsOnly();
 
     protected:
         //==========Protected member functions==========

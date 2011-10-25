@@ -76,8 +76,7 @@ namespace hopsan {
         double *getDataPtr(const size_t data_type);
 
         void setDataCharacteristics(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
-        std::string getDataName(size_t id);
-        std::string getDataUnit(size_t id);
+        void getDataNameAndUnit(const size_t id, std::string &rName, std::string &rUnit);
         int getDataIdFromName(const std::string name);
         void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
         void getDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);

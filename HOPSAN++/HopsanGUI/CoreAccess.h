@@ -100,7 +100,7 @@ public:
     void removeSubComponent(QString componentName, bool doDelete);
 
     bool isSimulationOk();
-    void initialize(double mStartTime, double mFinishTime, size_t nSamples=2048);
+    bool initialize(double mStartTime, double mFinishTime, int nSamples=2048);
     void simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0);
     void simulate(double mStartTime, double mFinishTime);
     void finalize(double mStartTime, double mFinishTime);
