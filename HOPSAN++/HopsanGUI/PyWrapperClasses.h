@@ -225,6 +225,7 @@ public slots:
         o->mpConfig->setEnableProgressBar(false);
         bool success = o->mpProjectTabs->getCurrentTab()->simulate();
         o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
+        qApp->processEvents();
         return success;
     }
 
@@ -258,6 +259,7 @@ public slots:
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
         o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName, "");
+        qApp->processEvents();
     }
 
     void plot(MainWindow* o, const QString &portAlias)
@@ -274,11 +276,22 @@ public slots:
         {
             //! @todo Write a message in the python console that the port with specified alias was not found
         }
+        qApp->processEvents();
     }
 
     void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
     {
         o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowNumber)->addPlotCurve(generation, compName, portName, dataName);
+    }
+
+    void closeLastPlotWindow(MainWindow* o)
+    {
+        o->mpPlotWidget->mpPlotVariableTree->closeLastPlotWindow();
+    }
+
+    void refreshLastPlotWindow(MainWindow* o)
+    {
+        o->mpPlotWidget->mpPlotVariableTree->refreshLastPlotWindow();
     }
 
     int getSimulationTime(MainWindow* o)

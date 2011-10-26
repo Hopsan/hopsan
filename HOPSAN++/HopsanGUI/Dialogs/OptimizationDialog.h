@@ -46,11 +46,15 @@ class OptimizationDialog : public QDialog
 public:
     OptimizationDialog(MainWindow *parent = 0);
 
+private:
+    void generateScriptFile();
+
 public slots:
     virtual void open();
 
 private slots:
     void updateOutputBox();
+    void run();
 
 private:
     QTreeWidget *mpParametersList;
@@ -64,6 +68,8 @@ private:
     QDialogButtonBox *mpButtonBox;
 
     QGridLayout *mpLayout;
+
+    QString mScript;
 };
 
 #endif // OPTIMIZATIONDIALOG_H

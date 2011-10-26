@@ -245,9 +245,26 @@ PlotWindow *PlotVariableTree::getPlotWindow(int number)
 }
 
 
+void PlotVariableTree::closeLastPlotWindow()
+{
+    if(!mOpenPlotWindows.isEmpty())
+        mOpenPlotWindows.last()->close();
+}
+
+
 void PlotVariableTree::reportClosedPlotWindow(PlotWindow *window)
 {
     mOpenPlotWindows.removeAll(window);
+}
+
+
+void PlotVariableTree::refreshLastPlotWindow()
+{
+    if(!mOpenPlotWindows.isEmpty())
+    {
+        mOpenPlotWindows.last()->getCurrentPlotTab()->getCurves(FIRSTPLOT).last()->updateToNewGeneration();
+        mOpenPlotWindows.last()->update();
+    }
 }
 
 

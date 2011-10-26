@@ -32,6 +32,7 @@
 #include "PyWrapperClasses.h"
 
 
+
 //! Create a dock for the Python console
 
 //! Constructor
@@ -107,6 +108,24 @@ void PyDockWidget::runPyScript(QString path)
     mpPyConsole->appendCommandPrompt();
 }
 
+
+void PyDockWidget::runMultipleCommands(QString command, int n)
+{
+    PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
+    for(int i=0; i<n; ++i)
+    {
+        mainContext.evalScript(command);
+        mpPyConsole->appendCommandPrompt();
+        //gpMainWindow->mpPlotWidget->mpPlotVariableTree->getPlotWindow(0)->getCurrentPlotTab()->getCurves(FIRSTPLOT).last()->updateToNewGeneration();
+        qApp->processEvents();
+    }
+}
+
+
+void PyDockWidget::optimize()
+{
+    runMultipleCommands("iterate()", 100);
+}
 
 PyWidget::PyWidget(QWidget *parent)
     : QWidget(parent)

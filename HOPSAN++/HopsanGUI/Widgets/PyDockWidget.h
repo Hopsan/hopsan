@@ -31,6 +31,7 @@
 class MainWindow;
 class PythonQtScriptingConsole;
 
+
 class PyDockWidget : public QDockWidget
 {
     Q_OBJECT
@@ -43,6 +44,8 @@ public:
 public slots:
     void runPyScript();
     void runPyScript(QString command);
+    void runMultipleCommands(QString command, int n);
+    void optimize();
 
 private:
     PythonQtScriptingConsole *mpPyConsole;
