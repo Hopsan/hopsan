@@ -61,6 +61,9 @@ win32 {
 unix { 
     LIBS += -ltbb -ldl
     INCLUDEPATH += /usr/include/tbb/
+
+    #Generate the svnrevnum.h file
+    system($${PWD}/../getSvnRevision.sh)
 }
 
 #Debug output

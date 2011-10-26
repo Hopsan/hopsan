@@ -59,6 +59,11 @@ unix {
     #QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/Dependencies/PythonQt2.0.1/lib\'
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
+    #Get the svn revision in here if script succeed, we dont care about the external file generated,
+    system($${PWD}/../getSvnRevision.sh) {
+        DEFINES *= "HOPSANGUISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.sh)\\\"\""
+    }
+
 }
 win32 {
     #DEFINES += STATICCORE
