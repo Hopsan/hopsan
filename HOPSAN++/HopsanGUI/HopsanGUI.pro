@@ -73,6 +73,9 @@ win32 {
     CONFIG(debug, debug|release) {
         CONFIG += console #Use this for consol app support (cout output, you aslo need to run in consol but hopsan seems slow)
     }
+
+    #Get the svn revision in here
+    DEFINES *= "HOPSANCORESVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
 }
 
 #Debug output

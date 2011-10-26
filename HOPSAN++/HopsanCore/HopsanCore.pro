@@ -54,6 +54,9 @@ win32 {
         QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
     }
     #--------------------------------------------------------
+
+    #Get the svn revision in here
+    DEFINES *= "HOPSANCORESVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
 }
 unix { 
     LIBS += -ltbb -ldl

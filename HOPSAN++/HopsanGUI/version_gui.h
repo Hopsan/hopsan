@@ -21,11 +21,15 @@
 //! @brief Contains version definitions for the HopsanGUI, HMF files and component appearance files
 //!
 //$Id$
-
 #ifndef VERSION_GUI_H
 #define VERSION_GUI_H
 
-#define HOPSANGUIVERSION "0.4.0"
+// If we dont have the revision number then define blank
+#ifndef HOPSANCORESVNREVISION
+#define HOPSANCORESVNREVISION "UNKNOWN"
+#endif
+
+#define HOPSANGUIVERSION "0.4.x_r" HOPSANCORESVNREVISION
 #define HMF_VERSIONNUM "0.4"
 #define CAF_VERSIONNUM "0.2"
 

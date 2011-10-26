@@ -16,7 +16,12 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define HOPSANCOREVERSION "0.4.x_trunk"
+// If we dont have the revision number then define blank
+#ifndef HOPSANCORESVNREVISION
+#define HOPSANCORESVNREVISION "UNKNOWN"
+#endif
+
+#define HOPSANCOREVERSION "0.4.x_r" HOPSANCORESVNREVISION
 #define HOPSANCOREMODELFILEVERSION "0.4"
 
 #ifdef DEBUGCOMPILING
