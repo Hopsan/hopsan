@@ -55,8 +55,8 @@ win32 {
     }
     #--------------------------------------------------------
 
-    #Get the svn revision in here
-    DEFINES *= "HOPSANCORESVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
+    #Generate the svnrevnum.h file
+    system($${PWD}/../getSvnRevision.bat)
 }
 unix { 
     LIBS += -ltbb -ldl
