@@ -76,7 +76,7 @@ Port::~Port()
 
 
 //! Returns the type of node that can be connected to this port
-const string Port::getNodeType()
+const string Port::getNodeType() const
 {
     return mNodeType;
 }
@@ -540,13 +540,13 @@ size_t Port::getNumPorts()
 }
 
 //! @brief Convenience functin to check if port is multiport
-bool Port::isMultiPort() const
+const bool Port::isMultiPort() const
 {
     return (mPortType > MULTIPORT);
 }
 
 //! Get the port type
-PORTTYPE Port::getPortType()
+const PORTTYPE Port::getPortType() const
 {
     return mPortType;
 }

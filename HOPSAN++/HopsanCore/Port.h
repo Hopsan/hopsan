@@ -83,9 +83,9 @@ namespace hopsan {
 
         virtual size_t getNumPorts();
 
-        bool isMultiPort() const;
-        const std::string getNodeType();
-        PORTTYPE getPortType();
+        const bool isMultiPort() const;
+        const std::string getNodeType() const;
+        const PORTTYPE getPortType() const;
         virtual PORTTYPE getExternalPortType();
         virtual PORTTYPE getInternalPortType();
 

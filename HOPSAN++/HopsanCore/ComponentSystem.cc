@@ -1067,7 +1067,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     }
 
 
-    //Prevent connection if porst are already connected to each other
+    //Prevent connection if ports are already connected to each other
     //! @todo What will happend with multiports
     if (pPort1->isConnectedTo(pPort2))
     {
@@ -1075,6 +1075,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
+    //Preven crossconnection between systems
     if (!connAssist.ensureNotCrossConnecting(pPort1, pPort2))
     {
         gCoreMessageHandler.addErrorMessage("You can not cross-connect between systems", "crossconnection");
@@ -1087,6 +1088,16 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         if ( (!pPort1->isConnected()) && (!pPort2->isConnected()) )
         {
             gCoreMessageHandler.addErrorMessage("You are not allowed to connect two blank systemports to each other");
+            return false;
+        }
+    }
+
+    //Prevent connection of readport to multiport, (what do you really want to read problem)
+    if (pPort1->isMultiPort() || pPort2->isMultiPort())
+    {
+        if ( (pPort1->getPortType() == READPORT) || (pPort1->getPortType() == READPORT) )
+        {
+            gCoreMessageHandler.addErrorMessage("You are not allowed to connect a readport to a multiport, (undefined what you will actually read). Connect to the other end of the connector instead");
             return false;
         }
     }
@@ -1820,8 +1831,7 @@ bool ComponentSystem::isSimulationOk()
             }
             else if( ports[i]->isConnected() )
             {
-                if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1 && ports[i]->getNodePtr()->getNumberOfPortsByType(READPORT) == 0)
-
+                if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
                 {
                     gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
                     return false;
