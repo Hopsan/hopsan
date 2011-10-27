@@ -4,7 +4,7 @@
 # If folder is missing no file is written
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2011-10-26
-# For use in Hopsan, requires TortoiseSVN installed
+# For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
 
 filename="svnrevnum.h"
 foldername="include"
