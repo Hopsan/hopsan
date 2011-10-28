@@ -38,8 +38,12 @@ namespace hopsan {
         ComponentFactory *mpComponentFactory;
         NodeFactory *mpNodeFactory;
 
+        typedef std::map<std::string, void*> LoadedExtLibsMapT;
+        LoadedExtLibsMapT mLoadedExtLibsMap;
+
     public:
         bool load(std::string libpath);
+        bool unLoad(std::string libpath);
         void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
     };
 }

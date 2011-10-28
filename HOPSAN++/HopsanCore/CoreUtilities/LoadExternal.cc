@@ -51,8 +51,6 @@ bool LoadExternal::load(string libpath)
     typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
     typedef void (*get_hopsan_info_t)(HopsanExternalLibInfoT *pHopsanExternalLibInfo);
 
-    bool hopsanInfoExists = true; //!< @todo temporary variable, remove later
-
 #ifdef WIN32
     HINSTANCE lib_ptr;
 
@@ -102,12 +100,10 @@ bool LoadExternal::load(string libpath)
     get_hopsan_info_t get_hopsan_info = (get_hopsan_info_t)GetProcAddress(lib_ptr, "get_hopsan_info");
     if (!get_hopsan_info)
     {
-        //#warning for 0.5.0 release, mak sure we run this check and abort / return ERROR
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << GetLastError();
         gCoreMessageHandler.addDebugMessage(ss.str());
-        //isHopsanComponentLib=false;
-        hopsanInfoExists = false;
+        isHopsanComponentLib=false;
     }
 
     //Now load the register function
@@ -122,7 +118,7 @@ bool LoadExternal::load(string libpath)
 
     if(!isHopsanComponentLib)
     {
-        //FreeLibrary(lib_ptr);
+        FreeLibrary(lib_ptr);
         return false;
     }
 #else
@@ -152,12 +148,10 @@ bool LoadExternal::load(string libpath)
 
     if (dlsym_error)
     {
-        //#warning for 0.5.0 release, make sure we run this check and abort / return ERROR
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << dlsym_error;
         gCoreMessageHandler.addDebugMessage(ss.str());
-        //isHopsanComponentLib = false;
-        hopsanInfoExists = false;
+        isHopsanComponentLib = false;
     }
 
     //Now load the register function
@@ -179,35 +173,47 @@ bool LoadExternal::load(string libpath)
 
 #endif
 
-    if (hopsanInfoExists)
+    bool isCorrectVersion = true;
+
+    HopsanExternalLibInfoT externalLibInfo;
+    get_hopsan_info(&externalLibInfo);
+
+    stringstream ss;
+    ss << "ExternalLib: " << libpath <<  " compiled as: " << externalLibInfo.libCompiledDebugRelease << " against HopsanCore: " << externalLibInfo.hopsanCoreVersion;
+    gCoreMessageHandler.addDebugMessage(ss.str());
+
+    //Now check if we are compiled against correct version number
+    if ( strcmp(externalLibInfo.hopsanCoreVersion, HOPSANCOREVERSION) != 0 )
     {
-        HopsanExternalLibInfoT externalLibInfo;
-        get_hopsan_info(&externalLibInfo);
-
         stringstream ss;
-        ss << "ExternalLib: " << libpath <<  " compiled as: " << externalLibInfo.libCompiledDebugRelease << " against HopsanCore: " << externalLibInfo.hopsanCoreVersion;
-        gCoreMessageHandler.addDebugMessage(ss.str());
-
-        //Now check if we are compiled against correct version number
-        if ( strcmp(externalLibInfo.hopsanCoreVersion, HOPSANCOREVERSION) != 0 )
-        {
-            stringstream ss;
-            ss << "External lib: " << libpath << " compiled against wrong HopsanCore version: " << externalLibInfo.hopsanCoreVersion << ", current version is: " << HOPSANCOREVERSION;
-            gCoreMessageHandler.addErrorMessage(ss.str());
-            return false;
-        }
-
-        //Now check if we are compiled against correct debug release version
-        if ( strcmp(externalLibInfo.libCompiledDebugRelease, DEBUGRELEASECOMPILED) != 0 )
-        {
-            stringstream ss;
-            ss << "ExternalLib: " << libpath << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << DEBUGRELEASECOMPILED << ", You may run into problems!";
-            gCoreMessageHandler.addWarningMessage(ss.str());
-            //return false;
-        }
+        ss << "External lib: " << libpath << " compiled against wrong HopsanCore version: " << externalLibInfo.hopsanCoreVersion << ", current version is: " << HOPSANCOREVERSION;
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        isCorrectVersion = false;
     }
 
-    //! @todo if we abort loading in code above we must remember to run dlclose or similar on the dll handle, right now we do not do that
+    //Now check if we are compiled against correct debug release version
+    if ( strcmp(externalLibInfo.libCompiledDebugRelease, DEBUGRELEASECOMPILED) != 0 )
+    {
+        stringstream ss;
+        ss << "ExternalLib: " << libpath << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << DEBUGRELEASECOMPILED << ", You may run into problems!";
+        gCoreMessageHandler.addWarningMessage(ss.str());
+        //isCorrectVersion = false;
+    }
+
+    if (!isCorrectVersion)
+    {
+        // If wrong version free lib and return false
+#ifdef WIN32
+        FreeLibrary(lib_ptr);
+#else
+        dlclose(lib_ptr);
+#endif
+        return false;
+    }
+
+    // Ok everything seems Ok, now register the library ptr in map so that we can unload it later
+    mLoadedExtLibsMap.insert(std::pair<string, void*>(libpath, static_cast<void*>(lib_ptr)));
+
     register_contents(mpComponentFactory, mpNodeFactory);
 
     //Check for register errors and status
@@ -217,6 +223,34 @@ bool LoadExternal::load(string libpath)
     //Clear factory status
     mpComponentFactory->clearRegisterStatusMap();
     mpNodeFactory->clearRegisterStatusMap();
+
+    return true;
+}
+
+bool LoadExternal::unLoad(std::string libpath)
+{
+    stringstream ss;
+    //! @todo we need to remember which components vere loaded by each lib and unload them
+    LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(libpath);
+    if (lelit != mLoadedExtLibsMap.end())
+    {
+#ifdef WIN32
+        HINSTANCE lib_ptr = static_cast<HINSTANCE>((*lelit).second);
+        FreeLibrary(lib_ptr);
+        //! @todo handle error messages after close
+#else
+        void* lib_ptr = (*lelit).second;
+        dlclose(lib_ptr);
+        //! @todo handle error messages after close
+#endif
+        ss << "Sucessfully unloaded: " << libpath;
+        gCoreMessageHandler.addInfoMessage(ss.str());
+    }
+    else
+    {
+        ss << "Could not unload: " << libpath << ", library not found";
+        gCoreMessageHandler.addWarningMessage(ss.str());
+    }
 
     return true;
 }

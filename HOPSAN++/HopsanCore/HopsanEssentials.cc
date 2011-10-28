@@ -180,9 +180,14 @@ size_t HopsanEssentials::checkMessage()
     return mpMessageHandler->nWaitingMessages();
 }
 
-bool HopsanEssentials::loadExternalComponent(const string path)
+bool HopsanEssentials::loadExternalComponentLib(const string path)
 {
     return mExternalLoader.load(path);
+}
+
+bool HopsanEssentials::unLoadExternalComponentLib(const std::string path)
+{
+    return mExternalLoader.unLoad(path);
 }
 
 void hopsan::addLogMess(std::string log)

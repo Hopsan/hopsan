@@ -62,6 +62,7 @@ public:
     void loadLibrary(QString libDir, bool external = false);
     void loadExternalLibrary(QString libDir);
     void loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree=0);
+    void unLoadLibrarySubTree(LibraryContentsTree *pTree);
     void loadHiddenSecretDir(QString dir);
 
     GUIModelObjectAppearance *getAppearanceData(QString componentType);
@@ -132,6 +133,7 @@ public:
 
     QString mName;
     QString mLibDir;
+    QVector<QString> mLoadedLibraryDLLs;
     QVector<LibraryContentsTree *> mChildNodesPtrs;
     QVector<LibraryComponent *> mComponentPtrs;
 };

@@ -42,9 +42,14 @@ bool CoreLibraryAccess::hasComponent(QString componentName)
 }
 
 
-bool CoreLibraryAccess::loadComponent(QString fileName)
+bool CoreLibraryAccess::loadComponentLib(QString fileName)
 {
-    return HopsanEssentials::getInstance()->loadExternalComponent(fileName.toStdString());
+    return HopsanEssentials::getInstance()->loadExternalComponentLib(fileName.toStdString());
+}
+
+bool CoreLibraryAccess::unLoadComponentLib(QString fileName)
+{
+    return HopsanEssentials::getInstance()->unLoadExternalComponentLib(fileName.toStdString());
 }
 
 

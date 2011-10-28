@@ -1352,6 +1352,11 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
 
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
+    qDebug() << "Adding tree entry: " << libName;
+    LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
+    pTree->mLibDir = libDir;
+    libName = pTree->mName; //Reset name vaariable to new unique name
+
         // Load DLL or SO files
     QStringList filters;
     #ifdef WIN32
@@ -1366,9 +1371,10 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     {
         QString filename = libDir + "/" + libList.at(i);
         qDebug() << "Trying to load: " << filename << " in Core";
-        if(mpCoreAccess->loadComponent(filename))
+        if(mpCoreAccess->loadComponentLib(filename))
         {
             success=true;
+            pTree->mLoadedLibraryDLLs.append(filename); // Remember dlls loaded in this subtree
         }
     }
     if(!success && libList.size()>0)
@@ -1380,11 +1386,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     gpMainWindow->mpMessageWidget->checkMessages();
 
 
-        // Load XML files and recursively load subfolder
-    qDebug() << "Adding tree entry: " << libName;
-    LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
-    pTree->mLibDir = libDir;
-    libName = pTree->mName;
+    // Load XML files and recursively load subfolder
 
     //Append subnodes recursively
     libDirObject.setFilter(QDir::AllDirs);
@@ -1486,9 +1488,21 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
         {
             gConfig.removeUserLib(libDir);
         }
+        delete pTree;
     }
 }
 
+
+void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
+{
+    //First call unload on all dlls in core
+    for (int i=0; i<pTree->mLoadedLibraryDLLs.size(); ++i)
+    {
+        mpCoreAccess->unLoadComponentLib(pTree->mLoadedLibraryDLLs[i]);
+    }
+    //Then remove the tree itself
+    mpContentsTree->findChild("External Libraries")->removeChild(pTree->mName);
+}
 
 //! @brief Slot that sets view mode to single tree and redraws the library
 void LibraryWidget::setListView()
@@ -1546,7 +1560,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     if(pSelectedAction == pUnloadLibraryFolder)
     {
         gConfig.removeUserLib(pTree->mLibDir);
-        mpContentsTree->findChild("External Libraries")->removeChild(pTree->mName);
+        unLoadLibrarySubTree(mpContentsTree->findChild("External Libraries")->findChild(pTree->mName));
         update();
     }
 
@@ -1648,7 +1662,6 @@ bool LibraryContentsTree::isEmpty()
 //! @returns Pointer to the new child node
 LibraryContentsTree *LibraryContentsTree::addChild(QString name)
 {
-
     if(findChild(name))
     {
         QString newName = name.append("_0");

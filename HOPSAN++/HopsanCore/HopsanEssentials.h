@@ -71,7 +71,8 @@ extern "C" {
         void getMessage(std::string &rMessage, std::string &rType, std::string &rTag);
         size_t checkMessage();
 
-        bool loadExternalComponent(const std::string path);
+        bool loadExternalComponentLib(const std::string path);
+        bool unLoadExternalComponentLib(const std::string path);
     };
 }
 
