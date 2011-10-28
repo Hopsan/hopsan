@@ -38,6 +38,9 @@
 #include "Configuration.h"
 #include "Widgets/ProjectTabWidget.h"
 
+#include "Dialogs/ComponentPropertiesDialog.h"
+
+
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
@@ -188,19 +191,34 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
         QMap<std::string, std::string>::iterator it;
         QMap<std::string, std::string> tempMap;
         tempMap = mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap();
+
+        QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
+        mpContainerObject->getCoreSystemAccessPtr()->getSystemParameters(qParameterNames,
+                                                                         qParameterValues,
+                                                                         qDescriptions,
+                                                                         qUnits,
+                                                                         qTypes);
         int row = 0;
-        for(it=tempMap.begin(); it!=tempMap.end(); ++it)
+        for(size_t i=0; i<qParameterNames.size(); ++i)
+//            for(it=tempMap.begin(); it!=tempMap.end(); ++it)
         {
-            QLabel *pParameterLabel = new QLabel(QString(it.key().c_str()), this);
-            pParameterLabel->setMinimumWidth(100);
-            QString numStr = QString(it.value().c_str());
-//            numStr.setNum(it.value());
-            QLineEdit *pParameterLineEdit = new QLineEdit(numStr, this);
-            pParameterLineEdit->setValidator(new QDoubleValidator(this));
-            mpSystemParametersLayout->addWidget(pParameterLabel, row, 0);
-            mpSystemParametersLayout->addWidget(pParameterLineEdit, row, 1);
-            mSystemParameterLabels.append(pParameterLabel);
-            mSystemParameterLineEdits.append(pParameterLineEdit);
+//            QLabel *pParameterLabel = new QLabel(QString(it.key().c_str()), this);
+//            pParameterLabel->setMinimumWidth(100);
+//            QString numStr = QString(it.value().c_str());
+////            numStr.setNum(it.value());
+//            QLineEdit *pParameterLineEdit = new QLineEdit(numStr, this);
+//            pParameterLineEdit->setValidator(new QDoubleValidator(this));
+//            mpSystemParametersLayout->addWidget(pParameterLabel, row, 0);
+//            mpSystemParametersLayout->addWidget(pParameterLineEdit, row, 1);
+//            mSystemParameterLabels.append(pParameterLabel);
+//            mSystemParameterLineEdits.append(pParameterLineEdit);
+            mvSystemParameterLayout.push_back(new ParameterLayout(qParameterNames[i],
+                                                                  qDescriptions[i],
+                                                                  qParameterValues[i],
+                                                                  qUnits[i],
+                                                                  qTypes[i],
+                                                                  0));
+            mpSystemParametersLayout->addLayout(mvSystemParameterLayout.back(), row, 0);
             ++row;
         }
         mpSystemParametersGroupBox->setLayout(mpSystemParametersLayout);
@@ -317,9 +335,10 @@ void ContainerPropertiesDialog::setValues()
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }
 
-    for(int i=0; i<mSystemParameterLabels.size(); ++i)
+    for(int i=0; i<mvSystemParameterLayout.size(); ++i)
     {
-        mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mSystemParameterLabels.at(i)->text(), mSystemParameterLineEdits.at(i)->text());
+//        mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mSystemParameterLabels.at(i)->text(), mSystemParameterLineEdits.at(i)->text());
+        mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mvSystemParameterLayout[i]->getDataName(), mvSystemParameterLayout[i]->getDataValueTxt());
     }
 
     this->done(0);

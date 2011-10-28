@@ -35,6 +35,7 @@
 
 //Forward Declaration
 class GUIContainerObject;
+class ParameterLayout;
 
 class ContainerPropertiesDialog : public QDialog
 {
@@ -87,6 +88,8 @@ private:
     QGridLayout *mpSystemParametersLayout;
     QList<QLabel *> mSystemParameterLabels;
     QList<QLineEdit *> mSystemParameterLineEdits;
+
+    QVector<ParameterLayout *> mvSystemParameterLayout;
 
 private slots:
     void setValues();
