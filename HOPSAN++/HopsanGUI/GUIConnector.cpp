@@ -1034,11 +1034,11 @@ void GUIConnector::determineAppearance()
     //Now replace tpes if systemports to select correct connector graphics
     if (startPortType == "SYSTEMPORT")
     {
-        startPortType = mpStartPort->getPortType(GUIPort::INTERNALPORTTYPE);
+        startPortType = mpStartPort->getPortType(CoreSystemAccess::INTERNALPORTTYPE);
     }
     if (endPortType == "SYSTEMPORT")
     {
-        endPortType = mpEndPort->getPortType(GUIPort::INTERNALPORTTYPE);
+        endPortType = mpEndPort->getPortType(CoreSystemAccess::INTERNALPORTTYPE);
     }
 
     if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") || (startPortType == "POWERMULTIPORT") || (endPortType == "POWERMULTIPORT") )

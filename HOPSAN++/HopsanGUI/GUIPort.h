@@ -32,6 +32,7 @@
 
 #include "common.h"
 #include "GUIPortAppearance.h"
+#include "CoreAccess.h"
 
 //Forward declarations
 class GUIModelObject;
@@ -46,8 +47,6 @@ class GUIPort :public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    enum PortTypeIndicationT {ACTUALPORTTYPE, INTERNALPORTTYPE};
-
     GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
     ~GUIPort();
 
@@ -69,7 +68,7 @@ public:
     void show();
     void hide();
 
-    virtual QString getPortType(const PortTypeIndicationT ind=ACTUALPORTTYPE);
+    virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     virtual QString getNodeType();
 
     void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits);
@@ -93,7 +92,7 @@ public slots:
     PlotWindow* plot(QString dataName, QString dataUnit=QString());
     void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
-    void refreshPortGraphics();
+    void refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ext_act=CoreSystemAccess::ACTUALPORTTYPE);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -136,7 +135,7 @@ class GroupPort : public GUIPort
 {
 public:
     GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
-    QString getPortType(const PortTypeIndicationT ind=ACTUALPORTTYPE);
+    QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
 };
 

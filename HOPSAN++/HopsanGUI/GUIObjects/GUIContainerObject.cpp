@@ -259,7 +259,6 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     qreal disp;  //Dispersion factor
     qreal sdisp; //sumofdispersionfactors
 
-    //! @todo maybe we should be able to update rotation in all of these also
     //! @todo weird to use createfunction to refresh graphics, but ok for now
     disp = 1.0/((qreal)(rightEdge.size()+1));
     sdisp=disp;
@@ -386,7 +385,7 @@ void GUIContainerObject::createExternalPort(QString portName)
     PortAppearanceMapT::iterator it = mGUIModelObjectAppearance.getPortAppearanceMap().find(portName);
     if (it != mGUIModelObjectAppearance.getPortAppearanceMap().end())
     {
-        //Create new external port if if does not already exist (this is the usual case for individual components)
+        //Create new external port if it does not already exist (this is the usual case for individual components)
         GUIPort *pPort = this->getPort(it.key());
         if ( pPort == 0 )
         {
@@ -412,13 +411,15 @@ void GUIContainerObject::createExternalPort(QString portName)
 
 
             mPortListPtrs.append(pPort);
+
+            pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
         }
         else
         {
 
             //The external port already seems to exist, lets update it incase something has changed
             //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
-            pPort->refreshPortGraphics();
+            pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
             qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
         }
     }
@@ -1757,7 +1758,7 @@ void GUIContainerObject::refreshInternalContainerPortGraphics()
         if(moit.value()->type() == GUICONTAINERPORT)
         {
             //We assume that a container port only have ONE gui port
-            moit.value()->getPortListPtrs().first()->refreshPortGraphics();
+            moit.value()->getPortListPtrs().first()->refreshPortGraphics(CoreSystemAccess::EXTERNALPORTTYPE);
         }
     }
 }

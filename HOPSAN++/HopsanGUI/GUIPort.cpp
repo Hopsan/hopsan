@@ -322,10 +322,12 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
 
 void GUIPort::refreshPortMainGraphics()
 {
+    double rotAng = this->mpPortAppearance->rot; // OK, uggly, but has to be done in case the mpMainIcon is reset below
     if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
     {
         if (mpMainIcon != 0)
         {
+            // We must restore original angle and translation before deleting and applying new main graphis, i know it sucks, but we have to
             this->setRotation(0);
             this->setTransform(QTransform::fromTranslate(mpMainIcon->boundingRect().center().x(), mpMainIcon->boundingRect().center().y()), true);
             mpMainIcon->deleteLater();
@@ -336,9 +338,10 @@ void GUIPort::refreshPortMainGraphics()
         this->resize(mpMainIcon->boundingRect().width(), mpMainIcon->boundingRect().height());
         qDebug() << "_______diff: " << -mpMainIcon->boundingRect().center();
         this->setTransform(QTransform::fromTranslate(-mpMainIcon->boundingRect().center().x(), -mpMainIcon->boundingRect().center().y()), true);
-        this->setTransformOriginPoint(this->boundingRect().center()); //All rotaion and other transformation should be aplied around the port center
-        this->setRotation(mpPortAppearance->rot);
     }
+    // Always refresh rotation
+    this->setTransformOriginPoint(this->boundingRect().center()); //All rotaion and other transformation should be aplied around the port center
+    this->setRotation(rotAng); // This will also reset mpPortAppearance->rot
 }
 
 
@@ -454,7 +457,7 @@ void GUIPort::refreshPortOverlayPosition()
 //! @brief recreate the port graphics overlay
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
 //! @todo Maybe we should preload all cqs and multiport overlays (just three of them) and create som kind of shared svg renderer that all ports can share, then we dont need to reload graphics from file every freaking time it changes and in every systemport
-void GUIPort::refreshPortGraphics()
+void GUIPort::refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ext_act)
 {
     qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
 
@@ -484,7 +487,7 @@ void GUIPort::refreshPortGraphics()
                 qDebug() << "cqsType: " << cqsType;
             }
         }
-        mpPortAppearance->selectPortIcon(cqsType, getPortType(), getNodeType());
+        mpPortAppearance->selectPortIcon(cqsType, getPortType(int_ext_act), getNodeType());
 
         refreshPortMainGraphics();
         refreshPortOverlayGraphics();
@@ -576,16 +579,9 @@ void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QStrin
 
 
 //! Wrapper for the Core getPortTypeString() function
-QString GUIPort::getPortType(const PortTypeIndicationT ind)
+QString GUIPort::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)
 {
-    if (ind == ACTUALPORTTYPE)
-    {
-        return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getPortName());
-    }
-    else /*if (ind == INTERNAL)*/
-    {
-        return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getPortName(), CoreSystemAccess::INTERNALPORTTYPE);
-    }
+    return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getPortName(), ind);
 }
 
 
@@ -749,7 +745,7 @@ GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pP
 }
 
 //! Overloaded as groups laks core connection
-QString GroupPort::getPortType(const PortTypeIndicationT /*ind*/)
+QString GroupPort::getPortType(const CoreSystemAccess::PortTypeIndicatorT /*ind*/)
 {
     //! @todo Return something smart
     return "GropPortType";
