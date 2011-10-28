@@ -57,4 +57,8 @@ void reduceVectorSize(QVector<double> &vector, int newSize);
 void removeDir(QString path);
 void copyIncludeFilesToDir(QString path);
 
+//Optimization
+void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);
+double sum(QVector< QVector<double> > vector, int i);
+
 #endif // GUIUTILITIES_H

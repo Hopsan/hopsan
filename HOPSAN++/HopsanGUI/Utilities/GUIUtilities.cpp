@@ -539,3 +539,55 @@ void copyIncludeFilesToDir(QString path)
     QFile rapidXmlUtilsH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
     rapidXmlUtilsH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
 }
+
+
+//Optimization
+
+
+//! @brief Reflects the worst point through the centroid of the remaining points
+//! @param vector Vector with points
+//! @param worst Index of worst vector
+//! @param alpha Reflection coefficient
+void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha)
+{
+    int n = vector.size();              //Number of points
+    int k = vector.first().size();      //Number of parameters
+    QVector<double> x_w = vector.at(worst);
+    QVector<double> x_c;
+
+    for(int i=0; i<k; ++i)
+    {
+        x_c.append(1.0/(n-1)*(sum(vector,i)-x_w.at(i)));
+    }
+
+    QVector<double> x_new;
+    for(int i=0; i<k; ++i)
+    {
+        x_new.append(x_c.at(i)+alpha*(x_c.at(i)-x_w.at(i)));
+    }
+    vector.replace(worst, x_new);
+}
+
+
+//! @brief Sums the number with index i in each vector (in a vector of vectors)
+//! @param vector Vector to sum elements from
+//! @param i Index to sum
+double sum(QVector< QVector<double> > vector, int i)
+{
+    double retval = 0;
+    for(int j=0; j<vector.size(); ++j)
+    {
+        retval += vector.at(j).at(i);
+    }
+    return retval;
+}
+
+
+//! @brief Returns the first time for which the data vector has reached specified value
+//! @param vData Data vector
+//! @param vTime Time vector
+//! @param value Value to look for
+double firstTimeAt(QVector<double> vData, QVector<double> vTime, double value)
+{
+    return vTime.at(vData.indexOf(value));
+}

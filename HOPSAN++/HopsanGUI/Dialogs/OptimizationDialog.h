@@ -48,28 +48,82 @@ public:
 
 private:
     void generateScriptFile();
+    bool verifyNumberOfVariables(int n);
+    QString getFunctionCode(int i);
+    QStringList getFunctionDataList(int i);
+    bool verifyFunctionVariables(int i);
 
 public slots:
     virtual void open();
 
 private slots:
+    void updateChosenParameters(QTreeWidgetItem* item, int i);
+    void updateChosenVariables(QTreeWidgetItem* item, int i);
+    void addFunction();
+    void removeFunction();
     void updateOutputBox();
     void run();
 
 private:
-    QTreeWidget *mpParametersList;
+    //Settings tab
+    QWidget *mpSettingsWidget;
+    QGridLayout *mpSettingsLayout;
+    QLabel *mpIterationsLabel;
+    QSpinBox *mpIterationsSpinBox;
+    QLabel *mpSearchPointsLabel;
+    QSpinBox *mpSearchPointsSpinBox;
+    QLabel *mpAlphaLabel;
+    QDoubleSpinBox *mpAlphaSpinBox;
+    QCheckBox *mpPlottingCheckBox;
 
+    //Parameters tab
+    QTreeWidget *mpParametersList;
+    QGridLayout *mpParametersLayout;
+    QWidget *mpParametersWidget;
+
+    //Objective function tab
+    QComboBox *mpFunctionsComboBox;
+    QTreeWidget *mpVariablesList;
+    QPushButton *mpAddFunctionButton;
+    QList<QDoubleSpinBox*> mWeightSpinBoxPtrs;
+    QList<QLabel*> mFunctionLabelPtrs;
+    QList<QWidget*> mDataWidgetPtrs;
+    QList< QList<QDoubleSpinBox*> > mDataSpinBoxPtrs;
+    QList<QToolButton*> mRemoveFunctionButtonPtrs;
+    QGridLayout *mpObjectiveLayout;
+    QWidget *mpObjectiveWidget;
+
+    //Tab widget
+    QTabWidget *mpTabWidget;
+
+    //Output
     QTextEdit *mpOutputBox;
 
+    //Buttons
     QPushButton *mpCancelButton;
     QPushButton *mpApplyButton;
     QPushButton *mpGenerateButton;
     QPushButton *mpRunButton;
     QDialogButtonBox *mpButtonBox;
 
+    //Main layout
     QGridLayout *mpLayout;
 
+    //Member variables
     QString mScript;
+    QStringList mFunctions;
+    QList<int> mSelectedFunctions;
+    QList<double> mFunctionWeights;
+    QList<QStringList> mFunctionComponents;
+    QList<QStringList> mFunctionPorts;
+    QList<QStringList> mFunctionVariables;
+    QList<double> mFunctionData;
+    QStringList mSelectedComponents;
+    QStringList mSelectedParameters;
+    QList<QLabel*> mpParameterLabels;
+    QList<QDoubleSpinBox*> mpParameterMinSpinBoxes;
+    QList<QDoubleSpinBox*> mpParameterMaxSpinBoxes;
+    QList<QStringList> mSelectedVariables;
 };
 
 #endif // OPTIMIZATIONDIALOG_H

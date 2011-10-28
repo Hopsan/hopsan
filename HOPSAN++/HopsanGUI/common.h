@@ -53,12 +53,14 @@
 #endif
 #ifdef DEVELOPMENT
 #define MODELPATH "../Models/"
+#define SCRIPTPATH "../Scripts/"
 #define BACKUPPATH "../Backup/"
 #define COMPONENTPATH "../HopsanGUI/componentData/"
 #define HELPPATH "../HopsanGUI/docs/html/"
 #define INCLUDEPATH "../HopsanCore/"
 #else
 #define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
+#define SCRIPTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
 #define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
 #define COMPONENTPATH "../componentData/"
 #define HELPPATH "../Help/"
