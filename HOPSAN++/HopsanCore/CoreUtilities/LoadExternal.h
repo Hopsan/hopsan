@@ -38,7 +38,8 @@ namespace hopsan {
         ComponentFactory *mpComponentFactory;
         NodeFactory *mpNodeFactory;
 
-        typedef std::map<std::string, void*> LoadedExtLibsMapT;
+        typedef std::pair<void*, std::vector<std::string> > LoadedLibInfoPairT;
+        typedef std::map<std::string, LoadedLibInfoPairT> LoadedExtLibsMapT;
         LoadedExtLibsMapT mLoadedExtLibsMap;
 
     public:

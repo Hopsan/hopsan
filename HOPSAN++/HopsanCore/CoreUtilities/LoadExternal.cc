@@ -43,8 +43,6 @@
 using namespace std;
 using namespace hopsan;
 
-//! @todo maybe the LoadExternal class is unnecessary, contents are only used in hopsan essentials, could maybe move stuff there
-
 //!This function loads a library with given path
 bool LoadExternal::load(string libpath)
 {
@@ -211,14 +209,24 @@ bool LoadExternal::load(string libpath)
         return false;
     }
 
-    // Ok everything seems Ok, now register the library ptr in map so that we can unload it later
-    mLoadedExtLibsMap.insert(std::pair<string, void*>(libpath, static_cast<void*>(lib_ptr)));
-
     register_contents(mpComponentFactory, mpNodeFactory);
 
     //Check for register errors and status
     checkClassFactoryStatus<ComponentFactory>(mpComponentFactory);
     checkClassFactoryStatus<NodeFactory>(mpNodeFactory);
+
+    // Ok everything seems Ok, now register the library ptr and registreed components in map so that we can unload it later
+    LoadedLibInfoPairT lelInfoPair(static_cast<void*>(lib_ptr), vector<string>() );
+    ComponentFactory::RegStatusVectorT regCompVec = mpComponentFactory->getRegisterStatusMap();
+    for (size_t i=0; i<regCompVec.size(); ++i)
+    {
+        if ( regCompVec[i].second == ComponentFactory::REGISTEREDOK )
+        {
+            lelInfoPair.second.push_back(regCompVec[i].first);
+        }
+    }
+    mLoadedExtLibsMap.insert( std::pair<string, LoadedLibInfoPairT>( libpath, lelInfoPair ) );
+    //!  @todo We also need to remember what nodes were loaded
 
     //Clear factory status
     mpComponentFactory->clearRegisterStatusMap();
@@ -230,16 +238,23 @@ bool LoadExternal::load(string libpath)
 bool LoadExternal::unLoad(std::string libpath)
 {
     stringstream ss;
-    //! @todo we need to remember which components vere loaded by each lib and unload them
     LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(libpath);
     if (lelit != mLoadedExtLibsMap.end())
     {
+        for (size_t i=0; i<lelit->second.second.size(); ++i)
+        {
+            mpComponentFactory->unRegisterCreatorFunction( lelit->second.second[i] );
+            //! @todo we should check register status to make sure unregistered
+        }
+
+        //! @todo we should really need to unregister nodes also
+
 #ifdef WIN32
-        HINSTANCE lib_ptr = static_cast<HINSTANCE>((*lelit).second);
+        HINSTANCE lib_ptr = static_cast<HINSTANCE>(lelit->second.first);
         FreeLibrary(lib_ptr);
         //! @todo handle error messages after close
 #else
-        void* lib_ptr = (*lelit).second;
+        void* lib_ptr = (*lelit).second.first;
         dlclose(lib_ptr);
         //! @todo handle error messages after close
 #endif

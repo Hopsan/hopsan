@@ -1377,14 +1377,17 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
             pTree->mLoadedLibraryDLLs.append(filename); // Remember dlls loaded in this subtree
         }
     }
+
     if(!success && libList.size()>0)
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage(libDirObject.path() + ": Could not find any working Hopsan library in specified folder!");
         gpMainWindow->mpMessageWidget->checkMessages();
+        pParentTree->removeChild(libName);
+        gConfig.removeUserLib(libDirObject.path());
+        delete pTree;
         return;     //No point in continuing since no library was found
     }
     gpMainWindow->mpMessageWidget->checkMessages();
-
 
     // Load XML files and recursively load subfolder
 
@@ -1502,6 +1505,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
     }
     //Then remove the tree itself
     mpContentsTree->findChild("External Libraries")->removeChild(pTree->mName);
+    gpMainWindow->mpMessageWidget->checkMessages();
 }
 
 //! @brief Slot that sets view mode to single tree and redraws the library
