@@ -1,22 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version='0.1'>
  
  <modelobject typename='HydraulicAckumulator'
      displayname='HydraulicAckumulator'>
   
-  <icon isopath='ackumulator_iso.svg'
+  <icon isopath='HydraulicAckumulator.svg'
       iconrotation='ON'
-      userpath='ackumulator_user.svg'/>
-   <portpose x='0.5'
-       y='1'
+      userpath='HydraulicAckumulator.svg'/>
+   <portpose x='0'
+       y='0.5'
        a='90'
        name='P1' />
    <portpose x='0.5'
        y='0'
-       a='270'
+       a='90'
+       name='Pp0' />
+   <portpose x='0.333333'
+       y='1'
+       a='90'
        name='PVa' />
-   <portpose x='1'
-       y='0.5'
-       a='0'
+   <portpose x='0.666667'
+       y='1'
+       a='90'
        name='Ppa' />
 </modelobject>
 </hopsanobjectappearance>
