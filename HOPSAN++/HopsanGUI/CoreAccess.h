@@ -83,8 +83,8 @@ public:
 
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rStartDataValues, QVector<QString> &rUnits);
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rStartDataValuesTxt, QVector<QString> &rUnits);
-    bool setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> startDataValues);
-    bool setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> startDataValues);
+//    bool setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> startDataValues);
+//    bool setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> startDataValues);
 
     void getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     QStringList getParameterNames(QString componentName);
