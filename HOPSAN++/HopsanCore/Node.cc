@@ -146,13 +146,12 @@ int Node::getDataIdFromName(const string name)
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rValues This vector will contain the values
 //! @param [in,out] rUnits This vector will contain the units
-//! @todo we should be able to select if we want ALL data or only those that are taged as PLOT (really bad name by the way)
-void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
+void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits, bool getAll)
 {
     //! @todo should we not clear the vectors first to make sure they are empty
     for(size_t i=0; i<mDataNames.size(); ++i)
     {
-        if(mPlotBehaviour[i] == Node::PLOT)
+        if((mPlotBehaviour[i] == Node::PLOT) || getAll)
         {
             rNames.push_back(mDataNames[i]);
             rValues.push_back(mDataVector[i]);
@@ -177,14 +176,13 @@ bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values
 //! Get all data names and units
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
-//! @todo we should be able to select if we want ALL data or only those that are taged as PLOT (really bad name by the way)
-void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
+void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits, bool getAll)
 {
     //std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
     for(size_t i=0; i<mDataNames.size(); ++i)
     {
         //std::cout << "mPlotBehaviour.size(): " << mPlotBehaviour.size() << std::endl;
-        if(mPlotBehaviour[i] == Node::PLOT)
+        if((mPlotBehaviour[i] == Node::PLOT) || getAll)
         {
             rNames.push_back(mDataNames[i]);
             rUnits.push_back(mDataUnits[i]);
