@@ -393,10 +393,6 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     addWidget(&mResetDefaultToolButton, 0, 4);
     addWidget(&mSystemParameterToolButton, 0, 5);
 
-    QPalette palette( mDataValuesLineEdit.palette() );
-    palette.setColor( QPalette::Text, QColor("gray") );
-    mDataValuesLineEdit.setPalette(palette);
-
     pickColor();
 
     connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
@@ -437,10 +433,13 @@ void ParameterLayout::setDataValueTxt(QString valueTxt)
 //! @brief Sets the value in the text field to the default parameter value
 void ParameterLayout::setDefaultValue()
 {
-    QString defaultText = mpGUIModelObject->getDefaultParameter(mDataName);
-    if(defaultText != QString())
-        mDataValuesLineEdit.setText(defaultText);
-    pickColor();
+    if(mpGUIModelObject)
+    {
+        QString defaultText = mpGUIModelObject->getDefaultParameter(mDataName);
+        if(defaultText != QString())
+            mDataValuesLineEdit.setText(defaultText);
+        pickColor();
+    }
 }
 
 
@@ -471,11 +470,14 @@ void ParameterLayout::showListOfSystemParameters()
 
 void ParameterLayout::pickColor()
 {
-    if(mDataValuesLineEdit.text() == mpGUIModelObject->getDefaultParameter(mDataName))
+    if(mpGUIModelObject)
     {
-        QPalette palette( mDataValuesLineEdit.palette() );
-        palette.setColor( QPalette::Text, QColor("gray") );
-        mDataValuesLineEdit.setPalette(palette);
+        if(mDataValuesLineEdit.text() == mpGUIModelObject->getDefaultParameter(mDataName))
+        {
+            QPalette palette( mDataValuesLineEdit.palette() );
+            palette.setColor( QPalette::Text, QColor("gray") );
+            mDataValuesLineEdit.setPalette(palette);
+        }
     }
     else
     {
