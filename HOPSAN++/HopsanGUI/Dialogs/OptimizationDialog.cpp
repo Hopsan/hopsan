@@ -57,6 +57,16 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpAlphaSpinBox->setRange(0, std::numeric_limits<double>::max());
     mpAlphaSpinBox->setSingleStep(0.1);
     mpAlphaSpinBox->setValue(1.3);
+    mpBetaLabel = new QLabel("Randomization factor: ");
+    mpBetaSpinBox = new QDoubleSpinBox(this);
+    mpBetaSpinBox->setRange(0, std::numeric_limits<double>::max());
+    mpBetaSpinBox->setSingleStep(0.1);
+    mpBetaSpinBox->setValue(0.3);
+    mpGammaLabel = new QLabel("Forgetting factor: ");
+    mpGammaSpinBox = new QDoubleSpinBox(this);
+    mpGammaSpinBox->setRange(0, std::numeric_limits<double>::max());
+    mpGammaSpinBox->setSingleStep(0.1);
+    mpGammaSpinBox->setValue(0.5);
     mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
     mpPlottingCheckBox->setChecked(true);
     mpSettingsLayout = new QGridLayout(this);
@@ -66,13 +76,19 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpSettingsLayout->addWidget(mpSearchPointsSpinBox, 1, 1);
     mpSettingsLayout->addWidget(mpAlphaLabel, 2, 0);
     mpSettingsLayout->addWidget(mpAlphaSpinBox, 2, 1);
-    mpSettingsLayout->addWidget(mpPlottingCheckBox, 3, 0, 1, 2);
-    mpSettingsLayout->addWidget(new QWidget(this), 4, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpBetaLabel, 3, 0);
+    mpSettingsLayout->addWidget(mpBetaSpinBox, 3, 1);
+    mpSettingsLayout->addWidget(mpGammaLabel, 4, 0);
+    mpSettingsLayout->addWidget(mpGammaSpinBox, 4, 1);
+    mpSettingsLayout->addWidget(mpPlottingCheckBox, 5, 0, 1, 2);
+    mpSettingsLayout->addWidget(new QWidget(this), 6, 0, 1, 2);
     mpSettingsLayout->setRowStretch(0, 0);
     mpSettingsLayout->setRowStretch(1, 0);
     mpSettingsLayout->setRowStretch(2, 0);
     mpSettingsLayout->setRowStretch(3, 0);
-    mpSettingsLayout->setRowStretch(4, 1);
+    mpSettingsLayout->setRowStretch(4, 0);
+    mpSettingsLayout->setRowStretch(4, 0);
+    mpSettingsLayout->setRowStretch(6, 1);
     mpSettingsWidget = new QWidget(this);
     mpSettingsWidget->setLayout(mpSettingsLayout);
 
@@ -90,30 +106,38 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpFunctionsComboBox->addItems(mFunctions);
     mpAddFunctionButton = new QPushButton("Add Function");
     QLabel *pWeightLabel = new QLabel("Weight");
+    QLabel *pNormLabel = new QLabel("Norm. Factor");
+    QLabel *pExpLabel = new QLabel("Exp. Factor");
     QLabel *pDescriptionLabel = new QLabel("Description");
     QLabel *pDataLabel = new QLabel("Data");
     QFont tempFont = pDescriptionLabel->font();
     tempFont.setBold(true);
     pWeightLabel->setFont(tempFont);
+    pNormLabel->setFont(tempFont);
+    pExpLabel->setFont(tempFont);
     pDescriptionLabel->setFont(tempFont);
     pDataLabel->setFont(tempFont);
     mpObjectiveLayout = new QGridLayout(this);
-    mpObjectiveLayout->addWidget(mpVariablesList,           0, 0, 1, 5);
-    mpObjectiveLayout->addWidget(mpFunctionsComboBox,       1, 0, 1, 3);
-    mpObjectiveLayout->addWidget(mpAddFunctionButton,       1, 3, 1, 2);
+    mpObjectiveLayout->addWidget(mpVariablesList,           0, 0, 1, 7);
+    mpObjectiveLayout->addWidget(mpFunctionsComboBox,       1, 0, 1, 4);
+    mpObjectiveLayout->addWidget(mpAddFunctionButton,       1, 5, 1, 3);
     mpObjectiveLayout->addWidget(pWeightLabel,              2, 0, 1, 1);
-    mpObjectiveLayout->addWidget(pDescriptionLabel,         2, 1, 1, 2);
-    mpObjectiveLayout->addWidget(pDataLabel,                2, 3, 1, 2);
-    mpObjectiveLayout->addWidget(new QWidget(this),         3, 0, 1, 5);
+    mpObjectiveLayout->addWidget(pNormLabel,                2, 1, 1, 1);
+    mpObjectiveLayout->addWidget(pExpLabel,                 2, 2, 1, 1);
+    mpObjectiveLayout->addWidget(pDescriptionLabel,         2, 3, 1, 2);
+    mpObjectiveLayout->addWidget(pDataLabel,                2, 5, 1, 2);
+    mpObjectiveLayout->addWidget(new QWidget(this),         3, 0, 1, 7);
     mpObjectiveLayout->setRowStretch(0, 0);
     mpObjectiveLayout->setRowStretch(1, 0);
     mpObjectiveLayout->setRowStretch(2, 0);
     mpObjectiveLayout->setRowStretch(3, 1);
     mpObjectiveLayout->setColumnStretch(0, 0);
     mpObjectiveLayout->setColumnStretch(1, 0);
-    mpObjectiveLayout->setColumnStretch(2, 1);
+    mpObjectiveLayout->setColumnStretch(2, 0);
     mpObjectiveLayout->setColumnStretch(3, 0);
-    mpObjectiveLayout->setColumnStretch(4, 0);
+    mpObjectiveLayout->setColumnStretch(4, 1);
+    mpObjectiveLayout->setColumnStretch(5, 0);
+    mpObjectiveLayout->setColumnStretch(6, 0);
     mpObjectiveWidget = new QWidget(this);
     mpObjectiveWidget->setLayout(mpObjectiveLayout);
 
@@ -230,6 +254,9 @@ void OptimizationDialog::generateScriptFile()
 
     QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
     QString alphaString = QString().setNum(mpAlphaSpinBox->value());
+    QString betaString = QString().setNum(mpBetaSpinBox->value());
+    QString gammaString = QString().setNum(mpGammaSpinBox->value());
+    QString nParString = QString().setNum(mpParameterLabels.size());
     mScript.clear();
 
     QTextStream scriptStream(&mScript);
@@ -256,14 +283,24 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "iterations=" << iterationsString << "\n";
     scriptStream << "hopsan.turnOffProgressBar()\n";
     scriptStream << "alpha=" << alphaString << "\n";
+    scriptStream << "beta=" << betaString << "\n";
+    scriptStream << "gamma=" << gammaString << "\n";
     scriptStream << "\n";
     scriptStream << "\n";
     scriptStream << "\n";
     scriptStream << "##### Optimization parameters #####\n";
     scriptStream << "\n";
-    scriptStream << "parameters = [[0.0, 0.0]";
+    scriptStream << "parameters = [[0.0";
+    for(int i=1; i<mpParameterLabels.size(); ++i)
+        scriptStream << ", 0.0";
+    scriptStream << "]";
     for(int i=1; i<mpSearchPointsSpinBox->value(); ++i)
-        scriptStream << ",\n           [0.0, 0.0]";
+    {
+        scriptStream << ",\n           [0.0";
+        for(int i=1; i<mpParameterLabels.size(); ++i)
+            scriptStream << ", 0.0";
+        scriptStream << "]";
+    }
     scriptStream << "]\n";
     scriptStream << "componentNames = [\""+mSelectedComponents.at(0)+"\"";
     for(int i=1; i<mSelectedComponents.size(); ++i)
@@ -292,7 +329,12 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "]\n";
     scriptStream << "def getObjective():\n";
     for(int i=0; i<mWeightSpinBoxPtrs.size(); ++i)
-        scriptStream << "  e"+QString().setNum(i)+"="+QString().setNum(mWeightSpinBoxPtrs.at(i)->value())+"\n";
+        scriptStream << "  w"+QString().setNum(i)+"="+QString().setNum(mWeightSpinBoxPtrs.at(i)->value())+"\n";
+    for(int i=0; i<mNormSpinBoxPtrs.size(); ++i)
+        scriptStream << "  n"+QString().setNum(i)+"="+QString().setNum(mNormSpinBoxPtrs.at(i)->value())+"\n";
+    for(int i=0; i<mExpSpinBoxPtrs.size(); ++i)
+        scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpSpinBoxPtrs.at(i)->value())+"\n";
+
     scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").getTimeVector()\n";
     for(int i=0; i<mFunctionVariables.size(); ++i)
         for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
@@ -313,27 +355,36 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "\n";
     scriptStream << "##### Execute optimization #####\n";
     scriptStream << "\n";
+    scriptStream << "for i in range(len(parameters)):\n";
+    scriptStream << "  for j in range(len(parameterNames)):\n";
+    scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[i][j])\n";
+    scriptStream << "  hopsan.simulate()\n";
+    scriptStream << "  obj[i] = getObjective()\n";
     if(mpPlottingCheckBox->isChecked())
     {
         scriptStream << "#Run one simulation first and open plot window, if user wants to see plots in real-time\n";
-        scriptStream << "hopsan.simulate()\n";
         for(int i=0; i<mFunctionVariables.size(); ++i)
             for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
                 scriptStream << "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
         scriptStream << "\n";
     }
+    scriptStream << "worstId = indexOfMax(obj)\n";
     scriptStream << "previousWorstId = -1\n";
+    scriptStream << "\n";
     scriptStream << "for k in range(iterations):\n";
+    scriptStream << "  kf=1-(alpha/2)**(gamma/(2*"+nParString+"))\n";
+    scriptStream << "  objspread=max(obj)-min(obj)\n";
     scriptStream << "  for i in range(len(parameters)):\n";
-    scriptStream << "    for j in range(len(parameterNames)):\n";
-    scriptStream << "      hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[i][j])\n";
-    scriptStream << "    hopsan.simulate()\n";
-    scriptStream << "    obj[i] = getObjective()\n";
+    scriptStream << "    obj[i] = obj[i] + objspread*kf\n";
+    scriptStream << "  for j in range(len(parameterNames)):\n";
+    scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[worstId][j])\n";
+    scriptStream << "  hopsan.simulate()\n";
+    scriptStream << "  obj[worstId] = getObjective()\n";
     scriptStream << "  worstId = indexOfMax(obj)\n";
     scriptStream << "  if worstId == previousWorstId:\n";
-    scriptStream << "    reflectWorst(parameters,worstId,alpha/2.0,minValues,maxValues)  #Same as previous, move halfway to centroid\n";
+    scriptStream << "    reflectWorst(parameters,worstId,alpha/2.0,minValues,maxValues,beta)  #Same as previous, move halfway to centroid\n";
     scriptStream << "  else:\n";
-    scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues)      #Reflect worst through centroid of the remaining points\n";
+    scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues,beta)      #Reflect worst through centroid of the remaining points\n";
     scriptStream << "  previousWorstId=worstId\n";
     scriptStream << "  \n";
     if(!mpPlottingCheckBox->isChecked())
@@ -422,7 +473,8 @@ void OptimizationDialog::addFunction()
 {
     int i=mpFunctionsComboBox->currentIndex();
 
-    if(!verifyFunctionVariables(i));
+    if(!verifyFunctionVariables(i))
+        return;
 
     QStringList data;
     data = getFunctionDataList(i);
@@ -442,6 +494,15 @@ void OptimizationDialog::addFunction()
     pWeightSpinBox->setRange(0.0,1000000.0);
     pWeightSpinBox->setSingleStep(0.1);
     pWeightSpinBox->setValue(1.0);
+    QDoubleSpinBox *pNormSpinBox = new QDoubleSpinBox(this);
+    pNormSpinBox->setRange(0.0,1000000.0);
+    pNormSpinBox->setSingleStep(0.1);
+    pNormSpinBox->setValue(1.0);
+    QDoubleSpinBox *pExpSpinBox = new QDoubleSpinBox(this);
+    pExpSpinBox->setRange(0.0,1000000.0);
+    pExpSpinBox->setSingleStep(0.1);
+    pExpSpinBox->setValue(2.0);
+
     QString variablesText = mFunctionComponents.last().first()+", "+mFunctionPorts.last().first()+", "+mFunctionVariables.last().first();
     for(int i=1; i<mFunctionVariables.last().size(); ++i)
     {
@@ -468,15 +529,19 @@ void OptimizationDialog::addFunction()
     pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
     pRemoveButton->setToolTip("Remove Function");
     mWeightSpinBoxPtrs.append(pWeightSpinBox);
+    mNormSpinBoxPtrs.append(pNormSpinBox);
+    mExpSpinBoxPtrs.append(pExpSpinBox);
     mFunctionLabelPtrs.append(pFunctionLabel);
     mDataWidgetPtrs.append(pDataWidget);
     mRemoveFunctionButtonPtrs.append(pRemoveButton);
 
     int row = mpObjectiveLayout->rowCount()-1;
-    mpObjectiveLayout->addWidget(pWeightSpinBox, row, 0, 1, 1);
-    mpObjectiveLayout->addWidget(pFunctionLabel, row, 1, 1, 2);
-    mpObjectiveLayout->addWidget(pDataWidget, row, 3, 1, 1);
-    mpObjectiveLayout->addWidget(pRemoveButton, row, 4, 1, 1);
+    mpObjectiveLayout->addWidget(pWeightSpinBox, row,   0, 1, 1);
+    mpObjectiveLayout->addWidget(pNormSpinBox, row,     1, 1, 1);
+    mpObjectiveLayout->addWidget(pExpSpinBox, row,      2, 1, 1);
+    mpObjectiveLayout->addWidget(pFunctionLabel, row,   3, 1, 2);
+    mpObjectiveLayout->addWidget(pDataWidget, row,      5, 1, 1);
+    mpObjectiveLayout->addWidget(pRemoveButton, row,    6, 1, 1);
     mpObjectiveLayout->setRowStretch(row, 0);
     mpObjectiveLayout->setRowStretch(row+1, 1);
     mpObjectiveLayout->setColumnStretch(0, 0);
@@ -484,7 +549,6 @@ void OptimizationDialog::addFunction()
     mpObjectiveLayout->setColumnStretch(2, 1);
     mpObjectiveLayout->setColumnStretch(3, 0);
     mpObjectiveLayout->setColumnStretch(4, 0);
-
 
     connect(pRemoveButton, SIGNAL(clicked()), this, SLOT(removeFunction()));
 }
@@ -496,6 +560,8 @@ void OptimizationDialog::removeFunction()
     int i = mRemoveFunctionButtonPtrs.indexOf(button);
 
     mpObjectiveLayout->removeWidget(mWeightSpinBoxPtrs.at(i));
+    mpObjectiveLayout->removeWidget(mNormSpinBoxPtrs.at(i));
+    mpObjectiveLayout->removeWidget(mExpSpinBoxPtrs.at(i));
     mpObjectiveLayout->removeWidget(mFunctionLabelPtrs.at(i));
     mpObjectiveLayout->removeWidget(mRemoveFunctionButtonPtrs.at(i));
     mpObjectiveLayout->removeWidget(mDataWidgetPtrs.at(i));
@@ -505,11 +571,15 @@ void OptimizationDialog::removeFunction()
         delete(mDataSpinBoxPtrs.at(i).at(j));
     }
     delete(mWeightSpinBoxPtrs.at(i));
+    delete(mNormSpinBoxPtrs.at(i));
+    delete(mExpSpinBoxPtrs.at(i));
     delete(mFunctionLabelPtrs.at(i));
     delete(mRemoveFunctionButtonPtrs.at(i));
     delete(mDataWidgetPtrs.at(i));
 
     mWeightSpinBoxPtrs.removeAt(i);
+    mNormSpinBoxPtrs.removeAt(i);
+    mExpSpinBoxPtrs.removeAt(i);
     mFunctionLabelPtrs.removeAt(i);
     mRemoveFunctionButtonPtrs.removeAt(i);
     mDataSpinBoxPtrs.removeAt(i);
@@ -579,25 +649,25 @@ QString OptimizationDialog::getFunctionCode(int i)
     switch(mSelectedFunctions.at(i))
     {
     case 0:
-        retval = "-e"+QString().setNum(i)+"*maxValue(data"+QString().setNum(i)+"0)";
+        retval = "-w"+QString().setNum(i)+"*(maxValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     case 1:
-        retval = "-e"+QString().setNum(i)+"*maxValue(data"+QString().setNum(i)+"0)";
+        retval = "-w"+QString().setNum(i)+"*(maxValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     case 2:
-        retval = "+e"+QString().setNum(i)+"*maxValue(data"+QString().setNum(i)+"0)";
+        retval = "+w"+QString().setNum(i)+"*(maxValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     case 3:
-        retval = "+e"+QString().setNum(i)+"*minValue(data"+QString().setNum(i)+"0)";
+        retval = "+w"+QString().setNum(i)+"*(minValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     case 4:
-        retval = "+e"+QString().setNum(i)+"*overShoot(data"+QString().setNum(i)+"0, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+")";
+        retval = "+w"+QString().setNum(i)+"*(overShoot(data"+QString().setNum(i)+"0, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     case 5:
-        retval = "+e"+QString().setNum(i)+"*firstTimeAt(data"+QString().setNum(i)+"0, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+")";
+        retval = "+w"+QString().setNum(i)+"*(firstTimeAt(data"+QString().setNum(i)+"0, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     case 6:
-        retval = "+e"+QString().setNum(i)+"*diffFromValueAtTime(data00, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+","+QString().setNum(mDataSpinBoxPtrs.at(i).at(1)->value())+")";
+        retval = "+w"+QString().setNum(i)+"*(diffFromValueAtTime(data00, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+","+QString().setNum(mDataSpinBoxPtrs.at(i).at(1)->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     }
     return retval;
@@ -628,17 +698,19 @@ bool OptimizationDialog::verifyFunctionVariables(int i)
 {
     switch(i)
     {
+    case 0:
+        return(verifyNumberOfVariables(1));
     case 1:
-        return(!verifyNumberOfVariables(1));
+        return(verifyNumberOfVariables(1));
     case 2:
-        return(!verifyNumberOfVariables(1));
+        return(verifyNumberOfVariables(1));
     case 3:
-        return(!verifyNumberOfVariables(1));
+        return(verifyNumberOfVariables(1));
     case 4:
-        return(!verifyNumberOfVariables(1));
+        return(verifyNumberOfVariables(1));
     case 5:
-        return(!verifyNumberOfVariables(1));
+        return(verifyNumberOfVariables(1));
     case 6:
-        return(!verifyNumberOfVariables(1));
+        return(verifyNumberOfVariables(1));
     }
 }

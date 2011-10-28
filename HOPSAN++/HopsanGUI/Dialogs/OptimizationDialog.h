@@ -74,6 +74,10 @@ private:
     QSpinBox *mpSearchPointsSpinBox;
     QLabel *mpAlphaLabel;
     QDoubleSpinBox *mpAlphaSpinBox;
+    QLabel *mpBetaLabel;
+    QDoubleSpinBox *mpBetaSpinBox;
+    QLabel *mpGammaLabel;
+    QDoubleSpinBox *mpGammaSpinBox;
     QCheckBox *mpPlottingCheckBox;
 
     //Parameters tab
@@ -86,6 +90,8 @@ private:
     QTreeWidget *mpVariablesList;
     QPushButton *mpAddFunctionButton;
     QList<QDoubleSpinBox*> mWeightSpinBoxPtrs;
+    QList<QDoubleSpinBox*> mNormSpinBoxPtrs;
+    QList<QDoubleSpinBox*> mExpSpinBoxPtrs;
     QList<QLabel*> mFunctionLabelPtrs;
     QList<QWidget*> mDataWidgetPtrs;
     QList< QList<QDoubleSpinBox*> > mDataSpinBoxPtrs;
@@ -113,7 +119,6 @@ private:
     QString mScript;
     QStringList mFunctions;
     QList<int> mSelectedFunctions;
-    QList<double> mFunctionWeights;
     QList<QStringList> mFunctionComponents;
     QList<QStringList> mFunctionPorts;
     QList<QStringList> mFunctionVariables;
