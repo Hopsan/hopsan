@@ -401,61 +401,6 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 }
 
 
-////! @brief Sets start values to a start value node in the port
-////! @param[in] names is a Vector of names to be set
-////! @param[in] values is a Vector of start values to be set
-//bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> values, const size_t /*portIdx*/)
-//{
-//    bool success = false;
-//    if(mpStartNode)
-//    {
-//        //Remove references from the System parameters if any
-//        for(size_t i = 0; i < names.size(); ++i)
-//        {
-//            //Get a pointer to the actual node data
-//            double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
-//            //FIXAgetComponent()->getSystemParent()->getSystemParameters().unMapParameter(nodeDataPtr);
-//        }
-//        //Write the value to the start value node
-//        success = mpStartNode->setDataValuesByNames(names, values);
-//    }
-//    return success;
-//}
-
-
-////! @brief Sets start values to a start value node in the port
-////!
-////! Observe that this method is ONLY used to map System parameters to the start values!
-////!
-////! @param[in] names is a Vector of names to be set
-////! @param[in] sysParNames is a Vector of names of System parameters that should be associated to the start value
-//bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames, const size_t /*portIdx*/)
-//{
-//    cout << "In setStartValueDataByNames()" << endl;
-//    bool success = false;
-//    if(mpStartNode)
-//    {
-//        success = true;
-//        std::vector<double> values;
-//        values.resize(sysParNames.size());
-//        for(size_t i = 0; i < sysParNames.size(); ++i)
-//        {
-//            //FIXAgetComponent()->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i]);
-//            //Get a pointer to the actual node data
-//            //double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
-//            //Map the node data to the System parameter
-//            //FIXAsuccess = getComponent()->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
-//            stringstream ssName;
-//            ssName << getPortName() << "::" << dataNames[i];
-
-//            success *= getComponent()->setParameterValue(ssName, sysParNames[i]);
-//        }
-//        //success *= mpStartNode->setDataValuesByNames(names, values);
-//    }
-//    return success;
-//}
-
-
 //! @brief Get the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @returns the start value
