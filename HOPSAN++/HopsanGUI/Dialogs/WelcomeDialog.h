@@ -40,6 +40,8 @@ class WelcomeDialog : public QDialog
 public:
     WelcomeDialog(MainWindow *parent = 0);
 
+    QString mpUpdateLink;
+
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
     virtual bool focusNextPrevChild(bool next);

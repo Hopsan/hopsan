@@ -24,6 +24,7 @@
 
 #include <QDebug>
 #include <QFontDatabase>
+#include <QtNetwork/QNetworkReply>
 #include "MainWindow.h"
 #include "version_gui.h"
 #include "common.h"
@@ -913,6 +914,77 @@ void MainWindow::openExampleModel()
 }
 
 
+//! @brief This will attempt to download the latest installer and (if successful) launch it in silent mode and close Hopsan
+//! @todo Disable this in Linux/Mac releases, or make it work for those platforms as well.
+void MainWindow::launchAutoUpdate()
+{
+    qDebug() << "HewrdPewrn";
+    QNetworkAccessManager *pNetworkManager = new QNetworkAccessManager();
+    connect(pNetworkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(commenceAutoUpdate(QNetworkReply*)));
+
+    qDebug() << "FewrSpeil";
+    //QString path = QString(AUTOUPDATELINK);
+    //QString path = "http://tiny.cc/hopsanupdate";
+    QUrl url = QUrl(mpWelcomeDialog->mpUpdateLink);
+
+    qDebug() << "Downloading: " << mpWelcomeDialog->mpUpdateLink;
+
+    mpDownloadDialog = new QProgressDialog("Downloading new version...", "Cancel",0, 100, this);
+    mpDownloadDialog->setWindowTitle("Hopsan Auto Update");
+    mpDownloadDialog->setWindowModality(Qt::WindowModal);
+    mpDownloadDialog->setMinimumWidth(300);
+    mpDownloadDialog->setValue(0);
+
+    mpDownloadStatus = pNetworkManager->get(QNetworkRequest(url));
+    connect(mpDownloadStatus, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateDownloadProgressBar(qint64, qint64)));
+    qDebug() << "FewFighers";
+}
+
+
+//! @brief Private slot that updates the progress bar during auto update downloads
+//! @param bytesReceived Number of bytes downloaded
+//! @param bytesTotal Total number of bytes to download
+void MainWindow::updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal)
+{
+    qDebug() << "Dewnlewding!";
+    int progress = 100*bytesReceived/bytesTotal;
+    mpDownloadDialog->setValue(progress);
+}
+
+
+//! @brief Private slot that saves the downloaded installer file, launches it and quit Hopsan
+//! @param reply Contains information about the downloaded installation executable
+void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
+{
+    qDebug() << "SkewHewrn";
+    QUrl url = reply->url();
+    if (reply->error())
+    {
+        mpMessageWidget->printGUIErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
+        qDebug() << "Dewnlewd Prewblem";
+        return;
+    }
+    else
+    {
+        QFile file("update.exe");
+        if (!file.open(QIODevice::WriteOnly)) {
+            mpMessageWidget->printGUIErrorMessage("Could not open update.exe for writing.");
+            qDebug() << "Feil Prewblem";
+            return;
+        }
+        file.write(reply->readAll());
+        file.close();
+    }
+    qDebug() << "KewHewrn";
+    reply->deleteLater();
+
+    QProcess *pProcess = new QProcess();
+    pProcess->start("update.exe", QStringList() << "/silent");
+    pProcess->waitForStarted();
+    this->close();
+}
+
+
 //! @brief Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
@@ -1121,5 +1193,5 @@ void MainWindow::fixTimeStep()
     if (mpProjectTabs->count() > 0)
     {
         mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->setDesiredTimeStep(getTimeStepFromToolBar());
-    }
+   }
 }

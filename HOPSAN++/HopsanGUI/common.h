@@ -38,6 +38,7 @@
 #define HOPSANLINK "http://tiny.cc/hopsan"
 #define NEWSLINK "http://tiny.cc/hopsannews"
 #define DOWNLOADLINK "http://tiny.cc/hopsanarchive"
+#define AUTOUPDATELINK "http://tiny.cc/hopsanupdate"
 
 //Path definitions (development and release)
 #define MAINPATH "../"

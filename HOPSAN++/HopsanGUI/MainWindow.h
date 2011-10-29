@@ -27,6 +27,7 @@
 
 #include <QMainWindow>
 #include <QtGui>
+#include <QtNetwork/QNetworkReply>
 
 #include "Widgets/UndoWidget.h"
 
@@ -142,6 +143,7 @@ public slots:
     void fixSimulationParameterValues();
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
+    void launchAutoUpdate();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
@@ -157,6 +159,8 @@ private slots:
     void updateSystemParametersActionButton(bool);
     void showToolBarHelpPopup();
     void openExampleModel();
+    void updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal);
+    void commenceAutoUpdate(QNetworkReply* reply);
 
 private:
     //Methods that adjusts simulation parameters if they are illegal
@@ -227,6 +231,10 @@ private:
     QGroupBox *mpHelpPopupGroupBox;
     QHBoxLayout *mpHelpPopupGroupBoxLayout;
     QTimer *mpHelpPopupTimer;
+
+    //Auto update
+    QNetworkReply *mpDownloadStatus;
+    QProgressDialog *mpDownloadDialog;
 };
 
 #endif // MAINWINDOW_H

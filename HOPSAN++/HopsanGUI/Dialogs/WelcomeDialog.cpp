@@ -133,7 +133,8 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     tempFont.setBold(true);
     mpNewVersionButton->setFont(tempFont);
     mpNewVersionButton->hide();
-    connect(mpNewVersionButton, SIGNAL(clicked()), this, SLOT(openDownloadPage()));
+    //connect(mpNewVersionButton, SIGNAL(clicked()), this, SLOT(openDownloadPage()));
+    connect(mpNewVersionButton, SIGNAL(clicked()), gpMainWindow, SLOT(launchAutoUpdate()));
 
     mpNewsLabel = new QLabel();
     mpNewsLabel->setText(" Latest News ");
@@ -337,5 +338,6 @@ void WelcomeDialog::showNews(bool loadedSuccessfully)
         webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
         mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
         mpNewVersionButton->setVisible(webVersion>thisVersion);
+        mpUpdateLink = mpWeb->page()->currentFrame()->metaData().find("hopsanupdatelink").value();
     }
 }

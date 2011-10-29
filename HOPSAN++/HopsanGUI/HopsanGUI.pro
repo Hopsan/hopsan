@@ -11,7 +11,7 @@ TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
 QT += svg xml
-QT += core gui webkit
+QT += core gui webkit network
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 
