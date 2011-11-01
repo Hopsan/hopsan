@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -15,13 +15,14 @@
 
 //!
 //! @file   HydraulicPressureReliefValve.hpp
-//! @author Robert Braun <robert.braun@liu.se>
+//! @author Andreas Klintemyr <andreas.klintemyr@telia.com>
 //! @date   2010-01-22
 //!
-//! @brief Contains a hydraulic pressure relief valve with first order dynamics
+//! @brief Contains a hydraulic pressure relief valve with first order dynamics and signal and input signal
 //! Written by Petter Krus 901015
 //! Revised by Petter Krus 920324
 //! Translated to HOPSAN NG by Robert Braun 100122
+//! Modified to contain input signal by Andreas Klintemyr 111101
 //$Id$
 
 #ifndef HYDRAULICPRESSURERELIEFVALVE_HPP_INCLUDED
@@ -40,15 +41,15 @@ namespace hopsan {
     class HydraulicPressureReliefValve : public ComponentQ
     {
     private:
-        double x0, pref, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, ph, x0max;
+        double x0, pmax, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, ph, x0max;
         double mPrevX0;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+        double *mpND_in, *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderTransferFunction mFilterLP;
-        Port *mpP1, *mpP2;
+        Port *mpP1, *mpP2, *mpIn;
 
     public:
         static Component *Creator()
@@ -58,7 +59,7 @@ namespace hopsan {
 
         HydraulicPressureReliefValve() : ComponentQ()
         {
-            pref = 20000000;
+            pmax = 20000000;
             tao = 0.01;
             Kcs = 0.00000001;
             Kcf = 0.00000001;
@@ -68,8 +69,9 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("p_ref", "Reference Opening Pressure", "[Pa]", pref);
+            registerParameter("p_max", "Maximum opening pressure", "[Pa]", pmax);
             registerParameter("tao", "Time Constant of Spool", "[s]", tao);
             registerParameter("k_c,s", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", Kcs);
             registerParameter("k_c,f", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", Kcf);
@@ -80,6 +82,8 @@ namespace hopsan {
 
         void initialize()
         {
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 1);
+
             mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
             mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
@@ -105,7 +109,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+            double in, p1, q1, c1, Zc1, p2, q2, c2, Zc2;
             double b1, gamma, b2, xs, xh, xsh, wCutoff;
             bool cav = false;
 
@@ -118,8 +122,11 @@ namespace hopsan {
             q2 = (*mpND_q2);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
+            in = (*mpND_in);
 
             //PRV Equations
+
+            limitValue(in, 0, 1);
 
             //Help variable b1
             b1 = Cs + (p1-p2)*Cf;
@@ -167,7 +174,7 @@ namespace hopsan {
             }
 
             // Calculation of spool position
-            xs = (gamma*(c1) + b2*x0/2.0 - pref) / (b1+b2);
+            xs = (gamma*(c1) + b2*x0/2.0 - pmax*in) / (b1+b2);
 
             //Hysteresis
             xh = ph / (b1+b2);                                  //Hysteresis width [m]
@@ -203,7 +210,7 @@ namespace hopsan {
             }
             if (cav)
             {
-                xs = (c1 + b2*x0/2.0 - pref) / (b1+b2);
+                xs = (c1 + b2*x0/2.0 - pmax*in) / (b1+b2);
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
                 x0 = mFilterLP.value();        //! @todo Make the filter actually redo last step if possible; this will create an undesired delay of one iteration
 

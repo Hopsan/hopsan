@@ -299,7 +299,8 @@ HEADERS += win32dll.h \
     Components/Signal/SignalTan.hpp \
     Components/Signal/SignalSin.hpp \
     Components/Signal/SignalCos.hpp \
-    Components/DummyComponent.hpp
+    Components/DummyComponent.hpp \
+    Components/Hydraulic/HydraulicPressureReliefValveWithInputSignal.hpp
 
 
 OTHER_FILES += \
@@ -307,6 +308,7 @@ OTHER_FILES += \
     Components/Signal/SignalTan.xml \
     Components/Signal/SignalSin.xml \
     Components/Signal/SignalCos.xml
+
 
 
 
