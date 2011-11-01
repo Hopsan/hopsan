@@ -15,7 +15,7 @@
 
 //!
 //! @file   HydraulicPressureReliefValve.hpp
-//! @author Andreas Klintemyr <andreas.klintemyr@telia.com>
+//! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-01-22
 //!
 //! @brief Contains a hydraulic pressure relief valve with first order dynamics and signal and input signal
