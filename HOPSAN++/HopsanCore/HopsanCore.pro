@@ -97,7 +97,8 @@ SOURCES += Port.cc \
     ComponentUtilities/WhiteGaussianNoise.cc \
     ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
     ComponentUtilities/SecondOrderTransferFunction.cc \
-    ComponentUtilities/FirstOrderTransferFunction.cc
+    ComponentUtilities/FirstOrderTransferFunction.cc \
+    ComponentUtilities/CSVParser.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -308,14 +309,4 @@ OTHER_FILES += \
     Components/Signal/SignalTan.xml \
     Components/Signal/SignalSin.xml \
     Components/Signal/SignalCos.xml
-
-
-
-
-
-
-
-
-
-
 

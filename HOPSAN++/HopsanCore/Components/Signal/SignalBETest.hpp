@@ -28,6 +28,7 @@
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 #include <algorithm>
+#include <sstream>
 
 namespace hopsan {
 
@@ -84,7 +85,7 @@ namespace hopsan {
                 myDataCurve = new CSVParser(success, mDataCurveFileName);
                 if(!success)
                 {
-                    stringstream ss;
+                    std::stringstream ss;
                     ss << "Unable to initialize CVS file: " << mDataCurveFileName;
                     addErrorMessage(ss.str());
                     stopSimulation();
@@ -93,7 +94,7 @@ namespace hopsan {
             if(success)
             {
 
-                stringstream ss;
+                std::stringstream ss;
                 //            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
                 ss << mGain << "  " << myDataCurve->interpolate(mGain);
                 addInfoMessage(ss.str());

@@ -123,13 +123,13 @@ public:
 
         if(mpPthetain->isConnected() && !mpPwin->isConnected())
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Angle input is connected but angular velocity is constant, kinematic relationsship must be manually enforced.";
             addWarningMessage(ss.str());
         }
         else if(mpPthetain->isConnected() && mpPwin->isConnected())
         {
-            stringstream ss;
+            std::stringstream ss;
             ss << "Both angle and velocity inputs are connected, kinematic relationsship must be manually enforced.";
             addWarningMessage(ss.str());
         }

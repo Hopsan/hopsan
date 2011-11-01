@@ -20,6 +20,7 @@
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
+#include <sstream>
 
 namespace hopsan {
 
@@ -74,13 +75,13 @@ namespace hopsan {
 
             if(mpXin->isConnected() && !mpVin->isConnected())
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Position input is connected but velocity is constant, kinematic relationsship must be manually enforced.";
                 addWarningMessage(ss.str());
             }
             else if(mpXin->isConnected() && mpVin->isConnected())
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << "Both position and velocity inputs are connected, kinematic relationsship must be manually enforced.";
                 addWarningMessage(ss.str());
             }
