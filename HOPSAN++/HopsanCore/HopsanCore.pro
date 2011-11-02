@@ -246,9 +246,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic43ValveNeutralToTank.hpp \
     Components/Hydraulic/Hydraulic43ValveNeutralSupplyToTank.hpp \
     Components/Hydraulic/HydraulicHose.hpp \
-    ComponentUtilities/ReadDataCurve.h \
-    ComponentUtilities/CSVParser.h \
-    ComponentUtilities/ReadDataCurve.h \
     ComponentUtilities/CSVParser.h \
     Components/Signal/SignalPower.hpp \
     Components/Signal/SignalUndefinedConnection.hpp \
@@ -305,8 +302,4 @@ HEADERS += win32dll.h \
 
 
 OTHER_FILES += \
-    HopsanCoreBuild.prf \
-    Components/Signal/SignalTan.xml \
-    Components/Signal/SignalSin.xml \
-    Components/Signal/SignalCos.xml
-
+    HopsanCoreBuild.prf
