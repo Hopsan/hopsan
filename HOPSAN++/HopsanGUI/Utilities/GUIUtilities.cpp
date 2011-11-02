@@ -539,6 +539,8 @@ void copyIncludeFilesToDir(QString path)
     QFile rapidXmlUtilsH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
     rapidXmlUtilsH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
 
+    QDir includeDir;
+    includeDir.mkdir(saveDir.path() + "/include/include");
     QFile svnRevNumH(gExecPath + QString(INCLUDEPATH) + "/include/svnrevnum.h");
     svnRevNumH.copy(saveDir.path() + "/include/include/svnrevnum.h");
 }
