@@ -42,6 +42,15 @@ def diffFromValueAtTime(data,time,x,t):
   for i in range(len(data)):
     if time[i]>=t:
       return abs(data[i]-x)	
+      
+#Returns the average absolute difference between vectors data1 and data2
+def averageAbsoluteDifference(data1, data2):
+  total=0
+  for i in range(len(data1)):
+    d1 = data1[i]
+    d2 = data2[i]
+    total = total+abs(d1-d2)
+  return total/len(data1)
    
    
       
@@ -83,14 +92,11 @@ def reflectWorst(vector,worstId,alpha,minValues,maxValues,beta):
   n = len(vector)
   k = len(vector[0])
   x_w = vector[worstId]
-  print x_w
   x_c = []
   for i in range(k):
     x_c.append(1.0/(n-1.0)*(sum(vector,i)-x_w[i]))
   x_new = []
   for i in range(k):
     rand = beta*(maxPar(vector,i)-minPar(vector,i))*(random.random()-0.5)
-    print rand
     x_new.append(max(minValues[i], min(maxValues[i], x_c[i]+alpha*(x_c[i]-x_w[i])+rand)))
-  print x_new  
   vector[worstId] = x_new 

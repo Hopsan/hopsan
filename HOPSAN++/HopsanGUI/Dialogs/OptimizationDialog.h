@@ -49,6 +49,7 @@ public:
 private:
     void generateScriptFile();
     bool verifyNumberOfVariables(int n);
+    QStringList getFunctionDescriptions();
     QString getFunctionCode(int i);
     QStringList getFunctionDataList(int i);
     bool verifyFunctionVariables(int i);
@@ -66,6 +67,7 @@ private slots:
 
 private:
     //Settings tab
+    QLabel *mpSettingsLabel;
     QWidget *mpSettingsWidget;
     QGridLayout *mpSettingsLayout;
     QLabel *mpIterationsLabel;
@@ -81,14 +83,24 @@ private:
     QCheckBox *mpPlottingCheckBox;
 
     //Parameters tab
+    QLabel *mpParametersLabel;
     QTreeWidget *mpParametersList;
     QGridLayout *mpParametersLayout;
     QWidget *mpParametersWidget;
+    QLabel *mpParameterMinLabel;
+    QLabel *mpParameterNameLabel;
+    QLabel *mpParameterMaxLabel;
 
     //Objective function tab
     QComboBox *mpFunctionsComboBox;
+    QLabel *mpObjectiveLabel;
     QTreeWidget *mpVariablesList;
     QPushButton *mpAddFunctionButton;
+    QLabel *mpWeightLabel;
+    QLabel *mpNormLabel;
+    QLabel *mpExpLabel;
+    QLabel *mpDescriptionLabel;
+    QLabel *mpDataLabel;
     QList<QDoubleSpinBox*> mWeightSpinBoxPtrs;
     QList<QDoubleSpinBox*> mNormSpinBoxPtrs;
     QList<QDoubleSpinBox*> mExpSpinBoxPtrs;
@@ -98,6 +110,8 @@ private:
     QList<QToolButton*> mRemoveFunctionButtonPtrs;
     QGridLayout *mpObjectiveLayout;
     QWidget *mpObjectiveWidget;
+    QGridLayout *mpOutputLayout;
+    QWidget *mpOutputWidget;
 
     //Tab widget
     QTabWidget *mpTabWidget;

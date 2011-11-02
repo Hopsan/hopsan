@@ -39,11 +39,15 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     : QDialog(parent)
 {
         //Set the name and size of the main window
-    this->resize(900,480);
+    this->resize(640,480);
     this->setWindowTitle("Optimization");
     this->setPalette(gConfig.getPalette());
 
     //Settings tab
+    mpSettingsLabel = new QLabel("Please choose general settings for optimization algorithm.");
+    QFont boldFont = mpSettingsLabel->font();
+    boldFont.setBold(true);
+    mpSettingsLabel->setFont(boldFont);
     mpIterationsLabel = new QLabel("Number of iterations:");
     mpIterationsSpinBox = new QSpinBox(this);
     mpIterationsSpinBox->setRange(0, std::numeric_limits<int>::max());
@@ -66,71 +70,89 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpGammaSpinBox = new QDoubleSpinBox(this);
     mpGammaSpinBox->setRange(0, std::numeric_limits<double>::max());
     mpGammaSpinBox->setSingleStep(0.1);
-    mpGammaSpinBox->setValue(0.5);
+    mpGammaSpinBox->setValue(0.3);
     mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
     mpPlottingCheckBox->setChecked(true);
     mpSettingsLayout = new QGridLayout(this);
-    mpSettingsLayout->addWidget(mpIterationsLabel, 0, 0);
-    mpSettingsLayout->addWidget(mpIterationsSpinBox, 0, 1);
-    mpSettingsLayout->addWidget(mpSearchPointsLabel, 1, 0);
-    mpSettingsLayout->addWidget(mpSearchPointsSpinBox, 1, 1);
-    mpSettingsLayout->addWidget(mpAlphaLabel, 2, 0);
-    mpSettingsLayout->addWidget(mpAlphaSpinBox, 2, 1);
-    mpSettingsLayout->addWidget(mpBetaLabel, 3, 0);
-    mpSettingsLayout->addWidget(mpBetaSpinBox, 3, 1);
-    mpSettingsLayout->addWidget(mpGammaLabel, 4, 0);
-    mpSettingsLayout->addWidget(mpGammaSpinBox, 4, 1);
-    mpSettingsLayout->addWidget(mpPlottingCheckBox, 5, 0, 1, 2);
-    mpSettingsLayout->addWidget(new QWidget(this), 6, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpSettingsLabel,        0, 0);
+    mpSettingsLayout->addWidget(mpIterationsLabel,      1, 0);
+    mpSettingsLayout->addWidget(mpIterationsSpinBox,    1, 1);
+    mpSettingsLayout->addWidget(mpSearchPointsLabel,    2, 0);
+    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,  2, 1);
+    mpSettingsLayout->addWidget(mpAlphaLabel,           3, 0);
+    mpSettingsLayout->addWidget(mpAlphaSpinBox,         3, 1);
+    mpSettingsLayout->addWidget(mpBetaLabel,            4, 0);
+    mpSettingsLayout->addWidget(mpBetaSpinBox,          4, 1);
+    mpSettingsLayout->addWidget(mpGammaLabel,           5, 0);
+    mpSettingsLayout->addWidget(mpGammaSpinBox,         5, 1);
+    mpSettingsLayout->addWidget(mpPlottingCheckBox,     6, 0, 1, 2);
+    mpSettingsLayout->addWidget(new QWidget(this),      7, 0, 1, 2);
     mpSettingsLayout->setRowStretch(0, 0);
     mpSettingsLayout->setRowStretch(1, 0);
     mpSettingsLayout->setRowStretch(2, 0);
     mpSettingsLayout->setRowStretch(3, 0);
     mpSettingsLayout->setRowStretch(4, 0);
     mpSettingsLayout->setRowStretch(4, 0);
-    mpSettingsLayout->setRowStretch(6, 1);
+    mpSettingsLayout->setRowStretch(6, 0);
+    mpSettingsLayout->setRowStretch(7, 1);
     mpSettingsWidget = new QWidget(this);
     mpSettingsWidget->setLayout(mpSettingsLayout);
 
     //Parameter tab
+    mpParametersLabel = new QLabel("Choose optimization parameters, and specify their minimum and maximum values.");
+    mpParametersLabel->setFont(boldFont);
     mpParametersList = new QTreeWidget(this);
+    mpParameterMinLabel = new QLabel("Min Value");
+    mpParameterNameLabel = new QLabel("Parameter Name");
+    mpParameterNameLabel->setAlignment(Qt::AlignCenter);
+    mpParameterMaxLabel = new QLabel("Max Value");
+    mpParameterMinLabel->setFont(boldFont);
+    mpParameterNameLabel->setFont(boldFont);
+    mpParameterMaxLabel->setFont(boldFont);
     mpParametersLayout = new QGridLayout(this);
-    mpParametersLayout->addWidget(mpParametersList, 0, 0, 1, 3);
+    mpParametersLayout->addWidget(mpParametersLabel,        0, 0, 1, 3);
+    mpParametersLayout->addWidget(mpParametersList,         1, 0, 1, 3);
+    mpParametersLayout->addWidget(mpParameterMinLabel,      2, 0, 1, 1);
+    mpParametersLayout->addWidget(mpParameterNameLabel,     2, 1, 1, 1);
+    mpParametersLayout->addWidget(mpParameterMaxLabel,      2, 2, 1, 1);
     mpParametersWidget = new QWidget(this);
     mpParametersWidget->setLayout(mpParametersLayout);
 
+
+
     //Objective function tab
-    mFunctions << "Minimize highest value" << "Minimize lowest value" << "Maximize highest value" << "Maximize lowest value" << "Overshoot over value" << "First time to value" << "Absolute difference from value at time";
+    mpObjectiveLabel = new QLabel("Create an objective function by first choosing variables in the list and then choosing a function below.");
+    mpObjectiveLabel->setFont(boldFont);
     mpVariablesList = new QTreeWidget(this);
     mpFunctionsComboBox = new QComboBox(this);
-    mpFunctionsComboBox->addItems(mFunctions);
+    mpFunctionsComboBox->addItems(getFunctionDescriptions());
     mpAddFunctionButton = new QPushButton("Add Function");
-    QLabel *pWeightLabel = new QLabel("Weight");
-    QLabel *pNormLabel = new QLabel("Norm. Factor");
-    QLabel *pExpLabel = new QLabel("Exp. Factor");
-    QLabel *pDescriptionLabel = new QLabel("Description");
-    QLabel *pDataLabel = new QLabel("Data");
-    QFont tempFont = pDescriptionLabel->font();
-    tempFont.setBold(true);
-    pWeightLabel->setFont(tempFont);
-    pNormLabel->setFont(tempFont);
-    pExpLabel->setFont(tempFont);
-    pDescriptionLabel->setFont(tempFont);
-    pDataLabel->setFont(tempFont);
+    mpWeightLabel = new QLabel("Weight");
+    mpNormLabel = new QLabel("Norm. Factor");
+    mpExpLabel = new QLabel("Exp. Factor");
+    mpDescriptionLabel = new QLabel("Description");
+    mpDataLabel = new QLabel("Data");
+    mpWeightLabel->setFont(boldFont);
+    mpNormLabel->setFont(boldFont);
+    mpExpLabel->setFont(boldFont);
+    mpDescriptionLabel->setFont(boldFont);
+    mpDataLabel->setFont(boldFont);
     mpObjectiveLayout = new QGridLayout(this);
-    mpObjectiveLayout->addWidget(mpVariablesList,           0, 0, 1, 7);
-    mpObjectiveLayout->addWidget(mpFunctionsComboBox,       1, 0, 1, 4);
-    mpObjectiveLayout->addWidget(mpAddFunctionButton,       1, 5, 1, 3);
-    mpObjectiveLayout->addWidget(pWeightLabel,              2, 0, 1, 1);
-    mpObjectiveLayout->addWidget(pNormLabel,                2, 1, 1, 1);
-    mpObjectiveLayout->addWidget(pExpLabel,                 2, 2, 1, 1);
-    mpObjectiveLayout->addWidget(pDescriptionLabel,         2, 3, 1, 2);
-    mpObjectiveLayout->addWidget(pDataLabel,                2, 5, 1, 2);
-    mpObjectiveLayout->addWidget(new QWidget(this),         3, 0, 1, 7);
+    mpObjectiveLayout->addWidget(mpObjectiveLabel,          0, 0, 1, 7);
+    mpObjectiveLayout->addWidget(mpVariablesList,           1, 0, 1, 7);
+    mpObjectiveLayout->addWidget(mpFunctionsComboBox,       2, 0, 1, 4);
+    mpObjectiveLayout->addWidget(mpAddFunctionButton,       2, 5, 1, 3);
+    mpObjectiveLayout->addWidget(mpWeightLabel,             3, 0, 1, 1);
+    mpObjectiveLayout->addWidget(mpNormLabel,               3, 1, 1, 1);
+    mpObjectiveLayout->addWidget(mpExpLabel,                3, 2, 1, 1);
+    mpObjectiveLayout->addWidget(mpDescriptionLabel,        3, 3, 1, 2);
+    mpObjectiveLayout->addWidget(mpDataLabel,               3, 5, 1, 2);
+    mpObjectiveLayout->addWidget(new QWidget(this),         4, 0, 1, 7);
     mpObjectiveLayout->setRowStretch(0, 0);
     mpObjectiveLayout->setRowStretch(1, 0);
     mpObjectiveLayout->setRowStretch(2, 0);
-    mpObjectiveLayout->setRowStretch(3, 1);
+    mpObjectiveLayout->setRowStretch(3, 0);
+    mpObjectiveLayout->setRowStretch(4, 1);
     mpObjectiveLayout->setColumnStretch(0, 0);
     mpObjectiveLayout->setColumnStretch(1, 0);
     mpObjectiveLayout->setColumnStretch(2, 0);
@@ -141,18 +163,23 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpObjectiveWidget = new QWidget(this);
     mpObjectiveWidget->setLayout(mpObjectiveLayout);
 
+    //Output box tab
+    mpOutputBox = new QTextEdit(this);
+    QFont monoFont = mpOutputBox->font();
+    monoFont.setFamily("Courier");
+    mpOutputBox->setFont(monoFont);
+    mpOutputBox->setMinimumWidth(450);
+    mpOutputLayout = new QGridLayout(this);
+    mpOutputLayout->addWidget(mpOutputBox);
+    mpOutputWidget = new QWidget(this);
+    mpOutputWidget->setLayout(mpOutputLayout);
+
     //Tab widget
     mpTabWidget = new QTabWidget(this);
     mpTabWidget->addTab(mpSettingsWidget, "Settings");
     mpTabWidget->addTab(mpParametersWidget, "Parameters");
     mpTabWidget->addTab(mpObjectiveWidget, "Objective Function");
-
-    //Output box
-    mpOutputBox = new QTextEdit(this);
-    tempFont = mpOutputBox->font();
-    tempFont.setFamily("Courier");
-    mpOutputBox->setFont(tempFont);
-    mpOutputBox->setMinimumWidth(450);
+    mpTabWidget->addTab(mpOutputWidget, "Output Code");
 
     //Buttons
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
@@ -168,9 +195,9 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 
     //Main layout
     QGridLayout *pLayout = new QGridLayout;
-    pLayout->addWidget(mpTabWidget, 1, 1, 1, 1);
-    pLayout->addWidget(mpOutputBox, 1, 3, 1, 1);
-    pLayout->addWidget(mpButtonBox, 2, 1, 1, 3);
+    pLayout->addWidget(mpTabWidget, 1, 1);
+    //pLayout->addWidget(mpOutputBox, 1, 3, 1, 1);
+    pLayout->addWidget(mpButtonBox, 2, 1);
     setLayout(pLayout);
 
     //Connections
@@ -370,19 +397,19 @@ void OptimizationDialog::generateScriptFile()
     }
     scriptStream << "worstId = indexOfMax(obj)\n";
     scriptStream << "previousWorstId = -1\n";
+    scriptStream << "kf=1-(alpha/2)**(gamma/(2*"+nParString+"))\n";
     scriptStream << "\n";
     scriptStream << "for k in range(iterations):\n";
-    scriptStream << "  kf=1-(alpha/2)**(gamma/(2*"+nParString+"))\n";
-    scriptStream << "  objspread=max(obj)-min(obj)\n";
-    scriptStream << "  for i in range(len(parameters)):\n";
-    scriptStream << "    obj[i] = obj[i] + objspread*kf\n";
     scriptStream << "  for j in range(len(parameterNames)):\n";
     scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[worstId][j])\n";
     scriptStream << "  hopsan.simulate()\n";
     scriptStream << "  obj[worstId] = getObjective()\n";
+    scriptStream << "  objspread=max(obj)-min(obj)\n";
+    scriptStream << "  for i in range(len(parameters)):\n";
+    scriptStream << "    obj[i] = obj[i] + objspread*kf\n";
     scriptStream << "  worstId = indexOfMax(obj)\n";
     scriptStream << "  if worstId == previousWorstId:\n";
-    scriptStream << "    reflectWorst(parameters,worstId,alpha/2.0,minValues,maxValues,beta)  #Same as previous, move halfway to centroid\n";
+    scriptStream << "    reflectWorst(parameters,worstId,0.5,minValues,maxValues,beta)  #Same as previous, move halfway to centroid\n";
     scriptStream << "  else:\n";
     scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues,beta)      #Reflect worst through centroid of the remaining points\n";
     scriptStream << "  previousWorstId=worstId\n";
@@ -508,7 +535,7 @@ void OptimizationDialog::addFunction()
     {
         variablesText.append(" and " + mFunctionComponents.last().at(i)+", "+mFunctionPorts.last().at(i)+", "+mFunctionVariables.last().at(i));
     }
-    QLabel *pFunctionLabel = new QLabel(mFunctions.at(i)+" for "+variablesText, this);
+    QLabel *pFunctionLabel = new QLabel(getFunctionDescriptions().at(i)+" for "+variablesText, this);
     pFunctionLabel->setWordWrap(true);
     QWidget *pDataWidget = new QWidget(this);
     QGridLayout *pDataGrid = new QGridLayout(this);
@@ -643,6 +670,17 @@ bool OptimizationDialog::verifyNumberOfVariables(int n)
 }
 
 
+//! @brief Returns the description of one of the pre-defined objective functions
+//! @param i Index of pre-defined function
+QStringList OptimizationDialog::getFunctionDescriptions()
+{
+    QStringList functions = QStringList() << "Minimize highest value" << "Minimize lowest value" << "Maximize highest value" << "Maximize lowest value" << "Overshoot over value" << "First time to value" << "Absolute difference from value at time" << "Average absolute difference";
+    return functions;
+}
+
+
+//! @brief Returns the Python calling code to one of the selected functions
+//! @param i Index of selected function
 QString OptimizationDialog::getFunctionCode(int i)
 {
     QString retval;
@@ -667,8 +705,10 @@ QString OptimizationDialog::getFunctionCode(int i)
         retval = "+w"+QString().setNum(i)+"*(firstTimeAt(data"+QString().setNum(i)+"0, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
     case 6:
-        retval = "+w"+QString().setNum(i)+"*(diffFromValueAtTime(data00, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+","+QString().setNum(mDataSpinBoxPtrs.at(i).at(1)->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
+        retval = "+w"+QString().setNum(i)+"*(diffFromValueAtTime(data"+QString().setNum(i)+"0, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+","+QString().setNum(mDataSpinBoxPtrs.at(i).at(1)->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
         break;
+    case 7:
+        retval = "+w"+QString().setNum(i)+"*(averageAbsoluteDifference(data"+QString().setNum(i)+"0, data"+QString().setNum(i)+"1)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
     }
     return retval;
 }
@@ -712,5 +752,7 @@ bool OptimizationDialog::verifyFunctionVariables(int i)
         return(verifyNumberOfVariables(1));
     case 6:
         return(verifyNumberOfVariables(1));
+    case 7:
+        return(verifyNumberOfVariables(2));
     }
 }
