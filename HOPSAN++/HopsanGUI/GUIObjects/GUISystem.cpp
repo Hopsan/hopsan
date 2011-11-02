@@ -1170,7 +1170,16 @@ void GUISystem::createSimulinkSourceFiles()
     QMessageBox::information(gpMainWindow, gpMainWindow->tr("Create Simulink Source Files"),
                              gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console.\n\nVisual Studio 2008 compiler is supported, although other versions might work as well.."));
 
-
++    QString fileName;
++    if(!mModelFileInfo.fileName().isEmpty())
++    {
++        fileName = mModelFileInfo.fileName();
++    }
++    else
++    {
++        fileName = "untitled.hmf";
++    }
++
 
         //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
@@ -1361,7 +1370,7 @@ void GUISystem::createSimulinkSourceFiles()
     wrapperStream << "#include \"include/ComponentUtilities/IntegratorLimited.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/ludcmp.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/matrix.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/ReadDataCurve.h\"\n";
+    //wrapperStream << "#include \"include/ComponentUtilities/ReadDataCurve.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/SecondOrderTransferFunction.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/TurbulentFlowFunction.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/ValveHysteresis.h\"\n";
@@ -1489,7 +1498,7 @@ void GUISystem::createSimulinkSourceFiles()
     portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG'')'); \n";
     wrapperStream << "    ssSetNumSampleTimes(S, 1);\n\n";
     wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n\n";
-    wrapperStream << "    std::string hmfFilePath = \"" << mModelFileInfo.fileName() << "\";\n";
+    wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
     wrapperStream << "    hopsan::HmfLoader coreHmfLoader;\n";
     wrapperStream << "    double startT = ssGetTStart(S);\n";
     wrapperStream << "    double stopT = ssGetTFinal(S);\n";
@@ -1675,7 +1684,7 @@ void GUISystem::createSimulinkSourceFiles()
     QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
     saveToDomElement(hmfRoot);
     const int IndentSize = 4;
-    QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
+    QFile xmlhmf(savePath + "/" + fileName);
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         return;
