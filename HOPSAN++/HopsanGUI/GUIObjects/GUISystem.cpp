@@ -1170,16 +1170,16 @@ void GUISystem::createSimulinkSourceFiles()
     QMessageBox::information(gpMainWindow, gpMainWindow->tr("Create Simulink Source Files"),
                              gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console.\n\nVisual Studio 2008 compiler is supported, although other versions might work as well.."));
 
-+    QString fileName;
-+    if(!mModelFileInfo.fileName().isEmpty())
-+    {
-+        fileName = mModelFileInfo.fileName();
-+    }
-+    else
-+    {
-+        fileName = "untitled.hmf";
-+    }
-+
+    QString fileName;
+    if(!mModelFileInfo.fileName().isEmpty())
+    {
+        fileName = mModelFileInfo.fileName();
+    }
+    else
+    {
+        fileName = "untitled.hmf";
+    }
+
 
         //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
