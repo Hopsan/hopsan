@@ -4,6 +4,6 @@
         <icon isopath="variablepump_iso.svg" iconrotation="ON" userpath="variablepump_user.svg"/>
         <portpose x="0.5741000000000001" y="1" a="90" name="P1"/>
         <portpose x="0.5741000000000001" y="0" a="270" name="P2"/>
-        <portpose x="1" y="0.055" a="180" name="in"/>
+        <portpose x="1" y="0.055" a="0" name="in"/>
     </modelobject>
 </hopsanobjectappearance>
