@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.0" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_rUNKNOWN" hopsancoreversion="0">
     <system typename="Subsystem" name="Position Servo">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2501.5" y="2501.5" zoom="1"/>
+            <viewport x="2501,5" y="2424" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -239,7 +239,7 @@
                 </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="5" timestep="0.001" start="0"/>
+        <simulationtime stop="5" timestep="0,001" start="0"/>
         <parameters/>
         <objects>
             <component typename="Hydraulic43Valve" name="4/3 Servo Valve">
@@ -306,7 +306,7 @@
             <component typename="SignalGain" name="GainI">
                 <parameters>
                     <parameter value="0" name="out::Value"/>
-                    <parameter value="9.39886e-05" name="k"/>
+                    <parameter value="0.0026373" name="k"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2408.00000000000000000000" y="2475" flipped="0" a="0"/>
@@ -382,7 +382,7 @@
             <component typename="SignalGain" name="GainP">
                 <parameters>
                     <parameter value="0" name="out::Value"/>
-                    <parameter value="0.00813578" name="k"/>
+                    <parameter value="0.00830111" name="k"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2374.00000000000000000000" y="2525" flipped="0" a="0"/>
@@ -442,7 +442,7 @@
             </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
-                    <parameter value="2e+007" name="p_ref"/>
+                    <parameter value="2e+07" name="p_max"/>
                     <parameter value="0.001" name="tao"/>
                     <parameter value="1e-008" name="k_c,s"/>
                     <parameter value="1e-008" name="k_c,f"/>

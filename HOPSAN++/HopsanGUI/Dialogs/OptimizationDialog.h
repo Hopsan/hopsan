@@ -48,11 +48,9 @@ public:
 
 private:
     void generateScriptFile();
-    bool verifyNumberOfVariables(int n);
-    QStringList getFunctionDescriptions();
-    QString getFunctionCode(int i);
-    QStringList getFunctionDataList(int i);
-    bool verifyFunctionVariables(int i);
+    bool verifyNumberOfVariables(int i);
+    bool loadObjectiveFunctions();
+    QString generateFunctionCode(int i);
 
 public slots:
     virtual void open();
@@ -80,6 +78,10 @@ private:
     QDoubleSpinBox *mpBetaSpinBox;
     QLabel *mpGammaLabel;
     QDoubleSpinBox *mpGammaSpinBox;
+    QLabel *mpEpsilonFLabel;
+    QDoubleSpinBox *mpEpsilonFSpinBox;
+    QLabel *mpEpsilonXLabel;
+    QDoubleSpinBox *mpEpsilonXSpinBox;
     QCheckBox *mpPlottingCheckBox;
 
     //Parameters tab
@@ -92,6 +94,7 @@ private:
     QLabel *mpParameterMaxLabel;
 
     //Objective function tab
+    QComboBox *mpMinMaxComboBox;
     QComboBox *mpFunctionsComboBox;
     QLabel *mpObjectiveLabel;
     QTreeWidget *mpVariablesList;
@@ -113,6 +116,12 @@ private:
     QGridLayout *mpOutputLayout;
     QWidget *mpOutputWidget;
 
+    QStringList mObjectiveFunctionDescriptions;
+    QStringList mObjectiveFunctionCalls;
+    QList<int> mObjectiveFunctionNumberOfVariables;
+    QList<bool> mObjectiveFunctionUsesTimeVector;
+    QList<QStringList> mObjectiveFunctionDataLists;
+
     //Tab widget
     QTabWidget *mpTabWidget;
 
@@ -132,6 +141,7 @@ private:
     //Member variables
     QString mScript;
     QStringList mFunctions;
+    QStringList mSelectedFunctionsMinMax;
     QList<int> mSelectedFunctions;
     QList<QStringList> mFunctionComponents;
     QList<QStringList> mFunctionPorts;

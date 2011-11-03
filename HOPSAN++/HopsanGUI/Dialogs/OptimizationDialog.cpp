@@ -35,6 +35,8 @@
 
 class ProjectTabWidget;
 
+
+//! @brief Constructor
 OptimizationDialog::OptimizationDialog(MainWindow *parent)
     : QDialog(parent)
 {
@@ -42,6 +44,9 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     this->resize(640,480);
     this->setWindowTitle("Optimization");
     this->setPalette(gConfig.getPalette());
+
+    //Load the objective functions
+    loadObjectiveFunctions();
 
     //Settings tab
     mpSettingsLabel = new QLabel("Please choose general settings for optimization algorithm.");
@@ -71,6 +76,16 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpGammaSpinBox->setRange(0, std::numeric_limits<double>::max());
     mpGammaSpinBox->setSingleStep(0.1);
     mpGammaSpinBox->setValue(0.3);
+    mpEpsilonFLabel = new QLabel("Tolerance for function convergence: ");
+    mpEpsilonFSpinBox = new QDoubleSpinBox(this);
+    mpEpsilonFSpinBox->setDecimals(20);
+    mpEpsilonFSpinBox->setRange(0, std::numeric_limits<double>::max());
+    mpEpsilonFSpinBox->setValue(0.00001);
+    mpEpsilonXLabel = new QLabel("Tolerance for parameter convergence: ");
+    mpEpsilonXSpinBox = new QDoubleSpinBox(this);
+    mpEpsilonXSpinBox->setDecimals(20);
+    mpEpsilonXSpinBox->setRange(0, std::numeric_limits<double>::max());
+    mpEpsilonXSpinBox->setValue(0.0001);
     mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
     mpPlottingCheckBox->setChecked(true);
     mpSettingsLayout = new QGridLayout(this);
@@ -85,8 +100,12 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpSettingsLayout->addWidget(mpBetaSpinBox,          4, 1);
     mpSettingsLayout->addWidget(mpGammaLabel,           5, 0);
     mpSettingsLayout->addWidget(mpGammaSpinBox,         5, 1);
-    mpSettingsLayout->addWidget(mpPlottingCheckBox,     6, 0, 1, 2);
-    mpSettingsLayout->addWidget(new QWidget(this),      7, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpEpsilonFLabel,        6, 0);
+    mpSettingsLayout->addWidget(mpEpsilonFSpinBox,      6, 1);
+    mpSettingsLayout->addWidget(mpEpsilonXLabel,        7, 0);
+    mpSettingsLayout->addWidget(mpEpsilonXSpinBox,      7, 1);
+    mpSettingsLayout->addWidget(mpPlottingCheckBox,     8, 0, 1, 2);
+    mpSettingsLayout->addWidget(new QWidget(this),      9, 0, 1, 2);    //Dummy widget for stretching the layout
     mpSettingsLayout->setRowStretch(0, 0);
     mpSettingsLayout->setRowStretch(1, 0);
     mpSettingsLayout->setRowStretch(2, 0);
@@ -94,7 +113,9 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpSettingsLayout->setRowStretch(4, 0);
     mpSettingsLayout->setRowStretch(4, 0);
     mpSettingsLayout->setRowStretch(6, 0);
-    mpSettingsLayout->setRowStretch(7, 1);
+    mpSettingsLayout->setRowStretch(7, 0);
+    mpSettingsLayout->setRowStretch(8, 0);
+    mpSettingsLayout->setRowStretch(9, 1);
     mpSettingsWidget = new QWidget(this);
     mpSettingsWidget->setLayout(mpSettingsLayout);
 
@@ -124,8 +145,10 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpObjectiveLabel = new QLabel("Create an objective function by first choosing variables in the list and then choosing a function below.");
     mpObjectiveLabel->setFont(boldFont);
     mpVariablesList = new QTreeWidget(this);
+    mpMinMaxComboBox = new QComboBox(this);
+    mpMinMaxComboBox->addItems(QStringList() << "Minimize" << "Maximize");
     mpFunctionsComboBox = new QComboBox(this);
-    mpFunctionsComboBox->addItems(getFunctionDescriptions());
+    mpFunctionsComboBox->addItems(mObjectiveFunctionDescriptions);
     mpAddFunctionButton = new QPushButton("Add Function");
     mpWeightLabel = new QLabel("Weight");
     mpNormLabel = new QLabel("Norm. Factor");
@@ -140,8 +163,9 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpObjectiveLayout = new QGridLayout(this);
     mpObjectiveLayout->addWidget(mpObjectiveLabel,          0, 0, 1, 7);
     mpObjectiveLayout->addWidget(mpVariablesList,           1, 0, 1, 7);
-    mpObjectiveLayout->addWidget(mpFunctionsComboBox,       2, 0, 1, 4);
-    mpObjectiveLayout->addWidget(mpAddFunctionButton,       2, 5, 1, 3);
+    mpObjectiveLayout->addWidget(mpMinMaxComboBox,          2, 0, 1, 1);
+    mpObjectiveLayout->addWidget(mpFunctionsComboBox,       2, 1, 1, 4);
+    mpObjectiveLayout->addWidget(mpAddFunctionButton,       2, 5, 1, 2);
     mpObjectiveLayout->addWidget(mpWeightLabel,             3, 0, 1, 1);
     mpObjectiveLayout->addWidget(mpNormLabel,               3, 1, 1, 1);
     mpObjectiveLayout->addWidget(mpExpLabel,                3, 2, 1, 1);
@@ -208,8 +232,13 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 }
 
 
+//! @brief Reimplementation of open() slot, used to initialize the dialog
 void OptimizationDialog::open()
 {
+    //Load the objective functions
+    if(!loadObjectiveFunctions())
+        return;
+
     mpParametersList->clear();
     GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     QStringList componentNames = pSystem->getGUIModelObjectNames();
@@ -264,6 +293,7 @@ void OptimizationDialog::open()
 }
 
 
+//! @brief Generates the Python script based upon selections made in the dialog
 void OptimizationDialog::generateScriptFile()
 {
     //! @todo Finish
@@ -298,7 +328,10 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "\n";
     scriptStream << "##### Import required packages #####\n";
     scriptStream << "\n";
+    scriptStream << "import sys\n";
+    scriptStream << "sys.path.append('" << gExecPath+QString(SCRIPTPATH) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
+    scriptStream << "from OptimizationObjectiveFunctions import *\n";
     scriptStream << "import random\n";
     scriptStream << "from time import sleep\n";
     scriptStream << "from types import FloatType\n";
@@ -312,6 +345,8 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "alpha=" << alphaString << "\n";
     scriptStream << "beta=" << betaString << "\n";
     scriptStream << "gamma=" << gammaString << "\n";
+    scriptStream << "tolFunc=" << QString().setNum(mpEpsilonFSpinBox->value()) << "\n";
+    scriptStream << "tolX=" << QString().setNum(mpEpsilonXSpinBox->value()) << "\n";
     scriptStream << "\n";
     scriptStream << "\n";
     scriptStream << "\n";
@@ -363,12 +398,27 @@ void OptimizationDialog::generateScriptFile()
         scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpSpinBoxPtrs.at(i)->value())+"\n";
 
     scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").getTimeVector()\n";
+    QMap<QString, QString> addedVariables;
     for(int i=0; i<mFunctionVariables.size(); ++i)
+    {
         for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
-            scriptStream << "  data"+QString().setNum(i)+QString().setNum(j)+"=hopsan.component(\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").getDataVector(\""+mFunctionVariables.at(i).at(j)+"\")\n";
+        {
+            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").getDataVector(\""+mFunctionVariables.at(i).at(j)+"\"";
+            QString variableId = "data"+QString().setNum(i)+QString().setNum(j);
+            if(addedVariables.contains(variable))
+            {
+                scriptStream << "  "+variableId+"="+addedVariables.find(variable).value()+"\n";
+            }
+            else
+            {
+                addedVariables.insert(variable, variableId);
+                scriptStream << "  "+variableId+"=hopsan.component("+variable+")\n";
+            }
+        }
+    }
     scriptStream << "  return ";
     for(int i=0; i<mFunctionVariables.size(); ++i)
-        scriptStream << getFunctionCode(i);
+        scriptStream << generateFunctionCode(i);
     scriptStream << "\n\n";
     scriptStream << "\n";
     scriptStream << "\n";
@@ -390,9 +440,19 @@ void OptimizationDialog::generateScriptFile()
     if(mpPlottingCheckBox->isChecked())
     {
         scriptStream << "#Run one simulation first and open plot window, if user wants to see plots in real-time\n";
+        QStringList plottedVariables;
         for(int i=0; i<mFunctionVariables.size(); ++i)
+        {
             for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
-                scriptStream << "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
+            {
+                QString plotCommand = "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
+                if(!plottedVariables.contains(plotCommand))
+                {
+                    scriptStream << plotCommand;
+                    plottedVariables.append(plotCommand);
+                }
+            }
+        }
         scriptStream << "\n";
     }
     scriptStream << "worstId = indexOfMax(obj)\n";
@@ -413,7 +473,22 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "  else:\n";
     scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues,beta)      #Reflect worst through centroid of the remaining points\n";
     scriptStream << "  previousWorstId=worstId\n";
-    scriptStream << "  \n";
+
+    scriptStream << "  if min(obj) == 0:\n";
+    scriptStream << "    if abs(max(obj)-min(obj)) <= tolFunc:\n";
+    scriptStream << "      print(\"Convergence in function values.\")\n";
+    scriptStream << "      break\n";
+    scriptStream << "  elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
+    scriptStream << "    print(\"Convergence in function values.\")\n";
+    scriptStream << "    break\n";
+    scriptStream << "  xConverged=True\n";
+    scriptStream << "  for i in range(len(parameterNames)):\n";
+    scriptStream << "    if abs((maxPar(parameters, i)-minPar(parameters,i))/(maxValues[i]-minValues[i])) > tolX:\n";
+    scriptStream << "      xConverged=False;\n";
+    scriptStream << "  if xConverged:\n";
+    scriptStream << "    print(\"Converged in parameter values.\")\n";
+    scriptStream << "    break\n";
+    scriptStream << "\n";
     if(!mpPlottingCheckBox->isChecked())
     {
         scriptStream << "#Plot when simulation is finished\n";
@@ -427,7 +502,7 @@ void OptimizationDialog::generateScriptFile()
 
 //! @brief Adds a new parameter to the list of selected parameter, and displays it in dialog
 //! @param item Tree widget item which represents parameter
-//! @param i Not used
+//! @param i Not used (must be  here for signal-slot compatibility)
 void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int i)
 {
     if(item->checkState(0) == Qt::Checked)
@@ -482,7 +557,7 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int i)
 
 //! @brief Adds a new variable to the list of selected variables
 //! @param item Tree widget item which represents variable
-//! @param i Not used
+//! @param i Not used (must be  here for signal-slot compatibility)
 void OptimizationDialog::updateChosenVariables(QTreeWidgetItem *item, int i)
 {
     QStringList variable;
@@ -500,12 +575,12 @@ void OptimizationDialog::addFunction()
 {
     int i=mpFunctionsComboBox->currentIndex();
 
-    if(!verifyFunctionVariables(i))
+    if(!verifyNumberOfVariables(i))
         return;
 
-    QStringList data;
-    data = getFunctionDataList(i);
+    QStringList data = mObjectiveFunctionDataLists.at(i);
 
+    mSelectedFunctionsMinMax.append(mpMinMaxComboBox->currentText());
     mSelectedFunctions.append(i);
     mFunctionComponents.append(QStringList());
     mFunctionPorts.append(QStringList());
@@ -535,7 +610,7 @@ void OptimizationDialog::addFunction()
     {
         variablesText.append(" and " + mFunctionComponents.last().at(i)+", "+mFunctionPorts.last().at(i)+", "+mFunctionVariables.last().at(i));
     }
-    QLabel *pFunctionLabel = new QLabel(getFunctionDescriptions().at(i)+" for "+variablesText, this);
+    QLabel *pFunctionLabel = new QLabel(mpMinMaxComboBox->currentText() + " " + mObjectiveFunctionDescriptions.at(i)+" for "+variablesText, this);
     pFunctionLabel->setWordWrap(true);
     QWidget *pDataWidget = new QWidget(this);
     QGridLayout *pDataGrid = new QGridLayout(this);
@@ -573,14 +648,17 @@ void OptimizationDialog::addFunction()
     mpObjectiveLayout->setRowStretch(row+1, 1);
     mpObjectiveLayout->setColumnStretch(0, 0);
     mpObjectiveLayout->setColumnStretch(1, 0);
-    mpObjectiveLayout->setColumnStretch(2, 1);
-    mpObjectiveLayout->setColumnStretch(3, 0);
+    mpObjectiveLayout->setColumnStretch(2, 0);
+    mpObjectiveLayout->setColumnStretch(3, 1);
     mpObjectiveLayout->setColumnStretch(4, 0);
+    mpObjectiveLayout->setColumnStretch(5, 0);
+    mpObjectiveLayout->setColumnStretch(6, 0);
 
     connect(pRemoveButton, SIGNAL(clicked()), this, SLOT(removeFunction()));
 }
 
 
+//! @brief Removes an objevtive function from the selected functions
 void OptimizationDialog::removeFunction()
 {
     QToolButton *button = qobject_cast<QToolButton *>(sender());
@@ -654,14 +732,18 @@ void OptimizationDialog::run()
 }
 
 
-bool OptimizationDialog::verifyNumberOfVariables(int n)
+//! @brief Checks if number of selected variables is correct. Gives error messages if they are too many or too low.
+//! @param i Selected objective function
+bool OptimizationDialog::verifyNumberOfVariables(int i)
 {
-    if(mSelectedVariables.size() > n)
+    int nVar = mObjectiveFunctionNumberOfVariables.at(i);
+
+    if(mSelectedVariables.size() > nVar)
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Too many variables selected for this function.");
         return false;
     }
-    else if(mSelectedVariables.size() < n)
+    else if(mSelectedVariables.size() < nVar)
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Too few variables selected for this function.");
         return false;
@@ -670,89 +752,110 @@ bool OptimizationDialog::verifyNumberOfVariables(int n)
 }
 
 
-//! @brief Returns the description of one of the pre-defined objective functions
-//! @param i Index of pre-defined function
-QStringList OptimizationDialog::getFunctionDescriptions()
+bool OptimizationDialog::loadObjectiveFunctions()
 {
-    QStringList functions = QStringList() << "Minimize highest value" << "Minimize lowest value" << "Maximize highest value" << "Maximize lowest value" << "Overshoot over value" << "First time to value" << "Absolute difference from value at time" << "Average absolute difference";
-    return functions;
+    //Read from OptimizationObjectiveFunctions.xml
+    QFile file(gExecPath+QString(SCRIPTPATH) + "OptimizationObjectiveFunctions.xml");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 "Unable to read objective functions file. Please make sure that it is located in the Scripts directory.\n");
+        return false;
+    }
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 gpMainWindow->tr("HopsanObjectiveFunctions: Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+        file.close();
+        return false;
+    }
+    else
+    {
+        QDomElement functionsRoot = domDocument.documentElement();
+        if (functionsRoot.tagName() != "hopsanobjectivefunctions")
+        {
+            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                     "The file is not an Hopsan objective function file. Incorrect hmf root tag name: "
+                                     + functionsRoot.tagName() + " != hopsanobjectivefunctions");
+            file.close();
+            return false;
+        }
+        else
+        {
+                //Load default user settings
+            QDomElement functionElement = functionsRoot.firstChildElement("objectivefunction");
+            while(!functionElement.isNull())
+            {
+                mObjectiveFunctionDescriptions << functionElement.attribute("description");
+                mObjectiveFunctionCalls << functionElement.attribute("call");
+                mObjectiveFunctionNumberOfVariables << functionElement.attribute("numberofvariables").toInt();
+                mObjectiveFunctionUsesTimeVector << (functionElement.attribute("needstimevector") == "true");
+                QStringList parameters;
+                QDomElement parameterElement = functionElement.firstChildElement("parameter");
+                while(!parameterElement.isNull())
+                {
+                    parameters << parameterElement.text();
+                    parameterElement = parameterElement.nextSiblingElement("parameter");
+                }
+                mObjectiveFunctionDataLists.append(parameters);
+                functionElement = functionElement.nextSiblingElement("objectivefunction");
+            }
+        }
+
+    file.close();
+    return true;
+
+}
+
+
+
+//    mObjectiveFunctionDescriptions = QStringList() << "Highest value" << "Lowest value" << "Overshoot over value" << "First time to value" << "Difference from value at time" << "Average absolute difference between variables";
+//    mObjectiveFunctionCalls = QStringList() << "maxValue" << "minValue" << "overShoot" << "firstTimeAt" << "diffFromValueAtTime" << "averageAbsoluteDifference";
+//    mObjectiveFunctionNumberOfVariables = QList<int>() << 1 << 1 << 1 << 1 << 1 << 2;
+//    mObjectiveFunctionUsesTimeVector = QList<bool>() << false << false << false << true << true << false;
+
+//    mObjectiveFunctionDataLists.append(QStringList());
+//    mObjectiveFunctionDataLists.append(QStringList());
+//    mObjectiveFunctionDataLists.append(QStringList() << "x");
+//    mObjectiveFunctionDataLists.append(QStringList() << "x");
+//    mObjectiveFunctionDataLists.append(QStringList() << "x" << "t");
+//    mObjectiveFunctionDataLists.append(QStringList());
 }
 
 
 //! @brief Returns the Python calling code to one of the selected functions
 //! @param i Index of selected function
-QString OptimizationDialog::getFunctionCode(int i)
+QString OptimizationDialog::generateFunctionCode(int i)
 {
     QString retval;
-    switch(mSelectedFunctions.at(i))
+    if(mSelectedFunctionsMinMax.at(i) == "Minimize")
     {
-    case 0:
-        retval = "-w"+QString().setNum(i)+"*(maxValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
-        break;
-    case 1:
-        retval = "-w"+QString().setNum(i)+"*(maxValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
-        break;
-    case 2:
-        retval = "+w"+QString().setNum(i)+"*(maxValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
-        break;
-    case 3:
-        retval = "+w"+QString().setNum(i)+"*(minValue(data"+QString().setNum(i)+"0)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
-        break;
-    case 4:
-        retval = "+w"+QString().setNum(i)+"*(overShoot(data"+QString().setNum(i)+"0, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
-        break;
-    case 5:
-        retval = "+w"+QString().setNum(i)+"*(firstTimeAt(data"+QString().setNum(i)+"0, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
-        break;
-    case 6:
-        retval = "+w"+QString().setNum(i)+"*(diffFromValueAtTime(data"+QString().setNum(i)+"0, time, "+QString().setNum(mDataSpinBoxPtrs.at(i).first()->value())+","+QString().setNum(mDataSpinBoxPtrs.at(i).at(1)->value())+")/n"+QString().setNum(i)+")**g"+QString().setNum(i);
-        break;
-    case 7:
-        retval = "+w"+QString().setNum(i)+"*(averageAbsoluteDifference(data"+QString().setNum(i)+"0, data"+QString().setNum(i)+"1)/n"+QString().setNum(i)+")**g"+QString().setNum(i);
+        retval.append("+");
     }
+    else
+    {
+        retval.append("-");
+    }
+
+    int fnc = mSelectedFunctions.at(i);
+
+    retval.append("w"+QString().setNum(i)+"*("+mObjectiveFunctionCalls.at(fnc)+"(data"+QString().setNum(i)+"0");
+    for(int v=1; v<mObjectiveFunctionNumberOfVariables.at(fnc); ++v)
+        retval.append(", data"+QString().setNum(i)+QString().setNum(v));
+    if(mObjectiveFunctionUsesTimeVector.at(fnc))
+        retval.append(", time");
+    for(int d=0; d<mObjectiveFunctionDataLists.at(fnc).size(); ++d)
+    {
+        double num = mDataSpinBoxPtrs.at(i).at(d)->value();
+        retval.append(", "+QString().setNum(num));
+    }
+    retval.append(")/n"+QString().setNum(i)+")**g"+QString().setNum(i));
+
     return retval;
-}
-
-
-QStringList OptimizationDialog::getFunctionDataList(int i)
-{
-    QStringList data;
-    switch(i)
-    {
-    case 4:
-        data << "x";
-        break;
-    case 5:
-        data << "x";
-        break;
-    case 6:
-        data << "x" << "t";
-        break;
-    }
-    return data;
-}
-
-
-
-bool OptimizationDialog::verifyFunctionVariables(int i)
-{
-    switch(i)
-    {
-    case 0:
-        return(verifyNumberOfVariables(1));
-    case 1:
-        return(verifyNumberOfVariables(1));
-    case 2:
-        return(verifyNumberOfVariables(1));
-    case 3:
-        return(verifyNumberOfVariables(1));
-    case 4:
-        return(verifyNumberOfVariables(1));
-    case 5:
-        return(verifyNumberOfVariables(1));
-    case 6:
-        return(verifyNumberOfVariables(1));
-    case 7:
-        return(verifyNumberOfVariables(2));
-    }
 }

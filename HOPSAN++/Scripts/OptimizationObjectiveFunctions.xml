@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectivefunctions>
+    <objectivefunction description="Highest value" call="maxValue" numberofvariables="1" needstimevector="false"/>
+    <objectivefunction description="Lowest value" call="minValue" numberofvariables="1" needstimevector="false"/>
+    <objectivefunction description="Overshoot over value" call="overShoot" numberofvariables="1" needstimevector="false">
+        <parameter name="x"/>
+    </objectivefunction>
+    <objectivefunction description="First time to value" call="firstTimeAt" numberofvariables="1" needstimevector="true">
+        <parameter name="x"/>
+    </objectivefunction>
+    <objectivefunction description="Difference from value at time" call="diffFromValueAtTime" numberofvariables="1" needstimevector="true">
+        <parameter name="x"/>
+        <parameter name="t"/>
+    </objectivefunction>
+    <objectivefunction description="Average absolute difference" call="averageAbsoluteDifference" numberofvariables="2" needstimevector="false"/>
+    <objectivefunction description="Average absolute difference (squared)" call="averageAbsoluteDifferenceSquared" numberofvariables="2" needstimevector="false"/>
+</hopsanobjectivefunctions>
+
