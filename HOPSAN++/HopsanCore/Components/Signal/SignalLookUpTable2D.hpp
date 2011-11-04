@@ -68,7 +68,7 @@ namespace hopsan {
 
         void initialize()
         {
-            bool success=true;
+            bool success=false;
             if(mDataCurveFileName != mOldDataCurveFileName)
             {
                 delete myDataCurve;
@@ -80,6 +80,10 @@ namespace hopsan {
                     addErrorMessage(ss.str());
                     stopSimulation();
                 }
+                else
+                {
+                    mOldDataCurveFileName = mDataCurveFileName;
+                }
             }
             if(success)
             {
@@ -90,7 +94,6 @@ namespace hopsan {
                 mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
                 mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
             }
-            mOldDataCurveFileName = mDataCurveFileName;
         }
 
 
