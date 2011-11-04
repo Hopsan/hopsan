@@ -154,6 +154,7 @@
 #include "Signal/SignalSin.hpp"
 #include "Signal/SignalCos.hpp"
 #include "Signal/SignalTan.hpp"
+#include "Signal/SignalLookUpTable2D.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

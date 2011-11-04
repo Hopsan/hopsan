@@ -181,6 +181,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("SignalSin", SignalSin::Creator);
     pComponentFactory->registerCreatorFunction("SignalCos", SignalCos::Creator);
     pComponentFactory->registerCreatorFunction("SignalTan", SignalTan::Creator);
+    pComponentFactory->registerCreatorFunction("SignalLookUpTable2D", SignalLookUpTable2D::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
 
