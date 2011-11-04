@@ -237,6 +237,19 @@
                         </connect>
                     </stuff>
                 </post>
+                <post number="37">
+                    <stuff what="verticalflip" objectname="Step"/>
+                    <stuff what="verticalflip" objectname="Subtract"/>
+                    <stuff what="verticalflip" objectname="GainP"/>
+                    <stuff what="verticalflip" objectname="Integrator"/>
+                    <stuff what="verticalflip" objectname="GainI"/>
+                </post>
+                <post number="38">
+                    <stuff what="verticalflip" objectname="Cylinder C"/>
+                </post>
+                <post number="39">
+                    <stuff what="rotate" angle="90" objectname="Cylinder C"/>
+                </post>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="5" timestep="0,001" start="0"/>

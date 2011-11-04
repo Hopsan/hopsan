@@ -2123,7 +2123,6 @@ void GUIContainerObject::rotateSubObjects90cw()
     if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
-        mpParentProjectTab->hasChanged();
         emit rotateSelectedObjectsRight();
     }
 }
@@ -2135,7 +2134,6 @@ void GUIContainerObject::rotateSubObjects90ccw()
     if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
-        mpParentProjectTab->hasChanged();
         emit rotateSelectedObjectsLeft();
     }
 }
@@ -2147,7 +2145,6 @@ void GUIContainerObject::flipSubObjectsHorizontal()
     if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
-        mpParentProjectTab->hasChanged();
         emit flipSelectedObjectsHorizontal();
     }
 }
@@ -2159,7 +2156,6 @@ void GUIContainerObject::flipSubObjectsVertical()
     if(this->isSubObjectSelected())
     {
         mpUndoStack->newPost();
-        mpParentProjectTab->hasChanged();
         emit flipSelectedObjectsVertical();
     }
 }

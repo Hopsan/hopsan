@@ -993,6 +993,8 @@ void GUIModelObject::showPorts(bool visible)
 //! @todo try to reuse the code in rotate guiobject,
 void GUIModelObject::rotate(qreal angle, undoStatus undoSettings)
 {
+    mpParentContainerObject->mpParentProjectTab->hasChanged();
+
     if(mIsFlipped)
     {
         angle *= -1;
@@ -1042,6 +1044,7 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
 //! @see flipVertical()
 void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 {
+    mpParentContainerObject->mpParentProjectTab->hasChanged();
     QTransform transf;
     transf.scale(-1.0, 1.0);
 
