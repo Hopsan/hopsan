@@ -19,6 +19,7 @@
 //! @date   2011-08-03
 //!
 //! @brief Contiains a second order integrator utility with provision for some damping and coulumb friction
+//! Revised by Robert Braun 2011-11-04
 //!
 //$Id$
 
@@ -84,6 +85,7 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::integrate(double u)
         mDelaySY = (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2+mW0)*(ue+mDelayU);
         mDelayY = mDelayY + mTimeStep/2*(mDelaySY+tempDelaySY);
     }
+    mDelayU = ue;
 }
 
 

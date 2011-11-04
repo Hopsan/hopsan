@@ -19,7 +19,6 @@
 //! @date   2011-01-05
 //!
 //! @brief Contains a translational mass with coulumb friction and damper
-//!
 //$Id$
 
 #ifndef MECHANICTRANSLATIONALMASSWITHCOULUMBFRICTION_HPP_INCLUDED
