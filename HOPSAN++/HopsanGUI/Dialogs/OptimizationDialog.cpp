@@ -53,41 +53,40 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     QFont boldFont = mpSettingsLabel->font();
     boldFont.setBold(true);
     mpSettingsLabel->setFont(boldFont);
+
     mpIterationsLabel = new QLabel("Number of iterations:");
     mpIterationsSpinBox = new QSpinBox(this);
     mpIterationsSpinBox->setRange(0, std::numeric_limits<int>::max());
     mpIterationsSpinBox->setValue(100);
+
     mpSearchPointsLabel = new QLabel("Number of search points:" );
     mpSearchPointsSpinBox = new QSpinBox(this);
     mpSearchPointsSpinBox->setRange(1, std::numeric_limits<int>::max());
     mpSearchPointsSpinBox->setValue(8);
+
     mpAlphaLabel = new QLabel("Reflection coefficient: ");
-    mpAlphaSpinBox = new QDoubleSpinBox(this);
-    mpAlphaSpinBox->setRange(0, std::numeric_limits<double>::max());
-    mpAlphaSpinBox->setSingleStep(0.1);
-    mpAlphaSpinBox->setValue(1.3);
+    mpAlphaLineEdit = new QLineEdit("1.3", this);
+    mpAlphaLineEdit->setValidator(new QDoubleValidator());
+
     mpBetaLabel = new QLabel("Randomization factor: ");
-    mpBetaSpinBox = new QDoubleSpinBox(this);
-    mpBetaSpinBox->setRange(0, std::numeric_limits<double>::max());
-    mpBetaSpinBox->setSingleStep(0.1);
-    mpBetaSpinBox->setValue(0.3);
+    mpBetaLineEdit = new QLineEdit("0.3", this);
+    mpBetaLineEdit->setValidator(new QDoubleValidator());
+
     mpGammaLabel = new QLabel("Forgetting factor: ");
-    mpGammaSpinBox = new QDoubleSpinBox(this);
-    mpGammaSpinBox->setRange(0, std::numeric_limits<double>::max());
-    mpGammaSpinBox->setSingleStep(0.1);
-    mpGammaSpinBox->setValue(0.3);
+    mpGammaLineEdit = new QLineEdit("0.3", this);
+    mpGammaLineEdit->setValidator(new QDoubleValidator());
+
     mpEpsilonFLabel = new QLabel("Tolerance for function convergence: ");
-    mpEpsilonFSpinBox = new QDoubleSpinBox(this);
-    mpEpsilonFSpinBox->setDecimals(20);
-    mpEpsilonFSpinBox->setRange(0, std::numeric_limits<double>::max());
-    mpEpsilonFSpinBox->setValue(0.00001);
+    mpEpsilonFLineEdit = new QLineEdit("0.00001", this);
+    mpEpsilonFLineEdit->setValidator(new QDoubleValidator());
+
     mpEpsilonXLabel = new QLabel("Tolerance for parameter convergence: ");
-    mpEpsilonXSpinBox = new QDoubleSpinBox(this);
-    mpEpsilonXSpinBox->setDecimals(20);
-    mpEpsilonXSpinBox->setRange(0, std::numeric_limits<double>::max());
-    mpEpsilonXSpinBox->setValue(0.0001);
+    mpEpsilonXLineEdit = new QLineEdit("0.0001", this);
+    mpEpsilonXLineEdit->setValidator(new QDoubleValidator());
+
     mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
     mpPlottingCheckBox->setChecked(true);
+
     mpSettingsLayout = new QGridLayout(this);
     mpSettingsLayout->addWidget(mpSettingsLabel,        0, 0);
     mpSettingsLayout->addWidget(mpIterationsLabel,      1, 0);
@@ -95,15 +94,15 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpSettingsLayout->addWidget(mpSearchPointsLabel,    2, 0);
     mpSettingsLayout->addWidget(mpSearchPointsSpinBox,  2, 1);
     mpSettingsLayout->addWidget(mpAlphaLabel,           3, 0);
-    mpSettingsLayout->addWidget(mpAlphaSpinBox,         3, 1);
+    mpSettingsLayout->addWidget(mpAlphaLineEdit,         3, 1);
     mpSettingsLayout->addWidget(mpBetaLabel,            4, 0);
-    mpSettingsLayout->addWidget(mpBetaSpinBox,          4, 1);
+    mpSettingsLayout->addWidget(mpBetaLineEdit,          4, 1);
     mpSettingsLayout->addWidget(mpGammaLabel,           5, 0);
-    mpSettingsLayout->addWidget(mpGammaSpinBox,         5, 1);
+    mpSettingsLayout->addWidget(mpGammaLineEdit,         5, 1);
     mpSettingsLayout->addWidget(mpEpsilonFLabel,        6, 0);
-    mpSettingsLayout->addWidget(mpEpsilonFSpinBox,      6, 1);
+    mpSettingsLayout->addWidget(mpEpsilonFLineEdit,      6, 1);
     mpSettingsLayout->addWidget(mpEpsilonXLabel,        7, 0);
-    mpSettingsLayout->addWidget(mpEpsilonXSpinBox,      7, 1);
+    mpSettingsLayout->addWidget(mpEpsilonXLineEdit,      7, 1);
     mpSettingsLayout->addWidget(mpPlottingCheckBox,     8, 0, 1, 2);
     mpSettingsLayout->addWidget(new QWidget(this),      9, 0, 1, 2);    //Dummy widget for stretching the layout
     mpSettingsLayout->setRowStretch(0, 0);
@@ -310,9 +309,9 @@ void OptimizationDialog::generateScriptFile()
     }
 
     QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
-    QString alphaString = QString().setNum(mpAlphaSpinBox->value());
-    QString betaString = QString().setNum(mpBetaSpinBox->value());
-    QString gammaString = QString().setNum(mpGammaSpinBox->value());
+    QString alphaString = QString().setNum(mpAlphaLineEdit->text().toDouble());
+    QString betaString = QString().setNum(mpBetaLineEdit->text().toDouble());
+    QString gammaString = QString().setNum(mpGammaLineEdit->text().toDouble());
     QString nParString = QString().setNum(mpParameterLabels.size());
     mScript.clear();
 
@@ -345,8 +344,8 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "alpha=" << alphaString << "\n";
     scriptStream << "beta=" << betaString << "\n";
     scriptStream << "gamma=" << gammaString << "\n";
-    scriptStream << "tolFunc=" << QString().setNum(mpEpsilonFSpinBox->value()) << "\n";
-    scriptStream << "tolX=" << QString().setNum(mpEpsilonXSpinBox->value()) << "\n";
+    scriptStream << "tolFunc=" << QString().setNum(mpEpsilonFLineEdit->text().toDouble()) << "\n";
+    scriptStream << "tolX=" << QString().setNum(mpEpsilonXLineEdit->text().toDouble()) << "\n";
     scriptStream << "\n";
     scriptStream << "\n";
     scriptStream << "\n";
@@ -372,13 +371,13 @@ void OptimizationDialog::generateScriptFile()
     for(int i=1; i<mSelectedParameters.size(); ++i)
         scriptStream << ", \"" << mSelectedParameters.at(i) << "\"";
     scriptStream << "]           #Names of parameters to optimize\n";
-    scriptStream << "minValues = ["+QString().setNum(mpParameterMinSpinBoxes.at(0)->value());
+    scriptStream << "minValues = ["+QString().setNum(mpParameterMinLineEdits.at(0)->text().toDouble());
     for(int i=1; i<mSelectedParameters.size(); ++i)
-        scriptStream << ", "+QString().setNum(mpParameterMinSpinBoxes.at(i)->value());
+        scriptStream << ", "+QString().setNum(mpParameterMinLineEdits.at(i)->text().toDouble());
     scriptStream << "]                    #Minimum value for each parameter\n";
-    scriptStream << "maxValues = ["+QString().setNum(mpParameterMaxSpinBoxes.at(0)->value());
+    scriptStream << "maxValues = ["+QString().setNum(mpParameterMaxLineEdits.at(0)->text().toDouble());
     for(int i=1; i<mSelectedParameters.size(); ++i)
-        scriptStream << ", "+QString().setNum(mpParameterMaxSpinBoxes.at(i)->value());
+        scriptStream << ", "+QString().setNum(mpParameterMaxLineEdits.at(i)->text().toDouble());
     scriptStream << "]                    #Maximum value for each parameter\n";
     scriptStream << "\n";
     scriptStream << "\n";
@@ -390,12 +389,12 @@ void OptimizationDialog::generateScriptFile()
         scriptStream << ", 0.0";
     scriptStream << "]\n";
     scriptStream << "def getObjective():\n";
-    for(int i=0; i<mWeightSpinBoxPtrs.size(); ++i)
-        scriptStream << "  w"+QString().setNum(i)+"="+QString().setNum(mWeightSpinBoxPtrs.at(i)->value())+"\n";
-    for(int i=0; i<mNormSpinBoxPtrs.size(); ++i)
-        scriptStream << "  n"+QString().setNum(i)+"="+QString().setNum(mNormSpinBoxPtrs.at(i)->value())+"\n";
-    for(int i=0; i<mExpSpinBoxPtrs.size(); ++i)
-        scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpSpinBoxPtrs.at(i)->value())+"\n";
+    for(int i=0; i<mWeightLineEditPtrs.size(); ++i)
+        scriptStream << "  w"+QString().setNum(i)+"="+QString().setNum(mWeightLineEditPtrs.at(i)->text().toDouble())+"\n";
+    for(int i=0; i<mNormLineEditPtrs.size(); ++i)
+        scriptStream << "  n"+QString().setNum(i)+"="+QString().setNum(mNormLineEditPtrs.at(i)->text().toDouble())+"\n";
+    for(int i=0; i<mExpLineEditPtrs.size(); ++i)
+        scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpLineEditPtrs.at(i)->text().toDouble())+"\n";
 
     scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").getTimeVector()\n";
     QMap<QString, QString> addedVariables;
@@ -511,20 +510,18 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int i)
         mSelectedParameters.append(item->text(0));
         QLabel *pLabel = new QLabel(trUtf8(" ≤  ") + item->parent()->text(0) + ", " + item->text(0) + trUtf8("  ≤ "));
         pLabel->setAlignment(Qt::AlignCenter);
-        QDoubleSpinBox *pMinSpinBox = new QDoubleSpinBox(this);
-        pMinSpinBox->setRange(std::numeric_limits<double>::min(), std::numeric_limits<double>::max());
-        pMinSpinBox->setValue(0.0);
-        QDoubleSpinBox *pMaxSpinBox = new QDoubleSpinBox(this);
-        pMaxSpinBox->setRange(std::numeric_limits<double>::min(), std::numeric_limits<double>::max());
-        pMaxSpinBox->setValue(1.0);
+        QLineEdit *pMinLineEdit = new QLineEdit("0.0", this);
+        pMinLineEdit->setValidator(new QDoubleValidator());
+        QLineEdit *pMaxLineEdit = new QLineEdit("1.0", this);
+        pMaxLineEdit->setValidator(new QDoubleValidator());
         mpParameterLabels.append(pLabel);
-        mpParameterMinSpinBoxes.append(pMinSpinBox);
-        mpParameterMaxSpinBoxes.append(pMaxSpinBox);
+        mpParameterMinLineEdits.append(pMinLineEdit);
+        mpParameterMaxLineEdits.append(pMaxLineEdit);
 
         int row = mpParametersLayout->rowCount();
-        mpParametersLayout->addWidget(pMinSpinBox, row, 0);
+        mpParametersLayout->addWidget(pMinLineEdit, row, 0);
         mpParametersLayout->addWidget(pLabel, row, 1);
-        mpParametersLayout->addWidget(pMaxSpinBox, row, 2);
+        mpParametersLayout->addWidget(pMaxLineEdit, row, 2);
     }
     else
     {
@@ -538,19 +535,19 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int i)
             }
         }
         mpParametersLayout->removeWidget(mpParameterLabels.at(i));
-        mpParametersLayout->removeWidget(mpParameterMinSpinBoxes.at(i));
-        mpParametersLayout->removeWidget(mpParameterMaxSpinBoxes.at(i));
+        mpParametersLayout->removeWidget(mpParameterMinLineEdits.at(i));
+        mpParametersLayout->removeWidget(mpParameterMaxLineEdits.at(i));
         QLabel *pParameterLabel = mpParameterLabels.at(i);
-        QDoubleSpinBox *pParameterMinSpinBox = mpParameterMinSpinBoxes.at(i);
-        QDoubleSpinBox *pParameterMaxSpinBoxes = mpParameterMaxSpinBoxes.at(i);
+        QLineEdit *pParameterMinLineEdit = mpParameterMinLineEdits.at(i);
+        QLineEdit *pParameterMaxLineEdit = mpParameterMaxLineEdits.at(i);
         mpParameterLabels.removeAt(i);
-        mpParameterMinSpinBoxes.removeAt(i);
-        mpParameterMaxSpinBoxes.removeAt(i);
+        mpParameterMinLineEdits.removeAt(i);
+        mpParameterMaxLineEdits.removeAt(i);
         mSelectedParameters.removeAt(i);
         mSelectedComponents.removeAt(i);
         delete(pParameterLabel);
-        delete(pParameterMinSpinBox);
-        delete(pParameterMaxSpinBoxes);
+        delete(pParameterMinLineEdit);
+        delete(pParameterMaxLineEdit);
     }
 }
 
@@ -592,18 +589,12 @@ void OptimizationDialog::addFunction()
         mFunctionVariables.last().append(mSelectedVariables.at(i).at(2));
     }
 
-    QDoubleSpinBox *pWeightSpinBox = new QDoubleSpinBox(this);
-    pWeightSpinBox->setRange(0.0,1000000.0);
-    pWeightSpinBox->setSingleStep(0.1);
-    pWeightSpinBox->setValue(1.0);
-    QDoubleSpinBox *pNormSpinBox = new QDoubleSpinBox(this);
-    pNormSpinBox->setRange(0.0,1000000.0);
-    pNormSpinBox->setSingleStep(0.1);
-    pNormSpinBox->setValue(1.0);
-    QDoubleSpinBox *pExpSpinBox = new QDoubleSpinBox(this);
-    pExpSpinBox->setRange(0.0,1000000.0);
-    pExpSpinBox->setSingleStep(0.1);
-    pExpSpinBox->setValue(2.0);
+    QLineEdit *pWeightLineEdit = new QLineEdit("1.0", this);
+    pWeightLineEdit->setValidator(new QDoubleValidator());
+    QLineEdit *pNormLineEdit = new QLineEdit("1.0", this);
+    pNormLineEdit->setValidator(new QDoubleValidator());
+    QLineEdit *pExpLineEdit = new QLineEdit("2.0", this);
+    pExpLineEdit->setValidator(new QDoubleValidator());
 
     QString variablesText = mFunctionComponents.last().first()+", "+mFunctionPorts.last().first()+", "+mFunctionVariables.last().first();
     for(int i=1; i<mFunctionVariables.last().size(); ++i)
@@ -615,32 +606,31 @@ void OptimizationDialog::addFunction()
     QWidget *pDataWidget = new QWidget(this);
     QGridLayout *pDataGrid = new QGridLayout(this);
     pDataWidget->setLayout(pDataGrid);
-    QList<QDoubleSpinBox*> dummyList;
+    QList<QLineEdit*> dummyList;
     for(int i=0; i<data.size(); ++i)
     {
         QLabel *pDataLabel = new QLabel(data.at(i), this);
-        QDoubleSpinBox *pDataSpinBox = new QDoubleSpinBox(this);
-        pDataSpinBox->setRange(-1000, 1000);
-        pDataSpinBox->setValue(0);
+        QLineEdit *pDataLineEdit = new QLineEdit("0.0", this);
+        pDataLineEdit->setValidator(new QDoubleValidator());
         pDataGrid->addWidget(pDataLabel, i, 0);
-        pDataGrid->addWidget(pDataSpinBox, i, 1);
-        dummyList.append(pDataSpinBox);
+        pDataGrid->addWidget(pDataLineEdit, i, 1);
+        dummyList.append(pDataLineEdit);
     }
-    mDataSpinBoxPtrs.append(dummyList);
+    mDataLineEditPtrs.append(dummyList);
     QToolButton *pRemoveButton = new QToolButton(this);
     pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
     pRemoveButton->setToolTip("Remove Function");
-    mWeightSpinBoxPtrs.append(pWeightSpinBox);
-    mNormSpinBoxPtrs.append(pNormSpinBox);
-    mExpSpinBoxPtrs.append(pExpSpinBox);
+    mWeightLineEditPtrs.append(pWeightLineEdit);
+    mNormLineEditPtrs.append(pNormLineEdit);
+    mExpLineEditPtrs.append(pExpLineEdit);
     mFunctionLabelPtrs.append(pFunctionLabel);
     mDataWidgetPtrs.append(pDataWidget);
     mRemoveFunctionButtonPtrs.append(pRemoveButton);
 
     int row = mpObjectiveLayout->rowCount()-1;
-    mpObjectiveLayout->addWidget(pWeightSpinBox, row,   0, 1, 1);
-    mpObjectiveLayout->addWidget(pNormSpinBox, row,     1, 1, 1);
-    mpObjectiveLayout->addWidget(pExpSpinBox, row,      2, 1, 1);
+    mpObjectiveLayout->addWidget(pWeightLineEdit, row,   0, 1, 1);
+    mpObjectiveLayout->addWidget(pNormLineEdit, row,     1, 1, 1);
+    mpObjectiveLayout->addWidget(pExpLineEdit, row,      2, 1, 1);
     mpObjectiveLayout->addWidget(pFunctionLabel, row,   3, 1, 2);
     mpObjectiveLayout->addWidget(pDataWidget, row,      5, 1, 1);
     mpObjectiveLayout->addWidget(pRemoveButton, row,    6, 1, 1);
@@ -664,30 +654,30 @@ void OptimizationDialog::removeFunction()
     QToolButton *button = qobject_cast<QToolButton *>(sender());
     int i = mRemoveFunctionButtonPtrs.indexOf(button);
 
-    mpObjectiveLayout->removeWidget(mWeightSpinBoxPtrs.at(i));
-    mpObjectiveLayout->removeWidget(mNormSpinBoxPtrs.at(i));
-    mpObjectiveLayout->removeWidget(mExpSpinBoxPtrs.at(i));
+    mpObjectiveLayout->removeWidget(mWeightLineEditPtrs.at(i));
+    mpObjectiveLayout->removeWidget(mNormLineEditPtrs.at(i));
+    mpObjectiveLayout->removeWidget(mExpLineEditPtrs.at(i));
     mpObjectiveLayout->removeWidget(mFunctionLabelPtrs.at(i));
     mpObjectiveLayout->removeWidget(mRemoveFunctionButtonPtrs.at(i));
     mpObjectiveLayout->removeWidget(mDataWidgetPtrs.at(i));
 
-    for(int j=0; j<mDataSpinBoxPtrs.at(i).size(); ++j)
+    for(int j=0; j<mDataLineEditPtrs.at(i).size(); ++j)
     {
-        delete(mDataSpinBoxPtrs.at(i).at(j));
+        delete(mDataLineEditPtrs.at(i).at(j));
     }
-    delete(mWeightSpinBoxPtrs.at(i));
-    delete(mNormSpinBoxPtrs.at(i));
-    delete(mExpSpinBoxPtrs.at(i));
+    delete(mWeightLineEditPtrs.at(i));
+    delete(mNormLineEditPtrs.at(i));
+    delete(mExpLineEditPtrs.at(i));
     delete(mFunctionLabelPtrs.at(i));
     delete(mRemoveFunctionButtonPtrs.at(i));
     delete(mDataWidgetPtrs.at(i));
 
-    mWeightSpinBoxPtrs.removeAt(i);
-    mNormSpinBoxPtrs.removeAt(i);
-    mExpSpinBoxPtrs.removeAt(i);
+    mWeightLineEditPtrs.removeAt(i);
+    mNormLineEditPtrs.removeAt(i);
+    mExpLineEditPtrs.removeAt(i);
     mFunctionLabelPtrs.removeAt(i);
     mRemoveFunctionButtonPtrs.removeAt(i);
-    mDataSpinBoxPtrs.removeAt(i);
+    mDataLineEditPtrs.removeAt(i);
     mDataWidgetPtrs.removeAt(i);
     mSelectedFunctions.removeAt(i);
     mFunctionComponents.removeAt(i);
@@ -852,7 +842,7 @@ QString OptimizationDialog::generateFunctionCode(int i)
         retval.append(", time");
     for(int d=0; d<mObjectiveFunctionDataLists.at(fnc).size(); ++d)
     {
-        double num = mDataSpinBoxPtrs.at(i).at(d)->value();
+        double num = mDataLineEditPtrs.at(i).at(d)->text().toDouble();
         retval.append(", "+QString().setNum(num));
     }
     retval.append(")/n"+QString().setNum(i)+")**g"+QString().setNum(i));

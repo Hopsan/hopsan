@@ -73,15 +73,15 @@ private:
     QLabel *mpSearchPointsLabel;
     QSpinBox *mpSearchPointsSpinBox;
     QLabel *mpAlphaLabel;
-    QDoubleSpinBox *mpAlphaSpinBox;
+    QLineEdit *mpAlphaLineEdit;
     QLabel *mpBetaLabel;
-    QDoubleSpinBox *mpBetaSpinBox;
+    QLineEdit *mpBetaLineEdit;
     QLabel *mpGammaLabel;
-    QDoubleSpinBox *mpGammaSpinBox;
+    QLineEdit *mpGammaLineEdit;
     QLabel *mpEpsilonFLabel;
-    QDoubleSpinBox *mpEpsilonFSpinBox;
+    QLineEdit *mpEpsilonFLineEdit;
     QLabel *mpEpsilonXLabel;
-    QDoubleSpinBox *mpEpsilonXSpinBox;
+    QLineEdit *mpEpsilonXLineEdit;
     QCheckBox *mpPlottingCheckBox;
 
     //Parameters tab
@@ -104,12 +104,12 @@ private:
     QLabel *mpExpLabel;
     QLabel *mpDescriptionLabel;
     QLabel *mpDataLabel;
-    QList<QDoubleSpinBox*> mWeightSpinBoxPtrs;
-    QList<QDoubleSpinBox*> mNormSpinBoxPtrs;
-    QList<QDoubleSpinBox*> mExpSpinBoxPtrs;
+    QList<QLineEdit*> mWeightLineEditPtrs;
+    QList<QLineEdit*> mNormLineEditPtrs;
+    QList<QLineEdit*> mExpLineEditPtrs;
     QList<QLabel*> mFunctionLabelPtrs;
     QList<QWidget*> mDataWidgetPtrs;
-    QList< QList<QDoubleSpinBox*> > mDataSpinBoxPtrs;
+    QList< QList<QLineEdit*> > mDataLineEditPtrs;
     QList<QToolButton*> mRemoveFunctionButtonPtrs;
     QGridLayout *mpObjectiveLayout;
     QWidget *mpObjectiveWidget;
@@ -150,8 +150,8 @@ private:
     QStringList mSelectedComponents;
     QStringList mSelectedParameters;
     QList<QLabel*> mpParameterLabels;
-    QList<QDoubleSpinBox*> mpParameterMinSpinBoxes;
-    QList<QDoubleSpinBox*> mpParameterMaxSpinBoxes;
+    QList<QLineEdit*> mpParameterMinLineEdits;
+    QList<QLineEdit*> mpParameterMaxLineEdits;
     QList<QStringList> mSelectedVariables;
 };
 
