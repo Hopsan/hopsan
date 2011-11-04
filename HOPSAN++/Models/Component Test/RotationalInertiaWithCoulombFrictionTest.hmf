@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3566" hopsancoreversion="0">
+    <system typename="Subsystem" name="RotationalInertiaWithCoulombFrictionTest">
+        <hopsangui>
+            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2213.5" y="2500.5" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.2">
+                <modelobject typename="Subsystem" displayname="RotationalInertiaWithCoulombFrictionTest">
+                    <icons>
+                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
+                </modelobject>
+                <portpositions/>
+            </hopsanobjectappearance>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1">
+                    <stuff what="addedobject">
+                        <component typename="MechanicGear" name="MechanicGear">
+                            <parameters>
+                                <parameter value="1000" name="Jg"/>
+                                <parameter value="10" name="Bg"/>
+                                <parameter value="0.01" name="myfric"/>
+                                <parameter value="1" name="wc"/>
+                                <parameter value="1" name="gearRatio"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2112.00000000000000000000" y="2641" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="2">
+                    <stuff what="movedobject" name="MechanicGear">
+                        <oldpos>2081.5 2620.5</oldpos>
+                        <newpos>2026.5 2510.5</newpos>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="movedobject" name="MechanicGear">
+                        <oldpos>2026.5 2510.5</oldpos>
+                        <newpos>2216.5 2466.5</newpos>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="movedobject" name="MechanicGear">
+                        <oldpos>2216.5 2466.5</oldpos>
+                        <newpos>2122.5 2419.5</newpos>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff what="movedobject" name="MechanicGear">
+                        <oldpos>2122.5 2419.5</oldpos>
+                        <newpos>2113.5 2459.5</newpos>
+                    </stuff>
+                </post>
+                <post number="6">
+                    <stuff what="movedobject" name="MechanicGear">
+                        <oldpos>2113.5 2459.5</oldpos>
+                        <newpos>2188.5 2477.5</newpos>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="addedobject">
+                        <component typename="MechanicRotationalInertiaWithCoulumbFriction" name="Rotational Inertia With Coulumb Friction">
+                            <parameters>
+                                <parameter value="1" name="J"/>
+                                <parameter value="10" name="B"/>
+                                <parameter value="50" name="t_s"/>
+                                <parameter value="45" name="t_k"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2392.00000000000000000000" y="2453" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="movedobject" name="Rotational Inertia With Coulumb Friction">
+                        <oldpos>2360 2429</oldpos>
+                        <newpos>2359 2429</newpos>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="deletedobject">
+                        <component typename="MechanicRotationalInertiaWithCoulumbFriction" name="Rotational Inertia With Coulumb Friction">
+                            <parameters>
+                                <parameter value="1" name="J"/>
+                                <parameter value="10" name="B"/>
+                                <parameter value="50" name="t_s"/>
+                                <parameter value="45" name="t_k"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2391.00000000000000000000" y="2453" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="addedobject">
+                        <component typename="MechanicRotationalInertiaWithCoulumbFriction" name="Rotational Inertia With Coulumb Friction">
+                            <parameters>
+                                <parameter value="1" name="J"/>
+                                <parameter value="10" name="B"/>
+                                <parameter value="50" name="t_s"/>
+                                <parameter value="45" name="t_k"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2331.00000000000000000000" y="2452" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff what="deletedobject">
+                        <component typename="MechanicGear" name="MechanicGear">
+                            <parameters>
+                                <parameter value="1000" name="Jg"/>
+                                <parameter value="10" name="Bg"/>
+                                <parameter value="0.01" name="myfric"/>
+                                <parameter value="1" name="wc"/>
+                                <parameter value="1" name="gearRatio"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2219.00000000000000000000" y="2498" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="12">
+                    <stuff what="movedobject" name="Rotational Inertia With Coulumb Friction">
+                        <oldpos>2299 2428</oldpos>
+                        <newpos>2295 2504</newpos>
+                    </stuff>
+                </post>
+                <post number="13">
+                    <stuff what="movedobject" name="Rotational Inertia With Coulumb Friction">
+                        <oldpos>2295 2504</oldpos>
+                        <newpos>2361 2515</newpos>
+                    </stuff>
+                </post>
+                <post number="14">
+                    <stuff what="addedobject">
+                        <component typename="MechanicTorsionalSpring" name="Torsional Spring">
+                            <parameters>
+                                <parameter value="0" name="P1::Angular Velocity"/>
+                                <parameter value="0" name="P1::Torque"/>
+                                <parameter value="0" name="P1::Angle"/>
+                                <parameter value="0" name="P2::Angular Velocity"/>
+                                <parameter value="0" name="P2::Torque"/>
+                                <parameter value="0" name="P2::Angle"/>
+                                <parameter value="100" name="k"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2134.00000000000000000000" y="2591" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff what="movedobject" name="Torsional Spring">
+                        <oldpos>2117.5 2576.5</oldpos>
+                        <newpos>2199.5 2510.5</newpos>
+                    </stuff>
+                </post>
+                <post number="16">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Rotational Inertia With Coulumb Friction" startport="P2" startcomponent="Torsional Spring">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2232.50000000000000000000" y="2535.00000000000000000000"/>
+                                    <coordinate x="2341.00000000000000000000" y="2535.00000000000000000000"/>
+                                    <coordinate x="2341.00000000000000000000" y="2535.00000000000000000000"/>
+                                    <coordinate x="2361.00000000000000000000" y="2535.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="17">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2026.00000000000000000000" y="2515" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source">
+                        <oldpos>2002.5 2508.5</oldpos>
+                        <newpos>2063.5 2538.5</newpos>
+                    </stuff>
+                </post>
+                <post number="19">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Torsional Spring" startport="Pmr1" startcomponent="Angle &amp; Velocity Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2110.50000000000000000000" y="2545.00000000000000000000"/>
+                                    <coordinate x="2179.50000000000000000000" y="2545.00000000000000000000"/>
+                                    <coordinate x="2179.50000000000000000000" y="2535.00000000000000000000"/>
+                                    <coordinate x="2199.50000000000000000000" y="2535.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="20">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source">
+                        <oldpos>2063.5 2538.5</oldpos>
+                        <newpos>2067.5 2528.5</newpos>
+                    </stuff>
+                </post>
+                <post number="21">
+                    <stuff what="addedobject">
+                        <component typename="SignalSoftStep" name="Soft step">
+                            <parameters>
+                                <parameter value="1" name="t_start"/>
+                                <parameter value="2" name="t_end"/>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="y_A"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="1841.00000000000000000000" y="2537" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="22">
+                    <stuff what="addedconnector">
+                        <connect endport="win" endcomponent="Angle &amp; Velocity Source" startport="out" startcomponent="Soft step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1853.50000000000000000000" y="2541.50000000000000000000"/>
+                                    <coordinate x="2047.50000000000000000000" y="2541.50000000000000000000"/>
+                                    <coordinate x="2047.50000000000000000000" y="2541.50000000000000000000"/>
+                                    <coordinate x="2067.50000000000000000000" y="2541.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="23" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="2" parametername="t_end" objectname="Soft step"/>
+                    <stuff newvalue="-10" what="changedparameter" oldvalue="0" parametername="y_0" objectname="Soft step"/>
+                    <stuff newvalue="10" what="changedparameter" oldvalue="1" parametername="y_A" objectname="Soft step"/>
+                </post>
+                <post number="24">
+                    <stuff what="movedobject" name="Rotational Inertia With Coulumb Friction">
+                        <oldpos>2361 2515</oldpos>
+                        <newpos>2299 2515</newpos>
+                    </stuff>
+                </post>
+                <post number="25">
+                    <stuff what="addedobject">
+                        <component typename="MechanicTorqueTransformer" name="Torque Source">
+                            <parameters>
+                                <parameter value="0" name="P1::Angular Velocity"/>
+                                <parameter value="0" name="P1::Angle"/>
+                                <parameter value="0" name="T"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2474.00000000000000000000" y="2547" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="26">
+                    <stuff what="horizontalflip" objectname="Torque Source"/>
+                </post>
+                <post number="27">
+                    <stuff what="addedconnector">
+                        <connect endport="P2" endcomponent="Rotational Inertia With Coulumb Friction" startport="P1" startcomponent="Torque Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2450.50000000000000000000" y="2547.00000000000000000000"/>
+                                    <coordinate x="2383.00000000000000000000" y="2547.00000000000000000000"/>
+                                    <coordinate x="2383.00000000000000000000" y="2535.00000000000000000000"/>
+                                    <coordinate x="2363.00000000000000000000" y="2535.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="28">
+                    <stuff what="movedobject" name="Torque Source">
+                        <oldpos>2497.5 2540.5</oldpos>
+                        <newpos>2467.5 2528.5</newpos>
+                    </stuff>
+                </post>
+                <post number="29">
+                    <stuff what="movedobject" name="Soft step">
+                        <oldpos>1828.5 2529</oldpos>
+                        <newpos>1831.5 2529</newpos>
+                    </stuff>
+                </post>
+                <post number="30" type="changedparameters">
+                    <stuff newvalue="20" what="changedparameter" oldvalue="10" parametername="y_A" objectname="Soft step"/>
+                </post>
+                <post number="31" type="changedparameters">
+                    <stuff newvalue="1000" what="changedparameter" oldvalue="100" parametername="k" objectname="Torsional Spring"/>
+                </post>
+                <post number="32" type="changedparameters">
+                    <stuff newvalue="50" what="changedparameter" oldvalue="45" parametername="t_k" objectname="Rotational Inertia With Coulumb Friction"/>
+                </post>
+                <post number="33" type="changedparameters">
+                    <stuff newvalue="10000" what="changedparameter" oldvalue="1000" parametername="k" objectname="Torsional Spring"/>
+                </post>
+                <post number="34" type="changedparameters">
+                    <stuff newvalue=".1" what="changedparameter" oldvalue="1" parametername="J" objectname="Rotational Inertia With Coulumb Friction"/>
+                </post>
+                <post number="35" type="changedparameters">
+                    <stuff newvalue="30" what="changedparameter" oldvalue="50" parametername="t_k" objectname="Rotational Inertia With Coulumb Friction"/>
+                </post>
+                <post number="36">
+                    <stuff what="movedobject" name="Soft step">
+                        <oldpos>1831.5 2529</oldpos>
+                        <newpos>1984.5 2529</newpos>
+                    </stuff>
+                </post>
+                <post number="37">
+                    <stuff what="movedobject" name="Torsional Spring">
+                        <oldpos>2199.5 2506</oldpos>
+                        <newpos>2178.5 2506</newpos>
+                    </stuff>
+                </post>
+                <post number="38">
+                    <stuff what="movedobject" name="Rotational Inertia With Coulumb Friction">
+                        <oldpos>2299 2515</oldpos>
+                        <newpos>2278 2515</newpos>
+                    </stuff>
+                </post>
+                <post number="39">
+                    <stuff what="movedobject" name="Torque Source">
+                        <oldpos>2467.5 2528.5</oldpos>
+                        <newpos>2433.5 2528.5</newpos>
+                    </stuff>
+                </post>
+                <post number="40">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2088" y="2357"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100" height="100"/>
+                                <line width="2" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="41">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Plot torque at P1 of the rotational inertia against the speed at P2" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="42">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2088 2357</oldpos>
+                        <newpos>2019 2357</newpos>
+                    </stuff>
+                </post>
+                <post number="43">
+                    <stuff h_new="100" what="resizedtextboxwidget" w_old="100" h_old="100" index="0" w_new="431">
+                        <oldpos>2088 2357</oldpos>
+                        <newpos>2019 2357</newpos>
+                    </stuff>
+                </post>
+                <post number="44">
+                    <stuff h_new="35" what="resizedtextboxwidget" w_old="431" h_old="100" index="0" w_new="431">
+                        <oldpos>2019 2357</oldpos>
+                        <newpos>2019 2357</newpos>
+                    </stuff>
+                </post>
+                <post number="45">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2019 2357</oldpos>
+                        <newpos>1983 2419</newpos>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="-10"/>
+        <parameters/>
+        <objects>
+            <component typename="SignalSoftStep" name="Soft step">
+                <parameters>
+                    <parameter value="1" name="t_start"/>
+                    <parameter value="10" name="t_end"/>
+                    <parameter value="-10" name="y_0"/>
+                    <parameter value="20" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="1997.00000000000000000000" y="2541.5" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2091.00000000000000000000" y="2535" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicRotationalInertiaWithCoulumbFriction" name="Rotational Inertia With Coulumb Friction">
+                <parameters>
+                    <parameter value=".1" name="J"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="50" name="t_s"/>
+                    <parameter value="30" name="t_k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2310.00000000000000000000" y="2539" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTorqueTransformer" name="Torque Source">
+                <parameters>
+                    <parameter value="0" name="P1::Angular Velocity"/>
+                    <parameter value="0" name="P1::Angle"/>
+                    <parameter value="0" name="T"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2410.00000000000000000000" y="2535" flipped="1" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTorsionalSpring" name="Torsional Spring">
+                <parameters>
+                    <parameter value="0" name="P1::Angular Velocity"/>
+                    <parameter value="0" name="P1::Torque"/>
+                    <parameter value="0" name="P1::Angle"/>
+                    <parameter value="0" name="P2::Angular Velocity"/>
+                    <parameter value="0" name="P2::Torque"/>
+                    <parameter value="0" name="P2::Angle"/>
+                    <parameter value="10000" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2195.00000000000000000000" y="2520.5" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="1983" y="2419"/>
+                    <textobject fontcolor="#556b2f" text="Plot torque at P1 of the rotational inertia against the speed at P2" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="431" height="35"/>
+                    <line width="2" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Rotational Inertia With Coulumb Friction" startport="P2" startcomponent="Torsional Spring">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2211.50000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2341.00000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2341.00000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2278.00000000000000000000" y="2535.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Torsional Spring" startport="Pmr1" startcomponent="Angle &amp; Velocity Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2114.50000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2179.50000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2179.50000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2178.50000000000000000000" y="2535.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="win" endcomponent="Angle &amp; Velocity Source" startport="out" startcomponent="Soft step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2009.50000000000000000000" y="2541.50000000000000000000"/>
+                        <coordinate x="2047.50000000000000000000" y="2541.50000000000000000000"/>
+                        <coordinate x="2047.50000000000000000000" y="2541.50000000000000000000"/>
+                        <coordinate x="2067.50000000000000000000" y="2541.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Rotational Inertia With Coulumb Friction" startport="P1" startcomponent="Torque Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2386.50000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2383.00000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2383.00000000000000000000" y="2535.00000000000000000000"/>
+                        <coordinate x="2342.00000000000000000000" y="2535.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
