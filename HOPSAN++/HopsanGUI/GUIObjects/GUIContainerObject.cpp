@@ -888,6 +888,8 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
             transitConnectors[i]->setStartPort(pTransPort->getPortListPtrs().at(0));
             transitConnectors[i]->getStartPort()->getGuiModelObject()->rememberConnector(transitConnectors[i]);
         }
+
+        this->refreshExternalPortsAppearanceAndPosition();
     }
 
     //! @todo do much more stuff
@@ -1450,7 +1452,14 @@ void GUIContainerObject::groupSelected(QPointF pt)
         //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly, for now we just ignore them (maybe we should allways ignore them when grouping)
         if (modelObjects[i]->type() != GUICONTAINERPORT)
         {
+            // Maybe take ownership should handle this
             mGUIModelObjectMap.remove(modelObjects[i]->getName());
+        }
+        else
+        {
+            //Remove container ports, we cant group them for now
+            modelObjects.removeAt(i);
+            --i;
         }
     }
 
@@ -1459,18 +1468,21 @@ void GUIContainerObject::groupSelected(QPointF pt)
         mWidgetMap.remove(widgets[i]->getWidgetIndex());
     }
 
-    //Create a new group at the location of the specified
-    GUIModelObject* pObj =  this->addGUIModelObject(HOPSANGUIGROUPTYPENAME, pt.toPoint(),0);
-    GUIContainerObject* pContainer =  qobject_cast<GUIContainerObject*>(pObj);
+    if (modelObjects.size() > 0 || widgets.size() > 0)
+    {
+        //Create a new group at the location of the specified
+        GUIModelObject* pObj =  this->addGUIModelObject(HOPSANGUIGROUPTYPENAME, pt.toPoint(),0);
+        GUIContainerObject* pContainer =  qobject_cast<GUIContainerObject*>(pObj);
 
-    //If dyncast sucessfull (it should allways be) then let new group take ownership of objects
-    if (pContainer != 0)
-    {
-        pContainer->takeOwnershipOf(modelObjects, widgets);
-    }
-    else
-    {
-        assert(false);
+        //If dyncast sucessfull (it should allways be) then let new group take ownership of objects
+        if (pContainer != 0)
+        {
+            pContainer->takeOwnershipOf(modelObjects, widgets);
+        }
+        else
+        {
+            assert(false);
+        }
     }
 }
 

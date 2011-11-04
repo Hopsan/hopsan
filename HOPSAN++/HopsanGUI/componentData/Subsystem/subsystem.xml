@@ -3,7 +3,7 @@
     <modelobject typename="Subsystem" displayname="">
         <icons>  
             <icon type="user" iconrotation="ON" path="subsystemDefault.svg"/>
-	    <icon type="defaultmissing" iconrotation="ON" path="subsystemDefault.svg"/>
-	</icons>
+	        <icon type="defaultmissing" iconrotation="ON" path="subsystemDefault.svg"/>
+	    </icons>
     </modelobject>
 </hopsanobjectappearance>

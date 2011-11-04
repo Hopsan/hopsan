@@ -67,7 +67,6 @@ GUISystem::~GUISystem()
     }
     else
     {
-        //mpParentContainerObject->getCoreSystemAccessPtr()->deleteRootSystemPtr();
         mpCoreSystemAccess->deleteRootSystemPtr();
     }
 

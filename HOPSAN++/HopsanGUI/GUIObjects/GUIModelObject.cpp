@@ -825,11 +825,11 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
 {
     rMenu.addSeparator();
-    //QAction *groupAction;
+    QAction *groupAction;
 
     //! @todo Grouping is deactivated because it does not currently work!
-    //if (!this->scene()->selectedItems().empty())
-    //    groupAction = rMenu.addAction(tr("Group components"));
+    if (!this->scene()->selectedItems().empty())
+        groupAction = rMenu.addAction(tr("Group components"));
 
     QAction *showNameAction = rMenu.addAction(tr("Show name"));
     QAction *rotateRightAction = rMenu.addAction(tr("Rotate Clockwise"));
@@ -879,10 +879,10 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
             this->showName();
         }
     }
-//    else if (selectedAction == groupAction)
-//    {
-//        this->mpParentContainerObject->groupSelected(pEvent->scenePos());
-//    }
+    else if (selectedAction == groupAction)
+    {
+        this->mpParentContainerObject->groupSelected(pEvent->scenePos());
+    }
     else
     {
         return selectedAction;

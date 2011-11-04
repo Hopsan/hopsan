@@ -28,7 +28,6 @@
 #include "Dialogs/ContainerPortPropertiesDialog.h"
 #include "MainWindow.h"
 
-//! @todo rename GUISystemPort to ContainerPort, rename files also
 GUIContainerPort::GUIContainerPort(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
@@ -41,7 +40,7 @@ GUIContainerPort::GUIContainerPort(QPointF position, qreal rotation, GUIModelObj
 
 GUIContainerPort::~GUIContainerPort()
 {
-    qDebug() << "GuiSystemPort destructor: " << this->getName();
+    qDebug() << "GuiContainerPort destructor: " << this->getName();
     if (mIsSystemPort)
     {
         mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
@@ -82,32 +81,22 @@ void GUIContainerPort::createPorts()
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
         mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mGUIModelObjectAppearance.getName();
+        mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
     }
     else
     {
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with desired name: " << desiredportname;
         mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname));
+        mpGuiPort = new GroupPort(mGUIModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
     }
 
-    mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
     mPortListPtrs.append(mpGuiPort);
-
 }
 
 
 //! Returns a string with the GUIObject type.
 QString GUIContainerPort::getTypeName()
 {
-//    if (mIsSystemPort)
-//    {
-//        return HOPSANGUISYSTEMPORTTYPENAME;
-//    }
-//    else
-//    {
-//        //! @todo we should make sure that the gui can register these guispecific names in core to avoid creating objects with these type names
-//        return HOPSANGUIGROUPPORTTYPENAME;
-//    }
-
     //! @todo we should make sure that the gui can register these guispecific names in core to avoid creating objects with these type names
     return HOPSANGUICONTAINERPORTTYPENAME;
 }

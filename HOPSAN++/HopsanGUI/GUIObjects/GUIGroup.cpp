@@ -95,10 +95,16 @@ GUIGroup::GUIGroup(QPointF position, qreal rotation, const GUIModelObjectAppeara
 GUIGroup::~GUIGroup()
 {
     qDebug() << ",,,,,,,,,GuiGroupDestructor";
+
+    //Disable undo befor clearing
+    this->setUndoEnabled(false, true); //The last true means DONT ASK
+
     //First remove all contents
     this->clearContents();
+
     //Now unregister my name in core (instead of delete in core as I am not a core obejct)
     this->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
+
 //    qDebug() << "GUIGroup destructor";
 //    GUISystem::GUIModelObjectMapT::iterator itm;
 //    for(itm = mpParentContainerObject->mGUIModelObjectMap.begin(); itm != mpParentContainerObject->mGUIModelObjectMap.end(); ++itm)
