@@ -667,13 +667,15 @@ void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
     qDebug() << "contextMenuEvent()";
 
+    // This will prevent context menus from appearing automatically - they are started manually from mouse release event.
+    if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
+        return;
+
     if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
         return;
 
     QMenu menu;
     this->buildBaseContextMenu(menu, event);
-
-
 }
 
 
@@ -808,8 +810,19 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         }
     }
 
+    //Open the context menu (this will force it to open on mouse release regardless of operation system - not verified in Linux yet)
+    if(event->button() == Qt::RightButton)
+    {
+        QGraphicsSceneContextMenuEvent *test = new QGraphicsSceneContextMenuEvent(QGraphicsSceneContextMenuEvent::ContextMenu);
+        test->setScenePos(event->scenePos());
+        test->setScreenPos(event->screenPos());
+        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setIgnoreNextContextMenuEvent();       //! @todo No idea why this is needed, but it is...
+        this->contextMenuEvent(test);
+    }
+
     GUIObject::mouseReleaseEvent(event);
 }
+
 //    }
 
 //    QGraphicsWidget::mouseReleaseEvent(event);

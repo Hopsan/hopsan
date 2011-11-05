@@ -78,6 +78,10 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
+    qDebug() << "GraphicsView::contextMenuEvent(), reason = " << event->reason();
+
+
+
     if(!mpContainerObject->isCreatingConnector() && !mIgnoreNextContextMenuEvent)
     {
         if (itemAt(event->pos()))
@@ -521,7 +525,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     mLeftMouseButtonPressed = true;
 
     QCursor apa;
-    qDebug() << "cursor pos: " << this->mapToScene(this->mapFromGlobal(apa.pos()));
+    qDebug() << "GraphicsView::mousePressEvent(), pos: " << this->mapToScene(this->mapFromGlobal(apa.pos()));
 
         //No rubber band during connecting:
     if (mpContainerObject->isCreatingConnector())
