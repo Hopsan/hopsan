@@ -97,11 +97,11 @@ namespace hopsan {
             num[0] = 0.0;
             num[1] = 1.0;
             num[2] = 0.0;
-            den[0] = J;
+            den[0] = k;
             den[1] = B;
-            den[2] = k;
-            mFilter.initialize(mTimestep, num, den, -f1*gearRatio, -v1/gearRatio);
-            mInt.initialize(mTimestep, -v1/gearRatio, -x1/gearRatio);
+            den[2] = J;
+            mFilter.initialize(mTimestep, num, den, 0, 0);      //Must initialize with zero, otherwise filter may give static offset with zero input
+            mInt.initialize(mTimestep, 0, 0);                   //Must initialize with zero, otherwise filter may give static offset with zero input
         }
 
 
@@ -131,9 +131,9 @@ namespace hopsan {
             (*mpND_f1) = f1;
             (*mpND_x1) = x1;
             (*mpND_v1) = v1;
-            (*mpND_t2) = -t2;
-            (*mpND_a2) = -a2;
-            (*mpND_w2) = -w2;
+            (*mpND_t2) = t2;
+            (*mpND_a2) = a2;
+            (*mpND_w2) = w2;
         }
     };
 }
