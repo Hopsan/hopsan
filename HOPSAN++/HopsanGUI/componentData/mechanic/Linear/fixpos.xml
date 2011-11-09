@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hopsanobjectappearance version="0.1">
+  <modelobject typename="MechanicFixedPosition" displayname="Fixed Position">
+    <icon isopath="fixpos_iso.svg" iconrotation="ON" userpath="fixpos_user.svg" />
+    <portpose x="0" y="0.5" a="0" name="Pm1" />
+  </modelobject>
+</hopsanobjectappearance>

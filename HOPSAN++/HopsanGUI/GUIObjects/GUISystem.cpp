@@ -574,43 +574,192 @@ void GUISystem::saveToWrappedCode()
     }
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
 
-        //Write initial comment
-    fileStream << "// Code from exported Hopsan model. This can be used in conjunction with HopsanCore by using HopsanWrapper. Subsystems probably don't work.\n\n";
-
-        //Write system initialization
-    fileStream << "initSystem(1e-3);\n\n";
-
-        //Save components
+    //Create lists for input and output interface components
+    QStringList inputs;
+    QStringList outputs;
     GUIModelObjectMapT::iterator it;
     for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
     {
-        fileStream << "addComponent(\"" << it.value()->getName() << "\", \"" << it.value()->getTypeName() << "\");\n";
-    }
-
-    fileStream << "\n";
-
-        //Save connectors
-    for(int i = 0; i != mSubConnectorList.size(); ++i)
-    {
-        fileStream << "connect(\"" << mSubConnectorList[i]->getStartComponentName() << "\", \"" << mSubConnectorList[i]->getStartPortName() <<
-                      "\", \"" << mSubConnectorList[i]->getEndComponentName() << "\", \"" << mSubConnectorList[i]->getEndPortName() << "\");\n";
-    }
-
-    fileStream << "\n";
-
-        //Save parameters
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
-    {
-        for(int i=0; i<it.value()->getParameterNames().size(); ++i)
+        if(it.value()->getTypeName() == "SignalInputInterface")
         {
-            fileStream << "setParameter(\"" << it.value()->getName() << "\", \"" << it.value()->getParameterNames().at(i) <<  "\", " << it.value()->getParameterValue(it.value()->getParameterNames().at(i)) << ");\n";
+            inputs.append(it.value()->getName());
+        }
+        else if(it.value()->getTypeName() == "SignalOutputInterface")
+        {
+            outputs.append(it.value()->getName());
         }
     }
 
+        //Write initial comment
+    fileStream << "// Code from exported Hopsan model. This can be used in conjunction with HopsanCore by using HopsanWrapper. Subsystems probably don't work.\n\n";
     fileStream << "\n";
-
-        //Initialize components
-    fileStream << "initComponents();";
+    fileStream << "#include \"hopsanrt-wrapper.h\"\n";
+    fileStream << "#include \"SIT_API.h\"\n";
+    fileStream << "#include \"model.h\"\n";
+    fileStream << "#include <stddef.h>\n";
+    fileStream << "#include <math.h>\n";
+    fileStream << "#include \"codegen.c\"\n";
+    fileStream << "\n";
+    fileStream << "#define rtDBL	0\n";
+    fileStream << "\n";
+    fileStream << "extern Parameters rtParameter[2];\n";
+    fileStream << "extern long READSIDE;\n";
+    fileStream << "\n";
+    fileStream << "#define readParam rtParameter[READSIDE]\n";
+    fileStream << "\n";
+    fileStream << "typedef struct \n";
+    fileStream << "{\n";
+    for(int i=0; i<inputs.size(); ++i)
+    {
+        QString tempString = inputs.at(i);
+        tempString.remove(" ");
+        fileStream << "    double "+tempString+";\n";
+    }
+    fileStream << "} Inports;\n";
+    fileStream << "\n";
+    fileStream << "typedef struct\n";
+    fileStream << "{\n";
+    for(int i=0; i<outputs.size(); ++i)
+    {
+        QString tempString = outputs.at(i);
+        tempString.remove(" ");
+        fileStream << "    double "+tempString+";\n";
+    }
+    fileStream << "} Outports;\n";
+    fileStream << "\n";
+    fileStream << "typedef struct\n";
+    fileStream << "{\n";
+    fileStream << "    double Time;\n";
+    fileStream << "} Signals;\n";
+    fileStream << "\n";
+    fileStream << "Inports rtInport;\n";
+    fileStream << "Outports rtOutport;\n";
+    fileStream << "Signals rtSignal;\n";
+    fileStream << "\n";
+    fileStream << "long SetValueByDataType(void* ptr, int subindex, double value, int type)\n";
+    fileStream << "{\n";
+    fileStream << "    switch (type)\n";
+    fileStream << "    {\n";
+    fileStream << "        case rtDBL:\n";
+    fileStream << "        ((double *)ptr)[subindex] = (double)value;\n";
+    fileStream << "        return NI_OK;\n";
+    fileStream << "    }\n";
+    fileStream << "    return NI_ERROR;\n";
+    fileStream << "}\n";
+    fileStream << "\n";
+    fileStream << "double GetValueByDataType(void* ptr, int subindex, int type)\n";
+    fileStream << "{\n";
+    fileStream << "    switch (type)\n";
+    fileStream << "    {\n";
+    fileStream << "        case rtDBL:\n";
+    fileStream << "        return (double)(((double *)ptr)[subindex]);\n";
+    fileStream << "    }\n";
+    fileStream << "    return 0x7FFFFFFFFFFFFFFF; /* NAN */\n";
+    fileStream << "}\n";
+    fileStream << "\n";
+    fileStream << "const long ParameterSize = 1;\n";
+    fileStream << "const ParameterAttributes rtParamAttribs[] = \n";
+    fileStream << "{\n";
+    fileStream << "        { \"HopsanRT/sine/Amplitude\", offsetof(Parameters, HopsanRT_sine_Amp), rtDBL, 1, 1}\n";
+    fileStream << "};\n";
+    fileStream << "\n";
+    fileStream << "const Parameters initParams = {0.0 /*time*/};\n";
+    fileStream << "\n";
+    fileStream << "const long SignalSize = 1;\n";
+    fileStream << "const SignalAttributes rtSignalAttribs[] = \n";
+    fileStream << "{\n";
+    fileStream << "    { \"HopsanRT/Time\", 0, \"Time\", &rtSignal.Time, rtDBL, 1, 1}\n";
+    fileStream << "};\n";
+    fileStream << "\n";
+    fileStream << "const long InportSize = "+QString().setNum(inputs.size())+";\n";
+    fileStream << "const ExtIOAttributes rtInportAttribs[] = \n";
+    fileStream << "{\n";
+    for(int i=0; i<inputs.size(); ++i)
+    {
+        QString tempString = inputs.at(i);
+        tempString.remove(" ");
+        fileStream << "    { \""+tempString+"\", 1, 1},\n";
+    }
+    fileStream << "};\n";
+    fileStream << "\n";
+    fileStream << "const long OutportSize = "+QString().setNum(outputs.size())+";\n";
+    fileStream << "const ExtIOAttributes rtOutportAttribs[] = \n";
+    fileStream << "{\n";
+    for(int i=0; i<outputs.size(); ++i)
+    {
+        QString tempString = outputs.at(i);
+        tempString.remove(" ");
+        fileStream << "    { \""+tempString+"\", 1, 1},\n";
+    }
+    fileStream << "};\n";
+    fileStream << "\n";
+    fileStream << "const char * const ModelName = \"HopsanRT\";\n";
+    fileStream << "const char * const build = \"5.0.1 SIT Custom DLL\";\n";
+    fileStream << "\n";
+    fileStream << "const double baserate = .001;\n";
+    fileStream << "\n";
+    fileStream << "long USER_Initialize() \n";
+    fileStream << "{\n";
+    fileStream << "    createSystem(1e-3);\n\n";
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+        fileStream << "    addComponent(\"" << it.value()->getName() << "\", \"" << it.value()->getTypeName() << "\");\n";
+    fileStream << "    \n";
+    for(int i = 0; i != mSubConnectorList.size(); ++i)
+        fileStream <<    "    connect(\"" << mSubConnectorList[i]->getStartComponentName() << "\", \"" << mSubConnectorList[i]->getStartPortName() <<
+                      "\", \"" << mSubConnectorList[i]->getEndComponentName() << "\", \"" << mSubConnectorList[i]->getEndPortName() << "\");\n";
+    fileStream << "    \n";
+    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+        for(int i=0; i<it.value()->getParameterNames().size(); ++i)
+            fileStream << "    setParameter(\"" << it.value()->getName() << "\", \"" << it.value()->getParameterNames().at(i) <<  "\", " << it.value()->getParameterValue(it.value()->getParameterNames().at(i)) << ");\n";
+    fileStream << "    \n";
+    fileStream << "    initSystem();\n";
+    fileStream << "    rtSignal.Time = 0;\n";
+    fileStream << "\n";
+    fileStream << "    return NI_OK;\n";
+    fileStream << "}\n";
+    fileStream << "\n";
+    fileStream << "void USER_TakeOneStep(double *inData, double *outData, double timestamp)\n";
+    fileStream << "{\n";
+    fileStream << "    rtSignal.Time += 0.001;\n";
+    fileStream << "    if (inData)\n";
+    fileStream << "    {\n";
+    for(int i=0; i<inputs.size(); ++i)
+    {
+        QString tempString = inputs.at(i);
+        tempString.remove(" ");
+        fileStream << "        rtInport."+tempString+" = inData["+QString().setNum(i)+"];\n";
+    }
+    fileStream << "    }\n";
+    fileStream << "    \n";
+    for(int i=0; i<inputs.size(); ++i)
+    {
+        QString tempString = inputs.at(i);
+        tempString.remove(" ");
+        fileStream << "    writeNodeData(\""+inputs.at(i)+"\", \"out\", 0, rtInport."+tempString+");\n";
+    }
+    fileStream << "    simulateOneTimestep(rtSignal.Time);\n";
+    for(int i=0; i<outputs.size(); ++i)
+    {
+        QString tempString = outputs.at(i);
+        tempString.remove(" ");
+        fileStream << "    rtOutport."+tempString+" = readNodeData(\""+outputs.at(i)+"\", \"in\", 0);\n";
+    }
+    fileStream << "    \n";
+    fileStream << "    if (outData)\n";
+    fileStream << "    {\n";
+    for(int i=0; i<outputs.size(); ++i)
+    {
+        QString tempString = outputs.at(i);
+        tempString.remove(" ");
+        fileStream << "        outData["+QString().setNum(i)+"] = rtOutport."+tempString+";\n";
+    }
+    fileStream << "    }\n";
+    fileStream << "}\n";
+    fileStream << "\n";
+    fileStream << "long USER_Finalize()\n";
+    fileStream << "{\n";
+    fileStream << "    return NI_OK;\n";
+    fileStream << "}\n";
 
     file.close();
 }

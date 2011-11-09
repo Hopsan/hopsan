@@ -186,6 +186,7 @@
 #include "Mechanic/MechanicThetaSource.hpp"
 #include "Mechanic/MechanicVehicle1D.hpp"
 #include "Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp"
+#include "Mechanic/MechanicFixedPosition.hpp"
 
 /* Electric Components */
 #include "Electric/ElectricBattery.hpp"

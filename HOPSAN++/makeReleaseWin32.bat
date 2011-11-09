@@ -22,24 +22,21 @@
 
 :: Define search path variables
 set tempDir=c:\temp_release
-set innoDir="c:\Program Files (x86)\Inno Setup 5"
-set scriptPath="C:\Users\Robert\Documents\Subversion\robbr48\Projekt\Hopsan NG\Release-kompileringar"
+set innoDir="C:\Program Files\Inno Setup 5
 set scriptFile="Hopsan_0.4_update.iss"
-set scriptOutput="output\setup6.exe"
 
 :: Create a temporary release directory
 mkdir %tempDir%
 mkdir %tempDir%\Models
-mkDir release_output
+mkDir output
 
 :: Copy "bin" folder to temporary directory
-xcopy bin %tempDir%\bin\ /s
+svn export bin %tempDir%\bin\ /s
+
+pause
 
 :: Copy "binVC" folder to temporary directory
-xcopy binVC %tempDir%\binVC\ /s
-
-:: Copy "hopsandefaults" file to temporary directory
-copy hopsandefaults %tempDir%\hopsandefaults
+svn export binVC %tempDir%\binVC\ /s
 
 :: Export "HopsanCore" SVN directory to "include" in temporary directory
 svn export HopsanCore %tempDir%\include
@@ -56,18 +53,20 @@ svn export HopsanGUI\componentData %tempDir%\componentdata
 :: Export "help" SVN directory to temporary directory
 svn export docs/help %tempDir%\help
 
+:: Copy "hopsandefaults" file to temporary directory
+copy hopsandefaults %tempDir%\hopsandefaults
+
 :: Create zip package
 ThirdParty\7z\7z.exe a -tzip release.zip %tempDir%\*
-move release.zip release_output/
+move release.zip output/
 
 pause
 
 :: Execute Inno compile script
-%innoDir%\Compil32.exe /cc %scriptPath%\%scriptFile%
-move %scriptPath%\%scriptOutput% release_output/ 
+%innoDir%\Compil32.exe /cc %scriptFile%
 
 :: Move release notse to output directory
-copy Hopsan-release-notes.txt release_output/
+copy Hopsan-release-notes.txt output/
 
 :: Remove temporary directory
 rd /s/q %tempDir%

@@ -762,10 +762,10 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->replot();
     getCurrentPlotTab()->getPlot(SECONDPLOT)->replot();
 
-
     //getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+
 
     getCurrentPlotTab()->rescaleToCurves();
 
@@ -1161,6 +1161,8 @@ PlotTab::PlotTab(PlotWindow *parent)
     mHasSpecialXAxis=false;
     mVectorXLabel = QString("Time [s]");
     mLeftAxisLogarithmic = false;
+    mRightAxisLogarithmic = false;
+    mBottomAxisLogarithmic = false;
     mIsSpecialPlot = false;
 
         //Initiate default values for left y-axis

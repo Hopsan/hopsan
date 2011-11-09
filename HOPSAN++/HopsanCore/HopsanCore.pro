@@ -298,8 +298,10 @@ HEADERS += win32dll.h \
     Components/Signal/SignalSin.hpp \
     Components/Signal/SignalCos.hpp \
     Components/DummyComponent.hpp \
-    Components/Hydraulic/HydraulicPressureReliefValveWithInputSignal.hpp
+    Components/Hydraulic/HydraulicPressureReliefValveWithInputSignal.hpp \
+    Components/Mechanic/MechanicFixedPosition.hpp
 
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
+

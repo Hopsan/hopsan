@@ -275,6 +275,7 @@ private:
 
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
+    bool mBottomAxisLogarithmic;
 
     QRubberBand *mpHoverRect;
 
