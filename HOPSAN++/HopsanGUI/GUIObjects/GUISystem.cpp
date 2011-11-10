@@ -577,6 +577,8 @@ void GUISystem::saveToWrappedCode()
     //Create lists for input and output interface components
     QStringList inputs;
     QStringList outputs;
+    QStringList mechCinterfaces;
+    QStringList mechQinterfaces;
     GUIModelObjectMapT::iterator it;
     for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
     {
@@ -588,7 +590,17 @@ void GUISystem::saveToWrappedCode()
         {
             outputs.append(it.value()->getName());
         }
+        else if(it.value()->getTypeName() == "MechanicInterfaceC")
+        {
+            mechCinterfaces.append(it.value()->getName());
+        }
+        else if(it.value()->getTypeName() == "MechanicInterfaceQ")
+        {
+            mechQinterfaces.append(it.value()->getName());
+        }
     }
+
+
 
         //Write initial comment
     fileStream << "// Code from exported Hopsan model. This can be used in conjunction with HopsanCore by using HopsanWrapper. Subsystems probably don't work.\n\n";
@@ -615,6 +627,22 @@ void GUISystem::saveToWrappedCode()
         tempString.remove(" ");
         fileStream << "    double "+tempString+";\n";
     }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    double "+tempString+"C;\n";
+        fileStream << "    double "+tempString+"Zc;\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    double "+tempString+"F;\n";
+        fileStream << "    double "+tempString+"X;\n";
+        fileStream << "    double "+tempString+"V;\n";
+        fileStream << "    double "+tempString+"M;\n";
+    }
     fileStream << "} Inports;\n";
     fileStream << "\n";
     fileStream << "typedef struct\n";
@@ -624,6 +652,22 @@ void GUISystem::saveToWrappedCode()
         QString tempString = outputs.at(i);
         tempString.remove(" ");
         fileStream << "    double "+tempString+";\n";
+    }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    double "+tempString+"F;\n";
+        fileStream << "    double "+tempString+"X;\n";
+        fileStream << "    double "+tempString+"V;\n";
+        fileStream << "    double "+tempString+"M;\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    double "+tempString+"C;\n";
+        fileStream << "    double "+tempString+"Zc;\n";
     }
     fileStream << "} Outports;\n";
     fileStream << "\n";
@@ -671,7 +715,7 @@ void GUISystem::saveToWrappedCode()
     fileStream << "    { \"HopsanRT/Time\", 0, \"Time\", &rtSignal.Time, rtDBL, 1, 1}\n";
     fileStream << "};\n";
     fileStream << "\n";
-    fileStream << "const long InportSize = "+QString().setNum(inputs.size())+";\n";
+    fileStream << "const long InportSize = "+QString().setNum(inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+";\n";
     fileStream << "const ExtIOAttributes rtInportAttribs[] = \n";
     fileStream << "{\n";
     for(int i=0; i<inputs.size(); ++i)
@@ -680,9 +724,25 @@ void GUISystem::saveToWrappedCode()
         tempString.remove(" ");
         fileStream << "    { \""+tempString+"\", 1, 1},\n";
     }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    { \""+tempString+"C\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"Zc\", 1, 1},\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    { \""+tempString+"F\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"X\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"V\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"M\", 1, 1},\n";
+    }
     fileStream << "};\n";
     fileStream << "\n";
-    fileStream << "const long OutportSize = "+QString().setNum(outputs.size())+";\n";
+    fileStream << "const long OutportSize = "+QString().setNum(outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+";\n";
     fileStream << "const ExtIOAttributes rtOutportAttribs[] = \n";
     fileStream << "{\n";
     for(int i=0; i<outputs.size(); ++i)
@@ -690,6 +750,22 @@ void GUISystem::saveToWrappedCode()
         QString tempString = outputs.at(i);
         tempString.remove(" ");
         fileStream << "    { \""+tempString+"\", 1, 1},\n";
+    }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    { \""+tempString+"F\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"X\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"V\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"M\", 1, 1},\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    { \""+tempString+"C\", 1, 1},\n";
+        fileStream << "    { \""+tempString+"Zc\", 1, 1},\n";
     }
     fileStream << "};\n";
     fileStream << "\n";
@@ -729,6 +805,22 @@ void GUISystem::saveToWrappedCode()
         tempString.remove(" ");
         fileStream << "        rtInport."+tempString+" = inData["+QString().setNum(i)+"];\n";
     }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "        rtInport."+tempString+"C = inData["+QString().setNum(2*i+inputs.size())+"];\n";
+        fileStream << "        rtInport."+tempString+"Zc = inData["+QString().setNum(2*i+1+inputs.size())+"];\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "        rtInport."+tempString+"F = inData["+QString().setNum(4*i+inputs.size()+2*mechCinterfaces.size())+"];\n";
+        fileStream << "        rtInport."+tempString+"X = inData["+QString().setNum(4*i+1+inputs.size()+2*mechCinterfaces.size())+"];\n";
+        fileStream << "        rtInport."+tempString+"V = inData["+QString().setNum(4*i+2+inputs.size()+2*mechCinterfaces.size())+"];\n";
+        fileStream << "        rtInport."+tempString+"M = inData["+QString().setNum(4*i+3+inputs.size()+2*mechCinterfaces.size())+"];\n";
+    }
     fileStream << "    }\n";
     fileStream << "    \n";
     for(int i=0; i<inputs.size(); ++i)
@@ -737,12 +829,44 @@ void GUISystem::saveToWrappedCode()
         tempString.remove(" ");
         fileStream << "    writeNodeData(\""+inputs.at(i)+"\", \"out\", 0, rtInport."+tempString+");\n";
     }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 3, rtInport."+tempString+"C);\n";
+        fileStream << "    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 4, rtInport."+tempString+"Zc);\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 1, rtInport."+tempString+"F);\n";
+        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 2, rtInport."+tempString+"X);\n";
+        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 0, rtInport."+tempString+"V);\n";
+        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 5, rtInport."+tempString+"M);\n";
+    }
     fileStream << "    simulateOneTimestep(rtSignal.Time);\n";
     for(int i=0; i<outputs.size(); ++i)
     {
         QString tempString = outputs.at(i);
         tempString.remove(" ");
         fileStream << "    rtOutport."+tempString+" = readNodeData(\""+outputs.at(i)+"\", \"in\", 0);\n";
+    }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    rtOutport."+tempString+"F = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 1);\n";
+        fileStream << "    rtOutport."+tempString+"X = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 2);\n";
+        fileStream << "    rtOutport."+tempString+"V = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 0);\n";
+        fileStream << "    rtOutport."+tempString+"M = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 5);\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "    rtOutport."+tempString+"C = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 3);\n";
+        fileStream << "    rtOutport."+tempString+"Zc = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 4);\n";
     }
     fileStream << "    \n";
     fileStream << "    if (outData)\n";
@@ -752,6 +876,22 @@ void GUISystem::saveToWrappedCode()
         QString tempString = outputs.at(i);
         tempString.remove(" ");
         fileStream << "        outData["+QString().setNum(i)+"] = rtOutport."+tempString+";\n";
+    }
+    for(int i=0; i<mechCinterfaces.size(); ++i)
+    {
+        QString tempString = mechCinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "        outData["+QString().setNum(4*i+outputs.size())+"] = rtOutport."+tempString+"F;\n";
+        fileStream << "        outData["+QString().setNum(4*i+1+outputs.size())+"] = rtOutport."+tempString+"X;\n";
+        fileStream << "        outData["+QString().setNum(4*i+2+outputs.size())+"] = rtOutport."+tempString+"V;\n";
+        fileStream << "        outData["+QString().setNum(4*i+3+outputs.size())+"] = rtOutport."+tempString+"M;\n";
+    }
+    for(int i=0; i<mechQinterfaces.size(); ++i)
+    {
+        QString tempString = mechQinterfaces.at(i);
+        tempString.remove(" ");
+        fileStream << "        outData["+QString().setNum(2*i+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"C;\n";
+        fileStream << "        outData["+QString().setNum(2*i+1+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n";
     }
     fileStream << "    }\n";
     fileStream << "}\n";

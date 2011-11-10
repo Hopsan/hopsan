@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicInterfaceQ" displayname="Hydraulic Interface of Q-type">
+        <icon isopath="hydinterfaceq.svg" iconrotation="ON" userpath="hydinterfaceq.svg"/>
+        <portpose x="0.0" y="0.5" a="0" name="P1"/>
+    </modelobject>
+</hopsanobjectappearance>

@@ -86,6 +86,8 @@
 #include "Hydraulic/HydraulicPilotControlledCheckValve.hpp"
 #include "Hydraulic/HydraulicPilotClosableCheckValve.hpp"
 #include "Hydraulic/HydraulicOverCenterValve.hpp"
+#include "Hydraulic/HydraulicInterfaceC.hpp"
+#include "Hydraulic/HydraulicInterfaceQ.hpp"
 
 //#include "Hydraulic/HydraulicPressureReliefValveTolerance.hpp"
 //#include "Hydraulic/HydraulicCylinderCTolerance.hpp"

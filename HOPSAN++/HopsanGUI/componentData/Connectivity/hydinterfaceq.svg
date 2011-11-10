@@ -7,7 +7,6 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
@@ -24,7 +23,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -42,7 +41,7 @@
      id="namedview11"
      showgrid="false"
      inkscape:zoom="8"
-     inkscape:cx="-6.158642"
+     inkscape:cx="13.341358"
      inkscape:cy="10.736703"
      inkscape:window-x="336"
      inkscape:window-y="76"
@@ -50,17 +49,6 @@
      inkscape:current-layer="svg3336" />
   <defs
      id="defs3338">
-    <linearGradient
-       id="linearGradient3760">
-      <stop
-         style="stop-color:#636363;stop-opacity:1;"
-         offset="0"
-         id="stop3762" />
-      <stop
-         style="stop-color:#ffffff;stop-opacity:1;"
-         offset="1"
-         id="stop3764" />
-    </linearGradient>
     <marker
        refX="0"
        refY="0"
@@ -73,26 +61,14 @@
          id="path8118"
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none" />
     </marker>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3760"
-       id="linearGradient3766"
-       x1="-19.779419"
-       y1="16.351063"
-       x2="-15.275727"
-       y2="-5.3510656"
-       gradientUnits="userSpaceOnUse" />
   </defs>
-  <path
-     sodipodi:type="arc"
-     style="fill:url(#linearGradient3766);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.91913330999999998;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-     id="path3801"
-     sodipodi:cx="-17.5"
-     sodipodi:cy="5.4999981"
-     sodipodi:rx="1.875"
-     sodipodi:ry="10"
-     d="m -15.625,5.4999981 a 1.875,10 0 1 1 -3.75,0 1.875,10 0 1 1 3.75,0 z"
-     transform="matrix(2.2666667,0,0,1.175,44.666667,6.0375003)" />
+  <rect
+     style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.49999988000000010;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+     id="rect3760"
+     width="8.5"
+     height="23.5"
+     x="0.74999994"
+     y="0.74999809" />
   <path
      style="fill:#006600;fill-opacity:1;stroke:#006600;stroke-width:1.49999988000000010;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
      d="m 5.6874981,17.285381 8.9812029,0 0,-3.166667 8.738467,4.75 -8.738467,4.75 0,-3.166667 -8.9812029,0 z"
@@ -105,4 +81,13 @@
      id="path2984-7"
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="cccccccc" />
+  <path
+     sodipodi:type="arc"
+     style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:10;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+     id="path3801"
+     sodipodi:cx="-17.5"
+     sodipodi:cy="5.4999981"
+     sodipodi:rx="1.875"
+     sodipodi:ry="10"
+     d="m -15.625,5.4999981 a 1.875,10 0 1 1 -3.75,0 1.875,10 0 1 1 3.75,0 z" />
 </svg>
