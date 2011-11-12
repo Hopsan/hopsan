@@ -38,6 +38,9 @@ class HelpDialog : public QDialog
 public:
     HelpDialog(MainWindow *parent = 0);
 
+protected:
+    void open();
+
 private:
     QWebView *mpHelp;
     QPushButton *mpOkButton;

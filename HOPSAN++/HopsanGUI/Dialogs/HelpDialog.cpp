@@ -48,8 +48,6 @@ HelpDialog::HelpDialog(MainWindow *parent)
     this->setWindowTitle("Hopsan User Guide");
 
     mpHelp = new QWebView(this);
-    qDebug() << gExecPath << QString(HELPPATH) << "hopsan-user.html";
-    mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "hopsan-user.html"));
 
     mpOkButton = new QPushButton(tr("&Close"));
     mpOkButton->setDefault(true);
@@ -60,4 +58,13 @@ HelpDialog::HelpDialog(MainWindow *parent)
     mpLayout->setSizeConstraint(QLayout::SetFixedSize);
     mpLayout->addWidget(mpHelp, 0, 0);
     setLayout(mpLayout);
+}
+
+
+void HelpDialog::open()
+{
+    qDebug() << gExecPath << QString(HELPPATH) << "hopsan-user.html";
+    mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "hopsan-user.html"));
+
+    QDialog::open();
 }

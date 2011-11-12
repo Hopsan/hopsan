@@ -110,14 +110,15 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpActionText->setAlignment(Qt::AlignCenter);
 
     mpRecentList = new QListWidget(this);
-    mpRecentList->setVisible(!gConfig.getRecentModels().empty());
+    QStringList recentModels = gConfig.getRecentModels();
+    mpRecentList->setVisible(!recentModels.empty());
 
-    for(int i=0; i<gConfig.getRecentModels().size(); ++i)
+    for(int i=0; i<recentModels.size(); ++i)
     {
-        if(!gConfig.getRecentModels().at(i).isEmpty())
+        if(!recentModels.at(i).isEmpty())
         {
-            mModelList.append(gConfig.getRecentModels().at(i));
-            QString displayName = gConfig.getRecentModels().at(i);
+            mModelList.append(recentModels.at(i));
+            QString displayName = recentModels.at(i);
             mpRecentList->addItem(displayName.section('/', -1));
         }
     }

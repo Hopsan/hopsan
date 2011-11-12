@@ -238,6 +238,9 @@ MainWindow::~MainWindow()
 //! All startup events that does not involve creating the main window and its widgets/dialogs belongs here.
 void MainWindow::initializeWorkspace()
 {
+    QTime time;
+    time.start();
+
     // Load HopsanGui built in secret components
     //! @todo this is handled kind of ugly, but OK for now
     QString componentPath = OBJECTICONPATH;

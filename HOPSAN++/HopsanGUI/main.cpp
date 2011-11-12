@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     //Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     QSplashScreen splash(pixmap);
+    splash.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::SplashScreen);
     splash.show();
 
     //Create the mainwindow
@@ -60,8 +61,8 @@ int main(int argc, char *argv[])
 
     //Show splash screen, show main window and initialize workspace
     QTimer::singleShot(1000, &splash, SLOT(close()));
-    QTimer::singleShot(400, &mainwindow, SLOT(show()));
-    QTimer::singleShot(500, &mainwindow, SLOT(initializeWorkspace()));
+    QTimer::singleShot(0, &mainwindow, SLOT(show()));
+    QTimer::singleShot(0, &mainwindow, SLOT(initializeWorkspace()));
 
     return a.exec();
 }

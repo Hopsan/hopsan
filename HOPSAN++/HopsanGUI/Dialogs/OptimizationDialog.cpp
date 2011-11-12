@@ -45,9 +45,6 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     this->setWindowTitle("Optimization");
     this->setPalette(gConfig.getPalette());
 
-    //Load the objective functions
-    loadObjectiveFunctions();
-
     //Settings tab
     mpSettingsLabel = new QLabel("Please choose general settings for optimization algorithm.");
     QFont boldFont = mpSettingsLabel->font();
@@ -147,7 +144,6 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpMinMaxComboBox = new QComboBox(this);
     mpMinMaxComboBox->addItems(QStringList() << "Minimize" << "Maximize");
     mpFunctionsComboBox = new QComboBox(this);
-    mpFunctionsComboBox->addItems(mObjectiveFunctionDescriptions);
     mpAddFunctionButton = new QPushButton("Add Function");
     mpWeightLabel = new QLabel("Weight");
     mpNormLabel = new QLabel("Norm. Factor");
@@ -238,6 +234,8 @@ void OptimizationDialog::open()
     if(!loadObjectiveFunctions())
         return;
 
+    mpFunctionsComboBox->addItems(mObjectiveFunctionDescriptions);
+
     mpParametersList->clear();
     GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     QStringList componentNames = pSystem->getGUIModelObjectNames();
@@ -303,9 +301,10 @@ void OptimizationDialog::generateScriptFile()
         return;
     }
 
-    if(mFunctionVariables.isEmpty())
+    if(mSelectedFunctions.isEmpty())
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("No objective functions specified for optimization.");
+        return;
     }
 
     QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
@@ -702,10 +701,11 @@ void OptimizationDialog::updateOutputBox()
 void OptimizationDialog::run()
 {
     QString dateString = QDateTime::currentDateTime().toString();
+    qDebug() << "dateString = " << dateString.toUtf8();
     dateString.replace(":", "_");
     dateString.replace(".", "_");
     dateString.replace(" ", "_");
-    QString pyPath = gExecPath+QString(SCRIPTPATH)+"OptimizationScript_"+dateString+".py";
+    QString pyPath = gExecPath+QString(SCRIPTPATH)+"OptimizationScript_"+dateString.toUtf8()+".py";
     QFile pyFile(pyPath);
     if (!pyFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
