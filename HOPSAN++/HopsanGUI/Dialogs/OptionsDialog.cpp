@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -96,7 +96,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpSnappingCheckBox = new QCheckBox(tr("Auto Snap Components"));
     mpSnappingCheckBox->setCheckable(true);
 
-    mpInterfaceGroupBox = new QGroupBox(tr("Interface"));
+    mpInterfaceWidget = new QWidget(this);
     mpInterfaceLayout = new QGridLayout;
     mpInterfaceLayout->addWidget(mpNativeStyleSheetCheckBox,    0, 0);
     mpInterfaceLayout->addWidget(mpShowWelcomeDialogCheckBox,   1, 0);
@@ -105,8 +105,10 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        4, 0);
     mpInterfaceLayout->addWidget(mpSnappingCheckBox,            5, 0);
     mpInterfaceLayout->addWidget(mpBackgroundColorLabel,        6, 0);
-    mpInterfaceLayout->addWidget(mpBackgroundColorButton,       7, 1);
-    mpInterfaceGroupBox->setLayout(mpInterfaceLayout);
+    mpInterfaceLayout->addWidget(mpBackgroundColorButton,       6, 1);
+    mpInterfaceLayout->addWidget(new QWidget(),                 7, 0, 1, 2);
+    mpInterfaceLayout->setRowStretch(7,1);
+    mpInterfaceWidget->setLayout(mpInterfaceLayout);
 
         //Simulation Options
     mpEnableProgressBarCheckBox = new QCheckBox(tr("Enable Simulation Progress Bar"));
@@ -135,7 +137,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     //palette.setColor(mpThreadsWarningLabel->foregroundRole(), Qt::darkRed);
     //mpThreadsWarningLabel->setPalette(palette);
 
-    mpSimulationGroupBox = new QGroupBox(tr("Simulation"));
+    mpSimulationWidget = new QWidget(this);
     mpSimulationLayout = new QGridLayout;
     mpSimulationLayout->addWidget(mpEnableProgressBarCheckBox, 0, 0);
     mpSimulationLayout->addWidget(mpProgressBarLabel, 1, 0);
@@ -143,11 +145,12 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpSimulationLayout->addWidget(mpUseMulticoreCheckBox, 2, 0, 1, 2);
     mpSimulationLayout->addWidget(mpThreadsLabel, 3, 0);
     mpSimulationLayout->addWidget(mpThreadsSpinBox, 3, 1);
+    mpSimulationLayout->addWidget(new QWidget(), 4, 0, 1, 2);
+    mpSimulationLayout->setRowStretch(4, 1);
     //mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
-    mpSimulationGroupBox->setLayout(mpSimulationLayout);
+    mpSimulationWidget->setLayout(mpSimulationLayout);
 
     mpGenerationLimitLabel = new QLabel(tr("Limit number of plot generations to"));
-    mpGenerationLimitLabel->setEnabled(gConfig.getEnableProgressBar());
     mpGenerationLimitSpinBox = new QSpinBox();
     mpGenerationLimitSpinBox->setMinimum(1);
     mpGenerationLimitSpinBox->setMaximum(5000000);
@@ -182,10 +185,10 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpAddAngleUnitButton = new QPushButton("Add Custom Angle Unit", this);
     mpAddAngularVelocityUnitButton = new QPushButton("Add Custom Angular Velocity Unit", this);
 
-    mpPlottingGroupBox = new QGroupBox(tr("Plotting"));
+    mpPlottingWidget = new QWidget(this);
     mpPlottingLayout = new QGridLayout;
-    mpPlottingLayout->addWidget(mpGenerationLimitLabel,             0, 0, 1, 2);
-    mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,           0, 1, 1, 2);
+    mpPlottingLayout->addWidget(mpGenerationLimitLabel,             0, 0, 1, 3);
+    mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,           0, 2, 1, 1);
     mpPlottingLayout->addWidget(mpValueUnitLabel,                   1, 0);
     mpPlottingLayout->addWidget(mpValueUnitComboBox,                1, 1);
     mpPlottingLayout->addWidget(mpAddValueUnitButton,               1, 2);
@@ -213,7 +216,9 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpPlottingLayout->addWidget(mpAngularVelocityUnitLabel,         9, 0);
     mpPlottingLayout->addWidget(mpAngularVelocityUnitComboBox,      9, 1);
     mpPlottingLayout->addWidget(mpAddAngularVelocityUnitButton,     9, 2);
-    mpPlottingGroupBox->setLayout(mpPlottingLayout);
+    mpPlottingLayout->addWidget(new QWidget(),                      10, 0, 1, 3);
+    mpPlottingLayout->setRowStretch(10, 1);
+    mpPlottingWidget->setLayout(mpPlottingLayout);
 
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpCancelButton->setAutoDefault(false);
@@ -243,12 +248,18 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsLabel,         SLOT(setEnabled(bool)));
     connect(mpUseMulticoreCheckBox,         SIGNAL(toggled(bool)),  mpThreadsSpinBox,       SLOT(setEnabled(bool)));
 
+    QTabWidget *pTabWidget = new QTabWidget(this);
+    pTabWidget->addTab(mpInterfaceWidget, "Interface");
+    pTabWidget->addTab(mpSimulationWidget, "Simlation");
+    pTabWidget->addTab(mpPlottingWidget, "Plotting");
+
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
-    pLayout->addWidget(mpInterfaceGroupBox);
-    pLayout->addWidget(mpSimulationGroupBox);
-    pLayout->addWidget(mpPlottingGroupBox);
-    pLayout->addWidget(mpButtonBox, 4, 0);
+    pLayout->addWidget(pTabWidget, 0, 0);
+//    pLayout->addWidget(mpInterfaceGroupBox);
+//    pLayout->addWidget(mpSimulationGroupBox);
+//    pLayout->addWidget(mpPlottingGroupBox);
+    pLayout->addWidget(mpButtonBox, 1, 0);
     setLayout(pLayout);
 }
 
@@ -375,6 +386,7 @@ void OptionsDialog::show()
     mpUseMulticoreCheckBox->setChecked(gConfig.getUseMulticore());
     mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
     mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
+    mpGenerationLimitSpinBox->setValue(gConfig.getGenerationLimit());
     updateCustomUnits();
 
     QDialog::show();

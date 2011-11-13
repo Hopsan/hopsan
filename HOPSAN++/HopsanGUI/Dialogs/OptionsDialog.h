@@ -79,7 +79,7 @@ private:
     QCheckBox *mpSnappingCheckBox;
     QLabel *mpBackgroundColorLabel;
     QToolButton *mpBackgroundColorButton;
-    QGroupBox *mpInterfaceGroupBox;
+    QWidget *mpInterfaceWidget;
     QGridLayout *mpInterfaceLayout;
 
     QCheckBox *mpUseMulticoreCheckBox;
@@ -89,7 +89,7 @@ private:
     QLabel *mpThreadsWarningLabel;
     QLabel *mpProgressBarLabel;
     QSpinBox *mpProgressBarSpinBox;
-    QGroupBox *mpSimulationGroupBox;
+    QWidget *mpSimulationWidget;
     QGridLayout *mpSimulationLayout;
 
     QLabel *mpGenerationLimitLabel;
@@ -121,7 +121,7 @@ private:
     QLabel *mpAngularVelocityUnitLabel;
     QComboBox *mpAngularVelocityUnitComboBox;
     QPushButton *mpAddAngularVelocityUnitButton;
-    QGroupBox *mpPlottingGroupBox;
+    QWidget *mpPlottingWidget;
     QGridLayout *mpPlottingLayout;
 
     QPushButton *mpCancelButton;

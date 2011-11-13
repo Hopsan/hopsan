@@ -63,7 +63,7 @@ HelpDialog::HelpDialog(MainWindow *parent)
 
 void HelpDialog::open()
 {
-    qDebug() << gExecPath << QString(HELPPATH) << "hopsan-user.html";
+    qDebug() << gExecPath + QString(HELPPATH) + "hopsan-user.html";
     mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "hopsan-user.html"));
 
     QDialog::open();

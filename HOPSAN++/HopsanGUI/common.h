@@ -57,7 +57,7 @@
 #define SCRIPTPATH "../Scripts/"
 #define BACKUPPATH "../Backup/"
 #define COMPONENTPATH "../HopsanGUI/componentData/"
-#define HELPPATH "../HopsanGUI/docs/html/"
+#define HELPPATH "../docs/help/"
 #define INCLUDEPATH "../HopsanCore/"
 #else
 #define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"

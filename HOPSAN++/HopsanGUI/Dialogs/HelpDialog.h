@@ -38,7 +38,7 @@ class HelpDialog : public QDialog
 public:
     HelpDialog(MainWindow *parent = 0);
 
-protected:
+public slots:
     void open();
 
 private:

@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
     //Show splash screen, show main window and initialize workspace
     QTimer::singleShot(1000, &splash, SLOT(close()));
-    QTimer::singleShot(0, &mainwindow, SLOT(show()));
+    QTimer::singleShot(50, &mainwindow, SLOT(show()));
     QTimer::singleShot(0, &mainwindow, SLOT(initializeWorkspace()));
 
     return a.exec();

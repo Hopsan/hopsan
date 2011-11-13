@@ -60,6 +60,7 @@ CopyStack gCopyStack;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    this->hide();
     gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
                                 //! @note This is however not possible, because the gpMainWindow pointer is needed by the MainWindow constructor code.
 
@@ -121,12 +122,17 @@ MainWindow::MainWindow(QWidget *parent)
     mpPyDockWidget->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 
+    QTime time;
+    time.start();
+
     //Create the component library widget and its dock
     mpLibDock = new QDockWidget(tr("Component Library"), this);
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
     mpLibDock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
+
+    qDebug() << "Time for creating library: " << time.elapsed();
 
     //Create the statusbar widget
     mpStatusBar = new QStatusBar();
@@ -238,9 +244,6 @@ MainWindow::~MainWindow()
 //! All startup events that does not involve creating the main window and its widgets/dialogs belongs here.
 void MainWindow::initializeWorkspace()
 {
-    QTime time;
-    time.start();
-
     // Load HopsanGui built in secret components
     //! @todo this is handled kind of ugly, but OK for now
     QString componentPath = OBJECTICONPATH;
@@ -258,6 +261,7 @@ void MainWindow::initializeWorkspace()
 
     // Create the plot widget, only once! :)
     mpPlotWidget = new PlotTreeWidget(this);
+    mpPlotWidget->hide();
 
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
