@@ -480,12 +480,12 @@ void ParameterLayout::pickColor()
             palette.setColor( QPalette::Text, QColor("gray") );
             mDataValuesLineEdit.setPalette(palette);
         }
-    }
-    else
-    {
-        QPalette palette( mDataValuesLineEdit.palette() );
-        palette.setColor( QPalette::Text, QColor("black") );
-        mDataValuesLineEdit.setPalette(palette);
+        else
+        {
+            QPalette palette( mDataValuesLineEdit.palette() );
+            palette.setColor( QPalette::Text, QColor("black") );
+            mDataValuesLineEdit.setPalette(palette);
+        }
     }
 }
 
