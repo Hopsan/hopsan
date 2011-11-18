@@ -139,7 +139,16 @@ void UndoStack::undoOneStep()
         if(stuffElement.attribute("what") == "deletedobject")
         {
             QDomElement componentElement = stuffElement.firstChildElement(HMF_COMPONENTTAG);
-            loadGUIModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
+            GUIModelObject* pObj = loadGUIModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
+
+            //Load parameter values
+            QDomElement xmlParameters = componentElement.firstChildElement(HMF_PARAMETERS);
+            QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+            while (!xmlParameter.isNull())
+            {
+                loadParameterValue(xmlParameter, pObj, NOUNDO);
+                xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+            }
         }
         else if(stuffElement.attribute("what") == "deletedcontainerport")
         {
@@ -845,6 +854,8 @@ void UndoStack::registerDeletedObject(GUIModelObject *item)
     }
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
+
+    qDebug() << mDomDocument.toString();
 }
 
 
