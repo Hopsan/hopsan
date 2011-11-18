@@ -366,6 +366,7 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
 
     mDescriptionNameLabel.setMinimumWidth(30);
     mDescriptionNameLabel.setMaximumWidth(200);
+    mDescriptionNameLabel.setWordWrap(true);
     mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     mDataNameLabel.setMinimumWidth(10);
     mDataNameLabel.setMaximumWidth(100);

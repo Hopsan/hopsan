@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hopsanobjectappearance version="0.1">
+  <modelobject typename="MechanicFreeLengthWall" displayname="Fixed Stop With Free Length">
+    <icon isopath="freelengthwall_iso.svg" iconrotation="ON" userpath="freelengthwall_user.svg"/>
+    <portpose x="0" y="0.5" a="0" name="Pm1"/>
+  </modelobject>
+</hopsanobjectappearance>

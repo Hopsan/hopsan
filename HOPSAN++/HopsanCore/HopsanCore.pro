@@ -301,10 +301,14 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicPressureReliefValveWithInputSignal.hpp \
     Components/Mechanic/MechanicFixedPosition.hpp \
     Components/Hydraulic/HydraulicInterfaceQ.hpp \
-    Components/Hydraulic/HydraulicInterfaceC.hpp
+    Components/Hydraulic/HydraulicInterfaceC.hpp \
+    Components/Mechanic/MechanicFreeLengthWall.hpp
 
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
+
+
+
 
 
