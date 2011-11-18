@@ -845,10 +845,10 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
         groupAction = rMenu.addAction(tr("Group components"));
 
     QAction *showNameAction = rMenu.addAction(tr("Show name"));
-    QAction *rotateRightAction = rMenu.addAction(tr("Rotate Clockwise"));
-    QAction *rotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise"));
-    QAction *flipVerticalAction = rMenu.addAction(tr("Flip Vertically"));
-    QAction *flipHorizontalAction = rMenu.addAction(tr("Flip Horizontally"));
+    QAction *rotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
+    QAction *rotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
+    QAction *flipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+D)"));
+    QAction *flipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+F)"));
     showNameAction->setCheckable(true);
     showNameAction->setChecked(mpNameText->isVisible());
     rMenu.addSeparator();
