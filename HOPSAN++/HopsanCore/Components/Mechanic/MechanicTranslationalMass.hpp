@@ -123,7 +123,8 @@ namespace hopsan {
                 std::stringstream ss;
                 ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<
                         "} and {" << getName() << "::" << mpP2->getPortName() << "}.";
-                this->addDebugMessage(ss.str());
+                this->addErrorMessage(ss.str());
+                stopSimulation();
             }
         }
 

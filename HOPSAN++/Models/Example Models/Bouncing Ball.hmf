@@ -4,9 +4,9 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499,5" y="2500" zoom="1"/>
+            <viewport x="2511,575077384196" y="2541,183873836563" zoom="2,803220999999999"/>
             <ports hidden="1"/>
-            <names hidden="1"/>
+            <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="Bouncing Ball">
@@ -712,6 +712,105 @@
                         <newpos>2624 2579.5</newpos>
                     </stuff>
                 </post>
+                <post number="102">
+                    <stuff what="addedobject">
+                        <component typename="SignalAbsoluteValue" name="Absolute Value">
+                            <parameters>
+                                <parameter value="0" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2515.00000000000000000000" y="2533" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="103">
+                    <stuff what="addedobject">
+                        <component typename="SignalAdd" name="Add">
+                            <parameters>
+                                <parameter value="0" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2469.00000000000000000000" y="2574" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="104">
+                    <stuff what="deletedobject">
+                        <component typename="SignalAdd" name="Add">
+                            <parameters>
+                                <parameter value="0" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2469.00000000000000000000" y="2574" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="105">
+                    <stuff what="deletedobject">
+                        <component typename="SignalAbsoluteValue" name="Absolute Value">
+                            <parameters>
+                                <parameter value="0" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2515.00000000000000000000" y="2533" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="106">
+                    <stuff what="addedobject">
+                        <component typename="SignalPulse" name="Pulse">
+                            <parameters>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="t_start"/>
+                                <parameter value="2" name="t_end"/>
+                                <parameter value="1" name="y_A"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2499.00000000000000000000" y="2543" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="107">
+                    <stuff what="deletedobject">
+                        <component typename="SignalPulse" name="Pulse">
+                            <parameters>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="t_start"/>
+                                <parameter value="2" name="t_end"/>
+                                <parameter value="1" name="y_A"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2499.00000000000000000000" y="2543" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="108">
+                    <stuff what="addedobject">
+                        <component typename="MechanicForceTransformer" name="Force Source_1">
+                            <parameters>
+                                <parameter value="0" name="P1::Velocity"/>
+                                <parameter value="0" name="P1::Position"/>
+                                <parameter value="0" name="F"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2503.00000000000000000000" y="2541" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="20" timestep="0,0001" start="0"/>
@@ -727,7 +826,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2644.00000000000000000000" y="2514.5" flipped="0" a="90"/>
-                    <nametext position="0" visible="0"/>
+                    <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="MechanicFreeLengthWall" name="Wall with Free Length">
@@ -736,7 +835,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2644.00000000000000000000" y="2599.5" flipped="0" a="90"/>
-                    <nametext position="0" visible="0"/>
+                    <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="MechanicTranslationalSpring" name="Translational Spring">
@@ -751,7 +850,18 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2644.00000000000000000000" y="2563" flipped="1" a="270"/>
-                    <nametext position="0" visible="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Source_1">
+                <parameters>
+                    <parameter value="0" name="P1::Velocity"/>
+                    <parameter value="0" name="P1::Position"/>
+                    <parameter value="0" name="F"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2503.00000000000000000000" y="2541" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="MechanicForceTransformer" name="Force Source">
@@ -762,12 +872,12 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2644.00000000000000000000" y="2463" flipped="0" a="90"/>
-                    <nametext position="0" visible="0"/>
+                    <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2095,743886176881" y="2443,551603035459"/>
+                    <pose x="2096" y="2444"/>
                     <textobject fontcolor="#005500" text="This example model shows the a ball bouncing&#xa;on the ground. The ball is modeled as a force&#xa;acting on a mass and a spring, where the force&#xa;represents the gravity, the mass the inertia and&#xa;the spring the elasticity. Notice that the stiffness&#xa;of the spring is irrelevant for the dynamic&#xa;behvaiour of the system, as long as it is large&#xa;enough to avoid numerical problems. Time step&#xa;must be small in order for the short contact&#xa;phase to be numerically correct." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                     <size width="325" height="208"/>
                     <line width="2" visible="1" style="solidline"/>
@@ -775,7 +885,7 @@
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2359,25" y="2314,5"/>
+                    <pose x="2359" y="2315"/>
                     <textobject fontcolor="#005500" text="Example: Bouncing Ball" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
                     <size width="263" height="41"/>
                     <line width="2" visible="0" style="solidline"/>
