@@ -4,9 +4,9 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2511,575077384196" y="2541,183873836563" zoom="2,803220999999999"/>
+            <viewport x="2500,770129607028" y="2499,506901725428" zoom="1,187434208703792"/>
             <ports hidden="1"/>
-            <names hidden="0"/>
+            <names hidden="1"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="Bouncing Ball">
@@ -811,6 +811,45 @@
                         </component>
                     </stuff>
                 </post>
+                <post number="109">
+                    <stuff what="deletedobject">
+                        <component typename="MechanicForceTransformer" name="Force Source_1">
+                            <parameters>
+                                <parameter value="0" name="P1::Velocity"/>
+                                <parameter value="0" name="P1::Position"/>
+                                <parameter value="0" name="F"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2503.00000000000000000000" y="2541" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="110">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2096 2444</oldpos>
+                        <newpos>2165.06 2408.63</newpos>
+                    </stuff>
+                </post>
+                <post number="111" type="movedmultiple">
+                    <stuff what="movedobject" name="Force Source">
+                        <oldpos>2644 2463</oldpos>
+                        <newpos>2637.13 2441.34</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Translational Spring">
+                        <oldpos>2644 2563</oldpos>
+                        <newpos>2673.13 2537.84</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Translational Mass">
+                        <oldpos>2612 2494.5</oldpos>
+                        <newpos>2624.63 2479.34</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Wall with Free Length">
+                        <oldpos>2644 2599.5</oldpos>
+                        <newpos>2636.63 2564.34</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="20" timestep="0,0001" start="0"/>
@@ -825,8 +864,8 @@
                     <parameter value="100" name="x_max"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2644.00000000000000000000" y="2514.5" flipped="0" a="90"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2656.63227881599823376746" y="2499.3412654208023014" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="MechanicFreeLengthWall" name="Wall with Free Length">
@@ -834,8 +873,8 @@
                     <parameter value="0" name="B"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2644.00000000000000000000" y="2599.5" flipped="0" a="90"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2656.63227881599823376746" y="2584.3412654208023014" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="MechanicTranslationalSpring" name="Translational Spring">
@@ -849,19 +888,8 @@
                     <parameter value="1000000" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2644.00000000000000000000" y="2563" flipped="1" a="270"/>
-                    <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicForceTransformer" name="Force Source_1">
-                <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value="0" name="P1::Position"/>
-                    <parameter value="0" name="F"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2503.00000000000000000000" y="2541" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2656.63227881599823376746" y="2547.8412654208023014" flipped="1" a="270"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="MechanicForceTransformer" name="Force Source">
@@ -871,13 +899,13 @@
                     <parameter value="9.81" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2644.00000000000000000000" y="2463" flipped="0" a="90"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2656.63227881599823376746" y="2447.8412654208023014" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2096" y="2444"/>
+                    <pose x="2165,056457527455" y="2408,629619315207"/>
                     <textobject fontcolor="#005500" text="This example model shows the a ball bouncing&#xa;on the ground. The ball is modeled as a force&#xa;acting on a mass and a spring, where the force&#xa;represents the gravity, the mass the inertia and&#xa;the spring the elasticity. Notice that the stiffness&#xa;of the spring is irrelevant for the dynamic&#xa;behvaiour of the system, as long as it is large&#xa;enough to avoid numerical problems. Time step&#xa;must be small in order for the short contact&#xa;phase to be numerically correct." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                     <size width="325" height="208"/>
                     <line width="2" visible="1" style="solidline"/>
@@ -896,10 +924,10 @@
             <connect endport="Pm1" endcomponent="Wall with Free Length" startport="P1" startcomponent="Translational Spring">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2644.00000000000000000000" y="2579.50000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2586.00000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2586.00000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2579.50000000000000000000"/>
+                        <coordinate x="2656.63227881599823376746" y="2564.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2570.84126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2570.84126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2564.34126542080230137799"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -912,10 +940,10 @@
             <connect endport="P2" endcomponent="Translational Mass" startport="P2" startcomponent="Translational Spring">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2644.00000000000000000000" y="2546.50000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2541.50000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2541.50000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2546.50000000000000000000"/>
+                        <coordinate x="2656.63227881599823376746" y="2531.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2526.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2526.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2531.34126542080230137799"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -928,10 +956,10 @@
             <connect endport="P1" endcomponent="Translational Mass" startport="P1" startcomponent="Force Source">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2644.00000000000000000000" y="2482.50000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2462.50000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2462.50000000000000000000"/>
-                        <coordinate x="2644.00000000000000000000" y="2482.50000000000000000000"/>
+                        <coordinate x="2656.63227881599823376746" y="2467.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2447.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2447.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2467.34126542080230137799"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
