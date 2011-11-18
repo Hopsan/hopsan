@@ -303,7 +303,8 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
 
     //Parameters
     bool addedUndoPost = false;
-    for (int i=0 ; i < vParLayout.size(); ++i )
+    //! @todo move this stuff into the parameterlayout class instead, it is all about to set parameters, for example ContainerPropertyDialog
+    for (int i=0 ; i < vParLayout.size(); ++i)
     {
         QString valueTxt = vParLayout[i]->getDataValueTxt();
 

@@ -69,6 +69,7 @@ private:
 };
 
 
+//! @todo Move this class to better place, it is used by other than just GUIComponent
 class ParameterLayout : public QGridLayout
 {
     Q_OBJECT
