@@ -37,10 +37,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicForceTransformer("ForceTransformer");
+            return new MechanicForceTransformer();
         }
 
-        MechanicForceTransformer(const std::string name) : ComponentC(name)
+        MechanicForceTransformer() : ComponentC()
         {
             //Set member attributes
             f = 0.0;

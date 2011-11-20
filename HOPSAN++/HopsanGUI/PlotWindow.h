@@ -224,6 +224,8 @@ public:
     bool isGridVisible();
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     bool isSpecialPlot();
+    void setBottomAxisLogarithmic(bool value);
+    bool hasLogarithmicBottomAxis();
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);

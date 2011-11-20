@@ -46,10 +46,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicLosslessConnector("LosslessConnector");
+            return new HydraulicLosslessConnector();
         }
 
-        HydraulicLosslessConnector(const std::string name) : ComponentQ(name)
+        HydraulicLosslessConnector() : ComponentQ()
         {
             Kc = 1.0e-11;
 

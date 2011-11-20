@@ -52,9 +52,9 @@ namespace hopsan {
 
         HydraulicSubSysExample() : ComponentSystem()
         {
-            volumeL = new HydraulicVolume("volumeL");
-            orificeC = new HydraulicLaminarOrifice("orificeC");
-            volumeR = new HydraulicVolume("volumeR");
+            volumeL = new HydraulicVolume();
+            orificeC = new HydraulicLaminarOrifice();
+            volumeR = new HydraulicVolume();
 
             orificeC->setParameterValue("Kc", "1e-12");
 

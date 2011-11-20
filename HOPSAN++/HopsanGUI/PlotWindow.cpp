@@ -763,9 +763,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     getCurrentPlotTab()->getPlot(SECONDPLOT)->replot();
 
     //getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
-    getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
-    getCurrentPlotTab()->getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
-
+    getCurrentPlotTab()->setBottomAxisLogarithmic(true);
 
     getCurrentPlotTab()->rescaleToCurves();
 
@@ -1908,14 +1906,42 @@ void PlotTab::exportToMatlab()
     fileStream << "subplot(2,1,1)\n";
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        fileStream << "plot(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->getCurvePtr()->pen().width() << ")\n";
+        if((mPlotCurvePtrs[FIRSTPLOT][i]->getAxisY() == QwtPlot::yLeft && mLeftAxisLogarithmic) || (mPlotCurvePtrs[FIRSTPLOT][i]->getAxisY() == QwtPlot::yRight && mRightAxisLogarithmic))
+        {
+            if(mBottomAxisLogarithmic)
+                fileStream << "loglog";
+            else
+                fileStream << "semilogy";
+        }
+        else
+        {
+            if(mBottomAxisLogarithmic)
+                fileStream << "semilogx";
+            else
+                fileStream << "plot";
+        }
+        fileStream << "(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->getCurvePtr()->pen().width() << ")\n";
     }
     if(mPlotCurvePtrs[SECONDPLOT].size() > 0)
     {
         fileStream << "subplot(2,1,2)\n";
         for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
         {
-            fileStream << "plot(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->getCurvePtr()->pen().width() << ")\n";
+            if((mPlotCurvePtrs[SECONDPLOT][i]->getAxisY() == QwtPlot::yLeft && mLeftAxisLogarithmic) || (mPlotCurvePtrs[SECONDPLOT][i]->getAxisY() == QwtPlot::yRight && mRightAxisLogarithmic))
+            {
+                if(mBottomAxisLogarithmic)
+                    fileStream << "loglog";
+                else
+                    fileStream << "semilogy";
+            }
+            else
+            {
+                if(mBottomAxisLogarithmic)
+                    fileStream << "semilogx";
+                else
+                    fileStream << "plot";
+            }
+            fileStream << "(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->getCurvePtr()->pen().width() << ")\n";
         }
     }
 
@@ -2296,6 +2322,29 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
 bool PlotTab::isSpecialPlot()
 {
     return mIsSpecialPlot;
+}
+
+
+void PlotTab::setBottomAxisLogarithmic(bool value)
+{
+    mBottomAxisLogarithmic = value;
+    if(value)
+    {
+        getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+        getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+    }
+    else
+    {
+        getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
+        getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
+    }
+
+}
+
+
+bool PlotTab::hasLogarithmicBottomAxis()
+{
+    return mBottomAxisLogarithmic;
 }
 
 

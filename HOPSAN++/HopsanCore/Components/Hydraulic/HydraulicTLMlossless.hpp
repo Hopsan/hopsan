@@ -52,10 +52,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicTLMlossless("TLMlossless");
+            return new HydraulicTLMlossless();
         }
 
-        HydraulicTLMlossless(const std::string name) : ComponentC(name)
+        HydraulicTLMlossless() : ComponentC()
         {
             //Set member attributes
             mTimeDelay     = 0.1;

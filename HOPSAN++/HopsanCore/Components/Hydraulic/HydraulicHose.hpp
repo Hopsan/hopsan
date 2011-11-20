@@ -63,10 +63,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicHose("Hose");
+            return new HydraulicHose();
         }
 
-        HydraulicHose(const std::string name) : ComponentC(name)
+        HydraulicHose() : ComponentC()
         {
             //Set member attributes
             betae = 1e9;

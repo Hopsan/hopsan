@@ -45,10 +45,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicTorsionalSpring("TorsionalSpring");
+            return new MechanicTorsionalSpring();
         }
 
-        MechanicTorsionalSpring(const std::string name) : ComponentC(name)
+        MechanicTorsionalSpring() : ComponentC()
         {
             //Set member attributes
             k   = 100.0;

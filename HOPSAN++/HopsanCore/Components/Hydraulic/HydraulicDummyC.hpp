@@ -32,10 +32,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicDummyC("Dummy C");
+            return new HydraulicDummyC();
         }
 
-        HydraulicDummyC(const std::string name) : ComponentC(name)
+        HydraulicDummyC() : ComponentC()
         {
             //Set member attributes
 

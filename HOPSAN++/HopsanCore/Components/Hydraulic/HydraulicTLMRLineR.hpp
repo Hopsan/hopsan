@@ -54,10 +54,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicTLMRlineR("TLMRlineR");
+            return new HydraulicTLMRlineR();
         }
 
-        HydraulicTLMRlineR(const std::string name) : ComponentC(name)
+        HydraulicTLMRlineR() : ComponentC()
         {
             //Set member attributes
             mTimeDelay     = 0.1;

@@ -40,10 +40,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicLaminarOrifice("LaminarOrifice");
+            return new HydraulicLaminarOrifice();
         }
 
-        HydraulicLaminarOrifice(const std::string name) : ComponentQ(name)
+        HydraulicLaminarOrifice() : ComponentQ()
         {
             Kc = 1.0e-11;
 

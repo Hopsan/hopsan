@@ -38,10 +38,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicTranslationalSpring("TranslationalSpring");
+            return new MechanicTranslationalSpring();
         }
 
-        MechanicTranslationalSpring(const std::string name) : ComponentC(name)
+        MechanicTranslationalSpring() : ComponentC()
         {
             //Set member attributes
             k = 100.0;

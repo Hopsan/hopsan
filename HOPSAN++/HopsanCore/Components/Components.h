@@ -189,7 +189,7 @@
 #include "Mechanic/MechanicVehicle1D.hpp"
 #include "Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp"
 #include "Mechanic/MechanicFixedPosition.hpp"
-#include "Mechanic/MechanicFreeLengthWall.hpp""
+#include "Mechanic/MechanicFreeLengthWall.hpp"
 
 /* Electric Components */
 #include "Electric/ElectricBattery.hpp"

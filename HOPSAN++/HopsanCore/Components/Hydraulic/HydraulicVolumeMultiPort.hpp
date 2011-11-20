@@ -53,10 +53,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicVolumeMultiPort("VolumeMultiPort");
+            return new HydraulicVolumeMultiPort();
         }
 
-        HydraulicVolumeMultiPort(const std::string name) : ComponentC(name)
+        HydraulicVolumeMultiPort() : ComponentC()
         {
             //Set member attributes
             mBulkmodulus   = 1.0e9;

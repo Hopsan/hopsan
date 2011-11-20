@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicTorqueTransformer("TorqueTransformer");
+            return new MechanicTorqueTransformer();
         }
 
-        MechanicTorqueTransformer(const std::string name) : ComponentC(name)
+        MechanicTorqueTransformer() : ComponentC()
         {
             //Set member attributes
             t = 0.0;

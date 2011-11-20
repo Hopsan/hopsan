@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicUndefinedConnectionC("UndefinedConnectionC");
+            return new HydraulicUndefinedConnectionC();
         }
 
-        HydraulicUndefinedConnectionC(const std::string name) : ComponentC(name)
+        HydraulicUndefinedConnectionC() : ComponentC()
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 

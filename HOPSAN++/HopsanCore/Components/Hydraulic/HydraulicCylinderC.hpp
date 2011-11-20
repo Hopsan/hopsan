@@ -61,10 +61,10 @@ class HydraulicCylinderC : public ComponentC
     public:
         static Component *Creator()
         {
-            return new HydraulicCylinderC("CylinderC");
+            return new HydraulicCylinderC();
         }
 
-        HydraulicCylinderC(const std::string name) : ComponentC(name)
+        HydraulicCylinderC() : ComponentC()
         {
             //Set member attributes
             wfak = 0.1;
@@ -380,7 +380,7 @@ class HydraulicCylinderC : public ComponentC
 //            return new HydraulicCylinderC("CylinderC");
 //        }
 
-//        HydraulicCylinderC(const std::string name) : ComponentC(name)
+//        HydraulicCylinderC() : ComponentC()
 //        {
 //            //Set member attributes
 //            PI = 3.14159265;
@@ -766,7 +766,7 @@ class HydraulicCylinderC : public ComponentC
 //            return new HydraulicCylinderC("CylinderC");
 //        }
 
-//        HydraulicCylinderC(const std::string name) : ComponentC(name)
+//        HydraulicCylinderC() : ComponentC()
 //        {
 //            //Set member attributes
 //            alfa = .01;

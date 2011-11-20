@@ -54,10 +54,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicTurbulentOrifice("TurbulentOrifice");
+            return new HydraulicTurbulentOrifice();
         }
 
-        HydraulicTurbulentOrifice(const std::string name) : ComponentQ(name)
+        HydraulicTurbulentOrifice() : ComponentQ()
         {
             Cq = 0.67;
             A = 0.00001;
