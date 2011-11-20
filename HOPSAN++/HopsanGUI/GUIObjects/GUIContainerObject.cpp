@@ -38,6 +38,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/SystemParametersWidget.h"
+#include "Widgets/PyDockWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIComponent.h"
 #include "GUIGroup.h"
@@ -1177,6 +1178,10 @@ void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 //! @see paste()
 void GUIContainerObject::copySelected(CopyStack *xmlStack)
 {
+    //Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
+    if(gpMainWindow->mpMessageWidget->textEditHasFocus())
+        return;
+
     QDomElement *copyRoot;
     if(xmlStack == 0)
     {

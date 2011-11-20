@@ -226,6 +226,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->createToolbars();
     this->createMenus();
 
+    connect(mpCopyAction, SIGNAL(triggered()), mpMessageWidget, SLOT(copy()));
+
     mpMessageWidget->loadConfig();
 }
 

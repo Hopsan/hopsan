@@ -41,13 +41,8 @@ using namespace hopsan;
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QWidget(pParent)
 {
-
-
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setReadOnly(true);
-    //mpTextEdit->setPalette(QPalette(QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("white"), QColor("whitesmoke")));
-    //mpTextEdit->setTextBackgroundColor(QColor("gray"));
-
     mpTextEdit->setFont(QFont(this->font().family(), 8));
 
     mGroupByTag = gConfig.getGroupMessagesByTag();
@@ -130,6 +125,12 @@ QSize MessageWidget::sizeHint() const
 void MessageWidget::loadConfig()
 {
     mpGroupByTagCheckBox->setChecked(gConfig.getGroupMessagesByTag());
+}
+
+
+bool MessageWidget::textEditHasFocus()
+{
+    return mpTextEdit->hasFocus();
 }
 
 
@@ -340,6 +341,14 @@ void MessageWidget::showDebugMessages(bool value)
     updateEverything();
 }
 
+
+void MessageWidget::copy()
+{
+    if(mpTextEdit->hasFocus())
+    {
+        mpTextEdit->copy();
+    }
+}
 
 
 //! @class GUIMessage

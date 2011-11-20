@@ -43,6 +43,7 @@ public:
     void printGUIDebugMessage(QString message, QString tag=QString());
     QSize sizeHint() const;
     void loadConfig();
+    bool textEditHasFocus();
 
 public slots:
     void clear();
@@ -52,6 +53,7 @@ public slots:
     void showWarningMessages(bool value);
     void showInfoMessages(bool value);
     void showDebugMessages(bool value);
+    void copy();
 
 private:
     void setMessageColor(QString type);
