@@ -275,20 +275,20 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
 }
 
 
-//! @brief Sorts the signal component vector
+//! @brief Sorts a component vector
 //! Components are sorted so that they are always simulated after the components they receive signals from. Algebraic loops can be detected, in that case this function does nothing.
-void ComponentSystem::sortSignalComponentVector(std::vector<Component*> &rOldSignalVector)
+void ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVector)
 {
-    std::vector<Component*> newSignalVector;
+    std::vector<Component*> newComponentVector;
 
     bool didSomething = true;
     while(didSomething)
     {
         didSomething = false;
         std::vector<Component*>::iterator it;
-        for(it=rOldSignalVector.begin(); it!=rOldSignalVector.end(); ++it)  //Loop through the unsorted signal component vector
+        for(it=rComponentVector.begin(); it!=rComponentVector.end(); ++it)  //Loop through the unsorted signal component vector
         {
-            if(!componentVectorContains(newSignalVector, (*it)))    //Ignore components that are already added to the new vector
+            if(!componentVectorContains(newComponentVector, (*it)))    //Ignore components that are already added to the new vector
             {
                 bool readyToAdd=true;
                 std::vector<Port*>::iterator itp;
@@ -300,16 +300,16 @@ void ComponentSystem::sortSignalComponentVector(std::vector<Component*> &rOldSig
                     {
                         if((*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent == this)
                         {
-                            if(!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr()) &&
-                               (*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeCQS() == Component::S)
+                            if(!componentVectorContains(newComponentVector, (*itp)->getNodePtr()->getWritePortComponentPtr()) &&
+                               (*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeCQS() == (*itp)->getComponent()->getTypeCQS()/*Component::S*/)
                             {
                                 readyToAdd = false;     //Depending on normal component which has not yet been added
                             }
                         }
                         else
                         {
-                            if(!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent) &&
-                               (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent->getTypeCQS() == Component::S)
+                            if(!componentVectorContains(newComponentVector, (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent) &&
+                               (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent->getTypeCQS() == (*itp)->getComponent()->getTypeCQS()/*Component::S*/)
                             {
                                 readyToAdd = false;     //Depending on subsystem component which has not yer been added
                             }
@@ -318,25 +318,25 @@ void ComponentSystem::sortSignalComponentVector(std::vector<Component*> &rOldSig
                 }
                 if(readyToAdd)  //Add the component if all required write port components was already added
                 {
-                    newSignalVector.push_back((*it));
+                    newComponentVector.push_back((*it));
                     didSomething = true;
                 }
             }
         }
     }
 
-    if(newSignalVector.size() == rOldSignalVector.size())   //All components moved to new vector = success!
+    if(newComponentVector.size() == rComponentVector.size())   //All components moved to new vector = success!
     {
-        rOldSignalVector = newSignalVector;
+        rComponentVector = newComponentVector;
         stringstream ss;
         std::vector<Component*>::iterator it;
-//        for(it=newSignalVector.begin(); it!=newSignalVector.end(); ++it)
+//        for(it=newComponentVector.begin(); it!=newComponentVector.end(); ++it)
 //            ss << (*it)->getName() << "\n";                                                                                               //DEBUG
 //        gCoreMessageHandler.addDebugMessage("Sorted signal components:\n" + ss.str());
     }
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
     {
-        gCoreMessageHandler.addWarningMessage("Found algebraic loop in signal components. Sorting not possible.");
+        gCoreMessageHandler.addWarningMessage("Components cannot be sorted correctly, either due to algebraic loops or because of multi-threaded partioning.");
     }
 }
 
@@ -1933,7 +1933,9 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
     adjustTimestep(mComponentCptrs);
     adjustTimestep(mComponentQptrs);
 
-    this->sortSignalComponentVector(mComponentSignalptrs);
+    this->sortComponentVector(mComponentSignalptrs);
+    this->sortComponentVector(mComponentCptrs);
+    this->sortComponentVector(mComponentQptrs);
 
     loadStartValues();
 
@@ -2486,6 +2488,13 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
         ss << timeVector[i]*1000;
         gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
     }
+
+        //Finally we sort each component vector, so that
+        //signal components are simlated in correct order:
+    for(size_t i=0; i<rSplitCVector.size(); ++i)
+    {
+        sortComponentVector(rSplitCVector[i]);
+    }
 }
 
 
@@ -2522,6 +2531,13 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
         stringstream ss;
         ss << timeVector[i]*1000;
         gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
+    }
+
+        //Finally we sort each component vector, so that
+        //signal components are simlated in correct order:
+    for(size_t i=0; i<rSplitQVector.size(); ++i)
+    {
+        sortComponentVector(rSplitQVector[i]);
     }
 }
 
@@ -2626,10 +2642,9 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
 
         //Finally we sort each component vector, so that
         //signal components are simlated in correct order:
-
     for(size_t i=0; i<rSplitSignalVector.size(); ++i)
     {
-        sortSignalComponentVector(rSplitSignalVector[i]);
+        sortComponentVector(rSplitSignalVector[i]);
     }
 }
 

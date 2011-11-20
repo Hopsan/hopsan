@@ -159,7 +159,7 @@ namespace hopsan {
         void addSubComponentPtrToStorage(Component* pComponent);
         void removeSubComponentPtrFromStorage(Component* pComponent);
 
-        void sortSignalComponentVector(std::vector<Component*> &rOldSignalVector);
+        void sortComponentVector(std::vector<Component*> &rOldSignalVector);
         bool componentVectorContains(std::vector<Component*> vector, Component *pComp);
 
         //UniqueName specific functions
