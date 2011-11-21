@@ -81,6 +81,7 @@ public:
 
     void addConnection(GUIConnector *pConnector);
     void removeConnection(GUIConnector *pConnector);
+    QVector<GUIConnector*> getAttachedConnectorPtrs() const;
     bool isConnected();
     QVector<GUIPort *> getConnectedPorts();
 

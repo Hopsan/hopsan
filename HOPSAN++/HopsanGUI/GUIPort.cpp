@@ -646,6 +646,13 @@ void GUIPort::removeConnection(GUIConnector *pConnector)
     //qDebug() << "Removing connection, connections = " << mnConnections;
 }
 
+//! @brief Return a copy of the currently connected connectors
+//! @return QVector with connector pointers
+QVector<GUIConnector*> GUIPort::getAttachedConnectorPtrs() const
+{
+    return mConnectedConnectors;
+}
+
 
 //! @brief Ask if the port is connected or not
 //! @return if the port is connected or not

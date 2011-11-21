@@ -1062,6 +1062,13 @@ void GUIConnector::determineAppearance()
     this->setPassive();
 }
 
+//! @brief Redraws the connector after redetermining what appearanche to use
+void GUIConnector::refreshConnectorAppearance()
+{
+    determineAppearance();
+    drawConnector();
+}
+
 
 //! @brief Slot that "deactivates" a connector if it is deselected
 void GUIConnector::deselect()

@@ -418,9 +418,18 @@ void GUIContainerObject::createExternalPort(QString portName)
         else
         {
 
-            //The external port already seems to exist, lets update it incase something has changed
+            // The external port already seems to exist, lets update it incase something has changed
             //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
             pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+
+            // In this case of container object, also refresh any attached connectors, if types have changed
+            //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
+            QVector<GUIConnector*> connectors = pPort->getAttachedConnectorPtrs();
+            for (int i=0; i<connectors.size(); ++i)
+            {
+                connectors[i]->refreshConnectorAppearance();
+            }
+
             qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
         }
     }

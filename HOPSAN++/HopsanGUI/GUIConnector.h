@@ -80,6 +80,8 @@ public:
     bool isFirstAndLastDiagonal();
     void determineAppearance();
 
+    void refreshConnectorAppearance();
+
     bool isConnected();
     bool isMakingDiagonal();
     bool isActive();
