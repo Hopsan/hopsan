@@ -52,7 +52,7 @@ private:
 
     void createEditStuff();
     bool interpretedAsStartValue(QString &parameterDescription);
-    void verifyNewValue(QString value);
+    void verifyNewValue(QString &value);
 
     QLabel *mpLabel;
     QLineEdit *mpLineEdit;

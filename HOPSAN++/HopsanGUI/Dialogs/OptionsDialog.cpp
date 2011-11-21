@@ -250,7 +250,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     QTabWidget *pTabWidget = new QTabWidget(this);
     pTabWidget->addTab(mpInterfaceWidget, "Interface");
-    pTabWidget->addTab(mpSimulationWidget, "Simlation");
+    pTabWidget->addTab(mpSimulationWidget, "Simulation");
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
 
     QGridLayout *pLayout = new QGridLayout;

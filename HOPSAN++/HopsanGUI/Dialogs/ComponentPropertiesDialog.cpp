@@ -495,7 +495,7 @@ void ParameterLayout::pickColor()
 //! @brief Verifies that a parameter value does not begin with a number but still contains illegal characters.
 //! @note This is a temporary solution. It shall be removed when parsing equations as parameters works.
 //! @param value String with parameter that shall be verified
-void ComponentPropertiesDialog::verifyNewValue(QString value)
+void ComponentPropertiesDialog::verifyNewValue(QString &value)
 {
     if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().contains(value.toStdString()))
     {
@@ -505,6 +505,7 @@ void ComponentPropertiesDialog::verifyNewValue(QString value)
     if(value[0].isNumber())
     {
         bool onlyNumbers=true;
+        value.replace(",", ".");
         for(int i=1; i<value.size(); ++i)
         {
             if(!value[i].isDigit() && !(value[i] == 'e') && !(value[i] == '+') && !(value[i] == '-') && !(value[i] == '.') && !(value[i] == ','))
