@@ -72,6 +72,11 @@ public:
     bool getGroupMessagesByTag();
     int getGenerationLimit();
     QString getLoadModelDir();
+    QString getModelGfxDir();
+    QString getPlotDataDir();
+    QString getPlotGfxDir();
+    QString getSimulinkExportDir();
+    QString getSubsystemDir();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -97,6 +102,11 @@ public:
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
     void setLoadModelDir(QString value);
+    void setModelGfxDir(QString value);
+    void setPlotDataDir(QString value);
+    void setPlotGfxDir(QString value);
+    void setSimulinkExportDir(QString value);
+    void setSubsystemDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -125,6 +135,11 @@ private:
     bool mGroupMessagesByTag;
     int mGenerationLimit;
     QString mLoadModelDir;
+    QString mModelGfxDir;
+    QString mPlotDataDir;
+    QString mPlotGfxDir;
+    QString mSimulinkExportDir;
+    QString mSubsystemDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

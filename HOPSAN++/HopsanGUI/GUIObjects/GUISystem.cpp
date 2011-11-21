@@ -36,6 +36,7 @@
 #include "Dialogs/ContainerPropertiesDialog.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PyDockWidget.h"
+#include "Configuration.h"
 
 GUISystem::GUISystem(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -1473,11 +1474,12 @@ void GUISystem::createSimulinkSourceFiles()
     QDir fileDialogSaveDir;
     QString savePath;
     savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
-                                                    fileDialogSaveDir.currentPath(),
+                                                    gConfig.getSimulinkExportDir(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
-
+    QFileInfo file(savePath);
+    gConfig.setSimulinkExportDir(file.absolutePath());
 
     QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
     progressBar.show();

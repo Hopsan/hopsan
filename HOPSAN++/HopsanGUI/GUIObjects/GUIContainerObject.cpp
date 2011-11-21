@@ -1984,13 +1984,13 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         QDir fileDialog; QFile file;
         QString modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                             gConfig.getLoadModelDir(),
+                                                             gConfig.getSubsystemDir(),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (!modelFilePath.isNull())
         {
             file.setFileName(modelFilePath);
             QFileInfo fileInfo(file);
-            gConfig.setLoadModelDir(fileInfo.absolutePath());
+            gConfig.setSubsystemDir(fileInfo.absolutePath());
 
             bool doIt = true;
             if (mGUIModelObjectMap.size() > 0)

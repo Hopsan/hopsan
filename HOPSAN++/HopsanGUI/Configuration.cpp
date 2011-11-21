@@ -70,6 +70,11 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
     appendDomIntegerNode(settings, "generationlimit", mGenerationLimit);
     appendDomTextNode(settings, "loadmodeldir", mLoadModelDir);
+    appendDomTextNode(settings, "modelgfxdir", mModelGfxDir);
+    appendDomTextNode(settings, "plotdatadir", mPlotDataDir);
+    appendDomTextNode(settings, "plotgfxdir", mPlotGfxDir);
+    appendDomTextNode(settings, "simulinkexportdir", mSimulinkExportDir);
+    appendDomTextNode(settings, "subsystemdir", mSubsystemDir);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -236,6 +241,16 @@ void Configuration::loadFromXml()
                 mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
             if(!settingsElement.firstChildElement("loadmodeldir").isNull())
                 mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
+            if(!settingsElement.firstChildElement("modelgfxdir").isNull())
+                mModelGfxDir = settingsElement.firstChildElement("modelgfxdir").text();
+            if(!settingsElement.firstChildElement("plotdatadir").isNull())
+                mPlotDataDir = settingsElement.firstChildElement("plotdatadir").text();
+            if(!settingsElement.firstChildElement("plotgfxdir").isNull())
+                mPlotGfxDir = settingsElement.firstChildElement("plotgfxdir").text();
+            if(!settingsElement.firstChildElement("simulinkexportdir").isNull())
+                mSimulinkExportDir = settingsElement.firstChildElement("simulinkexportdir").text();
+            if(!settingsElement.firstChildElement("subsystemdir").isNull())
+                mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -400,6 +415,17 @@ void Configuration::loadDefaultsFromXml()
                 mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
             if(!settingsElement.firstChildElement("loadmodeldir").isNull())
                 mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
+            if(!settingsElement.firstChildElement("modelgfxdir").isNull())
+                mModelGfxDir = settingsElement.firstChildElement("modelgfxdir").text();
+            if(!settingsElement.firstChildElement("plotdatadir").isNull())
+                mPlotDataDir = settingsElement.firstChildElement("plotdatadir").text();
+            if(!settingsElement.firstChildElement("plotgfxdir").isNull())
+                mPlotGfxDir = settingsElement.firstChildElement("plotgfxdir").text();
+            if(!settingsElement.firstChildElement("simulinkexportdir").isNull())
+                mSimulinkExportDir = settingsElement.firstChildElement("simulinkexportdir").text();
+            if(!settingsElement.firstChildElement("subsystemdir").isNull())
+                mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
+
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -727,6 +753,56 @@ QString Configuration::getLoadModelDir()
 }
 
 
+QString Configuration::getModelGfxDir()
+{
+    if(mModelGfxDir.isEmpty())
+    {
+        return gExecPath + QString(DATAPATH);
+    }
+    return mModelGfxDir;
+}
+
+
+QString Configuration::getPlotDataDir()
+{
+    if(mPlotDataDir.isEmpty())
+    {
+        return gExecPath + QString(DATAPATH);
+    }
+    return mPlotDataDir;
+}
+
+
+QString Configuration::getPlotGfxDir()
+{
+    if(mPlotGfxDir.isEmpty())
+    {
+        return gExecPath + QString(DATAPATH);
+    }
+    return mPlotGfxDir;
+}
+
+
+QString Configuration::getSimulinkExportDir()
+{
+    if(mSimulinkExportDir.isEmpty())
+    {
+        return gExecPath + QString(DATAPATH);
+    }
+    return mSimulinkExportDir;
+}
+
+
+QString Configuration::getSubsystemDir()
+{
+    if(mSubsystemDir.isEmpty())
+    {
+        return gExecPath + QString(MODELPATH);
+    }
+    return mSubsystemDir;
+}
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -940,4 +1016,34 @@ void Configuration::setGenerationLimit(int value)
 void Configuration::setLoadModelDir(QString value)
 {
     mLoadModelDir = value;
+}
+
+
+void Configuration::setModelGfxDir(QString value)
+{
+    mModelGfxDir = value;
+}
+
+
+void Configuration::setPlotDataDir(QString value)
+{
+    mPlotDataDir = value;
+}
+
+
+void Configuration::setPlotGfxDir(QString value)
+{
+    mPlotGfxDir = value;
+}
+
+
+void Configuration::setSimulinkExportDir(QString value)
+{
+    mSimulinkExportDir = value;
+}
+
+
+void Configuration::setSubsystemDir(QString value)
+{
+    mSubsystemDir = value;
 }

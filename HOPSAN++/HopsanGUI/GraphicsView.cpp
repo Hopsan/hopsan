@@ -606,11 +606,14 @@ void GraphicsView::centerView()
 //! @todo Check if it is possible to export to SVG instead. It appears as it is not possible with the current QT version, but I am not sure.
 void GraphicsView::exportToPDF()
 {
-     QString fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", QString(),
+    QString fileName = QFileDialog::getSaveFileName(
+        this, "Export File Name", gConfig.getModelGfxDir(),
         "Adobe PDF Documents (*.pdf)");
     if ( !fileName.isEmpty() )
     {
+        QFileInfo file(fileName);
+        gConfig.setModelGfxDir(file.absolutePath());
+
         //Here we set A0, Landscape and Fullpage among other things to make sure that components get large enough to be treeted as vector graphics
         //Some bug or "feature" makes small objects be converted to bitmaps (ugly)
         //! @todo Try to find out why this happens (se comment above)

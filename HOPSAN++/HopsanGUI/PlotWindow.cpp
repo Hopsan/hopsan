@@ -1767,10 +1767,11 @@ void PlotTab::exportToCsv()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
-                                            fileDialogSaveDir.currentPath(),
+                                            gConfig.getPlotDataDir(),
                                             tr("Comma-separated values (*.csv)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -1820,10 +1821,11 @@ void PlotTab::exportToMatlab()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To MATLAB File"),
-                                            fileDialogSaveDir.currentPath(),
+                                            gConfig.getPlotDataDir(),
                                             tr("MATLAB script file (*.m)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -1958,10 +1960,11 @@ void PlotTab::exportToGnuplot()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To gnuplot File"),
-                                            fileDialogSaveDir.currentPath(),
+                                            gConfig.getPlotDataDir(),
                                             tr("gnuplot file (*.dat)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -2006,9 +2009,12 @@ void PlotTab::exportToGnuplot()
 //! @brief Slot that exports plot tab as vector graphics to specified .pdf file
 void PlotTab::exportToPdf()
 {
-     QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", QString(), "Portable Document Format (*.pdf)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf)");
     if ( !fileName.isEmpty() )
     {
+        QFileInfo file(fileName);
+        gConfig.setPlotGfxDir(file.absolutePath());
+
         QwtPlotRenderer renderer;
 
         QPrinter *printer = new QPrinter(QPrinter::HighResolution);
@@ -2026,21 +2032,27 @@ void PlotTab::exportToPdf()
 void PlotTab::exportToPng()
 {
     QString fileName = QFileDialog::getSaveFileName(
-       this, "Export File Name", QString(),
+       this, "Export File Name", gConfig.getPlotGfxDir(),
        "Portable Network Graphics (*.png)");
 
-    if(mpBarPlot->isVisible())
+    if(!fileName.isEmpty())
     {
-        QPixmap pixmap = QPixmap::grabWidget(this);
-        pixmap.save(fileName);
-    }
-    else
-    {
-        QPixmap pixmap(mpPlot[FIRSTPLOT]->width(), mpPlot[FIRSTPLOT]->height());
-        pixmap.fill();
-        QwtPlotRenderer renderer;
-        renderer.renderTo(mpPlot[FIRSTPLOT], pixmap);
-        pixmap.save(fileName);
+        QFileInfo file(fileName);
+        gConfig.setPlotGfxDir(file.absolutePath());
+
+        if(mpBarPlot->isVisible())
+        {
+            QPixmap pixmap = QPixmap::grabWidget(this);
+            pixmap.save(fileName);
+        }
+        else
+        {
+            QPixmap pixmap(mpPlot[FIRSTPLOT]->width(), mpPlot[FIRSTPLOT]->height());
+            pixmap.fill();
+            QwtPlotRenderer renderer;
+            renderer.renderTo(mpPlot[FIRSTPLOT], pixmap);
+            pixmap.save(fileName);
+        }
     }
 }
 
@@ -2425,10 +2437,11 @@ void PlotTab::saveToXml()
     QFileInfo fileInfo;
     QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To XML File"),
-                                            fileDialogSaveDir.currentPath(),
+                                            gConfig.getPlotDataDir(),
                                             tr("Extensible Markup Language (*.xml)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
