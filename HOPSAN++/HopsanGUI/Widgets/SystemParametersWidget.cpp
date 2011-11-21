@@ -103,7 +103,7 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
 
     update();
 
-    connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openComponentPropertiesDialog()));
+    connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openAddParameterDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
     connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(update()));//StrÃ¶ssel!
     connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(update()));//StrÃ¶ssel!
@@ -304,10 +304,10 @@ void SystemParameterTableWidget::removeSelectedParameters()
 
 
 //! Slot that opens "Add Parameter" dialog, where the user can add new System parameters
-void SystemParameterTableWidget::openComponentPropertiesDialog()
+void SystemParameterTableWidget::openAddParameterDialog()
 {
-    QDialog *pAddComponentPropertiesDialog = new QDialog(this);
-    pAddComponentPropertiesDialog->setWindowTitle("Set System Parameter");
+    mpAddParameterDialog = new QDialog(this);
+    mpAddParameterDialog->setWindowTitle("Set System Parameter");
 
     mpNameLabel = new QLabel("Name: ", this);
     mpNameBox = new QLineEdit(this);
@@ -316,11 +316,13 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
     //mpValueBox->setValidator(new QDoubleValidator(this));
     mpTypeLabel = new QLabel("Type: ", this);
     mpTypeBox = new TypeComboBox(-1, -1, this);
-    mpAddInDialogButton = new QPushButton("Set/Add", this);
-    mpDoneInDialogButton = new QPushButton("Done", this);
+    mpCancelInDialogButton = new QPushButton("Cancel", this);
+    mpAddInDialogButton = new QPushButton(trUtf8("Add && Continue"), this);
+    mpAddAndCloseInDialogButton = new QPushButton("Add && Close", this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(mpAddInDialogButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(mpDoneInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(mpAddAndCloseInDialogButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout(this);
     pDialogLayout->addWidget(mpNameLabel,0,0);
@@ -330,10 +332,11 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
     pDialogLayout->addWidget(mpTypeLabel,2,0);
     pDialogLayout->addWidget(mpTypeBox,2,1);
     pDialogLayout->addWidget(pButtonBox,3,0,1,2);
-    pAddComponentPropertiesDialog->setLayout(pDialogLayout);
-    pAddComponentPropertiesDialog->show();
+    mpAddParameterDialog->setLayout(pDialogLayout);
+    mpAddParameterDialog->show();
 
-    connect(mpDoneInDialogButton,SIGNAL(clicked()),pAddComponentPropertiesDialog,SLOT(close()));
+    connect(mpCancelInDialogButton,SIGNAL(clicked()),mpAddParameterDialog,SLOT(close()));
+    connect(mpAddAndCloseInDialogButton,SIGNAL(clicked()),this,SLOT(addParameterAndCloseDialog()));
     connect(mpAddInDialogButton,SIGNAL(clicked()),this,SLOT(addParameter()));
 }
 
@@ -356,6 +359,14 @@ void SystemParameterTableWidget::addParameter()
     qDebug() << mpTypeBox->currentText();
     setParameter(mpNameBox->text(), mpValueBox->text(), "", "", mpTypeBox->currentText());
     gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+}
+
+
+void SystemParameterTableWidget::addParameterAndCloseDialog()
+{
+    addParameter();
+    mpAddParameterDialog->close();
+    delete(mpAddParameterDialog);
 }
 
 

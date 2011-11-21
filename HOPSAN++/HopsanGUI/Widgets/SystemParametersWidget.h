@@ -81,8 +81,9 @@ public slots:
     void changeParameter(QTableWidgetItem *item=0);
 
 private slots:
-    void openComponentPropertiesDialog();
+    void openAddParameterDialog();
     void addParameter();
+    void addParameterAndCloseDialog();
     void removeSelectedParameters();
     void update();
 
@@ -95,6 +96,7 @@ protected:
 private:
  //   QComboBox *createTypeComboBox();
 
+    QDialog *mpAddParameterDialog;
     QLabel *mpNameLabel;
     QLineEdit *mpNameBox;
     QLabel *mpValueLabel;
@@ -102,7 +104,8 @@ private:
     QLabel *mpTypeLabel;
     QComboBox *mpTypeBox;
     QPushButton *mpAddInDialogButton;
-    QPushButton *mpDoneInDialogButton;
+    QPushButton *mpCloseInDialogButton;
+    QPushButton *mpAddAndCloseInDialogButton;
 };
 
 
