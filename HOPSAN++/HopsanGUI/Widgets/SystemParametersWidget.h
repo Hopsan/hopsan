@@ -104,7 +104,7 @@ private:
     QLabel *mpTypeLabel;
     QComboBox *mpTypeBox;
     QPushButton *mpAddInDialogButton;
-    QPushButton *mpCloseInDialogButton;
+    QPushButton *mpCancelInDialogButton;
     QPushButton *mpAddAndCloseInDialogButton;
 };
 
