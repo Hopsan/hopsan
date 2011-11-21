@@ -83,6 +83,7 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
     mpUndoStack = new UndoStack(this);
     mpUndoStack->clear();
 
+    //! @todo, why are these here, should not change global options every time we create a subsystem, (but are they really global, or do we only use global to show system local settings)
     gpMainWindow->mpToggleNamesAction->setChecked(true);
     gpMainWindow->mpTogglePortsAction->setChecked(true);
 
@@ -106,11 +107,11 @@ void GUIContainerObject::connectMainWindowActions()
 {
     connect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(clicked()), this, SLOT(undo()), Qt::UniqueConnection);
-    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getUndoButton(),  SIGNAL(clicked()), this, SLOT(undo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getRedoButton(),  SIGNAL(clicked()), this, SLOT(redo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()), Qt::UniqueConnection);
 
-    connect(gpMainWindow->mpTogglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpTogglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(showSubcomponentPorts(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpDisableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoDisabled(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpCutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
@@ -135,12 +136,12 @@ void GUIContainerObject::disconnectMainWindowActions()
 {
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    disconnect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(clicked()), this, SLOT(undo()));
-    disconnect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(clicked()), this, SLOT(redo()));
+    disconnect(gpMainWindow->mpUndoWidget->getUndoButton(),  SIGNAL(clicked()), this, SLOT(undo()));
+    disconnect(gpMainWindow->mpUndoWidget->getRedoButton(),  SIGNAL(clicked()), this, SLOT(redo()));
     disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(clicked()), this, SLOT(clearUndo()));
 
-    disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,      SLOT(toggleNames(bool)));
-    disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,     SLOT(hidePorts(bool)));
+    disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,    SLOT(toggleNames(bool)));
+    disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,    SLOT(showSubcomponentPorts(bool)));
     disconnect(gpMainWindow->mpDisableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoDisabled(bool)));
     disconnect(gpMainWindow->mpCutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->mpCopyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
@@ -1083,7 +1084,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
         }
     }
 
-    //! @todo maybe we should let the port decide by itself if it should be visible or not insed add and removeconnection functions
+    //! @todo maybe we should let the port decide by itself if it should be visible or not insted
     //Show the end port if it exists and if it is no longer connected
     if(endPortWasConnected)
     {
@@ -1094,7 +1095,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
         }
     }
 
-    //! @todo maybe we should let the port decide by itself if it should be visible or not insed add and removeconnection functions
+    //! @todo maybe we should let the port decide by itself if it should be visible or not insted
     //Show the start port if it is no longer connected
     pConnector->getStartPort()->removeConnection(pConnector);
     if(!pConnector->getStartPort()->isConnected())
@@ -1591,9 +1592,9 @@ void GUIContainerObject::toggleNames(bool value)
 
 
 //! @brief Slot that sets hide ports flag to true or false
-void GUIContainerObject::hidePorts(bool doIt)
+void GUIContainerObject::showSubcomponentPorts(bool doShowThem)
 {
-    mPortsHidden = !doIt;
+    mPortsHidden = !doShowThem;
     //mpParentProjectTab->hasChanged();
 }
 

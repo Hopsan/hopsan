@@ -165,7 +165,7 @@ public slots:
     void hideNames();
     void showNames();
     void toggleNames(bool value);
-    void hidePorts(bool doIt);
+    void showSubcomponentPorts(bool doShowThem);
 
     //Connector slots
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);

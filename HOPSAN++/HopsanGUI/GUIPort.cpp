@@ -113,16 +113,16 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     mPortAppearanceAfterLastRefresh = *mpPortAppearance; //Remember current appearance
 
-    if(mpParentGuiModelObject->mpParentContainerObject != 0)
+    if( this->getParentContainerObjectPtr() != 0 )
     {
-        this->hideIfNotConnected(!mpParentGuiModelObject->mpParentContainerObject->arePortsHidden());
+        this->showIfNotConnected( !this->getParentContainerObjectPtr()->arePortsHidden() );
     }
 
     this->setAcceptHoverEvents(true);
 
     //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
     GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //! @todo need to be able to access this in some nicer way then ptr madness, also in aother places
-    connect(gpMainWindow->mpTogglePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(hideIfNotConnected(bool)));
+    connect(gpMainWindow->mpTogglePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(showIfNotConnected(bool)));
     connect(pView,                              SIGNAL(zoomChange(qreal)),  this, SLOT(refreshPortOverlayScale(qreal)));
 }
 
@@ -683,8 +683,6 @@ qreal GUIPort::getPortRotation()
     return mpPortAppearance->rot;
 }
 
-
-
 void GUIPort::hide()
 {
     this->magnify(false);
@@ -729,17 +727,17 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 
 //! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
 //! @param togglePortsActionTriggered is true if ports shall be hidden, otherwise false.
-void GUIPort::hideIfNotConnected(bool togglePortsActionTriggered)
+void GUIPort::showIfNotConnected(bool doShow)
 {
     if(mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab == mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
-        if(!isConnected() && !togglePortsActionTriggered)
-        {
-            this->hide();
-        }
-        else if(!isConnected() && togglePortsActionTriggered)
+        if(!isConnected() && doShow)
         {
             this->show();
+        }
+        else
+        {
+            this->hide();
         }
     }
 }
