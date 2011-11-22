@@ -1183,16 +1183,16 @@ void GUIModelObject::refreshAppearance()
 }
 
 
+QString GUIModelObject::getHelpPicture()
+{
+    return mGUIModelObjectAppearance.getHelpPicture();
+}
+
+
 //! @brief Reimplementation - a model object is never "invisible", only its icon is
 bool GUIModelObject::isVisible()
 {
     return mpIcon->isVisible();
-}
-
-
-QString GUIModelObject::getHelpPicture()
-{
-    return mGUIModelObjectAppearance.getHelpPicture();
 }
 
 

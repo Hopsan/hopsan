@@ -129,6 +129,7 @@ void GUIContainerObject::connectMainWindowActions()
     // Update the main window toolbar action buttons that are system specific
     gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
     gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
+    gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
@@ -143,7 +144,7 @@ void GUIContainerObject::disconnectMainWindowActions()
 
     disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,    SLOT(toggleNames(bool)));
     disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,    SLOT(showSubcomponentPorts(bool)));
-    disconnect(gpMainWindow->mpToggleSignalsAction,   SIGNAL(triggered(bool)),    this,     SLOT(toggleSignals(bool)));
+    disconnect(gpMainWindow->mpToggleSignalsAction,   SIGNAL(triggered(bool)),    this,    SLOT(toggleSignals(bool)));
     disconnect(gpMainWindow->mpDisableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoDisabled(bool)));
     disconnect(gpMainWindow->mpCutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->mpCopyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));

@@ -475,7 +475,7 @@ void GUIConnector::finishCreation()
 
     if(mpGUIConnectorAppearance->getStyle() == SIGNALCONNECTOR)
     {
-        connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+        connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)));
     }
 }
 
