@@ -64,8 +64,8 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
 {
         //Initialize
     setIsCreatingConnector(false);
-    mPortsHidden = !gpMainWindow->mpTogglePortsAction->isChecked();
-    mNamesHidden = !gpMainWindow->mpToggleNamesAction->isChecked();
+    mSubComponentPortsHidden = !gpMainWindow->mpTogglePortsAction->isChecked();
+    mSubComponentNamesHidden = !gpMainWindow->mpToggleNamesAction->isChecked();
     mLossesVisible = false;
     mUndoDisabled = false;
     mGfxType = USERGRAPHICS;
@@ -82,10 +82,6 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
     //Create the undastack
     mpUndoStack = new UndoStack(this);
     mpUndoStack->clear();
-
-    //! @todo, why are these here, should not change global options every time we create a subsystem, (but are they really global, or do we only use global to show system local settings)
-    gpMainWindow->mpToggleNamesAction->setChecked(true);
-    gpMainWindow->mpTogglePortsAction->setChecked(true);
 
     mpDragCopyStack = new CopyStack();
 
@@ -128,6 +124,10 @@ void GUIContainerObject::connectMainWindowActions()
     connect(gpMainWindow->getStartTimeLineEdit(), SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
     connect(gpMainWindow->getTimeStepLineEdit(),  SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()), Qt::UniqueConnection);
     connect(gpMainWindow->getFinishTimeLineEdit(),SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()), Qt::UniqueConnection);
+
+    // Update the main window toolbar action buttons that are system specific
+    gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
+    gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
@@ -932,7 +932,7 @@ QList<GUIWidget *> GUIContainerObject::getSelectedGUIWidgetPtrs()
 
 
 //! @brief Notifies container object that a gui model object has been selected
-void GUIContainerObject::rememverSelectedGUIModelObject(GUIModelObject *object)
+void GUIContainerObject::rememberSelectedGUIModelObject(GUIModelObject *object)
 {
     mSelectedGUIModelObjectsList.append(object);
 }
@@ -1091,7 +1091,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
         pConnector->getEndPort()->removeConnection(pConnector);
         if(!pConnector->getEndPort()->isConnected())
         {
-            pConnector->getEndPort()->setVisible(!mPortsHidden);
+            pConnector->getEndPort()->setVisible(!mSubComponentPortsHidden);
         }
     }
 
@@ -1100,7 +1100,7 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
     pConnector->getStartPort()->removeConnection(pConnector);
     if(!pConnector->getStartPort()->isConnected())
     {
-        pConnector->getStartPort()->setVisible(!mPortsHidden);
+        pConnector->getStartPort()->setVisible(!mSubComponentPortsHidden);
     }
 
     //Delete the connector and remove it from scene and lists
@@ -1586,19 +1586,16 @@ void GUIContainerObject::toggleNames(bool value)
     {
         emit hideAllNameText();
     }
-    mNamesHidden = !value;
-    //mpParentProjectTab->hasChanged();
+    mSubComponentNamesHidden = !value;
 }
 
 
 //! @brief Slot that sets hide ports flag to true or false
 void GUIContainerObject::showSubcomponentPorts(bool doShowThem)
 {
-    mPortsHidden = !doShowThem;
-    //mpParentProjectTab->hasChanged();
+    mSubComponentPortsHidden = !doShowThem;
+    emit showOrHideAllSubComponentPorts(doShowThem);
 }
-
-
 
 
 //! @brief Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
@@ -1797,7 +1794,7 @@ void GUIContainerObject::cancelCreatingConnector()
     if(mIsCreatingConnector)
     {
         mpTempConnector->getStartPort()->removeConnection(mpTempConnector);
-        if(!mpTempConnector->getStartPort()->isConnected() && !mPortsHidden)
+        if(!mpTempConnector->getStartPort()->isConnected() && !mSubComponentPortsHidden)
         {
             mpTempConnector->getStartPort()->show();
         }
@@ -1846,7 +1843,7 @@ void GUIContainerObject::removeOneConnectorLine(QPointF pos)
     if((mpTempConnector->getNumberOfLines() == 1 && mpTempConnector->isMakingDiagonal()) ||  (mpTempConnector->getNumberOfLines() == 2 && !mpTempConnector->isMakingDiagonal()))
     {
         mpTempConnector->getStartPort()->removeConnection(mpTempConnector);
-        if(!mpTempConnector->getStartPort()->isConnected() && !mPortsHidden)
+        if(!mpTempConnector->getStartPort()->isConnected() && !mSubComponentPortsHidden)
         {
             mpTempConnector->getStartPort()->show();
         }
@@ -1918,16 +1915,16 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 
 
 //! @brief Tells whether or not unconnected ports in container are hidden
-bool GUIContainerObject::arePortsHidden()
+bool GUIContainerObject::areSubComponentPortsHidden()
 {
-    return mPortsHidden;
+    return mSubComponentPortsHidden;
 }
 
 
 //! @brief Tells whether or not object names in container are hidden
-bool GUIContainerObject::areNamesHidden()
+bool GUIContainerObject::areSubComponentNamesHidden()
 {
-    return mNamesHidden;
+    return mSubComponentNamesHidden;
 }
 
 

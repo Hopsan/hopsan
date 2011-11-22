@@ -856,8 +856,8 @@ void ProjectTabWidget::tabChanged()
             gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->getSystem()->getGfxType());
         }
 
-        gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentContainer()->areNamesHidden());
-        gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentContainer()->arePortsHidden());
+        gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentContainer()->areSubComponentNamesHidden());
+        gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentContainer()->areSubComponentPortsHidden());
         gpMainWindow->mpShowLossesAction->setChecked(getCurrentContainer()->areLossesVisible());
     }
 }

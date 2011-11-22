@@ -76,7 +76,7 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
         this->setNameTextScale(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->getZoomFactor());
     }
     this->setNameTextPos(0); //Set initial name text position
-    if(pParentContainer != 0 && pParentContainer->areNamesHidden())
+    if(pParentContainer != 0 && pParentContainer->areSubComponentNamesHidden())
     {
         this->hideName(NOUNDO);
     }
@@ -917,7 +917,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
     {
         if(this->isSelected())
         {
-            mpParentContainerObject->rememverSelectedGUIModelObject(this);
+            mpParentContainerObject->rememberSelectedGUIModelObject(this);
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
@@ -995,7 +995,7 @@ void GUIModelObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-            if ((*i)->isConnected() || mpParentContainerObject->arePortsHidden())
+            if ((*i)->isConnected() || mpParentContainerObject->areSubComponentPortsHidden())
             {
                 (*i)->hide();
             }

@@ -68,7 +68,7 @@ public:
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool hasGUIModelObject(QString name);
-    void rememverSelectedGUIModelObject(GUIModelObject *object);
+    void rememberSelectedGUIModelObject(GUIModelObject *object);
     void forgetSelectedGUIModelObject(GUIModelObject *object);
     QList<GUIModelObject *> getSelectedGUIModelObjectPtrs();
     bool isSubObjectSelected();
@@ -194,8 +194,8 @@ public slots:
     //Appearance slots
     void setGfxType(graphicsType gfxType);
     graphicsType getGfxType();
-    bool arePortsHidden();
-    bool areNamesHidden();
+    bool areSubComponentPortsHidden();
+    bool areSubComponentNamesHidden();
 
     //Properties slots
     void openPropertiesDialogSlot();
@@ -234,6 +234,10 @@ signals:
     //Hide/show signals
     void hideAllNameText();
     void showAllNameText();
+    void showOrHideAllNameText(bool doShow); //!< @todo use this instead of two separate show hide
+
+    // Hide/Show subcomponent ports
+    void showOrHideAllSubComponentPorts(bool doShow);
 
     //Other signals
     void checkMessages();
@@ -288,8 +292,8 @@ protected:
     size_t mHighestWidgetIndex;
 
     //Contained object appearance members
-    bool mPortsHidden;
-    bool mNamesHidden;
+    bool mSubComponentPortsHidden;
+    bool mSubComponentNamesHidden;
     graphicsType mGfxType;
 
     //Plot members

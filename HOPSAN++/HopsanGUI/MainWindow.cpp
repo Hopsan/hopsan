@@ -999,7 +999,7 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
     {
-        mpTogglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->getSystem()->arePortsHidden());
+        mpTogglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->getSystem()->areSubComponentPortsHidden());
     }
 
     bool noTabs = !(mpProjectTabs->count() > 0);

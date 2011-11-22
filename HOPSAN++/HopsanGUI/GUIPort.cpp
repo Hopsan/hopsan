@@ -113,17 +113,18 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     mPortAppearanceAfterLastRefresh = *mpPortAppearance; //Remember current appearance
 
-    if( this->getParentContainerObjectPtr() != 0 )
-    {
-        this->showIfNotConnected( !this->getParentContainerObjectPtr()->arePortsHidden() );
-    }
-
     this->setAcceptHoverEvents(true);
 
-    //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
-    GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //! @todo need to be able to access this in some nicer way then ptr madness, also in aother places
-    connect(gpMainWindow->mpTogglePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(showIfNotConnected(bool)));
-    connect(pView,                              SIGNAL(zoomChange(qreal)),  this, SLOT(refreshPortOverlayScale(qreal)));
+    // Determine if the port should be shown or not
+    if( this->getParentContainerObjectPtr() != 0 )
+    {
+        this->showIfNotConnected( !this->getParentContainerObjectPtr()->areSubComponentPortsHidden() );
+    }
+
+    // Create signal connection to the zoom change signal for port overlay scaling and port hide/show function
+    GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
+    connect(getParentContainerObjectPtr(),  SIGNAL(showOrHideAllSubComponentPorts(bool)),   this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
+    connect(pView,                          SIGNAL(zoomChange(qreal)),                      this,   SLOT(refreshPortOverlayScale(qreal)),   Qt::UniqueConnection);
 }
 
 GUIPort::~GUIPort()
@@ -726,11 +727,11 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 
 
 //! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
-//! @param togglePortsActionTriggered is true if ports shall be hidden, otherwise false.
+//! @param doShow shall we show unconnected ports
 void GUIPort::showIfNotConnected(bool doShow)
 {
-    if(mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab == mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
-    {
+//    if(mpParentGuiModelObject->getParentContainerObject() == gpMainWindow->mpProjectTabs->getCurrentContainer())
+//    {
         if(!isConnected() && doShow)
         {
             this->show();
@@ -739,7 +740,7 @@ void GUIPort::showIfNotConnected(bool doShow)
         {
             this->hide();
         }
-    }
+//    }
 }
 
 

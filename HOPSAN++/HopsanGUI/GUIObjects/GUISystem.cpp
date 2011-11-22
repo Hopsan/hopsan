@@ -251,9 +251,9 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
             appendViewPortTag(guiStuff, x, y, zoom);
         }
         QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
-        portsHiddenElement.setAttribute("hidden", mPortsHidden);
+        portsHiddenElement.setAttribute("hidden", mSubComponentPortsHidden);
         QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
-        namesHiddenElement.setAttribute("hidden", mNamesHidden);
+        namesHiddenElement.setAttribute("hidden", mSubComponentNamesHidden);
 
         QDomElement scriptFileElement = appendDomElement(guiStuff, HMF_SCRIPTFILETAG);
         scriptFileElement.setAttribute("path", mScriptFilePath);
@@ -371,10 +371,10 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         this->setDisplayName(realName); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
-        this->mNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
-        this->mPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
-        gpMainWindow->mpToggleNamesAction->setChecked(!mNamesHidden);
-        gpMainWindow->mpTogglePortsAction->setChecked(!mPortsHidden);
+        this->mSubComponentNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
+        this->mSubComponentPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
+        gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
+        gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
         double y = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("y").toDouble();
         double zoom = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("zoom").toDouble();
