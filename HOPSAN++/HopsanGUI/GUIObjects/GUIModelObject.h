@@ -60,6 +60,7 @@ public:
     void setAppearanceDataBasePath(const QString basePath);
     virtual GUIModelObjectAppearance* getAppearanceData();
     virtual void refreshAppearance();
+    bool isVisible();
 
     //Help methods
     QString getHelpPicture();

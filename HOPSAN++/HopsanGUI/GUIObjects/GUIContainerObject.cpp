@@ -109,6 +109,7 @@ void GUIContainerObject::connectMainWindowActions()
 
     connect(gpMainWindow->mpTogglePortsAction,    SIGNAL(triggered(bool)),    this,     SLOT(showSubcomponentPorts(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpToggleNamesAction,    SIGNAL(triggered(bool)),    this,     SLOT(toggleNames(bool)), Qt::UniqueConnection);
+    connect(gpMainWindow->mpToggleSignalsAction,  SIGNAL(triggered(bool)),    this,     SLOT(toggleSignals(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpDisableUndoAction,    SIGNAL(triggered(bool)),    this,     SLOT(setUndoDisabled(bool)), Qt::UniqueConnection);
     connect(gpMainWindow->mpCutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
     connect(gpMainWindow->mpCopyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
@@ -142,6 +143,7 @@ void GUIContainerObject::disconnectMainWindowActions()
 
     disconnect(gpMainWindow->mpToggleNamesAction,     SIGNAL(triggered(bool)),    this,    SLOT(toggleNames(bool)));
     disconnect(gpMainWindow->mpTogglePortsAction,     SIGNAL(triggered(bool)),    this,    SLOT(showSubcomponentPorts(bool)));
+    disconnect(gpMainWindow->mpToggleSignalsAction,   SIGNAL(triggered(bool)),    this,     SLOT(toggleSignals(bool)));
     disconnect(gpMainWindow->mpDisableUndoAction,     SIGNAL(triggered(bool)),    this,    SLOT(setUndoDisabled(bool)));
     disconnect(gpMainWindow->mpCutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
     disconnect(gpMainWindow->mpCopyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
@@ -1590,6 +1592,12 @@ void GUIContainerObject::toggleNames(bool value)
 }
 
 
+void GUIContainerObject::toggleSignals(bool value)
+{
+    mSignalsHidden = !value;
+    emit showOrHideSignals(value);
+}
+
 //! @brief Slot that sets hide ports flag to true or false
 void GUIContainerObject::showSubcomponentPorts(bool doShowThem)
 {
@@ -1925,6 +1933,13 @@ bool GUIContainerObject::areSubComponentPortsHidden()
 bool GUIContainerObject::areSubComponentNamesHidden()
 {
     return mSubComponentNamesHidden;
+}
+
+
+//! @brief Tells whether or not signal components are hidden
+bool GUIContainerObject::areSignalsHidden()
+{
+    return mSignalsHidden;
 }
 
 

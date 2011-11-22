@@ -48,7 +48,7 @@ GUIComponent::GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppea
     //Component shall be hidden when toggle signals is deactivated, if it is of signal type and has no power ports (= is a sensor)
     if(this->getTypeCQS() == "S" && !this->hasPowerPorts())
     {
-        connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+        connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)));
     }
 
     QStringList defaultParameterNames = getParameterNames();
@@ -241,6 +241,10 @@ QString GUIComponent::getDefaultParameter(QString name)
 void GUIComponent::setVisible(bool visible)
 {
     this->mpIcon->setVisible(visible);
+    for(int i=0; i<mPortListPtrs.size(); ++i)
+    {
+        mPortListPtrs.at(i)->showIfNotConnected(!mpParentContainerObject->areSubComponentPortsHidden());
+    }
 }
 
 

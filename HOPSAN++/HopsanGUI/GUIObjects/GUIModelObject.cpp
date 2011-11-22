@@ -274,6 +274,7 @@ void GUIModelObject::setName(QString /*name*/)
 }
 
 
+
 //! @brief Returns a list with pointers to the ports in the object
 QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 {
@@ -1180,6 +1181,14 @@ void GUIModelObject::refreshAppearance()
 
     this->refreshDisplayName();
 }
+
+
+//! @brief Reimplementation - a model object is never "invisible", only its icon is
+bool GUIModelObject::isVisible()
+{
+    return mpIcon->isVisible();
+}
+
 
 QString GUIModelObject::getHelpPicture()
 {

@@ -88,7 +88,7 @@ public:
     GUIModelObject *mpParentGuiModelObject; //!< @todo make private
 
 public slots:
-    void showIfNotConnected(bool doShow);
+    void showIfNotConnected(bool doShow=true);
     void setVisible(bool value);
     PlotWindow* plot(QString dataName, QString dataUnit=QString());
     void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString());

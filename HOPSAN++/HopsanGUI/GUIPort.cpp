@@ -124,6 +124,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     // Create signal connection to the zoom change signal for port overlay scaling and port hide/show function
     GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
     connect(getParentContainerObjectPtr(),  SIGNAL(showOrHideAllSubComponentPorts(bool)),   this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
+    connect(mpParentGuiModelObject,         SIGNAL(visibleChanged()),                       this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
     connect(pView,                          SIGNAL(zoomChange(qreal)),                      this,   SLOT(refreshPortOverlayScale(qreal)),   Qt::UniqueConnection);
 }
 
@@ -732,7 +733,7 @@ void GUIPort::showIfNotConnected(bool doShow)
 {
 //    if(mpParentGuiModelObject->getParentContainerObject() == gpMainWindow->mpProjectTabs->getCurrentContainer())
 //    {
-        if(!isConnected() && doShow)
+        if(!isConnected() && doShow && mpParentGuiModelObject->isVisible())
         {
             this->show();
         }

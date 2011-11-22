@@ -165,6 +165,7 @@ public slots:
     void hideNames();
     void showNames();
     void toggleNames(bool value);
+    void toggleSignals(bool value);
     void showSubcomponentPorts(bool doShowThem);
 
     //Connector slots
@@ -196,6 +197,7 @@ public slots:
     graphicsType getGfxType();
     bool areSubComponentPortsHidden();
     bool areSubComponentNamesHidden();
+    bool areSignalsHidden();
 
     //Properties slots
     void openPropertiesDialogSlot();
@@ -231,13 +233,16 @@ signals:
     void deselectAllGUIConnectors();
     void selectAllGUIConnectors();
 
-    //Hide/show signals
+    //Hide/show name text
     void hideAllNameText();
     void showAllNameText();
     void showOrHideAllNameText(bool doShow); //!< @todo use this instead of two separate show hide
 
     // Hide/Show subcomponent ports
     void showOrHideAllSubComponentPorts(bool doShow);
+
+    //Hide/show signals components
+    void showOrHideSignals(bool doShow);
 
     //Other signals
     void checkMessages();
@@ -294,6 +299,7 @@ protected:
     //Contained object appearance members
     bool mSubComponentPortsHidden;
     bool mSubComponentNamesHidden;
+    bool mSignalsHidden;
     graphicsType mGfxType;
 
     //Plot members
