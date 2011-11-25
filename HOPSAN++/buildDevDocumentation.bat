@@ -1,7 +1,7 @@
 @ECHO OFF
-cd docs
+cd doc
 doxygen devDoxyfile
 echo.
-echo You can read the documentation by opening the file ./docs/dev/html/index.html
+echo You can read the documentation by opening the file ./doc/dev/html/index.html
 echo.
 pause

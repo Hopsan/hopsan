@@ -1,6 +1,6 @@
 @ECHO OFF
-cd docs
+cd doc
 doxygen userDoxyfile
 echo.
-echo You can read the documentation by opening the file ./docs/user/html/index.html
+echo You can read the documentation by opening the file ./doc/user/html/index.html
 echo.
