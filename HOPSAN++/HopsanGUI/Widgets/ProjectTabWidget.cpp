@@ -93,11 +93,27 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpGraphicsView  = new GraphicsView(this);
     mpGraphicsView->setScene(mpSystem->getContainedScenePtr());
 
-    QVBoxLayout *tabLayout = new QVBoxLayout(this);
+#ifdef XMAS
+    QLabel *pBalls = new QLabel(this);
+    QPixmap imageStars;
+    imageStars.load(QString(GRAPHICSPATH) + "balls.png");
+    pBalls->setPixmap(imageStars);
+    pBalls->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    pBalls->setFixedWidth(200);
+    pBalls->setFixedHeight(217);
+    pBalls->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    //mpCentralGridLayout->addWidget(pStars,0,0,1,1);
+#endif
+
+    //QVBoxLayout *tabLayout = new QVBoxLayout(this);
+    QGridLayout *tabLayout = new QGridLayout(this);
     tabLayout->setSpacing(0);
-    tabLayout->addWidget(mpQuickNavigationWidget);
-    tabLayout->addWidget(mpGraphicsView);
-    tabLayout->addWidget(mpExternalSystemWidget);
+    tabLayout->addWidget(mpQuickNavigationWidget,0,0,0,0);
+    tabLayout->addWidget(mpGraphicsView,1,0,2,2);
+#ifdef XMAS
+    tabLayout->addWidget(pBalls, 1,1);
+#endif
+    tabLayout->addWidget(mpExternalSystemWidget,3,0);
     //this->setLayout(tabLayout);
 
     mpGraphicsView->centerView();

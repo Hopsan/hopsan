@@ -57,9 +57,14 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     this->setMouseTracking(true);
     this->setAttribute(Qt::WA_NoMousePropagation, false);
 
-    mpHeading = new QLabel();
+
+    mpHeading = new QLabel(this);
     QPixmap image;
+#ifdef XMAS
+    image.load(QString(GRAPHICSPATH) + "welcome_xmas.png");
+#else
     image.load(QString(GRAPHICSPATH) + "welcome.png");
+#endif
     mpHeading->setPixmap(image);
     mpHeading->setAlignment(Qt::AlignCenter);
 
@@ -163,6 +168,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //pLayout->addWidget(pStars,                  0, 0);
     pLayout->addWidget(mpHeading,               0, 0);
     pLayout->addWidget(mpNewVersionButton,      1, 0);
     pLayout->addLayout(pButtonLayout,           2, 0);

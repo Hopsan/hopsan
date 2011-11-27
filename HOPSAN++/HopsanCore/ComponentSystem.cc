@@ -2175,7 +2175,7 @@ public:
     //! @param *pBarrier_C Pointer to barrier before C-type components
     //! @param *pBarrier_Q Pointer to barrier before Q-type components
     //! @param *pBarrier_N Pointer to barrier before node logging
-    taskSimMaster(vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector, double *pSimTime,
+    taskSimMaster(vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector, vector<double *> pSimTimes,
                   double startTime, double timeStep, double stopTime, size_t nThreads, size_t threadID,
                   BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
@@ -2183,7 +2183,7 @@ public:
         mVectorC = cVector;
         mVectorQ = qVector;
         mVectorN = nVector;
-        mpSimTime = pSimTime;
+        mpSimTimes = pSimTimes;
         mTime = startTime;
         mStopTime = stopTime;
         mTimeStep = timeStep;
@@ -2246,7 +2246,8 @@ public:
                 mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
             }
 
-            *mpSimTime = mTime;     //Update time in component system, so that progress bar can use it
+            for(size_t i=0; i<mpSimTimes.size(); ++i)
+                *mpSimTimes[i] = mTime;     //Update time in component system, so that progress bar can use it
 
             mTime += mTimeStep;
         }
@@ -2259,7 +2260,8 @@ private:
     double mStopTime;
     double mTimeStep;
     double mTime;
-    double *mpSimTime;
+    vector<double *> mpSimTimes;
+    size_t mnSystems;
     size_t mnThreads;
     size_t mThreadID;
     BarrierLock *mpBarrier_S;
@@ -2303,9 +2305,12 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
     BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
 
+    vector<double *> vTimePtrs;
+    vTimePtrs.push_back(&mTime);
+
     //Execute simulation
     simTasks->run(taskSimMaster(splitSignalVector[0], splitCVector[0], splitQVector[0],             //Create master thread
-                                splitNodeVector[0], &mTime, mTime, mTimestep, stopTsafe, nThreads, 0,
+                                splitNodeVector[0], vTimePtrs, mTime, mTimestep, stopTsafe, nThreads, 0,
                                 pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
 
     for(size_t t=1; t < nThreads; ++t)
@@ -2316,6 +2321,77 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
     simTasks->wait();                                           //Wait for all tasks to finish
     delete(simTasks);                                           //Delete the tasks
+}
+
+
+void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector)
+{
+    double stopTsafe = stopT - systemVector.at(0)->getDesiredTimeStep()/2.0;                   //Calculate the "actual" stop time
+                                                                                                                //Minus half a timestep is here to ensure that no numerical issues occur
+    double timeStep = systemVector.at(0)->getDesiredTimeStep();     //! @todo This can't be right...
+
+    vector< vector<Component*> > combinedSplitCVector;                  //Create combined vectors
+    vector< vector<Component*> > combinedSplitQVector;
+    vector< vector<Component*> > combinedSplitSignalVector;
+    vector< vector<Node*> > combinedSplitNodeVector;
+
+    vector<double *> vTimePtrs;
+
+    size_t nThreads = systemVector.at(0)->getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
+
+    //Loop through the systems, fetch the components & nodes and add them to the combined vectors
+    for(int i=0; i<systemVector.size(); ++i)
+    {
+        double *pTime = systemVector.at(i)->getTimePtr();
+        *pTime = startT;
+
+        systemVector.at(i)->logAllNodes(*pTime);                                         //Log the first time step
+
+        systemVector.at(i)->simulateAndMeasureTime(5);                                  //Measure time
+        systemVector.at(i)->sortComponentVectorsByMeasuredTime();                       //Sort component vectors
+
+        vector< vector<Component*> > splitCVector;                  //Create split vectors
+        vector< vector<Component*> > splitQVector;
+        vector< vector<Component*> > splitSignalVector;
+        vector< vector<Node*> > splitNodeVector;
+
+        systemVector.at(i)->distributeCcomponents(splitCVector, nThreads);              //Distribute Q-type components
+        systemVector.at(i)->distributeQcomponents(splitQVector, nThreads);              //Distribute C-type components
+        systemVector.at(i)->distributeSignalcomponents(splitSignalVector, nThreads);    //"Distribute" signal components
+        systemVector.at(i)->distributeNodePointers(splitNodeVector, nThreads);          //Distribute node pointers
+
+        //Append new split vectors to combined vectors
+        combinedSplitCVector.insert(combinedSplitCVector.end(), splitCVector.begin(), splitCVector.end());
+        combinedSplitQVector.insert(combinedSplitQVector.end(), splitQVector.begin(), splitQVector.end());
+        combinedSplitSignalVector.insert(combinedSplitSignalVector.end(), splitSignalVector.begin(), splitSignalVector.end());
+        combinedSplitNodeVector.insert(combinedSplitNodeVector.end(), splitNodeVector.begin(), splitNodeVector.end());
+
+        vTimePtrs.push_back(systemVector.at(i)->getTimePtr());
+    }
+
+    tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
+    simTasks = new tbb::task_group;
+
+    BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
+    BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
+    BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
+    BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
+
+
+
+    //Execute simulation
+    simTasks->run(taskSimMaster(combinedSplitSignalVector[0], combinedSplitCVector[0], combinedSplitQVector[0],             //Create master thread
+                                combinedSplitNodeVector[0], vTimePtrs, (*vTimePtrs[0]), timeStep, stopTsafe, nThreads, 0,
+                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+
+    for(size_t t=1; t < nThreads; ++t)
+    {
+        simTasks->run(taskSimSlave(combinedSplitSignalVector[t], combinedSplitCVector[t], combinedSplitQVector[t],          //Create slave threads
+                                   combinedSplitNodeVector[t], (*vTimePtrs[0]), timeStep, stopTsafe, nThreads, t,
+                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+    }
+    simTasks->wait();                                           //Wait for all tasks to finish
+    delete(simTasks);
 }
 
 

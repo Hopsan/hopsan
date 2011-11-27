@@ -106,5 +106,7 @@
         <file>graphics/uiicons/Hopsan-Optimize.png</file>
         <file>graphics/objecticons/missingComponent.xml</file>
         <file>graphics/objecticons/missingcomponent.svg</file>
+        <file>graphics/balls.png</file>
+        <file>graphics/welcome_xmas.png</file>
     </qresource>
 </RCC>

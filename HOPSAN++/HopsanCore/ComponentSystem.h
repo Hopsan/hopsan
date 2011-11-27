@@ -125,6 +125,8 @@ namespace hopsan {
         void simulate(const double startT, const double stopT);
         void finalize(const double startT, const double stopT);
 
+        void logAllNodes(const double time);
+
         //Set and get desired timestep
         void setDesiredTimestep(const double timestep);
         void setInheritTimestep(const bool inherit=true);
@@ -149,7 +151,6 @@ namespace hopsan {
 
         //log specific functions
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
-        void logAllNodes(const double time);
 
         //Add and Remove sub nodes
         void addSubNode(Node* node_ptr);
