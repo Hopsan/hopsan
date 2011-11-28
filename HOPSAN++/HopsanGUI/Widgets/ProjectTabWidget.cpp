@@ -109,7 +109,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     //QVBoxLayout *tabLayout = new QVBoxLayout(this);
     QGridLayout *tabLayout = new QGridLayout(this);
     tabLayout->setSpacing(0);
-    tabLayout->addWidget(mpQuickNavigationWidget,0,0,0,0);
+    tabLayout->addWidget(mpQuickNavigationWidget,0,0,1,2);
     tabLayout->addWidget(mpGraphicsView,1,0,2,2);
 #ifdef XMAS
     tabLayout->addWidget(pBalls, 1,1);
