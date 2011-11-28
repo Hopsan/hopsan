@@ -108,6 +108,7 @@ PlotVariableTree::PlotVariableTree(MainWindow *parent)
         gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().clear();
         connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
         connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+        connect(gpMainWindow->mpProjectTabs, SIGNAL(simulationFinished()), this, SLOT(updateList()));
     }
 
     this->setDragEnabled(true);
@@ -220,7 +221,9 @@ void PlotVariableTree::updateList()
         // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated.
         // It must first be disconnected in case it was already connected, to avoid duplication of connection.
     disconnect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+    disconnect(gpMainWindow->mpProjectTabs, SIGNAL(simulationFinished()), this, SLOT(updateList()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(simulationFinished()), this, SLOT(updateList()));
 }
 
 

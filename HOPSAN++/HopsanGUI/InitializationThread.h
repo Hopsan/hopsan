@@ -27,6 +27,7 @@
 #define INITIALIZATIONTHREAD_H
 
 #include <QThread>
+#include <QVector>
 
 class ProjectTab;
 class CoreSystemAccess;
@@ -48,6 +49,25 @@ private:
 
     ProjectTab *mpParentProjectTab;
     CoreSystemAccess *mpGUIRootSystem;
+};
+
+
+class MultipleInitializationThread : public QThread
+{
+public:
+    MultipleInitializationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, size_t nSamples);
+    const bool wasInitSuccessful() const;
+
+protected:
+    void run();
+
+private:
+    double mStartTime;
+    double mFinishTime;
+    size_t mSamples;
+    bool mInitSuccessful;
+
+    QVector<CoreSystemAccess *> mvGUIRootSystemPtrs;
 };
 
 #endif // INITIALIZATIONTHREAD_H

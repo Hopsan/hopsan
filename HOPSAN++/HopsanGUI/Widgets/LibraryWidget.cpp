@@ -487,7 +487,7 @@ void LibraryWidget::importFmu()
     if(!QDir(gExecPath + "../import/FMU").exists())
         QDir().mkdir(gExecPath + "../import/FMU");
 
-    if(!QDir(gExecPath + "../import/FMU/" + fmuName).exists());
+    if(!QDir(gExecPath + "../import/FMU/" + fmuName).exists())
         QDir().mkdir(gExecPath + "../import/FMU/" + fmuName);
 
     QString fmuPath = gExecPath + "../import/FMU/" + fmuName;

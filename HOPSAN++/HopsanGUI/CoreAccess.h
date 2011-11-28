@@ -59,8 +59,10 @@ public:
 
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
     ~CoreSystemAccess();
+    hopsan::ComponentSystem *getCoreSystemPtr();
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
     void deleteRootSystemPtr(); //!< @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
+
 
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);
@@ -103,10 +105,11 @@ public:
     bool isSimulationOk();
     bool initialize(double mStartTime, double mFinishTime, int nSamples=2048);
     void simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0);
-    void simulate(double mStartTime, double mFinishTime);
+    void simulate(double mStartTime, double mFinishTime);       //! @todo Not used, remove?
     void finalize(double mStartTime, double mFinishTime);
     double getCurrentTime();
     void stop();
+    void simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0);
 
     void deleteSystemPort(QString portname);
     QString addSystemPort(QString portname);

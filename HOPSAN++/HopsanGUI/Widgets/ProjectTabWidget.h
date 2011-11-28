@@ -63,10 +63,12 @@ public slots:
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
+    bool simulateAllOpenModels();
 
 signals:
     void checkMessages();
     void newTabAdded();
+    void simulationFinished();
 
 private:
     size_t mNumberOfUntitledTabs;

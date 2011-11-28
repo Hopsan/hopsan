@@ -64,6 +64,40 @@ const bool InitializationThread::wasInitSuccessful() const
 void InitializationThread::run()
 {
     mInitSuccessful = mpGUIRootSystem->initialize(mStartTime, mFinishTime, mSamples);
+    qDebug() << "Initialized!";
+    //exec(); //Is used if one want to run an event loop in this thread.
+}
+
+
+
+
+//! Constructor.
+MultipleInitializationThread::MultipleInitializationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, size_t nSamples)
+{
+    mvGUIRootSystemPtrs = vGUIRootSystemPtrs;
+
+    mStartTime = startTime;
+    mFinishTime = finishTime;
+    mSamples = nSamples;
+
+}
+
+//! @brief Check if initialize was successful
+const bool MultipleInitializationThread::wasInitSuccessful() const
+{
+    return mInitSuccessful;
+}
+
+
+//! Implements the task for the thread.
+void MultipleInitializationThread::run()
+{
+    mInitSuccessful = true;
+    for(int i=0; i<mvGUIRootSystemPtrs.size(); ++i)
+    {
+        if(!mvGUIRootSystemPtrs.at(i)->initialize(mStartTime, mFinishTime, mSamples))
+            mInitSuccessful = false;
+    }
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

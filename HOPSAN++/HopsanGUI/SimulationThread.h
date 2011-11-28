@@ -27,6 +27,7 @@
 #define SIMULATIONTHREAD_H
 
 #include <QThread>
+#include <QVector>
 
 //Forward Declaration
 class CoreSystemAccess;
@@ -46,4 +47,18 @@ private:
 
 };
 
+class MultipleSimulationThread : public QThread
+{
+public:
+    MultipleSimulationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, QObject *parent);
+
+protected:
+    void run();
+
+private:
+    QVector<CoreSystemAccess *> mvGUIRootSystemPtrs;
+    double mStartTime;
+    double mFinishTime;
+
+};
 #endif // SIMULATIONTHREAD_H

@@ -573,6 +573,11 @@ void MainWindow::createActions()
     this->addAction(mpSaveToWrappedCodeAction);
     connect(mpSaveToWrappedCodeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
 
+    mpDebugAction = new QAction(this);
+    mpDebugAction->setShortcut(QKeySequence("Ctrl+D+1"));
+    this->addAction(mpDebugAction);
+    connect(mpDebugAction, SIGNAL(triggered()), mpProjectTabs, SLOT(simulateAllOpenModels()));
+
     mpCreateSimulinkWrapperAction = new QAction(this);
     //mpCreateSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));
     this->addAction(mpCreateSimulinkWrapperAction);
@@ -890,7 +895,7 @@ void MainWindow::showToolBarHelpPopup()
     QAction *pHoveredAction = mpSimToolBar->actionAt(mpSimToolBar->mapFromGlobal(cursor.pos()));
     if(pHoveredAction == mpSimulateAction)
     {
-        showHelpPopupMessage("Starts a new simlation of current model.");
+        showHelpPopupMessage("Starts a new simulation of current model.");
     }
     else if(pHoveredAction == mpOptimizeAction)
     {

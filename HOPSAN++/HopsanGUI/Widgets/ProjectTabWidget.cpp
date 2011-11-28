@@ -81,6 +81,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
+    connect(mpParentProjectTabWidget, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
 
     emit checkMessages();
 
@@ -901,4 +902,143 @@ void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 void ProjectTabWidget::showLosses(bool show)
 {
     qobject_cast<GUISystem*>(getCurrentContainer())->showLosses(show);
+}
+
+
+bool ProjectTabWidget::simulateAllOpenModels()
+{
+    qDebug() << "simulateAllOpenModels()";
+
+    if(count() > 0)
+    {
+        GUISystem *pMainSystem = getCurrentTopLevelSystem();     //All systems will use start time, stop time and time step from this system
+
+        MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
+
+        pMainSystem->updateStartTime();
+        pMainSystem->updateStopTime();
+        pMainSystem->updateTimeStep();
+
+            //Setup simulation parameters
+        double startTime = pMainSystem->getStartTime();
+        double finishTime = pMainSystem->getStopTime();
+        double dt = finishTime - startTime;
+        size_t nSteps = dt/pMainSystem->getCoreSystemAccessPtr()->getDesiredTimeStep();
+        size_t nSamples = pMainSystem->getNumberOfLogSamples();
+
+        for(int i=0; i<count(); ++i)
+        {
+            if(!getSystem(i)->getCoreSystemAccessPtr()->isSimulationOk())
+            {
+                emit checkMessages();
+                return false;
+            }
+        }
+
+        qDebug() << "Initializing simulation!";
+
+            //Ask core to initialize simulation
+        QVector<CoreSystemAccess*> coreAccessVector;
+        for(int i=0; i<count(); ++i)
+        {
+            coreAccessVector.append(getSystem(i)->getCoreSystemAccessPtr());
+        }
+        MultipleInitializationThread actualInitialization(coreAccessVector, startTime, finishTime, nSamples);
+        actualInitialization.start(QThread::HighestPriority);
+
+        ProgressBarThread progressThread(this);
+        QProgressDialog progressBar(tr("Initializing simulation..."), tr("&Abort initialization"), 0, 0, this);
+        if(gConfig.getEnableProgressBar())
+        {
+            progressBar.setWindowModality(Qt::WindowModal);
+            progressBar.setWindowTitle(tr("Simulate!"));
+            size_t i=0;
+            while (actualInitialization.isRunning())
+            {
+                progressThread.start();
+                progressThread.setPriority(QThread::TimeCriticalPriority);//(QThread::LowestPriority);
+                progressThread.wait();
+                progressBar.setValue(i++);
+                if (progressBar.wasCanceled())
+                {
+                    for(int i=0; i<count(); ++i)
+                    {
+                        getSystem(i)->getCoreSystemAccessPtr()->stop();
+                    }
+                }
+            }
+            progressBar.setValue(i);
+        }
+
+        actualInitialization.wait(); //Make sure actualSimulation does not go out of scope during simulation
+        actualInitialization.quit();
+        const bool initSuccess = actualInitialization.wasInitSuccessful();
+
+        QTime simTimer;
+        if (initSuccess)
+        {
+            //! @todo we should not start simulation if init was aborted/stoped from inside hopsan core, dont just look at the progress bar button
+            //Ask core to execute (and finalize) simulation
+            if (!progressBar.wasCanceled())
+            {
+                if(gConfig.getUseMulticore())
+                    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting multi-threaded simulation of all models");
+                else
+                    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting single-threaded simulation of all models");
+
+                simTimer.start();
+                MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, this);
+                actualSimulation.start();
+                actualSimulation.setPriority(QThread::HighestPriority);
+
+                if(gConfig.getEnableProgressBar())
+                {
+                    progressBar.setLabelText(tr("Running simulation..."));
+                    progressBar.setCancelButtonText(tr("&Abort simulation"));
+                    progressBar.setMinimum(0);
+                    progressBar.setMaximum(nSteps);
+                    while (actualSimulation.isRunning())
+                    {
+                        progressThread.start();
+                        progressThread.setPriority(QThread::LowestPriority);
+                        progressThread.wait();
+                        progressBar.setValue((size_t)(pMainSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
+                        if (progressBar.wasCanceled())
+                        {
+                            for(int i=0; i<count(); ++i)
+                            {
+                                getSystem(i)->getCoreSystemAccessPtr()->stop();
+                            }
+                        }
+                    }
+                    progressThread.quit();
+                    progressBar.setValue((size_t)(pMainSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
+                }
+
+                actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+                actualSimulation.quit();
+                //emit checkMessages();
+            }
+        }
+
+        //! @todo we should be able to see if simulation was actaully completet successfully not only check the progress bar button
+        QString timeString;
+        timeString.setNum(simTimer.elapsed());
+        if (progressBar.wasCanceled() || !initSuccess)
+        {
+            pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of all systems was terminated!")));
+        }
+        else
+        {
+            pMessageWidget->printGUIInfoMessage(QString(tr("Simulated all systems successfully!  Simulation time: ").append(timeString).append(" ms")));
+            emit simulationFinished();
+            //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotWidget->mpVariableList->updateList();
+        }
+        emit checkMessages();
+
+        return (!progressBar.wasCanceled() && initSuccess);
+
+
+        //getSystem(i)->getCoreSystemAccessPtr()->simlateAllOpenModels();
+    }
 }

@@ -113,6 +113,7 @@ namespace hopsan {
         bool initialize(const double startT, const double stopT, const size_t nSamples=2048);
         void simulateMultiThreadedOld(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0);
+        void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector);
         #ifdef USETBB
         void simulateAndMeasureTime(size_t steps = 1);
         void sortComponentVectorsByMeasuredTime();

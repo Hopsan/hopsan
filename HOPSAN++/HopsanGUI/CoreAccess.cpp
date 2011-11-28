@@ -24,7 +24,9 @@
 
 #include "CoreAccess.h"
 #include "MainWindow.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "Widgets/MessageWidget.h"
+#include "GUIObjects/GUISystem.h"
 #include <QString>
 #include <QVector>
 
@@ -81,6 +83,11 @@ CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSy
         //Creating a subsystem, setting internal pointer
         mpCoreComponentSystem = pParentCoreSystemAccess->getCoreSubSystemPtr(name);
     }
+}
+
+ComponentSystem* CoreSystemAccess::getCoreSystemPtr()
+{
+    return mpCoreComponentSystem;
 }
 
 ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
@@ -188,6 +195,28 @@ void CoreSystemAccess::stop()
 {
     mpCoreComponentSystem->stopSimulation();
 }
+
+
+void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads)
+{
+    if(type == MULTICORE)
+    {
+        std::vector<ComponentSystem *> systemVector;
+        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+        {
+            systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
+        }
+        systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector);
+    }
+    else
+    {
+        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+        {
+            gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->simulate(mStartTime, mFinishTime, MULTICORE);      //Should be SINGLECORE, this is for testing only!
+        }
+    }
+}
+
 
 QString CoreSystemAccess::getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator)
 {
@@ -331,6 +360,7 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulatio
     {
         qDebug() << "Starting multicore simulation";
         mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads);
+        qDebug() << "Finished multicore simulation";
         //mpCoreComponentSystem->simulateMultiThreadedOld(mStartTime, mFinishTime);
     }
     else

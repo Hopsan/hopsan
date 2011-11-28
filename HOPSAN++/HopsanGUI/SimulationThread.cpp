@@ -54,6 +54,8 @@ SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double star
 //! @brief Implements the task for the thread.
 void SimulationThread::run()
 {
+    qDebug() << "Beginning simulate!";
+
     if(gConfig.getUseMulticore())
     {
         mpCoreSystemAccess->simulate(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads());
@@ -63,6 +65,38 @@ void SimulationThread::run()
         mpCoreSystemAccess->simulate(mStartTime, mFinishTime, SINGLECORE);
     }
     mpCoreSystemAccess->finalize(mStartTime, mFinishTime);
+
+    //exec(); //Is used if one want to run an event loop in this thread.
+}
+
+
+//! @brief Constructor
+MultipleSimulationThread::MultipleSimulationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, QObject *parent)
+    : QThread(parent)
+{
+    mvGUIRootSystemPtrs = vGUIRootSystemPtrs;
+
+    mStartTime = startTime;
+    mFinishTime = finishTime;
+}
+
+
+//! @brief Implements the task for the thread.
+void MultipleSimulationThread::run()
+{
+    if(gConfig.getUseMulticore())
+    {
+        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads());
+    }
+    else
+    {
+        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, SINGLECORE);
+    }
+
+    for(int i=0; i<mvGUIRootSystemPtrs.size(); ++i)
+    {
+        mvGUIRootSystemPtrs.at(i)->finalize(mStartTime, mFinishTime);
+    }
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

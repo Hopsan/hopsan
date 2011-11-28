@@ -1912,8 +1912,8 @@ void ComponentSystem::loadStartValuesFromSimulation()
 
 //! @brief Initializes a system and all its contained components before a simulation.
 //! Also allocates log data memory.
-//! @param startT Start time of simlation
-//! @param stopT Stop time of simlation
+//! @param startT Start time of simulation
+//! @param stopT Stop time of simulation
 //! @param nSamples Number of log samples
 bool ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
 {
@@ -2047,7 +2047,7 @@ private:
 };
 
 
-//! @brief Class for slave simlation threads, which must be syncronized from a master simulation thread
+//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
 class taskSimSlave
 {
 public:
@@ -2324,20 +2324,34 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 }
 
 
-void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector)
+void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector)
 {
+    cout << "Simulating " << systemVector.size() << " systems!";
+
     double stopTsafe = stopT - systemVector.at(0)->getDesiredTimeStep()/2.0;                   //Calculate the "actual" stop time
                                                                                                                 //Minus half a timestep is here to ensure that no numerical issues occur
     double timeStep = systemVector.at(0)->getDesiredTimeStep();     //! @todo This can't be right...
 
+    size_t nThreads = systemVector.at(0)->getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
+
+    vector<Component*> dummy;
+    vector<Node*> dummyNode;
     vector< vector<Component*> > combinedSplitCVector;                  //Create combined vectors
+    for(int t=0; t<nThreads; ++t)
+        combinedSplitCVector.push_back(dummy);
     vector< vector<Component*> > combinedSplitQVector;
+    for(int t=0; t<nThreads; ++t)
+        combinedSplitQVector.push_back(dummy);
     vector< vector<Component*> > combinedSplitSignalVector;
+    for(int t=0; t<nThreads; ++t)
+        combinedSplitSignalVector.push_back(dummy);
     vector< vector<Node*> > combinedSplitNodeVector;
+    for(int t=0; t<nThreads; ++t)
+        combinedSplitNodeVector.push_back(dummyNode);
 
     vector<double *> vTimePtrs;
 
-    size_t nThreads = systemVector.at(0)->getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
+
 
     //Loop through the systems, fetch the components & nodes and add them to the combined vectors
     for(int i=0; i<systemVector.size(); ++i)
@@ -2361,10 +2375,13 @@ void simulateMultipleSystemsMultiThreaded(const double startT, const double stop
         systemVector.at(i)->distributeNodePointers(splitNodeVector, nThreads);          //Distribute node pointers
 
         //Append new split vectors to combined vectors
-        combinedSplitCVector.insert(combinedSplitCVector.end(), splitCVector.begin(), splitCVector.end());
-        combinedSplitQVector.insert(combinedSplitQVector.end(), splitQVector.begin(), splitQVector.end());
-        combinedSplitSignalVector.insert(combinedSplitSignalVector.end(), splitSignalVector.begin(), splitSignalVector.end());
-        combinedSplitNodeVector.insert(combinedSplitNodeVector.end(), splitNodeVector.begin(), splitNodeVector.end());
+        for(int t=0; t<nThreads; ++t)
+        {
+            combinedSplitCVector.at(t).insert(combinedSplitCVector.at(t).end(), splitCVector.at(t).begin(), splitCVector.at(t).end());
+            combinedSplitQVector.at(t).insert(combinedSplitQVector.at(t).end(), splitQVector.at(t).begin(), splitQVector.at(t).end());
+            combinedSplitSignalVector.at(t).insert(combinedSplitSignalVector.at(t).end(), splitSignalVector.at(t).begin(), splitSignalVector.at(t).end());
+            combinedSplitNodeVector.at(t).insert(combinedSplitNodeVector.at(t).end(), splitNodeVector.at(t).begin(), splitNodeVector.at(t).end());
+        }
 
         vTimePtrs.push_back(systemVector.at(i)->getTimePtr());
     }
@@ -2501,6 +2518,7 @@ void ComponentSystem::sortComponentVectorsByMeasuredTime()
 //! @param nDesiredThreads How many threads the user wants
 int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
 {
+#ifdef win32
         //Obtain number of processor cores from environment variable, or use user specified value if not zero
     size_t nThreads;
     size_t nCores;
@@ -2527,6 +2545,9 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
     }
 
     return nThreads;
+#else
+    return nDesiredThreads;
+#endif
 }
 
 

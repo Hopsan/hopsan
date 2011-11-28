@@ -852,7 +852,7 @@ void Configuration::setUseMultiCore(bool value)
 }
 
 
-//! @brief Set function for number of simlation threads
+//! @brief Set function for number of simulation threads
 //! @param value Desired number of threads
 void Configuration::setNumberOfThreads(size_t value)
 {

@@ -59,6 +59,7 @@ win32 {
     system($${PWD}/../getSvnRevision.bat)
 }
 unix { 
+    DEFINES *= USETBB
     LIBS += -ltbb -ldl
     INCLUDEPATH += /usr/include/tbb/
 

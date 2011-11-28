@@ -349,7 +349,7 @@ void Node::logData(const double time)
             {
                 stringstream ss;
                 ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
-                gCoreMessageHandler.addWarningMessage(ss.str());
+                //gCoreMessageHandler.addWarningMessage(ss.str());
             }
             ++mLogCtr;
 
