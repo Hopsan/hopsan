@@ -44,27 +44,24 @@ HelpDialog::HelpDialog(MainWindow *parent)
     : QDialog(parent)
 {
     this->setObjectName("HelpDialog");
-    this->resize(480,640);
     this->setWindowTitle("Hopsan User Guide");
+    this->setSizeGripEnabled(true);
+    this->setMinimumSize(640, 480);
 
     mpHelp = new QWebView(this);
 
-    mpOkButton = new QPushButton(tr("&Close"));
-    mpOkButton->setDefault(true);
-    mpOkButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    connect(mpOkButton, SIGNAL(clicked()), this, SLOT(close()));
-
     mpLayout = new QGridLayout;
-    mpLayout->setSizeConstraint(QLayout::SetFixedSize);
     mpLayout->addWidget(mpHelp, 0, 0);
     setLayout(mpLayout);
+
+    this->resize(1024,768);
 }
 
 
 void HelpDialog::open()
 {
-    qDebug() << gExecPath + QString(HELPPATH) + "hopsan-user.html";
-    mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "hopsan-user.html"));
+    qDebug() << gExecPath + QString(HELPPATH) + "index.html";
+    mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "index.html"));
 
     QDialog::open();
 }

@@ -48,6 +48,7 @@
 #define PORTICONPATH ":graphics/porticons/"
 #define GRAPHICSPATH ":graphics/"
 #define SOUNDSPATH ":sounds/"
+#define HELPPATH "../doc/user/html/"
 #ifdef WIN32
 #define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
 #else
@@ -58,14 +59,12 @@
 #define SCRIPTPATH "../Scripts/"
 #define BACKUPPATH "../Backup/"
 #define COMPONENTPATH "../HopsanGUI/componentData/"
-#define HELPPATH "../docs/help/"
 #define INCLUDEPATH "../HopsanCore/"
 #else
 #define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
 #define SCRIPTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
 #define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
 #define COMPONENTPATH "../componentData/"
-#define HELPPATH "../Help/"
 #define INCLUDEPATH "../Include/"
 #endif
 
