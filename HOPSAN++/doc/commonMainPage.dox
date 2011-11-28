@@ -1,0 +1,33 @@
+/*!
+\mainpage Hopsan Documentation
+
+\if DEVELOPERDOCUMENTATION
+
+\section userGuides User Documentation
+
+\endif
+
+-# \subpage userTransmissionLineElementMethod \n
+-# \subpage userGettingStarted \n
+-# \subpage userShortkeys \n
+-# \subpage userCustomizingHopsan \n
+-# \subpage userCustomComponents \n
+-# \subpage userPythonScripting \n
+
+\if DEVELOPERDOCUMENTATION
+
+\section devGuides Developer Documentation
+
+-# \subpage devHowtoBuildDocumentation \n
+-# \subpage devBaseRequirements \n
+-# \subpage devHopsanCoreRequirements \n
+-# \subpage devHopsanGuiRequirements \n
+-# \subpage devHopsanCLIRequirements \n
+-# \subpage devBuildHopsan \n
+-# \subpage devCodingConventions \n
+-# \subpage devSubversionAutoProps \n
+
+
+\endif
+
+*/
