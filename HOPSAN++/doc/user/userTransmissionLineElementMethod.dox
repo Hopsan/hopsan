@@ -9,13 +9,13 @@ Power-transmitting components are divided into two types. The first type is capa
 \endhtmlonly
 
 \htmlonly
-<br><img src="../graphics/tlm.png" width=500><br><br>
+<br><img src="../../graphics/tlm.png" width=500><br><br>
 \endhtmlonly
 
 The second type is restrictive components, called "Q-type" (because they write the flow). In hydraulics, these are components that somehow limits the flow, such as valves and orifices. These work in the opposite way to C-type components, by taking c and Zc as input variables and returning pressure and flow. For this to work is it necessary that a C-type component only is connected to Q-type components and vice versa. 
 
 \htmlonly
-<br><img src="../graphics/cq.png" width=500><br><br>
+<br><img src="../../graphics/cq.png" width=500><br><br>
 \endhtmlonly
 
 */
