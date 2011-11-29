@@ -48,9 +48,8 @@ class GUIConnector : public QGraphicsWidget
     Q_OBJECT
     friend class ConnectorLine;
 public:
-    GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer);
+    GUIConnector(GUIContainerObject *pParentContainer);
     GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *pParentContainer, QStringList geometries = QStringList());
-    void commonConstructorCode();
     ~GUIConnector();
 
     void setParentContainer(GUIContainerObject *pParentContainer);
@@ -115,6 +114,7 @@ signals:
     void connectionFinished();
 
 private:
+    void commonConstructorCode();
     void refreshConnectedSystemportsGraphics();
     void disconnectPortSigSlots(GUIPort* pPort);
     void connectPortSigSlots(GUIPort* pPort);

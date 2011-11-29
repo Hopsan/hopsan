@@ -54,7 +54,7 @@ public:
     GUIModelObject *getGuiModelObject();
     QString getGuiModelObjectName();
 
-    QString getPortName();
+    QString getPortName() const;
     void setDisplayName(const QString name);
 
     QPointF getCenterPos();
@@ -135,9 +135,17 @@ private:
 class GroupPort : public GUIPort
 {
 public:
-    GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
+    GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentObject);
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
+
+    //bool isGroupPortDefined() const;
+    void setBasePort(GUIPort* pPort);
+    GUIPort* getBasePort() const;
+
+protected:
+    GUIPort* mpBasePort;
+
 };
 
 QPointF getOffsetPointfromPort(GUIPort *pStartPortGUIPort, GUIPort *pEndPort);

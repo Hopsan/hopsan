@@ -1132,37 +1132,15 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
     if (!mIsCreatingConnector)
     {
         deselectAll();
-        mpTempConnector = new GUIConnector(pPort, this);
-        mIsCreatingConnector = true;
-        mpTempConnector->drawConnector();
+        this->startConnector(pPort);
         gpMainWindow->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
     }
         //When clicking end port (finish creation of connector)
     else
     {
-
-        bool success = false;
-
-            //If we are connecting to group run special gui only check if connection OK
-        if (pPort->getPortType() == "GropPortType")
-        {
-
-            //! @todo do this
-        }
-        else
-        {
-            success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(), mpTempConnector->getStartPortName(), pPort->getGuiModelObjectName(), pPort->getPortName() );
-        }
-
+        bool success = finilizeConnector(pPort);
         if (success)
         {
-            gpMainWindow->hideHelpPopupMessage();
-            mIsCreatingConnector = false;
-            pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
-            mpTempConnector->setEndPort(pPort);
-            mpTempConnector->finishCreation();
-            mSubConnectorList.append(mpTempConnector);
-
             if(undoSettings == UNDO)
             {
                 mpUndoStack->newPost();
@@ -1171,7 +1149,77 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
             mpParentProjectTab->hasChanged();
         }
         emit checkMessages();
-     }
+    }
+}
+
+//! @brief Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
+void GUIContainerObject::createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings)
+{
+    //! work in progress /Peter
+}
+
+void GUIContainerObject::startConnector(GUIPort *startPort)
+{
+    mpTempConnector = new GUIConnector(this);
+    mpTempConnector->drawConnector();
+
+    // Make connector know its startport and make modelobject know about this connector
+    mpTempConnector->setStartPort(startPort);
+    startPort->getGuiModelObject()->rememberConnector(mpTempConnector);
+
+    // Get and Set initial start position for the connector
+    QPointF startPos = mapToScene(mapFromItem(startPort, startPort->boundingRect().center()));
+    mpTempConnector->setPos(startPos);
+    mpTempConnector->updateStartPoint(startPos);
+    mpTempConnector->addPoint(startPos);
+    mpTempConnector->addPoint(startPos);
+
+    mIsCreatingConnector = true;
+}
+
+bool GUIContainerObject::finilizeConnector(GUIPort *endPort)
+{
+    bool success = false;
+
+    // If we are connecting to group run special gui only check if connection OK
+    if (endPort->getPortType() == "GropPortType")
+    {
+        GroupPort *pGroupPort = dynamic_cast<GroupPort*>(endPort);
+        GUIPort *pBasePort = pGroupPort->getBasePort();
+
+        // Check if first connection to group port
+        if (pBasePort == 0)
+        {
+            pGroupPort->setBasePort(mpTempConnector->getStartPort());
+            success = true;
+        }
+        else
+        {
+            success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(),
+                                                             mpTempConnector->getStartPortName(),
+                                                             pBasePort->getGuiModelObjectName(),
+                                                             pBasePort->getPortName());
+        }
+    }
+    else
+    {
+        success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(),
+                                                          mpTempConnector->getStartPortName(),
+                                                          endPort->getGuiModelObjectName(),
+                                                          endPort->getPortName() );
+    }
+
+    if (success)
+    {
+        gpMainWindow->hideHelpPopupMessage();
+        mIsCreatingConnector = false;
+        endPort->getGuiModelObject()->rememberConnector(mpTempConnector);
+        mpTempConnector->setEndPort(endPort);
+        mpTempConnector->finishCreation();
+        mSubConnectorList.append(mpTempConnector);
+    }
+
+    return success;
 }
 
 

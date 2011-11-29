@@ -169,6 +169,7 @@ public slots:
 
     //Connector slots
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
+    void createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings=UNDO);
 
     //Section slots
     void groupSelected(QPointF pt);
@@ -266,6 +267,10 @@ protected:
     void clearContents();
     void forgetSubConnector(GUIConnector *pConnector);
     void refreshInternalContainerPortGraphics();
+
+    // Helpfunctions for creating connectors
+    void startConnector(GUIPort *startPort);
+    bool finilizeConnector(GUIPort *endPort);
 
     //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

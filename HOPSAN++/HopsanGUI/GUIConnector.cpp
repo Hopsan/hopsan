@@ -41,10 +41,10 @@
 
 class UndoStack;
 
-//! @brief Constructor for inital creation of a connector (first click)
+//! @brief Constructor for creation of empty non connected connector
 //! @param [in] startPort The initial port the connector
 //! @param [in] pParentContainer The parent container object who ones this connector
-GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer)
+GUIConnector::GUIConnector(GUIContainerObject *pParentContainer)
         : QGraphicsWidget()
 {
     this->commonConstructorCode();
@@ -53,22 +53,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContai
     // Add this item to the correct scene, whcih should also set the QtParent, the scene own the qt object
     mpParentContainerObject->getContainedScenePtr()->addItem(this);
 
-    // Make connector know its startport and make modelobject know about this connector
-    this->setStartPort(startPort);
-    startPort->getGuiModelObject()->rememberConnector(this);
-
-    // Get and Set initial start position for the connector
-    QPointF startPos = mapToScene(mapFromItem(startPort, startPort->boundingRect().center()));
-    this->setPos(startPos);
-    this->updateStartPoint(startPos);
-
-    // Determine inital appearance and begin drawing
+    // Determine inital appearance
     mpGUIConnectorAppearance = new ConnectorAppearance("Undefined", mpParentContainerObject->getGfxType());
-    this->addPoint(startPos);
-    this->addPoint(startPos);
-    //!< @todo why do we add two inial points?
-
-    this->drawConnector();
 }
 
 

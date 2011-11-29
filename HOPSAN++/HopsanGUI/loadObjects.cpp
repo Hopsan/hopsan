@@ -96,7 +96,6 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
         {
             //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
             GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, pointVector, pContainer, geometryList);
-//            pContainer->getContainedScenePtr()->addItem(pTempConnector);
 
             //Hide connected ports
             startPort->hide();
