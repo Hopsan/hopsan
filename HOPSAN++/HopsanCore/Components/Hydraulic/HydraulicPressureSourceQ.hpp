@@ -46,10 +46,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPressureSourceQ("PressureSourceQ");
+            return new HydraulicPressureSourceQ();
         }
 
-        HydraulicPressureSourceQ(const std::string name) : ComponentQ(name)
+        HydraulicPressureSourceQ() : ComponentQ()
         {
             p = 1e5;
 

@@ -52,10 +52,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPressureControlledPump("PressureControlledPump");
+            return new HydraulicPressureControlledPump();
         }
 
-        HydraulicPressureControlledPump(const std::string name) : ComponentQ(name)
+        HydraulicPressureControlledPump() : ComponentQ()
         {
             pnom = 7e6;
             speednom = 125;
@@ -114,7 +114,7 @@ namespace hopsan {
             double Zc1 = (*mpND_Zc1);
             double Zc2 = (*mpND_Zc2);
 
-            double y0, lpe, vmin, vmax;
+            double y0, lpe/*, vmin, vmax*/;
 
             gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
             if (speed < .001) { speed = .001; }
@@ -128,8 +128,8 @@ namespace hopsan {
             qmaxl = qmax * (speed / speednom);
             qminl = qmin * (speed / speednom);
 
-            vmax = qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tp));
-            vmin = -qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tm));
+            //vmax = qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tp));
+            //vmin = -qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tm));
 
             double c2e = (Kcp * Zc1 + 1) * gamma * c2 + Kcp * Zc2 * gamma * c1;
             double u = pdif - c2e + c3;

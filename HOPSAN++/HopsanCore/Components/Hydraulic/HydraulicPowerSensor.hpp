@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicPowerSensor("PowerSensor");
+            return new HydraulicPowerSensor();
         }
 
-        HydraulicPowerSensor(const std::string name) : ComponentSignal(name)
+        HydraulicPowerSensor() : ComponentSignal()
         {
 
             mpP1 = addReadPort("P1", "NodeHydraulic");

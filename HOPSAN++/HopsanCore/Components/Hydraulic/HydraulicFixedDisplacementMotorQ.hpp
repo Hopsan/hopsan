@@ -51,10 +51,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicFixedDisplacementMotorQ("FixedDisplacementMotorQ");
+            return new HydraulicFixedDisplacementMotorQ();
         }
 
-        HydraulicFixedDisplacementMotorQ(const std::string name) : ComponentQ(name)
+        HydraulicFixedDisplacementMotorQ() : ComponentQ()
         {
             dp = 0.00005;
             Bm = 0;

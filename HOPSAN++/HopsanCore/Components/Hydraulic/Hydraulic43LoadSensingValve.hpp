@@ -62,10 +62,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new Hydraulic43LoadSensingValve("Hydraulic 4/3 Valve with Load Sensing Port");
+            return new Hydraulic43LoadSensingValve();
         }
 
-        Hydraulic43LoadSensingValve(const std::string name) : ComponentQ(name)
+        Hydraulic43LoadSensingValve() : ComponentQ()
         {
             Cq = 0.67;
             d = 0.01;

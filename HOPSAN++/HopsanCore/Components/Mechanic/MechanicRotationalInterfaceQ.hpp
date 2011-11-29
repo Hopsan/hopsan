@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicRotationalInterfaceQ("RotationalInterfaceQ");
+            return new MechanicRotationalInterfaceQ();
         }
 
-        MechanicRotationalInterfaceQ(const std::string name) : ComponentQ(name)
+        MechanicRotationalInterfaceQ() : ComponentQ()
         {
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
         }

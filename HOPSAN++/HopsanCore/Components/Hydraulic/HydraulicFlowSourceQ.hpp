@@ -45,10 +45,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicFlowSourceQ("FlowSourceQ");
+            return new HydraulicFlowSourceQ();
         }
 
-        HydraulicFlowSourceQ(const std::string name) : ComponentQ(name)
+        HydraulicFlowSourceQ() : ComponentQ()
         {
             mFlow = 1.0e-3;
 

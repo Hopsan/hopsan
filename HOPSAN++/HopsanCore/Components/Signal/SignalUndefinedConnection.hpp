@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalUndefinedConnection("UndefinedConnection");
+            return new SignalUndefinedConnection();
         }
 
-        SignalUndefinedConnection(const std::string name) : ComponentSignal(name)
+        SignalUndefinedConnection() : ComponentSignal()
         {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 

@@ -197,8 +197,10 @@ void CoreSystemAccess::stop()
 }
 
 
-void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads)
+void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, bool dontSplitSystems, size_t nThreads)
 {
+    qDebug() << "simulateAllOpenModels(), nThreads = " << nThreads;
+
     if(type == MULTICORE)
     {
         std::vector<ComponentSystem *> systemVector;
@@ -206,13 +208,20 @@ void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTi
         {
             systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
         }
-        systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector);
+        if(dontSplitSystems)
+        {
+            systemVector.at(0)->simulateMultipleSystemsMultiThreadedInParallel(mStartTime, mFinishTime, nThreads, systemVector);
+        }
+        else
+        {
+            systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector);
+        }
     }
     else
     {
         for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
         {
-            gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->simulate(mStartTime, mFinishTime, MULTICORE);      //Should be SINGLECORE, this is for testing only!
+            gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->simulate(mStartTime, mFinishTime, MULTICORE, nThreads);      //Should be SINGLECORE, this is for testing only!
         }
     }
 }
@@ -356,6 +365,8 @@ bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSa
 
 void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads)
 {
+    qDebug() << "simulate(), nThreads = " << nThreads;
+
     if(type == MULTICORE)
     {
         qDebug() << "Starting multicore simulation";

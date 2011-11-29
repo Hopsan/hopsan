@@ -51,10 +51,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicRackAndPinion("RackAndPinion");
+            return new MechanicRackAndPinion();
         }
 
-        MechanicRackAndPinion(const std::string name) : ComponentQ(name)
+        MechanicRackAndPinion() : ComponentQ()
         {
             //Set member attributes
             gearRatio = 1;
@@ -76,7 +76,7 @@ namespace hopsan {
 
         void initialize()
         {
-            double f1, x1, v1;
+           // double f1, x1, v1;
 
             mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
             mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGLE);
@@ -90,9 +90,9 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WAVEVARIABLE);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CHARIMP);
 
-            f1 = (*mpND_f1);
-            x1 = (*mpND_x1);
-            v1 = (*mpND_v1);
+           // f1 = (*mpND_f1);
+           // x1 = (*mpND_x1);
+           // v1 = (*mpND_v1);
 
             num[0] = 0.0;
             num[1] = 1.0;

@@ -65,10 +65,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSoftStep("SoftStep");
+            return new SignalSoftStep();
         }
 
-        SignalSoftStep(const std::string name) : ComponentSignal(name)
+        SignalSoftStep() : ComponentSignal()
         {
             mStartTime = 1.0;
             mStopTime = 2.0;

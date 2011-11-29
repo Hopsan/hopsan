@@ -51,10 +51,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalLookUpTable2D("LookUpTable2D");
+            return new SignalLookUpTable2D();
         }
 
-        SignalLookUpTable2D(const std::string name) : ComponentSignal(name)
+        SignalLookUpTable2D() : ComponentSignal()
         {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

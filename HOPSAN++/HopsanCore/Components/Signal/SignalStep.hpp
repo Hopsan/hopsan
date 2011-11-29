@@ -56,10 +56,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalStep("Step");
+            return new SignalStep();
         }
 
-        SignalStep(const std::string name) : ComponentSignal(name)
+        SignalStep() : ComponentSignal()
         {
             mBaseValue = 0.0;
             mAmplitude = 1.0;

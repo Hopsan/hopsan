@@ -50,7 +50,7 @@ private:
 class MultipleSimulationThread : public QThread
 {
 public:
-    MultipleSimulationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, QObject *parent);
+    MultipleSimulationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, bool dontSplitSystems, QObject *parent);
 
 protected:
     void run();
@@ -59,6 +59,7 @@ private:
     QVector<CoreSystemAccess *> mvGUIRootSystemPtrs;
     double mStartTime;
     double mFinishTime;
+    bool mDontSplitSystems;
 
 };
 #endif // SIMULATIONTHREAD_H

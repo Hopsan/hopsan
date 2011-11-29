@@ -65,10 +65,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new Hydraulic43ValveNeutralSupplyToTank("Hydraulic 4/3 Valve Open To Tank In Neutral Position");
+            return new Hydraulic43ValveNeutralSupplyToTank();
         }
 
-        Hydraulic43ValveNeutralSupplyToTank(const std::string name) : ComponentQ(name)
+        Hydraulic43ValveNeutralSupplyToTank() : ComponentQ()
         {
             Cq = 0.67;
             d = 0.01;

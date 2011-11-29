@@ -114,8 +114,12 @@ namespace hopsan {
         void simulateMultiThreadedOld(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0);
         void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector);
+        void simulateMultipleSystemsMultiThreadedInParallel(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector);
         #ifdef USETBB
         void simulateAndMeasureTime(size_t steps = 1);
+        double getTotalMeasuredTime();
+        void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> systemVector);
+        std::vector< std::vector<ComponentSystem *> > distributeSystems(std::vector<ComponentSystem *> systemVector, size_t nThreads);
         void sortComponentVectorsByMeasuredTime();
         int getNumberOfThreads(size_t nDesiredThreads);
         void distributeCcomponents(std::vector< std::vector<Component*> > &rSplitCVector, size_t nThreads);
@@ -124,6 +128,7 @@ namespace hopsan {
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
         #endif
         void simulate(const double startT, const double stopT);
+        void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem *> systemVector);
         void finalize(const double startT, const double stopT);
 
         void logAllNodes(const double time);

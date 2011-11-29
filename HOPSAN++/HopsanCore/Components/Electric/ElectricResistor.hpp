@@ -67,13 +67,12 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricResistor creator" << std::endl;
-        return new ElectricResistor("Resistor");
+        return new ElectricResistor();
      }
 
-     ElectricResistor(const std::string name = "Resistor"
-                             ,const double Conduct = 0.1
+     ElectricResistor(const double Conduct = 0.1
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(3,3);

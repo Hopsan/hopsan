@@ -183,13 +183,13 @@ namespace hopsan {
         void simulateOneTimestep()
         {
                 //Declare local variables
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+            double /*p1,*/ q1, c1, Zc1, /*p2,*/ q2, c2, Zc2;
 
                 //Read variables from nodes
-            p1 = (*mpND_p1);
+            //p1 = (*mpND_p1);
             q1 = (*mpND_q1);
             c1 = (*mpND_c1);
-            p2 = (*mpND_p2);
+            //p2 = (*mpND_p2);
             q2 = (*mpND_q2);
             c2 = (*mpND_c2);
 

@@ -94,8 +94,7 @@ public:
         return new SignalAttitude();
      }
 
-     SignalAttitude(const std::string name = "Attitude"
-                             ,const double Kphi = 0.1
+     SignalAttitude(const double Kphi = 0.1
                              ,const double Kphipsi = 1.
                              ,const double phimin = -1.
                              ,const double phimax = 1.
@@ -117,7 +116,7 @@ public:
                              ,const double beta = 0.
                              ,const double Ub = 0.
                              )
-        : ComponentSignal(name)
+        : ComponentSignal()
      {
         mNstep=9;
         mKphi = Kphi;

@@ -36,10 +36,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicRotationalInertia("RotationalInertia");
+            return new MechanicRotationalInertia();
         }
 
-        MechanicRotationalInertia(const std::string name) : ComponentQ(name)
+        MechanicRotationalInertia() : ComponentQ()
         {
             //Set member attributes
             J = 0.1;

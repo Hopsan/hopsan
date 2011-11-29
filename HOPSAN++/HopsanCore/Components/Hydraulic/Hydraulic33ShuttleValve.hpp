@@ -60,10 +60,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new Hydraulic33ShuttleValve("Hydraulic 3/3 Shuttle Valve");
+            return new Hydraulic33ShuttleValve();
         }
 
-        Hydraulic33ShuttleValve(const std::string name) : ComponentQ(name)
+        Hydraulic33ShuttleValve() : ComponentQ()
         {
             Cq = 0.67;
             d = 0.01;

@@ -382,7 +382,10 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
         {
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
+
             //Check if the nodeDataPtr is in the System parameters
+            //! @todo Should this be done?
+
             std::string valueTxt;//FIXA = getComponent()->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
             if(!(valueTxt.empty()))
             {

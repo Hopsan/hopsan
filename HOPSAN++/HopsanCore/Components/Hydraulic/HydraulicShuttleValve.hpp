@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicShuttleValve("ShuttleValve");
+            return new HydraulicShuttleValve();
         }
 
-        HydraulicShuttleValve(const std::string name) : ComponentQ(name)
+        HydraulicShuttleValve() : ComponentQ()
         {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");

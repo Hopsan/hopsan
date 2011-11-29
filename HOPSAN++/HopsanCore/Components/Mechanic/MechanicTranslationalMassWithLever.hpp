@@ -39,10 +39,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicTranslationalMassWithLever("TranslationalMassWithLever");
+            return new MechanicTranslationalMassWithLever();
         }
 
-        MechanicTranslationalMassWithLever(const std::string name) : ComponentQ(name)
+        MechanicTranslationalMassWithLever() : ComponentQ()
         {
             //! @todo set eqmass to some good values, should consider lever.
 

@@ -61,10 +61,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalRamp("Ramp");
+            return new SignalRamp();
         }
 
-        SignalRamp(const std::string name) : ComponentSignal(name)
+        SignalRamp() : ComponentSignal()
         {
             mBaseValue = 0.0;
             mAmplitude = 1.0;

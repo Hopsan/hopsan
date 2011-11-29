@@ -60,14 +60,12 @@ public:
      static Component *Creator()
      {
         std::cout << "running MechanicThetaSource creator" << std::endl;
-        return new MechanicThetaSource("ThetaSource");
+        return new MechanicThetaSource();
      }
 
-     MechanicThetaSource(const std::string name = "ThetaSource"
-                             ,const double thetain = 0.
-                             ,const double win = 0.
+     MechanicThetaSource(const double win = 0.
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         mwin = win;

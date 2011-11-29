@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSource("Source");
+            return new SignalSource();
         }
 
-        SignalSource(const std::string name) : ComponentSignal(name)
+        SignalSource() : ComponentSignal()
         {
             mValue = 1.0;
 

@@ -60,10 +60,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSquareWave("SquareWave");
+            return new SignalSquareWave();
         }
 
-        SignalSquareWave(const std::string name) : ComponentSignal(name)
+        SignalSquareWave() : ComponentSignal()
         {
             mStartTime = 0.0;
             mFrequency = 1.0;

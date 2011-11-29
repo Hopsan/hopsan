@@ -43,10 +43,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSubtract("Subtract");
+            return new SignalSubtract();
         }
 
-        SignalSubtract(const std::string name) : ComponentSignal(name)
+        SignalSubtract() : ComponentSignal()
         {
 
             mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);

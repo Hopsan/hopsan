@@ -68,13 +68,12 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricInductance creator" << std::endl;
-        return new ElectricInductance("Inductance");
+        return new ElectricInductance();
      }
 
-     ElectricInductance(const std::string name = "Inductance"
-                             ,const double Induct = 0.1
+     ElectricInductance(const double Induct = 0.1
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(3,3);

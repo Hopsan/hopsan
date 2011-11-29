@@ -905,7 +905,19 @@ void ProjectTabWidget::showLosses(bool show)
 }
 
 
-bool ProjectTabWidget::simulateAllOpenModels()
+bool ProjectTabWidget::simulateAllOpenModelsWithSplit()
+{
+    simulateAllOpenModels(false);
+}
+
+
+bool ProjectTabWidget::simulateAllOpenModelsWithoutSplit()
+{
+    simulateAllOpenModels(true);
+}
+
+
+bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems)
 {
     qDebug() << "simulateAllOpenModels()";
 
@@ -915,9 +927,12 @@ bool ProjectTabWidget::simulateAllOpenModels()
 
         MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 
-        pMainSystem->updateStartTime();
-        pMainSystem->updateStopTime();
-        pMainSystem->updateTimeStep();
+        for(int i=0; i<count(); ++i)
+        {
+            pMainSystem->updateStartTime();
+            pMainSystem->updateStopTime();
+            pMainSystem->updateTimeStep();
+        }
 
             //Setup simulation parameters
         double startTime = pMainSystem->getStartTime();
@@ -974,6 +989,8 @@ bool ProjectTabWidget::simulateAllOpenModels()
         actualInitialization.quit();
         const bool initSuccess = actualInitialization.wasInitSuccessful();
 
+        qDebug() << "Starting simulation!";
+
         QTime simTimer;
         if (initSuccess)
         {
@@ -987,7 +1004,7 @@ bool ProjectTabWidget::simulateAllOpenModels()
                     gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting single-threaded simulation of all models");
 
                 simTimer.start();
-                MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, this);
+                MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, dontSplitSystems, this);
                 actualSimulation.start();
                 actualSimulation.setPriority(QThread::HighestPriority);
 

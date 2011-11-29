@@ -48,12 +48,11 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricUsource creator" << std::endl;
-        return new ElectricUsource("Usource");
+        return new ElectricUsource();
      }
 
-     ElectricUsource(const std::string name = "Usource"
-                             )
-        : ComponentC(name)
+     ElectricUsource()
+        : ComponentC()
      {
         mNstep=9;
 

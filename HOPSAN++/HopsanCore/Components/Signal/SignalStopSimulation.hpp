@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalStopSimulation("StopSim");
+            return new SignalStopSimulation();
         }
 
-        SignalStopSimulation(const std::string name) : ComponentSignal(name)
+        SignalStopSimulation() : ComponentSignal()
         {
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);

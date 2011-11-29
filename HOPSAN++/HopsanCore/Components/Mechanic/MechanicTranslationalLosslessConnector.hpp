@@ -34,10 +34,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicTranslationalLosslessConnector("TranslationalLosslessConnector");
+            return new MechanicTranslationalLosslessConnector();
         }
 
-        MechanicTranslationalLosslessConnector(const std::string name) : ComponentQ(name)
+        MechanicTranslationalLosslessConnector() : ComponentQ()
         {
             //Set member attributes
 

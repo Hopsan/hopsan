@@ -46,10 +46,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalIntegratorLimited("IntegratorLimited");
+            return new SignalIntegratorLimited();
         }
 
-        SignalIntegratorLimited(const std::string name) : ComponentSignal(name)
+        SignalIntegratorLimited() : ComponentSignal()
         {
 
             mMin = -1.5E+300;

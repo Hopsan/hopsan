@@ -44,10 +44,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicAngularVelocitySensor("AngularVelocitySensor");
+            return new MechanicAngularVelocitySensor();
         }
 
-        MechanicAngularVelocitySensor(const std::string name) : ComponentSignal(name)
+        MechanicAngularVelocitySensor() : ComponentSignal()
         {
 
             mpP1 = addReadPort("P1", "NodeMechanicRotational");

@@ -53,10 +53,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalBETest("Test");
+            return new SignalBETest();
         }
 
-        SignalBETest(const std::string name) : ComponentSignal(name)
+        SignalBETest() : ComponentSignal()
         {
             mGain = 1.0;
 

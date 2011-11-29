@@ -52,10 +52,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicAlternativePRV("AlternativePRV");
+            return new HydraulicAlternativePRV();
         }
 
-        HydraulicAlternativePRV(const std::string name) : ComponentQ(name)
+        HydraulicAlternativePRV() : ComponentQ()
         {
             mPref = 20000000;
             mCq = 0.67;

@@ -109,7 +109,7 @@ public:
     void finalize(double mStartTime, double mFinishTime);
     double getCurrentTime();
     void stop();
-    void simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0);
+    void simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, bool dontSplitSystems=false, size_t nThreads = 0);
 
     void deleteSystemPort(QString portname);
     QString addSystemPort(QString portname);

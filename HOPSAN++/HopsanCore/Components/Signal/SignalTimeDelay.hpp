@@ -46,10 +46,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalTimeDelay("TimeDelay");
+            return new SignalTimeDelay();
         }
 
-        SignalTimeDelay(const std::string name) : ComponentSignal(name)
+        SignalTimeDelay() : ComponentSignal()
         {
             mTimeDelay = 1.0;
 

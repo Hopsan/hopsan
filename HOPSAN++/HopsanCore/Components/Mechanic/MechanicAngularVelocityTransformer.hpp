@@ -47,10 +47,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicAngularVelocityTransformer("AngularVelocityTransformer");
+            return new MechanicAngularVelocityTransformer();
         }
 
-        MechanicAngularVelocityTransformer(const std::string name) : ComponentQ(name)
+        MechanicAngularVelocityTransformer() : ComponentQ()
         {
             //Set member attributes
             w = 0.0;

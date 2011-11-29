@@ -91,8 +91,7 @@ public:
         return new MechanicJLink();
      }
 
-     MechanicJLink(const std::string name = "JLink"
-                             ,const double JL = 1.
+     MechanicJLink(const double JL = 1.
                              ,const double BL = 1.
                              ,const double link = 0.1
                              ,const double x0 = 0.1
@@ -100,7 +99,7 @@ public:
                              ,const double thetamin = -1.05
                              ,const double thetamax = 1.05
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(4,4);

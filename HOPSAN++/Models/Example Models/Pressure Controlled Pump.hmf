@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.0" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_rUNKNOWN" hopsancoreversion="0">
     <system typename="Subsystem" name="Pressure Controlled Pump">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.323422935855" y="2499.80714719294" zoom="0.9684747092264965"/>
+            <viewport x="2500,323422935855" y="2499,80714719294" zoom="0,9684747092264965"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="Pressure Controlled Pump">
-                    <icons>
-                        <icon scale="1" path="C:/Program Files (x86)/Hopsan/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
-                    </icons>
+                    <icons/>
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
@@ -23,7 +21,7 @@
                 <post number="2"/>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="10" timestep="0.0001" start="-1"/>
+        <simulationtime stop="10" timestep="0,001" start="0"/>
         <parameters/>
         <objects>
             <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_3">
@@ -107,8 +105,6 @@
                     <parameter value="0.001" name="V"/>
                     <parameter value="1e+009" name="Beta_e"/>
                     <parameter value="0.1" name="alpha"/>
-                    <parameter value="0" name="noname subport::Flow"/>
-                    <parameter value="0" name="noname subport::Pressure"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2544.43168444684397400124" y="2471.9199788847654418" flipped="0" a="90"/>
@@ -121,7 +117,7 @@
                     <parameter value="2e7" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2908.32686638680524993106" y="2688.4908645907080427" flipped="0" a="360"/>
+                    <pose x="2908.32686638680524993106" y="2688.4908645907080427" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -213,15 +209,15 @@
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2467.813787145734" y="2432.302059433176"/>
+                    <pose x="2468" y="2432"/>
                     <textobject fontcolor="#005500" text="Pump" font="Calibri,16,-1,5,75,0,0,0,0,0"/>
-                    <size width="463.4581230119438" height="213.5806634412315"/>
+                    <size width="463,4581230119438" height="213,5806634412315"/>
                     <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2067.417906012085" y="2505.139302004029"/>
+                    <pose x="2067" y="2505"/>
                     <textobject fontcolor="#005500" text="This example model shows a detailed model of a &#xa;pump with pressure control. The displacement of &#xa;the pump  is changed by the piston, depending on &#xa;the difference between the actual pressure and the &#xa;reference. The spring makes sure the actual &#xa;pressure is always a little larger than the reference, &#xa;and provides some damping." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                     <size width="348" height="141"/>
                     <line width="2" visible="1" style="solidline"/>
@@ -229,7 +225,7 @@
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2423.813787145734" y="2254.050743607251"/>
+                    <pose x="2424" y="2254"/>
                     <textobject fontcolor="#005500" text="Example: Pressure Controlled Pump" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
                     <size width="401" height="41"/>
                     <line width="2" visible="0" style="solidline"/>

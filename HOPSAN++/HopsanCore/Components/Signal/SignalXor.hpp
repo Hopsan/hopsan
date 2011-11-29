@@ -45,10 +45,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalXor("Xor");
+            return new SignalXor();
         }
 
-        SignalXor(const std::string name) : ComponentSignal(name)
+        SignalXor() : ComponentSignal()
         {
 
             mpIn1 = addReadPort("in1", "NodeSignal");

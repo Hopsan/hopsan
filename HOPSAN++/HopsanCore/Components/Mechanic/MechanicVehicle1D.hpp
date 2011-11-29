@@ -97,17 +97,16 @@ public:
      static Component *Creator()
      {
         std::cout << "running MechanicVehicle1D creator" << std::endl;
-        return new MechanicVehicle1D("Vehicle1D");
+        return new MechanicVehicle1D();
      }
 
-     MechanicVehicle1D(const std::string name = "Vehicle1D"
-                             ,const double Mc = 1000.
+     MechanicVehicle1D(const double Mc = 1000.
                              ,const double cfr = 0.04
                              ,const double CdA = 0.5
                              ,const double rwheel = 1.
                              ,const double rho = 1.25
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(5,5);

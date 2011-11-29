@@ -135,7 +135,8 @@ public:
     QAction *mpCreateSimulinkWrapperAction;
     QAction *mpShowLossesAction;
 
-    QAction *mpDebugAction;
+    QAction *mpDebug1Action;
+    QAction *mpDebug2Action;
 
 public slots:
     void show();

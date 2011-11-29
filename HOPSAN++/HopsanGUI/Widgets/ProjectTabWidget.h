@@ -63,7 +63,8 @@ public slots:
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
-    bool simulateAllOpenModels();
+    bool simulateAllOpenModelsWithSplit();
+    bool simulateAllOpenModelsWithoutSplit();
 
 signals:
     void checkMessages();
@@ -71,6 +72,7 @@ signals:
     void simulationFinished();
 
 private:
+    bool simulateAllOpenModels(bool dontSplitSystems);
     size_t mNumberOfUntitledTabs;
 };
 

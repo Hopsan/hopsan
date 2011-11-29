@@ -32,10 +32,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicDummyQ("Dummy Q");
+            return new HydraulicDummyQ();
         }
 
-        HydraulicDummyQ(const std::string name) : ComponentQ(name)
+        HydraulicDummyQ() : ComponentQ()
         {
 
             mpP1 = addReadPort("in", "NodeSignal");

@@ -47,10 +47,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalIntegratorLimited2("Integrator");
+            return new SignalIntegratorLimited2();
         }
 
-        SignalIntegratorLimited2(const std::string name) : ComponentSignal(name)
+        SignalIntegratorLimited2() : ComponentSignal()
         {
             mStartY = 0.0;
 

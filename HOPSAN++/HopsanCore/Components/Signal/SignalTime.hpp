@@ -43,10 +43,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalTime("Time");
+            return new SignalTime();
         }
 
-        SignalTime(const std::string name) : ComponentSignal(name)
+        SignalTime() : ComponentSignal()
         {
 
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

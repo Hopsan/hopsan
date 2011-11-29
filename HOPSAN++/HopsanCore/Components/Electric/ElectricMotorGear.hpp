@@ -118,8 +118,7 @@ public:
         return new ElectricMotorGear();
      }
 
-     ElectricMotorGear(const std::string name = "MotorGear"
-                             ,const double Ke = 0.13
+     ElectricMotorGear(const double Ke = 0.13
                              ,const double Ra = 0.04
                              ,const double Tm0 = 0.
                              ,const double wc = 1.
@@ -130,7 +129,7 @@ public:
                              ,const double JL = 1
                              ,const double gearRatio = 1.
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(6,6);

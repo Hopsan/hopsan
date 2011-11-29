@@ -73,10 +73,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicCylinderQ("CylinderQ");
+            return new HydraulicCylinderQ();
         }
 
-        HydraulicCylinderQ(const std::string name) : ComponentQ(name)
+        HydraulicCylinderQ() : ComponentQ()
         {
             mArea1  = 0.0001;
             mArea2  = 0.0001;

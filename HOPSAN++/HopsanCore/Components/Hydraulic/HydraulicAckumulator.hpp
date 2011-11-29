@@ -73,13 +73,12 @@ public:
         return new HydraulicAckumulator();
      }
 
-     HydraulicAckumulator(const std::string name = "Ackumulator"
-                             ,const double p0 = 1.e7
-                             ,const double V0 = 0.001
-                             ,const double Kca = 1.e-8
-                             ,const double kappa = 1.2
+     HydraulicAckumulator(const double p0 = 1.e7
+                         ,const double V0 = 0.001
+                         ,const double Kca = 1.e-8
+                         ,const double kappa = 1.2
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(4,4);

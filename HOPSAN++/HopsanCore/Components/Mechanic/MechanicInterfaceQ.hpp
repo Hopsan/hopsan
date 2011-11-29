@@ -42,10 +42,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicInterfaceQ("InterfaceQ");
+            return new MechanicInterfaceQ();
         }
 
-        MechanicInterfaceQ(const std::string name) : ComponentQ(name)
+        MechanicInterfaceQ() : ComponentQ()
         {
             mpP1 = addPowerPort("P1", "NodeMechanic");
         }

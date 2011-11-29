@@ -43,10 +43,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicForceSensor("ForceSensor");
+            return new MechanicForceSensor();
         }
 
-        MechanicForceSensor(const std::string name) : ComponentSignal(name)
+        MechanicForceSensor() : ComponentSignal()
         {
 
             mpP1 = addReadPort("P1", "NodeMechanic", Port::NOTREQUIRED);

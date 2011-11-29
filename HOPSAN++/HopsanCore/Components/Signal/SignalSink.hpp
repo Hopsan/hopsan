@@ -42,10 +42,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSink("Sink");
+            return new SignalSink();
         }
 
-        SignalSink(const std::string name) : ComponentSignal(name)
+        SignalSink() : ComponentSignal()
         {
 
             mpIn = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);

@@ -49,10 +49,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicMultiPortTranslationalMass("MultiPortTranslationalMass");
+            return new MechanicMultiPortTranslationalMass();
         }
 
-        MechanicMultiPortTranslationalMass(const std::string name) : ComponentQ(name)
+        MechanicMultiPortTranslationalMass() : ComponentQ()
         {
             //Set member attributes
             m = 100.0;

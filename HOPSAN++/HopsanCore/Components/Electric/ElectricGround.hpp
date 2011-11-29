@@ -43,12 +43,11 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricGround creator" << std::endl;
-        return new ElectricGround("Ground");
+        return new ElectricGround();
      }
 
-     ElectricGround(const std::string name = "Ground"
-                             )
-        : ComponentC(name)
+     ElectricGround()
+        : ComponentC()
      {
         mNstep=9;
 

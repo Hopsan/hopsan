@@ -51,10 +51,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicCheckValveWithOrifice("CheckValveWithOrifice");
+            return new HydraulicCheckValveWithOrifice();
         }
 
-        HydraulicCheckValveWithOrifice(const std::string name) : ComponentQ(name)
+        HydraulicCheckValveWithOrifice() : ComponentQ()
         {
             mKs = 0.000000025;
             mKr = 0.000000005;

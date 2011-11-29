@@ -48,10 +48,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalStepExponentialDelay("StepExponentialDelay");
+            return new SignalStepExponentialDelay();
         }
 
-        SignalStepExponentialDelay(const std::string name) : ComponentSignal(name)
+        SignalStepExponentialDelay() : ComponentSignal()
         {
             mBaseValue = 0.0;
             mAmplitude = 1.0;

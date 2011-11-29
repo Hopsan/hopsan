@@ -105,18 +105,17 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricMotor creator" << std::endl;
-        return new ElectricMotor("Motor");
+        return new ElectricMotor();
      }
 
-     ElectricMotor(const std::string name = "Motor"
-                             ,const double Ke = 0.13
+     ElectricMotor(const double Ke = 0.13
                              ,const double Ra = 0.04
                              ,const double Tm0 = 0.
                              ,const double wc = 1.
                              ,const double Bm = 0.0012
                              ,const double Jm = 1
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(6,6);

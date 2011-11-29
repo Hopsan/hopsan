@@ -37,10 +37,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicRotationalInertiaWithSingleGear("RotationalInertiaWithSingleGear");
+            return new MechanicRotationalInertiaWithSingleGear();
         }
 
-        MechanicRotationalInertiaWithSingleGear(const std::string name) : ComponentQ(name)
+        MechanicRotationalInertiaWithSingleGear() : ComponentQ()
         {
             //Set member attributes
             gearRatio = 1;

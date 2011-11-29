@@ -55,10 +55,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicTranslationalMassWithCoulumbFriction("TranslationalMassWithCoulumbFriction");
+            return new MechanicTranslationalMassWithCoulumbFriction();
         }
 
-        MechanicTranslationalMassWithCoulumbFriction(const std::string name) : ComponentQ(name)
+        MechanicTranslationalMassWithCoulumbFriction() : ComponentQ()
         {
             //Set member attributes
             m = 100.0;

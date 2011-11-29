@@ -45,10 +45,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSaturation("Saturation");
+            return new SignalSaturation();
         }
 
-        SignalSaturation(const std::string name) : ComponentSignal(name)
+        SignalSaturation() : ComponentSignal()
         {
             mUpperLimit = 1.0;
             mLowerLimit = -1.0;

@@ -59,14 +59,13 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricCapacitance2 creator" << std::endl;
-        return new ElectricCapacitance2("Capacitance2");
+        return new ElectricCapacitance2();
      }
 
-     ElectricCapacitance2(const std::string name = "Capacitance2",
-                             const double Cc = 0.0001,
+     ElectricCapacitance2(const double Cc = 0.0001,
                              const double alpha = 0.1,
                              const double timestep = 0.001)
-        : ComponentC(name)
+        : ComponentC()
      {
         mNstep=9;
         mCc = Cc;

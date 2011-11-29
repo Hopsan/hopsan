@@ -56,10 +56,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalPulse("Pulse");
+            return new SignalPulse();
         }
 
-        SignalPulse(const std::string name) : ComponentSignal(name)
+        SignalPulse() : ComponentSignal()
         {
             mBaseValue = 0.0;
             mStartTime = 1.0;

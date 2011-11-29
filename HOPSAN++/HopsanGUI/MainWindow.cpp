@@ -573,10 +573,15 @@ void MainWindow::createActions()
     this->addAction(mpSaveToWrappedCodeAction);
     connect(mpSaveToWrappedCodeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
 
-    mpDebugAction = new QAction(this);
-    mpDebugAction->setShortcut(QKeySequence("Ctrl+D+1"));
-    this->addAction(mpDebugAction);
-    connect(mpDebugAction, SIGNAL(triggered()), mpProjectTabs, SLOT(simulateAllOpenModels()));
+    mpDebug1Action = new QAction(this);
+    mpDebug1Action->setShortcut(QKeySequence("Ctrl+D+1"));
+    this->addAction(mpDebug1Action);
+    connect(mpDebug1Action, SIGNAL(triggered()), mpProjectTabs, SLOT(simulateAllOpenModelsWithSplit()));
+
+    mpDebug2Action = new QAction(this);
+    mpDebug2Action->setShortcut(QKeySequence("Ctrl+D+2"));
+    this->addAction(mpDebug2Action);
+    connect(mpDebug2Action, SIGNAL(triggered()), mpProjectTabs, SLOT(simulateAllOpenModelsWithoutSplit()));
 
     mpCreateSimulinkWrapperAction = new QAction(this);
     //mpCreateSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));

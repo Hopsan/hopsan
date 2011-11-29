@@ -67,8 +67,7 @@ public:
         return new SignalPIlead();
      }
 
-     SignalPIlead(const std::string name = "PIlead"
-                             ,const double wa = 1.
+     SignalPIlead(const double wa = 1.
                              ,const double da = 1.
                              ,const double umin = -1.
                              ,const double umax = 1.
@@ -76,7 +75,7 @@ public:
                              ,const double y = 0.
                              ,const double kx = 1.
                              )
-        : ComponentSignal(name)
+        : ComponentSignal()
      {
         mNstep=9;
         jacobianMatrix.create(1,1);

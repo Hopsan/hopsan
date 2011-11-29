@@ -118,7 +118,7 @@ class HydraulicCylinderC : public ComponentC
             mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EQMASS);
 
             //Declare local variables;
-            double p1, q1, p2, q2, f3, x3, v3;
+            double p1, q1, p2, q2,/* f3,*/ x3, v3;
             double Zc1, Zc2, c3, Zx3;
             double qi1, qi2, V1, V2, qLeak, V1min, V2min;
 
@@ -127,7 +127,7 @@ class HydraulicCylinderC : public ComponentC
             q1 = (*mpND_q1);
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
-            f3 = (*mpND_f3);
+            //f3 = (*mpND_f3);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
             me = (*mpND_me);
@@ -181,22 +181,22 @@ class HydraulicCylinderC : public ComponentC
         void simulateOneTimestep()
         {
             //Declare local variables;
-            double p1, q1, p2, q2, f3, x3, v3;
+            double /*p1, */q1, /*p2, */q2, /*f3, */x3, v3;
             double Zc1, Zc2, c3, Zx3;
 
             double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
             double alpha=0.5;
 
             //Read variables from nodes
-            p1 = (*mpND_p1);
+            //p1 = (*mpND_p1);
             q1 = (*mpND_q1);
-            p2 = (*mpND_p2);
+            //p2 = (*mpND_p2);
             q2 = (*mpND_q2);
             c1 = (*mpND_c1);
             c2 = (*mpND_c2);
             Zc1 = (*mpND_Zc1);
             Zc2 = (*mpND_Zc2);
-            f3 = (*mpND_f3);
+            //f3 = (*mpND_f3);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
             me = (*mpND_me);
@@ -215,14 +215,14 @@ class HydraulicCylinderC : public ComponentC
             {
                 V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
                 V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
+                if(V1<V1min) V1 = V1min;
+                if(V2<V2min) V2 = V2min;
             }
             else
             {
                 addErrorMessage("The equivalent mass 'me' has to be greater than 0.");
                 stopSimulation();
             }
-            if(V1<V1min) V1 = V1min;
-            if(V2<V2min) V2 = V2min;
 
             //Volume equations
             Zc1 = 3 / 2 * betae/V1*mTimestep/(1-alpha);

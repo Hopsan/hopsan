@@ -113,7 +113,7 @@ namespace hopsan {
             mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 1.0);
 
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
-            double dpr, dpe, ka, v1e, v2e, ap, wp, qp1, qp2;
+            double dpr, dpe, ka, v1e, v2e, /*ap, wp,*/ qp1, qp2;
 
             //Read input variables from nodes
             p1 = (*mpND_p1);
@@ -121,7 +121,7 @@ namespace hopsan {
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
             t3 = (*mpND_t3);
-            a3 = (*mpND_a3);
+           // a3 = (*mpND_a3);
             w3 = (*mpND_w3);
             eps = (*mpND_eps);
 
@@ -135,8 +135,8 @@ namespace hopsan {
             v2e = v2;
             if (v1e < v1min) { v1e = v1min; }
             if (v2e < v2min) { v2e = v2min; }
-            ap = -a3;
-            wp = -w3;
+            //ap = -a3;
+            //wp = -w3;
             Zc1 = 2 * ka*betae*mTimestep / (2*v1e);
             Zc2 = 2 * ka*betae*mTimestep / (2*v2e);
             mDelayedC1.initialize(1, p1-Zc1*q1);
@@ -165,8 +165,8 @@ namespace hopsan {
             (*mpND_c2) = c2;
             (*mpND_Zc2) = Zc2;
             (*mpND_t3) = t3;
-            (*mpND_a3) = a3;
-            (*mpND_w3) = w3;
+            //(*mpND_a3) = a3;
+            //(*mpND_w3) = w3;
             (*mpND_c3) = c3;
             (*mpND_Zx3) = Zx3;
         }
@@ -174,10 +174,10 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare Local variables
-            double cp10e, cp20e, ka, ap, c1e, c2e, p1e, p2e, ct1, ct2,
-                   v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, dpr, wp, ct1e,
+            double cp10e, cp20e, ka, /*ap, */c1e, c2e, p1e, p2e, ct1, ct2,
+                   v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, dpr, /*wp, */ct1e,
                    ct2e, pm1e, pm2e, pp1e, qp1e, qp2e, pp2e, cp1e, cp2e;
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, /*t3, a3,*/ w3, c3, Zx3, eps;
 
             //Read input variables from nodes
             p1 = (*mpND_p1);
@@ -186,8 +186,8 @@ namespace hopsan {
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
             c2 = (*mpND_c2);
-            t3 = (*mpND_t3);
-            a3 = (*mpND_a3);
+            //t3 = (*mpND_t3);
+            //a3 = (*mpND_a3);
             w3 = (*mpND_w3);
             eps = (*mpND_eps);
 
@@ -199,8 +199,8 @@ namespace hopsan {
             limitValue(eps, -1.0, +1.0);
             dpe = dpr * eps;    //Effective displacement
             ka = 1 / (1 - alfa);
-            ap = -a3;
-            wp = -w3;
+            //ap = -a3;
+            //wp = -w3;
             Zc1 = 2*ka*betae*mTimestep / (2*v1e);
             Zc2 = 2*ka*betae*mTimestep / (2*v2e);
 

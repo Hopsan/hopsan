@@ -45,10 +45,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new SignalSmallerThan("SmallerThan");
+            return new SignalSmallerThan();
         }
 
-        SignalSmallerThan(const std::string name) : ComponentSignal(name)
+        SignalSmallerThan() : ComponentSignal()
         {
             mLimit = 0.0;
 

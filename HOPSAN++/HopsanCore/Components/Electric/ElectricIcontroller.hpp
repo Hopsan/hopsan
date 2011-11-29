@@ -84,18 +84,17 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricIcontroller creator" << std::endl;
-        return new ElectricIcontroller("Icontroller");
+        return new ElectricIcontroller();
      }
 
-     ElectricIcontroller(const std::string name = "Icontroller"
-                             ,const double resist = 0.01
+     ElectricIcontroller(const double resist = 0.01
                              ,const double wf = 0.01
                              ,const double umin = 1
                              ,const double imax = 10000.
                              ,const double imin = 0.01
                              ,const double umax = 1000.
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(4,4);

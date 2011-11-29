@@ -43,10 +43,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new HydraulicVariableDisplacementPump("VariableDisplacementPump");
+            return new HydraulicVariableDisplacementPump();
         }
 
-        HydraulicVariableDisplacementPump(const std::string name) : ComponentQ(name)
+        HydraulicVariableDisplacementPump() : ComponentQ()
         {
             n = 250.0;
             dp = 0.00005;

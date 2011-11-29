@@ -72,16 +72,15 @@ public:
      static Component *Creator()
      {
         std::cout << "running ElectricBattery creator" << std::endl;
-        return new ElectricBattery("Battery");
+        return new ElectricBattery();
      }
 
-     ElectricBattery(const std::string name = "Battery"
-                             ,const double cond = 100
+     ElectricBattery(const double cond = 100
                              ,const double unom = 12
                              ,const double capacity = 41
                              ,const double kappa = 0.1
                              )
-        : ComponentQ(name)
+        : ComponentQ()
      {
         mNstep=9;
         jacobianMatrix.create(4,4);
