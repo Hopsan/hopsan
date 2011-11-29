@@ -22,18 +22,18 @@
 //!
 //$Id$
 
-#ifndef GUICONNECTORAPPEARANCE_H
-#define GUICONNECTORAPPEARANCE_H
+#ifndef CONNECTORAPPEARANCE_H
+#define CONNECTORAPPEARANCE_H
 
 #include <QString>
 #include <QPen>
 #include "common.h"
 
-class GUIConnectorAppearance
+class ConnectorAppearance
 {
 public:
     //GUIConnectorAppearance();
-    GUIConnectorAppearance(QString porttype, graphicsType gfxType);
+    ConnectorAppearance(QString porttype, graphicsType gfxType);
     void setStyle(connectorStyle style);
     connectorStyle getStyle();
     void setIsoStyle(graphicsType gfxType);

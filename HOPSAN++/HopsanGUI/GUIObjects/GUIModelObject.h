@@ -149,8 +149,6 @@ protected:
     QList<GUIPort*> mPortListPtrs;
     QList<GUIConnector*> mGUIConnectorPtrs;
 
-    QGraphicsLineItem *mpTempLine;
-
     GUIModelObjectDisplayName *mpNameText;
 
     QGraphicsTextItem *mpLossesDisplay;

@@ -36,7 +36,7 @@
 #include "common.h"
 #include "GUIConnectorAppearance.h"
 
-class GUIConnectorLine;
+class ConnectorLine;
 class GraphicsView;
 class GUIObject;
 class GUIPort;
@@ -46,10 +46,10 @@ class GUIContainerObject;
 class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
-    friend class GUIConnectorLine;
+    friend class ConnectorLine;
 public:
-    GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *pParentContainer, QStringList geometries = QStringList(), QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *pParentContainer, QStringList geometries = QStringList());
     void commonConstructorCode();
     ~GUIConnector();
 
@@ -74,8 +74,8 @@ public:
     QString getEndPortName();
     QString getStartComponentName();
     QString getEndComponentName();
-    GUIConnectorLine *getLine(int line);
-    GUIConnectorLine *getLastLine();
+    ConnectorLine *getLine(int line);
+    ConnectorLine *getLastLine();
     bool isFirstOrLastDiagonal();
     bool isFirstAndLastDiagonal();
     void determineAppearance();
@@ -118,6 +118,8 @@ private:
     void refreshConnectedSystemportsGraphics();
     void disconnectPortSigSlots(GUIPort* pPort);
     void connectPortSigSlots(GUIPort* pPort);
+    void setupGeometries(const QStringList &rGeometries);
+    void addLine(ConnectorLine *pLine);
 
     bool mIsActive;
     bool mIsConnected;
@@ -125,24 +127,23 @@ private:
     bool mIsDashed;
 
     GUIContainerObject *mpParentContainerObject;
-    GUIConnectorAppearance *mpGUIConnectorAppearance;
+    ConnectorAppearance *mpGUIConnectorAppearance;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
-    GUIConnectorLine *mpTempLine;
 
-    QVector<GUIConnectorLine*> mpLines;
+    QVector<ConnectorLine*> mpLines;
     QVector<connectorGeometry> mGeometries;
     QVector<QPointF> mPoints;
 };
 
 
-class GUIConnectorLine : public QObject, public QGraphicsLineItem
+class ConnectorLine : public QObject, public QGraphicsLineItem
 {
     friend class GUIConnector;
     Q_OBJECT
 public:
-    GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUIConnectorAppearance *pConnApp, int lineNumber, GUIConnector *parent = 0);
-    ~GUIConnectorLine();
+    ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, int lineNumber, GUIConnector *parent = 0);
+    ~ConnectorLine();
 
     GUIConnector *mpParentGUIConnector;
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
@@ -181,7 +182,7 @@ private:
     bool mHasStartArrow;
     bool mHasEndArrow;
     int mLineNumber;
-    GUIConnectorAppearance *mpConnectorAppearance;
+    ConnectorAppearance *mpConnectorAppearance;
     connectorGeometry mGeometry;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;

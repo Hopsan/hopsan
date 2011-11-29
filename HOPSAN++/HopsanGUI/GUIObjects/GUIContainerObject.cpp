@@ -63,7 +63,7 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
         //Initialize
-    setIsCreatingConnector(false);
+    mIsCreatingConnector = false;
     mSubComponentPortsHidden = !gpMainWindow->mpTogglePortsAction->isChecked();
     mSubComponentNamesHidden = !gpMainWindow->mpToggleNamesAction->isChecked();
     mLossesVisible = false;
@@ -1129,11 +1129,11 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
 void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings)
 {
         //When clicking start port (begin creation of connector)
-    if (!isCreatingConnector())
+    if (!mIsCreatingConnector)
     {
-        mpTempConnector = new GUIConnector(pPort, this);
         deselectAll();
-        setIsCreatingConnector(true);
+        mpTempConnector = new GUIConnector(pPort, this);
+        mIsCreatingConnector = true;
         mpTempConnector->drawConnector();
         gpMainWindow->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
     }
@@ -1144,8 +1144,9 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         bool success = false;
 
             //If we are connecting to group run special gui only check if connection OK
-        if (pPort->getGuiModelObject()->type() == GUIGROUP)
+        if (pPort->getPortType() == "GropPortType")
         {
+
             //! @todo do this
         }
         else
@@ -1156,7 +1157,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         if (success)
         {
             gpMainWindow->hideHelpPopupMessage();
-            setIsCreatingConnector(false);
+            mIsCreatingConnector = false;
             pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
             mpTempConnector->finishCreation();
@@ -1752,14 +1753,6 @@ void GUIContainerObject::setIconPath(const QString path, const graphicsType gfxT
 
 
 //! @brief Access function for mIsCreatingConnector
-//! @param isConnected is the new value
-void GUIContainerObject::setIsCreatingConnector(bool isCreatingConnector)
-{
-    mIsCreatingConnector = isCreatingConnector;
-}
-
-
-//! @brief Access function for mIsCreatingConnector
 bool GUIContainerObject::isCreatingConnector()
 {
     return mIsCreatingConnector;
@@ -1808,7 +1801,7 @@ void GUIContainerObject::cancelCreatingConnector()
             mpTempConnector->getStartPort()->show();
         }
         mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpTempConnector);
-        setIsCreatingConnector(false);
+        mIsCreatingConnector = false;
         delete(mpTempConnector);
         gpMainWindow->hideHelpPopupMessage();
     }

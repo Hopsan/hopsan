@@ -27,29 +27,29 @@
 #include "Configuration.h"
 #include "common.h"
 
-GUIConnectorAppearance::GUIConnectorAppearance(QString type, graphicsType gfxType)
+ConnectorAppearance::ConnectorAppearance(QString type, graphicsType gfxType)
 {
     //Set the connector type and style
     setTypeAndIsoStyle(type, gfxType);     //Need to use set type instead of setting directly as setType narrows types down to power or signal
 }
 
 //! @brief Set the Connector type
-void GUIConnectorAppearance::setStyle(const connectorStyle style)
+void ConnectorAppearance::setStyle(const connectorStyle style)
 {
     mConnectorStyle = style;
 }
 
-connectorStyle GUIConnectorAppearance::getStyle()
+connectorStyle ConnectorAppearance::getStyle()
 {
     return mConnectorStyle;
 }
 
-void GUIConnectorAppearance::setIsoStyle(graphicsType gfxType)
+void ConnectorAppearance::setIsoStyle(graphicsType gfxType)
 {
     mGfxType = gfxType;
 }
 
-void GUIConnectorAppearance::setTypeAndIsoStyle(QString porttype, graphicsType gfxType)
+void ConnectorAppearance::setTypeAndIsoStyle(QString porttype, graphicsType gfxType)
 {
     if(porttype=="POWERPORT")
     {
@@ -66,13 +66,13 @@ void GUIConnectorAppearance::setTypeAndIsoStyle(QString porttype, graphicsType g
     setIsoStyle(gfxType);
 }
 
-QPen GUIConnectorAppearance::getPen(QString situation)
+QPen ConnectorAppearance::getPen(QString situation)
 {
     return getPen(mConnectorStyle, mGfxType, situation);
 }
 
 //! Get function for primary pen style
-QPen GUIConnectorAppearance::getPen(connectorStyle style, graphicsType gfxType, QString situation)
+QPen ConnectorAppearance::getPen(connectorStyle style, graphicsType gfxType, QString situation)
 {
     return gConfig.getPen(style, gfxType, situation);
 }

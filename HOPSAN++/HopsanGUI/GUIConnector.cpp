@@ -41,118 +41,98 @@
 
 class UndoStack;
 
-//! @brief Constructor for connector class
-//! @param startpos defines the start position of the connector, normally the center of the starting port.
-//! @param *parentView is a pointer to the GraphicsView the connector belongs to.
-//! @param parent is the parent of the port.
-GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer, QGraphicsItem *parent)
-        : QGraphicsWidget(parent)
+//! @brief Constructor for inital creation of a connector (first click)
+//! @param [in] startPort The initial port the connector
+//! @param [in] pParentContainer The parent container object who ones this connector
+GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer)
+        : QGraphicsWidget()
 {
     this->commonConstructorCode();
     this->setParentContainer(pParentContainer);
 
+    // Add this item to the correct scene, whcih should also set the QtParent, the scene own the qt object
     mpParentContainerObject->getContainedScenePtr()->addItem(this);
 
+    // Make connector know its startport and make modelobject know about this connector
     this->setStartPort(startPort);
     startPort->getGuiModelObject()->rememberConnector(this);
+
+    // Get and Set initial start position for the connector
     QPointF startPos = mapToScene(mapFromItem(startPort, startPort->boundingRect().center()));
     this->setPos(startPos);
     this->updateStartPoint(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance("Undefined", mpParentContainerObject->getGfxType());
+    // Determine inital appearance and begin drawing
+    mpGUIConnectorAppearance = new ConnectorAppearance("Undefined", mpParentContainerObject->getGfxType());
     this->addPoint(startPos);
     this->addPoint(startPos);
+    //!< @todo why do we add two inial points?
+
     this->drawConnector();
 }
 
 
 //! @brief Constructor used to create a whole connector at once. Used when for example loading models.
-//! @param *startPort Pointer to the start port
-//! @param *endPort Pointer to the end port
-//! @param points Point vector for the connector
-//! @param *parentView Pointer to the GraphicsView the connector belongs to
-//! @param *parent Pointer to parent of the port
-GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *pParentContainer, QStringList geometries, QGraphicsItem *parent)
-        : QGraphicsWidget(parent)
+//! @param [in] startPort Pointer to the start port
+//! @param [in] endPort Pointer to the end port
+//! @param [in] points Point vector for the connector
+//! @param [in] pParentContainer Pointer to the parent container object taht the connector belongs to
+//! @param [in] parent Pointer to parent of the port
+GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *pParentContainer, QStringList geometries)
+        : QGraphicsWidget()
 {
     this->commonConstructorCode();
-
     this->setParentContainer(pParentContainer);
 
-    mpStartPort = startPort;
-    mpEndPort = endPort;
-    mpStartPort->addConnection(this);
-    mpEndPort->addConnection(this);
+    // Make startports and endports aswellas their parent objects know about this connector
+    this->setStartPort(startPort);
+    this->setEndPort(endPort);
+    mpStartPort->getGuiModelObject()->rememberConnector(this);
+    mpEndPort->getGuiModelObject()->rememberConnector(this);
 
-    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    // Add this item to the correct scene, whcih should also set the QtParent, the scene own the qt object
+    mpParentContainerObject->getContainedScenePtr()->addItem(this);
+
+    // Get and Set initial start position for the connector
     QPointF startPos = getStartPort()->getGuiModelObject()->getCenterPos();
     this->setPos(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentContainerObject->getGfxType());
-
+    // Determine inital appearance and begin drawing
+    mpGUIConnectorAppearance = new ConnectorAppearance(startPort->getPortType(), mpParentContainerObject->getGfxType());
     mPoints = points;
 
-        //Setup the geometries vector based on the point geometry or supplied geometry list
+    // Setup the geometries vector based on the point geometry or supplied geometry list
+    setupGeometries(geometries);
+
+    // Create the lines, so that drawConnector has something to work with
     for(int i=0; i < mPoints.size()-1; ++i)
     {
-        if(geometries.empty())
-        {
-            if(mPoints[i].x() == mPoints[i+1].x())
-                mGeometries.push_back(HORIZONTAL);
-            else if(mPoints[i].y() == mPoints[i+1].y())
-                mGeometries.push_back(VERTICAL);
-            else
-                mGeometries.push_back(DIAGONAL);
-        }
-        else
-        {
-            if(geometries.at(i) == "horizontal")
-                mGeometries.push_back(HORIZONTAL);
-            else if(geometries.at(i) == "vertical")
-                mGeometries.push_back(VERTICAL);
-            else
-                mGeometries.push_back(DIAGONAL);
-        }
-    }
-
-    mIsConnected = true;
-    emit connectionFinished();
-    this->setPassive();
-
-        //Create the lines, so that drawConnector has something to work with
-    for(int i=0; i < mPoints.size()-1; ++i)
-    {
-        mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
-                                          mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
-                                          mpGUIConnectorAppearance, i, this);
+        ConnectorLine *pLine = new ConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
+                                                       mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
+                                                       mpGUIConnectorAppearance, i, this);
         //qDebug() << "Creating line from " << mPoints[i].x() << ", " << mPoints[i].y() << " to " << mPoints[i+1].x() << " " << mPoints[i+1].y();
-        mpLines.push_back(mpTempLine);
-        mpTempLine->setConnected();
-        mpTempLine->setPassive();
-        connect(mpTempLine,SIGNAL(lineSelected(bool, int)),this,SLOT(doSelect(bool, int)));
-        connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
-        connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
-        connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-        connect(this,SIGNAL(connectionFinished()),mpTempLine,SLOT(setConnected()));
+        this->addLine(pLine);
+        pLine->setConnected();
     }
 
-    this->determineAppearance();
-    this->drawConnector();
-    this->connectPortSigSlots(mpEndPort);
-
-        //Make all lines selectable and all lines except first and last movable
+    // Make all lines selectable and all lines except first and last movable
     for(int i=1; i<mpLines.size()-1; ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
     for(int i=0; i<mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-    mpStartPort->getGuiModelObject()->rememberConnector(this);
-    mpEndPort->getGuiModelObject()->rememberConnector(this);
-    mpParentContainerObject->getContainedScenePtr()->addItem(this);
+    // Refresh appearance and draw the connector
+    this->determineAppearance();
+    this->drawConnector();
 
+    mIsConnected = true;
+    emit connectionFinished();
+    this->setPassive();
+
+    // Connect MainWindow signals and slots
     if(mpGUIConnectorAppearance->getStyle() == SIGNALCONNECTOR)
     {
-        connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)));
+        connect(gpMainWindow->mpToggleSignalsAction, SIGNAL(toggled(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
     }
 }
 
@@ -578,7 +558,7 @@ QString GUIConnector::getEndComponentName()
 //! @see getThirdLastLine()
 //! @see getSecondLastLine()
 //! @see getLastLine()
-GUIConnectorLine *GUIConnector::getLine(int line)
+ConnectorLine *GUIConnector::getLine(int line)
 {
     return mpLines[line];
 }
@@ -588,7 +568,7 @@ GUIConnectorLine *GUIConnector::getLine(int line)
 //! @see getThirdLastLine()
 //! @see getSecondLastLine()
 //! @see getLine(int line)
-GUIConnectorLine *GUIConnector::getLastLine()
+ConnectorLine *GUIConnector::getLastLine()
 {
     return mpLines[mpLines.size()-1];
 }
@@ -673,14 +653,8 @@ void GUIConnector::drawConnector(bool alignOperation)
             //Add lines if there are too few
             while(mpLines.size() < mPoints.size()-1)
             {
-                mpTempLine = new GUIConnectorLine(0, 0, 0, 0, mpGUIConnectorAppearance, mpLines.size(), this);
-                mpTempLine->setPassive();
-                connect(mpTempLine,SIGNAL(lineSelected(bool, int)),this,SLOT(doSelect(bool, int)));
-                connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
-                connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
-                connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-                connect(this,SIGNAL(connectionFinished()),mpTempLine,SLOT(setConnected()));
-                mpLines.push_back(mpTempLine);
+                ConnectorLine *pLine = new ConnectorLine(0, 0, 0, 0, mpGUIConnectorAppearance, mpLines.size(), this);
+                this->addLine(pLine);
             }
 
         }
@@ -1118,6 +1092,44 @@ void GUIConnector::setVisible(bool visible)
     }
 }
 
+//! @brief Helpfunction that setup the geometries vector based on the point geometry or supplied geometry list
+void GUIConnector::setupGeometries(const QStringList &rGeometries)
+{
+    for(int i=0; i < mPoints.size()-1; ++i)
+    {
+        if(rGeometries.empty())
+        {
+            if(mPoints[i].x() == mPoints[i+1].x())
+                mGeometries.push_back(HORIZONTAL);
+            else if(mPoints[i].y() == mPoints[i+1].y())
+                mGeometries.push_back(VERTICAL);
+            else
+                mGeometries.push_back(DIAGONAL);
+        }
+        else
+        {
+            if(rGeometries.at(i) == "horizontal")
+                mGeometries.push_back(HORIZONTAL);
+            else if(rGeometries.at(i) == "vertical")
+                mGeometries.push_back(VERTICAL);
+            else
+                mGeometries.push_back(DIAGONAL);
+        }
+    }
+}
+
+//! @brief Helpfunction to add linesegment to connector
+void GUIConnector::addLine(ConnectorLine *pLine)
+{
+    mpLines.push_back(pLine);
+    pLine->setPassive();
+    connect(pLine,  SIGNAL(lineSelected(bool, int)),    this,       SLOT(doSelect(bool, int)),  Qt::UniqueConnection);
+    connect(pLine,  SIGNAL(lineMoved(int)),             this,       SLOT(updateLine(int)),      Qt::UniqueConnection);
+    connect(pLine,  SIGNAL(lineHoverEnter()),           this,       SLOT(setHovered()),         Qt::UniqueConnection);
+    connect(pLine,  SIGNAL(lineHoverLeave()),           this,       SLOT(setUnHovered()),       Qt::UniqueConnection);
+    connect(this,   SIGNAL(connectionFinished()),       pLine,      SLOT(setConnected()),       Qt::UniqueConnection);
+}
+
 //------------------------------------------------------------------------------------------------------------------------//
 
 
@@ -1129,7 +1141,7 @@ void GUIConnector::setVisible(bool visible)
 //! @param pConnApp Pointer to the connector appearance data, containing pens
 //! @param lineNumber Number of the line in the connector's line vector.
 //! @param *parent Pointer to the parent object (the connector)
-GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUIConnectorAppearance* pConnApp, int lineNumber, GUIConnector *parent)
+ConnectorLine::ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance* pConnApp, int lineNumber, GUIConnector *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
     mpParentGUIConnector = parent;
@@ -1148,13 +1160,13 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUICo
 
 
 //! @brief Destructor for connector lines
-GUIConnectorLine::~GUIConnectorLine()
+ConnectorLine::~ConnectorLine()
 {
 }
 
 
 //! @brief Reimplementation of paint function. Removes the ugly dotted selection box.
-void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
+void ConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
     QStyleOptionGraphicsItem *_o = const_cast<QStyleOptionGraphicsItem*>(o);
     _o->state &= ~QStyle::State_Selected;
@@ -1165,7 +1177,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 //! @brief Changes the style of the line to active
 //! @see setPassive()
 //! @see setHovered()
-void GUIConnectorLine::setActive()
+void ConnectorLine::setActive()
 {
         this->setPen(mpConnectorAppearance->getPen("Active"));
         if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
@@ -1182,7 +1194,7 @@ void GUIConnectorLine::setActive()
 //! @brief Changes the style of the line to default
 //! @see setActive()
 //! @see setHovered()
-void GUIConnectorLine::setPassive()
+void ConnectorLine::setPassive()
 {
     if(!mpParentGUIConnector->isConnected())
     {
@@ -1205,7 +1217,7 @@ void GUIConnectorLine::setPassive()
 //! @brief Changes the style of the line to hovered
 //! @see setActive()
 //! @see setPassive()
-void GUIConnectorLine::setHovered()
+void ConnectorLine::setHovered()
 {
     this->setPen(mpConnectorAppearance->getPen("Hover"));
     if(mpParentGUIConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
@@ -1219,7 +1231,7 @@ void GUIConnectorLine::setHovered()
 
 
 //! @brief Defines what happens if a mouse key is pressed while hovering a connector line
-void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void ConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
@@ -1230,7 +1242,7 @@ void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 
 //! @brief Defines what happens if a mouse key is released while hovering a connector line
-void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void ConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((this->pos() != mOldPos) && (event->button() == Qt::LeftButton))
     {
@@ -1243,7 +1255,7 @@ void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 //! @brief Defines what happens if the mouse cursor enters the line (changes cursor if the line is movable)
 //! @see hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void ConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
     {
@@ -1266,7 +1278,7 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 //! @brief Defines what happens when mouse cursor leaves the line
 //! @see hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void ConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!mpParentGUIConnector->mIsActive)
     {
@@ -1278,7 +1290,7 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 
 //! @brief Handles context menu events for connector
-void GUIConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     if (!mpParentGUIConnector->isConnected() || mpParentGUIConnector->getStartPort()->getNodeType() == "NodeSignal")
     {
@@ -1319,14 +1331,14 @@ void GUIConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 
 //! @brief Returns the number of the line in the connector
-int GUIConnectorLine::getLineNumber()
+int ConnectorLine::getLineNumber()
 {
     return mLineNumber;
 }
 
 
 //! @brief Defines what shall happen if the line is selected or moved
-QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant ConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
@@ -1341,7 +1353,7 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
 
 
 //! @brief Tells the line that its parent connector has been connected at both ends
-void GUIConnectorLine::setConnected()
+void ConnectorLine::setConnected()
 {
     mParentConnectorEndPortConnected = true;
 }
@@ -1352,7 +1364,7 @@ void GUIConnectorLine::setConnected()
 //! @param y1 Y-coordinate of the start position.
 //! @param x2 X-coordinate of the end position.
 //! @param y2 Y-coordinate of the end position.
-void GUIConnectorLine::setLine(QPointF pos1, QPointF pos2)
+void ConnectorLine::setLine(QPointF pos1, QPointF pos2)
 {
     this->mStartPos = this->mapFromParent(pos1);
     this->mEndPos = this->mapFromParent(pos2);
@@ -1375,7 +1387,7 @@ void GUIConnectorLine::setLine(QPointF pos1, QPointF pos2)
 
 //! @brief Adds an arrow at the end of the line
 //! @see addStartArrow()
-void GUIConnectorLine::addEndArrow()
+void ConnectorLine::addEndArrow()
 {
     qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mEndPos.x(),
@@ -1393,7 +1405,7 @@ void GUIConnectorLine::addEndArrow()
 
 //! @brief Adds an arrow at the start of the line
 //! @see addEndArrow()
-void GUIConnectorLine::addStartArrow()
+void ConnectorLine::addStartArrow()
 {
     qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mStartPos.x(),
@@ -1410,7 +1422,7 @@ void GUIConnectorLine::addStartArrow()
 
 
 //! @brief Reimplementation of setPen function, used to set the pen style for the arrow lines too
-void GUIConnectorLine::setPen (const QPen &pen)
+void ConnectorLine::setPen (const QPen &pen)
 {
     QGraphicsLineItem::setPen(pen);
     if(mHasStartArrow | mHasEndArrow)       //Update arrow lines two, but ignore dashes

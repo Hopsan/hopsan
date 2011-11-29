@@ -91,7 +91,6 @@ public:
     void rememberSelectedSubConnector(GUIConnector *pConnector);
     void forgetSelectedSubConnector(GUIConnector *pConnector);
     bool isCreatingConnector();
-    void setIsCreatingConnector(bool isCreatingConnector);
     void cancelCreatingConnector();
     void addOneConnectorLine(QPointF pos);
     void removeOneConnectorLine(QPointF pos);
