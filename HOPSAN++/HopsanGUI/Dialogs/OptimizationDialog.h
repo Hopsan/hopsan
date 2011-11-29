@@ -61,6 +61,7 @@ private slots:
     void addFunction();
     void removeFunction();
     void updateOutputBox();
+    QString generateFileName();
     void run();
 
 private:
@@ -83,6 +84,7 @@ private:
     QLabel *mpEpsilonXLabel;
     QLineEdit *mpEpsilonXLineEdit;
     QCheckBox *mpPlottingCheckBox;
+    QCheckBox *mpExport2CSVBox;
 
     //Parameters tab
     QLabel *mpParametersLabel;
