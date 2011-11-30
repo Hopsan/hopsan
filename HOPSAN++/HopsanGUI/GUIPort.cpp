@@ -731,8 +731,6 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 //! @param doShow shall we show unconnected ports
 void GUIPort::showIfNotConnected(bool doShow)
 {
-//    if(mpParentGuiModelObject->getParentContainerObject() == gpMainWindow->mpProjectTabs->getCurrentContainer())
-//    {
         if(!isConnected() && doShow && mpParentGuiModelObject->isVisible())
         {
             this->show();
@@ -741,7 +739,6 @@ void GUIPort::showIfNotConnected(bool doShow)
         {
             this->hide();
         }
-//    }
 }
 
 
@@ -767,10 +764,17 @@ QString GroupPort::getNodeType()
     return "GropPortNodeType";
 }
 
-//bool GroupPort::isGroupPortDefined() const
-//{
-//    return (mpBasePort != 0);
-//}
+void GroupPort::removeConnection(GUIConnector *pConnector)
+{
+    GUIPort::removeConnection(pConnector);
+    //! @warning this is wrong, we must check external port also before determining to clear
+    if (mConnectedConnectors.size() == 0)
+    {
+        //Clear the base port setting, we are now empty
+        this->setBasePort(0);
+    }
+}
+
 
 void GroupPort::setBasePort(GUIPort* pPort)
 {

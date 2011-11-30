@@ -80,7 +80,7 @@ public:
     bool getLastNodeData(QString dataName, double& rData);
 
     void addConnection(GUIConnector *pConnector);
-    void removeConnection(GUIConnector *pConnector);
+    virtual void removeConnection(GUIConnector *pConnector);
     QVector<GUIConnector*> getAttachedConnectorPtrs() const;
     bool isConnected();
     QVector<GUIPort *> getConnectedPorts();
@@ -103,6 +103,8 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openRightClickMenu(QPoint screenPos);
 
+    QVector<GUIConnector*> mConnectedConnectors;
+
 protected slots:
     void refreshPortOverlayScale(qreal scale);
 
@@ -115,7 +117,6 @@ private:
 //    QGraphicsLineItem *lineH;
 //    QGraphicsLineItem *lineV;
 
-    QVector<GUIConnector*> mConnectedConnectors;
     GUIPortAppearance *mpPortAppearance;
     GUIPortAppearance mPortAppearanceAfterLastRefresh;
     QString mPortDisplayName;
@@ -139,7 +140,8 @@ public:
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
 
-    //bool isGroupPortDefined() const;
+    void removeConnection(GUIConnector *pConnector);
+
     void setBasePort(GUIPort* pPort);
     GUIPort* getBasePort() const;
 

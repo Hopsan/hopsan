@@ -1067,67 +1067,126 @@ void GUIContainerObject::forgetSelectedSubConnector(GUIConnector *pConnector)
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
 void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus undoSettings)
 {
-    bool doDelete = false;          //! @todo Why would we not want to delete the connector when we call the function that is meant to delete it?
-    bool endPortWasConnected = false;       //Tells if connector is finished or being created
+    bool success=false;
 
-    if(undoSettings == UNDO)
-    {
-        mpUndoStack->registerDeletedConnector(pConnector);
-    }
-
-    for(int i = 0; i < mSubConnectorList.size(); ++i)
+    //! @todo why do we have this loop, probably as safety not to try and remove connectors thats not in this system
+    for(int i=0; i<mSubConnectorList.size(); ++i)
     {
         if(mSubConnectorList[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
              if(pConnector->isConnected())
              {
+                 GroupPort *pStartGroupPort=0, *pEndGroupPort=0;
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
-                 this->getCoreSystemAccessPtr()->disconnect(pStartP->getGuiModelObjectName(), pStartP->getPortName(), pEndP->getGuiModelObjectName(), pEndP->getPortName());
+
+                 if (pStartP->getPortType() == "GropPortType")
+                 {
+                     pStartGroupPort = dynamic_cast<GroupPort*>(pStartP);
+                 }
+
+                 if (pEndP->getPortType() == "GropPortType")
+                 {
+                     pEndGroupPort = dynamic_cast<GroupPort*>(pEndP);
+                 }
+
+                 GUIPort *pStartBasePort=0, *pEndBasePort=0;
+                 // If no group ports, do normal disconnect
+                 if ( (pStartGroupPort==0) && (pEndGroupPort==0) )
+                 {
+                    success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getGuiModelObjectName(),
+                                                                         pStartP->getPortName(),
+                                                                         pEndP->getGuiModelObjectName(),
+                                                                         pEndP->getPortName());
+                 }
+                 // If one or both of the ports were a group port
+                 else
+                 {
+                     // If start port is group port but not end port
+                     if ((pStartGroupPort != 0) && (pEndGroupPort == 0))
+                     {
+                        pStartBasePort = pStartGroupPort->getBasePort();
+                        pEndBasePort = pEndP;
+
+                     }
+                     // If start port is not group port but end port is
+                     else if ((pStartGroupPort == 0) && (pEndGroupPort != 0))
+                     {
+                         pStartBasePort = pStartP;
+                         pEndBasePort = pEndGroupPort->getBasePort();
+
+                     }
+                     // Else both were group ports
+                     else
+                     {
+                         pStartBasePort = pStartGroupPort->getBasePort();
+                         pEndBasePort = pEndGroupPort->getBasePort();
+                     }
+
+                     //! @warning this is ALL WRONG, needds to be rewritten
+                     //! @todo the problem is that baseport will likely be same for both ports, we need to figure out which port the oter groupport is actually connected to
+                     if ((pStartBasePort!=0) && (pEndBasePort!=0) && (pStartBasePort!=pEndBasePort))
+                     {
+                         success = this->getCoreSystemAccessPtr()->disconnect(pStartBasePort->getGuiModelObjectName(),
+                                                                              pStartBasePort->getPortName(),
+                                                                              pEndBasePort->getGuiModelObjectName(),
+                                                                              pEndBasePort->getPortName());
+                     }
+                     else
+                     {
+                         success = true;
+                     }
+
+                     //! @warning See bellow
+                     //! @todo WE MUST clear the base port from all relevant grop ports, need to recurse to find them, similar to split/merge in core
+
+                 }
+
                  emit checkMessages();
-                 endPortWasConnected = true;
              }
-             doDelete = true;       //Connector exists, so delete it?!
+             break;
         }
-        if(mSubConnectorList.empty())
-        {
-            break;
-        }
-    }
-
-    //! @todo maybe we should let the port decide by itself if it should be visible or not insted
-    //Show the end port if it exists and if it is no longer connected
-    if(endPortWasConnected)
-    {
-        pConnector->getEndPort()->removeConnection(pConnector);
-        if(!pConnector->getEndPort()->isConnected())
-        {
-            pConnector->getEndPort()->setVisible(!mSubComponentPortsHidden);
-        }
-    }
-
-    //! @todo maybe we should let the port decide by itself if it should be visible or not insted
-    //Show the start port if it is no longer connected
-    pConnector->getStartPort()->removeConnection(pConnector);
-    if(!pConnector->getStartPort()->isConnected())
-    {
-        pConnector->getStartPort()->setVisible(!mSubComponentPortsHidden);
     }
 
     //Delete the connector and remove it from scene and lists
-    if(doDelete)
+    if(success)
     {
+        if(undoSettings == UNDO)
+        {
+            mpUndoStack->registerDeletedConnector(pConnector);
+        }
+
+        //! @todo maybe we should let the port decide by itself if it should be visible or not insted
+        //Show the end port if it exists and if it is no longer connected
+        if(pConnector->getEndPort() != 0)
+        {
+            pConnector->getEndPort()->removeConnection(pConnector);
+            if(!pConnector->getEndPort()->isConnected())
+            {
+                pConnector->getEndPort()->setVisible(!mSubComponentPortsHidden);
+            }
+        }
+
+        //! @todo maybe we should let the port decide by itself if it should be visible or not insted
+        //Show the start port if it is no longer connected
+        pConnector->getStartPort()->removeConnection(pConnector);
+        if(!pConnector->getStartPort()->isConnected())
+        {
+            pConnector->getStartPort()->setVisible(!mSubComponentPortsHidden);
+        }
+
+        // Froget and delete the connector
         mSubConnectorList.removeAll(pConnector);
         mSelectedSubConnectorsList.removeAll(pConnector);
         mpScene->removeItem(pConnector);
         delete pConnector;
+
+        emit connectorRemoved();
     }
 
     //Refresh the graphics view
     mpParentProjectTab->getGraphicsView()->updateViewPort();
-
-    emit connectorRemoved();
 }
 
 
@@ -1170,7 +1229,6 @@ void GUIContainerObject::createConnector(GUIPort *pPort1, GUIPort *pPort2, undoS
 void GUIContainerObject::startConnector(GUIPort *startPort)
 {
     mpTempConnector = new GUIConnector(this);
-    mpTempConnector->drawConnector();
 
     // Make connector know its startport and make modelobject know about this connector
     mpTempConnector->setStartPort(startPort);
@@ -1184,48 +1242,92 @@ void GUIContainerObject::startConnector(GUIPort *startPort)
     mpTempConnector->addPoint(startPos);
 
     mIsCreatingConnector = true;
+    mpTempConnector->drawConnector();
 }
 
 bool GUIContainerObject::finilizeConnector(GUIPort *endPort)
 {
     bool success = false;
 
+    GUIPort *pStartBasePort=0, *pEndBasePort=0;
+    GroupPort *pStartGroupPort=0, *pEndGroupPort=0;
+    if (mpTempConnector->getStartPort()->getPortType() == "GropPortType")
+    {
+        pStartGroupPort = dynamic_cast<GroupPort*>(mpTempConnector->getStartPort());
+        pStartBasePort = pStartGroupPort->getBasePort();
+    }
+    else
+    {
+        pStartBasePort = mpTempConnector->getStartPort();
+    }
+
+
     // If we are connecting to group run special gui only check if connection OK
     if (endPort->getPortType() == "GropPortType")
     {
-        GroupPort *pGroupPort = dynamic_cast<GroupPort*>(endPort);
-        GUIPort *pBasePort = pGroupPort->getBasePort();
+        pEndGroupPort = dynamic_cast<GroupPort*>(endPort);
+        pEndBasePort = pEndGroupPort->getBasePort();
+    }
+    else
+    {
+        pEndBasePort = endPort;
+    }
 
-        // Check if first connection to group port
-        if (pBasePort == 0)
+
+    // Abort with error if trying to connect two undefined group ports to each other
+    if ( (pStartBasePort==0) && (pEndBasePort==0) )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("You are not allowed to connect two undefined group ports to each other");
+        return false;
+    }
+
+    // Handle if one or both ports are group ports
+    if ( (pStartGroupPort!=0) || (pEndGroupPort!=0) )
+    {
+        // If both group ports are defined
+        if ( (pStartBasePort != 0) && (pEndBasePort != 0) )
         {
-            pGroupPort->setBasePort(mpTempConnector->getStartPort());
+            success = this->getCoreSystemAccessPtr()->connect(pStartBasePort->getGuiModelObjectName(),
+                                                              pStartBasePort->getPortName(),
+                                                              pEndBasePort->getGuiModelObjectName(),
+                                                              pEndBasePort->getPortName());
+        }
+        // If start known but not end
+        else if ( (pStartBasePort != 0) && (pEndBasePort == 0) )
+        {
+            pEndGroupPort->setBasePort(pStartBasePort);
+            success = true;
+
+        }
+        // Else start unknown but end known
+        else if ( (pStartBasePort == 0) && (pEndBasePort != 0) )
+        {
+            pStartGroupPort->setBasePort(pEndBasePort);
             success = true;
         }
         else
         {
-            success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(),
-                                                             mpTempConnector->getStartPortName(),
-                                                             pBasePort->getGuiModelObjectName(),
-                                                             pBasePort->getPortName());
+            //This should never happen, handled above
+            success = false;
         }
     }
+    // Else treat as normal ports
     else
     {
-        success = this->getCoreSystemAccessPtr()->connect(mpTempConnector->getStartComponentName(),
-                                                          mpTempConnector->getStartPortName(),
-                                                          endPort->getGuiModelObjectName(),
-                                                          endPort->getPortName() );
+        success = this->getCoreSystemAccessPtr()->connect(pStartBasePort->getGuiModelObjectName(),
+                                                          pStartBasePort->getPortName(),
+                                                          pEndBasePort->getGuiModelObjectName(),
+                                                          pEndBasePort->getPortName());
     }
 
     if (success)
     {
         gpMainWindow->hideHelpPopupMessage();
-        mIsCreatingConnector = false;
         endPort->getGuiModelObject()->rememberConnector(mpTempConnector);
         mpTempConnector->setEndPort(endPort);
         mpTempConnector->finishCreation();
         mSubConnectorList.append(mpTempConnector);
+        mIsCreatingConnector = false;
     }
 
     return success;

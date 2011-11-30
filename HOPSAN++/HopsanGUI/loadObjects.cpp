@@ -51,25 +51,25 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
     QStringList geometryList;
 
     // Read core specific stuff
-    startComponentName = rDomElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG);
-    startPortName = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
-    endComponentName = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
-    endPortName = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
+    startComponentName  = rDomElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG);
+    startPortName       = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
+    endComponentName    = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
+    endPortName         = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
     //qDebug() << "loadConnector: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
 
     // Read gui specific stuff
     qreal x,y;
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    QDomElement guiCoordinates = guiData.firstChildElement(HMF_COORDINATES);
-    QDomElement coordTag = guiCoordinates.firstChildElement(HMF_COORDINATETAG);
+    QDomElement guiData         = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement guiCoordinates  = guiData.firstChildElement(HMF_COORDINATES);
+    QDomElement coordTag        = guiCoordinates.firstChildElement(HMF_COORDINATETAG);
     while (!coordTag.isNull())
     {
         parseCoordinateTag(coordTag, x, y);
         pointVector.push_back(QPointF(x,y));
         coordTag = coordTag.nextSiblingElement(HMF_COORDINATETAG);
     }
-    QDomElement guiGeometries = guiData.firstChildElement(HMF_GEOMETRIES);
-    QDomElement geometryTag = guiGeometries.firstChildElement(HMF_GEOMETRYTAG);
+    QDomElement guiGeometries   = guiData.firstChildElement(HMF_GEOMETRIES);
+    QDomElement geometryTag     = guiGeometries.firstChildElement(HMF_GEOMETRYTAG);
     while (!geometryTag.isNull())
     {
         geometryList.append(geometryTag.text());
