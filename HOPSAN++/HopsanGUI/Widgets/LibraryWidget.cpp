@@ -279,8 +279,7 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
 
 //! @brief Slot that loads components from a tree widget item to the icon box in dual view mode
 //! @param item Tree widget item to load from
-//! @param column Not used (required to be there because signal-slot must match parameters)
-void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
+void LibraryWidget::showLib(QTreeWidgetItem *item, int /*column*/)
 {
     //Find the node in the contents tree
     QStringList treePath;
@@ -366,8 +365,7 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
 
 //! @brief Initializes drag operation to workspace from a tree widget item
 //! @param item Tree widget item
-//! @param dummy Does nothing (must be there due to signal-slot parameter mataching)
-void LibraryWidget::initializeDrag(QTreeWidgetItem *item, int dummy)
+void LibraryWidget::initializeDrag(QTreeWidgetItem *item, int /*dummy*/)
 {
     if(!mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 

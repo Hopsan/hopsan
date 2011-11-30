@@ -72,7 +72,7 @@ namespace hopsan {
         void saveLogData(std::string filename);
 
         //void setData is now public!
-        const double getData(const size_t data_type) const;
+        double getData(const size_t data_type) const;
         double *getDataPtr(const size_t data_type);
 
         void setDataCharacteristics(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);

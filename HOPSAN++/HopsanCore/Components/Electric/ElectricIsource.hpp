@@ -100,8 +100,8 @@ public:
         //LocalExpressions
 
         //Expressions
-        double iel1 = iin;
-        double uel1 = cel1 + iel1*Zcel1;
+        //double iel1 = iin;
+        //double uel1 = cel1 + iel1*Zcel1;
 
         //Write new values to nodes
         //Port Pel1

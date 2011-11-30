@@ -174,6 +174,13 @@ QuickNavigationWidget *ProjectTab::getQuickNavigationWidget()
 }
 
 
+//! @brief Sets last simulation time (only use this from project tab widget!)
+void ProjectTab::setLastSimulationTime(int time)
+{
+    mLastSimulationTime = time;
+}
+
+
 //! @brief Returns last simulation time for tab
 int ProjectTab::getLastSimulationTime()
 {
@@ -777,7 +784,7 @@ void ProjectTabWidget::loadModel(QAction *action)
 //! @param modelFileName is the path to the loaded file
 //! @see loadModel()
 //! @see saveModel(saveTarget saveAsFlag)
-void ProjectTabWidget::loadModel(QString modelFileName)
+void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
 {
     //! @todo maybe  write utility function that opens filel checks existance and sets fileinfo
     QFile file(modelFileName);   //Create a QFile object
@@ -790,13 +797,15 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     QFileInfo fileInfo(file);
 
     //Make sure file not already open
-    for(int t=0; t!=this->count(); ++t)
+    if(!ignoreAlreadyOpen)
     {
-        if(this->getSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath())
+        for(int t=0; t!=this->count(); ++t)
         {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));
-            return;
+            if(this->getSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath())
+            {
+                QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));
+                return;
+            }
         }
     }
 
@@ -905,19 +914,25 @@ void ProjectTabWidget::showLosses(bool show)
 }
 
 
-bool ProjectTabWidget::simulateAllOpenModelsWithSplit()
+bool ProjectTabWidget::simulateAllOpenModelsSequencially(bool modelsHaveNotChanged)
 {
-    simulateAllOpenModels(false);
+    return simulateAllOpenModels(false, true, modelsHaveNotChanged);
 }
 
 
-bool ProjectTabWidget::simulateAllOpenModelsWithoutSplit()
+bool ProjectTabWidget::simulateAllOpenModelsWithSplit(bool modelsHaveNotChanged)
 {
-    simulateAllOpenModels(true);
+    return simulateAllOpenModels(false, false, modelsHaveNotChanged);
 }
 
 
-bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems)
+bool ProjectTabWidget::simulateAllOpenModelsWithoutSplit(bool modelsHaveNotChanged)
+{
+    return simulateAllOpenModels(true, false, modelsHaveNotChanged);
+}
+
+
+bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems, bool sequencialMultiThreading, bool modelsHaveNotChanged)
 {
     qDebug() << "simulateAllOpenModels()";
 
@@ -1004,7 +1019,7 @@ bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems)
                     gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting single-threaded simulation of all models");
 
                 simTimer.start();
-                MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, dontSplitSystems, this);
+                MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, dontSplitSystems, sequencialMultiThreading, modelsHaveNotChanged, this);
                 actualSimulation.start();
                 actualSimulation.setPriority(QThread::HighestPriority);
 
@@ -1041,6 +1056,10 @@ bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems)
         //! @todo we should be able to see if simulation was actaully completet successfully not only check the progress bar button
         QString timeString;
         timeString.setNum(simTimer.elapsed());
+        for(int i=0; i<count(); ++i)
+        {
+            getTab(i)->setLastSimulationTime(simTimer.elapsed());
+        }
         if (progressBar.wasCanceled() || !initSuccess)
         {
             pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of all systems was terminated!")));
@@ -1058,4 +1077,6 @@ bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems)
 
         //getSystem(i)->getCoreSystemAccessPtr()->simlateAllOpenModels();
     }
+
+    return false;       //No tabs open
 }

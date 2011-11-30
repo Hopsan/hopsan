@@ -175,7 +175,7 @@ void BarChartPlotter::drawContent(QPainter &p)
 }
 
 void BarChartPlotter::drawBarItem(QPainter &p, QRect rect, QPen &pen, QBrush &brush,
-                                  const QModelIndex &index, double value)
+                                  const QModelIndex &/*index*/, double /*value*/)
 {
     p.setPen(pen);
     p.setBrush(brush);

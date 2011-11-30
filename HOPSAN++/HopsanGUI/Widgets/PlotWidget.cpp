@@ -300,6 +300,9 @@ PlotWindow *PlotVariableTree::createPlotWindow(QString componentName, QString po
 
 PlotWindow *PlotVariableTree::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit)
 {
+    if((xVector.isEmpty()) || (yVector.isEmpty()))
+        return 0;
+
     PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
     plotWindow->addPlotCurve(0, componentName, portName, dataName, dataUnit, axis);
@@ -349,7 +352,7 @@ void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
 
 
 //! @brief Defines the right-click menu in the variable tree
-void PlotVariableTree::contextMenuEvent(QContextMenuEvent *event)
+void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
 {
     qDebug() << "contextMenuEvent()";
 

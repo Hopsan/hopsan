@@ -71,7 +71,7 @@ void SimulationThread::run()
 
 
 //! @brief Constructor
-MultipleSimulationThread::MultipleSimulationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, bool dontSplitSystems, QObject *parent)
+MultipleSimulationThread::MultipleSimulationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, bool dontSplitSystems, bool sequencialMultiThreading, bool modelsHaveNotChanged, QObject *parent)
     : QThread(parent)
 {
     mvGUIRootSystemPtrs = vGUIRootSystemPtrs;
@@ -79,6 +79,8 @@ MultipleSimulationThread::MultipleSimulationThread(QVector<CoreSystemAccess *> v
     mStartTime = startTime;
     mFinishTime = finishTime;
     mDontSplitSystems = dontSplitSystems;
+    mSequencialMultithreading = sequencialMultiThreading;
+    mModelsHaveNotChanged = modelsHaveNotChanged;
 }
 
 
@@ -87,11 +89,11 @@ void MultipleSimulationThread::run()
 {
     if(gConfig.getUseMulticore())
     {
-        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, MULTICORE, mDontSplitSystems, gConfig.getNumberOfThreads());
+        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, MULTICORE, mDontSplitSystems, mSequencialMultithreading, gConfig.getNumberOfThreads(), mModelsHaveNotChanged);
     }
     else
     {
-        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, SINGLECORE, mDontSplitSystems, gConfig.getNumberOfThreads());
+        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, SINGLECORE, mDontSplitSystems, mSequencialMultithreading, gConfig.getNumberOfThreads(), mModelsHaveNotChanged);
     }
 
     for(int i=0; i<mvGUIRootSystemPtrs.size(); ++i)

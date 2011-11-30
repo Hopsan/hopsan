@@ -93,7 +93,7 @@ void Node::setData(const size_t data_type, const double data)
 //! @param [in] data_type Identifier for the type of node data to get
 //! @return The data value
 //!
-const double Node::getData(const size_t data_type) const
+double Node::getData(const size_t data_type) const
 {
     return mDataVector[data_type];
 }
@@ -200,7 +200,7 @@ void Node::copyNodeVariables(Node *pNode)
     {
         for(size_t i=0; i<mDataNames.size(); ++i)
         {
-            cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
+            //cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
             if(mPlotBehaviour[i] == Node::PLOT)
             {
                 //pNode->mDataNames[i] = mDataNames[i];

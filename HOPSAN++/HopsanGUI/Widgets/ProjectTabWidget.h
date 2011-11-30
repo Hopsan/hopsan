@@ -57,14 +57,15 @@ public slots:
     bool closeAllProjectTabs();
     void loadModel();
     void loadModel(QAction *action);
-    void loadModel(QString modelFileName);
+    void loadModel(QString modelFileName, bool ignoreAlreadyOpen=false);
     void tabChanged();
     void saveCurrentModelToWrappedCode();
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
-    bool simulateAllOpenModelsWithSplit();
-    bool simulateAllOpenModelsWithoutSplit();
+    bool simulateAllOpenModelsSequencially(bool modelsHaveNotChanged=false);
+    bool simulateAllOpenModelsWithSplit(bool modelsHaveNotChanged=false);
+    bool simulateAllOpenModelsWithoutSplit(bool modelsHaveNotChanged=false);
 
 signals:
     void checkMessages();
@@ -72,7 +73,7 @@ signals:
     void simulationFinished();
 
 private:
-    bool simulateAllOpenModels(bool dontSplitSystems);
+    bool simulateAllOpenModels(bool dontSplitSystems, bool sequencialMultiThreading, bool modelsHaveNotChanged=false);
     size_t mNumberOfUntitledTabs;
 };
 
@@ -90,6 +91,7 @@ public:
     GUISystem *getSystem();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
+    void setLastSimulationTime(int time);
     int getLastSimulationTime();
     bool isEditingEnabled();
     ProjectTabWidget *mpParentProjectTabWidget;

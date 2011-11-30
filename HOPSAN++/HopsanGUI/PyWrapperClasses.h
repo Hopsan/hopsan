@@ -157,7 +157,12 @@ public slots:
 
     void loadModel(MainWindow* o, const QString& modelFileName)
     {
-        o->mpProjectTabs->loadModel(modelFileName);
+        o->mpProjectTabs->loadModel(modelFileName, true);
+    }
+
+    void closeAllModels(MainWindow* o)
+    {
+        o->mpProjectTabs->closeAllProjectTabs();
     }
 
     void printMessage(MainWindow* o, const QString& message)
@@ -228,6 +233,40 @@ public slots:
         qApp->processEvents();
         return success;
     }
+
+
+    bool simulateAllOpenModelsSequencially(MainWindow* o, bool modelsHaveNotChanged)
+    {
+        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
+        o->mpConfig->setEnableProgressBar(false);
+        bool success = o->mpProjectTabs->simulateAllOpenModelsSequencially(modelsHaveNotChanged);
+        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
+        qApp->processEvents();
+        return success;
+    }
+
+
+    bool simulateAllOpenModelsWithSplit(MainWindow* o, bool modelsHaveNotChanged)
+    {
+        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
+        o->mpConfig->setEnableProgressBar(false);
+        bool success = o->mpProjectTabs->simulateAllOpenModelsWithSplit(modelsHaveNotChanged);
+        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
+        qApp->processEvents();
+        return success;
+    }
+
+
+    bool simulateAllOpenModelsWithoutSplit(MainWindow* o, bool modelsHaveNotChanged)
+    {
+        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
+        o->mpConfig->setEnableProgressBar(false);
+        bool success = o->mpProjectTabs->simulateAllOpenModelsWithoutSplit(modelsHaveNotChanged);
+        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
+        qApp->processEvents();
+        return success;
+    }
+
 
     double getParameter(MainWindow* o, const QString& compName, const QString& parName)
     {

@@ -359,7 +359,7 @@ ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QStr
 }
 
 
-void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, GUIModelObject *pGUIModelObject)
+void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString /*typeName*/, GUIModelObject *pGUIModelObject)
 {
     mDataName = dataName;
 

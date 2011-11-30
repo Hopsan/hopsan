@@ -1241,7 +1241,8 @@ void ConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 //! @brief Defines what happens if the mouse cursor enters the line (changes cursor if the line is movable)
 //! @see hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-void ConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+
+void ConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent */*event*/)
 {
     if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
     {
@@ -1264,7 +1265,7 @@ void ConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 //! @brief Defines what happens when mouse cursor leaves the line
 //! @see hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-void ConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void ConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent */*event*/)
 {
     if(!mpParentGUIConnector->mIsActive)
     {

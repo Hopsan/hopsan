@@ -199,7 +199,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
                                                                          qUnits,
                                                                          qTypes);
         int row = 0;
-        for(size_t i=0; i<qParameterNames.size(); ++i)
+        for(int i=0; i<qParameterNames.size(); ++i)
 //            for(it=tempMap.begin(); it!=tempMap.end(); ++it)
         {
 //            QLabel *pParameterLabel = new QLabel(QString(it.key().c_str()), this);

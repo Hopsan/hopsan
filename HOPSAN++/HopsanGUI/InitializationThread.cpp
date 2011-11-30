@@ -54,7 +54,7 @@ InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, dou
 }
 
 //! @brief Check if initialize was successful
-const bool InitializationThread::wasInitSuccessful() const
+bool InitializationThread::wasInitSuccessful() const
 {
     return mInitSuccessful;
 }
@@ -83,7 +83,7 @@ MultipleInitializationThread::MultipleInitializationThread(QVector<CoreSystemAcc
 }
 
 //! @brief Check if initialize was successful
-const bool MultipleInitializationThread::wasInitSuccessful() const
+bool MultipleInitializationThread::wasInitSuccessful() const
 {
     return mInitSuccessful;
 }

@@ -606,7 +606,7 @@ bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, b
 //! @brief Virtual function that returns the specified start value
 //! @param portName Name of the port to return value from
 //! @param variable Name of the parameter to return value from
-QString GUIModelObject::getStartValueTxt(QString portName, QString variable)
+QString GUIModelObject::getStartValueTxt(QString /*portName*/, QString /*variable*/)
 {
     //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -844,6 +844,8 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
     //! @todo Grouping is deactivated because it does not currently work!
     if (!this->scene()->selectedItems().empty())
         groupAction = rMenu.addAction(tr("Group components"));
+    else
+        groupAction = new QAction(this);
 
     QAction *showNameAction = rMenu.addAction(tr("Show name"));
     QAction *rotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));

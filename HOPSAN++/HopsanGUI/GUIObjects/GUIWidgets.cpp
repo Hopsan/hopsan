@@ -93,7 +93,7 @@ QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 
-void GUIWidget::deleteMe(undoStatus undoSettings)
+void GUIWidget::deleteMe(undoStatus /*undoSettings*/)
 {
     assert(1 == 2);
 }
@@ -288,7 +288,7 @@ void GUITextBoxWidget::setBoxVisible(bool boxVisible)
 }
 
 
-void GUITextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void GUITextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
 {
     //! @todo Make a separate file for this dialog
 

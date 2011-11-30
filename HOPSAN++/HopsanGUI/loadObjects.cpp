@@ -128,7 +128,8 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
 
 
 //! @brief xml version
-void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
+//! @todo Make undo settings work or remove it
+void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus /*undoSettings*/)
 {
     QString parameterName;
     QString parameterValue;
@@ -159,7 +160,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 
 
 //! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats
-void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
+void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus /*undoSettings*/)
 {
     QString portName = rDomElement.attribute("portname");
     QString variable = rDomElement.attribute("variable");

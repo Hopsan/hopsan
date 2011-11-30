@@ -97,7 +97,7 @@ public:
     void getLosses(double &total, double &hydraulic, double &mechanic);
     bool isLossesDisplayVisible();
 
-    virtual QString getDefaultParameter(QString name) {assert(false);}
+    virtual QString getDefaultParameter(QString /*name*/) {assert(false);}
 
 public slots:
     void deleteMe();

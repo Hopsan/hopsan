@@ -3337,7 +3337,7 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSym
 //! @returns True if event was interrupted, false if its propagation shall continue
 //! @param object Pointer to the object the event belongs to (in this case the plot canvas)
 //! @param ev ent Event to be interrupted
-bool PlotMarker::eventFilter(QObject *object, QEvent *event)
+bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
 {
     if(!mIsMovable)
         return false;

@@ -232,13 +232,13 @@ NodeSignal::VALUE,mthetaref);
 
 
         //LocalExpressions
-        double Kv = Power(mU0,2)/(Power(mU0,2) + Power(Abs(Ub),2));
-        double u1cmin = Kv*mu1min;
-        double u1cmax = Kv*mu1max;
-        double u2cmin = Kv*mu2min;
-        double u2cmax = Kv*mu2max;
-        double u3cmin = Kv*mu3min;
-        double u3cmax = Kv*mu3max;
+//        double Kv = Power(mU0,2)/(Power(mU0,2) + Power(Abs(Ub),2));
+//        double u1cmin = Kv*mu1min;
+//        double u1cmax = Kv*mu1max;
+//        double u2cmin = Kv*mu2min;
+//        double u2cmax = Kv*mu2max;
+//        double u3cmin = Kv*mu3min;
+//        double u3cmax = Kv*mu3max;
 
         //Initialize delays
 

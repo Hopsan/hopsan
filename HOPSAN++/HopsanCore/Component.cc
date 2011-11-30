@@ -1223,12 +1223,6 @@ void Component::loadStartValuesFromSimulation()
 
 
 //constructor ComponentC
-ComponentC::ComponentC(string name) : Component()
-{
-    mTypeCQS = Component::C;
-}
-
-//constructor ComponentC
 ComponentC::ComponentC() : Component()
 {
     mTypeCQS = Component::C;
@@ -1236,22 +1230,11 @@ ComponentC::ComponentC() : Component()
 
 
 //Constructor ComponentQ
-ComponentQ::ComponentQ(string name) : Component()
-{
-    mTypeCQS = Component::Q;
-}
-
-//Constructor ComponentQ
 ComponentQ::ComponentQ() : Component()
 {
     mTypeCQS = Component::Q;
 }
 
-//constructor ComponentSignal
-ComponentSignal::ComponentSignal(string name) : Component()
-{
-    mTypeCQS = Component::S;
-}
 
 //constructor ComponentSignal
 ComponentSignal::ComponentSignal() : Component()

@@ -104,12 +104,12 @@ public:
 
     bool isSimulationOk();
     bool initialize(double mStartTime, double mFinishTime, int nSamples=2048);
-    void simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0);
+    void simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0, bool modelHasNotChanged=false);
     void simulate(double mStartTime, double mFinishTime);       //! @todo Not used, remove?
     void finalize(double mStartTime, double mFinishTime);
     double getCurrentTime();
     void stop();
-    void simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, bool dontSplitSystems=false, size_t nThreads = 0);
+    void simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, bool dontSplitSystems=false, bool sequencialMultiThreading=false, size_t nThreads = 0, bool modelsHaveNotChanged=false);
 
     void deleteSystemPort(QString portname);
     QString addSystemPort(QString portname);

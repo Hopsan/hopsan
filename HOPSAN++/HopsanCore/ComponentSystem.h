@@ -112,9 +112,9 @@ namespace hopsan {
         void loadStartValuesFromSimulation();
         bool initialize(const double startT, const double stopT, const size_t nSamples=2048);
         void simulateMultiThreadedOld(const double startT, const double stopT);
-        void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0);
-        void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector);
-        void simulateMultipleSystemsMultiThreadedInParallel(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector);
+        void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
+        void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool noChanges=false);
+        void simulateMultipleSystemsMultiThreadedInParallel(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool noChanges=false);
         #ifdef USETBB
         void simulateAndMeasureTime(size_t steps = 1);
         double getTotalMeasuredTime();
@@ -129,6 +129,7 @@ namespace hopsan {
         #endif
         void simulate(const double startT, const double stopT);
         void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem *> systemVector);
+        void simulateMultipleSystemsMultiThreadedInSequence(const double startT, const double stopT, std::vector<ComponentSystem *> systemVector, size_t nDesiredThreads, bool noChanges);
         void finalize(const double startT, const double stopT);
 
         void logAllNodes(const double time);
@@ -186,7 +187,17 @@ namespace hopsan {
         std::vector<Node*> mSubNodePtrs;
 
         bool volatile mStopSimulation;
-//Finns i Component        Parameters *mSystemParameters;
+
+        std::vector< std::vector<Component*> > mSplitCVector;                  //Create split vectors
+        std::vector< std::vector<Component*> > mSplitQVector;
+        std::vector< std::vector<Component*> > mSplitSignalVector;
+        std::vector< std::vector<Node*> > mSplitNodeVector;
+
+        std::vector< std::vector<ComponentSystem *> > mSplitSystemVector;
+
+        std::vector<double *> mvTimePtrs;
+
+        //Finns i Component        Parameters *mSystemParameters;
     };
 }
 

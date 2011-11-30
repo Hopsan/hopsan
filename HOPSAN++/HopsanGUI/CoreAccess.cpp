@@ -197,32 +197,32 @@ void CoreSystemAccess::stop()
 }
 
 
-void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, bool dontSplitSystems, size_t nThreads)
+void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, bool dontSplitSystems, bool sequencialMultiThreading, size_t nThreads, bool modelsHaveNotChanged)
 {
-    qDebug() << "simulateAllOpenModels(), nThreads = " << nThreads;
+    std::vector<ComponentSystem *> systemVector;
+    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+    {
+        systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
+    }
 
     if(type == MULTICORE)
     {
-        std::vector<ComponentSystem *> systemVector;
-        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+        if(sequencialMultiThreading)
         {
-            systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
+            systemVector.at(0)->simulateMultipleSystemsMultiThreadedInSequence(mStartTime, mFinishTime, systemVector, nThreads, modelsHaveNotChanged);
         }
-        if(dontSplitSystems)
+        else if(dontSplitSystems)
         {
-            systemVector.at(0)->simulateMultipleSystemsMultiThreadedInParallel(mStartTime, mFinishTime, nThreads, systemVector);
+            systemVector.at(0)->simulateMultipleSystemsMultiThreadedInParallel(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
         }
         else
         {
-            systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector);
+            systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
         }
     }
     else
     {
-        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
-        {
-            gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->simulate(mStartTime, mFinishTime, MULTICORE, nThreads);      //Should be SINGLECORE, this is for testing only!
-        }
+        systemVector.at(0)->simulateMultipleSystems(mStartTime, mFinishTime, systemVector);
     }
 }
 
@@ -363,14 +363,14 @@ bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSa
 }
 
 
-void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads)
+void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelHasNotChanged)
 {
     qDebug() << "simulate(), nThreads = " << nThreads;
 
     if(type == MULTICORE)
     {
         qDebug() << "Starting multicore simulation";
-        mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads);
+        mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads, modelHasNotChanged);
         qDebug() << "Finished multicore simulation";
         //mpCoreComponentSystem->simulateMultiThreadedOld(mStartTime, mFinishTime);
     }
@@ -449,12 +449,12 @@ QStringList CoreSystemAccess::getParameterNames(QString componentName)
     return qParameterNames;
 }
 
-QString CoreSystemAccess::getParameterUnit(QString componentName, QString parameterName)
+QString CoreSystemAccess::getParameterUnit(QString /*componentName*/, QString /*parameterName*/)
 {
     return QString("");
 }
 
-QString CoreSystemAccess::getParameterDescription(QString componentName, QString parameterName)
+QString CoreSystemAccess::getParameterDescription(QString /*componentName*/, QString /*parameterName*/)
 {
     return QString("");
 }
@@ -633,7 +633,7 @@ bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString d
 }
 
 
-QString CoreSystemAccess::getSystemParameter(QString name)
+QString CoreSystemAccess::getSystemParameter(QString /*name*/)
 {
     std::string value;
     //mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), value);
@@ -641,7 +641,7 @@ QString CoreSystemAccess::getSystemParameter(QString name)
 }
 
 
-bool CoreSystemAccess::hasSystemParameter(QString name)
+bool CoreSystemAccess::hasSystemParameter(QString /*name*/)
 {
     std::string dummy;
     return true;//mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), dummy);

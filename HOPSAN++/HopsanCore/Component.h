@@ -229,11 +229,6 @@ class ComponentSystem; //Forward declaration
     class DLLIMPORTEXPORT ComponentSignal : public Component
     {
     protected:
-#ifdef __GNUC__
-        ComponentSignal(std::string name)  __attribute__ ((deprecated));
-#else
-        ComponentSignal(std::string name); //No warning for msvc
-#endif
         ComponentSignal();
     };
 
@@ -241,11 +236,6 @@ class ComponentSystem; //Forward declaration
     class DLLIMPORTEXPORT ComponentC : public Component
     {
     protected:
-#ifdef __GNUC__
-        ComponentC(std::string name)  __attribute__ ((deprecated));
-#else
-        ComponentC(std::string name); //No warning for msvc
-#endif
         ComponentC();
     };
 
@@ -253,11 +243,6 @@ class ComponentSystem; //Forward declaration
     class DLLIMPORTEXPORT ComponentQ : public Component
     {
     protected:
-#ifdef __GNUC__
-        ComponentQ(std::string name) __attribute__ ((deprecated));
-#else
-        ComponentQ(std::string name); //No warning for msvc
-#endif
         ComponentQ();
     };
 

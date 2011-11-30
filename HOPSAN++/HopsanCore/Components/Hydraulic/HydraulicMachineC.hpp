@@ -112,7 +112,7 @@ namespace hopsan {
 
             mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 1.0);
 
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3, eps;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, /*a3,*/ w3, c3, Zx3, eps;
             double dpr, dpe, ka, v1e, v2e, /*ap, wp,*/ qp1, qp2;
 
             //Read input variables from nodes

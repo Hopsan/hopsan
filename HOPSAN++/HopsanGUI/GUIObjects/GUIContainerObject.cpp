@@ -556,6 +556,15 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
     mpTempGUIModelObject->setSelected(false);
     mpTempGUIModelObject->setSelected(true);
 
+    if(nameStatus == NAMEVISIBLE)
+    {
+        mpTempGUIModelObject->showName(NOUNDO);
+    }
+    else if(nameStatus == NAMENOTVISIBLE)
+    {
+        mpTempGUIModelObject->hideName(NOUNDO);
+    }
+
     return mpTempGUIModelObject;
 }
 

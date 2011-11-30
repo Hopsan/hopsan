@@ -553,8 +553,7 @@ void OptimizationDialog::generateScriptFile()
 
 //! @brief Adds a new parameter to the list of selected parameter, and displays it in dialog
 //! @param item Tree widget item which represents parameter
-//! @param i Not used (must be  here for signal-slot compatibility)
-void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int i)
+void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/)
 {
     if(item->checkState(0) == Qt::Checked)
     {
@@ -606,8 +605,7 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int i)
 
 //! @brief Adds a new variable to the list of selected variables
 //! @param item Tree widget item which represents variable
-//! @param i Not used (must be  here for signal-slot compatibility)
-void OptimizationDialog::updateChosenVariables(QTreeWidgetItem *item, int i)
+void OptimizationDialog::updateChosenVariables(QTreeWidgetItem *item, int /*i*/)
 {
     QStringList variable;
     variable << item->parent()->parent()->text(0) << item->parent()->text(0) << item->text(0);

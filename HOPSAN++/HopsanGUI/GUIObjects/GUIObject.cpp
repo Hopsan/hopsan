@@ -277,7 +277,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 //! @param angle Angle to rotate to
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @todo Clean up these rotate functino and make them more similar with those in modelobject, try to share code if possible
-void GUIObject::rotate(qreal angle, undoStatus undoSettings)
+void GUIObject::rotate(qreal angle, undoStatus /*undoSettings*/)
 {
     this->setTransformOriginPoint(this->boundingRect().center());
     if(mIsFlipped)

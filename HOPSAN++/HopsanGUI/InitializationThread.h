@@ -36,7 +36,7 @@ class InitializationThread : public QThread
 {
 public:
     InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ProjectTab *parent);
-    const bool wasInitSuccessful() const;
+    bool wasInitSuccessful() const;
 
 protected:
     void run();
@@ -56,7 +56,7 @@ class MultipleInitializationThread : public QThread
 {
 public:
     MultipleInitializationThread(QVector<CoreSystemAccess *> vGUIRootSystemPtrs, double startTime, double finishTime, size_t nSamples);
-    const bool wasInitSuccessful() const;
+    bool wasInitSuccessful() const;
 
 protected:
     void run();

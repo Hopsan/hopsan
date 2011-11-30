@@ -442,9 +442,18 @@ void Configuration::loadDefaultsFromXml()
                 QPen pen = QPen(QColor(color), width, penstyle, capStyle);
 
                 connectorStyle style;
-                if(type=="Power") style = POWERCONNECTOR;
-                if(type=="Signal") style = SIGNALCONNECTOR;
-                if(type=="Undefined") style = UNDEFINEDCONNECTOR;
+                if(type=="Power")
+                {
+                    style = POWERCONNECTOR;
+                }
+                else if(type=="Signal")
+                {
+                    style = SIGNALCONNECTOR;
+                }
+                else
+                {
+                    style = UNDEFINEDCONNECTOR;
+                }
 
                 if(!mPenStyles.contains(style))
                 {

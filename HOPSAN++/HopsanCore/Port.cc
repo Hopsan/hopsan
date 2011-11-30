@@ -492,13 +492,13 @@ size_t Port::getNumPorts()
 }
 
 //! @brief Convenience functin to check if port is multiport
-const bool Port::isMultiPort() const
+bool Port::isMultiPort() const
 {
     return (mPortType > MULTIPORT);
 }
 
 //! Get the port type
-const PORTTYPE Port::getPortType() const
+PORTTYPE Port::getPortType() const
 {
     return mPortType;
 }

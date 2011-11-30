@@ -54,6 +54,7 @@ HelpDialog::HelpDialog(MainWindow *parent)
     mpLayout->addWidget(mpHelp, 0, 0);
     setLayout(mpLayout);
 
+    //! @todo Set size depending one screen size
     this->resize(1024,768);
 }
 
