@@ -23,9 +23,14 @@
 //$Id$
 
 #include "Configuration.h"
+#include "GUIPort.h"
+#include "PlotWindow.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
 #include "GUIObjects/GUISystem.h"
+#include "Utilities/GUIUtilities.h"
+#include "Widgets/PlotWidget.h"
 #include "Widgets/ProjectTabWidget.h"
+
 
 
 //! @brief Constructor
@@ -33,7 +38,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
     : QDialog(parent)
 {
         //Set the name and size of the main window
-    this->resize(640,480);
+    this->resize(640,640);
     this->setWindowTitle("Sensitivity Analysis");
     this->setPalette(gConfig.getPalette());
 
@@ -58,6 +63,19 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
     mpParametersGroupBox = new QGroupBox(this);
     mpParametersGroupBox->setLayout(mpParametersLayout);
 
+    //Output variables list
+    mpOutputLabel = new QLabel("Choose output variables:");
+    mpOutputList = new QTreeWidget(this);
+    mpOutputNameLabel = new QLabel("Variable Name");
+    mpOutputNameLabel->setFont(boldFont);
+    mpOutputLayout = new QGridLayout(this);
+    mpOutputLayout->addWidget(mpOutputLabel,        0, 0, 1, 3);
+    mpOutputLayout->addWidget(mpOutputList,         1, 0, 1, 3);
+    mpOutputLayout->addWidget(mpOutputNameLabel,     2, 0, 1, 1);
+    mpOutputGroupBox = new QGroupBox(this);
+    mpOutputGroupBox->setLayout(mpOutputLayout);
+
+    //Output variables
     mpStepsLabel = new QLabel("Number of simulation steps: ");
     mpStepsSpinBox = new QSpinBox(this);
     mpStepsSpinBox->setValue(100);
@@ -80,9 +98,10 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
 
     //Main layout
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpParametersGroupBox, 0, 1);
-    mpLayout->addWidget(mpStepsWidget, 1, 1);
-    mpLayout->addWidget(mpButtonBox, 2, 1);
+    mpLayout->addWidget(mpParametersGroupBox,   0, 1);
+    mpLayout->addWidget(mpOutputGroupBox,       1, 1);
+    mpLayout->addWidget(mpStepsWidget,          2, 1);
+    mpLayout->addWidget(mpButtonBox,            3, 1);
     setLayout(mpLayout);
 
     //Connections
@@ -113,6 +132,31 @@ void SensitivityAnalysisDialog::open()
         }
     }
     connect(mpParametersList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenParameters(QTreeWidgetItem*,int)), Qt::UniqueConnection);
+
+    mpOutputList->clear();
+    for(int c=0; c<componentNames.size(); ++c)
+    {
+        QTreeWidgetItem *pComponentItem = new QTreeWidgetItem(QStringList() << componentNames.at(c));
+        QFont componentFont = pComponentItem->font(0);
+        componentFont.setBold(true);
+        pComponentItem->setFont(0, componentFont);
+        mpOutputList->insertTopLevelItem(0, pComponentItem);
+        QList<GUIPort*> ports = pSystem->getGUIModelObject(componentNames.at(c))->getPortListPtrs();
+        for(int p=0; p<ports.size(); ++p)
+        {
+            QTreeWidgetItem *pPortItem = new QTreeWidgetItem(QStringList() << ports.at(p)->getPortName());
+            QVector<QString> portNames, portUnits;
+            pSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentNames.at(c), ports.at(p)->getPortName(), portNames, portUnits);
+            for(int v=0; v<portNames.size(); ++v)
+            {
+                QTreeWidgetItem *pVariableItem = new QTreeWidgetItem(QStringList() << portNames.at(v));
+                pVariableItem->setCheckState(0, Qt::Unchecked);
+                pPortItem->insertChild(0, pVariableItem);
+            }
+            pComponentItem->insertChild(0, pPortItem);
+        }
+    }
+    connect(mpOutputList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenVariables(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
     QDialog::show();
 }
@@ -168,9 +212,96 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
 }
 
 
+void SensitivityAnalysisDialog::updateChosenVariables(QTreeWidgetItem* item, int /*i*/)
+{
+    QStringList variable;
+    variable << item->parent()->parent()->text(0) << item->parent()->text(0) << item->text(0);
+
+    if(item->checkState(0) == Qt::Checked)
+    {
+        mOutputVariables.append(variable);
+        QLabel *pLabel = new QLabel(variable.at(0) + ", " + variable.at(1) + ", " + variable.at(2));
+        mpOutputLabels.append(pLabel);
+        int row = mpOutputLayout->rowCount();
+        mpOutputLayout->addWidget(pLabel, row, 0);
+    }
+    else
+    {
+        int i=0;
+        for(; i<mOutputVariables.size(); ++i)
+        {
+            if(mOutputVariables.at(i) == variable)
+            {
+                break;
+            }
+        }
+        mpOutputLayout->removeWidget(mpOutputLabels.at(i));
+        QLabel *pOutputLabels = mpOutputLabels.at(i);
+        mpOutputLabels.removeAt(i);
+        mOutputVariables.removeAll(variable);
+        delete(pOutputLabels);
+    }
+}
+
+
 void SensitivityAnalysisDialog::run()
 {
-    qDebug() << "Running!";
-    close();
+    ProjectTabWidget *pTabs = gpMainWindow->mpProjectTabs;
+    int nThreads = gConfig.getNumberOfThreads();
+    int nSteps = mpStepsSpinBox->value();
+    int nParameteres = mSelectedParameters.size();
+
+    if(gConfig.getUseMulticore())
+    {
+        for(int i=1; i<nThreads; ++i)
+        {
+            pTabs->loadModel(pTabs->getCurrentContainer()->getModelFileInfo().absoluteFilePath(), true);
+        }
+    }
+
+    int nTabs = pTabs->count();
+
+    bool noChange=false;
+    for(int i=1; i<nSteps/nThreads; ++i)
+    {
+        for(int t=0; t<nTabs; ++t)
+        {
+            for(int p=0; p<nParameteres; ++p)
+            {
+                double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
+                pTabs->getContainer(t)->getGUIModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+            }
+        }
+        pTabs->simulateAllOpenModelsWithoutSplit(noChange);
+        noChange=true;
+    }
+
+    for(int v=0; v<mOutputVariables.size(); ++v)
+    {
+        pTabs->setCurrentIndex(0);
+
+        QString component = mOutputVariables.at(v).at(0);
+        QString port = mOutputVariables.at(v).at(1);
+        QString variable = mOutputVariables.at(v).at(2);
+        pTabs->getContainer(0)->getGUIModelObject(component)->getPort(port)->plot(variable);
+        gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->hideCurveInfo();
+        gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->setLegendsVisible(false);
+
+        for(int g=1; g<pTabs->getContainer(0)->getNumberOfPlotGenerations(); ++g)
+        {
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable);
+        }
+
+        for(int t=1; t<nTabs; ++t)
+        {
+            pTabs->setCurrentIndex(t);
+            for(int g=0; g<pTabs->getContainer(t)->getNumberOfPlotGenerations(); ++g)
+            {
+                gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable);
+            }
+        }
+
+
+    }
 }
 

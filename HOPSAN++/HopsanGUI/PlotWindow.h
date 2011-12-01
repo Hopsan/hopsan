@@ -86,6 +86,8 @@ public slots:
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
     void closeIfEmpty();
+    void hideCurveInfo();
+    void setLegendsVisible(bool value);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -110,6 +112,7 @@ private:
     QAction *mpResetXVectorButton;
     QAction *mpShowCurveInfoButton;
     QAction *mpShowPlotWidgetButton;
+    QAction *mpShowLegendsAction;
     QAction *mpBodePlotButton;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
@@ -119,6 +122,7 @@ private:
     QMenu *mpExportGfxMenu;
     QAction *mpExportPdfAction;
     QAction *mpExportPngAction;
+
 
     PlotTabWidget *mpPlotTabs;
 
@@ -144,6 +148,8 @@ private:
 
     QWidget *mpPlotInfoWidget;
     QVBoxLayout *mpPlotInfoLayout;
+
+    bool mLegendsVisible;
 };
 
 
@@ -226,6 +232,7 @@ public:
     bool isSpecialPlot();
     void setBottomAxisLogarithmic(bool value);
     bool hasLogarithmicBottomAxis();
+    void setLegendsVisible(bool value);
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);

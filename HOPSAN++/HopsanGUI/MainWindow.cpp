@@ -470,7 +470,6 @@ void MainWindow::createActions()
     connect(mpSensitivityAnalysisAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpSensitivityAnalysisAction, SIGNAL(triggered()), mpSensitivityAnalysisDialog, SLOT(open()));
 
-
     mpPlotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
     mpPlotAction->setCheckable(true);

@@ -2735,7 +2735,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
         }
         else
         {
-            for(size_t thread=nThreads-1; thread>-1; --thread)
+            for(int thread=(int)nThreads-1; thread>-1; --thread)
             {
                 if(cCompNum == mComponentCptrs.size())
                     break;
@@ -2795,7 +2795,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
         }
         else
         {
-            for(size_t thread=nThreads-1; thread>-1; --thread)
+            for(size_t thread=nThreads-1; thread>=0; --thread)
             {
                 if(qCompNum == mComponentQptrs.size())
                     break;

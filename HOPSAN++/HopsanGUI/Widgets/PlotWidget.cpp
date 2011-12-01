@@ -248,6 +248,12 @@ PlotWindow *PlotVariableTree::getPlotWindow(int number)
 }
 
 
+PlotWindow *PlotVariableTree::getLastPlotWindow()
+{
+    return mOpenPlotWindows.last();
+}
+
+
 void PlotVariableTree::closeLastPlotWindow()
 {
     if(!mOpenPlotWindows.isEmpty())

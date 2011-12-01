@@ -93,6 +93,7 @@ public:
     PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *getPlotWindow(int number);
+    PlotWindow *getLastPlotWindow();
     void closeLastPlotWindow();
     void refreshLastPlotWindow();
     void reportClosedPlotWindow(PlotWindow *window);

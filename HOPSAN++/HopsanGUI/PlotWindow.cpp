@@ -54,6 +54,7 @@
 #include "qwt_text_label.h"
 #include "qwt_plot_renderer.h"
 #include "qwt_scale_map.h"
+#include "qwt_plot.h"
 
 #include "Dependencies/BarChartPlotter/barchartplotter.h"
 #include "Dependencies/BarChartPlotter/axisbase.h"
@@ -172,6 +173,12 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpShowCurveInfoButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
     connect(mpShowCurveInfoButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpShowLegendsAction = new QAction(this);
+    mpShowLegendsAction->setCheckable(true);
+    mpShowLegendsAction->setChecked(true);
+    mpShowLegendsAction->setToolTip("Toggle Legends");
+    connect(mpShowLegendsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
     mpShowPlotWidgetButton = new QAction(this);
     mpShowPlotWidgetButton->setCheckable(true);
     mpShowPlotWidgetButton->setChecked(true);
@@ -210,6 +217,7 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpShowCurveInfoButton);
     mpToolBar->addAction(mpShowPlotWidgetButton);
+    mpToolBar->addAction(mpShowLegendsAction);
     mpToolBar->addAction(mpNewWindowFromTabButton);
     mpToolBar->setMouseTracking(true);
 
@@ -284,7 +292,7 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),        this,               SLOT(createPlotWindowFromTab()));
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),   this,               SLOT(updatePalette()));
     connect(mpShowPlotWidgetButton,             SIGNAL(toggled(bool)),      pPlotWidgetDock,    SLOT(setVisible(bool)));
-
+    connect(mpShowLegendsAction,                SIGNAL(toggled(bool)),      this,               SLOT(setLegendsVisible(bool)));
 
         //Hide lists and curve areas by default if screen size is small
     if(sh*sw <= 800*1280)
@@ -876,6 +884,22 @@ void PlotWindow::closeIfEmpty()
 }
 
 
+void PlotWindow::hideCurveInfo()
+{
+    mpShowCurveInfoButton->setChecked(false);
+}
+
+
+void PlotWindow::setLegendsVisible(bool value)
+{
+    mLegendsVisible = value;
+    for(int i=0; i<mpPlotTabs->count(); ++i)
+    {
+        mpPlotTabs->getTab(i)->setLegendsVisible(value);
+    }
+}
+
+
 void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 {
     hideHelpPopupMessage();
@@ -1403,6 +1427,8 @@ void PlotTab::addCurve(PlotCurve *curve, HopsanPlotID plotID)
     mpPlot[plotID]->replot();
     curve->setLineColor(mCurveColors.first());
     curve->setLineWidth(2);
+
+    //mpPlot[plotID]->
 
     mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
 }
@@ -2360,6 +2386,22 @@ bool PlotTab::hasLogarithmicBottomAxis()
 }
 
 
+void PlotTab::setLegendsVisible(bool value)
+{
+    for(int c=0; c<mPlotCurvePtrs[FIRSTPLOT].size(); ++c)
+    {
+        mPlotCurvePtrs[FIRSTPLOT].at(c)->getCurvePtr()->setItemAttribute(QwtPlotItem::Legend, value);
+    }
+
+    for(int c=0; c<mPlotCurvePtrs[FIRSTPLOT].size(); ++c)
+    {
+        mPlotCurvePtrs[FIRSTPLOT].at(c)->getCurvePtr()->setItemAttribute(QwtPlotItem::Legend, value);
+    }
+
+    update();
+}
+
+
 //! @brief Private slot that updates the xml preview field in the export to xml dialog
 QString PlotTab::updateXmlOutputTextInDialog()
 {
@@ -2804,6 +2846,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
         mpPlotInfoBox->mpPreviousButton->setDisabled(true);
         mpPlotInfoBox->mpFrequencyAnalysisButton->setDisabled(true);
     }
+
+    mpCurve->setItemAttribute(QwtPlotItem::Legend, mpParentPlotTab->mpParentPlotWindow->mLegendsVisible);
 
         //Create connections
     connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));

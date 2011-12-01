@@ -56,6 +56,7 @@ void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
 void removeDir(QString path);
 void copyIncludeFilesToDir(QString path);
+double normalDistribution(double average, double sigma);
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

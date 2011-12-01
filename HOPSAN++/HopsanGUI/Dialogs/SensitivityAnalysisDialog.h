@@ -43,6 +43,7 @@ public slots:
 
 private slots:
     void updateChosenParameters(QTreeWidgetItem* item, int i);
+    void updateChosenVariables(QTreeWidgetItem* item, int i);
     void run();
 
 private:
@@ -54,6 +55,13 @@ private:
     QLabel *mpParameterSigmaLabel;
     QGridLayout *mpParametersLayout;
     QGroupBox *mpParametersGroupBox;
+
+    //Output
+    QTreeWidget *mpOutputList;
+    QLabel *mpOutputLabel;
+    QLabel *mpOutputNameLabel;
+    QGridLayout *mpOutputLayout;
+    QGroupBox *mpOutputGroupBox;
 
     //Steps
     QLabel *mpStepsLabel;
@@ -75,6 +83,9 @@ private:
     QList<QLabel*> mpParameterLabels;
     QList<QLineEdit*> mpParameterAverageLineEdits;
     QList<QLineEdit*> mpParameterSigmaLineEdits;
+
+    QList<QStringList> mOutputVariables;
+    QList<QLabel*> mpOutputLabels;
 };
 
 #endif // SENSITIVITYANALYSISDIALOG_H
