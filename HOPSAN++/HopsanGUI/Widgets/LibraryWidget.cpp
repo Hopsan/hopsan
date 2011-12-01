@@ -1340,7 +1340,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
 //! @param pParentTree Current contents tree node
 void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree)
 {
-    qDebug() << "loadLibraryFolder() " << libDir;
+    //qDebug() << "loadLibraryFolder() " << libDir;
 
     QDir libDirObject(libDir);
     if(!libDirObject.exists() && gConfig.hasUserLib(libDir))
@@ -1350,7 +1350,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
 
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
-    qDebug() << "Adding tree entry: " << libName;
+    //qDebug() << "Adding tree entry: " << libName;
     LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
     pTree->mLibDir = libDir;
     libName = pTree->mName; //Reset name vaariable to new unique name

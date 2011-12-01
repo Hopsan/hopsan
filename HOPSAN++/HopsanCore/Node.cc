@@ -219,7 +219,7 @@ void Node::copyNodeVariables(Node *pNode)
 void Node::setSpecialStartValues(Node */*pNode*/)
 {
     //This method schould be implemented in child Nodes
-    cout << "This nodetype seem not to have any hidden variables for the user." << endl;
+    //cout << "This nodetype seem not to have any hidden variables for the user." << endl;
 }
 
 
@@ -315,12 +315,12 @@ bool Node::preAllocateLogSpace()
         {
             mTimeStorage.resize(mLogSlots);
             mDataStorage.resize(mLogSlots, vector<double>(data_size));
-            cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
+            //cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
             return true;
         }
         catch (exception &e)
         {
-            cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
+            //cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
             gCoreMessageHandler.addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
             mDoLog = false;
             return false;
@@ -475,7 +475,7 @@ bool Node::isConnectedToPort(Port *pPort)
 void Node::enableLog()
 {
     mDoLog = true;
-    cout << "enableLog" << endl;
+    //cout << "enableLog" << endl;
 }
 
 
@@ -483,7 +483,7 @@ void Node::enableLog()
 void Node::disableLog()
 {
     mDoLog = false;
-    cout << "disableLog" << endl;
+    //cout << "disableLog" << endl;
     // If log dissabled then free memory if something has been previously allocated
     mTimeStorage.clear();
     mDataStorage.clear();

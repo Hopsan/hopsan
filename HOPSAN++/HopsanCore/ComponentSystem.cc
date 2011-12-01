@@ -489,7 +489,7 @@ void ComponentSystem::removeSubNode(Node* node_ptr)
 //! preAllocates log space (to speed up later access for log writing)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples)
 {
-    cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
+    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
     bool success = true;
 
     // Allocate log data memory for subnodes
@@ -1917,7 +1917,7 @@ void ComponentSystem::loadStartValuesFromSimulation()
 //! @param nSamples Number of log samples
 bool ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
 {
-    cout << "Initializing SubSystem: " << this->mName << endl;
+    //cout << "Initializing SubSystem: " << this->mName << endl;
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     //preAllocate local logspace
@@ -2377,6 +2377,8 @@ void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, 
         systemVector.at(i)->logAllNodes(*pTime);                    //Log the first time step
     }
 
+    //cout << "noChanges = " << noChanges << endl;
+
     if(!noChanges)
     {
         mSplitCVector.clear();
@@ -2419,7 +2421,7 @@ void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, 
         }
     }
 
-    cout << "Simulating with split, mSplitCVector[0].size() = " << mSplitCVector[0].size() << endl;
+    //cout << "Simulating with split, mSplitCVector[0].size() = " << mSplitCVector[0].size() << endl;
 
     tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
     simTasks = new tbb::task_group;
@@ -2441,7 +2443,12 @@ void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, 
                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
     }
     simTasks->wait();                                           //Wait for all tasks to finish
-    delete(simTasks);                                           //Clean up the task objects
+
+    delete(simTasks);                                           //Clean up
+    delete(pBarrierLock_S);
+    delete(pBarrierLock_C);
+    delete(pBarrierLock_Q);
+    delete(pBarrierLock_N);
 }
 
 
@@ -2742,12 +2749,12 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
             break;
     }
 
-//    for(size_t i=0; i<nThreads; ++i)
-//    {
-//        stringstream ss;
-//        ss << timeVector[i]*1000;
-//        gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
-//    }
+    for(size_t i=0; i<nThreads; ++i)
+    {
+        stringstream ss;
+        ss << timeVector[i]*1000;
+        gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
+    }
 
         //Finally we sort each component vector, so that
         //signal components are simlated in correct order:
@@ -2802,12 +2809,12 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
             break;
     }
 
-//    for(size_t i=0; i<nThreads; ++i)
-//    {
-//        stringstream ss;
-//        ss << timeVector[i]*1000;
-//        gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
-//    }
+    for(size_t i=0; i<nThreads; ++i)
+    {
+        stringstream ss;
+        ss << timeVector[i]*1000;
+        gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
+    }
 
         //Finally we sort each component vector, so that
         //signal components are simlated in correct order:

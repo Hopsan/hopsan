@@ -42,6 +42,7 @@
 #include "Dialogs/HelpDialog.h"
 #include "Dialogs/WelcomeDialog.h"
 #include "Dialogs/OptimizationDialog.h"
+#include "Dialogs/SensitivityAnalysisDialog.h"
 
 #include "UndoStack.h"
 #include "Configuration.h"
@@ -115,6 +116,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
     mpOptimizationDialog = new OptimizationDialog(this);
+    mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
     mpHelpDialog = new HelpDialog(this);
 
     //Create the Python widget
@@ -458,9 +460,16 @@ void MainWindow::createActions()
 
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
     mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+O)"));
-    mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
+    mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+O"));
     connect(mpOptimizeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpOptimizeAction, SIGNAL(triggered()), mpOptimizationDialog, SLOT(open()));
+
+    mpSensitivityAnalysisAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SensitivityAnalysis.png"), tr("&Sensitivity Analysis"), this);
+    mpSensitivityAnalysisAction->setToolTip(tr("Open Sensitivity Analysis Dialog (Ctrl+Shift+A)"));
+    mpSensitivityAnalysisAction->setShortcut(QKeySequence("Ctrl+Shift+A"));
+    connect(mpSensitivityAnalysisAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    connect(mpSensitivityAnalysisAction, SIGNAL(triggered()), mpSensitivityAnalysisDialog, SLOT(open()));
+
 
     mpPlotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
@@ -674,6 +683,7 @@ void MainWindow::createMenus()
     mpSimulationMenu->addAction(mpSimulateAction);
 #ifdef DEVELOPMENT
     mpSimulationMenu->addAction(mpOptimizeAction);
+    mpSimulationMenu->addAction(mpSensitivityAnalysisAction);
 #endif
     mpSimulationMenu->addAction(mpPlotAction);
     mpSimulationMenu->addAction(mpShowLossesAction);
@@ -766,6 +776,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(mpSimulateAction);
 #ifdef DEVELOPMENT
     mpSimToolBar->addAction(mpOptimizeAction);
+    mpSimToolBar->addAction(mpSensitivityAnalysisAction);
 #endif
     mpSimToolBar->addAction(mpPlotAction);
     mpSimToolBar->addAction(mpShowLossesAction);
@@ -904,7 +915,11 @@ void MainWindow::showToolBarHelpPopup()
     }
     else if(pHoveredAction == mpOptimizeAction)
     {
-        showHelpPopupMessage("Open optimization dialog to initialize numerical optimization.");
+        showHelpPopupMessage("Open optimization dialog to initialize numerical optimization of current model.");
+    }
+    else if(pHoveredAction == mpSensitivityAnalysisAction)
+    {
+        showHelpPopupMessage("Perform sensitivity analysis of current model.");
     }
     else if(pHoveredAction == mpPlotAction)
     {
@@ -912,7 +927,7 @@ void MainWindow::showToolBarHelpPopup()
     }
     else if(pHoveredAction == mpOpenSystemParametersAction)
     {
-        showHelpPopupMessage("Opens the list of system parameters.");
+        showHelpPopupMessage("Opens the list of system parameters in current model.");
     }
     else if(pHoveredAction == mpPropertiesAction)
     {
@@ -1025,6 +1040,8 @@ void MainWindow::updateToolBarsToNewTab()
     mpZoomInAction->setEnabled(!noTabs);
     mpZoomOutAction->setEnabled(!noTabs);
     mpToggleNamesAction->setEnabled(!noTabs);
+    mpToggleSignalsAction->setEnabled(!noTabs);
+    mpTogglePortsAction->setEnabled(!noTabs);
     mpTogglePortsAction->setEnabled(!noTabs);
     mpExportPDFAction->setEnabled(!noTabs);
     mpAlignXAction->setEnabled(!noTabs);

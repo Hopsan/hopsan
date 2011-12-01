@@ -1,6 +1,6 @@
 import time
 
-modelPath = "../Models/Example Models/Load Sensing System.hmf"
+modelPath = "../Models/Example Models/Position Servo.hmf"
 
 hopsan.closeAllModels()
 for i in range(nModels):

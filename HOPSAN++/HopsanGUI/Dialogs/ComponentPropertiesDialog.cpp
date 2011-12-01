@@ -206,7 +206,7 @@ void ComponentPropertiesDialog::createEditStuff()
     pNameLayout->addWidget(pTypeNameLabel,1,0,1,2);
 
     QGridLayout *mainLayout = new QGridLayout();
-    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     int lr = 0; //Layout row
     if(!mpGUIComponent->getHelpText().isNull() || !mpGUIComponent->getHelpPicture().isNull())
     {
@@ -222,9 +222,9 @@ void ComponentPropertiesDialog::createEditStuff()
 
     if(!(mvParameterLayout.empty()))
     {
-        mainLayout->addWidget(pParameterLabel, lr, 0);
+        mainLayout->addWidget(pParameterLabel, lr, 0, 1, 2);
         ++lr;
-        mainLayout->addLayout(parameterLayout, lr, 0);
+        mainLayout->addLayout(parameterLayout, lr, 0, 1, 2);
         ++lr;
     }
     else
@@ -233,9 +233,9 @@ void ComponentPropertiesDialog::createEditStuff()
     }
     if(!(mvStartValueLayout.isEmpty()))
     {
-        mainLayout->addWidget(pStartValueLabel,lr, 0);
+        mainLayout->addWidget(pStartValueLabel,lr, 0, 1, 2);
         ++lr;
-        mainLayout->addLayout(startValueLayout, lr, 0);
+        mainLayout->addLayout(startValueLayout, lr, 0, 1, 2);
     }
     else
     {
@@ -254,7 +254,7 @@ void ComponentPropertiesDialog::createEditStuff()
     pPrimaryLayout->addWidget(pScrollArea);
     setLayout(pPrimaryLayout);
 
-    pPrimaryWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    pPrimaryWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     pPrimaryLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     int maxHeight = qApp->desktop()->screenGeometry().height()-100;
@@ -267,7 +267,7 @@ void ComponentPropertiesDialog::createEditStuff()
     {
         pScrollArea->setMinimumWidth(pPrimaryWidget->width()+3);
     }
-    pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    pScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     setWindowTitle(tr("Parameters"));
@@ -365,9 +365,9 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
 
     mpGUIModelObject = pGUIModelObject;
 
-    mDescriptionNameLabel.setMinimumWidth(30);
-    mDescriptionNameLabel.setMaximumWidth(200);
-    mDescriptionNameLabel.setWordWrap(true);
+    mDescriptionNameLabel.setMinimumWidth(100);
+    mDescriptionNameLabel.setMaximumWidth(1000);
+    //mDescriptionNameLabel.setWordWrap(true);
     mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     mDataNameLabel.setMinimumWidth(10);
     mDataNameLabel.setMaximumWidth(100);

@@ -108,5 +108,6 @@
         <file>graphics/objecticons/missingcomponent.svg</file>
         <file>graphics/balls.png</file>
         <file>graphics/welcome_xmas.png</file>
+        <file>graphics/uiicons/Hopsan-SensitivityAnalysis.png</file>
     </qresource>
 </RCC>

@@ -753,11 +753,11 @@ void GUIModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseMoveEvent(event);
 
-    qDebug() << "mouseMoveEvent(), button = " << event->button();
+    //qDebug() << "mouseMoveEvent(), button = " << event->button();
 
     if(mpParentContainerObject != 0 && mDragCopying)
     {
-        qDebug() << "Drag copying";
+        //qDebug() << "Drag copying";
         mpParentContainerObject->deselectAll();
         this->select();
         mpParentContainerObject->copySelected(mpParentContainerObject->getDragCopyStackPtr());

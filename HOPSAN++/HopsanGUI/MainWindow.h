@@ -46,6 +46,7 @@ class AboutDialog;
 class WelcomeDialog;
 class HelpDialog;
 class OptimizationDialog;
+class SensitivityAnalysisDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -108,6 +109,7 @@ public:
     QAction *mpPasteAction;
     QAction *mpSimulateAction;
     QAction *mpOptimizeAction;
+    QAction *mpSensitivityAnalysisAction;
     QAction *mpPlotAction;
     QAction *mpLoadLibsAction;
     QAction *mpPropertiesAction;
@@ -180,6 +182,7 @@ private:
     AboutDialog *mpAboutDialog;
     HelpDialog *mpHelpDialog;
     OptimizationDialog *mpOptimizationDialog;
+    SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;
 
     //Simulation setup line edits
     QLineEdit *mpStartTimeLineEdit;
