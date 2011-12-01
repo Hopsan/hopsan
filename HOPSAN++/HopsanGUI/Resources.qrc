@@ -109,5 +109,6 @@
         <file>graphics/balls.png</file>
         <file>graphics/welcome_xmas.png</file>
         <file>graphics/uiicons/Hopsan-SensitivityAnalysis.png</file>
+        <file>graphics/uiicons/Hopsan-ShowPlotLegends.png</file>
     </qresource>
 </RCC>

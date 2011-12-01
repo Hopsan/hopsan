@@ -177,6 +177,7 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpShowLegendsAction->setCheckable(true);
     mpShowLegendsAction->setChecked(true);
     mpShowLegendsAction->setToolTip("Toggle Legends");
+    mpShowLegendsAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotLegends.png"));
     connect(mpShowLegendsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpShowPlotWidgetButton = new QAction(this);
