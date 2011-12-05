@@ -3,6 +3,7 @@
 ###########################################################
 
 import random
+import math
 
       
 ##### Auxiliary optimization funcions #####
@@ -51,3 +52,29 @@ def reflectWorst(vector,worstId,alpha,minValues,maxValues,beta):
     rand = beta*(maxPar(vector,i)-minPar(vector,i))*(random.random()-0.5)
     x_new.append(max(minValues[i], min(maxValues[i], x_c[i]+alpha*(x_c[i]-x_w[i])+rand)))
   vector[worstId] = x_new 
+
+def toLogSpace(vector):
+  n = len(vector)
+  for i in range(n):
+    vector[i] = math.log10(vector[i])
+
+def toLinearSpace(vector):
+  n = len(vector)
+  for i in range(n):
+    vector[i] = 10**vector[i]
+
+#Transforms a vector of points from linear to logarithmic space
+def toLogSpace2(vector):
+  n = len(vector)	        #Number of points
+  k = len(vector[0])		#Number of parameters in each point
+  for i in range(n):
+    for j in range(k):
+      vector[i][j] = math.log10(vector[i][j])
+
+#Transforms a vector of points from logarithmic to linear space
+def toLinearSpace2(vector):
+  n = len(vector)	        #Number of points
+  k = len(vector[0])		#Number of parameters in each point
+  for i in range(n):
+    for j in range(k):
+      vector[i][j] = 10**vector[i][j]

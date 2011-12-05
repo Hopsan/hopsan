@@ -88,6 +88,7 @@ private:
 
     //Parameters tab
     QLabel *mpParametersLabel;
+    QCheckBox *mpParametersLogCheckBox;
     QTreeWidget *mpParametersList;
     QGridLayout *mpParametersLayout;
     QWidget *mpParametersWidget;

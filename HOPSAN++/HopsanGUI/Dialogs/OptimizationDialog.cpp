@@ -123,20 +123,25 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     //Parameter tab
     mpParametersLabel = new QLabel("Choose optimization parameters, and specify their minimum and maximum values.");
     mpParametersLabel->setFont(boldFont);
+    mpParametersLogCheckBox = new QCheckBox("Use logarithmic parameter scaling", this);
+    mpParametersLogCheckBox->setChecked(false);
     mpParametersList = new QTreeWidget(this);
     mpParameterMinLabel = new QLabel("Min Value");
+    mpParameterMinLabel->setAlignment(Qt::AlignCenter);
     mpParameterNameLabel = new QLabel("Parameter Name");
     mpParameterNameLabel->setAlignment(Qt::AlignCenter);
     mpParameterMaxLabel = new QLabel("Max Value");
+    mpParameterMaxLabel->setAlignment(Qt::AlignCenter);
     mpParameterMinLabel->setFont(boldFont);
     mpParameterNameLabel->setFont(boldFont);
     mpParameterMaxLabel->setFont(boldFont);
     mpParametersLayout = new QGridLayout(this);
-    mpParametersLayout->addWidget(mpParametersLabel,        0, 0, 1, 3);
-    mpParametersLayout->addWidget(mpParametersList,         1, 0, 1, 3);
-    mpParametersLayout->addWidget(mpParameterMinLabel,      2, 0, 1, 1);
-    mpParametersLayout->addWidget(mpParameterNameLabel,     2, 1, 1, 1);
-    mpParametersLayout->addWidget(mpParameterMaxLabel,      2, 2, 1, 1);
+    mpParametersLayout->addWidget(mpParametersLabel,        0, 0, 1, 4);
+    mpParametersLayout->addWidget(mpParametersLogCheckBox,  1, 0, 1, 4);
+    mpParametersLayout->addWidget(mpParametersList,         2, 0, 1, 4);
+    mpParametersLayout->addWidget(mpParameterMinLabel,      3, 0, 1, 1);
+    mpParametersLayout->addWidget(mpParameterNameLabel,     3, 1, 1, 1);
+    mpParametersLayout->addWidget(mpParameterMaxLabel,      3, 2, 1, 1);
     mpParametersWidget = new QWidget(this);
     mpParametersWidget->setLayout(mpParametersLayout);
 
@@ -328,7 +333,7 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "##    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,       ##\n";
     scriptStream << "##    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack                 ##\n";
     scriptStream << "##                                                                            ##\n";
-    scriptStream << "## This file is provided \"as is\", with no guarantee or warranty for the       ##\n";
+    scriptStream << "## This file is provided \"as is\", with no guarantee or warranty for the     ##\n";
     scriptStream << "## functionality or reliability of the contents. All contents in this file is ##\n";
     scriptStream << "## the original work of the copyright holders at the Division of Fluid and    ##\n";
     scriptStream << "## Mechatronic Systems (Flumes) at Linköping University. Modifying, using or  ##\n";
@@ -493,9 +498,33 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "    obj[i] = obj[i] + objspread*kf\n";
     scriptStream << "  worstId = indexOfMax(obj)\n";
     scriptStream << "  if worstId == previousWorstId:\n";
+    if(mpParametersLogCheckBox->isChecked())
+    {
+        scriptStream << "    toLogSpace(minValues)\n";
+        scriptStream << "    toLogSpace(maxValues)\n";
+        scriptStream << "    toLogSpace2(parameters)\n";
+    }
     scriptStream << "    reflectWorst(parameters,worstId,0.5,minValues,maxValues,beta)  #Same as previous, move halfway to centroid\n";
+    if(mpParametersLogCheckBox->isChecked())
+    {
+        scriptStream << "    toLinearSpace(minValues)\n";
+        scriptStream << "    toLinearSpace(maxValues)\n";
+        scriptStream << "    toLinearSpace2(parameters)\n";
+    }
     scriptStream << "  else:\n";
+    if(mpParametersLogCheckBox->isChecked())
+    {
+        scriptStream << "    toLogSpace(minValues)\n";
+        scriptStream << "    toLogSpace(maxValues)\n";
+        scriptStream << "    toLogSpace2(parameters)\n";
+    }
     scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues,beta)      #Reflect worst through centroid of the remaining points\n";
+    if(mpParametersLogCheckBox->isChecked())
+    {
+        scriptStream << "    toLinearSpace(minValues)\n";
+        scriptStream << "    toLinearSpace(maxValues)\n";
+        scriptStream << "    toLinearSpace2(parameters)\n";
+    }
     scriptStream << "  previousWorstId=worstId\n";
     scriptStream << "  trace['parameters'][k]=parameters[worstId]\n  trace['fitness'][k]=obj[worstId]\n";
     scriptStream << "  if min(obj) == 0:\n";
@@ -559,12 +588,13 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
     {
         mSelectedComponents.append(item->parent()->text(0));
         mSelectedParameters.append(item->text(0));
-        QLabel *pLabel = new QLabel(trUtf8(" â‰¤  ") + item->parent()->text(0) + ", " + item->text(0) + trUtf8("  â‰¤ "));
+        QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + trUtf8("  < "));
         pLabel->setAlignment(Qt::AlignCenter);
         QLineEdit *pMinLineEdit = new QLineEdit("0.0", this);
         pMinLineEdit->setValidator(new QDoubleValidator());
         QLineEdit *pMaxLineEdit = new QLineEdit("1.0", this);
         pMaxLineEdit->setValidator(new QDoubleValidator());
+
         mpParameterLabels.append(pLabel);
         mpParameterMinLineEdits.append(pMinLineEdit);
         mpParameterMaxLineEdits.append(pMaxLineEdit);
@@ -777,7 +807,7 @@ void OptimizationDialog::run()
     }
     QTextStream pyStream(&pyFile);
     //pyStream << mScript;
-    pyStream << mpOutputBox->toPlainText();
+    pyStream << mpOutputBox->toPlainText().toAscii();
     pyFile.close();
 
     gpMainWindow->mpPyDockWidget->runPyScript(pyPath);

@@ -90,7 +90,7 @@ public:
 public slots:
     void showIfNotConnected(bool doShow=true);
     void setVisible(bool value);
-    PlotWindow* plot(QString dataName, QString dataUnit=QString());
+    PlotWindow* plot(QString dataName, QString dataUnit=QString(), QColor desiredCurveColor=QColor());
     void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
     void refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ext_act=CoreSystemAccess::ACTUALPORTTYPE);

@@ -90,7 +90,7 @@ class PlotVariableTree : public QTreeWidget
     friend class PlotTreeWidget;
 public:
     PlotVariableTree(MainWindow *parent = 0);
-    PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
+    PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit, QColor desiredColor=QColor());
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *getPlotWindow(int number);
     PlotWindow *getLastPlotWindow();

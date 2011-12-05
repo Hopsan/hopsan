@@ -60,7 +60,7 @@ class PlotWindow : public QMainWindow
     friend class PlotCurve;
 public:
     PlotWindow(PlotVariableTree *PlotVariableTree, MainWindow *parent);
-    void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath = QString());
+    void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
     void setGeneration(int gen);
     PlotTabWidget *getPlotTabWidget();
@@ -214,7 +214,7 @@ public:
 
     void setTabName(QString name);
     void addBarChart(QStandardItemModel *pItemModel);
-    void addCurve(PlotCurve *curve, HopsanPlotID plotID=FIRSTPLOT);
+    void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
     QList<PlotCurve *> getCurves(HopsanPlotID plotID=FIRSTPLOT);

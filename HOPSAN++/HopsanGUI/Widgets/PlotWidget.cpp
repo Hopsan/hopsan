@@ -282,7 +282,7 @@ void PlotVariableTree::refreshLastPlotWindow()
 //! @param portName Name of the port where the variable is located
 //! @param dataName Name of the variable
 //! @param dataUnit Name of the unit of the variable
-PlotWindow *PlotVariableTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
+PlotWindow *PlotVariableTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit, QColor desiredColor)
 {
     //QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
     QPair<QVector<double>, QVector<double> > vectors;
@@ -296,7 +296,7 @@ PlotWindow *PlotVariableTree::createPlotWindow(QString componentName, QString po
 
     PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
-    plotWindow->addPlotCurve(mpCurrentContainer->getNumberOfPlotGenerations()-1, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
+    plotWindow->addPlotCurve(mpCurrentContainer->getNumberOfPlotGenerations()-1, componentName, portName, dataName, dataUnit, QwtPlot::yLeft, QString(), desiredColor);
 
     mOpenPlotWindows.append(plotWindow);
 

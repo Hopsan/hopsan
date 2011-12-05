@@ -384,11 +384,11 @@ void PlotWindow::hideHelpPopupMessage()
 //! @param portName Name of port where variable is located
 //! @param dataName Name of variable
 //! @param dataUnit Unit of variable
-void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath)
+void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath, QColor desiredColor)
 {
     if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
     PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelPath, getCurrentPlotTab());
-    getCurrentPlotTab()->addCurve(pTempCurve);
+    getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
     pTempCurve->updatePlotInfoVisibility();
 }
 
@@ -763,7 +763,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
                                           pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
                                           getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
-    getCurrentPlotTab()->addCurve(pPhaseCurve, SECONDPLOT);
+    getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
     pPhaseCurve->setData(vBodePhase, F);
     pPhaseCurve->updatePlotInfoVisibility();
 
@@ -1404,7 +1404,8 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
-void PlotTab::addCurve(PlotCurve *curve, HopsanPlotID plotID)
+//! @param desiredColor Desired color for curve (will override default colors)
+void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotID)
 {
     if(mHasSpecialXAxis)
     {
@@ -1413,20 +1414,29 @@ void PlotTab::addCurve(PlotCurve *curve, HopsanPlotID plotID)
 
     mPlotCurvePtrs[plotID].append(curve);
 
-    int i=0;
-    while(mUsedColors.contains(mCurveColors.first()))
+    if(desiredColor == QColor())
     {
-        mCurveColors.append(mCurveColors.first());
-        mCurveColors.pop_front();
-        ++i;
-        if(i>mCurveColors.size()) break;
+        int i=0;
+        while(mUsedColors.contains(mCurveColors.first()))
+        {
+            mCurveColors.append(mCurveColors.first());
+            mCurveColors.pop_front();
+            ++i;
+            if(i>mCurveColors.size()) break;
+        }
+        mUsedColors.append(mCurveColors.first());
+        curve->setLineColor(mCurveColors.first());
     }
-    mUsedColors.append(mCurveColors.first());
+    else
+    {
+        curve->setLineColor(desiredColor);
+    }
+
     mpPlot[plotID]->enableAxis(curve->getAxisY());
     rescaleToCurves();
     updateLabels();
     mpPlot[plotID]->replot();
-    curve->setLineColor(mCurveColors.first());
+
     curve->setLineWidth(2);
 
     //mpPlot[plotID]->
@@ -2821,9 +2831,6 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
         //Get data from container object
     mDataVector = mpContainerObject->getPlotData(generation, componentName, portName, dataName);
     mTimeVector = mpContainerObject->getTimeVector(generation, componentName, portName);
-
-    //qDebug() << "mDataVector = " << mDataVector;
-    //qDebug() << "mTimeVector = " << mTimeVector;
 
         //Create the actual curve
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));

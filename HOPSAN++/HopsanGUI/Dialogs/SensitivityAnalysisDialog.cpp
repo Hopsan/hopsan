@@ -80,6 +80,7 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
     mpStepsSpinBox = new QSpinBox(this);
     mpStepsSpinBox->setValue(100);
     mpStepsSpinBox->setMinimum(1);
+    mpStepsSpinBox->setMaximum(1000000);
     mpStepsSpinBox->setSingleStep(1);
     mpStepsLayout = new QHBoxLayout(this);
     mpStepsLayout->addWidget(mpStepsLabel);
@@ -283,13 +284,13 @@ void SensitivityAnalysisDialog::run()
         QString component = mOutputVariables.at(v).at(0);
         QString port = mOutputVariables.at(v).at(1);
         QString variable = mOutputVariables.at(v).at(2);
-        pTabs->getContainer(0)->getGUIModelObject(component)->getPort(port)->plot(variable);
+        pTabs->getContainer(0)->getGUIModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
         gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->hideCurveInfo();
         gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->setLegendsVisible(false);
 
         for(int g=1; g<pTabs->getContainer(0)->getNumberOfPlotGenerations(); ++g)
         {
-            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable);
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
         }
 
         for(int t=1; t<nTabs; ++t)
@@ -297,11 +298,9 @@ void SensitivityAnalysisDialog::run()
             pTabs->setCurrentIndex(t);
             for(int g=0; g<pTabs->getContainer(t)->getNumberOfPlotGenerations(); ++g)
             {
-                gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable);
+                gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
             }
         }
-
-
     }
 }
 

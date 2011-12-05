@@ -548,11 +548,11 @@ GUIModelObject *GUIPort::getGuiModelObject()
 //! Plots the variable with name 'dataName' in the node the port is connected to.
 //! @param dataName tells which variable to plot.
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
-PlotWindow *GUIPort::plot(QString dataName, QString dataUnit)
+PlotWindow *GUIPort::plot(QString dataName, QString dataUnit, QColor desiredCurveColor)
 {
     if(this->isConnected())
     {
-        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit);
+        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, desiredCurveColor);
     }
 
     return 0;       //Fail!
