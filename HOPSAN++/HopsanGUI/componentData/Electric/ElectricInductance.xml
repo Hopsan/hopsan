@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hopsanobjectappearance version="0.1">
+  <modelobject typename="ElectricInductance" displayname="Inductance">
+    <icon isopath="ElectricInductance.svg" iconrotation="ON" userpath="ElectricInductance.svg" />
+    <portpose x="0" y="0.844961240310078" a="180" name="Pel1" />
+    <portpose x="1" y="0.844961240310078" a="0" name="Pel2" />
+  </modelobject>
+</hopsanobjectappearance>

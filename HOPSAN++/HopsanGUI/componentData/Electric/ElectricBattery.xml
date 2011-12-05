@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hopsanobjectappearance version="0.1">
+  <modelobject typename="ElectricBattery" displayname="Battery">
+    <icon isopath="ElectricBattery.svg" iconrotation="ON" userpath="ElectricBattery.svg" />
+    <portpose x="0.5" y="0" a="270" name="Pel1" />
+    <portpose x="1" y="0.1" a="0" name="Psoc" />
+    <portpose x="1" y="0.3" a="0" name="Pubatt" />
+  </modelobject>
+</hopsanobjectappearance>

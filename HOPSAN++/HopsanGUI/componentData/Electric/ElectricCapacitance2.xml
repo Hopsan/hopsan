@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hopsanobjectappearance version="0.1">
+  <modelobject typename="ElectricCapacitance2" displayname="Capacitance">
+    <icon isopath="ElectricCapacitance2.svg" iconrotation="ON" userpath="ElectricCapacitance2.svg" />
+    <portpose x="0" y="0.0167522894795622" a="0" name="Pel1" />
+    <portpose x="1" y="0.0167522894795622" a="180" name="Pel2" />
+  </modelobject>
+</hopsanobjectappearance>

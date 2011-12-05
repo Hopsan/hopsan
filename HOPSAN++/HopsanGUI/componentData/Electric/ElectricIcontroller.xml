@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hopsanobjectappearance version="0.1">
+  <modelobject typename="ElectricIcontroller" displayname="I-Controller">
+    <icon isopath="ElectricIcontroller.svg" iconrotation="ON" userpath="ElectricIcontroller.svg" />
+    <portpose x="0" y="0.278294806364455" a="180" name="Pel1" />
+    <portpose x="1" y="0.278294806364455" a="0" name="Pel2" />
+    <portpose x="0.5" y="0" a="270" name="Piref" />
+  </modelobject>
+</hopsanobjectappearance>

@@ -1,0 +1,22 @@
+<hopsanobjectappearance version='0.1'>
+ 
+ <modelobject typename='ElectricSwitch'
+     displayname='ElectricSwitch'>
+  
+  <icon isopath='ElectricSwitch.svg'
+      iconrotation='ON'
+      userpath='ElectricSwitch.svg'/>
+   <portpose x='0'
+       y='0.73'
+       a='180'
+       name='Pel1' />
+   <portpose x='1'
+       y='0.7'
+       a='0'
+       name='Pel2' />
+   <portpose x='0.5'
+       y='0'
+       a='270'
+       name='Pstate' />
+</modelobject>
+</hopsanobjectappearance>
