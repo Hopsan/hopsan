@@ -2672,10 +2672,10 @@ void ComponentSystem::sortComponentVectorsByMeasuredTime()
 //! @param nDesiredThreads How many threads the user wants
 int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
 {
-#ifdef win32
         //Obtain number of processor cores from environment variable, or use user specified value if not zero
     size_t nThreads;
     size_t nCores;
+#ifdef win32
     if(getenv("NUMBER_OF_PROCESSORS") != 0)
     {
         string temp = getenv("NUMBER_OF_PROCESSORS");   //! @todo This appears to be a Windows only environment variable. Figure out how to do it on Unix (and Mac OS)
@@ -2685,6 +2685,9 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
     {
         nCores = 1;               //If non-Windows system, make sure there is at least one thread
     }
+#else
+    nCores = max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+#endif
     if(nDesiredThreads != 0)
     {
         nThreads = nDesiredThreads;              //If user specifides a number of threads, attempt to use this number
@@ -2699,9 +2702,6 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
     }
 
     return nThreads;
-#else
-    return nDesiredThreads;
-#endif
 }
 
 
