@@ -1,0 +1,612 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     21420,        603]
+NotebookOptionsPosition[     19790,        550]
+NotebookOutlinePosition[     20212,        566]
+CellTagsIndexPosition[     20169,        563]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Flight Control", "Title",
+ CellChangeTimes->{{3.520873834546875*^9, 3.520873840984375*^9}, {
+  3.520880951484375*^9, 3.520880952703125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG02.mx"}]], "Input",
+ PageWidth->WindowWidth,
+ CellChangeTimes->{{3.5039042069364696`*^9, 3.5039042084051447`*^9}, 
+   3.5039043176026783`*^9, {3.503905207466113*^9, 3.5039052078411083`*^9}, {
+   3.5039109774941587`*^9, 3.5039109827285337`*^9}, 3.51854719303125*^9, {
+   3.520873875578125*^9, 3.520873903796875*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Off", "[", 
+  RowBox[{"General", "::", "\"\<spell1\>\""}], "]"}]], "Input",
+ PageWidth->WindowWidth],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Signal\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}]}], "Input",
+ CellChangeTimes->{{3.513785617375*^9, 3.5137856214375*^9}, 
+   3.5153945235813417`*^9, {3.520873925546875*^9, 3.52087393078125*^9}, {
+   3.52087995446875*^9, 3.520879963640625*^9}, {3.520932113453125*^9, 
+   3.5209321145*^9}, {3.522342773015625*^9, 3.522342777*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Flight Control Unit", "Subtitle",
+ CellChangeTimes->{{3.520873963671875*^9, 3.520873967265625*^9}}],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{3.525624527328125*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Signal\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<AttitudeControl\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<Attitude control unit for an aircraft\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentSignal\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFile", "[", 
+   RowBox[{"domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.520874016125*^9, 3.520874068265625*^9}, {
+   3.52087448028125*^9, 3.52087450728125*^9}, 3.52087996896875*^9, {
+   3.520880203578125*^9, 3.52088022325*^9}, {3.520932119625*^9, 
+   3.5209321425*^9}, 3.5209322290625*^9, {3.520932736140625*^9, 
+   3.520932737640625*^9}, 3.522342782453125*^9, {3.5256245293125*^9, 
+   3.52562454328125*^9}, {3.526016819973899*^9, 3.5260168209582806`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "phiref", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Reference signal roll\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "thetaref", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Reference signal tip\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "psiref", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Reference signal yaw\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "phi", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<roll angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "theta", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<tipp angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "psi", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<yaw angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "beta", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<side slip angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Ub", ",", "0.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+       "\"\<actual speed\>\""}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520874548453125*^9, 3.520874548453125*^9}, {
+  3.520874718671875*^9, 3.520874721046875*^9}, {3.520874755734375*^9, 
+  3.520874766015625*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "Kphi", ",", "3.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain roll\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kphipsi", ",", "2.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain yaw/roll\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"phimin", ",", 
+       RowBox[{"-", "1."}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Minium bank angle for turn\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "phimax", ",", "1.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum bank angle for turn\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kelev", ",", "4.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain tip, default\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Krud", ",", "1.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain yaw, default\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u1min", ",", 
+       RowBox[{"-", ".9"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Minium output signal roll\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "u1max", ",", ".9", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum output signal roll\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u2min", ",", 
+       RowBox[{"-", ".7"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Minium output signal tip\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "u2max", ",", ".7", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum output signal tip\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u3min", ",", 
+       RowBox[{"-", ".7"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Minium output signal yaw\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "u3max", ",", ".7", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum output signal yaw\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "U0", ",", "100.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+       "\"\<Reference speed for compensation\>\""}], "}"}]}], "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.520874584265625*^9, 3.520874584265625*^9}, {
+   3.520874721515625*^9, 3.5208747834375*^9}, {3.52562634321875*^9, 
+   3.5256264030625*^9}, 3.5261184740790405`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "uaerL", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<left aerleron\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "uaerR", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<right aerleron\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "uelev", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<elevator\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "urud", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<rudder\>\""}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520874568515625*^9, 3.520874568515625*^9}, {
+  3.52087472571875*^9, 3.520874753328125*^9}, {3.520874792546875*^9, 
+  3.520874801671875*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Kvexpr", "=", 
+  FractionBox[
+   SuperscriptBox["U0", "2"], 
+   RowBox[{
+    SuperscriptBox["U0", "2"], "+", 
+    RowBox[{"Abs", "[", 
+     SuperscriptBox["Ub", "2"], "]"}]}]]}]], "Input"],
+
+Cell[BoxData[
+ FractionBox[
+  SuperscriptBox["U0", "2"], 
+  RowBox[{
+   SuperscriptBox["U0", "2"], "+", 
+   SuperscriptBox[
+    RowBox[{"Abs", "[", "Ub", "]"}], "2"]}]]], "Output",
+ CellChangeTimes->{
+  3.52088096003125*^9, 3.520932150671875*^9, 3.52093223328125*^9, 
+   3.520932760265625*^9, 3.520932832078125*^9, 3.520933067734375*^9, 
+   3.520933255546875*^9, 3.520933308296875*^9, 3.520933355609375*^9, 
+   3.52093795728125*^9, 3.52093798928125*^9, 3.52093828271875*^9, 
+   3.520938345515625*^9, 3.520938400234375*^9, 3.520938628078125*^9, {
+   3.520938672953125*^9, 3.520938685921875*^9}, 3.5209387343125*^9, 
+   3.52093878090625*^9, 3.52562455790625*^9, 3.5261171379328003`*^9, 
+   3.526117229796587*^9, 3.5261185079401493`*^9, 3.531933650765625*^9, 
+   3.532022643890625*^9, 3.53202276671875*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"localExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "Kv", ",", "Kvexpr", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Speed compensation factor\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u1cmin", ",", 
+       RowBox[{"Kv", " ", "u1min"}], ",", "double", ",", 
+       RowBox[{"\"\<\>\"", ";", "\"\<min rudder deflection 1\>\""}]}], "}"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u1cmax", ",", 
+       RowBox[{"Kv", " ", "u1max"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<max rudder deflection 1\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u2cmin", ",", 
+       RowBox[{"Kv", " ", "u2min"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<min rudder deflection 2\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u2cmax", ",", 
+       RowBox[{"Kv", " ", "u2max"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<max rudder deflection 2\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u3cmin", ",", 
+       RowBox[{"Kv", " ", "u3min"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<min rudder deflection 3\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u3cmax", ",", 
+       RowBox[{"Kv", " ", "u3max"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<max rudder deflection 3\>\""}], "}"}]}], "\[IndentingNewLine]", 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52087472684375*^9, 3.52087472896875*^9}, {
+  3.5223471696875*^9, 3.522347170765625*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"yaerexpr", "   ", "=", " ", 
+   RowBox[{"Kv", " ", "Kphi", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"diffAngle", "[", 
+       RowBox[{"phiref", ",", "phi"}], "]"}], "+", 
+      RowBox[{"limit", "[", 
+       RowBox[{
+        RowBox[{"Kphipsi", " ", 
+         RowBox[{"diffAngle", "[", 
+          RowBox[{"psiref", ",", "psi"}], "]"}]}], ",", "phimin", ",", 
+        "phimax"}], "]"}]}], ")"}]}]}], " ", ";"}], "\n", 
+ RowBox[{
+  RowBox[{"yelevexpr", " ", "=", " ", 
+   RowBox[{"Kv", " ", "Kelev", " ", 
+    RowBox[{"(", 
+     RowBox[{"diffAngle", "[", 
+      RowBox[{"thetaref", ",", "theta"}], "]"}], " ", ")"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"yrudexpr", "   ", "=", " ", 
+   RowBox[{"Kv", " ", "Krud", " ", 
+    RowBox[{"(", 
+     RowBox[{"-", "beta"}], ")"}]}]}], ";", "\[Psi]"}]}], "Input",
+ CellChangeTimes->{
+  3.520874640046875*^9, 3.520874692546875*^9, {3.5209330574375*^9, 
+   3.520933060859375*^9}, 3.525580570849698*^9}],
+
+Cell[BoxData["\[Psi]"], "Output",
+ CellChangeTimes->{3.5256245579375*^9, 3.526117137964052*^9, 
+  3.5261172298122125`*^9, 3.5261185079557753`*^9, 3.53193365078125*^9, 
+  3.532022643921875*^9, 3.532022766765625*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", " ", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", "\t", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"uaerL", ",", 
+       RowBox[{"limit", "[", 
+        RowBox[{
+         RowBox[{"-", "yaerexpr"}], ",", "u1cmin", ",", "u1cmax"}], "]"}]}], 
+      "}"}], ",", "\[IndentingNewLine]", "\t", 
+     RowBox[{"{", 
+      RowBox[{"uaerR", ",", 
+       RowBox[{"limit", "[", 
+        RowBox[{"yaerexpr", ",", "u1cmin", ",", "u1cmax"}], "]"}]}], "}"}], 
+     ",", "\[IndentingNewLine]", "\t", 
+     RowBox[{"{", 
+      RowBox[{"uelev", ",", 
+       RowBox[{"limit", "[", 
+        RowBox[{"yelevexpr", ",", "u2cmin", ",", "u2cmax"}], "]"}]}], "}"}], 
+     ",", "\[IndentingNewLine]", "\t", 
+     RowBox[{"{", 
+      RowBox[{"urud", ",", 
+       RowBox[{"limit", "[", 
+        RowBox[{"yrudexpr", ",", "u3cmin", ",", "u3cmax"}], "]"}]}], "}"}]}], 
+    "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520874644515625*^9, 3.5208746525*^9}, {
+   3.5208746850625*^9, 3.520874689984375*^9}, 3.520932942234375*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Compgen", "[", "file", "]"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.520938682*^9, 3.520938682484375*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Pilead", "Subtitle",
+ CellChangeTimes->{{3.520880011078125*^9, 3.520880015078125*^9}, {
+  3.520938836109375*^9, 3.52093884040625*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Signal\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<PIlead\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "brief", "=", "\"\<PI-controler with lead filter in feadback path\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentSignal\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFile", "[", 
+   RowBox[{"domain", ",", "displayName"}], "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.520880152296875*^9, 3.520880230078125*^9}, 
+   3.520932125875*^9, 3.520932753984375*^9, {3.52093324790625*^9, 
+   3.520933251453125*^9}, 3.522342790078125*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", ":=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "wa", ",", "1.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Break frequency\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "da", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<relative damping\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "kx", ",", "1.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Break frequency\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"umin", ",", 
+       RowBox[{"-", "1."}], ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Minium output signal\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "umax", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Maximum output signal\>\""}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520933349796875*^9, 3.5209333498125*^9}, {
+  3.520938265609375*^9, 3.520938271921875*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", ":=", " ", 
+   RowBox[{"{", "\n", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "yref", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Reference value\>\""}], "}"}], ",", "\n", 
+     RowBox[{"{", 
+      RowBox[{
+      "y", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Actual value\>\""}], "}"}]}], "\n", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520880034703125*^9, 3.520880034703125*^9}, {
+  3.520932825078125*^9, 3.520932825328125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", ":=", " ", 
+   RowBox[{"{", "\n", 
+    RowBox[{"{", 
+     RowBox[{
+     "u", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
+      "\"\<control signal\>\""}], "}"}], "\n", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52088004696875*^9, 3.520880046984375*^9}, 
+   3.520932825859375*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"k1", "=."}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"w11", "=."}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"w21", "=."}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"w22", "=."}], ";"}]}], "Input",
+ CellChangeTimes->{{3.532022750125*^9, 3.532022761953125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"uLaplace", ":=", 
+  RowBox[{"Simplify", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"k1", 
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        FractionBox["w11", "s"]}], ")"}], "yref"}], "-", 
+     RowBox[{"k1", 
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        FractionBox["w11", "s"]}], ")"}], 
+      FractionBox[
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         FractionBox["s", "w21"]}], ")"}], 
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         FractionBox["s", "w22"]}], ")"}]], "y"}]}], ",", 
+    RowBox[{"Assumptions", "->", "$Assumptions"}]}], "]"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"localExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"k1", ",", 
+       FractionBox["wa", "kx"], ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Gain\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "w11", ",", "wa", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Break frequency\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"w21", ",", 
+       FractionBox["wa", 
+        RowBox[{"2", " ", "da"}]], ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Break frequency\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "w22", ",", "wa", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Break frequency\>\""}], "}"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52234700896875*^9, 3.52234701828125*^9}, {
+   3.52234704890625*^9, 3.522347131203125*^9}, {3.522347193828125*^9, 
+   3.522347242390625*^9}, 3.532105888609375*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemEquationsDa", "=", 
+   RowBox[{"{", 
+    RowBox[{"u", "-", "uLaplace"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.5208800815625*^9, 3.52088011071875*^9}, {
+  3.522347346578125*^9, 3.522347346828125*^9}, {3.522347385375*^9, 
+  3.522347386203125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"systemVariables", "=", 
+   RowBox[{"{", "u", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520880113609375*^9, 3.520880127703125*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"variableLimits", "=", 
+   RowBox[{"{", 
+    RowBox[{"{", 
+     RowBox[{"u", ",", "umin", ",", "umax"}], "}"}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.52234748734375*^9, 3.52234750646875*^9}, {
+  3.522347649125*^9, 3.52234765228125*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{975, 874},
+WindowMargins->{{Automatic, 116}, {Automatic, 10}},
+FrontEndVersion->"8.0 for Microsoft Windows (32-bit) (November 7, 2010)",
+StyleDefinitions->FrontEnd`FileName[{"Creative"}, "NaturalColor.nb", 
+  CharacterEncoding -> "WindowsANSI"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 146, 2, 65, "Title"],
+Cell[728, 26, 377, 6, 41, "Input"],
+Cell[1108, 34, 124, 3, 41, "Input"],
+Cell[1235, 39, 615, 14, 82, "Input"],
+Cell[CellGroupData[{
+Cell[1875, 57, 105, 1, 23, "Subtitle"],
+Cell[1983, 60, 68, 1, 41, "Input"],
+Cell[2054, 63, 1252, 29, 182, "Input"],
+Cell[3309, 94, 1651, 39, 202, "Input"],
+Cell[4963, 135, 2697, 66, 302, "Input"],
+Cell[7663, 203, 945, 23, 122, "Input"],
+Cell[CellGroupData[{
+Cell[8633, 230, 212, 7, 65, "Input"],
+Cell[8848, 239, 803, 16, 62, "Output"]
+}, Open  ]],
+Cell[9666, 258, 1692, 37, 202, "Input"],
+Cell[CellGroupData[{
+Cell[11383, 299, 985, 27, 102, "Input"],
+Cell[12371, 328, 214, 3, 40, "Output"]
+}, Open  ]],
+Cell[12600, 334, 1052, 27, 122, "Input"],
+Cell[13655, 363, 185, 4, 82, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13877, 372, 140, 2, 23, "Subtitle"],
+Cell[14020, 376, 937, 24, 162, "Input"],
+Cell[14960, 402, 89, 2, 41, "Input"],
+Cell[15052, 406, 986, 26, 82, "Input"],
+Cell[16041, 434, 534, 14, 102, "Input"],
+Cell[16578, 450, 342, 9, 82, "Input"],
+Cell[16923, 461, 327, 9, 102, "Input"],
+Cell[17253, 472, 617, 20, 76, "Input"],
+Cell[17873, 494, 1066, 25, 183, "Input"],
+Cell[18942, 521, 297, 7, 41, "Input"],
+Cell[19242, 530, 171, 4, 41, "Input"],
+Cell[19416, 536, 280, 7, 41, "Input"],
+Cell[19699, 545, 63, 1, 41, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
