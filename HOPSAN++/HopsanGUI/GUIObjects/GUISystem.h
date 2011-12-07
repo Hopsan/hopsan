@@ -40,6 +40,35 @@
 class ProjectTab;
 
 
+class OptParameter
+{
+public:
+    QString mComponentName, mParameterName;
+    double mMin, mMax;
+};
+
+
+class OptimizationSettings
+{
+public:
+    OptimizationSettings();
+
+    int mNiter;
+    int mNsearchp;
+    double mRefcoeff;
+    double mRandfac;
+    double mForgfac;
+    double mFunctol;
+    double mPartol;
+    bool mPlot;
+    bool mSavecsv;
+    bool mlogPar;
+
+    //Paramters
+    QVector<OptParameter> mParamters;
+};
+
+
 class GUISystem : public GUIContainerObject
 {
     Q_OBJECT
@@ -74,6 +103,9 @@ public:
     CoreSystemAccess* getCoreSystemAccessPtr();
     GUIContainerObject *getParentContainerObject();
 
+    OptimizationSettings getOptimizationSettings();
+    void setOptimizationSettings(OptimizationSettings optSettings);
+
     enum { Type = GUISYSTEM };
     int type() const;
 
@@ -94,6 +126,9 @@ protected:
 
     void openPropertiesDialog();
 
+    void loadOptSettingsFromDomElement(QDomElement &rDomElement);
+    void saveOptSettingsToDomElement(QDomElement &rDomElement);
+
 private:
     void commonConstructorCode();
 
@@ -107,6 +142,9 @@ private:
 
     QRadioButton *mpExportFmuGccRadioButton;
     QRadioButton *mpExportFmuMsvcRadioButton;
+
+    OptimizationSettings mOptSettings;
 };
+
 
 #endif // GUISYSTEM_H

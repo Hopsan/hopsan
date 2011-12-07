@@ -52,6 +52,9 @@ private:
     bool loadObjectiveFunctions();
     QString generateFunctionCode(int i);
 
+    void loadConfiguration();
+    void saveConfiguration();
+
 public slots:
     virtual void open();
 

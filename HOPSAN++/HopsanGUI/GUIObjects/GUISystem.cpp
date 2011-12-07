@@ -232,7 +232,100 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
         aliasElement.setAttribute("port",ita.value().at(1));
         aliasElement.setAttribute("data",ita.value().at(2));
     }
+
 }
+
+
+void GUISystem::saveOptSettingsToDomElement(QDomElement &rDomElement)
+{
+    QDomElement XMLopt = appendDomElement(rDomElement, "optimization");
+    QDomElement XMLsetting = appendDomElement(XMLopt, "settings");
+    appendDomIntegerNode(XMLsetting, "niter", mOptSettings.mNiter);
+    appendDomIntegerNode(XMLsetting, "nsearchp", mOptSettings.mNsearchp);
+    appendDomValueNode(XMLsetting, "refcoeff", mOptSettings.mRefcoeff);
+    appendDomValueNode(XMLsetting, "randfac", mOptSettings.mRandfac);
+    appendDomValueNode(XMLsetting, "forgfac", mOptSettings.mForgfac);
+    appendDomValueNode(XMLsetting, "functol", mOptSettings.mFunctol);
+    appendDomValueNode(XMLsetting, "partol", mOptSettings.mPartol);
+    appendDomBooleanNode(XMLsetting, "plot", mOptSettings.mPlot);
+    appendDomBooleanNode(XMLsetting, "savecsv", mOptSettings.mSavecsv);
+
+    //Parameters
+    appendDomBooleanNode(XMLsetting, "logpar", mOptSettings.mlogPar);
+    QDomElement XMLparameters = appendDomElement(XMLopt, "parameters");
+    for(int i = 0; i < mOptSettings.mParamters.size(); ++i)
+    {
+        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
+        appendDomTextNode(XMLparameter, "componentname", mOptSettings.mParamters.at(i).mComponentName);
+        appendDomTextNode(XMLparameter, "parametername", mOptSettings.mParamters.at(i).mParameterName);
+        appendDomValueNode2(XMLparameter, "minmax", mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
+    }
+
+}
+
+
+void GUISystem::loadOptSettingsFromDomElement(QDomElement &rDomElement)
+{
+    qDebug() << rDomElement.toDocument().toString();
+
+    if(!rDomElement.firstChildElement("settings").isNull())
+    {
+        if(!rDomElement.firstChildElement("settings").firstChildElement("niter").isNull())
+            mOptSettings.mNiter = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("niter"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("nsearchp").isNull())
+            mOptSettings.mNsearchp = parseDomIntegerNode(rDomElement.firstChildElement("settings").firstChildElement("nsearchp"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("refcoeff").isNull())
+            mOptSettings.mRefcoeff = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("refcoeff"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("randfac").isNull())
+            mOptSettings.mRandfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("randfac"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("forgfac").isNull())
+            mOptSettings.mForgfac = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("forgfac"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("functol").isNull())
+            mOptSettings.mFunctol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("functol"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("partol").isNull())
+            mOptSettings.mPartol = parseDomValueNode(rDomElement.firstChildElement("settings").firstChildElement("partol"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("plot").isNull())
+            mOptSettings.mPlot = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("plot"));
+        if(!rDomElement.firstChildElement("settings").firstChildElement("savecsv").isNull())
+            mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"));
+
+        //fixa parameterar osv
+        if(!rDomElement.firstChildElement("settings").firstChildElement("logpar").isNull())
+            mOptSettings.mlogPar = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("logpar"));
+    }
+    if(!rDomElement.firstChildElement("parameters").isNull())
+    {
+        QDomElement XMLpar = rDomElement.firstChildElement("parameters").firstChildElement("parameter");
+        while (!XMLpar.isNull())
+        {
+            OptParameter parameter;
+            parameter.mComponentName = XMLpar.firstChildElement("componentname").text();
+            parameter.mParameterName = XMLpar.firstChildElement("parametername").text();
+            parseDomValueNode2(XMLpar.firstChildElement("minmax"), parameter.mMin, parameter.mMax);
+            mOptSettings.mParamters.append(parameter);
+
+            XMLpar = XMLpar.nextSiblingElement("parameter");
+        }
+
+        if(!rDomElement.firstChildElement("parameters").firstChildElement("savecsv").isNull())
+            mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"));
+
+    }
+
+}
+
+
+OptimizationSettings GUISystem::getOptimizationSettings()
+{
+    return mOptSettings;
+}
+
+
+void GUISystem::setOptimizationSettings(OptimizationSettings optSettings)
+{
+    mOptSettings = optSettings;
+}
+
 
 //! @brief Saves the System specific GUI data to XML DOM Element
 //! @param[in] rDomElement The DOM Element to save to
@@ -269,6 +362,8 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
         }
         this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
     }
+
+    saveOptSettingsToDomElement(rDomElement);
 
     guiStuff.appendChild(mpUndoStack->toXml());
 
@@ -515,6 +610,11 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             loadPlotAlias(xmlSubObject, this);
             xmlSubObject = xmlSubObject.nextSiblingElement("alias");
         }
+
+        //10. Load optimization settings
+        xmlSubObject = rDomElement.firstChildElement("optimization");
+        loadOptSettingsFromDomElement(xmlSubObject);
+
 
         //Refresh the appearnce of the subsystemem and create the GUIPorts based on the loaded portappearance information
         //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
@@ -2229,4 +2329,20 @@ void GUISystem::updateSimulationParametersInToolBar()
     gpMainWindow->setStartTimeInToolBar(mStartTime);
     gpMainWindow->setTimeStepInToolBar(mTimeStep);
     gpMainWindow->setFinishTimeInToolBar(mStopTime);
+}
+
+
+OptimizationSettings::OptimizationSettings()
+{
+    //Defaulf values
+    mNiter=100;
+    mNsearchp=8;
+    mRefcoeff=1.3;
+    mRandfac=.3;
+    mForgfac=0.0;
+    mFunctol=.00001;
+    mPartol=.0001;
+    mPlot=true;
+    mSavecsv=false;
+    mlogPar = false;
 }
