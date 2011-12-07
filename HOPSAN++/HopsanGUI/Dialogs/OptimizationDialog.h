@@ -57,6 +57,7 @@ public slots:
 
 private slots:
     void updateChosenParameters(QTreeWidgetItem* item, int i);
+    void removeParameter();
     void updateChosenVariables(QTreeWidgetItem* item, int i);
     void addFunction();
     void removeFunction();
@@ -155,6 +156,7 @@ private:
     QList<QLabel*> mpParameterLabels;
     QList<QLineEdit*> mpParameterMinLineEdits;
     QList<QLineEdit*> mpParameterMaxLineEdits;
+    QList<QToolButton*> mpParameterRemoveButtons;
     QList<QStringList> mSelectedVariables;
 };
 

@@ -159,6 +159,10 @@ void SensitivityAnalysisDialog::open()
     }
     connect(mpOutputList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenVariables(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
+    mOutputVariables.clear();
+    mSelectedParameters.clear();
+    mSelectedComponents.clear();
+
     QDialog::show();
 }
 
