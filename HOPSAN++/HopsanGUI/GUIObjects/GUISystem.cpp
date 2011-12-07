@@ -363,7 +363,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
         this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
     }
 
-    saveOptSettingsToDomElement(rDomElement);
+    saveOptSettingsToDomElement(guiStuff);
 
     guiStuff.appendChild(mpUndoStack->toXml());
 
@@ -612,7 +612,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         }
 
         //10. Load optimization settings
-        xmlSubObject = rDomElement.firstChildElement("optimization");
+        xmlSubObject = guiStuff.firstChildElement("optimization");
         loadOptSettingsFromDomElement(xmlSubObject);
 
 
