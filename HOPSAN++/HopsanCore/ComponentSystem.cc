@@ -1787,6 +1787,7 @@ bool ComponentSystem::isSimulationOk()
     //Make sure that there are no components or systems with an undefined cqs_type present
     if (mComponentUndefinedptrs.size() > 0)
     {
+
         for (size_t i=0; i<mComponentUndefinedptrs.size(); ++i)
         {
             gCoreMessageHandler.addErrorMessage(string("The component {") + mComponentUndefinedptrs[i]->getName() + string("} does not have a valid CQS type."));
@@ -2675,7 +2676,7 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
         //Obtain number of processor cores from environment variable, or use user specified value if not zero
     size_t nThreads;
     size_t nCores;
-#ifdef win32
+#ifdef WIN32
     if(getenv("NUMBER_OF_PROCESSORS") != 0)
     {
         string temp = getenv("NUMBER_OF_PROCESSORS");   //! @todo This appears to be a Windows only environment variable. Figure out how to do it on Unix (and Mac OS)
