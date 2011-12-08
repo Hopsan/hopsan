@@ -25,6 +25,7 @@
 #include <QtGui/QApplication>
 #include <QSplashScreen>
 #include <QTimer>
+#include <QLocale>
 
 #include "common.h"
 #include "MainWindow.h"
@@ -41,6 +42,11 @@ void loadApplicationFonts();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    //Force locale to English/USA
+    qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country());
+    QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
+    qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country());
 
     //Create global variables
     gExecPath = qApp->applicationDirPath().append('/');
