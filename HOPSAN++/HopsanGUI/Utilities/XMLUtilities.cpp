@@ -25,6 +25,7 @@
 #include "version_gui.h"
 #include "XMLUtilities.h"
 #include <QMessageBox>
+#include <QLocale>
 
 //! @brief Function for loading an XML DOM Documunt from file
 //! @param[in] rFile The file to load from
@@ -293,10 +294,22 @@ void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
 //! @param[in] zoom The zoom factor
 void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
 {
+    qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << "DecimalPoint: " << QLocale().decimalPoint();
     QDomElement pose = appendDomElement(rDomElement, HMF_VIEWPORTTAG);
-    pose.setAttribute("x",x);
-    pose.setAttribute("y",y);
-    pose.setAttribute("zoom",zoom);
+//    QString str;
+//    // We use str.setNum() to prevent the use of system locale (to prevent , decimal pt)
+//    str.setNum(x);
+//    pose.setAttribute("x", str);
+//    str.setNum(y);
+//    pose.setAttribute("y", str);
+//    str.setNum(zoom);
+//    pose.setAttribute("zoom", str);
+
+    pose.setAttribute("x", x);
+    pose.setAttribute("y", y);
+    pose.setAttribute("zoom", zoom);
+
+    qDebug() << "zoom: " << pose.attribute("zoom");
 }
 
 //! @brief Special purpose help function for adding a Hopsan specific XML tag containing simulationtime information
@@ -307,9 +320,14 @@ void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
 void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop)
 {
     QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
-    simu.setAttribute("start", start);
-    simu.setAttribute("timestep", step);
-    simu.setAttribute("stop", stop);
+    QString str;
+    // We use str.setNum() to prevent the use of system locale (to prevent , decimal pt)
+    str.setNum(start);
+    simu.setAttribute("start", str);
+    str.setNum(step);
+    simu.setAttribute("timestep", str);
+    str.setNum(stop);
+    simu.setAttribute("stop", str);
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing Object Pose information
