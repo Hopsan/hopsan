@@ -44,10 +44,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //Force locale to English/USA
-    qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country());
-    qDebug() << "Decimal point: " << QLocale().decimalPoint();
+    qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
+    //! @todo this does not seem to help, DomElement.setAttribute still use comma decimal point on swedish ubuntu, maybe a Qt bug
     //QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
-    //qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country());
+    //qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
     //Create global variables
     gExecPath = qApp->applicationDirPath().append('/');

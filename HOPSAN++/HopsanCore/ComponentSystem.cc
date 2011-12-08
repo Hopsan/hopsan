@@ -1921,6 +1921,13 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
     //cout << "Initializing SubSystem: " << this->mName << endl;
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
+    // Make sure timestep is not to low
+    if (mTimestep < 10*std::numeric_limits<double>::min())
+    {
+        gCoreMessageHandler.addErrorMessage("The timestep is to low");
+        return false;
+    }
+
     //preAllocate local logspace
     this->preAllocateLogSpace(startT, stopT, nSamples);
 
