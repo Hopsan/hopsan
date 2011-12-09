@@ -203,6 +203,17 @@ void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, c
     appendDomTextNode(rDomElement, element_name, str);
 }
 
+//! @brief Helpfunction for adding a qreal (float or double) attribute to a Dom element while making sure that decimal point is . and not ,
+//! @param domElement The DOM element to add the attribute to
+//! @param[in] attrName The name of the attribute
+//! @param[in] attrValue The value of the attribute
+void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue)
+{
+    QString str;
+    str.setNum(attrValue);
+    domElement.setAttribute(attrName, str);
+}
+
 
 //! @brief Function that parses one DOM elements containing one text node (based on three double values)
 //! @param[in] domElement The DOM Element to parse
@@ -292,22 +303,14 @@ void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
 //! @param[in] zoom The zoom factor
-void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
+void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal zoom)
 {
-    qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << "DecimalPoint: " << QLocale().decimalPoint();
+    //qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << "DecimalPoint: " << QLocale().decimalPoint();
     QDomElement pose = appendDomElement(rDomElement, HMF_VIEWPORTTAG);
-//    QString str;
-//    // We use str.setNum() to prevent the use of system locale (to prevent , decimal pt)
-//    str.setNum(x);
-//    pose.setAttribute("x", str);
-//    str.setNum(y);
-//    pose.setAttribute("y", str);
-//    str.setNum(zoom);
-//    pose.setAttribute("zoom", str);
 
-    pose.setAttribute("x", x);
-    pose.setAttribute("y", y);
-    pose.setAttribute("zoom", zoom);
+    setQrealAttribute(pose, "x", x);
+    setQrealAttribute(pose, "y", y);
+    setQrealAttribute(pose, "zoom", zoom);
 
     qDebug() << "zoom: " << pose.attribute("zoom");
 }
@@ -317,17 +320,12 @@ void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
 //! @param[in] start The starttime
 //! @param[in] step The timestep size
 //! @param[in] stop The stoptime
-void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop)
+void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop)
 {
     QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
-    QString str;
-    // We use str.setNum() to prevent the use of system locale (to prevent , decimal pt)
-    str.setNum(start);
-    simu.setAttribute("start", str);
-    str.setNum(step);
-    simu.setAttribute("timestep", str);
-    str.setNum(stop);
-    simu.setAttribute("stop", str);
+    setQrealAttribute(simu, "start", start);
+    setQrealAttribute(simu, "timestep", step);
+    setQrealAttribute(simu, "stop", stop);
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing Object Pose information

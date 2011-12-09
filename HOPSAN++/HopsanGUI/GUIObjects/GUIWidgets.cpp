@@ -187,8 +187,8 @@ void GUITextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     QPointF pos = mapToScene(boundingRect().topLeft());
 
     QDomElement xmlPose = appendDomElement(xmlGuiStuff, HMF_POSETAG);
-    xmlPose.setAttribute("x", pos.x());
-    xmlPose.setAttribute("y", pos.y());
+    setQrealAttribute(xmlPose, "x", pos.x());
+    setQrealAttribute(xmlPose, "y", pos.y());
 
     QDomElement xmlText = appendDomElement(xmlGuiStuff, "textobject");
     xmlText.setAttribute("text", mpTextItem->toPlainText());
@@ -196,12 +196,12 @@ void GUITextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     xmlText.setAttribute("fontcolor", mpTextItem->defaultTextColor().name());
 
     QDomElement xmlSize = appendDomElement(xmlGuiStuff, "size");
-    xmlSize.setAttribute("width", mpRectItem->rect().width());
-    xmlSize.setAttribute("height", mpRectItem->rect().height());
+    setQrealAttribute(xmlSize, "width", mpRectItem->rect().width());
+    setQrealAttribute(xmlSize, "height", mpRectItem->rect().height());
 
     QDomElement xmlLine = appendDomElement(xmlGuiStuff, "line");
     xmlLine.setAttribute("visible", mpRectItem->isVisible());
-    xmlLine.setAttribute("width", mpRectItem->pen().width());
+    setQrealAttribute(xmlLine, "width", mpRectItem->pen().width());
 
     QString style;
     if(mpRectItem->pen().style() == Qt::SolidLine)
