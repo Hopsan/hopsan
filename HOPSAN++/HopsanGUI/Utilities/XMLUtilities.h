@@ -52,11 +52,11 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 
 int parseDomIntegerNode(QDomElement);
 
-void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue);
+void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue, const int precision=6,  const char format='f');
 
 //Attribute help functions
-void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped);
-void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y);
+void appendPoseTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal th, const bool flipped, const int precision=6);
+void appendCoordinateTag(QDomElement &rDomElement, const qreal x, const qreal y, const int precision=20);
 void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal zoom);
 void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop);
 

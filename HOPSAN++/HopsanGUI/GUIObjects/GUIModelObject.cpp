@@ -653,7 +653,7 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
         //Save center pos in parent coordinates (same as scene coordinates for model objects)
     QPointF cpos = this->getCenterPos();
 
-    appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped);
+    appendPoseTag(xmlGuiStuff, cpos.x(), cpos.y(), rotation(), this->mIsFlipped, 10);
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
     nametext.setAttribute("position", getNameTextPos());
     nametext.setAttribute("visible", mpNameText->isVisible());

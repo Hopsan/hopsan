@@ -207,11 +207,10 @@ void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, c
 //! @param domElement The DOM element to add the attribute to
 //! @param[in] attrName The name of the attribute
 //! @param[in] attrValue The value of the attribute
-void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue)
+void setQrealAttribute(QDomElement domElement, const QString attrName, const qreal attrValue, const int precision, const char format)
 {
     QString str;
-    str.setNum(attrValue);
-    domElement.setAttribute(attrName, str);
+    domElement.setAttribute(attrName, str.setNum(attrValue, format, precision));
 }
 
 
@@ -270,16 +269,13 @@ bool parseDomBooleanNode(QDomElement domElement)
 //! @param[in] y The y coordinate
 //! @param[in] th The orientaion (angle)
 //! @param[in] flipped isFlipped status of the object
-void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped)
+void appendPoseTag(QDomElement &rDomElement, const qreal x, const qreal y, const qreal th, const bool flipped, const int precision)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_POSETAG);
-    QString xString;
-    xString.setNum(x,'f',20);
-    pose.setAttribute("x",xString);
-    QString yString;
-    yString.setNum(y,'g',20);
-    pose.setAttribute("y",yString);
-    pose.setAttribute("a",th);
+
+    setQrealAttribute(pose, "x", x, precision, 'g');
+    setQrealAttribute(pose, "y", y, precision, 'g');
+    setQrealAttribute(pose, "a", th, precision, 'g');
     pose.setAttribute("flipped", flipped);
 }
 
@@ -287,15 +283,11 @@ void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool fl
 //! @param[in] rDomElement The DOM Element to append to
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
-void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
+void appendCoordinateTag(QDomElement &rDomElement, const qreal x, const qreal y, const int precision)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_COORDINATETAG);
-    QString xString;
-    xString.setNum(x,'f',20);
-    pose.setAttribute("x",xString);
-    QString yString;
-    yString.setNum(y,'f',20);
-    pose.setAttribute("y",yString);
+    setQrealAttribute(pose, "x", x, precision);
+    setQrealAttribute(pose, "y", y, precision);
 }
 
 //! @brief Special purpose help function for adding a Hopsan specific XML tag containing viewport information
@@ -308,11 +300,11 @@ void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, c
     //qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << "DecimalPoint: " << QLocale().decimalPoint();
     QDomElement pose = appendDomElement(rDomElement, HMF_VIEWPORTTAG);
 
-    setQrealAttribute(pose, "x", x);
-    setQrealAttribute(pose, "y", y);
-    setQrealAttribute(pose, "zoom", zoom);
+    setQrealAttribute(pose, "x", x, 6, 'g');
+    setQrealAttribute(pose, "y", y, 6, 'g');
+    setQrealAttribute(pose, "zoom", zoom, 6, 'g');
 
-    qDebug() << "zoom: " << pose.attribute("zoom");
+    //qDebug() << "zoom: " << pose.attribute("zoom");
 }
 
 //! @brief Special purpose help function for adding a Hopsan specific XML tag containing simulationtime information
@@ -323,9 +315,9 @@ void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, c
 void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop)
 {
     QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
-    setQrealAttribute(simu, "start", start);
-    setQrealAttribute(simu, "timestep", step);
-    setQrealAttribute(simu, "stop", stop);
+    setQrealAttribute(simu, "start", start, 10, 'g');
+    setQrealAttribute(simu, "timestep", step, 10, 'g');
+    setQrealAttribute(simu, "stop", stop, 10, 'g');
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing Object Pose information
