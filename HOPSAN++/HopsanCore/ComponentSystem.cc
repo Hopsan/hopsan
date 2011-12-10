@@ -2714,6 +2714,7 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
 
 
 //! @brief Helper function that distributes C componente equally over one vector per thread
+//! Greedy algorithm is used. This does not guarantee an optimal solution, but is gives a 4/3-approximation.
 //! @param rSplitCVector Reference to vector with vectors of components (one vector per thread)
 //! @param nThreads Number of simulation threads
 void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplitCVector, size_t nThreads)
@@ -2724,37 +2725,26 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
     {
         timeVector[i] = 0;
     }
-
     rSplitCVector.resize(nThreads);
-    size_t cCompNum=0;
-    bool even=true;
-    while(true)
+
+    //Cycle components from largest to smallest
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
     {
-        if(even)
+        //Find index of vector with smallest total time
+        size_t smallestIndex=0;
+        double smallestTime=timeVector.at(smallestIndex);
+        for(size_t t=1; t<nThreads; ++t)
         {
-            for(size_t thread=0; thread<nThreads; ++thread)
+            if(timeVector.at(t) < smallestTime)
             {
-                if(cCompNum == mComponentCptrs.size())
-                    break;
-                rSplitCVector[thread].push_back(mComponentCptrs[cCompNum]);
-                timeVector[thread] += mComponentCptrs[cCompNum]->getMeasuredTime();
-                ++cCompNum;
+                smallestTime = timeVector.at(t);
+                smallestIndex = t;
             }
         }
-        else
-        {
-            for(int thread=(int)nThreads-1; thread>-1; --thread)
-            {
-                if(cCompNum == mComponentCptrs.size())
-                    break;
-                rSplitCVector[thread].push_back(mComponentCptrs[cCompNum]);
-                timeVector[thread] += mComponentCptrs[cCompNum]->getMeasuredTime();
-                ++cCompNum;
-            }
-        }
-        even=!even;
-        if(cCompNum == mComponentCptrs.size())
-            break;
+
+        //Insert current component to vector with smallest time
+        rSplitCVector[smallestIndex].push_back(mComponentCptrs[c]);
+        timeVector[smallestIndex] += mComponentCptrs[c]->getMeasuredTime();
     }
 
     for(size_t i=0; i<nThreads; ++i)
@@ -2774,6 +2764,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
 
 
 //! @brief Helper function that distributes Q componente equally over one vector per thread
+//! Greedy algorithm is used. This does not guarantee an optimal solution, but is gives a 4/3-approximation.
 //! @param rSplitQVector Reference to vector with vectors of components (one vector per thread)
 //! @param nThreads Number of simulation threads
 void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplitQVector, size_t nThreads)
@@ -2784,37 +2775,26 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
     {
         timeVector[i] = 0;
     }
-
     rSplitQVector.resize(nThreads);
-    size_t qCompNum=0;
-    bool even=true;
-    while(true)
+
+    //Cycle components from largest to smallest
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
     {
-        if(even)
+        //Find index of vector with smallest total time
+        size_t smallestIndex=0;
+        double smallestTime=timeVector.at(smallestIndex);
+        for(size_t t=1; t<nThreads; ++t)
         {
-            for(size_t thread=0; thread<nThreads; ++thread)
+            if(timeVector.at(t) < smallestTime)
             {
-                if(qCompNum == mComponentQptrs.size())
-                    break;
-                rSplitQVector[thread].push_back(mComponentQptrs[qCompNum]);
-                timeVector[thread] += mComponentQptrs[qCompNum]->getMeasuredTime();
-                ++qCompNum;
+                smallestTime = timeVector.at(t);
+                smallestIndex = t;
             }
         }
-        else
-        {
-            for(int thread=(int)nThreads-1; thread>-1; --thread)
-            {
-                if(qCompNum == mComponentQptrs.size())
-                    break;
-                rSplitQVector[thread].push_back(mComponentQptrs[qCompNum]);
-                timeVector[thread] += mComponentQptrs[qCompNum]->getMeasuredTime();
-                ++qCompNum;
-            }
-        }
-        even=!even;
-        if(qCompNum == mComponentQptrs.size())
-            break;
+
+        //Insert current component to vector with smallest time
+        rSplitQVector[smallestIndex].push_back(mComponentQptrs[q]);
+        timeVector[smallestIndex] += mComponentQptrs[q]->getMeasuredTime();
     }
 
     for(size_t i=0; i<nThreads; ++i)
