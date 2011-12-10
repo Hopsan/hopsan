@@ -2367,133 +2367,40 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 }
 
 
-//! @brief Simulates a vector of systems in parallel by combining their component popinter vectors
-//! @param startT Start time for all systems
-//! @param stopT Stop time for all systems
-//! @param nDesiredThreads Desired number of threads (may change due to hardware limitations)
-//! @param systemVector Vector of systems to simulate
-void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector, bool noChanges)
-{
-    double stopTsafe = stopT - systemVector.at(0)->getDesiredTimeStep()/2.0;        //Calculate the "actual" stop time
-    double timeStep = systemVector.at(0)->getDesiredTimeStep();                     //! @todo This can't be right...
-    size_t nThreads = systemVector.at(0)->getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
-
-    for(size_t i=0; i<systemVector.size(); ++i)
-    {
-        double *pTime = systemVector.at(i)->getTimePtr();
-        *pTime = startT;
-        systemVector.at(i)->logAllNodes(*pTime);                    //Log the first time step
-    }
-
-    //cout << "noChanges = " << noChanges << endl;
-
-    if(!noChanges)
-    {
-        mSplitCVector.clear();
-        mSplitQVector.clear();
-        mSplitSignalVector.clear();
-        mSplitNodeVector.clear();
-
-        mSplitCVector.resize(nThreads);
-        mSplitQVector.resize(nThreads);
-        mSplitSignalVector.resize(nThreads);
-        mSplitNodeVector.resize(nThreads);
-
-        mvTimePtrs.clear();
-
-        //Loop through the systems, fetch the components & nodes and add them to the combined vectors
-        for(size_t i=0; i<systemVector.size(); ++i)
-        {
-            systemVector.at(i)->simulateAndMeasureTime(5);                                  //Measure time
-            systemVector.at(i)->sortComponentVectorsByMeasuredTime();                       //Sort component vectors
-
-            vector< vector<Component*> > tempSplitCVector;                                      //Create split vectors
-            vector< vector<Component*> > tempSplitQVector;
-            vector< vector<Component*> > tempSplitSignalVector;
-            vector< vector<Node*> > tempSplitNodeVector;
-
-            systemVector.at(i)->distributeCcomponents(tempSplitCVector, nThreads);              //Distribute components & nodes
-            systemVector.at(i)->distributeQcomponents(tempSplitQVector, nThreads);
-            systemVector.at(i)->distributeSignalcomponents(tempSplitSignalVector, nThreads);
-            systemVector.at(i)->distributeNodePointers(tempSplitNodeVector, nThreads);
-
-            for(size_t t=0; t<nThreads; ++t)                                                   //Append split vectors to combined vectors
-            {
-                mSplitCVector.at(t).insert(mSplitCVector.at(t).end(), tempSplitCVector.at(t).begin(), tempSplitCVector.at(t).end());
-                mSplitQVector.at(t).insert(mSplitQVector.at(t).end(), tempSplitQVector.at(t).begin(), tempSplitQVector.at(t).end());
-                mSplitSignalVector.at(t).insert(mSplitSignalVector.at(t).end(), tempSplitSignalVector.at(t).begin(), tempSplitSignalVector.at(t).end());
-                mSplitNodeVector.at(t).insert(mSplitNodeVector.at(t).end(), tempSplitNodeVector.at(t).begin(), tempSplitNodeVector.at(t).end());
-            }
-
-            mvTimePtrs.push_back(systemVector.at(i)->getTimePtr());                          //Append pointer to time variable to time pointer vector
-        }
-    }
-
-    //cout << "Simulating with split, mSplitCVector[0].size() = " << mSplitCVector[0].size() << endl;
-
-    tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
-    simTasks = new tbb::task_group;
-
-    BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
-    BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
-    BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
-    BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
-
-    //Execute simulation
-    simTasks->run(taskSimMaster(mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-                                mSplitNodeVector[0], mvTimePtrs, (*mvTimePtrs[0]), timeStep, stopTsafe, nThreads, 0,
-                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-
-    for(size_t t=1; t < nThreads; ++t)
-    {
-        simTasks->run(taskSimSlave(mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-                                   mSplitNodeVector[t], (*mvTimePtrs[0]), timeStep, stopTsafe, nThreads, t,
-                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-    }
-    simTasks->wait();                                           //Wait for all tasks to finish
-
-    delete(simTasks);                                           //Clean up
-    delete(pBarrierLock_S);
-    delete(pBarrierLock_C);
-    delete(pBarrierLock_Q);
-    delete(pBarrierLock_N);
-}
-
-
-//! @brief Simulates a vector of component systems in parallel, by assigning one or more system to each simluation thread (without splitting the systems)
+//! @brief Simulates a vector of component systems in parallel, by assigning one or more system to each simluation thread
 //! @param startT Start time for all systems
 //! @param stopT Stop time for all systems
 //! @param nDesiredThreads Desired number of threads (may change due to hardware limitations)
 //! @param systemVector Vector of pointers to systems to simulate
-void ComponentSystem::simulateMultipleSystemsMultiThreadedInParallel(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector, bool noChanges)
+void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector, bool noChanges)
 {
-    size_t nThreads = getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
+    size_t nThreads = getNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
-    for(size_t i=0; i<systemVector.size(); ++i)                    //Loop through the systems, set start time, log nodes and measure simulation time
+    for(size_t i=0; i<systemVector.size(); ++i)                         //Loop through the systems, set start time, log nodes and measure simulation time
     {
         double *pTime = systemVector.at(i)->getTimePtr();
         *pTime = startT;
-        systemVector.at(i)->logAllNodes(*pTime);                //Log the first time step
+        systemVector.at(i)->logAllNodes(*pTime);                        //Log the first time step
     }
 
     if(!noChanges)
     {
         mSplitSystemVector.clear();
-        for(size_t i=0; i<systemVector.size(); ++i)                    //Loop through the systems, set start time, log nodes and measure simulation time
+        for(size_t i=0; i<systemVector.size(); ++i)                     //Loop through the systems, set start time, log nodes and measure simulation time
         {
-            systemVector.at(i)->simulateAndMeasureTime(5);          //Measure time
+            systemVector.at(i)->simulateAndMeasureTime(5);              //Measure time
         }
-        sortSystemsByTotalMeasuredTime(systemVector);               //Sort systems by total measured time
+        sortSystemsByTotalMeasuredTime(systemVector);                   //Sort systems by total measured time
         mSplitSystemVector = distributeSystems(systemVector, nThreads); //Distribute systems evenly over split vectors
     }
 
-    tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel simulation
+    tbb::task_group *simTasks;                                          //Initialize TBB routines for parallel simulation
     simTasks = new tbb::task_group;
-    for(size_t t=0; t < nThreads; ++t)                          //Execute simulation
+    for(size_t t=0; t < nThreads; ++t)                                  //Execute simulation
     {
         simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], (*systemVector.at(0)->getTimePtr()), stopT));
     }
-    simTasks->wait();                                           //Wait for all tasks to finish
+    simTasks->wait();                                                   //Wait for all tasks to finish
     delete(simTasks);
 }
 
@@ -2686,7 +2593,7 @@ int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
 #ifdef WIN32
     if(getenv("NUMBER_OF_PROCESSORS") != 0)
     {
-        string temp = getenv("NUMBER_OF_PROCESSORS");   //! @todo This appears to be a Windows only environment variable. Figure out how to do it on Unix (and Mac OS)
+        string temp = getenv("NUMBER_OF_PROCESSORS");
         nCores = atoi(temp.c_str());
     }
     else
@@ -2950,16 +2857,10 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     this->simulate(startT, stopT);
 }
 
-//! @brief Simulate function that overrides multi-threaded multiple systems simulation call with a single-threaded call
-//! In case multi-threaded support is not available
-void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector)
-{
-    this->simulateMultipleSystems(startT, stopT, systemVector);
-}
 
 //! @brief Simulate function that overrides multi-threaded multiple systems in parallel simulation call with a single-threaded call
 //! In case multi-threaded support is not available
-void ComponentSystem::simulateMultipleSystemsMultiThreadedInParallel(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector)
+void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector)
 {
     this->simulateMultipleSystems(startT, stopT, systemVector);
 }
@@ -3014,21 +2915,6 @@ void ComponentSystem::simulateMultipleSystems(const double startT, const double 
     for(size_t i=0; i<systemVector.size(); ++i)
     {
         systemVector[i]->simulate(startT, stopTsafe);
-    }
-}
-
-
-//! @brief Simulates several systems sequentially
-//! @param startT Start time for all systems
-//! @param stopT Stop time for all systems
-//! @param systemVector Vector of pointers to component systems
-void ComponentSystem::simulateMultipleSystemsMultiThreadedInSequence(const double startT, const double stopT, vector<ComponentSystem *> systemVector, size_t nDesiredThreads, bool noChanges)
-{
-    double stopTsafe = stopT - this->getDesiredTimeStep()/2.0;        //Calculate the "actual" stop time
-
-    for(size_t i=0; i<systemVector.size(); ++i)
-    {
-        systemVector[i]->simulateMultiThreaded(startT, stopTsafe, nDesiredThreads, noChanges);
     }
 }
 

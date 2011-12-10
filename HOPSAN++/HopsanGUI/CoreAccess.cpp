@@ -197,7 +197,7 @@ void CoreSystemAccess::stop()
 }
 
 
-void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, bool dontSplitSystems, bool sequencialMultiThreading, size_t nThreads, bool modelsHaveNotChanged)
+void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelsHaveNotChanged)
 {
     std::vector<ComponentSystem *> systemVector;
     for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
@@ -207,18 +207,7 @@ void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTi
 
     if(type == MULTICORE)
     {
-        if(sequencialMultiThreading)
-        {
-            systemVector.at(0)->simulateMultipleSystemsMultiThreadedInSequence(mStartTime, mFinishTime, systemVector, nThreads, modelsHaveNotChanged);
-        }
-        else if(dontSplitSystems)
-        {
-            systemVector.at(0)->simulateMultipleSystemsMultiThreadedInParallel(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
-        }
-        else
-        {
-            systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
-        }
+        systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
     }
     else
     {

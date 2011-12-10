@@ -277,7 +277,7 @@ void SensitivityAnalysisDialog::run()
                 pTabs->getContainer(t)->getGUIModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
             }
         }
-        pTabs->simulateAllOpenModelsWithoutSplit(noChange);
+        pTabs->simulateAllOpenModels(noChange);
         noChange=true;
     }
 

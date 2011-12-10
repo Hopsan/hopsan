@@ -235,33 +235,11 @@ public slots:
     }
 
 
-    bool simulateAllOpenModelsSequencially(MainWindow* o, bool modelsHaveNotChanged)
+    bool simulateAllOpenModels(MainWindow* o, bool modelsHaveNotChanged)
     {
         bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
         o->mpConfig->setEnableProgressBar(false);
-        bool success = o->mpProjectTabs->simulateAllOpenModelsSequencially(modelsHaveNotChanged);
-        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
-        qApp->processEvents();
-        return success;
-    }
-
-
-    bool simulateAllOpenModelsWithSplit(MainWindow* o, bool modelsHaveNotChanged)
-    {
-        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
-        o->mpConfig->setEnableProgressBar(false);
-        bool success = o->mpProjectTabs->simulateAllOpenModelsWithSplit(modelsHaveNotChanged);
-        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
-        qApp->processEvents();
-        return success;
-    }
-
-
-    bool simulateAllOpenModelsWithoutSplit(MainWindow* o, bool modelsHaveNotChanged)
-    {
-        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
-        o->mpConfig->setEnableProgressBar(false);
-        bool success = o->mpProjectTabs->simulateAllOpenModelsWithoutSplit(modelsHaveNotChanged);
+        bool success = o->mpProjectTabs->simulateAllOpenModels(modelsHaveNotChanged);
         o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
         qApp->processEvents();
         return success;

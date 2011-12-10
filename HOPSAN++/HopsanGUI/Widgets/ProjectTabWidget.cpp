@@ -914,25 +914,7 @@ void ProjectTabWidget::showLosses(bool show)
 }
 
 
-bool ProjectTabWidget::simulateAllOpenModelsSequencially(bool modelsHaveNotChanged)
-{
-    return simulateAllOpenModels(false, true, modelsHaveNotChanged);
-}
-
-
-bool ProjectTabWidget::simulateAllOpenModelsWithSplit(bool modelsHaveNotChanged)
-{
-    return simulateAllOpenModels(false, false, modelsHaveNotChanged);
-}
-
-
-bool ProjectTabWidget::simulateAllOpenModelsWithoutSplit(bool modelsHaveNotChanged)
-{
-    return simulateAllOpenModels(true, false, modelsHaveNotChanged);
-}
-
-
-bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems, bool sequencialMultiThreading, bool modelsHaveNotChanged)
+bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
 {
     qDebug() << "simulateAllOpenModels()";
 
@@ -1019,7 +1001,7 @@ bool ProjectTabWidget::simulateAllOpenModels(bool dontSplitSystems, bool sequenc
                     gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting single-threaded simulation of all models");
 
                 simTimer.start();
-                MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, dontSplitSystems, sequencialMultiThreading, modelsHaveNotChanged, this);
+                MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, modelsHaveNotChanged, this);
                 actualSimulation.start();
                 actualSimulation.setPriority(QThread::HighestPriority);
 
