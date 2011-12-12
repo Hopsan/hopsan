@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2839.75" y="2251.97" zoom="0.842152"/>
+            <viewport x="2701.45" y="2430.22" zoom="0.597271"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -14072,11 +14072,312 @@
                 <post number="1740" type="changedparameters">
                     <stuff newvalue="1e-9" what="changedparameter" oldvalue="1e-10" parametername="K_c" objectname="Laminar Orifice_12"/>
                 </post>
+                <post number="1741" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step"/>
+                </post>
+                <post number="1742" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_1"/>
+                </post>
+                <post number="1743" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_5"/>
+                </post>
+                <post number="1744" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_2"/>
+                </post>
+                <post number="1745" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_3"/>
+                </post>
+                <post number="1746" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_4"/>
+                </post>
+                <post number="1747" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_6"/>
+                </post>
+                <post number="1748" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_7"/>
+                </post>
+                <post number="1749">
+                    <stuff what="rotate" angle="90" objectname="Capacitance"/>
+                </post>
+                <post number="1750">
+                    <stuff what="rotate" angle="90" objectname="Capacitance"/>
+                </post>
+                <post number="1751">
+                    <stuff what="rotate" angle="90" objectname="Capacitance"/>
+                </post>
+                <post number="1752">
+                    <stuff what="movedobject" name="Capacitance">
+                        <oldpos>2028.74 2826</oldpos>
+                        <newpos>2006.97 2842.74</newpos>
+                    </stuff>
+                </post>
+                <post number="1753">
+                    <stuff what="deletedconnector">
+                        <connect endport="Pel2" endcomponent="DC Motor With Gear" startport="Pel1" startcomponent="Capacitance">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2006.97143399451897494146" y="2843.47992151054768328322"/>
+                                    <coordinate x="2070.50000000000000000000" y="2807.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>diagonal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="1754">
+                    <stuff what="deletedconnector">
+                        <connect endport="Pel1" endcomponent="Battery" startport="Pel2" startcomponent="Capacitance">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2047.97143399451897494146" y="2843.47992151054768328322"/>
+                                    <coordinate x="2070.50000000000000000000" y="2894.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>diagonal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="1755">
+                    <stuff what="addedconnector">
+                        <connect endport="Pel2" endcomponent="DC Motor With Gear" startport="Pel2" startcomponent="Capacitance">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2047.97143399451897494146" y="2843.47992151054768328322"/>
+                                    <coordinate x="2070.50000000000000000000" y="2843.47992151054768328322"/>
+                                    <coordinate x="2070.50000000000000000000" y="2807.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="1756">
+                    <stuff what="movedobject" name="Capacitance">
+                        <oldpos>2006.97 2842.74</oldpos>
+                        <newpos>2000.27 2807.58</newpos>
+                    </stuff>
+                </post>
+                <post number="1757">
+                    <stuff what="movedobject" name="Battery">
+                        <oldpos>2050 2894</oldpos>
+                        <newpos>1917.73 2813.63</newpos>
+                    </stuff>
+                </post>
+                <post number="1758">
+                    <stuff what="addedconnector">
+                        <connect endport="Pel1" endcomponent="Capacitance" startport="Pel1" startcomponent="Battery">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1938.23171588976811108296" y="2808.31999788630901093711"/>
+                                    <coordinate x="1938.23171588976811108296" y="2808.31999788630901093711"/>
+                                    <coordinate x="2000.27430568514000697178" y="2808.31999788630901093711"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="1759">
+                    <stuff what="movedobject" name="Battery">
+                        <oldpos>1917.73 2808.32</oldpos>
+                        <newpos>1922.75 2808.32</newpos>
+                    </stuff>
+                </post>
+                <post number="1760">
+                    <stuff what="rotate" angle="90" objectname="Battery"/>
+                </post>
+                <post number="1761">
+                    <stuff what="movedobject" name="Battery">
+                        <oldpos>1922.75 2808.32</oldpos>
+                        <newpos>1917.73 2786.32</newpos>
+                    </stuff>
+                </post>
+                <post number="1762">
+                    <stuff what="movedobject" name="Battery">
+                        <oldpos>1917.73 2786.32</oldpos>
+                        <newpos>1957.77 2786.32</newpos>
+                    </stuff>
+                </post>
+                <post number="1763">
+                    <stuff what="movedobject" name="Capacitance_2">
+                        <oldpos>2049.07 2049.08</oldpos>
+                        <newpos>2039.02 2075.87</newpos>
+                    </stuff>
+                </post>
+                <post number="1764">
+                    <stuff what="deletedconnector">
+                        <connect endport="Pel1" endcomponent="Resistor_1" startport="Pel1" startcomponent="Ground_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1937.50466935360918796505" y="2077.95810458590131020173"/>
+                                    <coordinate x="1937.50466935360918796505" y="2049.81770558590142172761"/>
+                                    <coordinate x="1956.06697235360911690805" y="2049.81770558590142172761"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="1765">
+                    <stuff what="movedobject" name="Resistor_1">
+                        <oldpos>1956.07 2045.82</oldpos>
+                        <newpos>1946.02 2072.61</newpos>
+                    </stuff>
+                </post>
+                <post number="1766">
+                    <stuff what="movedobject" name="Ground_1">
+                        <oldpos>1930.5 2077.96</oldpos>
+                        <newpos>1932.18 2099.72</newpos>
+                    </stuff>
+                </post>
+                <post number="1767">
+                    <stuff what="addedconnector">
+                        <connect endport="Pel1" endcomponent="Resistor_1" startport="Pel1" startcomponent="Ground_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1946.02127953593162601464" y="2099.72377200548180553596"/>
+                                    <coordinate x="1946.02127953593162601464" y="2076.60621897461624030257"/>
+                                    <coordinate x="1946.02127953593162601464" y="2076.60621897461624030257"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="1768">
+                    <stuff what="rotate" angle="90" objectname="Ground_1"/>
+                </post>
+                <post number="1769">
+                    <stuff what="rotate" angle="90" objectname="Ground_1"/>
+                </post>
+                <post number="1770">
+                    <stuff what="rotate" angle="90" objectname="Ground_1"/>
+                </post>
+                <post number="1771">
+                    <stuff what="rotate" angle="90" objectname="Ground_1"/>
+                </post>
+                <post number="1772">
+                    <stuff what="rotate" angle="90" objectname="Ground_1"/>
+                </post>
+                <post number="1773">
+                    <stuff what="movedobject" name="Ground_1">
+                        <oldpos>1939.02 2099.72</oldpos>
+                        <newpos>1932.02 2069.61</newpos>
+                    </stuff>
+                </post>
+                <post number="1774"/>
+                <post number="1775"/>
+                <post number="1776"/>
+                <post number="1777"/>
+                <post number="1778"/>
+                <post number="1779"/>
+                <post number="1780"/>
+                <post number="1781"/>
+                <post number="1782"/>
+                <post number="1783"/>
+                <post number="1784"/>
+                <post number="1785"/>
+                <post number="1786"/>
+                <post number="1787"/>
+                <post number="1788"/>
+                <post number="1789"/>
+                <post number="1790"/>
+                <post number="1791"/>
+                <post number="1792"/>
+                <post number="1793"/>
+                <post number="1794"/>
+                <post number="1795"/>
+                <post number="1796"/>
+                <post number="1797"/>
+                <post number="1798"/>
+                <post number="1799"/>
+                <post number="1800"/>
+                <post number="1801"/>
+                <post number="1802"/>
+                <post number="1803"/>
+                <post number="1804"/>
+                <post number="1805"/>
+                <post number="1806"/>
+                <post number="1807"/>
+                <post number="1808"/>
+                <post number="1809"/>
+                <post number="1810"/>
+                <post number="1811"/>
+                <post number="1812"/>
+                <post number="1813"/>
+                <post number="1814"/>
+                <post number="1815"/>
+                <post number="1816"/>
+                <post number="1817"/>
+                <post number="1818"/>
+                <post number="1819"/>
+                <post number="1820"/>
+                <post number="1821"/>
+                <post number="1822"/>
+                <post number="1823"/>
+                <post number="1824"/>
+                <post number="1825"/>
+                <post number="1826"/>
+                <post number="1827"/>
+                <post number="1828"/>
+                <post number="1829"/>
+                <post number="1830"/>
+                <post number="1831"/>
+                <post number="1832"/>
+                <post number="1833"/>
+                <post number="1834"/>
+                <post number="1835"/>
+                <post number="1836"/>
+                <post number="1837"/>
+                <post number="1838"/>
+                <post number="1839"/>
+                <post number="1840"/>
+                <post number="1841"/>
+                <post number="1842"/>
+                <post number="1843"/>
+                <post number="1844"/>
+                <post number="1845"/>
+                <post number="1846"/>
+                <post number="1847"/>
+                <post number="1848"/>
+                <post number="1849"/>
+                <post number="1850"/>
+                <post number="1851"/>
+                <post number="1852"/>
+                <post number="1853"/>
+                <post number="1854"/>
+                <post number="1855"/>
+                <post number="1856"/>
+                <post number="1857"/>
+                <post number="1858"/>
+                <post number="1859"/>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters>
-            <parameter typename="double" value="0.02" name="K_p"/>
+            <parameter typename="double" value="0.015" name="K_p"/>
         </parameters>
         <objects>
             <component typename="ElectricGround" name="Ground_1">
@@ -14085,7 +14386,7 @@
                     <parameter value="0" name="Pel1::Current"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="1937.504669" y="2084.958105" flipped="0" a="0"/>
+                    <pose x="1962.02128" y="2039.606219" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -14093,7 +14394,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="3094.806287" y="1977.958105" flipped="0" a="0"/>
@@ -14104,7 +14405,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2717" y="2243.593966" flipped="0" a="0"/>
@@ -14115,7 +14416,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2717" y="2601" flipped="1" a="180"/>
@@ -14126,7 +14427,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="3094.806287" y="2601" flipped="1" a="180"/>
@@ -14137,7 +14438,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="3094.806287" y="2243.593966" flipped="0" a="0"/>
@@ -14148,7 +14449,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2717" y="2866.596048" flipped="0" a="0"/>
@@ -14159,7 +14460,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="3092.941038" y="2866.635861" flipped="0" a="0"/>
@@ -14464,7 +14765,7 @@
                     <parameter value="0.001" name="timestep"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2028.566972" y="2071.080605" flipped="1" a="0"/>
+                    <pose x="2041.52128" y="2060.869118" flipped="1" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -14586,7 +14887,7 @@
                 <parameters>
                     <parameter value="0" name="y_0"/>
                     <parameter value="0.6" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="5" name="t_step"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2717" y="1977.958105" flipped="0" a="0"/>
@@ -14719,7 +15020,7 @@
                     <parameter value="0.001" name="timestep"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2049.237101" y="2848" flipped="0" a="90"/>
+                    <pose x="2020.774306" y="2851.582897" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -14728,7 +15029,7 @@
                     <parameter value="0.5" name="Conduct"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="1982.066972" y="2049.817706" flipped="0" a="0"/>
+                    <pose x="1995.02128" y="2039.606219" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -15636,7 +15937,7 @@
                     <parameter value="0.1" name="kappa"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2070.5" y="2916" flipped="0" a="0"/>
+                    <pose x="1978.274306" y="2830.319998" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -15854,30 +16155,6 @@
                     <coordinates>
                         <coordinate x="2193.50000000000000000000" y="2756.00000000000000000000"/>
                         <coordinate x="2159.00000000000000000000" y="2756.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pel2" endcomponent="DC Motor With Gear" startport="Pel1" startcomponent="Capacitance">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2070.50000000000000000000" y="2827.50000000000000000000"/>
-                        <coordinate x="2070.50000000000000000000" y="2807.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pel1" endcomponent="Battery" startport="Pel2" startcomponent="Capacitance">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2070.50000000000000000000" y="2868.50000000000000000000"/>
-                        <coordinate x="2070.50000000000000000000" y="2894.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -16542,9 +16819,9 @@
             <connect endport="Pel1" endcomponent="DC Motor With Gear_1" startport="Pel1" startcomponent="Capacitance_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2049.06697235360888953437" y="2049.81770532300151899108"/>
-                        <coordinate x="2070.50466935360873321770" y="2049.81770532300151899108"/>
-                        <coordinate x="2070.50466935360873321770" y="2081.45810458590085545438"/>
+                        <coordinate x="2062.02127953593162601464" y="2039.60621897461624030257"/>
+                        <coordinate x="2070.50466899999992165249" y="2039.60621897461624030257"/>
+                        <coordinate x="2070.50466899999992165249" y="2081.45810500000015963451"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -16556,8 +16833,8 @@
             <connect endport="Pel2" endcomponent="Resistor_1" startport="Pel2" startcomponent="Capacitance_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2008.06697235360888953437" y="2049.81770532300151899108"/>
-                        <coordinate x="2008.06697235360866216070" y="2049.81770558590096698026"/>
+                        <coordinate x="2021.02127953593162601464" y="2039.60621897461624030257"/>
+                        <coordinate x="2021.02127953593162601464" y="2039.60621897461624030257"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -16709,20 +16986,6 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pel1" endcomponent="Resistor_1" startport="Pel1" startcomponent="Ground_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1937.50466935360918796505" y="2077.95810458590131020173"/>
-                        <coordinate x="1937.50466935360918796505" y="2049.81770558590142172761"/>
-                        <coordinate x="1956.06697235360911690805" y="2049.81770558590142172761"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
@@ -17717,6 +17980,48 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel2" endcomponent="DC Motor With Gear" startport="Pel2" startcomponent="Capacitance">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2041.27430568514000697178" y="2830.31999788630901093711"/>
+                        <coordinate x="2070.50000000000000000000" y="2830.31999788630901093711"/>
+                        <coordinate x="2070.50000000000000000000" y="2807.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="Capacitance" startport="Pel1" startcomponent="Battery">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2000.27430568514000697178" y="2830.31999788630946568446"/>
+                        <coordinate x="2000.27430568514000697178" y="2830.31999788630901093711"/>
+                        <coordinate x="2000.27430568514000697178" y="2830.31999788630901093711"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="Resistor_1" startport="Pel1" startcomponent="Ground_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1969.02127953593162601464" y="2039.60621897461624030257"/>
+                        <coordinate x="1969.02127953593162601464" y="2039.60621897461624030257"/>
+                        <coordinate x="1969.02127953593162601464" y="2039.60621897461624030257"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
