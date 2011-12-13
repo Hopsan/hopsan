@@ -55,6 +55,9 @@ private:
     void loadConfiguration();
     void saveConfiguration();
 
+protected:
+    QTreeWidgetItem* findParameterTreeItem(QString componentName, QString parameterName);
+
 public slots:
     virtual void open();
 

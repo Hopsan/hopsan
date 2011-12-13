@@ -256,6 +256,11 @@ void OptimizationDialog::loadConfiguration()
 
     //Parameters
     //! @todo find a convinient way of initialize parameters
+    for(int i=0; i<optSettings.mParamters.size(); ++i)
+    {
+        findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
+
+    }
 }
 
 
@@ -707,9 +712,34 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
         mSelectedParameters.append(item->text(0));
         QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + trUtf8("  < "));
         pLabel->setAlignment(Qt::AlignCenter);
-        QLineEdit *pMinLineEdit = new QLineEdit("0.0", this);
+
+        GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+        OptimizationSettings optSettings = pSystem->getOptimizationSettings();
+        QString min, max;
+        for(int i=0; i<optSettings.mParamters.size(); ++i)
+        {
+            if(item->parent()->text(0) == optSettings.mParamters.at(i).mComponentName)
+            {
+                if(item->text(0) == optSettings.mParamters.at(i).mParameterName)
+                {
+                    min.setNum(optSettings.mParamters.at(i).mMin);
+                    max.setNum(optSettings.mParamters.at(i).mMax);
+                }
+            }
+        }
+        if(min == "")
+        {
+            min = "0.0";
+        }
+        if(max == "")
+        {
+            max = "1.0";
+        }
+
+
+        QLineEdit *pMinLineEdit = new QLineEdit(min, this);
         pMinLineEdit->setValidator(new QDoubleValidator());
-        QLineEdit *pMaxLineEdit = new QLineEdit("1.0", this);
+        QLineEdit *pMaxLineEdit = new QLineEdit(max, this);
         pMaxLineEdit->setValidator(new QDoubleValidator());
         QToolButton *pRemoveButton = new QToolButton(this);
         pRemoveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
@@ -759,6 +789,30 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
 }
 
 
+QTreeWidgetItem* OptimizationDialog::findParameterTreeItem(QString componentName, QString parameterName)
+{
+    QTreeWidgetItem* foundItem=0;
+
+    for(int c=0; c<mpParametersList->topLevelItemCount(); ++c)      //Uncheck the parameter in the list before removing it
+    {
+        if(mpParametersList->topLevelItem(c)->text(0) == componentName)
+        {
+            bool doBreak = false;
+            for(int p=0; p<mpParametersList->topLevelItem(c)->childCount(); ++p)
+            {
+                if(mpParametersList->topLevelItem(c)->child(p)->text(0) == parameterName)
+                {
+                    foundItem = mpParametersList->topLevelItem(c)->child(p);
+                    doBreak = true;
+                    break;
+                }
+            }
+            if(doBreak)
+                return foundItem;
+        }
+    }
+}
+
 
 //! @brief Removes an objevtive function from the selected functions
 void OptimizationDialog::removeParameter()
@@ -766,23 +820,31 @@ void OptimizationDialog::removeParameter()
     QToolButton *button = qobject_cast<QToolButton *>(sender());
     int i = mpParameterRemoveButtons.indexOf(button);
 
-    for(int c=0; c<mpParametersList->topLevelItemCount(); ++c)      //Uncheck the parameter in the list before removing it
+    QTreeWidgetItem *selectedItem = findParameterTreeItem(mSelectedComponents.at(i), mSelectedParameters.at(i));
+    if(selectedItem)
     {
-        if(mpParametersList->topLevelItem(c)->text(0) == mSelectedComponents.at(i))
-        {
-            bool doBreak = false;
-            for(int p=0; p<mpParametersList->topLevelItem(c)->childCount(); ++p)
-            {
-                if(mpParametersList->topLevelItem(c)->child(p)->text(0) == mSelectedParameters.at(i))
-                {
-                    mpParametersList->topLevelItem(c)->child(p)->setCheckState(0, Qt::Unchecked);       //Will trigger actual remove in updateChosenVariables()
-                    doBreak = true;
-                    break;
-                }
-            }
-            if(doBreak) return;
-        }
+        selectedItem->setCheckState(0, Qt::Unchecked);
     }
+    else
+    {
+
+//    for(int c=0; c<mpParametersList->topLevelItemCount(); ++c)      //Uncheck the parameter in the list before removing it
+//    {
+//        if(mpParametersList->topLevelItem(c)->text(0) == mSelectedComponents.at(i))
+//        {
+//            bool doBreak = false;
+//            for(int p=0; p<mpParametersList->topLevelItem(c)->childCount(); ++p)
+//            {
+//                if(mpParametersList->topLevelItem(c)->child(p)->text(0) == mSelectedParameters.at(i))
+//                {
+//                    mpParametersList->topLevelItem(c)->child(p)->setCheckState(0, Qt::Unchecked);       //Will trigger actual remove in updateChosenVariables()
+//                    doBreak = true;
+//                    break;
+//                }
+//            }
+//            if(doBreak) return;
+//        }
+//    }
 
     //Parameter is not in list (should not really happen), so remove it here instead
     mpParametersLayout->removeWidget(mpParameterLabels.at(i));
@@ -802,6 +864,7 @@ void OptimizationDialog::removeParameter()
 
     mSelectedParameters.removeAt(i);
     mSelectedComponents.removeAt(i);
+    }
 }
 
 
