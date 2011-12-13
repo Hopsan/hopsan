@@ -66,15 +66,15 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::integrate(double u)
     double ue;    //Effective acceleration
     double ues = -(2-mW0)/mTimeStep*tempDelaySY-mDelayU;
 
+    ue = ues;           //First assume no movement
     if(ues>(u-mUs) && ues<(u+mUs))
     {
-      ue = ues;           //No movement
       mDelaySY = 0;
       mDelayY = mDelayY;
     }
     else
     {
-        if(ues<(u-mUs))   //Movement
+        if(ues<=(u-mUs))   //Movement, so change ue
         {
             ue = u-mUk;
         }

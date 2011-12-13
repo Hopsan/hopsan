@@ -608,7 +608,7 @@ void GraphicsView::exportToPDF()
 {
     QString fileName = QFileDialog::getSaveFileName(
         this, "Export File Name", gConfig.getModelGfxDir(),
-        "Adobe PDF Documents (*.pdf)");
+        "Adobe PDF Documents (*.svg)");
     if ( !fileName.isEmpty() )
     {
         QFileInfo file(fileName);
@@ -626,5 +626,21 @@ void GraphicsView::exportToPDF()
         QPainter *painter = new QPainter(printer);
         this->render(painter);
         painter->end();
+
+
+//The following code will export to Svg instead
+        //! @todo Implement a SVG function, and figure out how to always make vector graphics work
+
+//        QSvgGenerator *gen = new QSvgGenerator();
+//        gen->setResolution(600000);
+//        gen->setFileName(fileName);
+//        gen->setSize(QSize(200000, 200000));
+//        gen->setViewBox(QRect(0, 0, 200000, 200000));
+//        gen->setTitle(tr("SVG Generator Example Drawing"));
+//        gen->setDescription(tr("An SVG drawing created by the SVG Generator "
+//                                        "Example provided with Qt."));
+//        QPainter *svgPainter = new QPainter(gen);
+//        this->render(svgPainter);
+//        svgPainter->end();
     }
 }

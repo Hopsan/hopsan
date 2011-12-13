@@ -95,7 +95,7 @@ double hopsan::onPositive(double x)
 
 
 
-double hopsan::dxOnPositive(double x)
+double hopsan::dxOnPositive(double /*x*/)
 {
     return 0.0;
 }
@@ -110,7 +110,7 @@ double hopsan::onNegative(double x)
 }
 
 
-double hopsan::dxOnNegative(double x)
+double hopsan::dxOnNegative(double /*x*/)
 {
     return 0.0;
 }
@@ -138,7 +138,7 @@ double hopsan::ifPositive(double x, double y1, double y2)
 //! @param y1 dummy
 //! @param y2 dummy
 //! @returns Limited derivative of x
-double hopsan::dtIfPositive(double x, double y1, double y2)
+double hopsan::dtIfPositive(double x, double /*y1*/, double /*y2*/)
 {
     if (x >= 0) { return 1.; }
     else { return 0.; }
@@ -149,7 +149,7 @@ double hopsan::dtIfPositive(double x, double y1, double y2)
 //! @param y1 dummy
 //! @param y2 dummy
 //! @returns Limited derivative of x
-double hopsan::dfIfPositive(double x, double y1, double y2)
+double hopsan::dfIfPositive(double x, double /*y1*/, double /*y2*/)
 {
     if (x >= 0) { return 1.; }
     else { return 0.; }
@@ -286,7 +286,7 @@ double hopsan::dxLimit(double x, double xmin, double xmax)
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
 //! @returns Limited x value
-double hopsan::limit2(double x, double sx, double xmin, double xmax)
+double hopsan::limit2(double x, double /*sx*/, double xmin, double xmax)
 {
     return hopsan::limit(x, xmin, xmax);
 }
