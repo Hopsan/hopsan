@@ -731,22 +731,21 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 //! @param doShow shall we show unconnected ports
 void GUIPort::showIfNotConnected(bool doShow)
 {
-        if(!isConnected() && doShow && mpParentGuiModelObject->isVisible())
-        {
-            this->show();
-        }
-        else
-        {
-            this->hide();
-        }
+    if(!isConnected() && doShow && mpParentGuiModelObject->isVisible())
+    {
+        this->show();
+    }
+    else
+    {
+        this->hide();
+    }
 }
 
 
 GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentObject)
     : GUIPort(name, xpos, ypos, pPortAppearance, pParentObject)
 {
-    //Nothing extra yet
-    mpBasePort = 0;
+    mpCommonGroupPortInfo = 0;
 }
 
 //! Overloaded as groups laks core connection
@@ -764,60 +763,35 @@ QString GroupPort::getNodeType()
     return "GropPortNodeType";
 }
 
+void GroupPort::addConnection(GUIConnector *pConnector)
+{
+    GUIPort::addConnection(pConnector);
+    mpCommonGroupPortInfo->mConnectedConnectors.append(pConnector);
+}
+
 void GroupPort::removeConnection(GUIConnector *pConnector)
 {
     GUIPort::removeConnection(pConnector);
-    //! @warning this is wrong, we must check external port also before determining to clear
-    if (mConnectedConnectors.size() == 0)
-    {
-        //Clear the base port setting, we are now empty
-        this->setBasePort(0);
-    }
+    mpCommonGroupPortInfo->mConnectedConnectors.remove(mpCommonGroupPortInfo->mConnectedConnectors.indexOf(pConnector));
 }
 
-
-void GroupPort::setBasePort(GUIPort* pPort)
-{
-    // Check if I am the external port else ask for this info from external port, only store info there
-    if (mpParentGuiModelObject->type() == GUIGROUP)
-    {
-        mpBasePort = pPort;
-    }
-    else
-    {
-        // Find external sibling port and return info
-        //! @todo maybe should overload the getPort function in Groups to allways cast and return groupport
-        GroupPort* pGPort = dynamic_cast<GroupPort*>(mpParentGuiModelObject->getParentContainerObject()->getPort(this->getPortName()));
-        if (pGPort != 0)
-        {
-            pGPort->setBasePort(pPort);
-        }
-        else
-        {
-            qDebug() << "ERROR: Could not dyn cast external port ptr";
-        }
-    }
-}
 
 GUIPort* GroupPort::getBasePort() const
 {
-    // Check if I am the external port else ask for this info from external port, only store info there
-    if (mpParentGuiModelObject->type() == GUIGROUP)
+    if (mpCommonGroupPortInfo->mConnectedConnectors.size() == 0)
     {
-        return mpBasePort;
+        return 0;
     }
     else
     {
-        // Find external sibling port and return info
-        //! @todo maybe should overload the getPort function in Groups to allways cast and return groupport
-        GroupPort* pGPort = dynamic_cast<GroupPort*>(mpParentGuiModelObject->getParentContainerObject()->getPort(this->getPortName()));
-        if (pGPort != 0)
+        GUIConnector *pCon = mpCommonGroupPortInfo->mConnectedConnectors[0];
+        if (pCon->getStartPort() == this)
         {
-            return pGPort->getBasePort();
+            return pCon->getEndPort();
         }
         else
         {
-            return 0;
+            return pCon->getStartPort();
         }
     }
 }

@@ -79,7 +79,7 @@ public:
 
     bool getLastNodeData(QString dataName, double& rData);
 
-    void addConnection(GUIConnector *pConnector);
+    virtual void addConnection(GUIConnector *pConnector);
     virtual void removeConnection(GUIConnector *pConnector);
     QVector<GUIConnector*> getAttachedConnectorPtrs() const;
     bool isConnected();
@@ -133,6 +133,13 @@ private:
 };
 
 
+class GroupPortCommonInfo
+{
+public:
+    QVector<GUIConnector*> mConnectedConnectors;
+
+};
+
 class GroupPort : public GUIPort
 {
 public:
@@ -140,13 +147,15 @@ public:
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
 
+    void addConnection(GUIConnector *pConnector);
     void removeConnection(GUIConnector *pConnector);
 
-    void setBasePort(GUIPort* pPort);
+
+    //void setBasePort(GUIPort* pPort);
     GUIPort* getBasePort() const;
 
 protected:
-    GUIPort* mpBasePort;
+    GroupPortCommonInfo* mpCommonGroupPortInfo;
 
 };
 

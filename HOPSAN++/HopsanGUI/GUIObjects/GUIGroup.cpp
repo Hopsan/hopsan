@@ -46,7 +46,7 @@
 #include "loadObjects.h"
 #include "CopyStack.h"
 
-using namespace std;
+//using namespace std;
 
 //! @class GUIGroup
 //! @brief The GUIGroup class implement a class to group components graphically
