@@ -67,7 +67,7 @@ public:
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
-    void registerRotatedObject(QString objectName, double angle);
+    void registerRotatedObject(const QString objectName, const qreal angle);
     void registerVerticalFlip(QString objectName);
     void registerHorizontalFlip(QString objectName);
     void registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt);
@@ -78,7 +78,7 @@ public:
     void registerDeletedWidget(GUIWidget *item);
     void registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos);
     void registerModifiedTextBoxWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color, int oldLineWidth, Qt::PenStyle oldLineStyle, int lineWidth, Qt::PenStyle lineStyle, bool boxVisibleBefore, bool boxVisible);
-    void registerResizedTextBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos);
+    void registerResizedTextBoxWidget(const int index, const qreal w_old, const qreal h_old, const qreal w_new, const qreal h_new, const QPointF oldPos, const QPointF newPos);
 
 private:
     GUIContainerObject *mpParentContainerObject;

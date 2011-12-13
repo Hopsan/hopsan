@@ -969,7 +969,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 
 //! @brief Register function for rotating an object
 //! @param item Pointer to the object
-void UndoStack::registerRotatedObject(QString objectName, double angle)
+void UndoStack::registerRotatedObject(const QString objectName, const qreal angle)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
@@ -977,7 +977,7 @@ void UndoStack::registerRotatedObject(QString objectName, double angle)
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "rotate");
     stuffElement.setAttribute("objectname", objectName);
-    stuffElement.setAttribute("angle", angle);
+    setQrealAttribute(stuffElement, "angle", angle);
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -1126,7 +1126,7 @@ void UndoStack::registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF new
 //! @param h_new New height of the box widget
 //! @param oldPos Previous position of the box widget
 //! @param newPos New position of the box widget
-void UndoStack::registerResizedTextBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos)
+void UndoStack::registerResizedTextBoxWidget(const int index, const qreal w_old, const qreal h_old, const qreal w_new, const qreal h_new, const QPointF oldPos, const QPointF newPos)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
@@ -1134,10 +1134,10 @@ void UndoStack::registerResizedTextBoxWidget(int index, double w_old, double h_o
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "resizedtextboxwidget");
     stuffElement.setAttribute("index", index);
-    stuffElement.setAttribute("w_old", w_old);
-    stuffElement.setAttribute("h_old", h_old);
-    stuffElement.setAttribute("w_new", w_new);
-    stuffElement.setAttribute("h_new", h_new);
+    setQrealAttribute(stuffElement, "w_old", w_old);
+    setQrealAttribute(stuffElement, "h_old", h_old);
+    setQrealAttribute(stuffElement, "w_new", w_new);
+    setQrealAttribute(stuffElement, "h_new", h_new);
     appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
     appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
     gpMainWindow->mpUndoWidget->refreshList();

@@ -155,7 +155,7 @@ void appendDomValueNode(QDomElement &rDomElement, const QString element_name, co
 //! @param[in] element_name The name of the new DOM element
 //! @param[in] a The first double value
 //! @param[in] b The second double value
-void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b)
+void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const qreal a, const qreal b)
 {
     QString num,str;
     num.setNum(a);
