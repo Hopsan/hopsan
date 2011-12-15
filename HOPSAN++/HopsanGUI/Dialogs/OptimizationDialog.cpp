@@ -686,12 +686,36 @@ void OptimizationDialog::generateScriptFile()
         scriptStream << "  contracted = False				#Contract points if they were reflected last step and are worse now\n";
         scriptStream << "  for w in range(len(worstIds)):\n";
         scriptStream << "    if obj[worstIds[w]] > previousObj[worstIds[w]]:\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLogSpace(minValues)\n";
+            scriptStream << "    toLogSpace(maxValues)\n";
+            scriptStream << "    toLogSpace2(parameters)\n";
+        }
         scriptStream << "      contract(parameters, worstIds[w], previousWorstIds,minValues,maxValues)\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLinearSpace(minValues)\n";
+            scriptStream << "    toLinearSpace(maxValues)\n";
+            scriptStream << "    toLinearSpace2(parameters)\n";
+        }
         scriptStream << "      contracted = True\n";
         scriptStream << "\n";
         scriptStream << "  if not contracted:\n";
         scriptStream << "    worstIds = indexOfMaxN(obj, nThreads)\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLogSpace(minValues)\n";
+            scriptStream << "    toLogSpace(maxValues)\n";
+            scriptStream << "    toLogSpace2(parameters)\n";
+        }
         scriptStream << "    reflectWorstN(parameters,worstIds,previousWorstIds,alpha,minValues,maxValues,beta)\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLinearSpace(minValues)\n";
+            scriptStream << "    toLinearSpace(maxValues)\n";
+            scriptStream << "    toLinearSpace2(parameters)\n";
+        }
         scriptStream << "\n";
         scriptStream << "  previousWorstIds = worstIds[:]\n";
         scriptStream << "  previousObj = obj[:]\n";
