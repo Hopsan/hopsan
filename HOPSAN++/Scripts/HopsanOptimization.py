@@ -4,7 +4,7 @@
 
 import random
 import math
-
+import sys
       
 ##### Auxiliary optimization funcions #####
 
@@ -17,6 +17,19 @@ def indexOfMax(data):
       max=data[i]
       maxId=i
   return maxId
+
+#Returns the index of the maximum value in vector data
+def indexOfMaxN(data, N):
+  maxIds = []
+  for t in range(N):
+    max = -sys.maxint - 1
+    maxId=0
+    for i in range(len(data)):
+      if (data[i] > max) and (i not in maxIds):
+        max=data[i]
+        maxId=i
+    maxIds.append(maxId)
+  return maxIds
 
 #Sums the elements with index i in each subvector in a vector of vectors
 def sum(vector,i):
@@ -52,6 +65,49 @@ def reflectWorst(vector,worstId,alpha,minValues,maxValues,beta):
     rand = beta*(maxPar(vector,i)-minPar(vector,i))*(random.random()-0.5)
     x_new.append(max(minValues[i], min(maxValues[i], x_c[i]+alpha*(x_c[i]-x_w[i])+rand)))
   vector[worstId] = x_new 
+
+#Reflects the N worst points in vector through the centroid of the remaining points, with reflection coefficient alpha
+def reflectWorstN(vector,worstIds,previousWorstIds,alpha,minValues,maxValues,beta):
+  n = len(vector)		#Number of points
+  k = len(vector[0])		#Number of parameters in each point
+  
+  x_c = []			#Centroid of remaining points	
+  for i in range(k):
+    sum = 0
+    for j in range(n):
+      if j not in worstIds:
+        sum = sum+vector[j][i]
+    x_c.append(1.0/(n-len(worstIds))*sum)
+
+  for w in range(len(worstIds)):
+    worstId = worstIds[w]
+    x_w = vector[worstId]
+    x_new = []
+    for i in range(k):
+      rand = beta*(maxPar(vector,i)-minPar(vector,i))*(random.random()-0.5)
+      x_new.append(max(minValues[i], min(maxValues[i], x_c[i]+alpha*(x_c[i]-x_w[i])+rand)))          
+    vector[worstId] = x_new 
+
+
+
+def contract(vector,id,worstIds,minValues,maxValues):
+  n = len(vector)  
+  k = len(vector[0])  
+
+  x_c = []			#Centroid of remaining points	
+  for i in range(k):
+    sum = 0
+    for j in range(n):
+      if j not in worstIds:
+        sum = sum+vector[j][i]
+    x_c.append(1.0/(n-len(worstIds))*sum)
+
+  x_w = vector[id]
+  x_new = []
+  for i in range(k):
+    x_new.append(max(minValues[i], min(maxValues[i], x_c[i]+0.5*(x_c[i]-x_w[i]))))     
+  vector[id] = x_new 
+
 
 def toLogSpace(vector):
   n = len(vector)
