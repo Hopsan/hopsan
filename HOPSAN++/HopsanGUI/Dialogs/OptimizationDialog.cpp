@@ -305,6 +305,7 @@ void OptimizationDialog::open()
     if(!loadObjectiveFunctions())
         return;
 
+    mpFunctionsComboBox->clear();
     mpFunctionsComboBox->addItems(mObjectiveFunctionDescriptions);
 
     mpParametersList->clear();
@@ -1076,6 +1077,12 @@ bool OptimizationDialog::verifyNumberOfVariables(int i)
 
 bool OptimizationDialog::loadObjectiveFunctions()
 {
+    mObjectiveFunctionDescriptions.clear();
+    mObjectiveFunctionCalls.clear();
+    mObjectiveFunctionNumberOfVariables.clear();
+    mObjectiveFunctionUsesTimeVector.clear();
+    mObjectiveFunctionDataLists.clear();
+
     //Read from OptimizationObjectiveFunctions.xml
     QFile file(gExecPath+QString(SCRIPTPATH) + "OptimizationObjectiveFunctions.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
