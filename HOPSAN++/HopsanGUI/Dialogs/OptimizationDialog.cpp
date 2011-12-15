@@ -81,6 +81,20 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpEpsilonXLineEdit = new QLineEdit("0.0001", this);
     mpEpsilonXLineEdit->setValidator(new QDoubleValidator());
 
+    mpMultiThreadedCheckBox = new QCheckBox("Multi-threaded optimization", this);
+    mpMultiThreadedCheckBox->setChecked(gConfig.getUseMulticore());
+
+    mpThreadsLabel = new QLabel("Number of threads: ");
+    mpThreadsSpinBox = new QSpinBox(this);
+    mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
+    mpThreadsSpinBox->setRange(1,1000000000);
+    mpThreadsSpinBox->setSingleStep(1);
+    mpThreadsSpinBox->setSingleStep(1);
+    mpThreadsLabel->setEnabled(mpMultiThreadedCheckBox->isChecked());
+    mpThreadsSpinBox->setEnabled(mpMultiThreadedCheckBox->isChecked());
+    connect(mpMultiThreadedCheckBox, SIGNAL(toggled(bool)), mpThreadsLabel, SLOT(setEnabled(bool)));
+    connect(mpMultiThreadedCheckBox, SIGNAL(toggled(bool)), mpThreadsSpinBox, SLOT(setEnabled(bool)));
+
     mpPlottingCheckBox = new QCheckBox("Plot each iteration", this);
     mpPlottingCheckBox->setChecked(true);
 
@@ -88,24 +102,27 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpExport2CSVBox->setChecked(false);
 
     mpSettingsLayout = new QGridLayout(this);
-    mpSettingsLayout->addWidget(mpSettingsLabel,        0, 0);
-    mpSettingsLayout->addWidget(mpIterationsLabel,      1, 0);
-    mpSettingsLayout->addWidget(mpIterationsSpinBox,    1, 1);
-    mpSettingsLayout->addWidget(mpSearchPointsLabel,    2, 0);
-    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,  2, 1);
-    mpSettingsLayout->addWidget(mpAlphaLabel,           3, 0);
+    mpSettingsLayout->addWidget(mpSettingsLabel,         0, 0);
+    mpSettingsLayout->addWidget(mpIterationsLabel,       1, 0);
+    mpSettingsLayout->addWidget(mpIterationsSpinBox,     1, 1);
+    mpSettingsLayout->addWidget(mpSearchPointsLabel,     2, 0);
+    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,   2, 1);
+    mpSettingsLayout->addWidget(mpAlphaLabel,            3, 0);
     mpSettingsLayout->addWidget(mpAlphaLineEdit,         3, 1);
-    mpSettingsLayout->addWidget(mpBetaLabel,            4, 0);
+    mpSettingsLayout->addWidget(mpBetaLabel,             4, 0);
     mpSettingsLayout->addWidget(mpBetaLineEdit,          4, 1);
-    mpSettingsLayout->addWidget(mpGammaLabel,           5, 0);
+    mpSettingsLayout->addWidget(mpGammaLabel,            5, 0);
     mpSettingsLayout->addWidget(mpGammaLineEdit,         5, 1);
-    mpSettingsLayout->addWidget(mpEpsilonFLabel,        6, 0);
+    mpSettingsLayout->addWidget(mpEpsilonFLabel,         6, 0);
     mpSettingsLayout->addWidget(mpEpsilonFLineEdit,      6, 1);
-    mpSettingsLayout->addWidget(mpEpsilonXLabel,        7, 0);
+    mpSettingsLayout->addWidget(mpEpsilonXLabel,         7, 0);
     mpSettingsLayout->addWidget(mpEpsilonXLineEdit,      7, 1);
-    mpSettingsLayout->addWidget(mpPlottingCheckBox,     8, 0, 1, 2);
-    mpSettingsLayout->addWidget(mpExport2CSVBox,        9, 0, 1, 2);
-    mpSettingsLayout->addWidget(new QWidget(this),      10, 0, 1, 2);    //Dummy widget for stretching the layout
+    mpSettingsLayout->addWidget(mpMultiThreadedCheckBox, 8, 0);
+    mpSettingsLayout->addWidget(mpThreadsLabel,          9, 0);
+    mpSettingsLayout->addWidget(mpThreadsSpinBox,        9, 1);
+    mpSettingsLayout->addWidget(mpPlottingCheckBox,      10, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpExport2CSVBox,         11, 0, 1, 2);
+    mpSettingsLayout->addWidget(new QWidget(this),       12, 0, 1, 2);    //Dummy widget for stretching the layout
     mpSettingsLayout->setRowStretch(0, 0);
     mpSettingsLayout->setRowStretch(1, 0);
     mpSettingsLayout->setRowStretch(2, 0);
@@ -422,7 +439,8 @@ void OptimizationDialog::open()
 //! @brief Generates the Python script based upon selections made in the dialog
 void OptimizationDialog::generateScriptFile()
 {
-    //! @todo Finish
+    bool multicore = mpMultiThreadedCheckBox->isChecked();
+    int nThreads = mpThreadsSpinBox->value();
 
     if(mSelectedParameters.isEmpty())
     {
@@ -492,6 +510,20 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "gamma=" << gammaString << "\n";
     scriptStream << "tolFunc=" << QString().setNum(mpEpsilonFLineEdit->text().toDouble()) << "\n";
     scriptStream << "tolX=" << QString().setNum(mpEpsilonXLineEdit->text().toDouble()) << "\n";
+    if(multicore)
+    {
+        scriptStream << "nThreads=" << QString().setNum(nThreads) << "\n";
+        scriptStream << "\n";
+        scriptStream << "\n";
+        scriptStream << "\n";
+        scriptStream << "##### Load More Models #####\n";
+        scriptStream << "\n";
+        scriptStream << "modelPath = \"../Models/Example Models/Position Servo.hmf\"\n";
+        scriptStream << "hopsan.closeAllModels()\n";
+        scriptStream << "for i in range(nThreads):\n";
+        scriptStream << "  hopsan.loadModel(modelPath)\n";
+        scriptStream << "  hopsan.useSingleCore()\n";
+    }
     scriptStream << "\n";
     scriptStream << "\n";
     scriptStream << "\n";
@@ -584,11 +616,26 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "\n";
     scriptStream << "##### Execute optimization #####\n";
     scriptStream << "\n";
-    scriptStream << "for i in range(len(parameters)):\n";
-    scriptStream << "  for j in range(len(parameterNames)):\n";
-    scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[i][j])\n";
-    scriptStream << "  hopsan.simulate()\n";
-    scriptStream << "  obj[i] = getObjective()\n";
+    if(multicore)
+    {
+        scriptStream << "for i in range(len(parameters)):\n";
+        scriptStream << "  for t in range(nThreads):\n";
+        scriptStream << "    hopsan.gotoTab(t)\n";
+        scriptStream << "    for j in range(len(parameterNames)):\n";
+        scriptStream << "      hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[i][j])\n";
+        scriptStream << "  hopsan.simulateAllOpenModels(False)\n";
+        scriptStream << "  for t in range(nThreads):\n";
+        scriptStream << "    obj[i] = getObjective()\n";
+    }
+    else
+    {
+          scriptStream << "for i in range(len(parameters)):\n";
+          scriptStream << "  for j in range(len(parameterNames)):\n";
+          scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[i][j])\n";
+          scriptStream << "  hopsan.simulate()\n";
+          scriptStream << "  obj[i] = getObjective()\n\n";
+
+    }
     if(mpPlottingCheckBox->isChecked())
     {
         scriptStream << "#Run one simulation first and open plot window, if user wants to see plots in real-time\n";
@@ -607,49 +654,89 @@ void OptimizationDialog::generateScriptFile()
         }
         scriptStream << "\n";
     }
-    scriptStream << "worstId = indexOfMax(obj)\n";
-    scriptStream << "previousWorstId = -1\n";
+    if(multicore)
+    {
+        scriptStream << "worstIds = indexOfMaxN(obj, nThreads)\n";
+        scriptStream << "previousWorstIds = [-1 -1]\n";
+        scriptStream << "previousObj = obj\n";
+    }
+    else
+    {
+        scriptStream << "worstId = indexOfMax(obj)\n";
+        scriptStream << "previousWorstId = -1\n";
+    }
     scriptStream << "kf=1-(alpha/2)**(gamma/(2*"+nParString+"))\n";
     scriptStream << "\n";
     scriptStream << "for k in range(iterations):\n";
-    scriptStream << "  for j in range(len(parameterNames)):\n";
-    scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[worstId][j])\n";
-    scriptStream << "  hopsan.simulate()\n";
-    scriptStream << "  obj[worstId] = getObjective()\n";
-    scriptStream << "  objspread=max(obj)-min(obj)\n";
-    scriptStream << "  for i in range(len(parameters)):\n";
-    scriptStream << "    obj[i] = obj[i] + objspread*kf\n";
-    scriptStream << "  worstId = indexOfMax(obj)\n";
-    scriptStream << "  if worstId == previousWorstId:\n";
-    if(mpParametersLogCheckBox->isChecked())
+    if(multicore)
     {
-        scriptStream << "    toLogSpace(minValues)\n";
-        scriptStream << "    toLogSpace(maxValues)\n";
-        scriptStream << "    toLogSpace2(parameters)\n";
+        //! @todo Implement logarithmic scale support for multithreaded simulations!
+        scriptStream << "  for t in range(nThreads):\n";
+        scriptStream << "    hopsan.gotoTab(t)\n";
+        scriptStream << "    for j in range(len(parameterNames)):\n";
+        scriptStream << "      hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[worstIds[t]][j])\n";
+        scriptStream << "  hopsan.simulateAllOpenModels(True)\n";
+        scriptStream << "  for t in range(nThreads):\n";
+        scriptStream << "    hopsan.gotoTab(t)\n";
+        scriptStream << "    obj[worstIds[t]] = getObjective()\n";
+        scriptStream << "  objspread=max(obj)-min(obj)\n";
+        scriptStream << "  for i in range(len(parameters)):\n";
+        scriptStream << "    obj[i] = obj[i] + objspread*kf		#Apply forgetting factor\n";
+        scriptStream << "\n";
+        scriptStream << "  contracted = False				#Contract points if they were reflected last step and are worse now\n";
+        scriptStream << "  for w in range(len(worstIds)):\n";
+        scriptStream << "    if obj[worstIds[w]] > previousObj[worstIds[w]]:\n";
+        scriptStream << "      contract(parameters, worstIds[w], previousWorstIds,minValues,maxValues)\n";
+        scriptStream << "      contracted = True\n";
+        scriptStream << "\n";
+        scriptStream << "  if not contracted:\n";
+        scriptStream << "    worstIds = indexOfMaxN(obj, nThreads)\n";
+        scriptStream << "    reflectWorstN(parameters,worstIds,previousWorstIds,alpha,minValues,maxValues,beta)\n";
+        scriptStream << "\n";
+        scriptStream << "  previousWorstIds = worstIds[:]\n";
+        scriptStream << "  previousObj = obj[:]\n";
     }
-    scriptStream << "    reflectWorst(parameters,worstId,0.5,minValues,maxValues,beta)  #Same as previous, move halfway to centroid\n";
-    if(mpParametersLogCheckBox->isChecked())
+    else
     {
-        scriptStream << "    toLinearSpace(minValues)\n";
-        scriptStream << "    toLinearSpace(maxValues)\n";
-        scriptStream << "    toLinearSpace2(parameters)\n";
+        scriptStream << "  for j in range(len(parameterNames)):\n";
+        scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[worstId][j])\n";
+        scriptStream << "  hopsan.simulate()\n";
+        scriptStream << "  obj[worstId] = getObjective()\n";
+        scriptStream << "  objspread=max(obj)-min(obj)\n";
+        scriptStream << "  for i in range(len(parameters)):\n";
+        scriptStream << "    obj[i] = obj[i] + objspread*kf\n";
+        scriptStream << "  worstId = indexOfMax(obj)\n";
+        scriptStream << "  if worstId == previousWorstId:\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLogSpace(minValues)\n";
+            scriptStream << "    toLogSpace(maxValues)\n";
+            scriptStream << "    toLogSpace2(parameters)\n";
+        }
+        scriptStream << "    reflectWorst(parameters,worstId,0.5,minValues,maxValues,beta)  #Same as previous, move halfway to centroid\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLinearSpace(minValues)\n";
+            scriptStream << "    toLinearSpace(maxValues)\n";
+            scriptStream << "    toLinearSpace2(parameters)\n";
+        }
+        scriptStream << "  else:\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLogSpace(minValues)\n";
+            scriptStream << "    toLogSpace(maxValues)\n";
+            scriptStream << "    toLogSpace2(parameters)\n";
+        }
+        scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues,beta)      #Reflect worst through centroid of the remaining points\n";
+        if(mpParametersLogCheckBox->isChecked())
+        {
+            scriptStream << "    toLinearSpace(minValues)\n";
+            scriptStream << "    toLinearSpace(maxValues)\n";
+            scriptStream << "    toLinearSpace2(parameters)\n";
+        }
+        scriptStream << "  previousWorstId=worstId\n";
+        scriptStream << "  trace['parameters'][k]=parameters[worstId]\n  trace['fitness'][k]=obj[worstId]\n";
     }
-    scriptStream << "  else:\n";
-    if(mpParametersLogCheckBox->isChecked())
-    {
-        scriptStream << "    toLogSpace(minValues)\n";
-        scriptStream << "    toLogSpace(maxValues)\n";
-        scriptStream << "    toLogSpace2(parameters)\n";
-    }
-    scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues,beta)      #Reflect worst through centroid of the remaining points\n";
-    if(mpParametersLogCheckBox->isChecked())
-    {
-        scriptStream << "    toLinearSpace(minValues)\n";
-        scriptStream << "    toLinearSpace(maxValues)\n";
-        scriptStream << "    toLinearSpace2(parameters)\n";
-    }
-    scriptStream << "  previousWorstId=worstId\n";
-    scriptStream << "  trace['parameters'][k]=parameters[worstId]\n  trace['fitness'][k]=obj[worstId]\n";
     scriptStream << "  if min(obj) == 0:\n";
     scriptStream << "    if abs(max(obj)-min(obj)) <= tolFunc:\n";
     scriptStream << "      print(\"Convergence in function values.\")\n";
@@ -1050,7 +1137,11 @@ void OptimizationDialog::run()
     pyStream << mpOutputBox->toPlainText().toAscii();
     pyFile.close();
 
+    QTime simTimer;
+    simTimer.start();
     gpMainWindow->mpPyDockWidget->runPyScript(pyPath);
+    QString timeString = QString().setNum(simTimer.elapsed());
+    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Optimization finished after " + timeString + " ms");
     close();
 }
 

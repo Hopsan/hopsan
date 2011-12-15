@@ -165,6 +165,11 @@ public slots:
         o->mpProjectTabs->closeAllProjectTabs();
     }
 
+    void gotoTab(MainWindow* o, int tab)
+    {
+        o->mpProjectTabs->setCurrentIndex(tab);
+    }
+
     void printMessage(MainWindow* o, const QString& message)
     {
         o->mpMessageWidget->printGUIInfoMessage(QString("pyMessage: ").append(message));

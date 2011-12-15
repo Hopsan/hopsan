@@ -90,6 +90,9 @@ private:
     QLineEdit *mpEpsilonFLineEdit;
     QLabel *mpEpsilonXLabel;
     QLineEdit *mpEpsilonXLineEdit;
+    QCheckBox *mpMultiThreadedCheckBox;
+    QLabel *mpThreadsLabel;
+    QSpinBox *mpThreadsSpinBox;
     QCheckBox *mpPlottingCheckBox;
     QCheckBox *mpExport2CSVBox;
 
