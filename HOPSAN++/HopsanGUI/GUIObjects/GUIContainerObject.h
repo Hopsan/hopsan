@@ -268,6 +268,9 @@ protected:
     void forgetSubConnector(GUIConnector *pConnector);
     void refreshInternalContainerPortGraphics();
 
+    //Help function for creating container ports
+    virtual void addExternalContainerPortObject(GUIModelObject *pModelObject);
+
     // Helpfunctions for creating connectors
     void startConnector(GUIPort *startPort);
     bool finilizeConnector(GUIPort *endPort);

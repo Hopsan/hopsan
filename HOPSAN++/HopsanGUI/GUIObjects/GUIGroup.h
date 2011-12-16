@@ -28,6 +28,7 @@
 #include<QGraphicsScene>
 
 #include "GUIContainerObject.h"
+#include "GUIPort.h"
 #include "common.h"
 #include <assert.h>
 
@@ -57,6 +58,8 @@ public:
     CoreSystemAccess* getCoreSystemAccessPtr();
 
 protected:
+    void addExternalContainerPortObject(GUIModelObject *pModelObject);
+
     QList<GUIModelObject*> mGUICompList;
     QList<GUIConnector*> mGUIConnList;
     QList<GUIConnector*> mGUITransitConnList;

@@ -88,6 +88,8 @@ void GUIContainerPort::createPorts()
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with desired name: " << desiredportname;
         mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname));
         mpGuiPort = new GroupPort(mGUIModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
+        SharedGroupInfoPtrT shp(new GroupPortCommonInfo);
+        static_cast<GroupPort*>(mpGuiPort)->setSharedGroupPortInfo(shp);
     }
 
     mPortListPtrs.append(mpGuiPort);

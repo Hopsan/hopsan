@@ -29,6 +29,7 @@
 //#include <QGraphicsLineItem>
 #include <QGraphicsTextItem>
 #include <QGraphicsWidget>
+#include <QSharedPointer>
 
 #include "common.h"
 #include "GUIPortAppearance.h"
@@ -140,6 +141,8 @@ public:
 
 };
 
+typedef QSharedPointer<GroupPortCommonInfo>  SharedGroupInfoPtrT;
+
 class GroupPort : public GUIPort
 {
 public:
@@ -153,9 +156,12 @@ public:
 
     //void setBasePort(GUIPort* pPort);
     GUIPort* getBasePort() const;
+    SharedGroupInfoPtrT getSharedGroupPortInfo();
+    void setSharedGroupPortInfo(SharedGroupInfoPtrT sharedGroupPortInfo);
 
 protected:
-    GroupPortCommonInfo* mpCommonGroupPortInfo;
+    //GroupPortCommonInfo* mpCommonGroupPortInfo;
+    SharedGroupInfoPtrT mSharedGroupPortInfo;
 
 };
 

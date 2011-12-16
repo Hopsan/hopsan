@@ -344,18 +344,26 @@ void GUIGroup::setName(QString newName)
 
 void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-        QMenu menu;
+    QMenu menu;
 
-        QAction *groupAction;
+    QAction *groupAction;
 
-        groupAction = menu.addAction(tr("Un-group components"));
+    groupAction = menu.addAction(tr("Un-group components"));
 
-        QAction *selectedAction = menu.exec(event->screenPos());
+    QAction *selectedAction = menu.exec(event->screenPos());
 
-        if (selectedAction == groupAction)
-        {
-            delete this;
-        }
+    if (selectedAction == groupAction)
+    {
+        delete this;
+    }
+}
+
+void GUIGroup::addExternalContainerPortObject(GUIModelObject *pModelObject)
+{
+    GroupPort* pGPin = dynamic_cast<GroupPort*>(pModelObject->getPort(pModelObject->getName()));
+    GUIContainerObject::addExternalContainerPortObject(pModelObject);
+    GroupPort *pGPext = dynamic_cast<GroupPort*>(this->getPort(pModelObject->getName()));
+    pGPext->setSharedGroupPortInfo(pGPin->getSharedGroupPortInfo());
 }
 
 

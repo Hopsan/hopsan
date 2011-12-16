@@ -745,7 +745,7 @@ void GUIPort::showIfNotConnected(bool doShow)
 GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentObject)
     : GUIPort(name, xpos, ypos, pPortAppearance, pParentObject)
 {
-    mpCommonGroupPortInfo = 0;
+    //Nothing special
 }
 
 //! Overloaded as groups laks core connection
@@ -766,25 +766,25 @@ QString GroupPort::getNodeType()
 void GroupPort::addConnection(GUIConnector *pConnector)
 {
     GUIPort::addConnection(pConnector);
-    mpCommonGroupPortInfo->mConnectedConnectors.append(pConnector);
+    mSharedGroupPortInfo->mConnectedConnectors.append(pConnector);
 }
 
 void GroupPort::removeConnection(GUIConnector *pConnector)
 {
     GUIPort::removeConnection(pConnector);
-    mpCommonGroupPortInfo->mConnectedConnectors.remove(mpCommonGroupPortInfo->mConnectedConnectors.indexOf(pConnector));
+    mSharedGroupPortInfo->mConnectedConnectors.remove(mSharedGroupPortInfo->mConnectedConnectors.indexOf(pConnector));
 }
 
 
 GUIPort* GroupPort::getBasePort() const
 {
-    if (mpCommonGroupPortInfo->mConnectedConnectors.size() == 0)
+    if (mSharedGroupPortInfo->mConnectedConnectors.size() == 0)
     {
         return 0;
     }
     else
     {
-        GUIConnector *pCon = mpCommonGroupPortInfo->mConnectedConnectors[0];
+        GUIConnector *pCon = mSharedGroupPortInfo->mConnectedConnectors[0];
         if (pCon->getStartPort() == this)
         {
             return pCon->getEndPort();
@@ -794,4 +794,14 @@ GUIPort* GroupPort::getBasePort() const
             return pCon->getStartPort();
         }
     }
+}
+
+SharedGroupInfoPtrT GroupPort::getSharedGroupPortInfo()
+{
+    return mSharedGroupPortInfo;
+}
+
+void GroupPort::setSharedGroupPortInfo(SharedGroupInfoPtrT sharedGroupPortInfo)
+{
+    mSharedGroupPortInfo = sharedGroupPortInfo;
 }

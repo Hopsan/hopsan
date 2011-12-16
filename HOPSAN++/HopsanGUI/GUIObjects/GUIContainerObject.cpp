@@ -407,7 +407,6 @@ void GUIContainerObject::createExternalPort(QString portName)
 
             if (this->type() == GUIGROUP)
             {
-                //! @todo We must somehow make usre that the external and internal port shares the same common goup port info class (a ptr to it)
                 pPort = new GroupPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
             }
             else
@@ -524,8 +523,9 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
     }
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
+        // We must create internal port FIRST before external one
         mpTempGUIModelObject = new GUIContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
-        this->createExternalPort(mpTempGUIModelObject->getName());
+        this->addExternalContainerPortObject(mpTempGUIModelObject);
         this->refreshExternalPortsAppearanceAndPosition();
     }
     else if (componentTypeName == HOPSANGUIGROUPTYPENAME)
@@ -2060,6 +2060,11 @@ void GUIContainerObject::refreshInternalContainerPortGraphics()
     }
 }
 
+
+void GUIContainerObject::addExternalContainerPortObject(GUIModelObject* pModelObject)
+{
+    this->createExternalPort(pModelObject->getName());
+}
 
 //! @brief Aborts creation of new connector.
 void GUIContainerObject::cancelCreatingConnector()
