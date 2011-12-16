@@ -48,6 +48,16 @@ public:
 };
 
 
+class OptFunction
+{
+public:
+    QString mMinMax;
+    int mFunction;
+    QStringList mComponents, mPorts, mVariables;
+    QString mWeight, mNorm, mExp;
+};
+
+
 class OptimizationSettings
 {
 public:
@@ -66,6 +76,7 @@ public:
 
     //Paramters
     QVector<OptParameter> mParamters;
+    QVector<OptFunction> mFunctions;
 };
 
 

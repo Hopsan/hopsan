@@ -2,9 +2,9 @@
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_rUNKNOWN" hopsancoreversion="0">
     <system typename="Subsystem" name="Position Servo">
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499,5" y="2368" zoom="1"/>
+            <viewport x="2499.5" y="2367.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -16,6 +16,27 @@
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>true</logpar>
+                </settings>
+                <parameters>
+                    <parameter>
+                        <componentname>Cylinder C</componentname>
+                        <parametername>c_leak</parametername>
+                        <minmax>1 7</minmax>
+                    </parameter>
+                </parameters>
+            </optimization>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0" type="changedparameters"/>
@@ -252,7 +273,7 @@
                 </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="10" timestep="0,001" start="0"/>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters/>
         <objects>
             <component typename="Hydraulic43Valve" name="4/3 Servo Valve">
@@ -274,7 +295,7 @@
                     <parameter value="1" name="delta_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2563.00000000000000000000" y="2515" flipped="0" a="0"/>
+                    <pose x="2563" y="2515" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -284,7 +305,7 @@
                     <parameter value="100000" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2573.00079999999979918357" y="2763" flipped="0" a="0"/>
+                    <pose x="2573.0008" y="2763" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -294,14 +315,14 @@
                     <parameter value="100000" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2481.00300000000015643309" y="2763" flipped="0" a="0"/>
+                    <pose x="2481.003" y="2763" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2712.00000000000000000000" y="2515" flipped="0" a="0"/>
+                    <pose x="2712" y="2515" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -312,7 +333,7 @@
                     <parameter value="10" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2798.00000000000000000000" y="2422" flipped="0" a="180"/>
+                    <pose x="2798" y="2422" flipped="0" a="180"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -322,7 +343,7 @@
                     <parameter value="0.0026373" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2408.00000000000000000000" y="2475" flipped="0" a="0"/>
+                    <pose x="2408" y="2475" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -331,7 +352,7 @@
                     <parameter value="0" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2302.00000000000000000000" y="2525" flipped="0" a="0"/>
+                    <pose x="2302" y="2525" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -340,7 +361,7 @@
                     <parameter value="0" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2358.00000000000000000000" y="2475" flipped="0" a="0"/>
+                    <pose x="2358" y="2475" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -353,7 +374,7 @@
                     <parameter value="0.3" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2573.00000000000000000000" y="2602" flipped="0" a="90"/>
+                    <pose x="2573" y="2602" flipped="0" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -366,7 +387,7 @@
                     <parameter value="1" name="x_max"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2710.00000000000000000000" y="2422" flipped="0" a="0"/>
+                    <pose x="2710" y="2422" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -377,7 +398,7 @@
                     <parameter value="1e-012" name="C_l,p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2466.00000000000000000000" y="2680" flipped="0" a="0"/>
+                    <pose x="2466" y="2680" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -388,7 +409,7 @@
                     <parameter value="1" name="t_step"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2212.00000000000000000000" y="2525" flipped="0" a="0"/>
+                    <pose x="2212" y="2525" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -398,7 +419,7 @@
                     <parameter value="0.00830111" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2374.00000000000000000000" y="2525" flipped="0" a="0"/>
+                    <pose x="2374" y="2525" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -407,7 +428,7 @@
                     <parameter value="0" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2446.00000000000000000000" y="2525" flipped="0" a="0"/>
+                    <pose x="2446" y="2525" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -417,7 +438,7 @@
                     <parameter value="100000" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2593.00000000000000000000" y="2554" flipped="0" a="0"/>
+                    <pose x="2593" y="2554" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -426,7 +447,7 @@
                     <parameter value="0" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2766.00000000000000000000" y="2367" flipped="0" a="0"/>
+                    <pose x="2766" y="2367" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -449,7 +470,7 @@
                     <parameter value="0" name="c_leak"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2598.00000000000000000000" y="2422" flipped="0" a="0"/>
+                    <pose x="2598" y="2422" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -463,24 +484,24 @@
                     <parameter value="0" name="p_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2575.00000000000000000000" y="2682" flipped="0" a="0"/>
+                    <pose x="2575" y="2682" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2015" y="2562"/>
+                    <pose x="2015.000000" y="2562.000000"/>
                     <textobject fontcolor="#005500" text="This example model consists of a&#xa;simple position servo controlled &#xa;by a proportional feedback. A step &#xa;signal is used as input. Analyzing &#xa;step responses can give important &#xa;information about the dynamic &#xa;behaviour of a system." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="235" height="141"/>
-                    <line width="2" visible="1" style="solidline"/>
+                    <size width="235.000000" height="141.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2419" y="2265"/>
+                    <pose x="2419.000000" y="2265.000000"/>
                     <textobject fontcolor="#005500" text="Example: Position Servo" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
-                    <size width="271" height="41"/>
-                    <line width="2" visible="0" style="solidline"/>
+                    <size width="271.000000" height="41.000000"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>

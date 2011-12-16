@@ -261,6 +261,31 @@ void GUISystem::saveOptSettingsToDomElement(QDomElement &rDomElement)
         appendDomValueNode2(XMLparameter, "minmax", mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
     }
 
+    QDomElement XMLfunctions = appendDomElement(XMLopt, "functions");
+    for(int i = 0; i < mOptSettings.mFunctions.size(); ++i)
+    {
+        QDomElement XMLparameter = appendDomElement(XMLparameters, "function");
+        appendDomIntegerNode(XMLparameter, "typeid", mOptSettings.mFunctions.at(i).mFunction);
+        appendDomTextNode(XMLparameter, "minmax", mOptSettings.mFunctions.at(i).mMinMax);
+        appendDomTextNode(XMLparameter, "weight", mOptSettings.mFunctions.at(i).mWeight);
+        appendDomTextNode(XMLparameter, "norm", mOptSettings.mFunctions.at(i).mNorm);
+        appendDomTextNode(XMLparameter, "exp", mOptSettings.mFunctions.at(i).mExp);
+
+        for(int j=0; j<mOptSettings.mFunctions.at(i).mComponents.size(); ++j)
+        {
+            appendDomTextNode(XMLparameter, "component", mOptSettings.mFunctions.at(i).mComponents.at(j));
+        }
+
+        for(int j=0; j<mOptSettings.mFunctions.at(i).mPorts.size(); ++j)
+        {
+            appendDomTextNode(XMLparameter, "port", mOptSettings.mFunctions.at(i).mPorts.at(j));
+        }
+
+        for(int j=0; j<mOptSettings.mFunctions.at(i).mVariables.size(); ++j)
+        {
+            appendDomTextNode(XMLparameter, "variable", mOptSettings.mFunctions.at(i).mPorts.at(j));
+        }
+    }
 }
 
 

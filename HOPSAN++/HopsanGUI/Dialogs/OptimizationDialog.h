@@ -60,12 +60,14 @@ protected:
 
 public slots:
     virtual void open();
+    virtual void reject();
 
 private slots:
     void updateChosenParameters(QTreeWidgetItem* item, int i);
     void removeParameter();
     void updateChosenVariables(QTreeWidgetItem* item, int i);
     void addFunction();
+    void processLastAddedFunction();
     void removeFunction();
     void updateOutputBox();
     QString generateFileName();

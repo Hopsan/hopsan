@@ -276,7 +276,22 @@ void OptimizationDialog::loadConfiguration()
     for(int i=0; i<optSettings.mParamters.size(); ++i)
     {
         findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
+    }
 
+
+    for(int i=0; i<optSettings.mFunctions.size(); ++i)
+    {
+        mSelectedFunctionsMinMax.append(optSettings.mFunctions.at(i).mMinMax);
+        mSelectedFunctions.append(optSettings.mFunctions.at(i).mFunction);
+        mFunctionComponents.append(optSettings.mFunctions.at(i).mComponents);
+        mFunctionPorts.append(optSettings.mFunctions.at(i).mPorts);
+        mFunctionVariables.append(optSettings.mFunctions.at(i).mVariables);
+
+        processLastAddedFunction();
+
+        mWeightLineEditPtrs.last()->setText(optSettings.mFunctions.at(i).mWeight);
+        mExpLineEditPtrs.last()->setText(optSettings.mFunctions.at(i).mExp);
+        mNormLineEditPtrs.last()->setText(optSettings.mFunctions.at(i).mNorm);
     }
 }
 
@@ -309,6 +324,22 @@ void OptimizationDialog::saveConfiguration()
         optSettings.mParamters.append(parameter);
     }
 
+    for(int i=0; i<mSelectedFunctions.size(); ++i)
+    {
+        OptFunction function;
+        function.mMinMax = mSelectedFunctionsMinMax.at(i);;
+        function.mFunction = mSelectedFunctions.at(i);
+        function.mComponents = mFunctionComponents.at(i);
+        function.mPorts = mFunctionPorts.at(i);
+        function.mVariables = mFunctionVariables.at(i);
+        function.mWeight = mWeightLineEditPtrs.at(i)->text();
+        function.mExp = mExpLineEditPtrs.at(i)->text();
+        function.mNorm = mNormLineEditPtrs.at(i)->text();
+
+        optSettings.mFunctions.append(function);
+    }
+
+
     GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
 
     pSystem->setOptimizationSettings(optSettings);
@@ -325,7 +356,22 @@ void OptimizationDialog::open()
     mpFunctionsComboBox->clear();
     mpFunctionsComboBox->addItems(mObjectiveFunctionDescriptions);
 
+
+    //Clear all parameters
+    for(int c=0; c<mpParametersList->topLevelItemCount(); ++c)      //Uncheck all parameters (will "remove" them)
+    {
+        for(int p=0; p<mpParametersList->topLevelItem(c)->childCount(); ++p)
+        {
+            if(mpParametersList->topLevelItem(c)->child(p)->checkState(0) == Qt::Checked)
+            {
+                mpParametersList->topLevelItem(c)->child(p)->setCheckState(0, Qt::Unchecked);
+            }
+        }
+    }
     mpParametersList->clear();
+
+
+    //Populate parameters list
     GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     QStringList componentNames = pSystem->getGUIModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
@@ -345,6 +391,8 @@ void OptimizationDialog::open()
     }
     connect(mpParametersList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenParameters(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
+
+    //Clear all objective functions
     mpVariablesList->clear();
     for(int c=0; c<componentNames.size(); ++c)
     {
@@ -433,6 +481,14 @@ void OptimizationDialog::open()
     loadConfiguration();
 
     QDialog::show();
+}
+
+
+void OptimizationDialog::reject()
+{
+    saveConfiguration();
+
+    QDialog::reject();
 }
 
 
@@ -1002,8 +1058,6 @@ void OptimizationDialog::addFunction()
     if(!verifyNumberOfVariables(i))
         return;
 
-    QStringList data = mObjectiveFunctionDataLists.at(i);
-
     mSelectedFunctionsMinMax.append(mpMinMaxComboBox->currentText());
     mSelectedFunctions.append(i);
     mFunctionComponents.append(QStringList());
@@ -1015,6 +1069,18 @@ void OptimizationDialog::addFunction()
         mFunctionPorts.last().append(mSelectedVariables.at(i).at(1));
         mFunctionVariables.last().append(mSelectedVariables.at(i).at(2));
     }
+
+    processLastAddedFunction();
+}
+
+
+//! @brief Creates the visible items for the last added function
+//! @todo Rename this to something less stupid
+void OptimizationDialog::processLastAddedFunction()
+{
+    int i = mSelectedFunctions.last();
+
+    QStringList data = mObjectiveFunctionDataLists.at(i);
 
     QLineEdit *pWeightLineEdit = new QLineEdit("1.0", this);
     pWeightLineEdit->setValidator(new QDoubleValidator());
