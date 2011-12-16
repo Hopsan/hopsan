@@ -261,29 +261,36 @@ void GUISystem::saveOptSettingsToDomElement(QDomElement &rDomElement)
         appendDomValueNode2(XMLparameter, "minmax", mOptSettings.mParamters.at(i).mMin, mOptSettings.mParamters.at(i).mMax);
     }
 
-    QDomElement XMLfunctions = appendDomElement(XMLopt, "functions");
-    for(int i = 0; i < mOptSettings.mFunctions.size(); ++i)
+    //Objective Functions
+    QDomElement XMLobjectives = appendDomElement(XMLopt, "objectives");
+    for(int i = 0; i < mOptSettings.mObjectives.size(); ++i)
     {
-        QDomElement XMLparameter = appendDomElement(XMLparameters, "function");
-        appendDomIntegerNode(XMLparameter, "typeid", mOptSettings.mFunctions.at(i).mFunction);
-        appendDomTextNode(XMLparameter, "minmax", mOptSettings.mFunctions.at(i).mMinMax);
-        appendDomTextNode(XMLparameter, "weight", mOptSettings.mFunctions.at(i).mWeight);
-        appendDomTextNode(XMLparameter, "norm", mOptSettings.mFunctions.at(i).mNorm);
-        appendDomTextNode(XMLparameter, "exp", mOptSettings.mFunctions.at(i).mExp);
+        QDomElement XMLobjective = appendDomElement(XMLobjectives, "objective");
+        appendDomTextNode(XMLobjective, "functionname", mOptSettings.mObjectives.at(i).mFunctionName);
+        appendDomValueNode(XMLobjective, "weight", mOptSettings.mObjectives.at(i).mWeight);
+        appendDomValueNode(XMLobjective, "norm", mOptSettings.mObjectives.at(i).mNorm);
+        appendDomValueNode(XMLobjective, "exp", mOptSettings.mObjectives.at(i).mExp);
 
-        for(int j=0; j<mOptSettings.mFunctions.at(i).mComponents.size(); ++j)
+        QDomElement XMLObjectiveVariables = appendDomElement(XMLobjective, "variables");
+        if(!(mOptSettings.mObjectives.at(i).mVariableInfo.isEmpty()))
         {
-            appendDomTextNode(XMLparameter, "component", mOptSettings.mFunctions.at(i).mComponents.at(j));
+            QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, "variable");
+            for(int j = 0; j < mOptSettings.mObjectives.at(i).mVariableInfo.size(); ++j)
+            {
+                appendDomTextNode(XMLObjectiveVariable, "componentname", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(0));
+                appendDomTextNode(XMLObjectiveVariable, "portname", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(1));
+                appendDomTextNode(XMLObjectiveVariable, "variablename", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(2));
+            }
         }
 
-        for(int j=0; j<mOptSettings.mFunctions.at(i).mPorts.size(); ++j)
-        {
-            appendDomTextNode(XMLparameter, "port", mOptSettings.mFunctions.at(i).mPorts.at(j));
-        }
 
-        for(int j=0; j<mOptSettings.mFunctions.at(i).mVariables.size(); ++j)
+        if(!(mOptSettings.mObjectives.at(i).mData.isEmpty()))
         {
-            appendDomTextNode(XMLparameter, "variable", mOptSettings.mFunctions.at(i).mPorts.at(j));
+            QDomElement XMLdata = appendDomElement(XMLobjective, "data");
+            for(int j = 0; j < mOptSettings.mObjectives.at(i).mData.size(); ++j)
+            {
+                appendDomTextNode(XMLdata, "parameter", mOptSettings.mObjectives.at(i).mData.at(j));
+            }
         }
     }
 }
@@ -314,7 +321,6 @@ void GUISystem::loadOptSettingsFromDomElement(QDomElement &rDomElement)
         if(!rDomElement.firstChildElement("settings").firstChildElement("savecsv").isNull())
             mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"));
 
-        //fixa parameterar osv
         if(!rDomElement.firstChildElement("settings").firstChildElement("logpar").isNull())
             mOptSettings.mlogPar = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("logpar"));
     }
@@ -334,9 +340,49 @@ void GUISystem::loadOptSettingsFromDomElement(QDomElement &rDomElement)
 
         if(!rDomElement.firstChildElement("parameters").firstChildElement("savecsv").isNull())
             mOptSettings.mSavecsv = parseDomBooleanNode(rDomElement.firstChildElement("settings").firstChildElement("savecsv"));
-
     }
+    if(!rDomElement.firstChildElement("objectives").isNull())
+    {
+        Objectives objectives;
 
+        QDomElement XMLobj = rDomElement.firstChildElement("objectives").firstChildElement("objective");
+        while (!XMLobj.isNull())
+        {
+            objectives.mFunctionName = XMLobj.firstChildElement("functionname").text();
+            objectives.mWeight = XMLobj.firstChildElement("weight").text().toDouble();
+            objectives.mNorm = XMLobj.firstChildElement("norm").text().toDouble();
+            objectives.mExp = XMLobj.firstChildElement("exp").text().toDouble();
+
+            if(!XMLobj.firstChildElement("variables").isNull())
+            {
+                QDomElement XMLVars = XMLobj.firstChildElement("variables").firstChildElement("variable");
+                QStringList variableInfo;
+                while (!XMLVars.isNull())
+                {
+                    variableInfo.append(XMLVars.firstChildElement("componentname").text());
+                    variableInfo.append(XMLVars.firstChildElement("portname").text());
+                    variableInfo.append(XMLVars.firstChildElement("variablename").text());
+
+                    XMLVars = XMLVars.nextSiblingElement("variable");
+                }
+                objectives.mVariableInfo.append(variableInfo);
+            }
+
+            if(!XMLobj.firstChildElement("data").isNull())
+            {
+                QDomElement XMLpar = XMLobj.firstChildElement("data").firstChildElement("parameter");
+                while (!XMLpar.isNull())
+                {
+                    objectives.mData.append(XMLpar.text());
+
+                    XMLpar = XMLpar.nextSiblingElement("parameter");
+                }
+            }
+
+            XMLobj = XMLobj.nextSiblingElement("objective");
+        }
+        mOptSettings.mObjectives.append(objectives);
+    }
 }
 
 

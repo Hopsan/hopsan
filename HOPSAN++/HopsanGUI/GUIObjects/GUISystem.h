@@ -48,13 +48,13 @@ public:
 };
 
 
-class OptFunction
+class Objectives
 {
 public:
-    QString mMinMax;
-    int mFunction;
-    QStringList mComponents, mPorts, mVariables;
-    QString mWeight, mNorm, mExp;
+    QString mFunctionName;
+    QStringList mData;
+    QList<QStringList> mVariableInfo;
+    double mWeight, mNorm, mExp;
 };
 
 
@@ -76,7 +76,7 @@ public:
 
     //Paramters
     QVector<OptParameter> mParamters;
-    QVector<OptFunction> mFunctions;
+    QVector<Objectives> mObjectives;
 };
 
 

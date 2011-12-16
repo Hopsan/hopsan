@@ -48,12 +48,14 @@ public:
 
 private:
     void generateScriptFile();
-    bool verifyNumberOfVariables(int i);
+    bool verifyNumberOfVariables(int i, int nSelVar);
     bool loadObjectiveFunctions();
     QString generateFunctionCode(int i);
 
     void loadConfiguration();
     void saveConfiguration();
+
+    void addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData);
 
 protected:
     QTreeWidgetItem* findParameterTreeItem(QString componentName, QString parameterName);
@@ -67,7 +69,6 @@ private slots:
     void removeParameter();
     void updateChosenVariables(QTreeWidgetItem* item, int i);
     void addFunction();
-    void processLastAddedFunction();
     void removeFunction();
     void updateOutputBox();
     QString generateFileName();
@@ -123,6 +124,7 @@ private:
     QList<QLineEdit*> mNormLineEditPtrs;
     QList<QLineEdit*> mExpLineEditPtrs;
     QList<QLabel*> mFunctionLabelPtrs;
+    QList<QString> mFunctionName;
     QList<QWidget*> mDataWidgetPtrs;
     QList< QList<QLineEdit*> > mDataLineEditPtrs;
     QList<QToolButton*> mRemoveFunctionButtonPtrs;
