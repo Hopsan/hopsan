@@ -444,7 +444,7 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
         QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
         xmlIcon.setAttribute(CAF_TYPE, "iso");
         xmlIcon.setAttribute(CAF_PATH, mIsoIconAppearance.mRelativePath);
-        xmlIcon.setAttribute(CAF_SCALE, mIsoIconAppearance.mScale);
+        setQrealAttribute(xmlIcon, CAF_SCALE, mIsoIconAppearance.mScale);
         xmlIcon.setAttribute(CAF_ICONROTATION, mIsoIconAppearance.mRotationBehaviour);
     }
 
