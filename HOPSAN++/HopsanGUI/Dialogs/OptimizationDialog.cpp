@@ -102,20 +102,20 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpExport2CSVBox->setChecked(false);
 
     mpSettingsLayout = new QGridLayout(this);
-    mpSettingsLayout->addWidget(mpSettingsLabel,         0, 0);
-    mpSettingsLayout->addWidget(mpIterationsLabel,       1, 0);
-    mpSettingsLayout->addWidget(mpIterationsSpinBox,     1, 1);
-    mpSettingsLayout->addWidget(mpSearchPointsLabel,     2, 0);
-    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,   2, 1);
-    mpSettingsLayout->addWidget(mpAlphaLabel,            3, 0);
+    mpSettingsLayout->addWidget(mpSettingsLabel,        0, 0);
+    mpSettingsLayout->addWidget(mpIterationsLabel,      1, 0);
+    mpSettingsLayout->addWidget(mpIterationsSpinBox,    1, 1);
+    mpSettingsLayout->addWidget(mpSearchPointsLabel,    2, 0);
+    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,  2, 1);
+    mpSettingsLayout->addWidget(mpAlphaLabel,           3, 0);
     mpSettingsLayout->addWidget(mpAlphaLineEdit,         3, 1);
-    mpSettingsLayout->addWidget(mpBetaLabel,             4, 0);
+    mpSettingsLayout->addWidget(mpBetaLabel,            4, 0);
     mpSettingsLayout->addWidget(mpBetaLineEdit,          4, 1);
-    mpSettingsLayout->addWidget(mpGammaLabel,            5, 0);
+    mpSettingsLayout->addWidget(mpGammaLabel,           5, 0);
     mpSettingsLayout->addWidget(mpGammaLineEdit,         5, 1);
-    mpSettingsLayout->addWidget(mpEpsilonFLabel,         6, 0);
+    mpSettingsLayout->addWidget(mpEpsilonFLabel,        6, 0);
     mpSettingsLayout->addWidget(mpEpsilonFLineEdit,      6, 1);
-    mpSettingsLayout->addWidget(mpEpsilonXLabel,         7, 0);
+    mpSettingsLayout->addWidget(mpEpsilonXLabel,        7, 0);
     mpSettingsLayout->addWidget(mpEpsilonXLineEdit,      7, 1);
     mpSettingsLayout->addWidget(mpMultiThreadedCheckBox, 8, 0);
     mpSettingsLayout->addWidget(mpThreadsLabel,          9, 0);
@@ -272,26 +272,21 @@ void OptimizationDialog::loadConfiguration()
     mpParametersLogCheckBox->setChecked(optSettings.mlogPar);
 
     //Parameters
-    //! @todo find a convinient way of initialize parameters
     for(int i=0; i<optSettings.mParamters.size(); ++i)
     {
         findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
     }
-
-
-    for(int i=0; i<optSettings.mFunctions.size(); ++i)
+    //Objectives
+    for(int i=0; i<optSettings.mObjectives.size(); ++i)
     {
-        mSelectedFunctionsMinMax.append(optSettings.mFunctions.at(i).mMinMax);
-        mSelectedFunctions.append(optSettings.mFunctions.at(i).mFunction);
-        mFunctionComponents.append(optSettings.mFunctions.at(i).mComponents);
-        mFunctionPorts.append(optSettings.mFunctions.at(i).mPorts);
-        mFunctionVariables.append(optSettings.mFunctions.at(i).mVariables);
+        //! @todo Find a good way of setting the objective functions
 
-        processLastAddedFunction();
-
-        mWeightLineEditPtrs.last()->setText(optSettings.mFunctions.at(i).mWeight);
-        mExpLineEditPtrs.last()->setText(optSettings.mFunctions.at(i).mExp);
-        mNormLineEditPtrs.last()->setText(optSettings.mFunctions.at(i).mNorm);
+        int idx = mpFunctionsComboBox->findText(optSettings.mObjectives.at(i).mFunctionName);
+        if(idx > -1) //found!
+        {//Lägg till variabel i XML -> compname, portname, varname, ska vara i mSelectedVariables
+            mpFunctionsComboBox->setCurrentIndex(idx);
+            addObjectiveFunction(idx, optSettings.mObjectives.at(i).mWeight, optSettings.mObjectives.at(i).mNorm, optSettings.mObjectives.at(i).mExp, optSettings.mObjectives.at(i).mVariableInfo, optSettings.mObjectives.at(i).mData);
+        }
     }
 }
 
@@ -323,25 +318,34 @@ void OptimizationDialog::saveConfiguration()
         parameter.mMin = mpParameterMinLineEdits.at(i)->text().toDouble();
         optSettings.mParamters.append(parameter);
     }
-
-    for(int i=0; i<mSelectedFunctions.size(); ++i)
+    //Objective functions
+    for(int i=0; i < mWeightLineEditPtrs.size(); ++i)
     {
-        OptFunction function;
-        function.mMinMax = mSelectedFunctionsMinMax.at(i);;
-        function.mFunction = mSelectedFunctions.at(i);
-        function.mComponents = mFunctionComponents.at(i);
-        function.mPorts = mFunctionPorts.at(i);
-        function.mVariables = mFunctionVariables.at(i);
-        function.mWeight = mWeightLineEditPtrs.at(i)->text();
-        function.mExp = mExpLineEditPtrs.at(i)->text();
-        function.mNorm = mNormLineEditPtrs.at(i)->text();
+        Objectives objective;
+        objective.mFunctionName = mFunctionName.at(i);
+        objective.mWeight = mWeightLineEditPtrs.at(i)->text().toDouble();
+        objective.mNorm   = mNormLineEditPtrs.at(i)->text().toDouble();
+        objective.mExp    = mExpLineEditPtrs.at(i)->text().toDouble();
 
-        optSettings.mFunctions.append(function);
+        QStringList variableInfo;
+        for(int j=0; j < mFunctionComponents.at(i).size(); ++j)
+        {
+            variableInfo << mFunctionComponents.at(i).at(j);
+            variableInfo << mFunctionPorts.at(i).at(j);
+            variableInfo << mFunctionVariables.at(i).at(j);
+        }
+        objective.mVariableInfo.append(variableInfo);
+
+        for(int j=0; j < mDataLineEditPtrs.at(i).size(); ++j)
+        {
+            objective.mData.append(mDataLineEditPtrs.at(i).at(j)->text());
+        }
+        optSettings.mObjectives.append(objective);
     }
 
 
-    GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
 
+    GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     pSystem->setOptimizationSettings(optSettings);
 }
 
@@ -356,7 +360,6 @@ void OptimizationDialog::open()
     mpFunctionsComboBox->clear();
     mpFunctionsComboBox->addItems(mObjectiveFunctionDescriptions);
 
-
     //Clear all parameters
     for(int c=0; c<mpParametersList->topLevelItemCount(); ++c)      //Uncheck all parameters (will "remove" them)
     {
@@ -369,7 +372,6 @@ void OptimizationDialog::open()
         }
     }
     mpParametersList->clear();
-
 
     //Populate parameters list
     GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
@@ -390,7 +392,6 @@ void OptimizationDialog::open()
         }
     }
     connect(mpParametersList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenParameters(QTreeWidgetItem*,int)), Qt::UniqueConnection);
-
 
     //Clear all objective functions
     mpVariablesList->clear();
@@ -449,6 +450,7 @@ void OptimizationDialog::open()
     mNormLineEditPtrs.clear();
     mExpLineEditPtrs.clear();
     mFunctionLabelPtrs.clear();
+    mFunctionName.clear();
     mRemoveFunctionButtonPtrs.clear();
     mDataLineEditPtrs.clear();
     mDataWidgetPtrs.clear();
@@ -1053,40 +1055,36 @@ void OptimizationDialog::updateChosenVariables(QTreeWidgetItem *item, int /*i*/)
 //! @brief Adds a new objective function from combo box and selected variables
 void OptimizationDialog::addFunction()
 {
-    int i=mpFunctionsComboBox->currentIndex();
-
-    if(!verifyNumberOfVariables(i))
-        return;
-
-    mSelectedFunctionsMinMax.append(mpMinMaxComboBox->currentText());
-    mSelectedFunctions.append(i);
-    mFunctionComponents.append(QStringList());
-    mFunctionPorts.append(QStringList());
-    mFunctionVariables.append(QStringList());
-    for(int i=0; i<mSelectedVariables.size(); ++i)
-    {
-        mFunctionComponents.last().append(mSelectedVariables.at(i).at(0));
-        mFunctionPorts.last().append(mSelectedVariables.at(i).at(1));
-        mFunctionVariables.last().append(mSelectedVariables.at(i).at(2));
-    }
-
-    processLastAddedFunction();
+    int idx = mpFunctionsComboBox->currentIndex();
+    addObjectiveFunction(idx, 1.0, 1.0, 2.0, mSelectedVariables, QStringList());
 }
 
 
-//! @brief Creates the visible items for the last added function
-//! @todo Rename this to something less stupid
-void OptimizationDialog::processLastAddedFunction()
+//! @brief Adds a new objective function
+void OptimizationDialog::addObjectiveFunction(int idx, double weight, double norm, double exp, QList<QStringList> selectedVariables, QStringList objData)
 {
-    int i = mSelectedFunctions.last();
+    if(!verifyNumberOfVariables(idx, selectedVariables.size()))
+        return;
 
-    QStringList data = mObjectiveFunctionDataLists.at(i);
+    QStringList data = mObjectiveFunctionDataLists.at(idx);
 
-    QLineEdit *pWeightLineEdit = new QLineEdit("1.0", this);
+    mSelectedFunctionsMinMax.append(mpMinMaxComboBox->currentText());
+    mSelectedFunctions.append(idx);
+    mFunctionComponents.append(QStringList());
+    mFunctionPorts.append(QStringList());
+    mFunctionVariables.append(QStringList());
+    for(int i=0; i<selectedVariables.size(); ++i)
+    {
+        mFunctionComponents.last().append(selectedVariables.at(i).at(0));
+        mFunctionPorts.last().append(selectedVariables.at(i).at(1));
+        mFunctionVariables.last().append(selectedVariables.at(i).at(2));
+    }
+
+    QLineEdit *pWeightLineEdit = new QLineEdit(QString().setNum(weight), this);
     pWeightLineEdit->setValidator(new QDoubleValidator());
-    QLineEdit *pNormLineEdit = new QLineEdit("1.0", this);
+    QLineEdit *pNormLineEdit = new QLineEdit(QString().setNum(norm), this);
     pNormLineEdit->setValidator(new QDoubleValidator());
-    QLineEdit *pExpLineEdit = new QLineEdit("2.0", this);
+    QLineEdit *pExpLineEdit = new QLineEdit(QString().setNum(exp), this);
     pExpLineEdit->setValidator(new QDoubleValidator());
 
     QString variablesText = mFunctionComponents.last().first()+", "+mFunctionPorts.last().first()+", "+mFunctionVariables.last().first();
@@ -1094,7 +1092,8 @@ void OptimizationDialog::processLastAddedFunction()
     {
         variablesText.append(" and " + mFunctionComponents.last().at(i)+", "+mFunctionPorts.last().at(i)+", "+mFunctionVariables.last().at(i));
     }
-    QLabel *pFunctionLabel = new QLabel(mpMinMaxComboBox->currentText() + " " + mObjectiveFunctionDescriptions.at(i)+" for "+variablesText, this);
+    QLabel *pFunctionLabel = new QLabel(mpMinMaxComboBox->currentText() + " " + mObjectiveFunctionDescriptions.at(idx)+" for "+variablesText, this);
+    mFunctionName.append(mObjectiveFunctionDescriptions.at(idx));
     pFunctionLabel->setWordWrap(true);
     QWidget *pDataWidget = new QWidget(this);
     QGridLayout *pDataGrid = new QGridLayout(this);
@@ -1102,8 +1101,14 @@ void OptimizationDialog::processLastAddedFunction()
     QList<QLineEdit*> dummyList;
     for(int i=0; i<data.size(); ++i)
     {
+        QString thisData;
+        if(objData.size()<=i)
+            thisData = "1.0";
+        else
+            thisData = objData.at(i);
+
         QLabel *pDataLabel = new QLabel(data.at(i), this);
-        QLineEdit *pDataLineEdit = new QLineEdit("0.0", this);
+        QLineEdit *pDataLineEdit = new QLineEdit(thisData, this);
         pDataLineEdit->setValidator(new QDoubleValidator());
         pDataGrid->addWidget(pDataLabel, i, 0);
         pDataGrid->addWidget(pDataLineEdit, i, 1);
@@ -1169,6 +1174,7 @@ void OptimizationDialog::removeFunction()
     mNormLineEditPtrs.removeAt(i);
     mExpLineEditPtrs.removeAt(i);
     mFunctionLabelPtrs.removeAt(i);
+    mFunctionName.removeAt(i);
     mRemoveFunctionButtonPtrs.removeAt(i);
     mDataLineEditPtrs.removeAt(i);
     mDataWidgetPtrs.removeAt(i);
@@ -1238,16 +1244,16 @@ void OptimizationDialog::run()
 
 //! @brief Checks if number of selected variables is correct. Gives error messages if they are too many or too low.
 //! @param i Selected objective function
-bool OptimizationDialog::verifyNumberOfVariables(int i)
+bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 {
-    int nVar = mObjectiveFunctionNumberOfVariables.at(i);
+    int nVar = mObjectiveFunctionNumberOfVariables.at(idx);
 
-    if(mSelectedVariables.size() > nVar)
+    if(nSelVar > nVar)
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Too many variables selected for this function.");
         return false;
     }
-    else if(mSelectedVariables.size() < nVar)
+    else if(nSelVar < nVar)
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Too few variables selected for this function.");
         return false;
