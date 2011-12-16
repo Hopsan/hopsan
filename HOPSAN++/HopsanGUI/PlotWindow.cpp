@@ -2337,11 +2337,11 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
 
             if(mHasSpecialXAxis)        //Special x-axis, replace time with x-data
             {
-                dataTag.setAttribute(mVectorXDataName, mVectorX[j]);
+                setQrealAttribute(dataTag, mVectorXDataName, mVectorX[j], 10, 'g');
             }
             else                        //X-axis = time
             {
-                dataTag.setAttribute("time", mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[j]);
+                setQrealAttribute(dataTag, "time", mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[j], 10, 'g');
             }
 
             //Write variable tags for each variable
