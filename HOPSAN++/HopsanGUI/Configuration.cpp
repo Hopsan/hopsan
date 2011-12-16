@@ -98,7 +98,7 @@ void Configuration::saveToXml()
                 tempElement.setAttribute("gfxtype", it2.key());
                 tempElement.setAttribute("situation", it3.key());
                 tempElement.setAttribute("color", it3.value().color().name());
-                tempElement.setAttribute("width", it3.value().widthF());
+                setQrealAttribute(tempElement, "width", it3.value().widthF());
                 tempElement.setAttribute(HMF_STYLETAG, it3.value().style());
                 tempElement.setAttribute("capstyle", it3.value().capStyle());
             }
@@ -142,7 +142,7 @@ void Configuration::saveToXml()
             QDomElement xmlTemp = appendDomElement(units, "customunit");
             xmlTemp.setAttribute("name", itpcu.key());
             xmlTemp.setAttribute("unit", itcu.key());
-            xmlTemp.setAttribute("scale", itcu.value());
+            setQrealAttribute(xmlTemp, "scale", itcu.value());
         }
     }
 
