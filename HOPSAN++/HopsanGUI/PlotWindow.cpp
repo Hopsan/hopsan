@@ -306,6 +306,12 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
 }
 
 
+void PlotWindow::changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    getCurrentPlotTab()->changeXVector(xarray, componentName, portName, dataName, dataUnit, FIRSTPLOT);
+}
+
+
 void PlotWindow::addPlotTab(QString requestedName)
 {
     PlotTab *mpNewTab = new PlotTab(this);
