@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
     <system typename="Subsystem" name="ElectricInductanceTest">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2390.448227947314" y="2483.506015225164" zoom="1.187434208703792"/>
+            <viewport x="2361.815062631052" y="2483.927091185698" zoom="1.187434208703792"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="ElectricInductanceTest">
-                    <icons/>
+                    <icons>
+                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
@@ -19,6 +21,59 @@
                 <post number="0"/>
                 <post number="1"/>
                 <post number="2"/>
+                <post number="3">
+                    <stuff what="movedobject" name="Ramp">
+                        <oldpos>2122.77 2504.18</oldpos>
+                        <newpos>2123.61 2504.79</newpos>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2072" y="2369"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100" height="100"/>
+                                <line width="2" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Test of inductance. Gives a constant &#xa;increase in current as the input voltage&#xa;gets constant" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="6">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2072 2369</oldpos>
+                        <newpos>2065.26 2338.68</newpos>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="addedobject">
+                        <component typename="MechanicFreeLengthWall" name="Fixed Stop With Free Length">
+                            <parameters>
+                                <parameter value="10" name="B"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2055.00000000000000000000" y="2576" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="deletedobject">
+                        <component typename="MechanicFreeLengthWall" name="Fixed Stop With Free Length">
+                            <parameters>
+                                <parameter value="10" name="B"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2055.00000000000000000000" y="2576" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="1" timestep="0.001" start="0"/>
@@ -32,7 +87,7 @@
                     <parameter value="0.1" name="t_end"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2135.26544413225929019973" y="2516.6834173418687897" flipped="0" a="0"/>
+                    <pose x="2136.10759605332577848458" y="2517.2865808938759073" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -65,13 +120,21 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2065.262784631469" y="2338.682530841606"/>
+                    <textobject fontcolor="#556b2f" text="Test of inductance. Gives a constant &#xa;increase in current as the input voltage&#xa;gets constant" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="262" height="100"/>
+                    <line width="2" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
         </objects>
         <connections>
             <connect endport="Puin" endcomponent="ElectricUsource" startport="out" startcomponent="Ramp">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2147.76544413225929019973" y="2516.68341734186878966284"/>
-                        <coordinate x="2175.50000000000000000000" y="2516.68341734186878966284"/>
+                        <coordinate x="2148.60759605332577848458" y="2517.28658089387590734987"/>
+                        <coordinate x="2175.50000000000000000000" y="2517.28658089387590734987"/>
                         <coordinate x="2175.50000000000000000000" y="2517.28658089387590734987"/>
                         <coordinate x="2195.00000000000000000000" y="2517.28658089387590734987"/>
                     </coordinates>

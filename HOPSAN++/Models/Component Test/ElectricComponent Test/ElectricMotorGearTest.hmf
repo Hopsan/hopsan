@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
     <system typename="Subsystem" name="ElectricMotorGearTest">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2473.5" y="2556" zoom="1"/>
+            <viewport x="2438.5" y="2555.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="ElectricMotorGearTest">
-                    <icons/>
+                    <icons>
+                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
@@ -46,6 +48,24 @@
                 <post number="27"/>
                 <post number="28"/>
                 <post number="29"/>
+                <post number="30">
+                    <stuff h_new="98" what="resizedtextboxwidget" w_old="225" h_old="100" index="1" w_new="225">
+                        <oldpos>2119 2295</oldpos>
+                        <newpos>2119 2297</newpos>
+                    </stuff>
+                </post>
+                <post number="31">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2119 2297</oldpos>
+                        <newpos>2105 2284</newpos>
+                    </stuff>
+                </post>
+                <post number="32">
+                    <stuff what="movedobject" name="Torque Transformer">
+                        <oldpos>2558.5 2509.39</oldpos>
+                        <newpos>2555.5 2508.39</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="100" timestep="0.001" start="0"/>
@@ -169,7 +189,7 @@
                     <parameter value="0" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2535.00000000000000000000" y="2515.8850000000002183" flipped="1" a="0"/>
+                    <pose x="2532.00000000000000000000" y="2514.8850000000002183" flipped="1" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -192,9 +212,9 @@
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2119" y="2295"/>
+                    <pose x="2105" y="2284"/>
                     <textobject fontcolor="#556b2f" text="Test of static chracteristics of the&#xa;ElectricMotorGear component.&#xa;The load tourqe is varied with a&#xa;soft step" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="225" height="100"/>
+                    <size width="225" height="98"/>
                     <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
@@ -203,8 +223,8 @@
             <connect endport="Pmr1" endcomponent="ElectricMotorGear" startport="P1" startcomponent="Torque Transformer">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2511.50000000000000000000" y="2515.88500000000021827873"/>
-                        <coordinate x="2491.00000000000000000000" y="2515.88500000000021827873"/>
+                        <coordinate x="2508.50000000000000000000" y="2514.88500000000021827873"/>
+                        <coordinate x="2491.00000000000000000000" y="2514.88500000000021827873"/>
                         <coordinate x="2491.00000000000000000000" y="2515.00000000000000000000"/>
                         <coordinate x="2460.00000000000000000000" y="2515.00000000000000000000"/>
                     </coordinates>
@@ -297,8 +317,8 @@
                     <coordinates>
                         <coordinate x="2477.50000000000000000000" y="2333.00000000000000000000"/>
                         <coordinate x="2567.00000000000000000000" y="2333.00000000000000000000"/>
-                        <coordinate x="2567.00000000000000000000" y="2515.88500000000021827873"/>
-                        <coordinate x="2558.50000000000000000000" y="2515.88500000000021827873"/>
+                        <coordinate x="2567.00000000000000000000" y="2514.88500000000021827873"/>
+                        <coordinate x="2555.50000000000000000000" y="2514.88500000000021827873"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>

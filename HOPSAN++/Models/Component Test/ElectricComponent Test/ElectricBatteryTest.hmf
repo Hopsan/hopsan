@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
     <system typename="Subsystem" name="ElectricBatteryTest">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.5" y="2500" zoom="1"/>
+            <viewport x="2501" y="2380.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="ElectricBatteryTest">
-                    <icons/>
+                    <icons>
+                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
@@ -18,18 +20,180 @@
                 <post number="-1"/>
                 <post number="0"/>
                 <post number="1"/>
+                <post number="2">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2347.00000000000000000000" y="2459" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="Pubatt" startcomponent="ElectricBattery">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2251.50000000000000000000" y="2413.19999999999981810106"/>
+                                    <coordinate x="2334.50000000000000000000" y="2413.19999999999981810106"/>
+                                    <coordinate x="2334.50000000000000000000" y="2459.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2334.5 2446.5</oldpos>
+                        <newpos>2348.5 2437.5</newpos>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="Pubatt" startcomponent="ElectricBattery">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2251.50000000000000000000" y="2413.19999999999981810106"/>
+                                    <coordinate x="2348.50000000000000000000" y="2413.19999999999981810106"/>
+                                    <coordinate x="2348.50000000000000000000" y="2450.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="6">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="Pubatt" startcomponent="ElectricBattery">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2251.50000000000000000000" y="2413.19999999999981810106"/>
+                                    <coordinate x="2294.00000000000000000000" y="2413.19999999999981810106"/>
+                                    <coordinate x="2294.00000000000000000000" y="2450.00000000000000000000"/>
+                                    <coordinate x="2348.50000000000000000000" y="2450.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2348.5 2437.5</oldpos>
+                        <newpos>2349.5 2437.5</newpos>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink_1">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2370.00000000000000000000" y="2407" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="Psoc" startcomponent="ElectricBattery">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2251.50000000000000000000" y="2404.40000000000009094947"/>
+                                    <coordinate x="2357.50000000000000000000" y="2404.40000000000009094947"/>
+                                    <coordinate x="2357.50000000000000000000" y="2404.40000000000009094947"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="10" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="0" parametername="Psoc::Value" objectname="ElectricBattery"/>
+                </post>
+                <post number="11" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="0.1" parametername="Conduct" objectname="ElectricResistor"/>
+                </post>
+                <post number="12" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="1" parametername="Conduct" objectname="ElectricResistor"/>
+                </post>
+                <post number="13" type="changedparameters">
+                    <stuff newvalue=".1" what="changedparameter" oldvalue="10" parametername="Conduct" objectname="ElectricResistor"/>
+                </post>
+                <post number="14" type="changedparameters">
+                    <stuff newvalue=".01" what="changedparameter" oldvalue=".1" parametername="Conduct" objectname="ElectricResistor"/>
+                </post>
+                <post number="15" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="0.01" parametername="cond" objectname="ElectricBattery"/>
+                </post>
+                <post number="16" type="changedparameters">
+                    <stuff newvalue=".1" what="changedparameter" oldvalue=".01" parametername="Conduct" objectname="ElectricResistor"/>
+                </post>
+                <post number="17" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="1" parametername="cond" objectname="ElectricBattery"/>
+                </post>
+                <post number="18" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="10" parametername="cond" objectname="ElectricBattery"/>
+                </post>
+                <post number="19" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue=".1" parametername="Conduct" objectname="ElectricResistor"/>
+                </post>
+                <post number="20" type="changedparameters">
+                    <stuff newvalue="1000" what="changedparameter" oldvalue="100" parametername="cond" objectname="ElectricBattery"/>
+                </post>
+                <post number="21" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="1" parametername="Conduct" objectname="ElectricResistor"/>
+                </post>
+                <post number="22">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2357.5 2391.9</oldpos>
+                        <newpos>2356.5 2391.9</newpos>
+                    </stuff>
+                </post>
+                <post number="23">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2356.5 2391.9</oldpos>
+                        <newpos>2355.5 2391.9</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <simulationtime stop="1500" timestep="0.01" start="0"/>
         <parameters/>
         <objects>
             <component typename="ElectricResistor" name="ElectricResistor">
                 <parameters>
-                    <parameter value="0.1" name="Conduct"/>
+                    <parameter value="10" name="Conduct"/>
                 </parameters>
-                <startvalues/>
                 <hopsangui>
                     <pose x="2441.00000000000000000000" y="2331" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2362.00000000000000000000" y="2450" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -43,12 +207,6 @@
                     <parameter value="0.1" name="alpha"/>
                     <parameter value="0.001" name="timestep"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="Pel1" variable="Voltage" value="0"/>
-                    <startvalue portname="Pel1" variable="Current" value="0"/>
-                    <startvalue portname="Pel2" variable="Voltage" value="0"/>
-                    <startvalue portname="Pel2" variable="Current" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2323.00000000000000000000" y="2352" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -56,19 +214,22 @@
             </component>
             <component typename="ElectricBattery" name="ElectricBattery">
                 <parameters>
-                    <parameter value="0" name="Psoc::Value"/>
+                    <parameter value="1" name="Psoc::Value"/>
                     <parameter value="0" name="Pubatt::Value"/>
-                    <parameter value="0.01" name="cond"/>
+                    <parameter value="1000" name="cond"/>
                     <parameter value="12" name="unom"/>
                     <parameter value="41" name="capacity"/>
                     <parameter value="0.1" name="kappa"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="Pubatt" variable="Value" value="0"/>
-                    <startvalue portname="Psoc" variable="Value" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2231.00000000000000000000" y="2422" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2368.00000000000000000000" y="2404.3999999999996362" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -77,10 +238,6 @@
                     <parameter value="0" name="Pel1::Voltage"/>
                     <parameter value="0" name="Pel1::Current"/>
                 </parameters>
-                <startvalues>
-                    <startvalue portname="Pel1" variable="Voltage" value="0"/>
-                    <startvalue portname="Pel1" variable="Current" value="0"/>
-                </startvalues>
                 <hopsangui>
                     <pose x="2467.00000000000000000000" y="2387" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -124,6 +281,36 @@
                         <coordinate x="2467.00000000000000000000" y="2331.00000000000000000000"/>
                         <coordinate x="2467.00000000000000000000" y="2331.00000000000000000000"/>
                         <coordinate x="2467.00000000000000000000" y="2380.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Pubatt" startcomponent="ElectricBattery">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2251.50000000000000000000" y="2413.19999999999981810106"/>
+                        <coordinate x="2294.00000000000000000000" y="2413.19999999999981810106"/>
+                        <coordinate x="2294.00000000000000000000" y="2450.00000000000000000000"/>
+                        <coordinate x="2349.50000000000000000000" y="2450.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="Psoc" startcomponent="ElectricBattery">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2251.50000000000000000000" y="2404.40000000000009094947"/>
+                        <coordinate x="2355.50000000000000000000" y="2404.40000000000009094947"/>
+                        <coordinate x="2355.50000000000000000000" y="2404.39999999999963620212"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>

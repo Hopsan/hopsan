@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
-    <system typename="Subsystem" name="ElectricResistorTest">
+    <system typename="Subsystem" name="ElectricSwitchTest">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2501.5" y="2501.5" zoom="1"/>
+            <viewport x="2478" y="2384" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
-                <modelobject typename="Subsystem" displayname="ElectricResistorTest">
+                <modelobject typename="Subsystem" displayname="ElectricSwitchTest">
                     <icons>
                         <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
                     </icons>
@@ -221,33 +221,36 @@
                     <stuff newvalue="6" what="changedparameter" oldvalue="2" parametername="t_end" objectname="Ramp"/>
                 </post>
                 <post number="14">
-                    <stuff what="movedobject" name="ElectricResistor">
-                        <oldpos>2359 2367</oldpos>
-                        <newpos>2358 2367</newpos>
+                    <stuff what="addedobject">
+                        <component typename="ElectricSwitch" name="ElectricSwitch">
+                            <parameters>
+                                <parameter value="0.1" name="state"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2375.00000000000000000000" y="2583" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
                     </stuff>
                 </post>
                 <post number="15">
-                    <stuff what="deletedconnector">
-                        <connect endport="Pel1" endcomponent="ElectricResistor" startport="Pel1" startcomponent="ElectricUsource">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2358.00000000000000000000" y="2371.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff what="movedobject" name="ElectricSwitch">
+                        <oldpos>2345 2563</oldpos>
+                        <newpos>2457 2507</newpos>
                     </stuff>
+                </post>
+                <post number="16">
+                    <stuff what="movedobject" name="ElectricSwitch">
+                        <oldpos>2457 2507</oldpos>
+                        <newpos>2472 2367</newpos>
+                    </stuff>
+                </post>
+                <post number="17">
                     <stuff what="deletedconnector">
                         <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="ElectricResistor">
                             <hopsangui>
                                 <coordinates>
-                                    <coordinate x="2410.00000000000000000000" y="2371.00000000000000000000"/>
+                                    <coordinate x="2411.00000000000000000000" y="2371.00000000000000000000"/>
                                     <coordinate x="2435.00000000000000000000" y="2371.00000000000000000000"/>
                                     <coordinate x="2435.00000000000000000000" y="2452.00000000000000000000"/>
                                     <coordinate x="2275.00000000000000000000" y="2452.00000000000000000000"/>
@@ -263,68 +266,33 @@
                             </hopsangui>
                         </connect>
                     </stuff>
-                    <stuff what="deletedobject">
-                        <component typename="ElectricResistor" name="ElectricResistor">
-                            <parameters>
-                                <parameter value="0.1" name="Conduct"/>
-                            </parameters>
-                            <hopsangui>
-                                <pose x="2384.00000000000000000000" y="2371" flipped="0" a="0"/>
-                                <nametext position="0" visible="1"/>
-                            </hopsangui>
-                        </component>
-                    </stuff>
-                </post>
-                <post number="16" type="paste"/>
-                <post number="17">
-                    <stuff what="addedobject">
-                        <component typename="ElectricVarResistor" name="ElectricVarResistor">
-                            <parameters>
-                                <parameter value="0.1" name="Conduct"/>
-                            </parameters>
-                            <hopsangui>
-                                <pose x="2382.00000000000000000000" y="2382" flipped="0" a="0"/>
-                                <nametext position="0" visible="1"/>
-                            </hopsangui>
-                        </component>
-                    </stuff>
                 </post>
                 <post number="18">
-                    <stuff what="addedconnector">
-                        <connect endport="Pel1" endcomponent="ElectricVarResistor" startport="Pel1" startcomponent="ElectricUsource">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2270.00000000000000000000" y="2382.00000000000000000000"/>
-                                    <coordinate x="2356.00000000000000000000" y="2382.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff what="movedobject" name="ElectricSwitch">
+                        <oldpos>2472 2367</oldpos>
+                        <newpos>2451 2364</newpos>
                     </stuff>
                 </post>
                 <post number="19">
-                    <stuff what="movedobject" name="ElectricVarResistor">
-                        <oldpos>2356 2369</oldpos>
-                        <newpos>2348 2358</newpos>
+                    <stuff what="movedobject" name="ElectricSwitch">
+                        <oldpos>2451 2364</oldpos>
+                        <newpos>2488 2365</newpos>
                     </stuff>
                 </post>
                 <post number="20">
                     <stuff what="addedconnector">
-                        <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="ElectricVarResistor">
+                        <connect endport="Pel2" endcomponent="ElectricSwitch" startport="Pel1" startcomponent="ElectricGround">
                             <hopsangui>
                                 <coordinates>
-                                    <coordinate x="2400.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2444.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2444.00000000000000000000" y="2459.00000000000000000000"/>
-                                    <coordinate x="2275.00000000000000000000" y="2459.00000000000000000000"/>
                                     <coordinate x="2275.00000000000000000000" y="2494.00000000000000000000"/>
+                                    <coordinate x="2275.00000000000000000000" y="2471.00000000000000000000"/>
+                                    <coordinate x="2403.00000000000000000000" y="2471.00000000000000000000"/>
+                                    <coordinate x="2403.00000000000000000000" y="2371.66667999999981475412"/>
+                                    <coordinate x="2488.00000000000000000000" y="2371.66667999999981475412"/>
+                                    <coordinate x="2488.00000000000000000000" y="2391.66667999999981475412"/>
                                 </coordinates>
                                 <geometries>
+                                    <geometry>horizontal</geometry>
                                     <geometry>vertical</geometry>
                                     <geometry>horizontal</geometry>
                                     <geometry>vertical</geometry>
@@ -335,35 +303,79 @@
                         </connect>
                     </stuff>
                 </post>
-                <post number="21" type="paste">
+                <post number="21">
+                    <stuff what="modifiedconnector" linenumber="3">
+                        <oldpos>0 0</oldpos>
+                        <newpos>2 28</newpos>
+                        <connect endport="Pel2" endcomponent="ElectricSwitch" startport="Pel1" startcomponent="ElectricGround">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2275.00000000000000000000" y="2494.00000000000000000000"/>
+                                    <coordinate x="2275.00000000000000000000" y="2471.00000000000000000000"/>
+                                    <coordinate x="2403.00000000000000000000" y="2471.00000000000000000000"/>
+                                    <coordinate x="2403.00000000000000000000" y="2399.66667999999981475412"/>
+                                    <coordinate x="2488.00000000000000000000" y="2399.66667999999981475412"/>
+                                    <coordinate x="2488.00000000000000000000" y="2391.66667999999981475412"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="22">
                     <stuff what="addedobject">
-                        <component typename="SignalRamp" name="Ramp_1">
+                        <component typename="ElectricCapacitance2" name="Capacitance">
                             <parameters>
-                                <parameter value="0" name="y_0"/>
-                                <parameter value="1" name="y_A"/>
-                                <parameter value="1" name="t_start"/>
-                                <parameter value="2" name="t_end"/>
+                                <parameter value="0" name="Pel1::Voltage"/>
+                                <parameter value="0" name="Pel1::Current"/>
+                                <parameter value="0" name="Pel2::Voltage"/>
+                                <parameter value="0" name="Pel2::Current"/>
+                                <parameter value="0.0001" name="Cc"/>
+                                <parameter value="0.1" name="alpha"/>
+                                <parameter value="0.001" name="timestep"/>
                             </parameters>
                             <hopsangui>
-                                <pose x="2200.00000000000000000000" y="2395.5" flipped="0" a="0"/>
+                                <pose x="2447.00000000000000000000" y="2391" flipped="0" a="0"/>
                                 <nametext position="0" visible="1"/>
                             </hopsangui>
                         </component>
                     </stuff>
-                    <stuff what="rotate" angle="0" objectname="Ramp_1"/>
-                    <stuff what="movedobject" name="Ramp_1">
-                        <oldpos>2187.5 2383</oldpos>
-                        <newpos>2189.5 2314.5</newpos>
-                    </stuff>
                 </post>
-                <post number="22">
+                <post number="23">
                     <stuff what="addedconnector">
-                        <connect endport="PConduct" endcomponent="ElectricVarResistor" startport="out" startcomponent="Ramp_1">
+                        <connect endport="Pel1" endcomponent="Capacitance" startport="Pel2" startcomponent="ElectricResistor">
                             <hopsangui>
                                 <coordinates>
-                                    <coordinate x="2214.50000000000000000000" y="2327.00000000000000000000"/>
-                                    <coordinate x="2374.00000000000000000000" y="2327.00000000000000000000"/>
-                                    <coordinate x="2374.00000000000000000000" y="2358.00000000000000000000"/>
+                                    <coordinate x="2411.00000000000000000000" y="2371.00000000000000000000"/>
+                                    <coordinate x="2420.50000000000000000000" y="2371.00000000000000000000"/>
+                                    <coordinate x="2420.50000000000000000000" y="2371.00000000000000000000"/>
+                                    <coordinate x="2426.50000000000000000000" y="2371.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="24">
+                    <stuff what="addedconnector">
+                        <connect endport="Pel1" endcomponent="ElectricSwitch" startport="Pel2" startcomponent="Capacitance">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2467.50000000000000000000" y="2371.00000000000000000000"/>
+                                    <coordinate x="2488.00000000000000000000" y="2371.00000000000000000000"/>
+                                    <coordinate x="2488.00000000000000000000" y="2378.33332000000018524588"/>
                                 </coordinates>
                                 <geometries>
                                     <geometry>vertical</geometry>
@@ -373,71 +385,62 @@
                             </hopsangui>
                         </connect>
                     </stuff>
-                </post>
-                <post number="23" type="changedparameters">
-                    <stuff newvalue="0.1" what="changedparameter" oldvalue="0" parametername="y_0" objectname="Ramp_1"/>
-                    <stuff newvalue="1" what="changedparameter" oldvalue="12" parametername="y_A" objectname="Ramp_1"/>
-                </post>
-                <post number="24" type="changedparameters">
-                    <stuff newvalue="2" what="changedparameter" oldvalue="5" parametername="t_start" objectname="Ramp"/>
-                    <stuff newvalue="3" what="changedparameter" oldvalue="6" parametername="t_end" objectname="Ramp"/>
                 </post>
                 <post number="25">
-                    <stuff what="movedobject" name="Ramp_1">
-                        <oldpos>2189.5 2314.5</oldpos>
-                        <newpos>2188.5 2314.5</newpos>
+                    <stuff what="movedobject" name="ElectricSwitch">
+                        <oldpos>2488 2365</oldpos>
+                        <newpos>2562 2378</newpos>
                     </stuff>
                 </post>
-                <post number="26" type="changedparameters">
-                    <stuff newvalue="0" what="changedparameter" oldvalue="1" parametername="y_A" objectname="Ramp_1"/>
+                <post number="26">
+                    <stuff what="modifiedconnector" linenumber="3">
+                        <oldpos>2 28</oldpos>
+                        <newpos>-2 68</newpos>
+                        <connect endport="Pel2" endcomponent="ElectricSwitch" startport="Pel1" startcomponent="ElectricGround">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2275.00000000000000000000" y="2494.00000000000000000000"/>
+                                    <coordinate x="2275.00000000000000000000" y="2471.00000000000000000000"/>
+                                    <coordinate x="2403.00000000000000000000" y="2471.00000000000000000000"/>
+                                    <coordinate x="2403.00000000000000000000" y="2439.66667999999981475412"/>
+                                    <coordinate x="2562.00000000000000000000" y="2439.66667999999981475412"/>
+                                    <coordinate x="2562.00000000000000000000" y="2404.66667999999981475412"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
                 </post>
-                <post number="27" type="changedparameters">
-                    <stuff newvalue="-.1" what="changedparameter" oldvalue="0" parametername="y_A" objectname="Ramp_1"/>
+                <post number="27">
+                    <stuff what="addedobject">
+                        <component typename="SignalStep" name="Step">
+                            <parameters>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="y_A"/>
+                                <parameter value="1" name="t_step"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2463.00000000000000000000" y="2297" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
                 </post>
                 <post number="28">
-                    <stuff what="deletedconnector">
-                        <connect endport="Pel1" endcomponent="ElectricVarResistor" startport="Pel1" startcomponent="ElectricUsource">
+                    <stuff what="addedconnector">
+                        <connect endport="Pstate" endcomponent="ElectricSwitch" startport="out" startcomponent="Step">
                             <hopsangui>
                                 <coordinates>
-                                    <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2348.00000000000000000000" y="2371.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                    <stuff what="deletedconnector">
-                        <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="ElectricVarResistor">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2400.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2444.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2444.00000000000000000000" y="2459.00000000000000000000"/>
-                                    <coordinate x="2275.00000000000000000000" y="2459.00000000000000000000"/>
-                                    <coordinate x="2275.00000000000000000000" y="2494.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                    <stuff what="deletedconnector">
-                        <connect endport="PConduct" endcomponent="ElectricVarResistor" startport="out" startcomponent="Ramp_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2213.50000000000000000000" y="2327.00000000000000000000"/>
-                                    <coordinate x="2374.00000000000000000000" y="2327.00000000000000000000"/>
-                                    <coordinate x="2374.00000000000000000000" y="2358.00000000000000000000"/>
+                                    <coordinate x="2475.50000000000000000000" y="2297.00000000000000000000"/>
+                                    <coordinate x="2592.00000000000000000000" y="2297.00000000000000000000"/>
+                                    <coordinate x="2592.00000000000000000000" y="2378.00000000000000000000"/>
                                 </coordinates>
                                 <geometries>
                                     <geometry>vertical</geometry>
@@ -447,103 +450,73 @@
                             </hopsangui>
                         </connect>
                     </stuff>
+                </post>
+                <post number="29">
+                    <stuff what="movedobject" name="Step">
+                        <oldpos>2450.5 2284.5</oldpos>
+                        <newpos>2450.5 2283.5</newpos>
+                    </stuff>
+                </post>
+                <post number="30" type="changedparameters">
+                    <stuff newvalue="7" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step"/>
+                </post>
+                <post number="31" type="changedparameters">
+                    <stuff newvalue="3" what="changedparameter" oldvalue="7" parametername="t_step" objectname="Step"/>
+                </post>
+                <post number="32" type="changedparameters">
+                    <stuff newvalue="0.001" what="changedparameter" oldvalue="0.0001" parametername="Cc" objectname="Capacitance"/>
+                </post>
+                <post number="33" type="changedparameters">
+                    <stuff newvalue="0.01" what="changedparameter" oldvalue="0.001" parametername="Cc" objectname="Capacitance"/>
+                </post>
+                <post number="34" type="changedparameters">
+                    <stuff newvalue="0.0001" what="changedparameter" oldvalue="0.01" parametername="Cc" objectname="Capacitance"/>
+                </post>
+                <post number="35" type="changedparameters">
+                    <stuff newvalue="0.00001" what="changedparameter" oldvalue="0.0001" parametername="Cc" objectname="Capacitance"/>
+                </post>
+                <post number="36" type="changedparameters">
+                    <stuff newvalue="0.0001" what="changedparameter" oldvalue="0.00001" parametername="Cc" objectname="Capacitance"/>
+                </post>
+                <post number="37">
+                    <stuff what="movedobject" name="ElectricSwitch">
+                        <oldpos>2566 2393.5</oldpos>
+                        <newpos>2602 2388.5</newpos>
+                    </stuff>
+                </post>
+                <post number="38">
+                    <stuff what="movedobject" name="ElectricSwitch">
+                        <oldpos>2602 2388.5</oldpos>
+                        <newpos>2488 2364.5</newpos>
+                    </stuff>
+                </post>
+                <post number="39" type="changedparameters">
+                    <stuff newvalue="7" what="changedparameter" oldvalue="3" parametername="t_step" objectname="Step"/>
+                </post>
+                <post number="40">
+                    <stuff what="addedobject">
+                        <component typename="ElectricVarResistor" name="ElectricVarResistor">
+                            <parameters>
+                                <parameter value="0.1" name="Conduct"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2335.00000000000000000000" y="2299" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="41" type="cut">
                     <stuff what="deletedobject">
                         <component typename="ElectricVarResistor" name="ElectricVarResistor">
                             <parameters>
                                 <parameter value="0.1" name="Conduct"/>
                             </parameters>
                             <hopsangui>
-                                <pose x="2374.00000000000000000000" y="2371" flipped="0" a="0"/>
+                                <pose x="2335.00000000000000000000" y="2299" flipped="0" a="0"/>
                                 <nametext position="0" visible="1"/>
                             </hopsangui>
                         </component>
-                    </stuff>
-                </post>
-                <post number="29">
-                    <stuff what="deletedobject">
-                        <component typename="SignalRamp" name="Ramp_1">
-                            <parameters>
-                                <parameter value="0.1" name="y_0"/>
-                                <parameter value="-.1" name="y_A"/>
-                                <parameter value="5" name="t_start"/>
-                                <parameter value="6" name="t_end"/>
-                            </parameters>
-                            <hopsangui>
-                                <pose x="2201.00000000000000000000" y="2327" flipped="0" a="0"/>
-                                <nametext position="0" visible="1"/>
-                            </hopsangui>
-                        </component>
-                    </stuff>
-                </post>
-                <post number="30">
-                    <stuff what="addedobject">
-                        <component typename="ElectricResistor" name="Resistor">
-                            <parameters>
-                                <parameter value="0.1" name="Conduct"/>
-                            </parameters>
-                            <hopsangui>
-                                <pose x="2343.00000000000000000000" y="2384" flipped="0" a="0"/>
-                                <nametext position="0" visible="1"/>
-                            </hopsangui>
-                        </component>
-                    </stuff>
-                </post>
-                <post number="31">
-                    <stuff what="movedobject" name="Resistor">
-                        <oldpos>2317 2380</oldpos>
-                        <newpos>2342 2348</newpos>
-                    </stuff>
-                </post>
-                <post number="32">
-                    <stuff what="addedconnector">
-                        <connect endport="Pel1" endcomponent="Resistor" startport="Pel1" startcomponent="ElectricUsource">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
-                                    <coordinate x="2270.00000000000000000000" y="2352.00000000000000000000"/>
-                                    <coordinate x="2342.00000000000000000000" y="2352.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="33">
-                    <stuff what="addedconnector">
-                        <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="Resistor">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2394.00000000000000000000" y="2352.00000000000000000000"/>
-                                    <coordinate x="2421.00000000000000000000" y="2352.00000000000000000000"/>
-                                    <coordinate x="2421.00000000000000000000" y="2447.00000000000000000000"/>
-                                    <coordinate x="2275.00000000000000000000" y="2447.00000000000000000000"/>
-                                    <coordinate x="2275.00000000000000000000" y="2494.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="34">
-                    <stuff what="movedobject" name="Resistor">
-                        <oldpos>2342 2348</oldpos>
-                        <newpos>2342 2329</newpos>
-                    </stuff>
-                </post>
-                <post number="35">
-                    <stuff what="movedobject" name="Resistor">
-                        <oldpos>2342 2329</oldpos>
-                        <newpos>2338 2362</newpos>
                     </stuff>
                 </post>
             </hopsanundo>
@@ -551,24 +524,24 @@
         <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters/>
         <objects>
-            <component typename="SignalRamp" name="Ramp">
-                <parameters>
-                    <parameter value="0" name="y_0"/>
-                    <parameter value="12" name="y_A"/>
-                    <parameter value="2" name="t_start"/>
-                    <parameter value="3" name="t_end"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2200.00000000000000000000" y="2395.5" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="ElectricResistor" name="Resistor">
+            <component typename="ElectricResistor" name="ElectricResistor">
                 <parameters>
                     <parameter value="0.1" name="Conduct"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2364.00000000000000000000" y="2366" flipped="0" a="0"/>
+                    <pose x="2385.00000000000000000000" y="2371" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalRamp" name="Ramp">
+                <parameters>
+                    <parameter value="0" name="y_0"/>
+                    <parameter value="12" name="y_A"/>
+                    <parameter value="5" name="t_start"/>
+                    <parameter value="6" name="t_end"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2200.00000000000000000000" y="2395.5" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -582,6 +555,21 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <component typename="ElectricCapacitance2" name="Capacitance">
+                <parameters>
+                    <parameter value="0" name="Pel1::Voltage"/>
+                    <parameter value="0" name="Pel1::Current"/>
+                    <parameter value="0" name="Pel2::Voltage"/>
+                    <parameter value="0" name="Pel2::Current"/>
+                    <parameter value="0.0001" name="Cc"/>
+                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0.001" name="timestep"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2447.00000000000000000000" y="2392.2628992628992819" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
             <component typename="ElectricGround" name="ElectricGround">
                 <parameters>
                     <parameter value="0" name="Pel1::Voltage"/>
@@ -592,8 +580,42 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="0" name="y_0"/>
+                    <parameter value="1" name="y_A"/>
+                    <parameter value="7" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2463.00000000000000000000" y="2296" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="ElectricSwitch" name="ElectricSwitch">
+                <parameters>
+                    <parameter value="0.1" name="state"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2514.00000000000000000000" y="2369" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
         </objects>
         <connections>
+            <connect endport="Pel1" endcomponent="ElectricResistor" startport="Pel1" startcomponent="ElectricUsource">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2359.00000000000000000000" y="2371.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
             <connect endport="Puin" endcomponent="ElectricUsource" startport="out" startcomponent="Ramp">
                 <hopsangui>
                     <coordinates>
@@ -610,32 +632,64 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="Pel1" endcomponent="Resistor" startport="Pel1" startcomponent="ElectricUsource">
+            <connect endport="Pel2" endcomponent="ElectricSwitch" startport="Pel1" startcomponent="ElectricGround">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2270.00000000000000000000" y="2371.00000000000000000000"/>
-                        <coordinate x="2270.00000000000000000000" y="2366.00000000000000000000"/>
-                        <coordinate x="2338.00000000000000000000" y="2366.00000000000000000000"/>
+                        <coordinate x="2275.00000000000000000000" y="2494.00000000000000000000"/>
+                        <coordinate x="2275.00000000000000000000" y="2471.00000000000000000000"/>
+                        <coordinate x="2403.00000000000000000000" y="2471.00000000000000000000"/>
+                        <coordinate x="2403.00000000000000000000" y="2439.66667999999981475412"/>
+                        <coordinate x="2540.00000000000000000000" y="2439.66667999999981475412"/>
+                        <coordinate x="2540.00000000000000000000" y="2370.80000000000018189894"/>
                     </coordinates>
                     <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="Capacitance" startport="Pel2" startcomponent="ElectricResistor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2411.00000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2420.50000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2420.50000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2426.50000000000000000000" y="2371.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="Resistor">
+            <connect endport="Pel1" endcomponent="ElectricSwitch" startport="Pel2" startcomponent="Capacitance">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2390.00000000000000000000" y="2366.00000000000000000000"/>
-                        <coordinate x="2421.00000000000000000000" y="2366.00000000000000000000"/>
-                        <coordinate x="2421.00000000000000000000" y="2447.00000000000000000000"/>
-                        <coordinate x="2275.00000000000000000000" y="2447.00000000000000000000"/>
-                        <coordinate x="2275.00000000000000000000" y="2494.00000000000000000000"/>
+                        <coordinate x="2467.50000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2488.00000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2488.00000000000000000000" y="2371.07000000000016370905"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pstate" endcomponent="ElectricSwitch" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2475.50000000000000000000" y="2296.00000000000000000000"/>
+                        <coordinate x="2514.00000000000000000000" y="2296.00000000000000000000"/>
+                        <coordinate x="2514.00000000000000000000" y="2364.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
