@@ -7,6 +7,8 @@
         </icons>
         <portpositions>
             <portpose x="0.0" y="0.5" a="180" name="in"/>
+            <portpose x="1.0" y="0.5" a="0" name="in_right"/>
+            <portpose x="0.5" y="1.0" a="90" name="in_bottom"/>
         </portpositions>
     </modelobject>
 </hopsanobjectappearance>

@@ -38,6 +38,8 @@ namespace hopsan {
 
     private:
         Port *mpIn;
+        Port *mpInRight;
+        Port *mpInBottom;
 
     public:
         static Component *Creator()
@@ -47,8 +49,9 @@ namespace hopsan {
 
         SignalSink() : ComponentSignal()
         {
-
             mpIn = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpInRight = addReadMultiPort("in_right", "NodeSignal", Port::NOTREQUIRED);
+            mpInBottom = addReadPort("in_bottom", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
