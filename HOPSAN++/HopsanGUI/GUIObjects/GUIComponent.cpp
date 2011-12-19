@@ -24,12 +24,15 @@
 
 #include <QDrag>
 
-#include "GUIComponent.h"
-#include "GUIContainerObject.h"
-#include "Dialogs/ComponentPropertiesDialog.h"
-#include "GUIPort.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Configuration.h"
 #include "GraphicsView.h"
+#include "GUIPort.h"
+#include "PlotWindow.h"
+#include "Dialogs/ComponentPropertiesDialog.h"
+#include "GUIObjects/GUIComponent.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "Widgets/ProjectTabWidget.h"
+
 
 GUIComponent::GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -82,6 +85,7 @@ bool GUIComponent::hasPowerPorts()
 
 
 //! Event when double clicking on component icon.
+//! @todo Fix the sink component so it works with this
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
@@ -105,6 +109,22 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                 getPort("in")->getConnectedPorts().at(i)->plotToPlotWindow(pPlotWindow, "Value");
             }
         }
+        if(this->getPort("in_right")->isConnected() && pPlotWindow)
+        {
+            for(int i=0; (i<getPort("in_right")->getConnectedPorts().size() && pPlotWindow != 0); ++i)
+            {
+                getPort("in_right")->getConnectedPorts().at(i)->plotToPlotWindow(pPlotWindow, "Value", QString(), 1);
+            }
+        }
+        if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
+        {
+            QString componentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
+            QString portName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
+            QString dataName = "Value";
+            pPlotWindow->changeXVector(mpParentContainerObject->getPlotData(mpParentContainerObject->getNumberOfPlotGenerations()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
+        }
+
+        //No plot window was opened, so it is a non-connected sink - open properties instead
         if(!pPlotWindow)
         {
             openPropertiesDialog();

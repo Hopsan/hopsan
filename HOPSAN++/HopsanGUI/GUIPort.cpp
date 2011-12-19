@@ -563,7 +563,7 @@ PlotWindow *GUIPort::plot(QString dataName, QString dataUnit, QColor desiredCurv
 //! @param pPlotWindow Pointer to plot window to add curve to
 //! @param dataName Name of the data variable to plot
 //! @param dataUnit Desired data unit (empty = use default)
-void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit)
+void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit, int axisY)
 {
     //Make sure plot data exists
     QPair<QVector<double>, QVector<double> > vectors;
@@ -576,7 +576,7 @@ void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QStrin
         return;         //Return if it does not
 
     //Add new curve to the plot window
-    pPlotWindow->addPlotCurve(mpParentGuiModelObject->mpParentContainerObject->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit);
+    pPlotWindow->addPlotCurve(mpParentGuiModelObject->mpParentContainerObject->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
 }
 
 
