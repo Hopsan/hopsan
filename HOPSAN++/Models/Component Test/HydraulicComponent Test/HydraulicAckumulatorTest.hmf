@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.2" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
     <system typename="Subsystem" name="HydraulicAckumulatorTest">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2243.5" y="2500" zoom="1"/>
+            <viewport x="2436.5" y="2501.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="HydraulicAckumulatorTest">
                     <icons>
-                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
                     </icons>
                 </modelobject>
                 <portpositions/>
@@ -83,6 +83,63 @@
                         <oldpos>2462.5 2462.5</oldpos>
                         <newpos>2461.5 2462.5</newpos>
                     </stuff>
+                </post>
+                <post number="17">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="PVa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2366.00000000000000000000" y="2430.00000000000000000000"/>
+                                    <coordinate x="2366.00000000000000000000" y="2407.00000000000000000000"/>
+                                    <coordinate x="2461.50000000000000000000" y="2407.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="PVa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2366.00000000000000000000" y="2430.00000000000000000000"/>
+                                    <coordinate x="2366.00000000000000000000" y="2407.00000000000000000000"/>
+                                    <coordinate x="2461.50000000000000000000" y="2407.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="19">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="PVa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2366.00000000000000000000" y="2430.00000000000000000000"/>
+                                    <coordinate x="2366.00000000000000000000" y="2407.00000000000000000000"/>
+                                    <coordinate x="2461.50000000000000000000" y="2407.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="20" type="changedparameters">
+                    <stuff newvalue="0.01" what="changedparameter" oldvalue="0.001" parametername="V0" objectname="Gas Accumulator"/>
                 </post>
             </hopsanundo>
         </hopsangui>
@@ -164,12 +221,12 @@
             </component>
             <component typename="HydraulicAckumulator" name="Gas Accumulator">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
-                    <parameter value="1e+006" name="P_min"/>
-                    <parameter value="0.005" name="V_tot"/>
-                    <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="1.4" name="Kappa"/>
-                    <parameter value="1e-08" name="K_ce"/>
+                    <parameter value="0" name="PVa::Value"/>
+                    <parameter value="0" name="Ppa::Value"/>
+                    <parameter value="1e+007" name="p0"/>
+                    <parameter value="0.01" name="V0"/>
+                    <parameter value="1e-008" name="Kca"/>
+                    <parameter value="1.2" name="kappa"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2366.00000000000000000000" y="2475" flipped="0" a="0"/>
@@ -284,7 +341,7 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Gas Accumulator">
+            <connect endport="in" endcomponent="Sink" startport="PVa" startcomponent="Gas Accumulator">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2366.00000000000000000000" y="2430.00000000000000000000"/>

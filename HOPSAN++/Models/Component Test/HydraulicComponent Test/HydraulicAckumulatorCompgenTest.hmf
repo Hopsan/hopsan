@@ -4,13 +4,15 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2407.5" y="2468.5" zoom="1"/>
+            <viewport x="2408.5" y="2469.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.2">
                 <modelobject typename="Subsystem" displayname="HydraulicAckumulatorCompgenTest">
-                    <icons/>
+                    <icons>
+                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
@@ -36,9 +38,21 @@
                 <post number="17"/>
                 <post number="18"/>
                 <post number="19"/>
+                <post number="20">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2456.5 2559.5</oldpos>
+                        <newpos>2455.5 2559.5</newpos>
+                    </stuff>
+                </post>
+                <post number="21" type="changedparameters">
+                    <stuff newvalue="0.01" what="changedparameter" oldvalue="0.001" parametername="V0" objectname="Gas Accumulator_1"/>
+                </post>
+                <post number="22" type="changedparameters">
+                    <stuff newvalue="0.001" what="changedparameter" oldvalue="0.01" parametername="V0" objectname="Gas Accumulator_1"/>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="20" timestep="0.001" start="0"/>
+        <simulationtime stop="50" timestep="0.001" start="0"/>
         <parameters/>
         <objects>
             <component typename="HydraulicAckumulator" name="Gas Accumulator_1">
@@ -115,7 +129,7 @@
             <component typename="SignalSink" name="Sink_2">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2469.00000000000000000000" y="2572" flipped="0" a="0"/>
+                    <pose x="2468.00000000000000000000" y="2572" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -215,7 +229,7 @@
                     <coordinates>
                         <coordinate x="2378.00000000000000000000" y="2446.00000000000000000000"/>
                         <coordinate x="2378.00000000000000000000" y="2572.00000000000000000000"/>
-                        <coordinate x="2456.50000000000000000000" y="2572.00000000000000000000"/>
+                        <coordinate x="2455.50000000000000000000" y="2572.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
