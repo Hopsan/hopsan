@@ -18,6 +18,7 @@
             </hopsanobjectappearance>
             <hopsanundo>
                 <post number="-1"/>
+                <post number="0"/>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="1.5" timestep="0.001" start="-0.1"/>
@@ -483,7 +484,7 @@
                     <parameter value="1" name="t_end"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2211.82409590909219332389" y="2039.0235839047631998" flipped="0" a="0"/>
+                    <pose x="2259.32146425724386062939" y="2064.0235839047631998" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -1341,8 +1342,8 @@
             <connect endport="in" endcomponent="4/3 Servo Valve" startport="out" startcomponent="Ramp">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2224.32409590909219332389" y="2039.02358390476319982554"/>
-                        <coordinate x="2346.32409590909219332389" y="2039.02358390476319982554"/>
+                        <coordinate x="2271.82146425724386062939" y="2064.02358390476319982554"/>
+                        <coordinate x="2346.32409590909219332389" y="2064.02358390476319982554"/>
                         <coordinate x="2346.32409590909219332389" y="2064.02358390476319982554"/>
                         <coordinate x="2366.32409590909219332389" y="2064.02358390476319982554"/>
                     </coordinates>
