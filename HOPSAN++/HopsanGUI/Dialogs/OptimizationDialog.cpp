@@ -550,6 +550,10 @@ void OptimizationDialog::generateScriptFile()
     scriptStream << "##### Import required packages #####\n";
     scriptStream << "\n";
     scriptStream << "import sys\n";
+    scriptStream << "import time\n";
+    scriptStream << "\n";
+    scriptStream << "startTime = time.time()\n";
+    scriptStream << "\n";
     scriptStream << "sys.path.append('" << gExecPath+QString(SCRIPTPATH) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
     scriptStream << "from OptimizationObjectiveFunctions import *\n";
@@ -580,7 +584,7 @@ void OptimizationDialog::generateScriptFile()
         scriptStream << "hopsan.closeAllModels()\n";
         scriptStream << "for i in range(nThreads):\n";
         scriptStream << "  hopsan.loadModel(modelPath)\n";
-        scriptStream << "  hopsan.useSingleCore()\n";
+        scriptStream << "hopsan.useMultiCore()\n";
     }
     scriptStream << "\n";
     scriptStream << "\n";
@@ -821,17 +825,20 @@ void OptimizationDialog::generateScriptFile()
     }
     scriptStream << "  if min(obj) == 0:\n";
     scriptStream << "    if abs(max(obj)-min(obj)) <= tolFunc:\n";
-    scriptStream << "      print(\"Convergence in function values.\")\n";
+    scriptStream << "      elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "      print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
     scriptStream << "      break\n";
     scriptStream << "  elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
-    scriptStream << "    print(\"Convergence in function values.\")\n";
+    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "    print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
     scriptStream << "    break\n";
     scriptStream << "  xConverged=True\n";
     scriptStream << "  for i in range(len(parameterNames)):\n";
     scriptStream << "    if abs((maxPar(parameters, i)-minPar(parameters,i))/(maxValues[i]-minValues[i])) > tolX:\n";
     scriptStream << "      xConverged=False;\n";
     scriptStream << "  if xConverged:\n";
-    scriptStream << "    print(\"Converged in parameter values.\")\n";
+    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "    print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
     scriptStream << "    break\n";
     scriptStream << "\n";
     if(!mpPlottingCheckBox->isChecked())
@@ -1202,7 +1209,7 @@ void OptimizationDialog::updateOutputBox()
 //! @brief Generates file name for the script
 QString OptimizationDialog::generateFileName()
 {
-    QString dateString = QDateTime::currentDateTime().toString();
+    QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
     qDebug() << "dateString = " << dateString.toUtf8();
     dateString.replace(":", "_");
     dateString.replace(".", "_");
