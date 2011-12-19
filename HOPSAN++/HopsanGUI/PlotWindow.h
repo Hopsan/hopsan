@@ -73,6 +73,7 @@ signals:
     void curveAdded();
 
 public slots:
+    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void addPlotTab(QString requestedName=QString());
     void close();
     void updatePalette();
