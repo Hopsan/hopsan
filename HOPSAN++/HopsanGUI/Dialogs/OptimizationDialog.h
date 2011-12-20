@@ -62,7 +62,7 @@ protected:
 
 public slots:
     virtual void open();
-    virtual void reject();
+    virtual void okPressed();
 
 private slots:
     void updateChosenParameters(QTreeWidgetItem* item, int i);
@@ -147,7 +147,7 @@ private:
 
     //Buttons
     QPushButton *mpCancelButton;
-    QPushButton *mpApplyButton;
+    QPushButton *mpOkButton;
     QPushButton *mpGenerateButton;
     QPushButton *mpRunButton;
     QDialogButtonBox *mpButtonBox;

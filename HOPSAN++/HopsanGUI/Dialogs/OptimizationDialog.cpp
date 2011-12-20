@@ -230,12 +230,15 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     //Buttons
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpCancelButton->setAutoDefault(false);
+    mpOkButton = new QPushButton(tr("&Ok"), this);
+    mpOkButton->setAutoDefault(false);
     mpGenerateButton = new QPushButton(tr("&Generate Script"), this);
     mpGenerateButton->setDefault(true);
     mpRunButton = new QPushButton(tr("&Run Optimization"), this);
     mpRunButton->setDefault(true);
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpGenerateButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpRunButton, QDialogButtonBox::ActionRole);
 
@@ -248,6 +251,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 
     //Connections
     connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
+    connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(okPressed()));
     connect(mpGenerateButton,               SIGNAL(clicked()),      this,                   SLOT(updateOutputBox()));
     connect(mpRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
     connect(mpAddFunctionButton,            SIGNAL(clicked()),      this,                   SLOT(addFunction()));
@@ -486,11 +490,11 @@ void OptimizationDialog::open()
 }
 
 
-void OptimizationDialog::reject()
+void OptimizationDialog::okPressed()
 {
     saveConfiguration();
 
-    QDialog::reject();
+    reject();
 }
 
 
