@@ -1,0 +1,43 @@
+<hopsanobjectappearance version='0.1'>
+ 
+ <modelobject typename='HydraulicValve416'
+     displayname='HydraulicValve416'>
+  
+  <icon isopath='HydraulicValve416.svg'
+      iconrotation='ON'
+      userpath='HydraulicValve416.svg'/>
+   <portpose x='0.45'
+       y='1'
+       a='90'
+       name='Pp' />
+   <portpose x='0.71'
+       y='1'
+       a='90'
+       name='Pt' />
+   <portpose x='0.45'
+       y='0'
+       a='270'
+       name='Pa' />
+   <portpose x='0.71'
+       y='0'
+       a='270'
+       name='Pb' />
+   <portpose x='0'
+       y='0.37'
+       a='180'
+       name='Pxvpa' />
+   <portpose x='0'
+       y='0.47'
+       a='180'
+       name='Pxvpb' />
+   <portpose x='0'
+       y='0.68'
+       a='180'
+       name='Pxvta' />
+   <portpose x='0'
+       y='0.78'
+       a='180'
+       name='Pxvtb' />
+
+</modelobject>
+</hopsanobjectappearance>
