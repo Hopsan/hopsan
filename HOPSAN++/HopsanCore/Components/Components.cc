@@ -78,6 +78,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("Hydraulic33ShuttleValve", Hydraulic33ShuttleValve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicValve416", HydraulicValve416::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43ValveNeutralToTank", Hydraulic43ValveNeutralToTank::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43ValveNeutralSupplyToTank", Hydraulic43ValveNeutralSupplyToTank::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
@@ -143,7 +144,6 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* pComponentFac
     pComponentFactory->registerCreatorFunction("SignalHP1Filter", SignalHP1Filter::Creator);
     pComponentFactory->registerCreatorFunction("SignalHP2Filter", SignalHP2Filter::Creator);
     pComponentFactory->registerCreatorFunction("SignalPIlead", SignalPIlead::Creator);
-    pComponentFactory->registerCreatorFunction("SignalAttitude", SignalAttitude::Creator);
     pComponentFactory->registerCreatorFunction("SignalPulse", SignalPulse::Creator);
     pComponentFactory->registerCreatorFunction("SignalMin", SignalMin::Creator);
     pComponentFactory->registerCreatorFunction("SignalMax", SignalMax::Creator);
