@@ -331,14 +331,16 @@ void OptimizationDialog::saveConfiguration()
         objective.mNorm   = mNormLineEditPtrs.at(i)->text().toDouble();
         objective.mExp    = mExpLineEditPtrs.at(i)->text().toDouble();
 
-        QStringList variableInfo;
         for(int j=0; j < mFunctionComponents.at(i).size(); ++j)
         {
+            QStringList variableInfo;
+
             variableInfo << mFunctionComponents.at(i).at(j);
             variableInfo << mFunctionPorts.at(i).at(j);
             variableInfo << mFunctionVariables.at(i).at(j);
+
+            objective.mVariableInfo.append(variableInfo);
         }
-        objective.mVariableInfo.append(variableInfo);
 
         for(int j=0; j < mDataLineEditPtrs.at(i).size(); ++j)
         {
