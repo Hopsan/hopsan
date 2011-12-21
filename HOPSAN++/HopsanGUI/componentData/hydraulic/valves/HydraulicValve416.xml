@@ -1,7 +1,7 @@
 <hopsanobjectappearance version='0.1'>
  
  <modelobject typename='HydraulicValve416'
-     displayname='HydraulicValve416'>
+     displayname='4/16 Valve'>
   
   <icon isopath='HydraulicValve416.svg'
       iconrotation='ON'
