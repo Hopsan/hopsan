@@ -4,6 +4,6 @@
         <icon isopath="ElectricVarResistor.svg" iconrotation="ON" userpath="ElectricVarResistor.svg"/>
         <portpose x="0" y="0.5" a="180" name="Pel1"/>
         <portpose x="1" y="0.5" a="0" name="Pel2"/>
-       <portpose x="0.5" y="0" a="270" name="PConduct"/>
+       <portpose x="0.5" y="0" a="90" name="PConduct"/>
     </modelobject>
 </hopsanobjectappearance>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hopsanobjectappearance version="0.1">
+  <modelobject typename="ElectricMotorGear" displayname="DC Motor With Gear">
+    <icon isopath="ElectricMotorGear.svg" iconrotation="ON" userpath="ElectricMotorGear.svg" />
+    <portpose x="0.25" y="0" a="90" name="Pel1" />
+    <portpose x="0.25" y="1" a="270" name="Pel2" />
+    <portpose x="1" y="0.5" a="180" name="Pmr1" />
+    <portpose x="0.75" y="0.3" a="270" name="PgearRatio" />
+    <portpose x="1" y="0.7" a="0" name="Pwm" />
+    <portpose x="1" y="0.9" a="0" name="Ptormg" />
+    <portpose x="0.7" y="1" a="90" name="PPin" />
+    <portpose x="0.9" y="1" a="90" name="PPout" />
+  </modelobject>
+</hopsanobjectappearance>
