@@ -19,6 +19,16 @@ def indexOfMax(data):
   return maxId
 
 #Returns the index of the maximum value in vector data
+def indexOfMin(data):
+  min = data[0]
+  minId=0
+  for i in range(len(data)):
+    if data[i] < min:
+      min=data[i]
+      minId=i
+  return minId
+
+#Returns the index of the maximum value in vector data
 def indexOfMaxN(data, N):
   maxIds = []
   for t in range(N):

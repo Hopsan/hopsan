@@ -48,6 +48,8 @@ public:
 
 private:
     void generateScriptFile();
+    void generateComplexScript();
+    void generateParticleSwarmScript();
     bool verifyNumberOfVariables(int i, int nSelVar);
     bool loadObjectiveFunctions();
     QString generateFunctionCode(int i);
@@ -65,6 +67,7 @@ public slots:
     virtual void okPressed();
 
 private slots:
+    void setAlgorithm(int i);
     void updateChosenParameters(QTreeWidgetItem* item, int i);
     void removeParameter();
     void updateChosenVariables(QTreeWidgetItem* item, int i);
@@ -79,16 +82,26 @@ private:
     QLabel *mpSettingsLabel;
     QWidget *mpSettingsWidget;
     QGridLayout *mpSettingsLayout;
+    QLabel *mpAlgorithmLabel;
+    QComboBox *mpAlgorithmBox;
     QLabel *mpIterationsLabel;
     QSpinBox *mpIterationsSpinBox;
     QLabel *mpSearchPointsLabel;
     QSpinBox *mpSearchPointsSpinBox;
+    QLabel *mpParticlesLabel;
+    QSpinBox *mpParticlesSpinBox;
     QLabel *mpAlphaLabel;
     QLineEdit *mpAlphaLineEdit;
     QLabel *mpBetaLabel;
     QLineEdit *mpBetaLineEdit;
     QLabel *mpGammaLabel;
     QLineEdit *mpGammaLineEdit;
+    QLabel *mpOmegaLabel;
+    QLineEdit *mpOmegaLineEdit;
+    QLabel *mpC1Label;
+    QLineEdit *mpC1LineEdit;
+    QLabel *mpC2Label;
+    QLineEdit *mpC2LineEdit;
     QLabel *mpEpsilonFLabel;
     QLineEdit *mpEpsilonFLineEdit;
     QLabel *mpEpsilonXLabel;

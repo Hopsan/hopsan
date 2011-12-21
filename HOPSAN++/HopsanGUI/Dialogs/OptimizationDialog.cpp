@@ -51,6 +51,11 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     boldFont.setBold(true);
     mpSettingsLabel->setFont(boldFont);
 
+    mpAlgorithmLabel = new QLabel("Optimiation algorithm:");
+    mpAlgorithmBox = new QComboBox(this);
+    mpAlgorithmBox->addItems(QStringList() << "Complex" << "Particle Swarm");
+    connect(mpAlgorithmBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
+
     mpIterationsLabel = new QLabel("Number of iterations:");
     mpIterationsSpinBox = new QSpinBox(this);
     mpIterationsSpinBox->setRange(0, std::numeric_limits<int>::max());
@@ -60,6 +65,11 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpSearchPointsSpinBox = new QSpinBox(this);
     mpSearchPointsSpinBox->setRange(1, std::numeric_limits<int>::max());
     mpSearchPointsSpinBox->setValue(8);
+
+    mpParticlesLabel = new QLabel("Number of particles:" );
+    mpParticlesSpinBox = new QSpinBox(this);
+    mpParticlesSpinBox->setRange(1, std::numeric_limits<int>::max());
+    mpParticlesSpinBox->setValue(20);
 
     mpAlphaLabel = new QLabel("Reflection coefficient: ");
     mpAlphaLineEdit = new QLineEdit("1.3", this);
@@ -72,6 +82,18 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpGammaLabel = new QLabel("Forgetting factor: ");
     mpGammaLineEdit = new QLineEdit("0.3", this);
     mpGammaLineEdit->setValidator(new QDoubleValidator());
+
+    mpOmegaLabel = new QLabel("Inertia Weight: ");
+    mpOmegaLineEdit = new QLineEdit("1", this);
+    mpOmegaLineEdit->setValidator(new QDoubleValidator());
+
+    mpC1Label = new QLabel("Learning factor 1: ");
+    mpC1LineEdit = new QLineEdit("2", this);
+    mpC1LineEdit->setValidator(new QDoubleValidator());
+
+    mpC2Label = new QLabel("Learning Factor 2: ");
+    mpC2LineEdit = new QLineEdit("2", this);
+    mpC2LineEdit->setValidator(new QDoubleValidator());
 
     mpEpsilonFLabel = new QLabel("Tolerance for function convergence: ");
     mpEpsilonFLineEdit = new QLineEdit("0.00001", this);
@@ -103,26 +125,36 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 
     mpSettingsLayout = new QGridLayout(this);
     mpSettingsLayout->addWidget(mpSettingsLabel,        0, 0);
-    mpSettingsLayout->addWidget(mpIterationsLabel,      1, 0);
-    mpSettingsLayout->addWidget(mpIterationsSpinBox,    1, 1);
-    mpSettingsLayout->addWidget(mpSearchPointsLabel,    2, 0);
-    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,  2, 1);
-    mpSettingsLayout->addWidget(mpAlphaLabel,           3, 0);
-    mpSettingsLayout->addWidget(mpAlphaLineEdit,         3, 1);
-    mpSettingsLayout->addWidget(mpBetaLabel,            4, 0);
-    mpSettingsLayout->addWidget(mpBetaLineEdit,          4, 1);
-    mpSettingsLayout->addWidget(mpGammaLabel,           5, 0);
-    mpSettingsLayout->addWidget(mpGammaLineEdit,         5, 1);
-    mpSettingsLayout->addWidget(mpEpsilonFLabel,        6, 0);
-    mpSettingsLayout->addWidget(mpEpsilonFLineEdit,      6, 1);
-    mpSettingsLayout->addWidget(mpEpsilonXLabel,        7, 0);
-    mpSettingsLayout->addWidget(mpEpsilonXLineEdit,      7, 1);
-    mpSettingsLayout->addWidget(mpMultiThreadedCheckBox, 8, 0);
-    mpSettingsLayout->addWidget(mpThreadsLabel,          9, 0);
-    mpSettingsLayout->addWidget(mpThreadsSpinBox,        9, 1);
-    mpSettingsLayout->addWidget(mpPlottingCheckBox,      10, 0, 1, 2);
-    mpSettingsLayout->addWidget(mpExport2CSVBox,         11, 0, 1, 2);
-    mpSettingsLayout->addWidget(new QWidget(this),       12, 0, 1, 2);    //Dummy widget for stretching the layout
+    mpSettingsLayout->addWidget(mpAlgorithmLabel,       1, 0);
+    mpSettingsLayout->addWidget(mpAlgorithmBox,         1, 1);
+    mpSettingsLayout->addWidget(mpIterationsLabel,      2, 0);
+    mpSettingsLayout->addWidget(mpIterationsSpinBox,    2, 1);
+    mpSettingsLayout->addWidget(mpSearchPointsLabel,    3, 0);
+    mpSettingsLayout->addWidget(mpSearchPointsSpinBox,  3, 1);
+    mpSettingsLayout->addWidget(mpParticlesLabel,       3, 0);
+    mpSettingsLayout->addWidget(mpParticlesSpinBox,     3, 1);
+    mpSettingsLayout->addWidget(mpAlphaLabel,           4, 0);
+    mpSettingsLayout->addWidget(mpAlphaLineEdit,        4, 1);
+    mpSettingsLayout->addWidget(mpOmegaLabel,           4, 0);
+    mpSettingsLayout->addWidget(mpOmegaLineEdit,        4, 1);
+    mpSettingsLayout->addWidget(mpBetaLabel,            5, 0);
+    mpSettingsLayout->addWidget(mpBetaLineEdit,         5, 1);
+    mpSettingsLayout->addWidget(mpC1Label,              5, 0);
+    mpSettingsLayout->addWidget(mpC1LineEdit,           5, 1);
+    mpSettingsLayout->addWidget(mpGammaLabel,           6, 0);
+    mpSettingsLayout->addWidget(mpGammaLineEdit,        6, 1);
+    mpSettingsLayout->addWidget(mpC2Label,              6, 0);
+    mpSettingsLayout->addWidget(mpC2LineEdit,           6, 1);
+    mpSettingsLayout->addWidget(mpEpsilonFLabel,        7, 0);
+    mpSettingsLayout->addWidget(mpEpsilonFLineEdit,     7, 1);
+    mpSettingsLayout->addWidget(mpEpsilonXLabel,        8, 0);
+    mpSettingsLayout->addWidget(mpEpsilonXLineEdit,     8, 1);
+    mpSettingsLayout->addWidget(mpMultiThreadedCheckBox,9, 0);
+    mpSettingsLayout->addWidget(mpThreadsLabel,         10, 0);
+    mpSettingsLayout->addWidget(mpThreadsSpinBox,       10, 1);
+    mpSettingsLayout->addWidget(mpPlottingCheckBox,     11, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpExport2CSVBox,        12, 0, 1, 2);
+    mpSettingsLayout->addWidget(new QWidget(this),      13, 0, 1, 2);    //Dummy widget for stretching the layout
     mpSettingsLayout->setRowStretch(0, 0);
     mpSettingsLayout->setRowStretch(1, 0);
     mpSettingsLayout->setRowStretch(2, 0);
@@ -136,6 +168,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpSettingsLayout->setRowStretch(10, 1);
     mpSettingsWidget = new QWidget(this);
     mpSettingsWidget->setLayout(mpSettingsLayout);
+    setAlgorithm(0);
 
     //Parameter tab
     mpParametersLabel = new QLabel("Choose optimization parameters, and specify their minimum and maximum values.");
@@ -503,9 +536,6 @@ void OptimizationDialog::okPressed()
 //! @brief Generates the Python script based upon selections made in the dialog
 void OptimizationDialog::generateScriptFile()
 {
-    bool multicore = mpMultiThreadedCheckBox->isChecked();
-    int nThreads = mpThreadsSpinBox->value();
-
     if(mSelectedParameters.isEmpty())
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("No parameters specified for optimization.");
@@ -518,6 +548,24 @@ void OptimizationDialog::generateScriptFile()
         return;
     }
 
+    switch (mpAlgorithmBox->currentIndex())
+    {
+    case 0 :
+        generateComplexScript();
+        break;
+    case 1 :
+        generateParticleSwarmScript();
+        break;
+    default :
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Algorithm type undefined.");
+    }
+}
+
+
+void OptimizationDialog::generateComplexScript()
+{
+    bool multicore = mpMultiThreadedCheckBox->isChecked();
+    int nThreads = mpThreadsSpinBox->value();
     QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
     QString alphaString = QString().setNum(mpAlphaLineEdit->text().toDouble());
     QString betaString = QString().setNum(mpBetaLineEdit->text().toDouble());
@@ -528,23 +576,6 @@ void OptimizationDialog::generateScriptFile()
     QTextStream scriptStream(&mScript);
 
     scriptStream << "# coding=utf-8\n";
-    scriptStream << "################################################################################\n";
-    scriptStream << "## This Python script is automatic generated by Hopsan NG                     ##\n";
-    scriptStream << "##                                                                            ##\n";
-
-    //Maybe there should not be a copyright on the generated script file??
-
-    scriptStream << "## Copyright (c) " << QDate::currentDate().year() << "                                                         ##\n";
-    scriptStream << "##    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Bjorn Eriksson,       ##\n";
-    scriptStream << "##    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack                 ##\n";
-    scriptStream << "##                                                                            ##\n";
-    scriptStream << "## This file is provided \"as is\", with no guarantee or warranty for the     ##\n";
-    scriptStream << "## functionality or reliability of the contents. All contents in this file is ##\n";
-    scriptStream << "## the original work of the copyright holders at the Division of Fluid and    ##\n";
-    scriptStream << "## Mechatronic Systems (Flumes) at Linkoping University. Modifying, using or  ##\n";
-    scriptStream << "## redistributing any part of this file is prohibited without explicit        ##\n";
-    scriptStream << "## permission from the copyright holders.                                     ##\n";
-    scriptStream << "################################################################################\n";
     scriptStream << "##########################################################\n";
     scriptStream << "## Complex Optimization Script for Hopsan               ##\n";
     scriptStream << "##                                                      ##\n";
@@ -882,6 +913,365 @@ void OptimizationDialog::generateScriptFile()
         scriptStream << "    writer.writerow(values)\n";
         scriptStream << "fl.close()\n";
     }
+}
+
+
+void OptimizationDialog::generateParticleSwarmScript()
+{
+    bool multicore = mpMultiThreadedCheckBox->isChecked();
+    QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
+    QString particlesString = QString().setNum(mpParticlesSpinBox->value());
+    QString omegaString = QString().setNum(mpOmegaLineEdit->text().toDouble());
+    QString c1String = QString().setNum(mpC1LineEdit->text().toDouble());
+    QString c2String = QString().setNum(mpC2LineEdit->text().toDouble());
+    QString tolFuncString = QString().setNum(mpEpsilonFLineEdit->text().toDouble());
+    QString tolXString = QString().setNum(mpEpsilonXLineEdit->text().toDouble());
+    int nParameters = mpParameterLabels.size();
+    int nParticles = mpParticlesSpinBox->value();
+    int nComponents = mSelectedComponents.size();
+
+    mScript.clear();
+
+    QTextStream scriptStream(&mScript);
+
+    scriptStream << "# coding=utf-8\n";
+    scriptStream << "##########################################################\n";
+    scriptStream << "## Particle Swarm Optimization Script for Hopsan        ##\n";
+    scriptStream << "##                                                      ##\n";
+    scriptStream << "## Export routine written by Robert Braun, October 2011 ##\n";
+    scriptStream << "##########################################################\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Import required packages #####\n";
+    scriptStream << "\n";
+    scriptStream << "import sys\n";
+    scriptStream << "import time\n";
+    scriptStream << "\n";
+    scriptStream << "startTime = time.time()\n";
+    scriptStream << "\n";
+    scriptStream << "sys.path.append('" << gExecPath+QString(SCRIPTPATH) <<"')\n";
+    scriptStream << "from HopsanOptimization import *\n";
+    scriptStream << "from OptimizationObjectiveFunctions import *\n";
+    scriptStream << "import random\n";
+    scriptStream << "from time import sleep\n";
+    scriptStream << "from types import FloatType\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Initialize Hopsan #####\n";
+    scriptStream << "\n";
+    scriptStream << "hopsan.turnOffProgressBar()\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Simulation settings #####\n";
+    scriptStream << "\n";
+    scriptStream << "iterations=" << iterationsString << "\n";
+    scriptStream << "omega=" << omegaString << "\n";
+    scriptStream << "c1=" << c1String << "\n";
+    scriptStream << "c2=" << c2String << "\n";
+    scriptStream << "tolFunc=" << tolFuncString << "\n";
+    scriptStream << "tolX=" << tolXString << "\n";
+    scriptStream << "np=" << particlesString;
+    if(multicore)
+    {
+        scriptStream << "\n";
+        scriptStream << "\n";
+        scriptStream << "\n";
+        scriptStream << "##### Load More Models #####\n";
+        scriptStream << "\n";
+        scriptStream << "modelPath = \"../Models/Example Models/Position Servo.hmf\"\n";
+        scriptStream << "hopsan.closeAllModels()\n";
+        scriptStream << "for i in range(nThreads):\n";
+        scriptStream << "  hopsan.loadModel(modelPath)\n";
+        scriptStream << "hopsan.useMultiCore()\n";
+    }
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Optimization particles #####\n";
+    scriptStream << "\n";
+    scriptStream << "# Particles\n";
+    scriptStream << "particles = [[0.0";
+    for(int i=1; i<nParameters; ++i)
+        scriptStream << ", 0.0";
+    scriptStream << "]";
+    for(int i=1; i<nParticles; ++i)
+    {
+        scriptStream << ",\n           [0.0";
+        for(int i=1; i<nParameters; ++i)
+            scriptStream << ", 0.0";
+        scriptStream << "]";
+    }
+    scriptStream << "]\n";
+    scriptStream << "\n";
+    scriptStream << "# Velocities\n";
+    scriptStream << "velocities = [[0.0";
+    for(int i=1; i<nParameters; ++i)
+        scriptStream << ", 0.0";
+    scriptStream << "]";
+    for(int i=1; i<nParticles; ++i)
+    {
+        scriptStream << ",\n           [0.0";
+        for(int i=1; i<nParameters; ++i)
+            scriptStream << ", 0.0";
+        scriptStream << "]";
+    }
+    scriptStream << "]\n";
+    scriptStream << "\n";
+    scriptStream << "# Best known point for each particle\n";
+    scriptStream << "pi = [[0.0";
+    for(int i=1; i<nParameters; ++i)
+        scriptStream << ", 0.0";
+    scriptStream << "]";
+    for(int i=1; i<nParticles; ++i)
+    {
+        scriptStream << ",\n           [0.0";
+        for(int i=1; i<nParameters; ++i)
+            scriptStream << ", 0.0";
+        scriptStream << "]";
+    }
+    scriptStream << "]\n";
+    scriptStream << "\n";
+    scriptStream << "# Objective functions for best known points\n";
+    scriptStream << "pi_obj = [0.0";
+    for(int i=1; i<nParticles; ++i)
+        scriptStream << ", 0.0";
+    scriptStream << "]\n";
+    scriptStream << "\n";
+    scriptStream << "# Best known point in swarm\n";
+    scriptStream << "g = ["+QString().setNum(0.0);
+    for(int i=1; i<nParameters; ++i)
+        scriptStream << ", "+QString().setNum(0.0);
+    scriptStream << "]\n";
+    scriptStream << "g_obj = 0.0";
+
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Optimization parameters #####\n";
+    scriptStream << "\n";
+    scriptStream << "componentNames = [\""+mSelectedComponents.at(0)+"\"";
+    for(int i=1; i<nComponents; ++i)
+        scriptStream << ", \"" << mSelectedComponents.at(i) << "\"";
+    scriptStream << "]   #Names of components where parameters are located\n";
+    scriptStream << "parameterNames = [\""+mSelectedParameters.at(0)+"\"";
+    for(int i=1; i<nParameters; ++i)
+        scriptStream << ", \"" << mSelectedParameters.at(i) << "\"";
+    scriptStream << "]           #Names of parameters to optimize\n";
+    scriptStream << "minValues = ["+QString().setNum(mpParameterMinLineEdits.at(0)->text().toDouble());
+    for(int i=1; i<nParameters; ++i)
+        scriptStream << ", "+QString().setNum(mpParameterMinLineEdits.at(i)->text().toDouble());
+    scriptStream << "]                    #Minimum value for each parameter\n";
+    scriptStream << "maxValues = ["+QString().setNum(mpParameterMaxLineEdits.at(0)->text().toDouble());
+    for(int i=1; i<nParameters; ++i)
+        scriptStream << ", "+QString().setNum(mpParameterMaxLineEdits.at(i)->text().toDouble());
+    scriptStream << "]                    #Maximum value for each parameter\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Objective function #####\n";
+    scriptStream << "\n";
+    scriptStream << "obj = [0.0";
+    for(int i=1; i<nParticles; ++i)
+        scriptStream << ", 0.0";
+    scriptStream << "]\n";
+    scriptStream << "def getObjective():\n";
+    for(int i=0; i<mWeightLineEditPtrs.size(); ++i)
+        scriptStream << "  w"+QString().setNum(i)+"="+QString().setNum(mWeightLineEditPtrs.at(i)->text().toDouble())+"\n";
+    for(int i=0; i<mNormLineEditPtrs.size(); ++i)
+        scriptStream << "  n"+QString().setNum(i)+"="+QString().setNum(mNormLineEditPtrs.at(i)->text().toDouble())+"\n";
+    for(int i=0; i<mExpLineEditPtrs.size(); ++i)
+        scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpLineEditPtrs.at(i)->text().toDouble())+"\n";
+
+    scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").getTimeVector()\n";
+    QMap<QString, QString> addedVariables;
+    for(int i=0; i<mFunctionVariables.size(); ++i)
+    {
+        for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
+        {
+            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").getDataVector(\""+mFunctionVariables.at(i).at(j)+"\"";
+            QString variableId = "data"+QString().setNum(i)+QString().setNum(j);
+            if(addedVariables.contains(variable))
+            {
+                scriptStream << "  "+variableId+"="+addedVariables.find(variable).value()+"\n";
+            }
+            else
+            {
+                addedVariables.insert(variable, variableId);
+                scriptStream << "  "+variableId+"=hopsan.component("+variable+")\n";
+            }
+        }
+    }
+    scriptStream << "  return ";
+    for(int i=0; i<mFunctionVariables.size(); ++i)
+        scriptStream << generateFunctionCode(i);
+    scriptStream << "\n\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Initialize swarm #####\n";
+    scriptStream << "\n";
+    scriptStream << "# Generate random particles\n";
+    scriptStream << "for i in range(len(particles)):\n";
+    scriptStream << "  for j in range(len(parameterNames)):\n";
+    scriptStream << "    particles[i][j] = minValues[j]+(maxValues[j]-minValues[j])*random.random()\n";
+    scriptStream << "\n";
+    scriptStream << "# Generate random starting velocities";
+    scriptStream << "for i in range(len(velocities)):\n";
+    scriptStream << "  for j in range(len(parameterNames)):\n";
+    scriptStream << "    minVel = -abs(maxValues[j]-minValues[j])\n";
+    scriptStream << "    maxVel = abs(maxValues[j]-minValues[j])\n";
+    scriptStream << "    particles[i][j] = minVel + (maxVel-minVel)*random.random()\n";
+    scriptStream << "\n";
+    scriptStream << "# Find best point in swarm\n";
+    if(multicore)
+    {
+        scriptStream << "for i in range(np):\n";
+        scriptStream << "  hopsan.gotoTab(t)\n";
+        scriptStream << "  for j in range(len(parameterNames)):\n";
+        scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
+        scriptStream << "  hopsan.simulateAllOpenModels(False)\n";
+        scriptStream << "  for t in range(np):\n";
+        scriptStream << "    hopsan.gotoTab(t)\n";
+        scriptStream << "    obj[i] = getObjective()\n";
+    }
+    else
+    {
+          scriptStream << "for i in range(np):\n";
+          scriptStream << "  for j in range(len(parameterNames)):\n";
+          scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
+          scriptStream << "  hopsan.simulate()\n";
+          scriptStream << "  obj[i] = getObjective()\n";
+    }
+    scriptStream << "\n";
+    scriptStream << "#Calculate best known positions\n";
+    scriptStream << "for i in range(np):\n";
+    scriptStream << "  pi[i] = particles[i]\n";
+    scriptStream << "  pi_obj[i] = obj[i]\n";
+    scriptStream << "g = particles[indexOfMin(pi_obj)]\n";
+    scriptStream << "g_obj = obj[indexOfMin(pi_obj)]\n";
+    if(mpPlottingCheckBox->isChecked())
+    {
+        scriptStream << "# Run one simulation first and open plot window, if user wants to see plots in real-time\n";
+        QStringList plottedVariables;
+        for(int i=0; i<mFunctionVariables.size(); ++i)
+        {
+            for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
+            {
+                QString plotCommand = "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
+                if(!plottedVariables.contains(plotCommand))
+                {
+                    scriptStream << plotCommand;
+                    plottedVariables.append(plotCommand);
+                }
+            }
+        }
+        scriptStream << "\n";
+    }
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "\n";
+    scriptStream << "##### Run optimization #####\n";
+    scriptStream << "\n";
+    scriptStream << "for k in range(iterations):\n";
+    scriptStream << "  \n";
+    scriptStream << "  #  Move the particles\n";
+    scriptStream << "  for i in range(np):\n";
+    scriptStream << "    r1 = random.random()\n";
+    scriptStream << "    r2 = random.random()\n";
+    scriptStream << "    for j in range(len(parameterNames)):\n";
+    scriptStream << "      velocities[i][j] = omega*velocities[i][j] + c1*r1*(pi[i][j]-particles[i][j]) + c2*r2*(g[j]-particles[i][j])\n";
+    scriptStream << "      particles[i][j] = particles[i][j]+velocities[i][j]\n";
+    scriptStream << "      if particles[i][j] <= minValues[j]: \n";
+    scriptStream << "        particles[i][j] = minValues[j]\n";
+    scriptStream << "        velocities[i][j] = 0.0\n";
+    scriptStream << "      if particles[i][j] >= maxValues[j]:\n";
+    scriptStream << "        particles[i][j] = maxValues[j]\n";
+    scriptStream << "        velocities[i][j] = 0.0\n";
+    scriptStream << "  \n";
+    scriptStream << "  #  Simulate and evaluate objective functions\n";
+    if(multicore)
+    {
+        scriptStream << "for i in range(np):\n";
+        scriptStream << "  hopsan.gotoTab(t)\n";
+        scriptStream << "  for j in range(len(parameterNames)):\n";
+        scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
+        scriptStream << "  hopsan.simulateAllOpenModels(True)\n";
+        scriptStream << "  for t in range(np):\n";
+        scriptStream << "    hopsan.gotoTab(t)\n";
+        scriptStream << "    obj[i] = getObjective()\n";
+    }
+    else
+    {
+         scriptStream << "for i in range(np):\n";
+         scriptStream << "  for j in range(len(parameterNames)):\n";
+         scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
+         scriptStream << "  hopsan.simulate()\n";
+         scriptStream << "  obj[i] = getObjective()\n";
+    }
+    scriptStream << "  \n";
+    scriptStream << "# Calculate best known positions\n";
+    scriptStream << "for i in range(np):\n";
+    scriptStream << "  if obj[i] < pi_obj[i]:\n";
+    scriptStream << "    pi[i] = particles[i][:]\n";
+    scriptStream << "    pi_obj[i] = obj[i]\n";
+    scriptStream << "    if pi_obj[i] < g_obj:\n";
+    scriptStream << "      g = pi[i][:]\n";
+    scriptStream << "      g_obj = pi_obj[i]\n";
+    scriptStream << "  \n";
+    scriptStream << "  # Check for convergence\n";
+    scriptStream << "  if min(obj) == 0:\n";
+    scriptStream << "    if abs(max(obj)-min(obj)) <= tolFunc:\n";
+    scriptStream << "      elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "      print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "      break\n";
+    scriptStream << "  elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
+    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "    print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "    break\n";
+    scriptStream << "  xConverged=True\n";
+    scriptStream << "  for i in range(len(parameterNames)):\n";
+    scriptStream << "    if abs((maxPar(parameters, i)-minPar(parameters,i))/(maxValues[i]-minValues[i])) > tolX:\n";
+    scriptStream << "      xConverged=False;\n";
+    scriptStream << "  if xConverged:\n";
+    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "    print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "    break\n";
+    scriptStream << "\n";
+    if(!mpPlottingCheckBox->isChecked())
+    {
+        scriptStream << "#Plot when simulation is finished\n";
+        for(int i=0; i<mFunctionVariables.size(); ++i)
+            for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
+                scriptStream << "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
+        scriptStream << "\n";
+    }
+}
+
+
+
+void OptimizationDialog::setAlgorithm(int i)
+{
+    //Complex
+    mpSearchPointsLabel->setVisible(i==0);
+    mpSearchPointsSpinBox->setVisible(i==0);
+    mpAlphaLabel->setVisible(i==0);
+    mpAlphaLineEdit->setVisible(i==0);
+    mpBetaLabel->setVisible(i==0);
+    mpBetaLineEdit->setVisible(i==0);
+    mpGammaLabel->setVisible(i==0);
+    mpGammaLineEdit->setVisible(i==0);
+
+    //Particle swarm
+    mpParticlesLabel->setVisible(i==1);
+    mpParticlesSpinBox->setVisible(i==1);
+    mpOmegaLabel->setVisible(i==1);
+    mpOmegaLineEdit->setVisible(i==1);
+    mpC1Label->setVisible(i==1);
+    mpC1LineEdit->setVisible(i==1);
+    mpC2Label->setVisible(i==1);
+    mpC2LineEdit->setVisible(i==1);
 }
 
 

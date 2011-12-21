@@ -44,9 +44,9 @@ class HydraulicCylinderC : public ComponentC
 {
 
     private:
-        double A1,A2,sl,cLeak,bp,me,betae,V01,V02, CxLim, ZxLim, wfak;
+        double A1,A2,sl,cLeak,bp,betae,V01,V02, CxLim, ZxLim, wfak;
 
-        double c1, ci1, cl1, c2, ci2, cl2;  //Members because old value need to be remembered
+        double ci1, cl1, ci2, cl2;  //Members because old value need to be remembered (c1 and c2 are remembered through nodes)
         double mNum[2];
         double mDen[2];
 
@@ -69,7 +69,6 @@ class HydraulicCylinderC : public ComponentC
             //Set member attributes
             wfak = 0.1;
             betae = 1000000000.0;
-            me = 100.0;
             V01 = 0.0003;
             V02 = 0.0003;
             A1 = 0.001;
@@ -87,7 +86,6 @@ class HydraulicCylinderC : public ComponentC
             registerParameter("A_1", "Piston Area 1", "[m^2]", A1);
             registerParameter("A_2", "Piston Area 2", "[m^2]", A2);
             registerParameter("s_l", "Stroke", "[m]", sl);
-//            registerParameter("m_e", "Equivalent Load Mass", "[kg]", me);
             registerParameter("V_1", "Dead Volume in Chamber 1", "[m^3]", V01);
             registerParameter("V_2", "Dead Volume in Chamber 2", "[m^3]", V02);
             registerParameter("B_p", "Viscous Friction", "[Ns/m]", bp);
@@ -118,8 +116,8 @@ class HydraulicCylinderC : public ComponentC
             mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EQMASS);
 
             //Declare local variables;
-            double p1, q1, p2, q2,/* f3,*/ x3, v3;
-            double Zc1, Zc2, c3, Zx3;
+            double p1, q1, p2, q2, x3, v3;
+            double c1, c2, Zc1, Zc2, c3, Zx3;
             double qi1, qi2, V1, V2, qLeak, V1min, V2min;
 
             //Read variables from nodes
@@ -127,14 +125,12 @@ class HydraulicCylinderC : public ComponentC
             q1 = (*mpND_q1);
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
-            //f3 = (*mpND_f3);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
-            me = (*mpND_me);
 
-            //Limit end of stroke limitations
-            CxLim = 0;
-            ZxLim = 0;
+//            //Limit end of stroke limitations
+//            CxLim = 0;
+//            ZxLim = 0;
 
             //Size of volumes
             V1 = V01+A1*(-x3);
@@ -181,22 +177,20 @@ class HydraulicCylinderC : public ComponentC
         void simulateOneTimestep()
         {
             //Declare local variables;
-            double /*p1, */q1, /*p2, */q2, /*f3, */x3, v3;
-            double Zc1, Zc2, c3, Zx3;
-
+            double c1, Zc1, q1;
+            double c2, Zc2, q2;
+            double x3, v3, c3, Zx3;
+            double me;
             double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
             double alpha=0.5;
 
             //Read variables from nodes
-            //p1 = (*mpND_p1);
             q1 = (*mpND_q1);
-            //p2 = (*mpND_p2);
             q2 = (*mpND_q2);
             c1 = (*mpND_c1);
             c2 = (*mpND_c2);
             Zc1 = (*mpND_Zc1);
             Zc2 = (*mpND_Zc2);
-            //f3 = (*mpND_f3);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
             me = (*mpND_me);
@@ -224,18 +218,25 @@ class HydraulicCylinderC : public ComponentC
                 stopSimulation();
             }
 
-            //Volume equations
+
+            // Cylinder volumes are modelled the same way as the multiport volume:
+            //   c1 = Wave variable for external port
+            //   ci1 = Wave variable for internal (mechanical) port
+            //   cl1 = Wave variable for leakage port
+
+            //Volume 1
             Zc1 = 3 / 2 * betae/V1*mTimestep/(1-alpha);
             p1mean = ((c1 + Zc1*2*q1) + (ci1 + Zc1*2*qi1) + (cl1 + Zc1*2*(-qLeak))) / 3;
-            c1 = alpha * c1 + (1.0 - alpha)*(p1mean*2 - c1 - 2*Zc1*q1);
-            ci1 = alpha * ci1 + (1.0 - alpha)*(p1mean*2 - ci1 - 2*Zc1*qi1);
-            cl1 = alpha * cl1 + (1.0 - alpha)*(p1mean*2 - cl1 - 2*Zc1*(-qLeak));
+            c1 = std::max(0.0, alpha * c1 + (1.0 - alpha)*(p1mean*2 - c1 - 2*Zc1*q1));
+            ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2 - ci1 - 2*Zc1*qi1));
+            cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2 - cl1 - 2*Zc1*(-qLeak)));
 
+            //Volume 2
             Zc2 = 3 / 2 * betae/V2*mTimestep/(1-alpha);
             p2mean = ((c2 + Zc2*2*q2) + (ci2 + Zc2*2*qi2) + (cl2 + Zc2*2*qLeak)) / 3;
-            c2 = alpha * c2 + (1.0 - alpha)*(p2mean*2 - c2 - 2*Zc2*q2);
-            ci2 = alpha * ci2 + (1.0 - alpha)*(p2mean*2 - ci2 - 2*Zc2*qi2);
-            cl2 = alpha * cl2 + (1.0 - alpha)*(p2mean*2 - cl2 - 2*Zc2*qLeak);
+            c2 = std::max(0.0, alpha * c2 + (1.0 - alpha)*(p2mean*2 - c2 - 2*Zc2*q2));
+            ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2 - ci2 - 2*Zc2*qi2));
+            cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2 - cl2 - 2*Zc2*qLeak));
 
 
             //limitStroke(CxLim, ZxLim, x3, v3, me, sl);
@@ -245,6 +246,16 @@ class HydraulicCylinderC : public ComponentC
             Zx3 = A1*A1*Zc1 + A2*A2*Zc2 + bp;// + ZxLim;
             //! @note End of stroke limitation currently turned off, because the piston gets stuck in the end position.
             //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
+
+
+            if(mTime > 5 && mTime < 5.002)
+            {
+                std::stringstream ss;
+                ss << "\nc1 = " << c1 << "\n c2 = " << c2;
+                ss << "\nci1 = " << ci1 << "\n ci2 = " << ci2;
+                ss << "\np1mean = " << p1mean << "\n p2mean = " << p2mean;
+                addDebugMessage(ss.str());
+            }
 
             //Write to nodes
             (*mpND_c1) = c1;

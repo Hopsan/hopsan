@@ -52,7 +52,8 @@ namespace hopsan {
         MechanicFreeLengthWall() : ComponentQ()
         {
             //Set member attributes
-            B = 10;
+            B = 0.001;              //Must not be zero - velocity will become very oscillative
+
             //Add ports to the component
             mpP1 = addPowerPort("Pm1", "NodeMechanic");
 
@@ -109,7 +110,7 @@ namespace hopsan {
                 x1=0.0;
                 v1=0.0;
                 mFilterX.initializeValues(-c1, x1);
-                mFilterV.initializeValues(-c1, 0.0);
+                mFilterV.initializeValues(-c1, v1);
             }
 
             f1 = c1 + Zx1*v1;
