@@ -130,7 +130,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalIntegrator2.hpp \
     Components/Signal/SignalIntegrator.hpp \
     Components/Signal/SignalPIlead.hpp \
-    Components/Signal/SignalAttitude.hpp \
     Components/Signal/SignalHysteresis.hpp \
     Components/Signal/SignalGain.hpp \
     Components/Signal/SignalFirstOrderFilter.hpp \
@@ -208,7 +207,8 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicVolume4.hpp \
     Components/Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp \
     Components/Hydraulic/Hydraulic33Valve.hpp \
-    Components/Hydraulic/Hydraulic33Valve.hpp \
+    Components/Hydraulic/Hydraulic43Valve.hpp \
+    Components/Hydraulic/HydraulicValve416.hpp \
     Components/Hydraulic/Hydraulic32DirectionalValve.hpp \
     Components/HydraulicComponentTemplate.hpp \
     Components/Mechanic/MechanicTranslationalLosslessConnector.hpp \
@@ -265,6 +265,7 @@ HEADERS += win32dll.h \
     Components/Signal/SignalAdditiveNoise.hpp \
     Components/Mechanic/MechanicRackAndPinion.hpp \
     Components/Mechanic/MechanicJLink.hpp \
+    Components/Mechanic/MechanicJLink2.hpp \
     Components/Mechanic/MechanicThetaSource.hpp \
     Components/Mechanic/MechanicVehicle1D.hpp \
     Components/Signal/SignalStepExponentialDelay.hpp \
