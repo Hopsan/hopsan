@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.0" hopsancoreversion="0">
     <system typename="Subsystem" name="ElectricVehicleSystem">
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2365.5" y="2488.5" zoom="1"/>
+            <viewport x="2160" y="2362.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -18,8 +18,7 @@
             </hopsanobjectappearance>
             <hopsanundo>
                 <post number="-1"/>
-                <post number="0" type="changedparameters"/>
-                <post number="1"/>
+                <post number="0"/>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="40" timestep="0.01" start="0"/>
@@ -35,7 +34,7 @@
                     <parameter value="1000" name="umax"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2111.00000000000000000000" y="2489.5" flipped="0" a="0"/>
+                    <pose x="2111.00000000000000000000" y="2492.5" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -250,8 +249,8 @@
             <connect endport="Pel1" endcomponent="ElectricCapacitance2" startport="Pel2" startcomponent="ElectricIcontroller">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2145.00000000000000000000" y="2479.74497148003592883470"/>
-                        <coordinate x="2160.00000000000000000000" y="2479.74497148003592883470"/>
+                        <coordinate x="2145.00000000000000000000" y="2482.74497148003592883470"/>
+                        <coordinate x="2160.00000000000000000000" y="2482.74497148003592883470"/>
                         <coordinate x="2160.00000000000000000000" y="2482.23710073710071810638"/>
                         <coordinate x="2172.50000000000000000000" y="2482.23710073710071810638"/>
                     </coordinates>
@@ -268,8 +267,8 @@
                     <coordinates>
                         <coordinate x="2035.50000000000000000000" y="2482.33710073710062715691"/>
                         <coordinate x="2068.50000000000000000000" y="2482.33710073710062715691"/>
-                        <coordinate x="2068.50000000000000000000" y="2479.74497148003592883470"/>
-                        <coordinate x="2077.00000000000000000000" y="2479.74497148003592883470"/>
+                        <coordinate x="2068.50000000000000000000" y="2482.74497148003592883470"/>
+                        <coordinate x="2077.00000000000000000000" y="2482.74497148003592883470"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -408,7 +407,7 @@
                     <coordinates>
                         <coordinate x="2059.00000000000000000000" y="2365.00000000000000000000"/>
                         <coordinate x="2111.00000000000000000000" y="2365.00000000000000000000"/>
-                        <coordinate x="2111.00000000000000000000" y="2467.50000000000000000000"/>
+                        <coordinate x="2111.00000000000000000000" y="2470.50000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
