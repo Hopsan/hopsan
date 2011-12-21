@@ -61,8 +61,8 @@ void HopsanEssentials::Initialize()
 
 HopsanEssentials::HopsanEssentials()
 {
-    mpNodeFactory = new NodeFactory; //getCoreNodeFactoryPtr();
-    mpComponentFactory = new ComponentFactory;//getCoreComponentFactoryPtr();
+    mpNodeFactory = new NodeFactory;
+    mpComponentFactory = new ComponentFactory;
     mpMessageHandler = getCoreMessageHandlerPtr();
     mExternalLoader.setFactory(mpComponentFactory, mpNodeFactory);
     Initialize();

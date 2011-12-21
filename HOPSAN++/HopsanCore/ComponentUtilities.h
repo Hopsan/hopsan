@@ -31,5 +31,6 @@
 #include "ComponentUtilities/CSVParser.h"
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 #include "ComponentUtilities/WhiteGaussianNoise.h"
+#include "ComponentUtilities/num2string.hpp"
 
 #endif // COMPONENTUTILITIES_H_INCLUDED

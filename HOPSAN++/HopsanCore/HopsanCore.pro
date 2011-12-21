@@ -304,7 +304,8 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicFixedPosition.hpp \
     Components/Hydraulic/HydraulicInterfaceQ.hpp \
     Components/Hydraulic/HydraulicInterfaceC.hpp \
-    Components/Mechanic/MechanicFreeLengthWall.hpp
+    Components/Mechanic/MechanicFreeLengthWall.hpp \
+    ComponentUtilities/num2string.hpp
 
 
 OTHER_FILES += \

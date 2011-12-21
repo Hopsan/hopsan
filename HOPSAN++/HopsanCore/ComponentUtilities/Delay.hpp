@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Delay.hpppp
+//! @file   Delay.hpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-12-01
 //!
