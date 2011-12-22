@@ -7,12 +7,14 @@
 
 \endif
 
--# \subpage userTransmissionLineElementMethod \n
+
 -# \subpage userGettingStarted \n
--# \subpage userShortkeys \n
--# \subpage userCustomizingHopsan \n
+-# \subpage userAnalysisTools \n
+-# \subpage userModelExport \n
 -# \subpage userCustomComponents \n
 -# \subpage userPythonScripting \n
+-# \subpage userMultiThreaded \n
+-# \subpage userTransmissionLineElementMethod \n
 
 \if DEVELOPERDOCUMENTATION
 

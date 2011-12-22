@@ -1,0 +1,85 @@
+/*!
+\page userModelExport Exporting Models
+\todo write this
+
+-# \subpage simulink \n
+-# \subpage fmi \n
+
+\page simulink Exporting to Matlab/Simulink
+
+Hopsan models can be exported to Matlab/Simulink as S-function libraries. This is done by using an automatically generated wrapper file, that will create an S-function from the model and linking it to the Hopsan simulation core. 
+
+\section simulink-prerequisites Prerequisites
+
+- 32-bit Matlab/Simulink 2010a or later
+- Visual C++ 2008 compiler (express version works)
+
+\section simulink-guide Step-by-step guide
+
+\subsection simulink-step1 1. Prepare the model
+
+First of all we must have a model to export. In this example we want to export the position servo model (found in Example Models directory) and create a closed-loop controller in Simulink. The only required modifications is that we must add interface components (found in Connectivity library) wherever we want interaction between Simulink and Hopsan. In this case we want a signal input to control the valve, and a signal output from the sensor. The controller is thus removed from the Hopsan model.
+
+\htmlonly
+<img src="../../graphics/simulink_model.png" border=0>
+\endhtmlonly
+
+\subsection simulink-step2 2. Export source files
+
+Next step is to export the files. Click the "Export" button and select Simulink Source Files.
+
+\htmlonly
+<table border="0">
+<tr>
+<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/export_icon.png" border=0>
+</td>
+<td><b>Export</b></td>
+</tr>
+</table>
+\endhtmlonly
+
+Now choose an empty directory. Source files, model files and binaries will be generated and copied to this directory.
+
+\subsection simulink-step3 3. Compile in Matlab
+
+Open Matlab. First make sure that the correct compiler is used. Write the following command in the console:
+\verbatim
+mex -setup
+\endverbatim
+
+Now select Visual C++ 2008 (later versions probably work as well). Then change Matlab work directory to the one created in the previous step. Run the compilation script file "HopsanSimulinkCompile.m". This will create the S-function library.
+
+\subsection simulink-step4 4. Open model in Simulink
+
+Open Simulink and create a new model. Add an S-function block. Open the properties and choose HopsanSimulink (without file extension) as the library file. Now a Simulink block looking like this appears:
+
+(BILD)
+
+The ports corresponds to the interface components in Hopsan. The DEBUG output port will give zero if everything is ok, or an error number greater than zero if something goes wrong.
+
+Now let's add a PI-controller similar to the one we had originally in Hopsan. Also add scopes at the reference and output signals. Choose some reasonable values and check the results in the scopes.
+
+(BILD)
+
+\section simulink-troubleshooting Troubleshooting
+
+\subsection problem1 Problem: 
+I get the following error message when loading the S-function:
+
+\verbatim
+??? Error using ==> set_param
+Error, S-function 'HopsanSimulink' in 'Hopsan_test/S-Function' called mdlSetNumInputPorts more than once.
+Error in ==> HopsanSimulinkPortLabels at 1
+set_param(gcb,'Mask','on')
+\endverbatim
+
+\subsection solution1 Solution: 
+This issue means that you are using an unsupported version of Matlab. This will hopefully be fixed in future releases. A solution is to manually edit the HopsanSimulink.cpp file, and removing the following line:
+
+\code
+mexCallMATLAB(0, 0, 0, 0, "HopsanSimulinkPortLabels"); 
+\endcode
+
+\page fmi Exporting to Functional Mock-up Unit
+This feature is currently under development, but not available in this release.
+*/

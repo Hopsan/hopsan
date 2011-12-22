@@ -1,12 +1,16 @@
 /*!
-\page userCustomComponents Using Custom Libraries
+\page userCustomComponents Custom Components & Libraries
 \todo write this
 
 -# \subpage creating-component-libraries \n
+-# \subpage generating-components-mathematica \n
 -# \subpage importing-component-libraries \n
 
 \page creating-component-libraries Creating Component Libraries
 \todo write this
+
+\page generating-components-mathematica Generating Components From Mathematica
+This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
 
 \page importing-component-libraries Importing Component Libraries
 \todo write this

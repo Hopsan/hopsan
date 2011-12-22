@@ -19,7 +19,7 @@
 <td><u></u>Quit Program</td>
 </tr>
 <tr>
-<td>Ctrl+Shift+O</td>
+<td>Ctrl+Alt+O</td>
 <td>Open <u>O</u>ptions</td>
 </tr>
 <tr>
@@ -43,16 +43,28 @@
 <td><u>S</u>imulate Current Model</td>
 </tr>
 <tr>
+<td>Ctrl+Shift+O</td>
+<td>Open <u>O</u>ptimization Dialog</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A</td>
+<td>Sensitivity <u>A</u>nalysis</td>
+</tr>
+<tr>
+<td>Ctrl+L</td>
+<td>Calculate <u>L</u>osses</td>
+</tr>
+<tr>
 <td>Ctrl+N</td>
-<td>Show Component Names</td>
+<td>Toggle Component <u>N</u>ames</td>
 </tr>
 <tr>
 <td>Ctrl+T</td>
-<td>Show Non-Connected Ports</td>
+<td><u>T</u>oggle Non-Connected Ports</td>
 </tr>
 <tr>
 <td>Ctrl+A</td>
-<td>Select All</td>
+<td>Select <u>A</u>ll</td>
 </tr>
 <tr>
 <td>Ctrl+Z</td>
@@ -84,7 +96,11 @@
 </tr>
 <tr>
 <td>Ctrl+R</td>
-<td>Rotate</td>
+<td>Rotate <u>R</u>ight</td>
+</tr>
+<tr>
+<td>Ctrl+E</td>
+<td>Rotate L<u>e</u>ft</td>
 </tr>
 <tr>
 <td>Ctrl+Space</td>

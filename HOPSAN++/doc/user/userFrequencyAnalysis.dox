@@ -1,0 +1,30 @@
+/*!
+\page userFrequencyAnalysis Frequency Analysis
+\todo write this
+
+\section Transfer Function Analysis
+
+\htmlonly
+<table border="0">
+<tr>
+<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/tfanalysis_icon.png" border=0>
+</td>
+<td><b>Transfer Function Analysis</b></td>
+</tr>
+</table>
+\endhtmlonly
+
+
+\section Frequency Spectrum
+
+\htmlonly
+<table border="0">
+<tr>
+<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/fft_icon.png" border=0>
+</td>
+<td><b>Frequency Analysis</b></td>
+</tr>
+</table>
+\endhtmlonly
+
+*/

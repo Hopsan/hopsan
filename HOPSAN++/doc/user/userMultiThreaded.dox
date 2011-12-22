@@ -1,0 +1,16 @@
+/*!
+\page userMultiThreaded Multi-Threaded Simulations
+\section multi-threaded-simulations Multi-threaded simulations
+Hopsan NG uses multi-threaded simulations to take advantage of so called multi-core architecture in modern processors. This is activated from the Options dialog. It is also possible to select how many threads that are to be used. By choosing zero threads, the simulation engine will automatically ask the operating system how many cores (or "hyperthreads") the computer has, and use this amount of threads. Using more threads than available processors will lock up the program. There is however a built-in limitation to prevent this, so it should never happen.
+
+Though the intention of parallelizing is to reduce simulation time, there is no guarantee that a parallel simulation will be faster. There are always overhead costs involved, and for small model they can be larger than the actual benefits. The overhead cost can also increase when using a higher number of cores, which means that on some systems a small model may run faster with two cores, but slower with four. 
+
+In order to maximize the benefits, it is adviced to select processor affinity in Windows Task Manager to specify exactly which cores that shall be used (unless all cores are to be used of course). It is also recommended to disable the simulation progress bar before simulations using all cores, since it will slow down one of the simulation threads.
+
+\todo Skriv mer...
+
+\section multithreaded-references References:
+\htmlonly
+<a href = "http://urn.kb.se/resolve?urn=urn:nbn:se:liu:diva-68373">Braun R, Nordin P, Eriksson B, Krus P. High Performance System Simulation Using Multiple Processor Cores. In: The Twelfth Scandinavian International Conference on Fluid Power, SICFP'11. 2011.</a>
+\endhtmlonly
+*/
