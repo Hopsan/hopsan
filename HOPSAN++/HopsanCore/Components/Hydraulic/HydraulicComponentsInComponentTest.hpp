@@ -94,9 +94,7 @@ namespace hopsan {
         bool initialize(const double startT, const double stopT, const size_t nSamples)     //Important, initialize must have these arguments
         {
             //Set parameters
-            std::stringstream ss2;
-            ss2 << Volume;
-            mpVolume->setParameterValue("V", ss2.str(), true);
+            mpVolume->setParameterValue("V", to_string(Volume), true);
 
             return ComponentSystem::initialize(startT, stopT, nSamples);
         }

@@ -28,24 +28,8 @@
 #include <string>
 #include <sstream>
 
-inline
-std::string num2string(const double num)
-{
-    std::stringstream ss;
-    ss << num;
-    return ss.str();
-}
-
-inline
-std::string num2string(const float num)
-{
-    std::stringstream ss;
-    ss << num;
-    return ss.str();
-}
-
-inline
-std::string num2string(const int num)
+template<typename T>
+inline std::string to_string(const T num)
 {
     std::stringstream ss;
     ss << num;
