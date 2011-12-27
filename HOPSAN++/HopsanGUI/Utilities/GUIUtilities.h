@@ -33,6 +33,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <complex>
+#include <QDomElement>
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
@@ -57,6 +58,7 @@ void reduceVectorSize(QVector<double> &vector, int newSize);
 void removeDir(QString path);
 void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
+void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement);
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

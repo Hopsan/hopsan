@@ -33,7 +33,10 @@
 
 #include "GUIUtilities.h"
 #include "MainWindow.h"
+#include "Widgets/MessageWidget.h"
 #include "common.h"
+#include "Configuration.h"
+#include "Widgets/LibraryWidget.h"
 
 using namespace std;
 
@@ -607,4 +610,358 @@ double normalDistribution(double average, double sigma)
     double U1 = (double)rand() / (double)RAND_MAX;
     double U2 = (double)rand() / (double)RAND_MAX;
     return average + sigma*sqrt(-2*log(U1))*cos(2*3.1415926*U2);
+}
+
+
+
+void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
+{
+    //Initialize the file stream
+    QFileInfo fileInfo;
+    QFile file;
+    fileInfo.setFile(outputFile);
+    file.setFileName(fileInfo.filePath());   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + outputFile);
+        return;
+    }
+    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+
+    QString typeName = rDomElement.attribute("typename");
+    QString displayName = rDomElement.attribute("displayname");
+    QString cqsType = rDomElement.attribute("cqstype");
+
+    fileStream << "#ifndef " << typeName.toUpper() << "_HPP_INCLUDED\n";
+    fileStream << "#define " << typeName.toUpper() << "_HPP_INCLUDED\n\n";
+    fileStream << "#include \"ComponentEssentials.h\"\n\n";
+    fileStream << "namespace hopsan {\n\n";
+    fileStream << "    class " << typeName << " : public Component" << cqsType << "\n";
+    fileStream << "    {\n";
+    fileStream << "    private:\n";
+    QDomElement parameterElement = rDomElement.firstChildElement("parameter");
+    while(!parameterElement.isNull())
+    {
+        fileStream << "        double " << parameterElement.attribute("name") << ";\n";
+        parameterElement = parameterElement.nextSiblingElement("parameter");
+    }
+
+    QDomElement portElement = rDomElement.firstChildElement("port");
+    fileStream << "        double ";
+    int portId=1;
+    QStringList allVarNames;
+    while(!portElement.isNull())
+    {
+        QString name = portElement.attribute("name");
+        QString nodetype = portElement.attribute("nodetype");
+        QString id = QString().setNum(portId);
+        if(nodetype == "NodeSignal")
+        {
+            allVarNames << name+id;
+        }
+        else if(nodetype == "NodeHydraulic")
+        {
+            allVarNames << "p"+id << "q"+id << "c"+id << "Zc"+id;
+        }
+        ++portId;
+        portElement = portElement.nextSiblingElement("port");
+    }
+    if(!allVarNames.isEmpty())
+    {
+        fileStream << "*mpND_" << allVarNames[0];
+        for(int i=1; i<allVarNames.size(); ++i)
+        {
+            fileStream << ", *mpND_" << allVarNames[i];
+        }
+    }
+    fileStream << ";\n";
+    portElement = rDomElement.firstChildElement("port");
+    fileStream << "        Port ";
+    while(!portElement.isNull())
+    {
+        fileStream << "*mp" << portElement.attribute("name");
+        portElement = portElement.nextSiblingElement("port");
+        if(!portElement.isNull())
+        {
+            fileStream << ", ";
+        }
+    }
+    fileStream << ";\n\n";
+    fileStream << "    public:\n";
+    fileStream << "        static Component *Creator()\n";
+    fileStream << "        {\n";
+    fileStream << "            return new " << typeName << "();\n";
+    fileStream << "        }\n\n";
+    fileStream << "        " << typeName << "() : Component" << cqsType << "()\n";
+    fileStream << "        {\n";
+    parameterElement = rDomElement.firstChildElement("parameter");
+    while(!parameterElement.isNull())
+    {
+        fileStream << "            " << parameterElement.attribute("name") << " = " << parameterElement.attribute("init") << ";\n";
+        parameterElement = parameterElement.nextSiblingElement("parameter");
+    }
+    fileStream << "\n";
+    parameterElement = rDomElement.firstChildElement("parameter");
+    while(!parameterElement.isNull())
+    {
+        QString name = parameterElement.attribute("name");
+        QString desc = parameterElement.attribute("description");
+        QString unit = parameterElement.attribute("unit");
+        QString disp = parameterElement.attribute("displayname");
+        fileStream << "            registerParameter(\"" << disp << "\", \"" << desc << "\", \"" << unit << "\", " << name << ");\n";
+        parameterElement = parameterElement.nextSiblingElement("parameter");
+    }
+    fileStream << "\n";
+    portElement = rDomElement.firstChildElement("port");
+    while(!portElement.isNull())
+    {
+        QString type = portElement.attribute("type");
+        QString name = portElement.attribute("name");
+        QString nodetype = portElement.attribute("nodetype");
+        bool notreq = portElement.attribute("notrequired") == "True";
+        fileStream << "            mp" << name << " = add" << type << "(\"" << name << "\", \"" << nodetype << "\"";
+        if(notreq)
+        {
+            fileStream << ", Port::NOTREQUIRED);\n";
+        }
+        else
+        {
+            fileStream << ");\n";
+        }
+        portElement = portElement.nextSiblingElement("port");
+    }
+    fileStream << "        }\n\n";
+    fileStream << "        void initialize()\n";
+    fileStream << "        {\n";
+    portElement = rDomElement.firstChildElement("port");
+    portId=1;
+    while(!portElement.isNull())
+    {
+        QString name = portElement.attribute("name");
+        QString nodetype = portElement.attribute("nodetype");
+        QString def = portElement.attribute("default");
+        bool notreq = portElement.attribute("notrequired") == "True";
+
+        QStringList varNames;
+        QStringList varLabels;
+        if(nodetype == "NodeSignal")
+        {
+            varNames << name;
+            varLabels << "VALUE";
+        }
+        else if(nodetype == "NodeHydraulic")
+        {
+            varNames << "p" << "q" << "c" << "Zc";
+            varLabels << "PRESSURE" << "FLOW" << "WAVEVARIABLE" << "CHARIMP";
+        }
+
+        for(int i=0; i<varNames.size(); ++i)
+        {
+            fileStream << "            mpND_" << varNames[i] << portId << " = getSafeNodeDataPtr(mp" << name << ", " << nodetype << "::" << varLabels[i];
+            if(notreq)
+            {
+                fileStream << ", " << def;
+            }
+            fileStream << ");\n";
+        }
+        ++portId;
+        portElement = portElement.nextSiblingElement("port");
+    }
+    fileStream << "        }\n\n";
+    fileStream << "        void simulateOneTimestep()\n";
+    fileStream << "        {\n";
+    fileStream << "            double ";
+    portElement = rDomElement.firstChildElement("port");
+    portId=1;
+    while(!portElement.isNull())
+    {
+        QString name = portElement.attribute("name");
+        QString nodetype = portElement.attribute("nodetype");
+
+        QStringList varNames;
+        if(nodetype == "NodeSignal")
+        {
+            varNames << name;
+        }
+        else if(nodetype == "NodeHydraulic")
+        {
+            varNames << "p" << "q" << "c" << "Zc";
+        }
+
+        for(int i=0; i<varNames.size()-1; ++i)
+        {
+            fileStream << varNames[i] << portId << ", ";
+        }
+        fileStream << varNames.last() << portId;
+        ++portId;
+        portElement = portElement.nextSiblingElement("port");
+        if(!portElement.isNull())
+        {
+            fileStream << ", ";
+        }
+    }
+    fileStream << ";\n";
+    portElement = rDomElement.firstChildElement("port");
+    portId=1;
+    while(!portElement.isNull())
+    {
+        QString type = portElement.attribute("type");
+        QString name = portElement.attribute("name");
+        QString nodetype = portElement.attribute("nodetype");
+
+        QStringList varNames;
+        if(nodetype == "NodeSignal" && type == "ReadPort")
+        {
+            varNames << name;
+        }
+        else if(nodetype == "NodeHydraulic" && cqsType == "Q")
+        {
+            varNames << "c" << "Zc";
+        }
+        else if(nodetype == "NodeHydraulic" && cqsType == "C")
+        {
+            varNames << "p" << "q";
+        }
+        else if(nodetype == "NodeHydraulic" && cqsType == "S")
+        {
+            varNames << "p" << "q" << "c" << "Zc";
+        }
+
+        for(int i=0; i<varNames.size(); ++i)
+        {
+            fileStream << "            " << varNames[i] << portId << " = (*mpND_" << varNames[i] << portId << ");\n";
+        }
+        ++portId;
+        portElement = portElement.nextSiblingElement("port");
+    }
+    fileStream << "\n";
+    QDomElement equationElement = rDomElement.firstChildElement("equation");
+    while(!equationElement.isNull())
+    {
+        fileStream << "            " << equationElement.text() << ";\n";
+        equationElement = equationElement.nextSiblingElement("equation");
+    }
+    fileStream << "\n";
+    portElement = rDomElement.firstChildElement("port");
+    portId=1;
+    while(!portElement.isNull())
+    {
+        QString type = portElement.attribute("type");
+        QString name = portElement.attribute("name");
+        QString nodetype = portElement.attribute("nodetype");
+
+        QStringList varNames;
+        if(nodetype == "NodeSignal" && type == "WritePort")
+        {
+            varNames << name;
+        }
+        else if(nodetype == "NodeHydraulic" && cqsType == "C")
+        {
+            varNames << "c" << "Zc";
+        }
+        else if(nodetype == "NodeHydraulic" && cqsType == "Q")
+        {
+            varNames << "p" << "q";
+        }
+        else if(nodetype == "NodeHydraulic" && cqsType == "S")
+        {
+            varNames << "p" << "q" << "c" << "Zc";
+        }
+
+        for(int i=0; i<varNames.size(); ++i)
+        {
+            fileStream << "            (*mpND_" << varNames[i] << portId << ") = " << varNames[i] << portId << ";\n";
+        }
+        ++portId;
+        portElement = portElement.nextSiblingElement("port");
+    }
+    fileStream << "        }\n";
+    fileStream << "    };\n";
+    fileStream << "}\n\n";
+    fileStream << "#endif // " << typeName.toUpper() << "_HPP_INCLUDED\n";
+    file.close();
+
+    QFile ccLibFile;
+    ccLibFile.setFileName("tempLib.cc");
+    if(!ccLibFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open tempLib.cc for writing.");
+        return;
+    }
+    QTextStream ccLibStream(&ccLibFile);
+    ccLibStream << "#include \"" << outputFile << "\"\n";
+    ccLibStream << "#include \"ComponentEssentials.h\"\n\n";
+    ccLibStream << "using namespace hopsan;\n\n";
+    ccLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* /*nfact_ptr*/)\n";
+    ccLibStream << "{\n";
+    ccLibStream << "    cfact_ptr->registerCreatorFunction(\"" << typeName<< "\", " << typeName << "::Creator);\n";
+    ccLibStream << "}\n\n";
+    ccLibStream << "extern \"C\" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)\n";
+    ccLibStream << "{\n";
+    ccLibStream << "    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n";
+    ccLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n";
+    ccLibStream << "}\n";
+    ccLibFile.close();
+
+    QFile clBatchFile;
+    clBatchFile.setFileName("compile.bat");
+    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open compile.bat for writing.");
+        return;
+    }
+    QTextStream clBatchStream(&clBatchFile);
+    clBatchStream << "g++.exe -shared tempLib.cc -o " << typeName << ".dll -I" << INCLUDEPATH << " -L./ -lHopsanCore\n";
+    clBatchFile.close();
+
+    QFile xmlFile;
+    xmlFile.setFileName(typeName+".xml");
+    if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open " + typeName + ".xml  for writing.");
+        return;
+    }
+    QTextStream xmlStream(&xmlFile);
+    xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    xmlStream << "<hopsanobjectappearance version=\"0.2\">\n";
+    xmlStream << "  <modelobject typename=\"" << typeName << "\" displayname=\"" << displayName << "\">\n";
+    xmlStream << "    <icons>\n";
+    xmlStream << "      <icon type=\"iso\" path=\"laminarorifice_iso.svg\" iconrotation=\"ON\"/>\n";
+    xmlStream << "      <icon type=\"user\" path=\"laminarorifice_user.svg\" iconrotation=\"ON\"/>\n";
+    xmlStream << "    </icons>\n";
+    xmlStream << "    <portpositions>\n";
+    xmlStream << "      <portpose name=\"P1\" x=\"1.0\" y=\"0.5\" a=\"0\"/>\n";
+    xmlStream << "      <portpose name=\"P2\" x=\"0.0\" y=\"0.5\" a=\"180\"/>\n";
+    xmlStream << "    <portpose name=\"Kc\" x=\"0.5\" y=\"0.0\" a=\"270\"/>\n";
+    xmlStream << "    </portpositions>\n";
+    xmlStream << "  </modelobject>\n";
+    xmlStream << "</hopsanobjectappearance>\n";
+    xmlFile.close();
+
+    //Execute HopsanFMU compile script
+    QProcess p;
+    p.start("cmd.exe", QStringList() << "/c" << "cd " + gExecPath + " & compile.bat");
+    p.waitForFinished();
+
+    QDir componentsDir(QString(DOCSPATH));
+    QDir generatedDir(QString(DOCSPATH) + "Generated Componentes/");
+    if(!generatedDir.exists())
+    {
+        componentsDir.mkdir("Generated Componentes");
+    }
+
+    xmlFile.copy(generatedDir.path() + "/" + xmlFile.fileName());
+
+    QFile dllFile(gExecPath+typeName+".dll");
+    dllFile.copy(generatedDir.path() + "/" + typeName + ".dll");
+
+    file.remove();
+    clBatchFile.remove();
+    ccLibFile.remove();
+    dllFile.remove();
+    xmlFile.remove();
+
+    //Load the library
+    gpMainWindow->mpLibrary->unloadExternalLibrary(generatedDir.path());
+    gpMainWindow->mpLibrary->loadExternalLibrary(generatedDir.path());    //Load the library
 }
