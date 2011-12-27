@@ -1256,6 +1256,7 @@ void LibraryWidget::importFmu()
 void LibraryWidget::loadExternalLibrary(QString libDir)
 {
     qDebug() << "LOADING Library dir " << libDir;
+    gConfig.addUserLib(libDir);     //Register new library in configuration
     loadLibrary(libDir, true);
 }
 
@@ -1490,6 +1491,17 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
             gConfig.removeUserLib(libDir);
         }
         delete pTree;
+    }
+}
+
+
+void LibraryWidget::unloadExternalLibrary(QString libName)
+{
+    if(gConfig.hasUserLib(libName))
+    {
+        gConfig.removeUserLib(libName);
+        unLoadLibrarySubTree(mpContentsTree->findChild("External Libraries")->findChild(libName));
+        update();
     }
 }
 

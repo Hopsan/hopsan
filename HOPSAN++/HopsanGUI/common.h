@@ -51,8 +51,10 @@
 #define HELPPATH "../doc/user/html/"
 #ifdef WIN32
 #define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
+#define DOCSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/"
 #else
 #define DATAPATH MAINPATH
+#define DOCSPATH MAINPATH
 #endif
 #ifdef DEVELOPMENT
 #define MODELPATH "../Models/"

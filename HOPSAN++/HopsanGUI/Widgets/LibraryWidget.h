@@ -62,7 +62,7 @@ public:
     void loadLibrary(QString libDir, bool external = false);
     void loadExternalLibrary(QString libDir);
     void loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree=0);
-    void unLoadLibrarySubTree(LibraryContentsTree *pTree);
+    void unloadExternalLibrary(QString libName);
     void loadHiddenSecretDir(QString dir);
 
     GUIModelObjectAppearance *getAppearanceData(QString componentType);
@@ -89,6 +89,8 @@ private slots:
     void initializeDrag(QTreeWidgetItem* item, int dummy);
 
 private:
+    void unLoadLibrarySubTree(LibraryContentsTree *pTree);
+
     LibraryContentsTree *mpContentsTree;
     LibraryContentsTree *mpSecretHiddenContentsTree;
 
