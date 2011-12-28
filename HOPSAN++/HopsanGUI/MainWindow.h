@@ -47,6 +47,7 @@ class WelcomeDialog;
 class HelpDialog;
 class OptimizationDialog;
 class SensitivityAnalysisDialog;
+class ComponentGeneratorDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -56,10 +57,12 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    //Set and get methods for simulation parameters in toolbar
+
     OptionsDialog *getOptionsDialog();
+    ComponentGeneratorDialog *getComponentGeneratorDialog();
     PyDockWidget *getPythonDock();
 
+    //Set and get methods for simulation parameters in toolbar
     QLineEdit *getStartTimeLineEdit();
     QLineEdit *getTimeStepLineEdit();
     QLineEdit *getFinishTimeLineEdit();
@@ -183,6 +186,7 @@ private:
     HelpDialog *mpHelpDialog;
     OptimizationDialog *mpOptimizationDialog;
     SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;
+    ComponentGeneratorDialog *mpComponentGeneratorDialog;
 
     //Simulation setup line edits
     QLineEdit *mpStartTimeLineEdit;

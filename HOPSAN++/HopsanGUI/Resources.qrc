@@ -110,5 +110,7 @@
         <file>graphics/welcome_xmas.png</file>
         <file>graphics/uiicons/Hopsan-SensitivityAnalysis.png</file>
         <file>graphics/uiicons/Hopsan-ShowPlotLegends.png</file>
+        <file>graphics/uiicons/Hopsan-Add.png</file>
+        <file>graphics/objecticons/generatedcomponenticon.svg</file>
     </qresource>
 </RCC>

@@ -70,9 +70,12 @@ public:
 
     graphicsType mGfxType;
 
-        QLabel *mpComponentNameField;
+    QLabel *mpComponentNameField;
+
+    QStringList mLoadedComponents;
 
 public slots:
+    void generateComponent();
     void addExternalLibrary(QString libDir = QString());
     void importFmu();
     void setGfxType(graphicsType gfxType);
@@ -99,6 +102,7 @@ private:
     LibraryListWidget *mpList;
     QToolButton *mpTreeViewButton;
     QToolButton *mpDualViewButton;
+    QToolButton *mpGenerateComponentButton;
     QToolButton *mpLoadExternalButton;
     QToolButton *mpLoadFmuButton;
     QGridLayout *mpGrid;

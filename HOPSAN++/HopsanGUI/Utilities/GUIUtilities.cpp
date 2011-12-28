@@ -631,9 +631,12 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     QString typeName = rDomElement.attribute("typename");
     QString displayName = rDomElement.attribute("displayname");
     QString cqsType = rDomElement.attribute("cqstype");
+    if(cqsType == "S")
+        cqsType = "Signal";
 
     fileStream << "#ifndef " << typeName.toUpper() << "_HPP_INCLUDED\n";
     fileStream << "#define " << typeName.toUpper() << "_HPP_INCLUDED\n\n";
+    fileStream << "#include <math.h>\n";
     fileStream << "#include \"ComponentEssentials.h\"\n\n";
     fileStream << "namespace hopsan {\n\n";
     fileStream << "    class " << typeName << " : public Component" << cqsType << "\n";
@@ -657,7 +660,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         QString id = QString().setNum(portId);
         if(nodetype == "NodeSignal")
         {
-            allVarNames << name+id;
+            allVarNames << name;
         }
         else if(nodetype == "NodeHydraulic")
         {
@@ -757,7 +760,12 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 
         for(int i=0; i<varNames.size(); ++i)
         {
-            fileStream << "            mpND_" << varNames[i] << portId << " = getSafeNodeDataPtr(mp" << name << ", " << nodetype << "::" << varLabels[i];
+            QString varName;
+            if(nodetype == "NodeSignal")
+                varName = varNames[i];
+            else
+                varName = varNames[i]+QString().setNum(portId);
+            fileStream << "            mpND_" << varName << " = getSafeNodeDataPtr(mp" << name << ", " << nodetype << "::" << varLabels[i];
             if(notreq)
             {
                 fileStream << ", " << def;
@@ -790,9 +798,19 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 
         for(int i=0; i<varNames.size()-1; ++i)
         {
-            fileStream << varNames[i] << portId << ", ";
+            QString varName;
+            if(nodetype == "NodeSignal")
+                varName = varNames[i];
+            else
+                varName = varNames[i] + QString().setNum(portId);
+            fileStream << varName << ", ";
         }
-        fileStream << varNames.last() << portId;
+        QString varName;
+        if(nodetype == "NodeSignal")
+            varName = varNames.last();
+        else
+            varName = varNames.last() + QString().setNum(portId);
+        fileStream << varName;
         ++portId;
         portElement = portElement.nextSiblingElement("port");
         if(!portElement.isNull())
@@ -829,7 +847,12 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 
         for(int i=0; i<varNames.size(); ++i)
         {
-            fileStream << "            " << varNames[i] << portId << " = (*mpND_" << varNames[i] << portId << ");\n";
+            QString varName;
+            if(nodetype == "NodeSignal")
+                varName = varNames[i];
+            else
+                varName = varNames[i] + QString().setNum(portId);
+            fileStream << "            " << varName << " = (*mpND_" << varName << ");\n";
         }
         ++portId;
         portElement = portElement.nextSiblingElement("port");
@@ -870,7 +893,12 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 
         for(int i=0; i<varNames.size(); ++i)
         {
-            fileStream << "            (*mpND_" << varNames[i] << portId << ") = " << varNames[i] << portId << ";\n";
+            QString varName;
+            if(nodetype == "NodeSignal")
+                varName = varNames[i];
+            else
+                varName = varNames[i] + QString().setNum(portId);
+            fileStream << "            (*mpND_" << varName << ") = " << varName << ";\n";
         }
         ++portId;
         portElement = portElement.nextSiblingElement("port");
@@ -926,13 +954,39 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     xmlStream << "<hopsanobjectappearance version=\"0.2\">\n";
     xmlStream << "  <modelobject typename=\"" << typeName << "\" displayname=\"" << displayName << "\">\n";
     xmlStream << "    <icons>\n";
-    xmlStream << "      <icon type=\"iso\" path=\"laminarorifice_iso.svg\" iconrotation=\"ON\"/>\n";
-    xmlStream << "      <icon type=\"user\" path=\"laminarorifice_user.svg\" iconrotation=\"ON\"/>\n";
+    //! @todo Make it possible to choose icon files
+    //! @todo In the meantime, use a default "generated component" icon
+    xmlStream << "      <icon type=\"user\" path=\"generatedcomponenticon.svg\" iconrotation=\"ON\"/>\n";
     xmlStream << "    </icons>\n";
     xmlStream << "    <portpositions>\n";
-    xmlStream << "      <portpose name=\"P1\" x=\"1.0\" y=\"0.5\" a=\"0\"/>\n";
-    xmlStream << "      <portpose name=\"P2\" x=\"0.0\" y=\"0.5\" a=\"180\"/>\n";
-    xmlStream << "    <portpose name=\"Kc\" x=\"0.5\" y=\"0.0\" a=\"270\"/>\n";
+    portElement = rDomElement.firstChildElement("port");
+    QStringList leftPorts, rightPorts, topPorts;
+    while(!portElement.isNull())
+    {
+        QString type = portElement.attribute("type");
+        QString name = portElement.attribute("name");
+        QString nodetype = portElement.attribute("nodetype");
+
+        if(nodetype == "NodeSignal" && type == "ReadPort")
+            leftPorts << name;
+        else if(nodetype == "NodeSignal" && type == "WritePort")
+            rightPorts << name;
+        else
+            topPorts << name;
+        portElement = portElement.nextSiblingElement("port");
+    }
+    for(int i=0; i<leftPorts.size(); ++i)
+    {
+        xmlStream << "      <portpose name=\"" << leftPorts[i] << "\" x=\"0.0\" y=\"" << QString().setNum((double(i)+1)/(double(leftPorts.size())+1.0)) << "\" a=\"180\"/>\n";
+    }
+    for(int i=0; i<rightPorts.size(); ++i)
+    {
+        xmlStream << "      <portpose name=\"" << rightPorts[i] << "\" x=\"1.0\" y=\"" << QString().setNum((double(i)+1)/(double(rightPorts.size())+1.0)) << "\" a=\"0\"/>\n";
+    }
+    for(int i=0; i<topPorts.size(); ++i)
+    {
+        xmlStream << "      <portpose name=\"" << topPorts[i] << "\" x=\"" << QString().setNum((double(i)+1)/(double(topPorts.size())+1.0)) << "\" y=\"0.0\" a=\"270\"/>\n";
+    }
     xmlStream << "    </portpositions>\n";
     xmlStream << "  </modelobject>\n";
     xmlStream << "</hopsanobjectappearance>\n";
@@ -955,11 +1009,14 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     QFile dllFile(gExecPath+typeName+".dll");
     dllFile.copy(generatedDir.path() + "/" + typeName + ".dll");
 
-    file.remove();
+    QFile svgFile(QString(OBJECTICONPATH)+"generatedcomponenticon.svg");
+    svgFile.copy(generatedDir.path() + "/generatedcomponenticon.svg");
+
+/*    file.remove();
     clBatchFile.remove();
     ccLibFile.remove();
     dllFile.remove();
-    xmlFile.remove();
+    xmlFile.remove()*/;
 
     //Load the library
     gpMainWindow->mpLibrary->unloadExternalLibrary(generatedDir.path());

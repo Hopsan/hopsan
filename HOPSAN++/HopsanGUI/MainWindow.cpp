@@ -43,6 +43,7 @@
 #include "Dialogs/WelcomeDialog.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "Dialogs/SensitivityAnalysisDialog.h"
+#include "Dialogs/ComponentGeneratorDialog.h"
 
 #include "UndoStack.h"
 #include "Configuration.h"
@@ -117,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpAboutDialog = new AboutDialog(this);
     mpOptimizationDialog = new OptimizationDialog(this);
     mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
+    mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);
     mpHelpDialog = new HelpDialog(this);
 
     //Create the Python widget
@@ -267,6 +269,14 @@ void MainWindow::initializeWorkspace()
     mpPlotWidget = new PlotTreeWidget(this);
     mpPlotWidget->hide();
 
+//    for(int i=0; i<mpLibrary->mLoadedComponents.size(); ++i)
+//    {
+//        if(!mpLibrary->getAppearanceData(mpLibrary->mLoadedComponents.at(i))->getHelpText().isEmpty())
+//        {
+//            qDebug() << mpLibrary->mLoadedComponents.at(i) << ":\n" << mpLibrary->getAppearanceData(mpLibrary->mLoadedComponents.at(i))->getHelpText();
+//        }
+//    }
+
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
     {
@@ -302,6 +312,8 @@ void MainWindow::initializeWorkspace()
         }
     }
 }
+
+
 
 
 //! @brief Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
@@ -617,9 +629,9 @@ void MainWindow::createActions()
     mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
     mpTimeLabelDeliminator2 = new QLabel(tr(" :: "));
 
-    connect(mpStartTimeLineEdit, SIGNAL(editingFinished()), SLOT(fixSimulationParameterValues()));
-    connect(mpTimeStepLineEdit, SIGNAL(editingFinished()), SLOT(fixSimulationParameterValues()));
-    connect(mpFinishTimeLineEdit, SIGNAL(editingFinished()), SLOT(fixSimulationParameterValues()));
+    connect(mpStartTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()));
+    connect(mpTimeStepLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()));
+    connect(mpFinishTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()));
 }
 
 
@@ -1117,6 +1129,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 OptionsDialog *MainWindow::getOptionsDialog()
 {
     return mpOptionsDialog;
+}
+
+
+ComponentGeneratorDialog *MainWindow::getComponentGeneratorDialog()
+{
+    return mpComponentGeneratorDialog;
 }
 
 //! @brief Sets a new startvalue.

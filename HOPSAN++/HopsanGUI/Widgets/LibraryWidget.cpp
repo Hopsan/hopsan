@@ -25,15 +25,16 @@
 
 #include <QtGui>
 
+#include "Configuration.h"
 #include "LibraryWidget.h"
 #include "MainWindow.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "GUIObjects/GUIContainerObject.h"
 #include "MessageWidget.h"
+#include "Dialogs/ComponentGeneratorDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
-#include "Configuration.h"
-#include "common.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
+#include "Widgets/ProjectTabWidget.h"
+#include "common.h"
 
 using namespace std;
 using namespace hopsan;
@@ -67,37 +68,45 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpList->setGridSize(QSize(45,45));
     mpList->hide();
 
+    QSize iconSize = QSize(24,24);  //Size of library icons
+
     mpTreeViewButton = new QToolButton();
     mpTreeViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryTreeView.png"));
-    mpTreeViewButton->setIconSize(QSize(24,24));
+    mpTreeViewButton->setIconSize(iconSize);
     mpTreeViewButton->setToolTip(tr("Single List View"));
     mpDualViewButton = new QToolButton();
     mpDualViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryDualView.png"));
-    mpDualViewButton->setIconSize(QSize(24,24));
+    mpDualViewButton->setIconSize(iconSize);
     mpDualViewButton->setToolTip(tr("Dual List View"));
+    mpGenerateComponentButton = new QToolButton();
+    mpGenerateComponentButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-New.png"));
+    mpGenerateComponentButton->setIconSize(iconSize);
+    mpGenerateComponentButton->setToolTip(tr("Generate New Component"));
     mpLoadExternalButton = new QToolButton();
     mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadLibrary.png"));
-    mpLoadExternalButton->setIconSize(QSize(24,24));
+    mpLoadExternalButton->setIconSize(iconSize);
     mpLoadExternalButton->setToolTip(tr("Load External Library"));
     mpLoadFmuButton = new QToolButton();
     mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
-    mpLoadFmuButton->setIconSize(QSize(24,24));
+    mpLoadFmuButton->setIconSize(iconSize);
     mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU)"));
 
     connect(mpTreeViewButton, SIGNAL(clicked()), this, SLOT(setListView()));
     connect(mpDualViewButton, SIGNAL(clicked()), this, SLOT(setDualView()));
+    connect(mpGenerateComponentButton, SIGNAL(clicked()), this, SLOT(generateComponent()));
     connect(mpLoadExternalButton, SIGNAL(clicked()), this, SLOT(addExternalLibrary()));
     connect(mpLoadFmuButton, SIGNAL(clicked()), this, SLOT(importFmu()));
 
     mpGrid = new QGridLayout(this);
-    mpGrid->addWidget(mpTree,               0,0,1,5);
-    mpGrid->addWidget(mpComponentNameField, 1,0,1,5);
-    mpGrid->addWidget(mpList,               2,0,1,5);
-    mpGrid->addWidget(mpTreeViewButton,     3,0,1,1);
-    mpGrid->addWidget(mpDualViewButton,     3,1,1,1);
-    mpGrid->addWidget(mpLoadExternalButton, 3,2,1,1);
+    mpGrid->addWidget(mpTree,                       0,0,1,6);
+    mpGrid->addWidget(mpComponentNameField,         1,0,1,6);
+    mpGrid->addWidget(mpList,                       2,0,1,6);
+    mpGrid->addWidget(mpTreeViewButton,             3,0,1,1);
+    mpGrid->addWidget(mpDualViewButton,             3,1,1,1);
+    mpGrid->addWidget(mpGenerateComponentButton,    3,2,1,1);
+    mpGrid->addWidget(mpLoadExternalButton,         3,3,1,1);
 #ifdef DEVELOPMENT
-    mpGrid->addWidget(mpLoadFmuButton,      3,3,1,1);
+    mpGrid->addWidget(mpLoadFmuButton,              3,4,1,1);
 #endif
     mpGrid->setContentsMargins(4,4,4,4);
     mpGrid->setHorizontalSpacing(0);
@@ -421,6 +430,13 @@ void LibraryWidget::loadLibrary(QString libDir, bool external)
     }
 
     update();       //Redraw the library
+}
+
+
+//! @brief Slots that opens the component generator dialog
+void LibraryWidget::generateComponent()
+{
+    gpMainWindow->getComponentGeneratorDialog()->open();
 }
 
 
@@ -1476,6 +1492,8 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
         if (success)
         {
             pTree->addComponent(pAppearanceData);
+            mLoadedComponents << pAppearanceData->getTypeName();
+            qDebug() << "Adding: " << pAppearanceData->getTypeName();
         }
 
         //Close file
@@ -1500,7 +1518,10 @@ void LibraryWidget::unloadExternalLibrary(QString libName)
     if(gConfig.hasUserLib(libName))
     {
         gConfig.removeUserLib(libName);
-        unLoadLibrarySubTree(mpContentsTree->findChild("External Libraries")->findChild(libName));
+        if(mpContentsTree->findChild("External Libraries")->findChild(libName))
+        {
+            unLoadLibrarySubTree(mpContentsTree->findChild("External Libraries")->findChild(libName));
+        }
         update();
     }
 }

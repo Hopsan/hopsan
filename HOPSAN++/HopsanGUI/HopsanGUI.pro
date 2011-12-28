@@ -146,7 +146,9 @@ SOURCES += main.cpp \
     Dependencies/BarChartPlotter/barchartplotter.cpp \
     Dependencies/BarChartPlotter/axisbase.cpp \
     Dialogs/OptimizationDialog.cpp \
-    Dialogs/SensitivityAnalysisDialog.cpp
+    Dialogs/SensitivityAnalysisDialog.cpp \
+    Dialogs/ComponentGeneratorDialog.cpp
+
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -199,15 +201,9 @@ HEADERS += MainWindow.h \
     Dependencies/BarChartPlotter/axisbase.h \
     Dialogs/OptimizationDialog.h \
     Dialogs/SensitivityAnalysis.h \
-    Dialogs/SensitivityAnalysisDialog.h
+    Dialogs/SensitivityAnalysisDialog.h \
+    Dialogs/ComponentGeneratorDialog.h
 
 OTHER_FILES += \
     ../hopsandefaults \
     HopsanGuiBuild.prf
-
-
-
-
-
-
-
