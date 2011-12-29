@@ -6,7 +6,7 @@
 -# \subpage particle-swarm-algorithm \n
 -# \subpage optimization-example \n
 
-\page constrained-simplex-algorithm Constraned Simplex Algorithm
+\page constrained-simplex-algorithm Constrained Simplex Algorithm
 \todo write this
 
 \page particle-swarm-algorithm Particle Swarm Algorithm

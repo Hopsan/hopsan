@@ -49,6 +49,20 @@ ParameterSpecification::ParameterSpecification(QString name, QString displayName
 }
 
 
+UtilitySpecification::UtilitySpecification(QString utility, QString name)
+{
+    this->utility = utility;
+    this->name = name;
+}
+
+
+StaticVariableSpecification::StaticVariableSpecification(QString datatype, QString name)
+{
+    this->datatype = datatype;
+    this->name = name;
+}
+
+
 //! @brief Constructor
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QDialog(parent)
@@ -82,6 +96,24 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpComponentTypeLabel = new QLabel("CQS Type: ");
     mpComponentTypeComboBox = new QComboBox(this);
     mpComponentTypeComboBox->addItems(QStringList() << "C" << "Q" << "S");
+    mpAddItemButton = new QToolButton(this);
+    mpAddItemButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+    mpAddItemMenu = new QMenu(this);
+    QAction *mpAddPortAction = new QAction(tr("&Add Port"), this);
+    QAction *mpAddParameterAction = new QAction(tr("&Add Parameter"), this);
+    QAction *mpAddUtilityAction = new QAction(tr("&Add Utility Function"), this);
+    QAction *mpAddStaticVariableAction = new QAction(tr("&Add Static Variable"), this);
+    connect(mpAddPortAction, SIGNAL(triggered()), this, SLOT(addPort()));
+    connect(mpAddParameterAction, SIGNAL(triggered()), this, SLOT(addParameter()));
+    connect(mpAddUtilityAction, SIGNAL(triggered()), this, SLOT(addUtility()));
+    connect(mpAddStaticVariableAction, SIGNAL(triggered()), this, SLOT(addStaticVariable()));
+    mpAddItemMenu->addAction(mpAddPortAction);
+    mpAddItemMenu->addAction(mpAddParameterAction);
+    mpAddItemMenu->addAction(mpAddUtilityAction);
+    mpAddItemMenu->addAction(mpAddStaticVariableAction);
+    mpAddItemButton->setMenu(mpAddItemMenu);
+    mpAddItemButton->setPopupMode(QToolButton::InstantPopup);
+    mpAddItemButton->setToolTip("Add Item");
 
     //Group boxes and layouts
     mpParametersGroupBox = new QGroupBox("Parameters", this);
@@ -109,6 +141,26 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpAddParameterButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Add.png"));
     mpAddParameterButton->setToolTip("Add Parameter");
     connect(mpAddParameterButton, SIGNAL(pressed()), this, SLOT(addParameter()));
+
+    mpUtilitiesGroupBox = new QGroupBox("Utilities", this);
+    mpUtilitiesLayout = new QGridLayout();
+    mpUtilitiesGroupBox->setLayout(mpUtilitiesLayout);
+    mpUtilitiesLabel = new QLabel("Utility:", this);
+    mpUtilityNamesLabel = new QLabel("Name:", this);
+    mpAddUtilityButton = new QToolButton(this);
+    mpAddUtilityButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Add.png"));
+    mpAddUtilityButton->setToolTip("Add Utility");
+    connect(mpAddUtilityButton, SIGNAL(pressed()), this, SLOT(addUtility()));
+
+    mpStaticVariablesGroupBox = new QGroupBox("Static Variables", this);
+    mpStaticVariablesLayout = new QGridLayout();
+    mpStaticVariablesGroupBox->setLayout(mpStaticVariablesLayout);
+    mpStaticVariableNamesLabel = new QLabel("Name:", this);
+    mpAddStaticVariableButton = new QToolButton(this);
+    mpAddStaticVariableButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Add.png"));
+    mpAddStaticVariableButton->setToolTip("Add Static Variable");
+    connect(mpAddStaticVariableButton, SIGNAL(pressed()), this, SLOT(addStaticVariable()));
+
 
 
     //Main layout
@@ -144,14 +196,26 @@ void ComponentGeneratorDialog::addParameter()
 }
 
 
+void ComponentGeneratorDialog::addUtility()
+{
+    mUtilitiesList.append(UtilitySpecification());
+    update();
+}
+
+
+void ComponentGeneratorDialog::addStaticVariable()
+{
+    mStaticVariablesList.append(StaticVariableSpecification());
+    update();
+}
+
+
 void ComponentGeneratorDialog::removePort()
 {
     QToolButton *button = qobject_cast<QToolButton *>(sender());
     int i = mvRemovePortButtons.indexOf(button);
-
     mPortList.removeAt(i);
     qDebug() << "Removing port with index " << i;
-
     update();
 }
 
@@ -160,9 +224,26 @@ void ComponentGeneratorDialog::removeParameter()
 {
     QToolButton *button = qobject_cast<QToolButton *>(sender());
     int i = mvRemoveParameterButtons.indexOf(button);
-
     mParametersList.removeAt(i);
+    update();
+}
 
+
+
+void ComponentGeneratorDialog::removeUtility()
+{
+    QToolButton *button = qobject_cast<QToolButton *>(sender());
+    int i = mvRemoveUtilityButtons.indexOf(button);
+    mUtilitiesList.removeAt(i);
+    update();
+}
+
+
+void ComponentGeneratorDialog::removeStaticVariable()
+{
+    QToolButton *button = qobject_cast<QToolButton *>(sender());
+    int i = mvRemoveStaticVariableButtons.indexOf(button);
+    mStaticVariablesList.removeAt(i);
     update();
 }
 
@@ -207,6 +288,16 @@ void ComponentGeneratorDialog::updateValues()
         int i = mvParameterInitEdits.indexOf(lineEdit);
         mParametersList[i].init = lineEdit->text();
     }
+    else if(mvUtilityNameEdits.contains(lineEdit))
+    {
+        int i = mvUtilityNameEdits.indexOf(lineEdit);
+        mUtilitiesList[i].name = lineEdit->text();
+    }
+    else if(mvStaticVariableNameEdits.contains(lineEdit))
+    {
+        int i = mvStaticVariableNameEdits.indexOf(lineEdit);
+        mStaticVariablesList[i].name = lineEdit->text();
+    }
 
     //Assume sender is a check box
     QCheckBox *checkBox = qobject_cast<QCheckBox *>(sender());
@@ -227,6 +318,11 @@ void ComponentGeneratorDialog::updateValues()
     {
         int i = mvNodeTypeComboBoxes.indexOf(comboBox);
         mPortList[i].nodetype = comboBox->currentText();
+    }
+    else if(mvUtilitiesComboBoxes.contains(comboBox))
+    {
+        int i = mvUtilitiesComboBoxes.indexOf(comboBox);
+        mUtilitiesList[i].utility = comboBox->currentText();
     }
 }
 
@@ -269,47 +365,58 @@ void ComponentGeneratorDialog::update()
     mvPortDefaultEdits.clear();
     mvRemovePortButtons.clear();
 
-    for(int i=0; i<mPortList.size(); ++i)
+    if(!mPortList.isEmpty())
     {
-        QLineEdit *pPortNameEdit = new QLineEdit(mPortList.at(i).name, this);
-        QComboBox *pPortTypeComboBox = new QComboBox(this);
-        QStringList portTypes = QStringList() << "ReadPort" << "WritePort" << "PowerPort";
-        pPortTypeComboBox->addItems(portTypes);
-        pPortTypeComboBox->setCurrentIndex(portTypes.indexOf(mPortList.at(i).porttype));
-        QComboBox *pNodeTypeComboBox = new QComboBox(this);
-        QStringList nodeTypes = QStringList() << "NodeSignal" << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
-        pNodeTypeComboBox->addItems(nodeTypes);
-        pNodeTypeComboBox->setCurrentIndex(nodeTypes.indexOf(mPortList.at(i).nodetype));
-        QCheckBox *pRequiredCheckBox = new QCheckBox(this);
-        pRequiredCheckBox->setChecked(!mPortList.at(i).notrequired);
-        QLineEdit *pDefaultEdit = new QLineEdit(mPortList.at(i).defaultvalue, this);
-        QToolButton *pRemoveButton = new QToolButton(this);
-        pRemoveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
+        for(int i=0; i<mPortList.size(); ++i)
+        {
+            QLineEdit *pPortNameEdit = new QLineEdit(mPortList.at(i).name, this);
+            QComboBox *pPortTypeComboBox = new QComboBox(this);
+            QStringList portTypes = QStringList() << "ReadPort" << "WritePort" << "PowerPort";
+            pPortTypeComboBox->addItems(portTypes);
+            pPortTypeComboBox->setCurrentIndex(portTypes.indexOf(mPortList.at(i).porttype));
+            QComboBox *pNodeTypeComboBox = new QComboBox(this);
+            QStringList nodeTypes = QStringList() << "NodeSignal" << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
+            pNodeTypeComboBox->addItems(nodeTypes);
+            pNodeTypeComboBox->setCurrentIndex(nodeTypes.indexOf(mPortList.at(i).nodetype));
+            QCheckBox *pRequiredCheckBox = new QCheckBox(this);
+            pRequiredCheckBox->setChecked(!mPortList.at(i).notrequired);
+            QLineEdit *pDefaultEdit = new QLineEdit(mPortList.at(i).defaultvalue, this);
+            QToolButton *pRemoveButton = new QToolButton(this);
+            pRemoveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
 
-        connect(pPortNameEdit,      SIGNAL(textChanged(QString)),           this, SLOT(updateValues()));
-        connect(pPortTypeComboBox,  SIGNAL(currentIndexChanged(QString)),   this, SLOT(updateValues()));
-        connect(pNodeTypeComboBox,  SIGNAL(currentIndexChanged(QString)),   this, SLOT(updateValues()));
-        connect(pRequiredCheckBox,  SIGNAL(toggled(bool)),                  this, SLOT(updateValues()));
-        connect(pDefaultEdit,       SIGNAL(textChanged(QString)),           this, SLOT(updateValues()));
-        connect(pRemoveButton,      SIGNAL(pressed()),                      this, SLOT(removePort()));
+            connect(pPortNameEdit,      SIGNAL(textChanged(QString)),           this, SLOT(updateValues()));
+            connect(pPortTypeComboBox,  SIGNAL(currentIndexChanged(QString)),   this, SLOT(updateValues()));
+            connect(pNodeTypeComboBox,  SIGNAL(currentIndexChanged(QString)),   this, SLOT(updateValues()));
+            connect(pRequiredCheckBox,  SIGNAL(toggled(bool)),                  this, SLOT(updateValues()));
+            connect(pDefaultEdit,       SIGNAL(textChanged(QString)),           this, SLOT(updateValues()));
+            connect(pRemoveButton,      SIGNAL(pressed()),                      this, SLOT(removePort()));
 
-        mpPortsLayout->addWidget(pPortNameEdit, row, 0);
-        mpPortsLayout->addWidget(pPortTypeComboBox, row, 1);
-        mpPortsLayout->addWidget(pNodeTypeComboBox, row, 2);
-        mpPortsLayout->addWidget(pRequiredCheckBox, row, 3);
-        mpPortsLayout->addWidget(pDefaultEdit, row, 4);
-        mpPortsLayout->addWidget(pRemoveButton, row, 5);
-        mpPortsLayout->setAlignment(pRequiredCheckBox, Qt::AlignCenter);
+            mpPortsLayout->addWidget(pPortNameEdit, row, 0);
+            mpPortsLayout->addWidget(pPortTypeComboBox, row, 1);
+            mpPortsLayout->addWidget(pNodeTypeComboBox, row, 2);
+            mpPortsLayout->addWidget(pRequiredCheckBox, row, 3);
+            mpPortsLayout->addWidget(pDefaultEdit, row, 4);
+            mpPortsLayout->addWidget(pRemoveButton, row, 5);
+            mpPortsLayout->setAlignment(pRequiredCheckBox, Qt::AlignCenter);
 
-        mvPortNameEdits.append(pPortNameEdit);
-        mvPortTypeComboBoxes.append(pPortTypeComboBox);
-        mvNodeTypeComboBoxes.append(pNodeTypeComboBox);
-        mvRequiredCheckBoxes.append(pRequiredCheckBox);
-        mvPortDefaultEdits.append(pDefaultEdit);
-        mvRemovePortButtons.append(pRemoveButton);
+            mvPortNameEdits.append(pPortNameEdit);
+            mvPortTypeComboBoxes.append(pPortTypeComboBox);
+            mvNodeTypeComboBoxes.append(pNodeTypeComboBox);
+            mvRequiredCheckBoxes.append(pRequiredCheckBox);
+            mvPortDefaultEdits.append(pDefaultEdit);
+            mvRemovePortButtons.append(pRemoveButton);
 
-        ++row;
+            ++row;
+        }
     }
+    mpPortNamesLabel->setVisible(!mPortList.isEmpty());
+    mpPortTypeLabel->setVisible(!mPortList.isEmpty());
+    mpNodeTypelabel->setVisible(!mPortList.isEmpty());
+    mpPortRequiredLabel->setVisible(!mPortList.isEmpty());
+    mpPortDefaultLabel->setVisible(!mPortList.isEmpty());
+    mpAddPortButton->setVisible(!mPortList.isEmpty());
+    mpPortsGroupBox->setVisible(!mPortList.isEmpty());
+
 
     while(!mpParametersLayout->isEmpty())
     {
@@ -347,39 +454,155 @@ void ComponentGeneratorDialog::update()
     mvParameterInitEdits.clear();
     mvRemoveParameterButtons.clear();
 
-    for(int i=0; i<mParametersList.size(); ++i)
+    if(!mParametersList.isEmpty())
     {
-        QLineEdit *pParameterNameEdit = new QLineEdit(mParametersList.at(i).name, this);
-        QLineEdit *pParameterDisplayEdit = new QLineEdit(mParametersList.at(i).displayName, this);
-        QLineEdit *pParameterDescriptionEdit = new QLineEdit(mParametersList.at(i).description, this);
-        QLineEdit *pParameterUnitEdit = new QLineEdit(mParametersList.at(i).unit, this);
-        QLineEdit *pParameterInitEdit = new QLineEdit(mParametersList.at(i).init, this);
-        QToolButton *pRemoveButton = new QToolButton(this);
-        pRemoveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
+        for(int i=0; i<mParametersList.size(); ++i)
+        {
+            QLineEdit *pParameterNameEdit = new QLineEdit(mParametersList.at(i).name, this);
+            QLineEdit *pParameterDisplayEdit = new QLineEdit(mParametersList.at(i).displayName, this);
+            QLineEdit *pParameterDescriptionEdit = new QLineEdit(mParametersList.at(i).description, this);
+            QLineEdit *pParameterUnitEdit = new QLineEdit(mParametersList.at(i).unit, this);
+            QLineEdit *pParameterInitEdit = new QLineEdit(mParametersList.at(i).init, this);
+            QToolButton *pRemoveButton = new QToolButton(this);
+            pRemoveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
 
-        connect(pParameterNameEdit,         SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
-        connect(pParameterDisplayEdit,      SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
-        connect(pParameterDescriptionEdit,  SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
-        connect(pParameterUnitEdit,         SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
-        connect(pParameterInitEdit,         SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
-        connect(pRemoveButton,              SIGNAL(pressed()),          this, SLOT(removeParameter()));
+            connect(pParameterNameEdit,         SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
+            connect(pParameterDisplayEdit,      SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
+            connect(pParameterDescriptionEdit,  SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
+            connect(pParameterUnitEdit,         SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
+            connect(pParameterInitEdit,         SIGNAL(textChanged(QString)),  this, SLOT(updateValues()));
+            connect(pRemoveButton,              SIGNAL(pressed()),          this, SLOT(removeParameter()));
 
-        mpParametersLayout->addWidget(pParameterNameEdit, row, 0);
-        mpParametersLayout->addWidget(pParameterDisplayEdit, row, 1);
-        mpParametersLayout->addWidget(pParameterDescriptionEdit, row, 2);
-        mpParametersLayout->addWidget(pParameterUnitEdit, row, 3);
-        mpParametersLayout->addWidget(pParameterInitEdit, row, 4);
-        mpParametersLayout->addWidget(pRemoveButton, row, 5);
+            mpParametersLayout->addWidget(pParameterNameEdit, row, 0);
+            mpParametersLayout->addWidget(pParameterDisplayEdit, row, 1);
+            mpParametersLayout->addWidget(pParameterDescriptionEdit, row, 2);
+            mpParametersLayout->addWidget(pParameterUnitEdit, row, 3);
+            mpParametersLayout->addWidget(pParameterInitEdit, row, 4);
+            mpParametersLayout->addWidget(pRemoveButton, row, 5);
 
-        mvParameterNameEdits.append(pParameterNameEdit);
-        mvParameterDisplayEdits.append(pParameterDisplayEdit);
-        mvParameterDescriptionEdits.append(pParameterDescriptionEdit);
-        mvParameterUnitEdits.append(pParameterUnitEdit);
-        mvParameterInitEdits.append(pParameterInitEdit);
-        mvRemoveParameterButtons.append(pRemoveButton);
+            mvParameterNameEdits.append(pParameterNameEdit);
+            mvParameterDisplayEdits.append(pParameterDisplayEdit);
+            mvParameterDescriptionEdits.append(pParameterDescriptionEdit);
+            mvParameterUnitEdits.append(pParameterUnitEdit);
+            mvParameterInitEdits.append(pParameterInitEdit);
+            mvRemoveParameterButtons.append(pRemoveButton);
 
-        ++row;
+            ++row;
+        }
     }
+
+    mpParametersNameLabel->setVisible(!mParametersList.isEmpty());
+    mpParametersDisplayLabel->setVisible(!mParametersList.isEmpty());
+    mpParametersDescriptionLabel->setVisible(!mParametersList.isEmpty());
+    mpParametersUnitLabel->setVisible(!mParametersList.isEmpty());;
+    mpParametersInitLabel->setVisible(!mParametersList.isEmpty());
+    mpAddParameterButton->setVisible(!mParametersList.isEmpty());
+    mpParametersGroupBox->setVisible(!mParametersList.isEmpty());
+
+
+
+
+    while(!mpUtilitiesLayout->isEmpty())
+    {
+        delete(mpUtilitiesLayout->itemAt(0));
+        mpUtilitiesLayout->removeItem(mpUtilitiesLayout->itemAt(0));
+    }
+
+    row=0;
+
+    mpUtilitiesLayout->addWidget(mpUtilitiesLabel, row, 0);
+    mpUtilitiesLayout->addWidget(mpUtilityNamesLabel, row, 1);
+    mpUtilitiesLayout->addWidget(mpAddUtilityButton, row, 2);
+
+    ++row;
+
+    for(int i=0; i<mvUtilitiesComboBoxes.size(); ++i)
+        delete(mvUtilitiesComboBoxes.at(i));
+    for(int i=0; i<mvUtilityNameEdits.size(); ++i)
+        delete(mvUtilityNameEdits.at(i));
+    for(int i=0; i<mvRemoveUtilityButtons.size(); ++i)
+        delete(mvRemoveUtilityButtons.at(i));
+    mvUtilitiesComboBoxes.clear();
+    mvUtilityNameEdits.clear();
+    mvRemoveUtilityButtons.clear();
+
+    if(!mUtilitiesList.isEmpty())
+    {
+        for(int i=0; i<mUtilitiesList.size(); ++i)
+        {
+            QComboBox *pUtilitiesComboBox = new QComboBox(this);
+            QStringList utilities = QStringList() << "CSVParser" << "Delay" << "DoubleIntegratorWithDamping" << "DoubleIntegratorWithDampingAndCoulumbFriction" << "FirstOrderTransferFunction" << "Integrator" << "IntegratorLimited" << "Matrix" << "SecondOrderTransferFunction" << "TurbulentFlowFunction" << "ValveHysteresis" << "Vec" << "WhiteGaussianNoise";
+            pUtilitiesComboBox->addItems(utilities);
+            pUtilitiesComboBox->setCurrentIndex(utilities.indexOf(mUtilitiesList.at(i).utility));
+            QLineEdit *pUtilityNameEdit = new QLineEdit(mUtilitiesList.at(i).name, this);
+            QToolButton *pRemoveButton = new QToolButton(this);
+            pRemoveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
+
+            connect(pUtilitiesComboBox,         SIGNAL(currentIndexChanged(QString)),   this, SLOT(updateValues()));
+            connect(pUtilityNameEdit,           SIGNAL(textChanged(QString)),           this, SLOT(updateValues()));
+            connect(pRemoveButton,              SIGNAL(pressed()),                      this, SLOT(removeUtility()));
+
+            mpUtilitiesLayout->addWidget(pUtilitiesComboBox, row, 0);
+            mpUtilitiesLayout->addWidget(pUtilityNameEdit, row, 1);
+            mpUtilitiesLayout->addWidget(pRemoveButton, row, 2);
+
+            mvUtilitiesComboBoxes.append(pUtilitiesComboBox);
+            mvUtilityNameEdits.append(pUtilityNameEdit);
+            mvRemoveUtilityButtons.append(pRemoveButton);
+
+            ++row;
+        }
+    }
+
+    mpUtilitiesLabel->setVisible(!mUtilitiesList.isEmpty());
+    mpUtilityNamesLabel->setVisible(!mUtilitiesList.isEmpty());
+    mpAddUtilityButton->setVisible(!mUtilitiesList.isEmpty());
+    mpUtilitiesGroupBox->setVisible(!mUtilitiesList.isEmpty());
+
+
+    while(!mpStaticVariablesLayout->isEmpty())
+    {
+        delete(mpStaticVariablesLayout->itemAt(0));
+        mpStaticVariablesLayout->removeItem(mpStaticVariablesLayout->itemAt(0));
+    }
+
+    row=0;
+
+    mpStaticVariablesLayout->addWidget(mpStaticVariableNamesLabel, row, 0);
+    mpStaticVariablesLayout->addWidget(mpAddStaticVariableButton, row, 1);
+
+    ++row;
+
+    for(int i=0; i<mvStaticVariableNameEdits.size(); ++i)
+        delete(mvStaticVariableNameEdits.at(i));
+    for(int i=0; i<mvRemoveStaticVariableButtons.size(); ++i)
+        delete(mvRemoveStaticVariableButtons.at(i));
+    mvStaticVariableNameEdits.clear();
+    mvRemoveStaticVariableButtons.clear();
+
+    if(!mStaticVariablesList.isEmpty())
+    {
+        for(int i=0; i<mStaticVariablesList.size(); ++i)
+        {
+            QLineEdit *pStaticVariableNameEdit = new QLineEdit(mStaticVariablesList.at(i).name, this);
+            QToolButton *pRemoveButton = new QToolButton(this);
+            pRemoveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
+
+            connect(pStaticVariableNameEdit,    SIGNAL(textChanged(QString)),   this, SLOT(updateValues()));
+            connect(pRemoveButton,              SIGNAL(pressed()),              this, SLOT(removeStaticVariable()));
+
+            mpStaticVariablesLayout->addWidget(pStaticVariableNameEdit, row, 0);
+            mpStaticVariablesLayout->addWidget(pRemoveButton, row, 1);
+
+            mvStaticVariableNameEdits.append(pStaticVariableNameEdit);
+            mvRemoveStaticVariableButtons.append(pRemoveButton);
+
+            ++row;
+        }
+    }
+    mpStaticVariableNamesLabel->setVisible(!mStaticVariablesList.isEmpty());
+    mpAddStaticVariableButton->setVisible(!mStaticVariablesList.isEmpty());
+    mpStaticVariablesGroupBox->setVisible(!mStaticVariablesList.isEmpty());
 
     while(!mpLayout->isEmpty())
     {
@@ -393,11 +616,14 @@ void ComponentGeneratorDialog::update()
     mpLayout->addWidget(mpComponentDisplayEdit,     0, 3);
     mpLayout->addWidget(mpComponentTypeLabel,       0, 4);
     mpLayout->addWidget(mpComponentTypeComboBox,    0, 5);
-    mpLayout->addWidget(mpPortsGroupBox,            1, 0, 1, 6);
-    mpLayout->addWidget(mpParametersGroupBox,       2, 0, 1, 6);
-    mpLayout->addWidget(mpEquationsGroupBox,        3, 0, 1, 6);
-    mpLayout->addWidget(mpButtonBox,                4, 0, 1, 6);
-    mpLayout->setRowStretch(3, 1);
+    mpLayout->addWidget(mpAddItemButton,            0, 6);
+    mpLayout->addWidget(mpPortsGroupBox,            1, 0, 1, 7);
+    mpLayout->addWidget(mpParametersGroupBox,       2, 0, 1, 7);
+    mpLayout->addWidget(mpUtilitiesGroupBox,        3, 0, 1, 7);
+    mpLayout->addWidget(mpStaticVariablesGroupBox,  4, 0, 1, 7);
+    mpLayout->addWidget(mpEquationsGroupBox,        5, 0, 1, 7);
+    mpLayout->addWidget(mpButtonBox,                6, 0, 1, 7);
+    mpLayout->setRowStretch(5, 1);
 }
 
 
@@ -433,6 +659,19 @@ void ComponentGeneratorDialog::compile()
         parElement.setAttribute("description", mParametersList.at(i).description);
         parElement.setAttribute("unit", mParametersList.at(i).unit);
         parElement.setAttribute("init", mParametersList.at(i).init);
+    }
+
+    for(int i=0; i<mUtilitiesList.size(); ++i)
+    {
+        QDomElement utilityElement = appendDomElement(componentRoot,"utility");
+        utilityElement.setAttribute("utility", mUtilitiesList[i].utility);
+        utilityElement.setAttribute("name", mUtilitiesList[i].name);
+    }
+
+    for(int i=0; i<mStaticVariablesList.size(); ++i)
+    {
+        QDomElement variableElement = appendDomElement(componentRoot,"staticvariable");
+        variableElement.setAttribute("name", mStaticVariablesList[i].name);
     }
 
     QString plainEquations = mpEquationsTextField->toPlainText();

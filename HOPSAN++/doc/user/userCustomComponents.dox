@@ -1,17 +1,253 @@
 /*!
 \page userCustomComponents Custom Components & Libraries
-\todo write this
 
--# \subpage creating-component-libraries \n
+-# \subpage writing-components \n
 -# \subpage generating-components-mathematica \n
--# \subpage importing-component-libraries \n
 
-\page creating-component-libraries Creating Component Libraries
+Hopsan uses pre-compiled components. An external component library can be loaded in the program by clicking on the Load External Library icon, in the bottom of the library widget.
+
+\htmlonly
+<table border="0">
+<tr>
+<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/loadlibrary_icon.png" border=0>
+</td>
+<td><b>Load External Library</b></td>
+</tr>
+</table>
+\endhtmlonly
+
+Each Hopsan components requires three files; a .dll file, a .svg file and a .xml file. A library typcally consists of a directory, containing one .dll file and several .svg and .xml files. Folders in the library can be created by placing the .svg and .xml files in subdirectories.
+
+\section component_dll Shared Library Files (.dll)
+The library file contains the executable code for the component. While simulating, Hopsan will call functions defined in this file each time step. One library file can include several components. See \link writing-components Writing Components \endlink for more information.
+
+\section component_svg Graphical Icons (.svg)
+Icons for the graphical interface are stored in the Scalable Vector Graphics format. A good tool for creating and editing such files is Inkscape. Bitmap files can be used by embedding them in a .svg file.
+
+\htmlonly
+<a href="http://inkscape.org/">Inkscape Webpage</a>
+\endhtmlonly
+
+\section component_xml Appearance Description Files (.xml)
+Information about the component for the graphical interface, such as icon, port positions and component name, is stored in a .xml file. A typical appearance file looks like this:
+
+\verbatim
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.2">
+  <modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice">
+    <icons>
+      <icon type="iso" path="laminarorifice_iso.svg" iconrotation="ON"/>
+      <icon type="user" path="laminarorifice_user.svg" iconrotation="ON"/>
+    </icons>
+    <portpositions>
+      <portpose name="P1" x="1.0" y="0.5" a="0"/>
+      <portpose name="P2" x="0.0" y="0.5" a="180"/>
+      <portpose name="Kc" x="0.5" y="0.0" a="270"/>
+    </portpositions>
+  </modelobject>
+</hopsanobjectappearance>
+\endverbatim
+
+The first line contains basic information about the XML code, and should always look the same. A description of the remaining tags follows:
+
+- \b hopsanobjectappearance Main tag for appearance file
+  - \b version Should always be 0.2 with this XML layout
+- \b modelobject Main tag for the component
+  - \b typename Name of the component as registered in the simulation core, see \link writing-components Writing Components \endlink
+  - \b displayname Name for the component shown in the graphical interface
+- \b icons Contains paths to icons
+  - \b type Tells if icon is USER or ISO 1219 (ISO is not required)
+  - \b path Relative path from the .xml file to the .svg
+  - \b iconrotation Tells whether or not the icon rotates when the component is rotated in the workspace
+- \b portpositions Defines the positions for each port
+  - \b name Name of the port as defined in the code
+  - \b x X-position in percent of component icon (0 = left, 1 = right)
+  - \b y Y-position in percent of component icon (0 = top, 1 = bottom)
+  - \b Angle of component, 0 = right, 90 = down etc., port shall normally point outwards from the component
+
+\section component_libraries Component Libraries
+
+\page writing-components Writing Components in C++
 \todo write this
+
+\section writingcomponents_prerequisites Prerequisites
+  - Qt Creator
+  - MinGW32 Compiler
+  - Basic knowledge of C++
+  - Basic knowledge of TLM modeling
+
+Technically it should be possible to use any code writing software, but the example project files are written for the Qt environment. Knowledge about TLM is not required for writing arithmetic components. See\link userTransmissionLineElementMethod the Transmission Line Element Method\endlink for more information.
+
+\section writingcomponents_libraryfiles Library Project Files
+
+\subsection writingcomponents_file_pro exampleComponentLib.pro
+This is the project file for Qt Creator. If you are using a different coding environment, you need to create a similar file for this. 
+
+Three modifications is required in this files. First of all the INCLUDEPATH must be changed so that it points to the "include" folder in the Hopsan installation. Similarly, the LIBS path must point to the "bin" folder in the installation directory. Finally, the relative path to all components source files in the library must be specified under HEADINGS.
+
+\code
+QT -= core gui
+TEMPLATE = lib
+
+TARGET = exampleComponentLib
+DESTDIR = $${PWD}/
+INCLUDEPATH *= $${PWD}/../../HopsanCore
+LIBS *= -L$${PWD}/../../bin
+
+CONFIG(debug, debug|release) {
+    LIBS *= -lHopsanCore_d
+    DEFINES *= DEBUGCOMPILING
+}
+CONFIG(release, debug|release) {
+    LIBS *= -lHopsanCore
+    DEFINES *= RELEASECOMPILING
+}
+
+SOURCES += \
+    exampleComponentLib.cc
+
+HEADERS += \
+    component_code/MyExampleVolume.hpp \
+    component_code/MyExampleOrifice.hpp
+
+OTHER_FILES +=
+\endcode
+
+\subsection writingcomponents_file_cc exampleComponentLib.cc
+This file contains wrapper code that is used to communicate between the library and the Hopsan simulation core. Two modifications are required. First of all, all component source files must be included. Second, each component needs to be registered in the simulation core by the cfact_ptr->registerCreatorFunction lines.
+
+\code
+#include "component_code/MyExampleOrifice.hpp"
+#include "component_code/MyExampleVolume.hpp"
+
+#include "ComponentEssentials.h"
+using namespace hopsan;
+
+extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)
+{
+    cfact_ptr->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
+    cfact_ptr->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
+}
+
+extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
+{
+    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
+    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
+}
+\endcode
+
+\subsection writingcomponents_file_svg_xml XML and SVG files
+The XML files contain the appearance description, and the SVG files are the icons, see description above.
+
+\subsection writingcomponents_file_hpp MyExampleOrifice.hpp & MyExampleVolume.hpp
+These files contains the source code for the components, see below.
+
+
+\section writingcomponents_codestructure Component Code Structure
+Components are written in header-only C++ files (.hpp). Let's take a look at "MyExampleOrifice.hpp". The file consist of the following parts:
+
+\code
+#include "ComponentEssentials.h"
+\endcode
+
+This line includes the essential functions for the component from the simulation core. It may be necessary to include more files, for example "ComponentUtilities.h" for accessing built-in component utilities in Hopsan, or external header files.
+
+\code
+class MyExampleOrifice : public ComponentQ
+\endcode
+
+Here the class is declared. ComponentQ means that this is a Q-type component. It could also be ComponentC or ComponentS for C-type or signal components.
+
+\code
+double mKc;
+Port *mpP1, *mpP2;
+\endcode
+
+This is the member variables in the class. In this case we have a restriction coefficient called mKc and two ports called mpP1 and mpP2 ("m" is an abbreviation of "member" and "mp" menas "member pointer").
+
+\code
+static Component *Creator()
+{
+    return new MyExampleOrifice();
+}
+\endcode
+
+Here we see the creator function, which is used to generate instances of the component in the simulation core. Nothing needs to be changed except the name of the class.
+
+\code
+MyExampleOrifice() : ComponentQ()
+{
+    // Set initial member variable values
+    mKc = 1.0e-11;
+
+    // Add ports to the component
+    mpP1 = addPowerPort("P1", "NodeHydraulic");
+    mpP2 = addPowerPort("P2", "NodeHydraulic");
+
+    // Register component parameters that can be changed by the user
+    registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
+}
+\endcode
+
+This is the constructor for the class, which is ran every time a new component is created (added to the model). First we give the restrictor coefficient a default value. Then we register the parameter with a name, a decription and a unit. This will make it available to the user in the graphical interface. Finally we define the ports, in this case we want two hydraulic power ports. The following port types and node types are available:
+
+Port types
+  - addPowerPort
+  - addPowerMultiPort
+  - addReadPort
+  - addReadMultiPort
+  - addWritePort
+
+Node types
+  - NodeSignal
+  - NodeMechanic
+  - NodeMechanicRotational
+  - NodeHydraulic
+  - NodePneumatic
+  - NodeElectric
+
+Node types can be extended, these are just the current built-in types.
+
+\code
+void initialize()
+{
+    //Nothing to initialize
+}
+\endcode
+
+The initialize function is ran before the first time step in the simulation. In this example case we have nothing that needs to be initialized. 
+
+\code
+void simulateOneTimestep()
+{
+    //Get variable values from nodes
+    double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+    double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+    double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+    double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+
+    //Orifice equations
+    double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
+    double q1 = -q2;
+    double p1 = c1 + q1*Zc1;
+    double p2 = c2 + q2*Zc2;
+
+    //Write new values to nodes
+    mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+    mpP1->writeNode(NodeHydraulic::FLOW, q1);
+    mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
+    mpP2->writeNode(NodeHydraulic::FLOW, q2);
+}
+\endcode
+
+This is the most important code, the model equations that are executed each time step. We begin with creating local variables from the node pointers, and we end by writing back the values we have calculated. This proceedure is intended to make the actual equations more readable. The middle part is the actual equations. In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighbouring C-type components.
+
+\section writingcomponents_compilation Compilation
+
+When everything is finished, the project must be compiled. It is necessary to use the MinGW32 compiler, because Hopsan is compiled with this. The project must also be compiled in "release" mode.
+
+If compilation was succesful, a .dll file will appear in the directory. It should now be possible to load the library from Hopsan, by pointing out the directory - see \link userCustomComponents previous section \endlink.
 
 \page generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
-
-\page importing-component-libraries Importing Component Libraries
-\todo write this
 */

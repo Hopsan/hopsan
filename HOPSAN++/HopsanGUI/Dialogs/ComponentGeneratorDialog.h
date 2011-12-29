@@ -54,6 +54,22 @@ public:
     QString init;
 };
 
+class UtilitySpecification
+{
+public:
+    UtilitySpecification(QString utility="FirstOrderTransferFunction", QString name=QString());
+    QString utility;
+    QString name;
+};
+
+class StaticVariableSpecification
+{
+public:
+    StaticVariableSpecification(QString datatype="double", QString name=QString());
+    QString datatype;
+    QString name;
+};
+
 class ComponentGeneratorDialog : public QDialog
 {
     Q_OBJECT
@@ -68,8 +84,12 @@ private slots:
     void update();
     void addPort();
     void addParameter();
+    void addUtility();
+    void addStaticVariable();
     void removePort();
     void removeParameter();
+    void removeUtility();
+    void removeStaticVariable();
     void updateValues();
     void compile();
 
@@ -78,6 +98,16 @@ private:
     QGridLayout *mpEquationsLayout;
     QGroupBox *mpEquationsGroupBox;
     QTextEdit *mpEquationsTextField;
+
+    //General Settings
+    QLabel *mpComponentNameLabel;
+    QLineEdit *mpComponentNameEdit;
+    QLabel *mpComponentDisplayLabel;
+    QLineEdit *mpComponentDisplayEdit;
+    QLabel *mpComponentTypeLabel;
+    QComboBox *mpComponentTypeComboBox;
+    QToolButton *mpAddItemButton;
+    QMenu *mpAddItemMenu;
 
     //Port Group Box
     QGroupBox *mpPortsGroupBox;
@@ -95,14 +125,6 @@ private:
     QVector<QLineEdit*> mvPortDefaultEdits;
     QVector<QToolButton*> mvRemovePortButtons;
 
-    //General Settings
-    QLabel *mpComponentNameLabel;
-    QLineEdit *mpComponentNameEdit;
-    QLabel *mpComponentDisplayLabel;
-    QLineEdit *mpComponentDisplayEdit;
-    QLabel *mpComponentTypeLabel;
-    QComboBox *mpComponentTypeComboBox;
-
     //Parameter Group Box
     QGroupBox *mpParametersGroupBox;
     QGridLayout *mpParametersLayout;
@@ -119,6 +141,24 @@ private:
     QVector<QLineEdit*> mvParameterInitEdits;
     QVector<QToolButton*> mvRemoveParameterButtons;
 
+    //Utilities Group Box
+    QGroupBox *mpUtilitiesGroupBox;
+    QGridLayout *mpUtilitiesLayout;
+    QLabel *mpUtilitiesLabel;
+    QLabel *mpUtilityNamesLabel;
+    QToolButton *mpAddUtilityButton;
+    QVector<QComboBox*> mvUtilitiesComboBoxes;
+    QVector<QLineEdit*> mvUtilityNameEdits;
+    QVector<QToolButton*> mvRemoveUtilityButtons;
+
+    //Static Variables Group Box
+    QGroupBox *mpStaticVariablesGroupBox;
+    QGridLayout *mpStaticVariablesLayout;
+    QLabel *mpStaticVariableNamesLabel;
+    QToolButton *mpAddStaticVariableButton;
+    QVector<QLineEdit*> mvStaticVariableNameEdits;
+    QVector<QToolButton*> mvRemoveStaticVariableButtons;
+
     //Buttons
     QPushButton *mpCancelButton;
     QPushButton *mpCompileButton;
@@ -130,6 +170,8 @@ private:
     //Member variables
     QList<PortSpecification> mPortList;
     QList<ParameterSpecification> mParametersList;
+    QList<UtilitySpecification> mUtilitiesList;
+    QList<StaticVariableSpecification> mStaticVariablesList;
 };
 
 #endif // COMPONENTGENERATORDIALOG_H_INCLUDED
