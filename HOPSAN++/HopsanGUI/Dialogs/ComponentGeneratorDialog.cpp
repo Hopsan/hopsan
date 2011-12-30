@@ -73,10 +73,36 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     this->setPalette(gConfig.getPalette());
 
     //Equation Text Field
-    mpEquationsTextField = new QTextEdit(this);
+    mpGivenLabel = new QLabel("Given: ");
+    mpSoughtLabel = new QLabel("Sought: ");
+
+    mpInitTextField = new QTextEdit(this);
+    mpInitLayout = new QGridLayout(this);
+    mpInitLayout->addWidget(mpInitTextField, 0, 0);
+    mpInitWidget = new QWidget(this);
+    mpInitWidget->setLayout(mpInitLayout);
+
+    mpSimulateTextField = new QTextEdit(this);
+    mpSimulateLayout = new QGridLayout(this);
+    mpSimulateLayout->addWidget(mpSimulateTextField, 0, 0);
+    mpSimulateWidget = new QWidget(this);
+    mpSimulateWidget->setLayout(mpSimulateLayout);
+
+    mpFinalizeTextField = new QTextEdit(this);
+    mpFinalizeLayout = new QGridLayout(this);
+    mpFinalizeLayout->addWidget(mpFinalizeTextField, 0, 0);
+    mpFinalizeWidget = new QWidget(this);
+    mpFinalizeWidget->setLayout(mpFinalizeLayout);
+
+    mpEquationTabs = new QTabWidget(this);
+    mpEquationTabs->addTab(mpInitWidget, "Initialize");
+    mpEquationTabs->addTab(mpSimulateWidget, "Simulate");
+    mpEquationTabs->addTab(mpFinalizeWidget, "Finalize");
     mpEquationsLayout = new QGridLayout(this);
-    mpEquationsLayout->addWidget(mpEquationsTextField);
-    mpEquationsGroupBox = new QGroupBox("Equations");
+    mpEquationsLayout->addWidget(mpGivenLabel, 0, 0);
+    mpEquationsLayout->addWidget(mpSoughtLabel, 1, 0);
+    mpEquationsLayout->addWidget(mpEquationTabs);
+    mpEquationsGroupBox = new QGroupBox("Equations", this);
     mpEquationsGroupBox->setLayout(mpEquationsLayout);
 
     //Buttons
@@ -96,6 +122,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpComponentTypeLabel = new QLabel("CQS Type: ");
     mpComponentTypeComboBox = new QComboBox(this);
     mpComponentTypeComboBox->addItems(QStringList() << "C" << "Q" << "S");
+    connect(mpComponentTypeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateValues()));
     mpAddItemButton = new QToolButton(this);
     mpAddItemButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
     mpAddItemMenu = new QMenu(this);
@@ -324,6 +351,47 @@ void ComponentGeneratorDialog::updateValues()
         int i = mvUtilitiesComboBoxes.indexOf(comboBox);
         mUtilitiesList[i].utility = comboBox->currentText();
     }
+
+
+    QString cqs = mpComponentTypeComboBox->currentText();
+    QString givenText = "Given: ";
+    QString soughtText = "Sought: ";
+    for(int i=0; i<mParametersList.size(); ++i)
+    {
+        givenText.append(mParametersList[i].name + ", ");
+    }
+    for(int i=0; i<mPortList.size(); ++i)
+    {
+        QString num = QString().setNum(i+1);
+        if(mPortList[i].porttype == "ReadPort")
+        {
+            givenText.append(mPortList[i].name + ", ");
+        }
+        else if(mPortList[i].porttype == "WritePort")
+        {
+            soughtText.append(mPortList[i].name + ", ");
+        }
+        else if(mPortList[i].porttype == "PowerPort" && cqs == "C")
+        {
+            if(mPortList[i].nodetype == "NodeHydraulic")
+            {
+                givenText.append("p"+num+", q"+num+", ");
+                soughtText.append("c"+num+", Zc"+num+", ");
+            }
+        }
+        else if(mPortList[i].porttype == "PowerPort" && cqs == "Q")
+        {
+            if(mPortList[i].nodetype == "NodeHydraulic")
+            {
+                givenText.append("c"+num+", Zc"+num+", ");
+                soughtText.append("p"+num+", q"+num+", ");
+            }
+        }
+    }
+    givenText.chop(2);
+    soughtText.chop(2);
+    mpGivenLabel->setText(givenText);
+    mpSoughtLabel->setText(soughtText);
 }
 
 
@@ -638,9 +706,10 @@ void ComponentGeneratorDialog::compile()
     componentRoot.setAttribute("cqstype", mpComponentTypeComboBox->currentText());
     domDocument.appendChild(componentRoot);
 
+    QDomElement portsElement = appendDomElement(componentRoot,"ports");
     for(int i=0; i<mPortList.size(); ++i)
     {
-        QDomElement portElement = appendDomElement(componentRoot,"port");
+        QDomElement portElement = appendDomElement(portsElement,"port");
         portElement.setAttribute("name", mPortList.at(i).name);
         portElement.setAttribute("type", mPortList.at(i).porttype);
         portElement.setAttribute("nodetype", mPortList.at(i).nodetype);
@@ -651,9 +720,10 @@ void ComponentGeneratorDialog::compile()
         portElement.setAttribute("default", mPortList.at(i).defaultvalue);
     }
 
+    QDomElement parametersElement = appendDomElement(componentRoot,"parameters");
     for(int i=0; i<mParametersList.size(); ++i)
     {
-        QDomElement parElement = appendDomElement(componentRoot,"parameter");
+        QDomElement parElement = appendDomElement(parametersElement,"parameter");
         parElement.setAttribute("name", mParametersList.at(i).name);
         parElement.setAttribute("displayname", mParametersList.at(i).displayName);
         parElement.setAttribute("description", mParametersList.at(i).description);
@@ -661,24 +731,43 @@ void ComponentGeneratorDialog::compile()
         parElement.setAttribute("init", mParametersList.at(i).init);
     }
 
+    QDomElement utilitiesElement = appendDomElement(componentRoot,"utilities");
     for(int i=0; i<mUtilitiesList.size(); ++i)
     {
-        QDomElement utilityElement = appendDomElement(componentRoot,"utility");
+        QDomElement utilityElement = appendDomElement(utilitiesElement,"utility");
         utilityElement.setAttribute("utility", mUtilitiesList[i].utility);
         utilityElement.setAttribute("name", mUtilitiesList[i].name);
     }
 
+    QDomElement variablesElement = appendDomElement(componentRoot,"staticvariables");
     for(int i=0; i<mStaticVariablesList.size(); ++i)
     {
-        QDomElement variableElement = appendDomElement(componentRoot,"staticvariable");
+        QDomElement variableElement = appendDomElement(variablesElement,"staticvariable");
         variableElement.setAttribute("name", mStaticVariablesList[i].name);
     }
 
-    QString plainEquations = mpEquationsTextField->toPlainText();
+    QDomElement initializeElement = appendDomElement(componentRoot,"initialize");
+    QString plainInitEquations = mpInitTextField->toPlainText();
+    QStringList initEquations = plainInitEquations.split("\n");
+    for(int i=0; i<initEquations.size(); ++i)
+    {
+        appendDomTextNode(initializeElement,"equation",initEquations.at(i));
+    }
+
+    QDomElement simulateElement = appendDomElement(componentRoot,"simulate");
+    QString plainEquations = mpSimulateTextField->toPlainText();
     QStringList equations = plainEquations.split("\n");
     for(int i=0; i<equations.size(); ++i)
     {
-        appendDomTextNode(componentRoot,"equation",equations.at(i));
+        appendDomTextNode(simulateElement,"equation",equations.at(i));
+    }
+
+    QDomElement finalizeElement = appendDomElement(componentRoot,"finalize");
+    QString plainFinalEquations = mpFinalizeTextField->toPlainText();
+    QStringList finalEquations = plainFinalEquations.split("\n");
+    for(int i=0; i<finalEquations.size(); ++i)
+    {
+        appendDomTextNode(finalizeElement,"equation",finalEquations.at(i));
     }
 
     appendRootXMLProcessingInstruction(domDocument);

@@ -94,10 +94,22 @@ private slots:
     void compile();
 
 private:
-    //Equations text edit
+    //Initialization & equations text edits
+    QLabel *mpGivenLabel;
+    QLabel *mpSoughtLabel;
+    QTabWidget *mpEquationTabs;
+    QGridLayout *mpInitLayout;
+    QWidget *mpInitWidget;
+    QTextEdit *mpInitTextField;
+    QGridLayout *mpSimulateLayout;
+    QWidget *mpSimulateWidget;
+    QTextEdit *mpSimulateTextField;
+    QGridLayout *mpFinalizeLayout;
+    QWidget *mpFinalizeWidget;
+    QTextEdit *mpFinalizeTextField;
     QGridLayout *mpEquationsLayout;
     QGroupBox *mpEquationsGroupBox;
-    QTextEdit *mpEquationsTextField;
+
 
     //General Settings
     QLabel *mpComponentNameLabel;

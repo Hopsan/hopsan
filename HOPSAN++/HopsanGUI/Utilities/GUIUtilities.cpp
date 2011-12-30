@@ -638,7 +638,8 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     fileStream << "#define " << typeName.toUpper() << "_HPP_INCLUDED\n\n";
     fileStream << "#include <math.h>\n";
     fileStream << "#include \"ComponentEssentials.h\"\n";
-    QDomElement utilityElement = rDomElement.firstChildElement("utility");
+    QDomElement utilitiesElement = rDomElement.firstChildElement("utilities");
+    QDomElement utilityElement = utilitiesElement.firstChildElement("utility");
     if(!utilityElement.isNull())
         fileStream << "#include \"ComponentUtilities.h\"\n";
     fileStream << "\n";
@@ -646,13 +647,15 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     fileStream << "    class " << typeName << " : public Component" << cqsType << "\n";
     fileStream << "    {\n";
     fileStream << "    private:\n";
-    QDomElement parameterElement = rDomElement.firstChildElement("parameter");
+    QDomElement parametersElement = rDomElement.firstChildElement("parameters");
+    QDomElement parameterElement = parametersElement.firstChildElement("parameter");
     while(!parameterElement.isNull())
     {
         fileStream << "        double " << parameterElement.attribute("name") << ";\n";
         parameterElement = parameterElement.nextSiblingElement("parameter");
     }
-    QDomElement variableElement = rDomElement.firstChildElement("staticvariable");
+    QDomElement variablesElemenet = rDomElement.firstChildElement("staticvariables");
+    QDomElement variableElement = variablesElemenet.firstChildElement("staticvariable");
     while(!variableElement.isNull())
     {
         fileStream << "        double " << variableElement.attribute("name") << ";\n";
@@ -660,10 +663,11 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     }
     while(!utilityElement.isNull())
     {
-        fileStream << "        " << utilityElement.attribute ("type") << " " << utilityElement.attribute("name") << ";\n";
+        fileStream << "        " << utilityElement.attribute ("utility") << " " << utilityElement.attribute("name") << ";\n";
         utilityElement = utilityElement.nextSiblingElement("utility");
     }
-    QDomElement portElement = rDomElement.firstChildElement("port");
+    QDomElement portsElement = rDomElement.firstChildElement("ports");
+    QDomElement portElement = portsElement.firstChildElement("port");
     fileStream << "        double ";
     int portId=1;
     QStringList allVarNames;
@@ -692,7 +696,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         }
     }
     fileStream << ";\n";
-    portElement = rDomElement.firstChildElement("port");
+    portElement = portsElement.firstChildElement("port");
     fileStream << "        Port ";
     while(!portElement.isNull())
     {
@@ -711,14 +715,14 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     fileStream << "        }\n\n";
     fileStream << "        " << typeName << "() : Component" << cqsType << "()\n";
     fileStream << "        {\n";
-    parameterElement = rDomElement.firstChildElement("parameter");
+    parameterElement = parametersElement.firstChildElement("parameter");
     while(!parameterElement.isNull())
     {
         fileStream << "            " << parameterElement.attribute("name") << " = " << parameterElement.attribute("init") << ";\n";
         parameterElement = parameterElement.nextSiblingElement("parameter");
     }
     fileStream << "\n";
-    parameterElement = rDomElement.firstChildElement("parameter");
+    parameterElement = parametersElement.firstChildElement("parameter");
     while(!parameterElement.isNull())
     {
         QString name = parameterElement.attribute("name");
@@ -729,7 +733,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         parameterElement = parameterElement.nextSiblingElement("parameter");
     }
     fileStream << "\n";
-    portElement = rDomElement.firstChildElement("port");
+    portElement = portsElement.firstChildElement("port");
     while(!portElement.isNull())
     {
         QString type = portElement.attribute("type");
@@ -750,7 +754,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     fileStream << "        }\n\n";
     fileStream << "        void initialize()\n";
     fileStream << "        {\n";
-    portElement = rDomElement.firstChildElement("port");
+    portElement = portsElement.firstChildElement("port");
     portId=1;
     while(!portElement.isNull())
     {
@@ -790,11 +794,12 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         portElement = portElement.nextSiblingElement("port");
     }
     fileStream << "\n";
-    QDomElement initEquationElement = rDomElement.firstChildElement("initequation");
+    QDomElement initializeElement = rDomElement.firstChildElement("initialize");
+    QDomElement initEquationElement = initializeElement.firstChildElement("equation");
     if(!initEquationElement.isNull())
     {
         fileStream << "            double ";
-        portElement = rDomElement.firstChildElement("port");
+        portElement = portsElement.firstChildElement("port");
         portId=1;
         while(!portElement.isNull())
         {
@@ -834,7 +839,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
             }
         }
         fileStream << ";\n";
-        portElement = rDomElement.firstChildElement("port");
+        portElement = portsElement.firstChildElement("port");
         portId=1;
         while(!portElement.isNull())
         {
@@ -876,10 +881,10 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         while(!initEquationElement.isNull())
         {
             fileStream << "            " << initEquationElement.text() << ";\n";
-            initEquationElement = initEquationElement.nextSiblingElement("initequation");
+            initEquationElement = initEquationElement.nextSiblingElement("equation");
         }
         fileStream << "\n";
-        portElement = rDomElement.firstChildElement("port");
+        portElement = portsElement.firstChildElement("port");
         portId=1;
         while(!portElement.isNull())
         {
@@ -921,11 +926,11 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     fileStream << "        }\n\n";
 
 
-    //Simulate one time stpe
+    //Simulate one time step
     fileStream << "        void simulateOneTimestep()\n";
     fileStream << "        {\n";
     fileStream << "            double ";
-    portElement = rDomElement.firstChildElement("port");
+    portElement = portsElement.firstChildElement("port");
     portId=1;
     while(!portElement.isNull())
     {
@@ -965,7 +970,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         }
     }
     fileStream << ";\n";
-    portElement = rDomElement.firstChildElement("port");
+    portElement = portsElement.firstChildElement("port");
     portId=1;
     while(!portElement.isNull())
     {
@@ -1004,14 +1009,15 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         portElement = portElement.nextSiblingElement("port");
     }
     fileStream << "\n";
-    QDomElement equationElement = rDomElement.firstChildElement("equation");
+    QDomElement simulateElement = rDomElement.firstChildElement("simulate");
+    QDomElement equationElement = simulateElement.firstChildElement("equation");
     while(!equationElement.isNull())
     {
         fileStream << "            " << equationElement.text() << ";\n";
         equationElement = equationElement.nextSiblingElement("equation");
     }
     fileStream << "\n";
-    portElement = rDomElement.firstChildElement("port");
+    portElement = portsElement.firstChildElement("port");
     portId=1;
     while(!portElement.isNull())
     {
@@ -1050,6 +1056,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         portElement = portElement.nextSiblingElement("port");
     }
     fileStream << "        }\n";
+    //! @todo Support finalize equations
     fileStream << "    };\n";
     fileStream << "}\n\n";
     fileStream << "#endif // " << typeName.toUpper() << "_HPP_INCLUDED\n";
@@ -1105,7 +1112,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     xmlStream << "      <icon type=\"user\" path=\"generatedcomponenticon.svg\" iconrotation=\"ON\"/>\n";
     xmlStream << "    </icons>\n";
     xmlStream << "    <portpositions>\n";
-    portElement = rDomElement.firstChildElement("port");
+    portElement = portsElement.firstChildElement("port");
     QStringList leftPorts, rightPorts, topPorts;
     while(!portElement.isNull())
     {
