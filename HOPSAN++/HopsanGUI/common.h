@@ -29,7 +29,6 @@
 
 //Development flag
 #define DEVELOPMENT
-#define XMAS
 
 //Numerical definitions
 #define GOLDENRATIO 1.61803399

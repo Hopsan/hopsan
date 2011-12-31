@@ -112,5 +112,6 @@
         <file>graphics/uiicons/Hopsan-ShowPlotLegends.png</file>
         <file>graphics/uiicons/Hopsan-Add.png</file>
         <file>graphics/objecticons/generatedcomponenticon.svg</file>
+        <file>graphics/welcome_newyear.png</file>
     </qresource>
 </RCC>

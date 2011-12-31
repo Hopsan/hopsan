@@ -90,6 +90,17 @@ void PyDockWidget::saveSettingsToDomElement(QDomElement &rDomElement)
 }
 
 
+QString PyDockWidget::getLastOutput()
+{
+    QString text = mpPyConsole->toPlainText();
+    QStringList lines = text.split("\n");
+    if(lines.size() > 3)
+    {
+        return lines[lines.size()-3];
+    }
+}
+
+
 void PyDockWidget::runPyScript()
 {
     PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();

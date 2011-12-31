@@ -60,11 +60,14 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 
     mpHeading = new QLabel(this);
     QPixmap image;
-#ifdef XMAS
-    image.load(QString(GRAPHICSPATH) + "welcome_xmas.png");
-#else
-    image.load(QString(GRAPHICSPATH) + "welcome.png");
-#endif
+    QDate today = QDate::currentDate();
+    qDebug() << "Day = " << today.day() << ", Month = " << today.month();
+    if(today.month() == 12 && today.day() > 20 && today.day() < 31)
+        image.load(QString(GRAPHICSPATH) + "welcome_xmas.png");
+    else if((today.month() == 12 && today.day() == 31) || (today.month() == 1 && today.day() == 1))
+        image.load(QString(GRAPHICSPATH) + "welcome_newyear.png");
+    else
+        image.load(QString(GRAPHICSPATH) + "welcome.png");
     mpHeading->setPixmap(image);
     mpHeading->setAlignment(Qt::AlignCenter);
 
