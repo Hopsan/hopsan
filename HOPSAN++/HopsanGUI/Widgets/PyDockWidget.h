@@ -41,6 +41,7 @@ public:
     QString getScriptFileName();
     void saveSettingsToDomElement(QDomElement &rDomElement);
     QString getLastOutput();
+    QString runCommand(QString command);
 
 public slots:
     void runPyScript();

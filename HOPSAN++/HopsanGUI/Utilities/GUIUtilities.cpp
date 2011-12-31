@@ -1175,3 +1175,36 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
     gpMainWindow->mpLibrary->unloadExternalLibrary(generatedDir.path());
     gpMainWindow->mpLibrary->loadExternalLibrary(generatedDir.path());    //Load the library
 }
+
+
+
+void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables)
+{
+    QString word;
+    bool leftSide=true;
+    for(int i=0; i<equation.size(); ++i)
+    {
+        QChar currentChar = equation.at(i);
+        if(currentChar.isLetter())
+        {
+            word.append(currentChar);
+        }
+        else if(!word.isEmpty())
+        {
+            if(leftSide)
+            {
+                leftSideVariables.append(word);
+            }
+            else
+            {
+                righrSideVariables.append(word);
+            }
+            word.clear();
+        }
+
+        if(currentChar == '=')
+        {
+            leftSide = false;
+        }
+    }
+}

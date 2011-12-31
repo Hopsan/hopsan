@@ -58,7 +58,10 @@ void reduceVectorSize(QVector<double> &vector, int newSize);
 void removeDir(QString path);
 void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
+
+//Component generation
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement);
+void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

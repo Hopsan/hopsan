@@ -269,6 +269,68 @@ void MainWindow::initializeWorkspace()
     mpPlotWidget = new PlotTreeWidget(this);
     mpPlotWidget->hide();
 
+
+    //DEBUG
+    QStringList equations;
+    equations << "x = 2*y-5+sin(z)";
+    equations << "x + 3*y = 0";
+    equations << "4*e**y-z = 0";
+
+    QList<QStringList> leftSymbols, rightSymbols;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        leftSymbols.append(QStringList());
+        rightSymbols.append(QStringList());
+        identifyVariables(equations[i], leftSymbols[i], rightSymbols[i]);
+    }
+
+    QStringList allSymbols;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        allSymbols.append(leftSymbols.at(i));
+        allSymbols.append(rightSymbols.at(i));
+    }
+    allSymbols.removeDuplicates();
+
+    mpPyDockWidget->runCommand("from sympy import *");
+    for(int i=0; i<allSymbols.size(); ++i)
+    {
+        mpPyDockWidget->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
+    }
+    QString command = "X=Matrix([[";
+    for(int i=0; i<allSymbols.size(); ++i)
+    {
+        command.append(allSymbols.at(i)+"],[");
+    }
+    command.chop(2);
+    command.append("])");
+    mpPyDockWidget->runCommand(command);
+
+    for(int i=0; i<equations.size(); ++i)
+    {
+        QString iStr = QString().setNum(i);
+        mpPyDockWidget->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
+        mpPyDockWidget->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
+        mpPyDockWidget->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
+    }
+
+    QStringList jString;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        for(int j=0; j<equations.size(); ++j)
+        {
+            QString iStr = QString().setNum(i);
+            QString jStr = QString().setNum(j);
+            mpPyDockWidget->runCommand("j"+iStr+jStr+" = diff(f"+iStr+", "+allSymbols.at(j)+")");
+            mpPyDockWidget->runCommand("print(j"+iStr+jStr+")");
+            jString.append(mpPyDockWidget->getLastOutput());
+        }
+    }
+
+    qDebug() << "Jacobian = " << jString;
+    //END DEBUG
+
+
 //    for(int i=0; i<mpLibrary->mLoadedComponents.size(); ++i)
 //    {
 //        if(!mpLibrary->getAppearanceData(mpLibrary->mLoadedComponents.at(i))->getHelpText().isEmpty())

@@ -133,6 +133,27 @@ void PyDockWidget::runMultipleCommands(QString command, int n)
 }
 
 
+QString PyDockWidget::runCommand(QString command)
+{
+    //PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
+    //QVariant output = mainContext.evalScript(command);
+    //mpPyConsole->appendCommandPrompt();
+
+    mpPyConsole->append("py> "+command);
+    mpPyConsole->executeLine(false);
+
+    qApp->processEvents();
+
+
+    //QVariant test = mainContext.getVariable("j11");
+    //qDebug() << test;
+    //qDebug() << test.toString();
+
+
+    return getLastOutput();
+}
+
+
 void PyDockWidget::optimize()
 {
     runMultipleCommands("iterate()", 100);
