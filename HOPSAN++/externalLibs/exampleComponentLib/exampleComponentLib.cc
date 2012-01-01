@@ -26,9 +26,9 @@
 using namespace hopsan;
 
 // When you load your model into Hopsan, the register_contents() function bellow will be called
-// It will register your components into the Hopsan ComponentFactory
+// It will register YOUR components into the Hopsan ComponentFactory
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)
+extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
 {
     // ========== Register Components ==========
     // Use the registerCreatorFunction(KeyValue, Function) in the component factory to register components
@@ -37,8 +37,8 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFac
     // If a typename is already in use, your component will not be added.
     // Suggestion, let the KeyValue (TypeName) be the same as your Class name
 
-    cfact_ptr->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
-    cfact_ptr->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
+    pComponentFactory->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
+    pComponentFactory->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported

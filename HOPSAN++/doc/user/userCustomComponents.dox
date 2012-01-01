@@ -36,8 +36,8 @@ Information about the component for the graphical interface, such as icon, port 
 <hopsanobjectappearance version="0.2">
   <modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice">
     <icons>
-      <icon type="iso" path="laminarorifice_iso.svg" iconrotation="ON"/>
-      <icon type="user" path="laminarorifice_user.svg" iconrotation="ON"/>
+      <icon type="iso" path="laminarorifice_iso.svg" iconrotation="ON" scale="1.0"/>
+      <icon type="user" path="laminarorifice_user.svg" iconrotation="ON" scale="1.0"/>
     </icons>
     <portpositions>
       <portpose name="P1" x="1.0" y="0.5" a="0"/>
@@ -59,6 +59,7 @@ The first line contains basic information about the XML code, and should always 
   - \b type Tells if icon is USER or ISO 1219 (ISO is not required)
   - \b path Relative path from the .xml file to the .svg
   - \b iconrotation Tells whether or not the icon rotates when the component is rotated in the workspace
+  - \b scale Lets you adjust the scale of the .svg graphics (without modifying the actual .svg file) (default=1.0 if omitted)
 - \b portpositions Defines the positions for each port
   - \b name Name of the port as defined in the code
   - \b x X-position in percent of component icon (0 = left, 1 = right)
@@ -79,11 +80,13 @@ The first line contains basic information about the XML code, and should always 
 Technically it should be possible to use any code writing software, but the example project files are written for the Qt environment. Knowledge about TLM is not required for writing arithmetic components. See\link userTransmissionLineElementMethod the Transmission Line Element Method\endlink for more information.
 
 \section writingcomponents_libraryfiles Library Project Files
+The files in the \b exampleComponentLib folder have more contents and explanation comments. The examples in this section containes subsets of the original files.
+When creating a new component library use the example files as a getting started template.
 
 \subsection writingcomponents_file_pro exampleComponentLib.pro
 This is the project file for Qt Creator. If you are using a different coding environment, you need to create a similar file for this. 
 
-Three modifications is required in this files. First of all the INCLUDEPATH must be changed so that it points to the "include" folder in the Hopsan installation. Similarly, the LIBS path must point to the "bin" folder in the installation directory. Finally, the relative path to all components source files in the library must be specified under HEADINGS.
+Three modifications is required in this files. First of all the \b INCLUDEPATH must be changed so that it points to the "include" folder in the Hopsan installation. Similarly, the \b LIBS path must point to the "bin" folder in the installation directory. Finally, the relative path to all components source files in the library must be specified under HEADERS.
 
 \code
 QT -= core gui
@@ -114,7 +117,10 @@ OTHER_FILES +=
 \endcode
 
 \subsection writingcomponents_file_cc exampleComponentLib.cc
-This file contains wrapper code that is used to communicate between the library and the Hopsan simulation core. Two modifications are required. First of all, all component source files must be included. Second, each component needs to be registered in the simulation core by the cfact_ptr->registerCreatorFunction lines.
+This file contains code that is used to register you library components in the Hopsan simulation core. Two modifications are required. 
+- First of all, all component code files must be included. (They will be copied into this file during compilation)
+- Second, each component needs to be registered in the simulation core by the pComponentFactory->registerCreatorFunction("KeyValue", CreatorFunction) lines.\n
+The \e "KeyValue" argument must be a uniqe typename that identifies you component. The \e CreatorFunction argument is the Creator function in each component.
 
 \code
 #include "component_code/MyExampleOrifice.hpp"
@@ -123,10 +129,10 @@ This file contains wrapper code that is used to communicate between the library 
 #include "ComponentEssentials.h"
 using namespace hopsan;
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)
+extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
 {
-    cfact_ptr->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
-    cfact_ptr->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
+    pComponentFactory->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
+    pComponentFactory->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
 }
 
 extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
