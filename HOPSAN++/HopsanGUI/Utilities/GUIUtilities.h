@@ -60,7 +60,34 @@ void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
 
 //Component generation
+class ComponentDescription
+{
+public:
+    ComponentDescription(QString typeName, QString displayName, QString cqsType);
+    QString typeName;
+    QString displayName;
+    QString cqsType;
+    QStringList utilities;
+    QStringList utilityNames;
+    QStringList parNames;
+    QStringList parInits;
+    QStringList parDisplayNames;
+    QStringList parDescriptions;
+    QStringList parUnits;
+    QStringList varNames;
+    QStringList varTypes;
+    QStringList portNames;
+    QStringList portTypes;
+    QStringList portNodeTypes;
+    QStringList portDefaults;
+    QList<bool> portNotReq;
+    QStringList initEquations;
+    QStringList simEquations;
+    QStringList finalEquations;
+};
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement);
+void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QStringList sysEquations, QStringList stateVars, QStringList jacobian);
+void generateComponentSourceCode(QString outputFile, ComponentDescription comp, bool overwriteStartValues=false);
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 
 //Optimization

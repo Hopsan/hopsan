@@ -744,6 +744,7 @@ void ComponentGeneratorDialog::compile()
     {
         QDomElement variableElement = appendDomElement(variablesElement,"staticvariable");
         variableElement.setAttribute("name", mStaticVariablesList[i].name);
+        variableElement.setAttribute("datatype", "double");
     }
 
     QDomElement initializeElement = appendDomElement(componentRoot,"initialize");

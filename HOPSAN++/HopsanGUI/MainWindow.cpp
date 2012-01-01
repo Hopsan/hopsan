@@ -271,63 +271,82 @@ void MainWindow::initializeWorkspace()
 
 
     //DEBUG
-    QStringList equations;
-    equations << "x = 2*y-5+sin(z)";
-    equations << "x + 3*y = 0";
-    equations << "4*e**y-z = 0";
+//    QStringList equations;
+//    equations << "q2 = Kc*(p1 - p2)";
+//    equations << "q1 = -q2";
+//    equations << "p1 = c1 + Zc1*q1";
+//    equations << "p2 = c2 + Zc2*q2";
 
-    QList<QStringList> leftSymbols, rightSymbols;
-    for(int i=0; i<equations.size(); ++i)
-    {
-        leftSymbols.append(QStringList());
-        rightSymbols.append(QStringList());
-        identifyVariables(equations[i], leftSymbols[i], rightSymbols[i]);
-    }
+//    QStringList stateVars;
+//    stateVars << "p1" << "q1" << "p2" << "q2";
 
-    QStringList allSymbols;
-    for(int i=0; i<equations.size(); ++i)
-    {
-        allSymbols.append(leftSymbols.at(i));
-        allSymbols.append(rightSymbols.at(i));
-    }
-    allSymbols.removeDuplicates();
+//    QList<QStringList> leftSymbols, rightSymbols;
+//    for(int i=0; i<equations.size(); ++i)
+//    {
+//        leftSymbols.append(QStringList());
+//        rightSymbols.append(QStringList());
+//        identifyVariables(equations[i], leftSymbols[i], rightSymbols[i]);
+//    }
 
-    mpPyDockWidget->runCommand("from sympy import *");
-    for(int i=0; i<allSymbols.size(); ++i)
-    {
-        mpPyDockWidget->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
-    }
-    QString command = "X=Matrix([[";
-    for(int i=0; i<allSymbols.size(); ++i)
-    {
-        command.append(allSymbols.at(i)+"],[");
-    }
-    command.chop(2);
-    command.append("])");
-    mpPyDockWidget->runCommand(command);
+//    QStringList allSymbols;
+//    for(int i=0; i<equations.size(); ++i)
+//    {
+//        allSymbols.append(leftSymbols.at(i));
+//        allSymbols.append(rightSymbols.at(i));
+//    }
+//    allSymbols.removeDuplicates();
 
-    for(int i=0; i<equations.size(); ++i)
-    {
-        QString iStr = QString().setNum(i);
-        mpPyDockWidget->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
-        mpPyDockWidget->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
-        mpPyDockWidget->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
-    }
+//    mpPyDockWidget->runCommand("from sympy import *");
+//    for(int i=0; i<allSymbols.size(); ++i)
+//    {
+//        mpPyDockWidget->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
+//    }
+//    QString command = "X=Matrix([[";
+//    for(int i=0; i<allSymbols.size(); ++i)
+//    {
+//        command.append(allSymbols.at(i)+"],[");
+//    }
+//    command.chop(2);
+//    command.append("])");
+//    mpPyDockWidget->runCommand(command);
 
-    QStringList jString;
-    for(int i=0; i<equations.size(); ++i)
-    {
-        for(int j=0; j<equations.size(); ++j)
-        {
-            QString iStr = QString().setNum(i);
-            QString jStr = QString().setNum(j);
-            mpPyDockWidget->runCommand("j"+iStr+jStr+" = diff(f"+iStr+", "+allSymbols.at(j)+")");
-            mpPyDockWidget->runCommand("print(j"+iStr+jStr+")");
-            jString.append(mpPyDockWidget->getLastOutput());
-        }
-    }
+//    for(int i=0; i<equations.size(); ++i)
+//    {
+//        QString iStr = QString().setNum(i);
+//        mpPyDockWidget->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
+//        mpPyDockWidget->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
+//        mpPyDockWidget->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
+//    }
 
-    qDebug() << "Jacobian = " << jString;
+//    QStringList jString;
+//    for(int i=0; i<equations.size(); ++i)
+//    {
+//        for(int j=0; j<stateVars.size(); ++j)
+//        {
+//            QString iStr = QString().setNum(i);
+//            QString jStr = QString().setNum(j);
+//            mpPyDockWidget->runCommand("j"+iStr+jStr+" = diff(f"+iStr+", "+stateVars.at(j)+")");
+//            mpPyDockWidget->runCommand("print(j"+iStr+jStr+")");
+//            jString.append(mpPyDockWidget->getLastOutput());
+//        }
+//    }
+
+//    QStringList sysEquations;
+//    for(int i=0; i<equations.size(); ++i)
+//    {
+//        mpPyDockWidget->runCommand("print(f"+QString().setNum(i)+")");
+//        sysEquations.append(mpPyDockWidget->getLastOutput());
+//    }
+
+//    qDebug() << "Jacobian = " << jString;
+//    qDebug() << "System Equations = " << sysEquations;
+
+//    QString typeName = "EquationComponent";
+//    QString displayName = "Equation Generated Component";
+//    QString cqsType = "Q";
+
+//    generateComponentSourceCode(typeName, displayName, cqsType, sysEquations, stateVars, jString);
+
     //END DEBUG
 
 
