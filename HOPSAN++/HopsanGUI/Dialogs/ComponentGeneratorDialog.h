@@ -97,7 +97,7 @@ private:
     //Initialization & equations text edits
     QLabel *mpGivenLabel;
     QLabel *mpSoughtLabel;
-    QTabWidget *mpEquationTabs;
+    QTabWidget *mpCodeTabs;
     QGridLayout *mpInitLayout;
     QWidget *mpInitWidget;
     QTextEdit *mpInitTextField;
@@ -108,10 +108,15 @@ private:
     QWidget *mpFinalizeWidget;
     QTextEdit *mpFinalizeTextField;
     QGridLayout *mpEquationsLayout;
-    QGroupBox *mpEquationsGroupBox;
+    QWidget *mpEquationsWidget;
+    QTextEdit *mpEquationsTextField;
+    QGridLayout *mpCodeLayout;
+    QGroupBox *mpCodeGroupBox;
 
 
     //General Settings
+    QLabel *mpGenerateFromLabel;
+    QComboBox *mpGenerateFromComboBox;
     QLabel *mpComponentNameLabel;
     QLineEdit *mpComponentNameEdit;
     QLabel *mpComponentDisplayLabel;
