@@ -1,8 +1,7 @@
 /*!
 \page userCustomComponents Custom Components & Libraries
 
--# \subpage writing-components \n
--# \subpage generating-components-mathematica \n
+\section introduction-component-libraries Introduction to Component Libraries
 
 Hopsan uses pre-compiled components. An external component library can be loaded in the program by clicking on the Load External Library icon, in the bottom of the library widget.
 
@@ -16,20 +15,37 @@ Hopsan uses pre-compiled components. An external component library can be loaded
 </table>
 \endhtmlonly
 
-Each Hopsan components requires three files; a .dll file, a .svg file and a .xml file. A library typcally consists of a directory, containing one .dll file and several .svg and .xml files. Folders in the library can be created by placing the .svg and .xml files in subdirectories.
+A Hopsan component library consists of at least three types of files.
+-# The compiled component library code as a \b .dll Windows (Dynamic Link Library) file or as a \b .so (Shared Object) file (Linux/Mac).
+-# A set of \b .xml files that describes the graphical appearance of each component.
+-# A set of \b .svg (Scalable Vector Graphics) files containing component icon graphics.
 
-\section component_dll Shared Library Files (.dll)
-The library file contains the executable code for the component. While simulating, Hopsan will call functions defined in this file each time step. One library file can include several components. See \link writing-components Writing Components \endlink for more information.
+There needs to be one .xml file for every component in the library but .svg files can be shared if needed. All components should however be compiled into one single .dll/.so file.
+A library typically consists of a directory, containing one .dll/.so file and the .xml and .svg files. Subdirectories containing the .xml and .svg files can be used to create sub categories in the library. The directory hierarchy will be shown in the Hopsan GUI Component Library Widget.
+
+If you have access to the component library source code some additional important files should also be mentioned.
+-# One "libraryName".cc file. This is the source code file that is compiled into the .dll/.so .
+-# One or several "componentName".hpp files containing the component source code.
+-# A project file, or a so called Makefile (build script) that is needed for building the code into the .dll/.so.
+
+If you are only a user of the library you can ignore these additional files, component developers should refer to \link writing-components \endlink 
+
+Read more: \n
+-# \subpage creating-modifying-component-appearance \n
+-# \subpage writing-components \n
+-# \subpage generating-components-mathematica \n
+
+\page creating-modifying-component-appearance Create or Modify Component Appearance
 
 \section component_svg Graphical Icons (.svg)
-Icons for the graphical interface are stored in the Scalable Vector Graphics format. A good tool for creating and editing such files is Inkscape. Bitmap files can be used by embedding them in a .svg file.
+Icons for the graphical interface are stored in the Scalable Vector Graphics format. A good tool, which is free and open-source, for creating and editing such files is Inkscape. If you want to use bitmaps graphics, .jpg, .png or similar formats, such graphics can be embedded in a .svg file.
 
 \htmlonly
 <a href="http://inkscape.org/">Inkscape Webpage</a>
 \endhtmlonly
 
 \section component_xml Appearance Description Files (.xml)
-Information about the component for the graphical interface, such as icon, port positions and component name, is stored in a .xml file. A typical appearance file looks like this:
+Information about the component for the graphical interface, such as icon, port positions and component name, is stored in a .xml file. This file contains information about the component that is not part of the actual simulation code. This information can be changed without the need to recompile the actual component code. A typical appearance file looks like this:
 
 \verbatim
 <?xml version="1.0" encoding="UTF-8"?>
@@ -44,6 +60,7 @@ Information about the component for the graphical interface, such as icon, port 
       <portpose name="P2" x="0.0" y="0.5" a="180"/>
       <portpose name="Kc" x="0.5" y="0.0" a="270"/>
     </portpositions>
+    <help text="Help Text" picture="helpPicture.svg"/>
   </modelobject>
 </hopsanobjectappearance>
 \endverbatim
@@ -64,27 +81,36 @@ The first line contains basic information about the XML code, and should always 
   - \b name Name of the port as defined in the code
   - \b x X-position in percent of component icon (0 = left, 1 = right)
   - \b y Y-position in percent of component icon (0 = top, 1 = bottom)
-  - \b Angle of component, 0 = right, 90 = down etc., port shall normally point outwards from the component
+  - \b a Angle of port, 0 = right, 90 = down etc., port shall normally point outwards from the component
+- \b help Allows you to specify a help information explaining the function of the component.
+  - \b text The help text
+  - \b picture The path to the .svg help picture
 
-\section component_libraries Component Libraries
 
 \page writing-components Writing Components in C++
-\todo write this
+
+\section writingcomponents_introduction-writing-components Introduction Writing Custom Components 
+The majority of the Hopsan component code is contained within the HopsanCore. When the user is creating a new component only the parts which make the new component unique needs to be specified. All other functionality is inherited from the base implementation in the HopsanCore. The code that is written for the new components must be compiled into the .dll/.so file. This file will contain the runtime executable code for the new components. While simulating, Hopsan will call functions in this file each time step.
+
+The compiled library file can include one or several new components. It must also include two mandatory functions used by the HopsanCore to get information and to register the contents of the library once it is loaded.
+
+If you have not already done so, read the \link introduction-component-libraries \endlink for a description of the library files.
+
+\section writingcomponents_exampleComponentLibrary The Example Component Library
+The examples bellow are based on the exampleComponentLibrary that should be included with your version of Hopsan. These examples contains subsets of the original files. Also read the original files for their full content. They also include additional comments. When creating a new component library, use the example files as a getting started template.
 
 \section writingcomponents_prerequisites Prerequisites
   - Qt Creator
-  - MinGW32 Compiler
+  - MinGW32 Compiler (MS Windows) or GNU GCC (Linux)
   - Basic knowledge of C++
   - Basic knowledge of TLM modeling
 
-Technically it should be possible to use any code writing software, but the example project files are written for the Qt environment. Knowledge about TLM is not required for writing arithmetic components. See\link userTransmissionLineElementMethod the Transmission Line Element Method\endlink for more information.
+The exampleComponentLibrary project file is specific for the Qt Creator C++ IDE but technically it is possible to use any IDE (code writing software). Knowledge about TLM is not required for writing arithmetic components. See \link userTransmissionLineElementMethod the Transmission Line Element Method \endlink for more information.
 
-\section writingcomponents_libraryfiles Library Project Files
-The files in the \b exampleComponentLib folder have more contents and explanation comments. The examples in this section containes subsets of the original files.
-When creating a new component library use the example files as a getting started template.
+\section writingcomponents_libraryfiles Component Library Project Files
 
 \subsection writingcomponents_file_pro exampleComponentLib.pro
-This is the project file for Qt Creator. If you are using a different coding environment, you need to create a similar file for this. 
+This is the project file for Qt Creator. If you are using a different coding environment, you need to create a similar file for that environment. It is also possible to write a custom make file manually.  
 
 Three modifications is required in this files. First of all the \b INCLUDEPATH must be changed so that it points to the "include" folder in the Hopsan installation. Similarly, the \b LIBS path must point to the "bin" folder in the installation directory. Finally, the relative path to all components source files in the library must be specified under HEADERS.
 
@@ -120,7 +146,7 @@ OTHER_FILES +=
 This file contains code that is used to register you library components in the Hopsan simulation core. Two modifications are required. 
 - First of all, all component code files must be included. (They will be copied into this file during compilation)
 - Second, each component needs to be registered in the simulation core by the pComponentFactory->registerCreatorFunction("KeyValue", CreatorFunction) lines.\n
-The \e "KeyValue" argument must be a uniqe typename that identifies you component. The \e CreatorFunction argument is the Creator function in each component.
+The \e "KeyValue" argument must be a unique typename that identifies you component. The \e CreatorFunction argument is the Creator function in each component.
 
 \code
 #include "component_code/MyExampleOrifice.hpp"
@@ -143,7 +169,7 @@ extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExterna
 \endcode
 
 \subsection writingcomponents_file_svg_xml XML and SVG files
-The XML files contain the appearance description, and the SVG files are the icons, see description above.
+The XML files contain the appearance description, and the SVG files are the icons, see \link creating-modifying-component-appearance Creating or Modifying Component Appearance \endlink.
 
 \subsection writingcomponents_file_hpp MyExampleOrifice.hpp & MyExampleVolume.hpp
 These files contains the source code for the components, see below.
@@ -169,7 +195,7 @@ double mKc;
 Port *mpP1, *mpP2;
 \endcode
 
-This is the member variables in the class. In this case we have a restriction coefficient called mKc and two ports called mpP1 and mpP2 ("m" is an abbreviation of "member" and "mp" menas "member pointer").
+This is the member variables in the class. In this case we have a restriction coefficient called mKc and two ports called mpP1 and mpP2 ("m" is an abbreviation of "member" and "mp" means "member pointer").
 
 \code
 static Component *Creator()
@@ -195,7 +221,7 @@ MyExampleOrifice() : ComponentQ()
 }
 \endcode
 
-This is the constructor for the class, which is ran every time a new component is created (added to the model). First we give the restrictor coefficient a default value. Then we register the parameter with a name, a decription and a unit. This will make it available to the user in the graphical interface. Finally we define the ports, in this case we want two hydraulic power ports. The following port types and node types are available:
+This is the constructor for the class, which is ran every time a new component is created (added to the model). First we give the restrictor coefficient a default value. Then we register the parameter with a name, a description and a unit. This will make it available to the user in the graphical interface. Finally we define the ports, in this case we want two hydraulic power ports. The following port types and node types are available:
 
 Port types
   - addPowerPort
@@ -246,13 +272,13 @@ void simulateOneTimestep()
 }
 \endcode
 
-This is the most important code, the model equations that are executed each time step. We begin with creating local variables from the node pointers, and we end by writing back the values we have calculated. This proceedure is intended to make the actual equations more readable. The middle part is the actual equations. In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighbouring C-type components.
+This is the most important code, the model equations that are executed each time step. We begin with creating local variables from the node pointers, and we end by writing back the values we have calculated. This procedure is intended to make the actual equations more readable. The middle part is the actual equations. In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighbouring C-type components.
 
 \section writingcomponents_compilation Compilation
 
 When everything is finished, the project must be compiled. It is necessary to use the MinGW32 compiler, because Hopsan is compiled with this. The project must also be compiled in "release" mode.
 
-If compilation was succesful, a .dll file will appear in the directory. It should now be possible to load the library from Hopsan, by pointing out the directory - see \link userCustomComponents previous section \endlink.
+If compilation was successful, a .dll file will appear in the directory. It should now be possible to load the library from Hopsan, by pointing out the directory - see \link userCustomComponents Introduction \endlink.
 
 \page generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
