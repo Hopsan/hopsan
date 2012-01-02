@@ -16,19 +16,19 @@ Hopsan uses pre-compiled components. An external component library can be loaded
 \endhtmlonly
 
 A Hopsan component library consists of at least three types of files.
--# The compiled component library code as a \b .dll Windows (Dynamic Link Library) file or as a \b .so (Shared Object) file (Linux/Mac).
--# A set of \b .xml files that describes the graphical appearance of each component.
--# A set of \b .svg (Scalable Vector Graphics) files containing component icon graphics.
+-# The compiled component library code as a .\b dll Windows (Dynamic Link Library) file or as a .\b so (Shared Object) file (Linux/Mac).
+-# A set of .\b xml files that describes the graphical appearance of each component.
+-# A set of .\b svg (Scalable Vector Graphics) files containing component icon graphics.
 
 There needs to be one .xml file for every component in the library but .svg files can be shared if needed. All components should however be compiled into one single .dll/.so file.
 A library typically consists of a directory, containing one .dll/.so file and the .xml and .svg files. Subdirectories containing the .xml and .svg files can be used to create sub categories in the library. The directory hierarchy will be shown in the Hopsan GUI Component Library Widget.
 
 If you have access to the component library source code some additional important files should also be mentioned.
--# One "libraryName".cc file. This is the source code file that is compiled into the .dll/.so .
--# One or several "componentName".hpp files containing the component source code.
+-# One \e "libraryName.cc" file. This is the source code file that is compiled into the .dll/.so .
+-# One or several \e "componentName.hpp" files containing the component source code.
 -# A project file, or a so called Makefile (build script) that is needed for building the code into the .dll/.so.
 
-If you are only a user of the library you can ignore these additional files, component developers should refer to \link writing-components \endlink 
+If you are only a user of the library you can ignore these additional files, component developers should refer to \link writing-components Writing Components in C++ \endlink 
 
 Read more: \n
 -# \subpage creating-modifying-component-appearance \n
