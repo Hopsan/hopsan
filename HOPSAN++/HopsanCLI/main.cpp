@@ -21,20 +21,23 @@
 #include <tclap/CmdLine.h>
 #include "TicToc.hpp"
 
+// If we dont have the revision number then define blank
+#ifndef HOPSANCLISVNREVISION
+#define HOPSANCLISVNREVISION "UNKNOWN"
+#endif
+
+#define HOPSANCLIVERSION "0.5.x_r" HOPSANCLISVNREVISION
 
 using namespace std;
 using namespace hopsan;
 
 int main(int argc, char *argv[])
 {
-
-    cout << "Hello world!" << endl;
-
     try {
-        TCLAP::CmdLine cmd("HopsanCLI", ' ', "put_version-number_here");
+        TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
         // Define a value argument and add it to the command line.
-        TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"../Models/pressurerelifepaper.hmf","String containing file path", cmd);
+        TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","String containing file path", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );

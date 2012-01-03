@@ -51,8 +51,19 @@ unix {
     QMAKE_LFLAGS *= -Wl,-rpath,\'\$$ORIGIN/./\'
 
     LIBS *= -lrt
+
+    #Get the svn revision in here if script succeed, we dont care about the external file generated,
+    system($${PWD}/../getSvnRevision.sh) {
+        DEFINES *= "HOPSANCLISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.sh)\\\"\""
+    }
 }
 win32 {
+
+    #Get the svn revision in here if script succeed, we dont care about the external file generated,
+    system($${PWD}/../getSvnRevision.bat) {
+        DEFINES *= "HOPSANCLISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
+    }
+
 
 }
 
