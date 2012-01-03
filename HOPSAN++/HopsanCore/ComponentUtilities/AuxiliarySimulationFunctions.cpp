@@ -16,16 +16,7 @@
 //$Id$
 
 #include "AuxiliarySimulationFunctions.h"
-#include <math.h>
-
-//! Multiplies the value by two.
-//! @param[in] input is the value to multiply.
-//! @return the input value times two.
-double hopsan::multByTwo(double input)
-{
-    return 2.0*input;
-}
-
+#include <cmath>
 
 //! @brief Limits a value so it is between min and max
 //! @param &value Reference pointer to the value
@@ -173,11 +164,11 @@ double hopsan::squareAbsL(double x, double x0)
     return (-sqrt(x0) + sqrt(x0 + fabs(x)));
 }
 
-
 double hopsan::dxSquareAbsL(double x, double x0)
 {
     return 1.0 / (sqrt(x0 + fabs(x)) * 2.0) * hopsan::sign(x);
 }
+
 //! @brief Safe variant of atan2
 double hopsan::Atan2L(double y, double x)
 {
@@ -186,15 +177,20 @@ double hopsan::Atan2L(double y, double x)
         else
     {return 0.;}
 }
+
 double hopsan::d1Atan2L(double y, double x)
 {
-    return x/(0.001 + Power(x,2) + Power(y,2));
+    //return x/(0.001 + pow(x,2) + pow(y,2));
+    return x/(0.001 + x*x + y*y);
 }
+
 //! @brief Derivative of ATAN2L with respect to x
 double hopsan::d2Atan2L(double y, double x)
 {
-    return -y/(0.001 + Power(x,2) + Power(y,2));
+    //return -y/(0.001 + pow(x,2) + pow(y,2));
+    return -y/(0.001 + x*x + y*y);
 }
+
 //! @brief Returns 1.0 if input variables have same sign, else returns 0.0
 double hopsan::equalSigns(double x, double y)
 {
@@ -203,19 +199,20 @@ double hopsan::equalSigns(double x, double y)
     }
     return 1.0;
 }
+
 //! @brief Safe variant of asin
 double hopsan::ArcSinL(double x)
 {
     return asin(limit(x,-0.999,0.999));
 }
+
 //! @brief derivative of AsinL
 double hopsan::dxArcSinL(double x)
 {
-    return 1/Sqrt(1 - Power(limit(x,-
-                                  0.999,0.999),2));
+    return 1.0/sqrt(1 - pow(limit(x,-0.999,0.999),2));
 }
-//! @brief difference between two angles, fi1-fi2
 
+//! @brief difference between two angles, fi1-fi2
 double hopsan::diffAngle(double fi1, double fi2)
 {   double output;
     double output0 = fi1-fi2;
@@ -230,25 +227,26 @@ double hopsan::diffAngle(double fi1, double fi2)
     //this is a fix to make it work for small angle differences. Something is wrong with the conditions
     output=fi1-fi2;
     return output;
-
 }
+
 //! @brief Induced drag coefficient for aircraft model
 double hopsan::CLift( double alpha,double CLalpha,double ap,double an,double expclp,double expcln)
 {
-    return Sin(2*alpha)/Sqrt(2) + ((-(1/Sqrt(2)) + CLalpha/2.)*Sin(2*alpha))/
-            (1 + Abs(onNegative(Sin(alpha))*Power(Sin(alpha)/an,expcln) +
-                onPositive(Sin(alpha))*Power(Sin(alpha)/ap,expclp)));
+    return sin(2.0*alpha)/sqrt(2.0) + ((-(1.0/sqrt(2.0)) + CLalpha/2.0)*sin(2.0*alpha))/
+            (1 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
+                      onPositive(sin(alpha))*pow(sin(alpha)/ap,expclp)));
 }
+
 //! @brief Induced drag coefficient for aircraft model
 double hopsan::CDragInd(double alpha,double AR,double e,double CLalpha,double ap,double an,double expclp,double expcln)
 {
-     return 0.35355*(1 - 1/
-       (1 + Abs(onNegative(Sin(alpha))*Power(Sin(alpha)/an,expcln) +
-                onPositive(Sin(alpha))*Power(Sin(alpha)/ap,expclp))))*(1 - Cos(2*alpha)) +
-             ((1 - Cos(2*alpha))*(Sin(2*alpha)/Sqrt(2) +
-                        ((-(1/Sqrt(2)) + CLalpha/2.)*Sin(2*alpha))/
-                                (1 + Abs(onNegative(Sin(alpha))*Power(Sin(alpha)/an,expcln) +
-                                 onPositive(Sin(alpha))*Power(Sin(alpha)/ap,expclp)))))/(2.*AR*e);
+    return 0.35355*(1.0 - 1.0/
+                    (1.0 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
+                                onPositive(sin(alpha))*pow(sin(alpha)/ap,expclp))))*(1 - cos(2.0*alpha)) +
+            ((1 - cos(2.0*alpha))*(sin(2.0*alpha)/sqrt(2.0) +
+                                   ((-(1.0/sqrt(2.0)) + CLalpha/2.0)*sin(2.0*alpha))/
+                                   (1 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
+                                             onPositive(sin(alpha))*pow(sin(alpha)/ap,expclp)))))/(2.0*AR*e);
 }
 
 //! @brief Overloads void hopsan::limitValue() with a return value.
@@ -256,7 +254,6 @@ double hopsan::CDragInd(double alpha,double AR,double e,double CLalpha,double ap
 //! @param x Value to be limited
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
-
 double hopsan::limit(double x, double xmin, double xmax)
 {
     double output = x;
@@ -303,65 +300,4 @@ double hopsan::dxLimit2(double x, double sx, double xmin, double xmax)
     if (x >= xmax && sx >= 0.0) { return 0.0; }
     if (x <= xmin && sx <= 0.0) { return 0.0; }
     return 1.0;
-}
-
-//! @brief Wrapper function, for using Mathematica syntax
-double hopsan::Power(double x, double y)
-{
-    return pow(x, y);
-}
-
-
-//! @brief Wrapper function, for using Mathematica syntax
-double hopsan::Sin(double x)
-{
-    return sin(x);
-}
-
-
-//! @brief Wrapper function, for using Mathematica syntax
-double hopsan::Cos(double x)
-{
-    return cos(x);
-}
-
-
-//! @brief Wrapper function, for using Mathematica syntax
-double hopsan::Tan(double x)
-{
-    return tan(x);
-}
-
-
-//! @brief function for using Mathematica syntax
-double hopsan::Cot(double x)
-{
-    return 1/tan(x);
-}
-
-
-//! @brief function for using Mathematica syntax
-double hopsan::Csc(double x)
-{
-    return 1/sin(x);
-}
-
-
-//! @brief function for using Mathematica syntax
-double hopsan::Sec(double x)
-{
-    return 1/cos(x);
-}
-
-
-//! @brief Wrapper function, for using Mathematica syntax
-double hopsan::Sqrt(double x)
-{
-    return sqrt(x);
-}
-
-//! @brief Wrapper function, for using Mathematica syntax
-double hopsan::Abs(double x)
-{
-    return fabs(x);
 }

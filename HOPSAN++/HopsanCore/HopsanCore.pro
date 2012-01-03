@@ -306,7 +306,8 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicInterfaceC.hpp \
     Components/Mechanic/MechanicFreeLengthWall.hpp \
     Components/Hydraulic/HydraulicComponentsInComponentTest.hpp \
-    ComponentUtilities/num2string.hpp
+    ComponentUtilities/num2string.hpp \
+    ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

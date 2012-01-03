@@ -29,7 +29,6 @@
 
 namespace hopsan {
 extern "C" {
-    double DLLIMPORTEXPORT multByTwo(double input);     //! @todo Vad Ã¤r det hÃ¤r bra fÃ¶r?
     void DLLIMPORTEXPORT limitValue(double &value, double min, double max);
     bool DLLIMPORTEXPORT doubleToBool(double value);
     double DLLIMPORTEXPORT boolToDouble(bool value);
@@ -61,17 +60,6 @@ extern "C" {
     double DLLIMPORTEXPORT dxLimit(double x, double xmin, double xmax);
     double DLLIMPORTEXPORT limit2(double x, double sx, double xmin, double xmax);
     double DLLIMPORTEXPORT dxLimit2(double x, double sx, double xmin, double xmax);
-
-    //! Wrapped functions for Mathematica syntax
-    double DLLIMPORTEXPORT Power(double x, double y);
-    double DLLIMPORTEXPORT Sin(double x);
-    double DLLIMPORTEXPORT Cos(double x);
-    double DLLIMPORTEXPORT Tan(double x);
-    double DLLIMPORTEXPORT Csc(double x);
-    double DLLIMPORTEXPORT Sec(double x);
-    double DLLIMPORTEXPORT Cot(double x);
-    double DLLIMPORTEXPORT Sqrt(double x);
-    double DLLIMPORTEXPORT Abs(double x);
 }
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H

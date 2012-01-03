@@ -30,6 +30,7 @@
 #include "ComponentUtilities/matrix.h"
 #include "ComponentUtilities/CSVParser.h"
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
+#include "ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h"
 #include "ComponentUtilities/WhiteGaussianNoise.h"
 #include "ComponentUtilities/num2string.hpp"
 
