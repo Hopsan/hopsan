@@ -678,6 +678,12 @@ QVector<GUIPort *> GUIPort::getConnectedPorts()
     return vector;
 }
 
+//! @brief virtual function, only usefull for group port, guiport will return it self (this)
+GUIPort* GUIPort::getRealPort()
+{
+    return this;
+}
+
 
 //! @brief Returns the rotation set by port appearance
 qreal GUIPort::getPortRotation()
@@ -745,14 +751,14 @@ void GUIPort::showIfNotConnected(bool doShow)
 GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentObject)
     : GUIPort(name, xpos, ypos, pPortAppearance, pParentObject)
 {
-    //Nothing special
+    //Nothing for now
 }
 
 //! Overloaded as groups laks core connection
 QString GroupPort::getPortType(const CoreSystemAccess::PortTypeIndicatorT /*ind*/)
 {
     //! @todo Return something smart
-    return "GropPortType";
+    return "GroupPortType";
 }
 
 
@@ -776,7 +782,7 @@ void GroupPort::removeConnection(GUIConnector *pConnector)
 }
 
 
-GUIPort* GroupPort::getBasePort() const
+GUIPort* GroupPort::getRealPort()
 {
     if (mSharedGroupPortInfo->mConnectedConnectors.size() == 0)
     {
@@ -785,7 +791,9 @@ GUIPort* GroupPort::getBasePort() const
     else
     {
         GUIConnector *pCon = mSharedGroupPortInfo->mConnectedConnectors[0];
-        if (pCon->getStartPort() == this)
+
+        // If the startport is one of the shared ports, this or our sibling (internal <-> external), we should choose the other port instead
+        if (mSharedGroupPortInfo->mSharedPorts.contains(pCon->getStartPort()))
         {
             return pCon->getEndPort();
         }
@@ -803,5 +811,10 @@ SharedGroupInfoPtrT GroupPort::getSharedGroupPortInfo()
 
 void GroupPort::setSharedGroupPortInfo(SharedGroupInfoPtrT sharedGroupPortInfo)
 {
-    mSharedGroupPortInfo = sharedGroupPortInfo;
+    if (!mSharedGroupPortInfo.isNull())
+    {
+        mSharedGroupPortInfo->mSharedPorts.removeAll(this); // Remove knowledge about this port
+    }
+    mSharedGroupPortInfo = sharedGroupPortInfo;         // Set new shared info
+    mSharedGroupPortInfo->mSharedPorts.append(this);    // Remember this port
 }

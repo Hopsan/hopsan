@@ -1078,23 +1078,25 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
              //! @todo some error handling both ports must exist and be connected to each other
              if(pConnector->isConnected())
              {
-                 GroupPort *pStartGroupPort=0, *pEndGroupPort=0;
+                 //GroupPort *pStartGroupPort=0, *pEndGroupPort=0;
+                 bool startPortIsGroupPort=false, endPortIsGroupPort=false;
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
 
-                 if (pStartP->getPortType() == "GropPortType")
+                 if (pStartP->getPortType() == "GroupPortType")
                  {
-                     pStartGroupPort = dynamic_cast<GroupPort*>(pStartP);
+                     startPortIsGroupPort=true;
                  }
 
-                 if (pEndP->getPortType() == "GropPortType")
+                 if (pEndP->getPortType() == "GroupPortType")
                  {
-                     pEndGroupPort = dynamic_cast<GroupPort*>(pEndP);
+                     endPortIsGroupPort = true;
                  }
 
-                 GUIPort *pStartBasePort=0, *pEndBasePort=0;
+                 qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
+                 GUIPort *pStartRealPort=0, *pEndRealPort=0;
                  // If no group ports, do normal disconnect
-                 if ( (pStartGroupPort==0) && (pEndGroupPort==0) )
+                 if ( !startPortIsGroupPort && !endPortIsGroupPort )
                  {
                     success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getGuiModelObjectName(),
                                                                          pStartP->getPortName(),
@@ -1104,79 +1106,83 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
                  // If one or both of the ports were a group port
                  else
                  {
-                     bool dissconStartBaseport=false;
-                     bool dissconEndBaseport=false;
+                     bool dissconStartRealPort=false;
+                     bool dissconEndRealPort=false;
 
                      // If start port is group port but not end port
-                     if ((pStartGroupPort != 0) && (pEndGroupPort == 0))
+                     if ( startPortIsGroupPort && !endPortIsGroupPort )
                      {
-                        pStartBasePort = pStartGroupPort->getBasePort();
-                        pEndBasePort = pEndP;
+                        pStartRealPort = pStartP->getRealPort();
+                        pEndRealPort = pEndP;
 
-                        if (pStartBasePort == pEndBasePort)
+                        // Determine if the port beeing dissconnected is the actual REAL port, that is, the first port connected to the group port
+                        if (pStartRealPort == pEndRealPort)
                         {
-                            dissconStartBaseport = true;
+                            dissconStartRealPort = true;
                         }
                      }
                      // If start port is not group port but end port is
-                     else if ((pStartGroupPort == 0) && (pEndGroupPort != 0))
+                     else if ( !startPortIsGroupPort && endPortIsGroupPort )
                      {
-                         pStartBasePort = pStartP;
-                         pEndBasePort = pEndGroupPort->getBasePort();
+                         pStartRealPort = pStartP;
+                         pEndRealPort = pEndP->getRealPort();
 
-                         if (pStartBasePort == pEndBasePort)
+                         // Determine if the port beeing dissconnected is the actual REAL port, that is, the first port connected to the group port
+                         if (pStartRealPort == pEndRealPort)
                          {
-                             dissconEndBaseport = true;
+                             dissconEndRealPort = true;
                          }
                      }
                      // Else both were group ports
                      else
                      {
-                         pStartBasePort = pStartGroupPort->getBasePort();
-                         pEndBasePort = pEndGroupPort->getBasePort();
+                         pStartRealPort = pStartP->getRealPort();
+                         pEndRealPort = pEndP->getRealPort();
 
                          //! @todo  do this
+                         assert(false);
                      }
 
-                     // If one or both base ports are beeing disconnected
-                     if (dissconStartBaseport || dissconEndBaseport)
+                     // If one or both real ports are beeing disconnected
+                     if (dissconStartRealPort || dissconEndRealPort)
                      {
                          QVector<GUIPort*> connPortsVect;
 
-                         if (dissconStartBaseport && dissconEndBaseport)
+                         if (dissconStartRealPort && dissconEndRealPort)
                          {
-                             gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: this is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
+                             gpMainWindow->mpMessageWidget->printGUIErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
                              success = false;
                          }
 
                          //Handle disconnection of start base port
-                         if (dissconStartBaseport)
+                         if (dissconStartRealPort)
                          {
-                            connPortsVect = pStartGroupPort->getConnectedPorts();
+                            connPortsVect = pStartP->getConnectedPorts();
                             //! @todo what if a connected port is another group port
 
                             // The base port is the first so we skip it (begin at index 1)
+                            // Dissconnect all secondary connections
                             for (int i=1; i<connPortsVect.size(); ++i)
                             {
                                 this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
                                                                            connPortsVect[i]->getPortName(),
-                                                                           pEndBasePort->getGuiModelObjectName(),
-                                                                           pEndBasePort->getPortName());
+                                                                           pEndRealPort->getGuiModelObjectName(),
+                                                                           pEndRealPort->getPortName());
 
                             }
 
                             connPortsVect.erase(connPortsVect.begin());
 
-                            // Reconnect all secondary ports,
+                            // Reconnect all secondary ports, to the new base port
                             if (connPortsVect.size() > 0)
                             {
                                 // New base port will be
-                                pStartBasePort = connPortsVect[0];
+                                pStartRealPort = connPortsVect[0];
 
                                 for (int i=1; i<connPortsVect.size(); ++i)
                                 {
-                                    this->getCoreSystemAccessPtr()->connect(pStartBasePort->getGuiModelObjectName(),
-                                                                            pStartBasePort->getPortName(),
+                                    this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
+                                                                            pStartRealPort->getPortName(),
                                                                             connPortsVect[i]->getGuiModelObjectName(),
                                                                             connPortsVect[i]->getPortName());
                                 }
@@ -1187,33 +1193,34 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
                          }
 
                          //Handle disconnection of end base port
-                         if (dissconEndBaseport)
+                         if (dissconEndRealPort)
                          {
-                             connPortsVect = pEndGroupPort->getConnectedPorts();
+                             connPortsVect = pEndP->getConnectedPorts();
                              //! @todo what if a connected port is another group port
 
                              // The base port is the first so we skip it (begin at index 1)
+                             // Dissconnect all secondary connections
                              for (int i=1; i<connPortsVect.size(); ++i)
                              {
                                  this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
                                                                             connPortsVect[i]->getPortName(),
-                                                                            pStartBasePort->getGuiModelObjectName(),
-                                                                            pStartBasePort->getPortName());
+                                                                            pStartRealPort->getGuiModelObjectName(),
+                                                                            pStartRealPort->getPortName());
 
                              }
 
                              connPortsVect.erase(connPortsVect.begin());
 
-                             // Reconnect all secondary ports,
+                             // Reconnect all secondary ports, to the new base port
                              if (connPortsVect.size() > 0)
                              {
                                  // New base port will be
-                                 pEndBasePort = connPortsVect[0];
+                                 pEndRealPort = connPortsVect[0];
 
                                  for (int i=1; i<connPortsVect.size(); ++i)
                                  {
-                                     this->getCoreSystemAccessPtr()->connect(pEndBasePort->getGuiModelObjectName(),
-                                                                             pEndBasePort->getPortName(),
+                                     this->getCoreSystemAccessPtr()->connect(pEndRealPort->getGuiModelObjectName(),
+                                                                             pEndRealPort->getPortName(),
                                                                              connPortsVect[i]->getGuiModelObjectName(),
                                                                              connPortsVect[i]->getPortName());
                                  }
@@ -1228,32 +1235,13 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
                      }
                      else
                      {
-                         // Dissconnect appropriate core ports (when non is a baseport)
-                         success = this->getCoreSystemAccessPtr()->disconnect(pStartBasePort->getGuiModelObjectName(),
-                                                                              pStartBasePort->getPortName(),
-                                                                              pEndBasePort->getGuiModelObjectName(),
-                                                                              pEndBasePort->getPortName());
+                         // Dissconnect appropriate core ports (when non is a real ports but one is groupport)
+                         success = this->getCoreSystemAccessPtr()->disconnect(pStartRealPort->getGuiModelObjectName(),
+                                                                              pStartRealPort->getPortName(),
+                                                                              pEndRealPort->getGuiModelObjectName(),
+                                                                              pEndRealPort->getPortName());
                      }
-
-//                     //! @warning this is ALL WRONG, needds to be rewritten
-//                     //! @todo the problem is that baseport will likely be same for both ports, we need to figure out which port the oter groupport is actually connected to
-//                     if ((pStartBasePort!=0) && (pEndBasePort!=0) && (pStartBasePort!=pEndBasePort))
-//                     {
-//                         success = this->getCoreSystemAccessPtr()->disconnect(pStartBasePort->getGuiModelObjectName(),
-//                                                                              pStartBasePort->getPortName(),
-//                                                                              pEndBasePort->getGuiModelObjectName(),
-//                                                                              pEndBasePort->getPortName());
-//                     }
-//                     else
-//                     {
-//                         success = true;
-//                     }
-
-//                     //! @warning See bellow
-//                     //! @todo WE MUST clear the base port from all relevant grop ports, need to recurse to find them, similar to split/merge in core
-
                  }
-
                  emit checkMessages();
              }
              break;
@@ -1360,33 +1348,40 @@ bool GUIContainerObject::finilizeConnector(GUIPort *endPort)
 {
     bool success = false;
 
-    GUIPort *pStartBasePort=0, *pEndBasePort=0;
-    GroupPort *pStartGroupPort=0, *pEndGroupPort=0;
-    if (mpTempConnector->getStartPort()->getPortType() == "GropPortType")
+    // Check if we are connecting group ports
+    GUIPort *pStartRealPort=0, *pEndRealPort=0;
+    bool startPortIsGroupPort=false, endPortIsGroupPort=false;
+    if (mpTempConnector->getStartPort()->getPortType() == "GroupPortType")
     {
-        pStartGroupPort = dynamic_cast<GroupPort*>(mpTempConnector->getStartPort());
-        pStartBasePort = pStartGroupPort->getBasePort();
+        startPortIsGroupPort=true;
+        pStartRealPort = mpTempConnector->getStartPort()->getRealPort();
     }
     else
     {
-        pStartBasePort = mpTempConnector->getStartPort();
+        pStartRealPort = mpTempConnector->getStartPort();
     }
 
-
-    // If we are connecting to group run special gui only check if connection OK
-    if (endPort->getPortType() == "GropPortType")
+    if (endPort->getPortType() == "GroupPortType")
     {
-        pEndGroupPort = dynamic_cast<GroupPort*>(endPort);
-        pEndBasePort = pEndGroupPort->getBasePort();
+        endPortIsGroupPort=true;
+        pEndRealPort = endPort->getRealPort();
     }
     else
     {
-        pEndBasePort = endPort;
+        pEndRealPort = endPort;
     }
+    qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
 
+    // Abort with error if trying to connect two group ports to each other
+    //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
+    if ( startPortIsGroupPort && endPortIsGroupPort )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
+        return false;
+    }
 
     // Abort with error if trying to connect two undefined group ports to each other
-    if ( (pStartBasePort==0) && (pEndBasePort==0) )
+    if ( (pStartRealPort==0) && (pEndRealPort==0) )
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("You are not allowed to connect two undefined group ports to each other");
         return false;
@@ -1394,27 +1389,25 @@ bool GUIContainerObject::finilizeConnector(GUIPort *endPort)
 
     // Handle if one or both ports are group ports
     //! @todo cleanup and rewrite
-    if ( (pStartGroupPort!=0) || (pEndGroupPort!=0) )
+    if ( startPortIsGroupPort || endPortIsGroupPort )
     {
         // If both group ports are defined
-        if ( (pStartBasePort != 0) && (pEndBasePort != 0) )
+        if ( (pStartRealPort != 0) && (pEndRealPort != 0) )
         {
-            success = this->getCoreSystemAccessPtr()->connect(pStartBasePort->getGuiModelObjectName(),
-                                                              pStartBasePort->getPortName(),
-                                                              pEndBasePort->getGuiModelObjectName(),
-                                                              pEndBasePort->getPortName());
+            success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
+                                                              pStartRealPort->getPortName(),
+                                                              pEndRealPort->getGuiModelObjectName(),
+                                                              pEndRealPort->getPortName());
         }
         // If start known but not end
-        else if ( (pStartBasePort != 0) && (pEndBasePort == 0) )
+        else if ( (pStartRealPort != 0) && (pEndRealPort == 0) )
         {
-            //pEndGroupPort->setBasePort(pStartBasePort);
             success = true;
 
         }
         // Else start unknown but end known
-        else if ( (pStartBasePort == 0) && (pEndBasePort != 0) )
+        else if ( (pStartRealPort == 0) && (pEndRealPort != 0) )
         {
-            //pStartGroupPort->setBasePort(pEndBasePort);
             success = true;
         }
         else
@@ -1426,10 +1419,10 @@ bool GUIContainerObject::finilizeConnector(GUIPort *endPort)
     // Else treat as normal ports
     else
     {
-        success = this->getCoreSystemAccessPtr()->connect(pStartBasePort->getGuiModelObjectName(),
-                                                          pStartBasePort->getPortName(),
-                                                          pEndBasePort->getGuiModelObjectName(),
-                                                          pEndBasePort->getPortName());
+        success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
+                                                          pStartRealPort->getPortName(),
+                                                          pEndRealPort->getGuiModelObjectName(),
+                                                          pEndRealPort->getPortName());
     }
 
     if (success)

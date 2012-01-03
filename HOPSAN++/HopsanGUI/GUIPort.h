@@ -86,6 +86,8 @@ public:
     bool isConnected();
     QVector<GUIPort *> getConnectedPorts();
 
+    virtual GUIPort* getRealPort();
+
     GUIModelObject *mpParentGuiModelObject; //!< @todo make private
 
 public slots:
@@ -138,7 +140,7 @@ class GroupPortCommonInfo
 {
 public:
     QVector<GUIConnector*> mConnectedConnectors;
-
+    QList<GUIPort*> mSharedPorts;
 };
 
 typedef QSharedPointer<GroupPortCommonInfo>  SharedGroupInfoPtrT;
@@ -153,9 +155,7 @@ public:
     void addConnection(GUIConnector *pConnector);
     void removeConnection(GUIConnector *pConnector);
 
-
-    //void setBasePort(GUIPort* pPort);
-    GUIPort* getBasePort() const;
+    GUIPort* getRealPort();
     SharedGroupInfoPtrT getSharedGroupPortInfo();
     void setSharedGroupPortInfo(SharedGroupInfoPtrT sharedGroupPortInfo);
 
