@@ -105,6 +105,7 @@ class ComponentSystem; //Forward declaration
         //Virtual functions
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
+        virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
         virtual bool initialize(const double startT, const double stopT, const size_t nSamples);
         virtual void simulate(const double startT, const double Ts);
         virtual void finalize(const double startT, const double Ts);
@@ -162,9 +163,6 @@ class ComponentSystem; //Forward declaration
         void addWarningMessage(std::string message);
         void addErrorMessage(std::string message);
         void addInfoMessage(std::string message);
-
-        //Temporarily made public for RT-simulation
-        virtual void initialize(); //! @todo Default values are hard set
 
     protected:
         //==========Protected member functions==========
