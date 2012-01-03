@@ -20,7 +20,7 @@
 //!
 //! @brief Contains help utility functions for converting a number to a string
 //!
-//$Id: Delay.hpp 3547 2011-10-25 11:48:47Z petno25 $
+//$Id$
 
 #ifndef NUM2STRING_HPP
 #define NUM2STRING_HPP
