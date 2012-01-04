@@ -72,7 +72,7 @@ QPointF getOffsetPointfromPort(GUIPort *pStartPort, GUIPort *pEndPort)
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject)
     : QGraphicsWidget(pParentGUIModelObject)
 {
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
@@ -748,7 +748,7 @@ void GUIPort::showIfNotConnected(bool doShow)
 }
 
 
-GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentObject)
+GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParentObject)
     : GUIPort(name, xpos, ypos, pPortAppearance, pParentObject)
 {
     //Nothing for now

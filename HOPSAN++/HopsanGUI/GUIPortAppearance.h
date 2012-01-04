@@ -28,7 +28,7 @@
 #include <QString>
 #include <QHash>
 
-class GUIPortAppearance
+class PortAppearance
 {
 public:
     void selectPortIcon(QString cqstype, QString porttype, QString nodetype);
@@ -39,6 +39,6 @@ public:
     QString mMultiPortOverlayPath;
 };
 
-typedef QHash<QString, GUIPortAppearance> PortAppearanceMapT;
+typedef QHash<QString, PortAppearance> PortAppearanceMapT;
 
 #endif // GUIPORTAPPEARANCE_H

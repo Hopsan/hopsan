@@ -34,7 +34,7 @@
 #include "UndoStack.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "GUIObjects/GUISystem.h"
-#include "loadObjects.h"
+#include "loadFunctions.h"
 #include "Configuration.h"
 
 class UndoStack;

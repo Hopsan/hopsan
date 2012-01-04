@@ -26,7 +26,7 @@
 #include "MainWindow.h"
 #include "GraphicsView.h"
 #include "CoreAccess.h"
-#include "loadObjects.h"
+#include "loadFunctions.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "version_gui.h"

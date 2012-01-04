@@ -48,7 +48,7 @@ class GUIPort :public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
+    GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
     ~GUIPort();
 
     GUIContainerObject *getParentContainerObjectPtr();
@@ -120,8 +120,8 @@ private:
 //    QGraphicsLineItem *lineH;
 //    QGraphicsLineItem *lineV;
 
-    GUIPortAppearance *mpPortAppearance;
-    GUIPortAppearance mPortAppearanceAfterLastRefresh;
+    PortAppearance *mpPortAppearance;
+    PortAppearance mPortAppearanceAfterLastRefresh;
     QString mPortDisplayName;
 
     qreal mMag;
@@ -148,7 +148,7 @@ typedef QSharedPointer<GroupPortCommonInfo>  SharedGroupInfoPtrT;
 class GroupPort : public GUIPort
 {
 public:
-    GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentObject);
+    GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParentObject);
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
 

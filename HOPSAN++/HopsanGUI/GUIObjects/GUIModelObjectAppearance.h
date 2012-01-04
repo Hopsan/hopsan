@@ -73,7 +73,7 @@ public:
     QPointF getNameTextPos();
     PortAppearanceMapT &getPortAppearanceMap();
     void erasePortAppearance(const QString portName);
-    void addPortAppearance(const QString portName, GUIPortAppearance *pPortAppearance=0);
+    void addPortAppearance(const QString portName, PortAppearance *pPortAppearance=0);
 
     bool hasIcon(const graphicsType gfxType);
 

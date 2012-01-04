@@ -39,7 +39,7 @@
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
-#include "loadObjects.h"
+#include "loadFunctions.h"
 #include "MessageWidget.h"
 #include "Configuration.h"
 

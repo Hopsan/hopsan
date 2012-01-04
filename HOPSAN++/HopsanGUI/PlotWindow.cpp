@@ -46,7 +46,7 @@
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "Configuration.h"
-#include "loadObjects.h"
+#include "loadFunctions.h"
 #include "version_gui.h"
 
 #include "qwt_scale_engine.h"

@@ -28,7 +28,7 @@
 #include "UndoStack.h"
 #include "MainWindow.h"
 #include "GUIConnector.h"
-#include "loadObjects.h"
+#include "loadFunctions.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "Widgets/MessageWidget.h"

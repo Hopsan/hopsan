@@ -43,7 +43,7 @@
 #include "Widgets/MessageWidget.h"
 #include "GraphicsView.h"
 #include "Widgets/LibraryWidget.h"
-#include "loadObjects.h"
+#include "loadFunctions.h"
 #include "CopyStack.h"
 
 //using namespace std;

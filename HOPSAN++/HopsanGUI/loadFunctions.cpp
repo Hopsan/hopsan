@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include "loadObjects.h"
+#include "loadFunctions.h"
 
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -36,7 +36,6 @@
 #include "Utilities/GUIUtilities.h"
 
 #include <QMap>
-
 
 //! @brief Loads a Connector from the supplied load data
 //! @param[in] rDomElement The DOM element to load from

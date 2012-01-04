@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   loadObjects.h
+//! @file   loadFunctions.h
 //! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-01-01
 //!
@@ -22,8 +22,8 @@
 //!
 //$Id$
 
-#ifndef LOADOBJECTS_H
-#define LOADOBJECTS_H
+#ifndef LOADFUNCTIONS_H
+#define LOADFUNCTIONS_H
 
 #include "Utilities/XMLUtilities.h"
 #include "common.h"
@@ -54,4 +54,4 @@ void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pContainer);
 
 GUITextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings=UNDO);
 
-#endif // LOADOBJECTS_H
+#endif // LOADFUNCTIONS_H

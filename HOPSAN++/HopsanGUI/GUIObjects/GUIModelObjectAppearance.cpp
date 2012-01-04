@@ -314,11 +314,11 @@ void GUIModelObjectAppearance::erasePortAppearance(const QString portName)
 //! @brief Adds or updates a port appearance post for a specified portname
 //! @param[in] portName The port name for the port Appearance to be added
 //! @param[in] pPortAppearance A pointer to the port Appearance to add, if 0 then a new undefined appearance will be created
-void GUIModelObjectAppearance::addPortAppearance(const QString portName, GUIPortAppearance *pPortAppearance)
+void GUIModelObjectAppearance::addPortAppearance(const QString portName, PortAppearance *pPortAppearance)
 {
     if (pPortAppearance == 0)
     {
-        mPortAppearanceMap.insert(portName, GUIPortAppearance());
+        mPortAppearanceMap.insert(portName, PortAppearance());
     }
     else
     {
@@ -381,7 +381,7 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
         QDomElement xmlPortPose = xmlPorts.firstChildElement(CAF_PORTPOSE);
         while (!xmlPortPose.isNull())
         {
-            GUIPortAppearance portApp;
+            PortAppearance portApp;
             parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
             mPortAppearanceMap.insert(portname, portApp);
             xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
@@ -408,7 +408,7 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
     QDomElement xmlPortPose = domElement.firstChildElement(CAF_PORTPOSE);
     while (!xmlPortPose.isNull())
     {
-        GUIPortAppearance portApp;
+        PortAppearance portApp;
         parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
         mPortAppearanceMap.insert(portname, portApp);
         xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);

@@ -112,7 +112,6 @@ SOURCES += main.cpp \
     Dialogs/OptionsDialog.cpp \
     UndoStack.cpp \
     GraphicsView.cpp \
-    loadObjects.cpp \
     ProgressBarThread.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
@@ -147,7 +146,8 @@ SOURCES += main.cpp \
     Dependencies/BarChartPlotter/axisbase.cpp \
     Dialogs/OptimizationDialog.cpp \
     Dialogs/SensitivityAnalysisDialog.cpp \
-    Dialogs/ComponentGeneratorDialog.cpp
+    Dialogs/ComponentGeneratorDialog.cpp \
+    loadFunctions.cpp
 
 
 HEADERS += MainWindow.h \
@@ -165,7 +165,6 @@ HEADERS += MainWindow.h \
     UndoStack.h \
     CoreAccess.h \
     GraphicsView.h \
-    loadObjects.h \
     ProgressBarThread.h \
     common.h \
     CoreAccess.h \
@@ -202,7 +201,8 @@ HEADERS += MainWindow.h \
     Dialogs/OptimizationDialog.h \
     Dialogs/SensitivityAnalysis.h \
     Dialogs/SensitivityAnalysisDialog.h \
-    Dialogs/ComponentGeneratorDialog.h
+    Dialogs/ComponentGeneratorDialog.h \
+    loadFunctions.h
 
 OTHER_FILES += \
     ../hopsandefaults \

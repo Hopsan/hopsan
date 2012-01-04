@@ -30,7 +30,7 @@
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "GraphicsView.h"
-#include "loadObjects.h"
+#include "loadFunctions.h"
 #include "CoreAccess.h"
 #include "CopyStack.h"
 #include "Widgets/ProjectTabWidget.h"
@@ -480,7 +480,7 @@ void GUIContainerObject::renameExternalPort(const QString oldName, const QString
         if ((*plit)->getPortName() == oldName )
         {
             //Rename the port appearance data by remove and re-add
-            GUIPortAppearance tmp = mGUIModelObjectAppearance.getPortAppearanceMap().value(oldName);
+            PortAppearance tmp = mGUIModelObjectAppearance.getPortAppearanceMap().value(oldName);
             mGUIModelObjectAppearance.erasePortAppearance(oldName);
             mGUIModelObjectAppearance.addPortAppearance(newName, &tmp);
 
