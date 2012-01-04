@@ -1,7 +1,12 @@
 /*!
 \page userCustomComponents Custom Components & Libraries
 
-\section introduction-component-libraries Introduction to Component Libraries
+-# \subpage introduction-component-libraries \n
+-# \subpage creating-modifying-component-appearance \n
+-# \subpage writing-components \n
+-# \subpage generating-components-mathematica \n
+
+\page introduction-component-libraries Introduction to Component Libraries
 
 Hopsan uses pre-compiled components. An external component library can be loaded in the program by clicking on the Load External Library icon, in the bottom of the library widget.
 
@@ -29,11 +34,6 @@ If you have access to the component library source code some additional importan
 -# A project file, or a so called Makefile (build script) that is needed for building the code into the .dll/.so.
 
 If you are only a user of the library you can ignore these additional files, component developers should refer to \link writing-components Writing Components in C++ \endlink 
-
-Read more: \n
--# \subpage creating-modifying-component-appearance \n
--# \subpage writing-components \n
--# \subpage generating-components-mathematica \n
 
 \page creating-modifying-component-appearance Create or Modify Component Appearance
 
@@ -283,3 +283,4 @@ If compilation was successful, a .dll file will appear in the directory. It shou
 \page generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
 */
+
