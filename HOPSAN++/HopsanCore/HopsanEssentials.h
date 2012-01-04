@@ -53,7 +53,7 @@ extern "C" {
         HopsanCoreMessageHandler* mpMessageHandler;
         LoadExternal mExternalLoader;
 
-        void Initialize();
+        void initialize();
         HopsanEssentials();
 
     public:
@@ -62,9 +62,10 @@ extern "C" {
 
         std::string getCoreVersion();
 
-        Component* CreateComponent(const std::string &rString);
+        Component* createComponent(const std::string &rString);
+        ComponentSystem* createComponentSystem();
         bool hasComponent(const std::string type);
-        ComponentSystem* CreateComponentSystem();
+        bool reserveComponentTypeName(const std::string typeName);
 
         Node* createNode(const NodeTypeT &rNodeType);
 

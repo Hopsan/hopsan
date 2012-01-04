@@ -90,7 +90,7 @@ ComponentSystem* HmfLoader::loadModel(string filename, double &rStartTime, doubl
         rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
         rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
 
-        ComponentSystem * pSys = HopsanEssentials::getInstance()->CreateComponentSystem(); //Create root system
+        ComponentSystem * pSys = HopsanEssentials::getInstance()->createComponentSystem(); //Create root system
         loadSystemContents(pSysNode, pSys);
 
         return pSys;
@@ -127,7 +127,7 @@ void HmfLoader::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSyst
             else if (strcmp(pObject->name(), "system")==0)
             {
                 //Add new system
-                ComponentSystem * pSys = HopsanEssentials::getInstance()->CreateComponentSystem();
+                ComponentSystem * pSys = HopsanEssentials::getInstance()->createComponentSystem();
                 pSystem->addComponent(pSys);
                 loadSystemContents(pObject, pSys);
             }
@@ -156,7 +156,7 @@ void HmfLoader::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSys
     string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
     string displayName =  readStringAttribute(pComponentNode, "name", typeName);
 
-    Component *pComp = HopsanEssentials::getInstance()->CreateComponent(typeName);
+    Component *pComp = HopsanEssentials::getInstance()->createComponent(typeName);
     pComp->setName(displayName);
     //cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
     pSystem->addComponent(pComp);

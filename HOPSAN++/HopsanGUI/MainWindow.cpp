@@ -232,7 +232,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(mpCopyAction, SIGNAL(triggered()), mpMessageWidget, SLOT(copy()));
 
-    mpMessageWidget->loadConfig();
+    mpMessageWidget->loadConfig();    
 }
 
 

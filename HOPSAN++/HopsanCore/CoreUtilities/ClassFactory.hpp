@@ -27,7 +27,6 @@
 
 #include <map>
 #include <vector>
-//#include <iostream>
 
 namespace hopsan {
 
@@ -72,6 +71,14 @@ namespace hopsan {
             }
             //std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
             return idKey;
+        }
+
+        //! @brief Reserve keyword by inserting NULL ptr,
+        bool reserveKey(_Key idKey)
+        {
+            std::pair<typename FactoryMapT::iterator, bool> rc;
+            rc = mFactoryMap.insert(FactoryPairT(idKey, 0));
+            return rc.second;
         }
 
         //! @brief Creates an instance based on the key using creator function (if registered)

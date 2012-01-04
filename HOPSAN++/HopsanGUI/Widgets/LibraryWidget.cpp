@@ -50,6 +50,13 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
         :   QWidget(parent)
 {
     mpCoreAccess = new CoreLibraryAccess();
+
+    //! @todo Dont know if this is the right place to do this, but we need to do it early
+    // We want to register certain GUI specific KeyValues in the core to prevent external libs from loading components with theses typenames
+    mpCoreAccess->reserveComponentTypeName(HOPSANGUICONTAINERPORTTYPENAME);
+    mpCoreAccess->reserveComponentTypeName(HOPSANGUISYSTEMTYPENAME);
+    mpCoreAccess->reserveComponentTypeName(HOPSANGUIGROUPTYPENAME);
+
     mpContentsTree = new LibraryContentsTree();
     mpSecretHiddenContentsTree = new LibraryContentsTree();
 

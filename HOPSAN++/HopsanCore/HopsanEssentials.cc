@@ -37,15 +37,17 @@ bool HopsanEssentials::mHasInstance = false;
 HopsanEssentials* HopsanEssentials::mpInstance = 0;
 
 
-void HopsanEssentials::Initialize()
+void HopsanEssentials::initialize()
 {
+    reserveComponentTypeName("Subsystem");
+
     //Make sure that internal Nodes and Components register
     register_nodes(mpNodeFactory);
     register_components(mpComponentFactory);
 
     //Check for register errors and status
-    checkClassFactoryStatus<ComponentFactory>(mpComponentFactory);
-    checkClassFactoryStatus<NodeFactory>(mpNodeFactory);
+    checkClassFactoryStatus(mpComponentFactory);
+    checkClassFactoryStatus(mpNodeFactory);
 
     //Clear factory status
     mpComponentFactory->clearRegisterStatusMap();
@@ -65,7 +67,7 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory = new ComponentFactory;
     mpMessageHandler = getCoreMessageHandlerPtr();
     mExternalLoader.setFactory(mpComponentFactory, mpNodeFactory);
-    Initialize();
+    initialize();
 }
 
 
@@ -106,9 +108,9 @@ std::string HopsanEssentials::getCoreVersion()
 }
 
 //! Creates a component with the specified key-value and returns a pointer to this component.
-Component* HopsanEssentials::CreateComponent(const string &rString)
+Component* HopsanEssentials::createComponent(const string &rString)
 {
-    addLogMess(rString + "::CreateComponent");
+    addLogMess(rString + "::createComponent");
     Component* pComp = mpComponentFactory->createInstance(rString.c_str());
     if (pComp)
     {
@@ -117,7 +119,7 @@ Component* HopsanEssentials::CreateComponent(const string &rString)
     }
     else
     {
-        checkClassFactoryStatus<ComponentFactory>(mpComponentFactory);
+        checkClassFactoryStatus(mpComponentFactory);
         mpComponentFactory->clearRegisterStatusMap();
     }
     return pComp;
@@ -128,9 +130,14 @@ bool HopsanEssentials::hasComponent(const string type)
     return mpComponentFactory->hasKey(type.c_str());
 }
 
+bool HopsanEssentials::reserveComponentTypeName(const std::string typeName)
+{
+    return mpComponentFactory->reserveKey(typeName);
+}
+
 
 //! @todo for now a ugly special fix for component system, (It can not be created by the factory that only deals with Component* objects)
-ComponentSystem* HopsanEssentials::CreateComponentSystem()
+ComponentSystem* HopsanEssentials::createComponentSystem()
 {
     return new ComponentSystem();
 }
@@ -144,7 +151,7 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
     }
     else
     {
-        checkClassFactoryStatus<NodeFactory>(mpNodeFactory);
+        checkClassFactoryStatus(mpNodeFactory);
         mpNodeFactory->clearRegisterStatusMap();
     }
     return pNode;

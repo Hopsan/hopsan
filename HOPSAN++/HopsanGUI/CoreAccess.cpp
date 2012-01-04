@@ -54,6 +54,12 @@ bool CoreLibraryAccess::unLoadComponentLib(QString fileName)
     return HopsanEssentials::getInstance()->unLoadExternalComponentLib(fileName.toStdString());
 }
 
+//! @brief Reserves a type name in the Hopsan Core, to prevent external libs from loading components with that specific typename
+bool CoreLibraryAccess::reserveComponentTypeName(const QString typeName)
+{
+    return hopsan::HopsanEssentials::getInstance()->reserveComponentTypeName(typeName.toStdString());
+}
+
 
 size_t CoreMessagesAccess::getNumberOfMessages()
 {
@@ -76,7 +82,7 @@ CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSy
     if (pParentCoreSystemAccess == 0)
     {
         //Create new root system
-        mpCoreComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
+        mpCoreComponentSystem = HopsanEssentials::getInstance()->createComponentSystem();
     }
     else
     {
@@ -379,7 +385,7 @@ void CoreSystemAccess::finalize(double mStartTime, double mFinishTime)
 QString CoreSystemAccess::createComponent(QString type, QString name)
 {
     //qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
-    Component *pCoreComponent = HopsanEssentials::getInstance()->CreateComponent(type.toStdString());
+    Component *pCoreComponent = HopsanEssentials::getInstance()->createComponent(type.toStdString());
     if (pCoreComponent != 0)
     {
         mpCoreComponentSystem->addComponent(pCoreComponent);
@@ -399,7 +405,7 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
 
 QString CoreSystemAccess::createSubSystem(QString name)
 {
-    ComponentSystem *pTempComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
+    ComponentSystem *pTempComponentSystem = HopsanEssentials::getInstance()->createComponentSystem();
     mpCoreComponentSystem->addComponent(pTempComponentSystem);
     if (!name.isEmpty())
     {

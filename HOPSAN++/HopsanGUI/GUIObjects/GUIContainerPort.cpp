@@ -99,7 +99,6 @@ void GUIContainerPort::createPorts()
 //! Returns a string with the GUIObject type.
 QString GUIContainerPort::getTypeName()
 {
-    //! @todo we should make sure that the gui can register these guispecific names in core to avoid creating objects with these type names
     return HOPSANGUICONTAINERPORTTYPENAME;
 }
 

@@ -212,8 +212,8 @@ bool LoadExternal::load(string libpath)
     register_contents(mpComponentFactory, mpNodeFactory);
 
     //Check for register errors and status
-    checkClassFactoryStatus<ComponentFactory>(mpComponentFactory);
-    checkClassFactoryStatus<NodeFactory>(mpNodeFactory);
+    checkClassFactoryStatus(mpComponentFactory);
+    checkClassFactoryStatus(mpNodeFactory);
 
     // Ok everything seems Ok, now register the library ptr and registreed components in map so that we can unload it later
     LoadedLibInfoPairT lelInfoPair(static_cast<void*>(lib_ptr), vector<string>() );
