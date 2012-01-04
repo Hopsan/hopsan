@@ -84,12 +84,12 @@ public:
 
     //Handle connector methods
     bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
-    GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
-    void rememberSubConnector(GUIConnector *pConnector);
-    void removeSubConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
+    Connector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
+    void rememberSubConnector(Connector *pConnector);
+    void removeSubConnector(Connector* pConnector, undoStatus undoSettings=UNDO);
     bool isConnectorSelected();
-    void rememberSelectedSubConnector(GUIConnector *pConnector);
-    void forgetSelectedSubConnector(GUIConnector *pConnector);
+    void rememberSelectedSubConnector(Connector *pConnector);
+    void forgetSelectedSubConnector(Connector *pConnector);
     bool isCreatingConnector();
     void cancelCreatingConnector();
     void addOneConnectorLine(QPointF pos);
@@ -168,8 +168,8 @@ public slots:
     void showSubcomponentPorts(bool doShowThem);
 
     //Connector slots
-    void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
-    void createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings=UNDO);
+    Connector* createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
+    Connector* createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings=UNDO);
 
     //Section slots
     void groupSelected(QPointF pt);
@@ -230,8 +230,8 @@ signals:
     void deselectAllNameText();
     void deselectAllGUIObjects();
     void selectAllGUIObjects();
-    void deselectAllGUIConnectors();
-    void selectAllGUIConnectors();
+    void deselectAllConnectors();
+    void selectAllConnectors();
 
     //Hide/show name text
     void hideAllNameText();
@@ -265,7 +265,7 @@ protected:
     virtual void renameExternalPort(QString oldName, QString newName);
     virtual void openPropertiesDialog();
     void clearContents();
-    void forgetSubConnector(GUIConnector *pConnector);
+    void forgetSubConnector(Connector *pConnector);
     void refreshInternalContainerPortGraphics();
 
     //Help function for creating container ports
@@ -293,9 +293,9 @@ protected:
     QList<GUIModelObject *> mSelectedGUIModelObjectsList;
 
     //Connector members
-    QList<GUIConnector *> mSelectedSubConnectorsList;
-    QList<GUIConnector *> mSubConnectorList;
-    GUIConnector *mpTempConnector;
+    QList<Connector *> mSelectedSubConnectorsList;
+    QList<Connector *> mSubConnectorList;
+    Connector *mpTempConnector;
     bool mIsCreatingConnector;
 
     //Widget members

@@ -428,7 +428,7 @@ void GUIContainerObject::createExternalPort(QString portName)
 
             // In this case of container object, also refresh any attached connectors, if types have changed
             //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
-            QVector<GUIConnector*> connectors = pPort->getAttachedConnectorPtrs();
+            QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
             for (int i=0; i<connectors.size(); ++i)
             {
                 connectors[i]->refreshConnectorAppearance();
@@ -514,7 +514,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
-    emit deselectAllGUIConnectors();
+    emit deselectAllConnectors();
 
     QString componentTypeName = pAppearanceData->getTypeName();
     if (componentTypeName == HOPSANGUISYSTEMTYPENAME)
@@ -669,7 +669,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     GUIModelObject* obj_ptr = it.value();
 
         //Remove connectors that are connected to the model object
-    QList<GUIConnector *> pConnectorList = obj_ptr->getGUIConnectorPtrs();
+    QList<Connector *> pConnectorList = obj_ptr->getConnectorPtrs();
     for(int i=0; i<pConnectorList.size(); ++i)
     {
         this->removeSubConnector(pConnectorList[i], undoSettings);
@@ -816,15 +816,15 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
         //! @todo what if idx already taken, dont care for now as we shal only move into groups when they are created
     }
 
-    QList<GUIConnector*> transitConnectors;
-    QList<GUIConnector*> internalConnectors;
+    QList<Connector*> transitConnectors;
+    QList<Connector*> internalConnectors;
 
     //Determine what connectors are transitconnectors
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
         GUIModelObject *pObj = rModelObjectList[i];
 
-        QList<GUIConnector*> connectorPtrs = pObj->getGUIConnectorPtrs();
+        QList<Connector*> connectorPtrs = pObj->getConnectorPtrs();
         for(int i=0; i<connectorPtrs.size(); ++i)
         {
             if((rModelObjectList.contains(connectorPtrs[i]->getStartPort()->getGuiModelObject())) &&
@@ -995,9 +995,9 @@ GUIPort *GUIContainerObject::getGUIModelObjectPort(const QString modelObjectName
 
 
 //! @brief Find a connector in the connector vector
-GUIConnector* GUIContainerObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+Connector* GUIContainerObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
-    GUIConnector *item;
+    Connector *item;
     item = 0;
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
@@ -1050,14 +1050,14 @@ bool GUIContainerObject::hasConnector(QString startComp, QString startPort, QStr
 
 
 //! @brief Notifies container object that a subconnector has been selected
-void GUIContainerObject::rememberSelectedSubConnector(GUIConnector *pConnector)
+void GUIContainerObject::rememberSelectedSubConnector(Connector *pConnector)
 {
     mSelectedSubConnectorsList.append(pConnector);
 }
 
 
 //! @brief Notifies container object that a subconnector has been deselected
-void GUIContainerObject::forgetSelectedSubConnector(GUIConnector *pConnector)
+void GUIContainerObject::forgetSelectedSubConnector(Connector *pConnector)
 {
     mSelectedSubConnectorsList.removeAll(pConnector);
 }
@@ -1066,7 +1066,7 @@ void GUIContainerObject::forgetSelectedSubConnector(GUIConnector *pConnector)
 //! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
-void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus undoSettings)
+void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoSettings)
 {
     bool success=false;
 
@@ -1293,7 +1293,8 @@ void GUIContainerObject::removeSubConnector(GUIConnector* pConnector, undoStatus
 //! @brief Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
-void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings)
+//! @return A pointer to the created connector, 0 if failed, or connector unfinnished
+Connector* GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings)
 {
         //When clicking start port (begin creation of connector)
     if (!mIsCreatingConnector)
@@ -1301,11 +1302,14 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         deselectAll();
         this->startConnector(pPort);
         gpMainWindow->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
+        return 0; //The connector is still unfinnished
     }
         //When clicking end port (finish creation of connector)
     else
     {
         bool success = finilizeConnector(pPort);
+        emit checkMessages();
+
         if (success)
         {
             if(undoSettings == UNDO)
@@ -1314,20 +1318,34 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
                 mpUndoStack->registerAddedConnector(mpTempConnector);
             }
             mpParentProjectTab->hasChanged();
+            return mpTempConnector; //Return ptr to the created connector
         }
-        emit checkMessages();
+        else
+        {
+            return 0; //Failed creation
+        }
     }
 }
 
-//! @brief Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
-void GUIContainerObject::createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings)
+//! @brief Create a connector when both ports are known (when loading primarily)
+Connector* GUIContainerObject::createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings)
 {
-    //! work in progress /Peter
+    if (!mIsCreatingConnector)
+    {
+        createConnector(pPort1, undoSettings);
+        return createConnector(pPort2, undoSettings); //Return ptr to the created connector, or 0
+    }
+    else
+    {
+        // This should never happen, but just in case
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("could not create connector, connector creation already in progress");
+        return 0;
+    }
 }
 
 void GUIContainerObject::startConnector(GUIPort *startPort)
 {
-    mpTempConnector = new GUIConnector(this);
+    mpTempConnector = new Connector(this);
 
     // Make connector know its startport and make modelobject know about this connector
     mpTempConnector->setStartPort(startPort);
@@ -1528,7 +1546,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 
         //Deselect all components & connectors
     emit deselectAllGUIObjects();
-    emit deselectAllGUIConnectors();
+    emit deselectAllConnectors();
 
     QHash<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
 
@@ -1612,7 +1630,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         if (sucess)
         {
             //qDebug() << ",,,,,,,,,: " << tempConnectorElement.attribute("startcomponent") << " " << tempConnectorElement.attribute("startport") << " " << tempConnectorElement.attribute("endcomponent") << " " << tempConnectorElement.attribute("endport");
-            GUIConnector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
+            Connector *tempConnector = this->findConnector(tempConnectorElement.attribute("startcomponent"), tempConnectorElement.attribute("startport"),
                                                               tempConnectorElement.attribute("endcomponent"), tempConnectorElement.attribute("endport"));
 
                 //Apply offset to connector and register it in undo stack
@@ -1663,9 +1681,9 @@ void GUIContainerObject::alignX()
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.last()->getCenterPos().x(), mSelectedGUIModelObjectsList.at(i)->getCenterPos().y()));
             QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
-            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().size(); ++j)
+            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
             {
-                mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().at(j)->drawConnector(true);
+                mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
         }
         mpParentProjectTab->hasChanged();
@@ -1685,9 +1703,9 @@ void GUIContainerObject::alignY()
             mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.at(i)->getCenterPos().x(), mSelectedGUIModelObjectsList.last()->getCenterPos().y()));
             QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
             mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
-            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().size(); ++j)
+            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
             {
-                mSelectedGUIModelObjectsList.at(i)->getGUIConnectorPtrs().at(j)->drawConnector(true);
+                mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
         }
         mpParentProjectTab->hasChanged();
@@ -1810,7 +1828,7 @@ void GUIContainerObject::assignSection(int no)
 void GUIContainerObject::selectAll()
 {
     emit selectAllGUIObjects();
-    emit selectAllGUIConnectors();
+    emit selectAllConnectors();
 }
 
 
@@ -1818,7 +1836,7 @@ void GUIContainerObject::selectAll()
 void GUIContainerObject::deselectAll()
 {
     emit deselectAllGUIObjects();
-    emit deselectAllGUIConnectors();
+    emit deselectAllConnectors();
 }
 
 
@@ -2024,7 +2042,7 @@ bool GUIContainerObject::isCreatingConnector()
 
 
 //! @brief Tells container object to remember a new sub connector
-void GUIContainerObject::rememberSubConnector(GUIConnector *pConnector)
+void GUIContainerObject::rememberSubConnector(Connector *pConnector)
 {
     mSubConnectorList.append(pConnector);
 }
@@ -2034,7 +2052,7 @@ void GUIContainerObject::rememberSubConnector(GUIConnector *pConnector)
 //!
 //! It does not delete the connector and connected components dos not forget about it
 //! use only when transfering ownership of objects to an other container
-void GUIContainerObject::forgetSubConnector(GUIConnector *pConnector)
+void GUIContainerObject::forgetSubConnector(Connector *pConnector)
 {
     mSubConnectorList.removeAll(pConnector);
 }

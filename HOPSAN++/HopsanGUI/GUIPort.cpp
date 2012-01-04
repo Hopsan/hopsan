@@ -634,14 +634,14 @@ PortDirectionT GUIPort::getPortDirection()
 }
 
 
-void GUIPort::addConnection(GUIConnector *pConnector)
+void GUIPort::addConnection(Connector *pConnector)
 {
     mConnectedConnectors.append(pConnector);
     //qDebug() << "Adding connection, connections = " << mnConnections;
 }
 
 
-void GUIPort::removeConnection(GUIConnector *pConnector)
+void GUIPort::removeConnection(Connector *pConnector)
 {
     int idx = mConnectedConnectors.indexOf(pConnector);
     mConnectedConnectors.remove(idx);
@@ -650,7 +650,7 @@ void GUIPort::removeConnection(GUIConnector *pConnector)
 
 //! @brief Return a copy of the currently connected connectors
 //! @return QVector with connector pointers
-QVector<GUIConnector*> GUIPort::getAttachedConnectorPtrs() const
+QVector<Connector*> GUIPort::getAttachedConnectorPtrs() const
 {
     return mConnectedConnectors;
 }
@@ -769,13 +769,13 @@ QString GroupPort::getNodeType()
     return "GropPortNodeType";
 }
 
-void GroupPort::addConnection(GUIConnector *pConnector)
+void GroupPort::addConnection(Connector *pConnector)
 {
     GUIPort::addConnection(pConnector);
     mSharedGroupPortInfo->mConnectedConnectors.append(pConnector);
 }
 
-void GroupPort::removeConnection(GUIConnector *pConnector)
+void GroupPort::removeConnection(Connector *pConnector)
 {
     GUIPort::removeConnection(pConnector);
     mSharedGroupPortInfo->mConnectedConnectors.remove(mSharedGroupPortInfo->mConnectedConnectors.indexOf(pConnector));
@@ -790,7 +790,7 @@ GUIPort* GroupPort::getRealPort()
     }
     else
     {
-        GUIConnector *pCon = mSharedGroupPortInfo->mConnectedConnectors[0];
+        Connector *pCon = mSharedGroupPortInfo->mConnectedConnectors[0];
 
         // If the startport is one of the shared ports, this or our sibling (internal <-> external), we should choose the other port instead
         if (mSharedGroupPortInfo->mSharedPorts.contains(pCon->getStartPort()))

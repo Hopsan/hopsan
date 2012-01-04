@@ -34,7 +34,7 @@
 
 class ProjectTabWidget;
 class GraphicsView;
-class GUIConnector;
+class Connector;
 class GUIPort;
 class GUIComponent;
 
@@ -61,8 +61,8 @@ protected:
     void addExternalContainerPortObject(GUIModelObject *pModelObject);
 
     QList<GUIModelObject*> mGUICompList;
-    QList<GUIConnector*> mGUIConnList;
-    QList<GUIConnector*> mGUITransitConnList;
+    QList<Connector*> mGUIConnList;
+    QList<Connector*> mGUITransitConnList;
 
     //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 

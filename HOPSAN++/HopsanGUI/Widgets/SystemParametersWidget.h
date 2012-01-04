@@ -41,7 +41,7 @@
     //Forward Declarations
 class GUIObject;
 class GraphicsView;
-class GUIConnector;
+class Connector;
 class MainWindow;
 class GUISystem;
 class GUIModelObject;

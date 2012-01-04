@@ -43,41 +43,44 @@ class GUIPort;
 class GUISystem;
 class GUIContainerObject;
 
-class GUIConnector : public QGraphicsWidget
+class Connector : public QGraphicsWidget
 {
     Q_OBJECT
     friend class ConnectorLine;
 public:
-    GUIConnector(GUIContainerObject *pParentContainer);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *pParentContainer, QStringList geometries = QStringList());
-    ~GUIConnector();
+    Connector(GUIContainerObject *pParentContainer);
+    ~Connector();
 
     void setParentContainer(GUIContainerObject *pParentContainer);
     GUIContainerObject *getParentContainer();
 
-    enum { Type = UserType + 1 };           //Va tusan gÃ¶r den hÃ¤r?! -Det du!
+    enum { Type = UserType + 1 };           //!< @todo is this really necessary, we dont check Type on connectors (only one version exist)
 
     void addPoint(QPointF point);
     void removePoint(bool deleteIfEmpty = false);
+    void finishCreation();
+    void setPointsAndGeometries(const QVector<QPointF> &rPoints, const QStringList &rGeometries);
+
     void setStartPort(GUIPort *port);
     void setEndPort(GUIPort *port);
-    void finishCreation();
-    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
-    int getNumberOfLines();
-    connectorGeometry getGeometry(int lineNumber);
+
     GUIPort *getStartPort();
     GUIPort *getEndPort();
-    QPointF getStartPoint();
-    QPointF getEndPoint();
     QString getStartPortName();
     QString getEndPortName();
     QString getStartComponentName();
     QString getEndComponentName();
+
+    QPointF getStartPoint();
+    QPointF getEndPoint();
     ConnectorLine *getLine(int line);
     ConnectorLine *getLastLine();
+    int getNumberOfLines();
     bool isFirstOrLastDiagonal();
     bool isFirstAndLastDiagonal();
-    void determineAppearance();
+    connectorGeometry getGeometry(const int lineNumber);
+
+    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
 
     void refreshConnectorAppearance();
 
@@ -114,12 +117,12 @@ signals:
     void connectionFinished();
 
 private:
-    void commonConstructorCode();
+    void determineAppearance();
     void refreshConnectedSystemportsGraphics();
     void disconnectPortSigSlots(GUIPort* pPort);
     void connectPortSigSlots(GUIPort* pPort);
-    void setupGeometries(const QStringList &rGeometries);
     void addLine(ConnectorLine *pLine);
+    void removeAllLines();
 
     bool mIsActive;
     bool mIsConnected;
@@ -127,7 +130,7 @@ private:
     bool mIsDashed;
 
     GUIContainerObject *mpParentContainerObject;
-    ConnectorAppearance *mpGUIConnectorAppearance;
+    ConnectorAppearance *mpConnectorAppearance;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
 
@@ -139,13 +142,12 @@ private:
 
 class ConnectorLine : public QObject, public QGraphicsLineItem
 {
-    friend class GUIConnector;
+    friend class Connector;
     Q_OBJECT
 public:
-    ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, int lineNumber, GUIConnector *parent = 0);
+    ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, int lineNumber, Connector *parent = 0);
     ~ConnectorLine();
 
-    GUIConnector *mpParentGUIConnector;
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
     void addEndArrow();
     void addStartArrow();
@@ -177,12 +179,15 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
+    Connector *mpParentConnector;
+    ConnectorAppearance *mpConnectorAppearance;
+
     bool mIsActive;
     bool mParentConnectorEndPortConnected;
     bool mHasStartArrow;
     bool mHasEndArrow;
     int mLineNumber;
-    ConnectorAppearance *mpConnectorAppearance;
+
     connectorGeometry mGeometry;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;

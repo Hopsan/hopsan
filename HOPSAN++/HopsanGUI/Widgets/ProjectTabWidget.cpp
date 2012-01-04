@@ -375,7 +375,7 @@ void ProjectTab::setEditingEnabled(bool value)
             grayEffect->setColor(QColor("gray"));
             mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setGraphicsEffect(grayEffect);
 
-            QList<GUIConnector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
+            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getConnectorPtrs();
             for(int j=0; j<connectors.size(); ++j)
             {
                 QGraphicsColorizeEffect *grayEffect2 = new QGraphicsColorizeEffect();
@@ -403,7 +403,7 @@ void ProjectTab::setEditingEnabled(bool value)
             if(mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->graphicsEffect())
                 mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->graphicsEffect()->setEnabled(false);
 
-            QList<GUIConnector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getGUIConnectorPtrs();
+            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getConnectorPtrs();
             for(int j=0; j<connectors.size(); ++j)
             {
                 if(connectors.at(j)->graphicsEffect())

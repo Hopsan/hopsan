@@ -222,12 +222,12 @@ void GUIModelObject::setNameTextScale(qreal scale)
 
 //! @brief Stores a connector pointer in the connector list
 //! @param item Pointer to connector that shall be stored
-void GUIModelObject::rememberConnector(GUIConnector *item)
+void GUIModelObject::rememberConnector(Connector *item)
 {
     //Only append if new connector, prevents double registration if we connect to ourselves
-    if ( !mGUIConnectorPtrs.contains(item) )
+    if ( !mConnectorPtrs.contains(item) )
     {
-        mGUIConnectorPtrs.append(item);
+        mConnectorPtrs.append(item);
         connect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
     }
 }
@@ -235,16 +235,16 @@ void GUIModelObject::rememberConnector(GUIConnector *item)
 
 //! @brief Removes a connector pointer from the connector list
 //! @param item Pointer to connector that shall be forgotten
-void GUIModelObject::forgetConnector(GUIConnector *item)
+void GUIModelObject::forgetConnector(Connector *item)
 {
-    mGUIConnectorPtrs.removeAll(item);
+    mConnectorPtrs.removeAll(item);
     disconnect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
 }
 
 //! @param Returns a copy of the list with pointers to the connecetors connected to the object
-QList<GUIConnector*> GUIModelObject::getGUIConnectorPtrs()
+QList<Connector*> GUIModelObject::getConnectorPtrs()
 {
-    return mGUIConnectorPtrs;
+    return mConnectorPtrs;
 }
 
 
@@ -942,38 +942,38 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
            !mpParentContainerObject->isCreatingConnector() && mpParentContainerObject->getSelectedGUIModelObjectPtrs().size() == 1)
         {
                 //Vertical snap
-            if( (mGUIConnectorPtrs.size() == 1) &&
-                (mGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-                !(mGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-                !(mGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
-                (abs(mGUIConnectorPtrs.first()->getStartPoint().x() - mGUIConnectorPtrs.first()->getEndPoint().x()) < SNAPDISTANCE) &&
-                (abs(mGUIConnectorPtrs.first()->getStartPoint().x() - mGUIConnectorPtrs.first()->getEndPoint().x()) > 0.0) )
+            if( (mConnectorPtrs.size() == 1) &&
+                (mConnectorPtrs.first()->getNumberOfLines() < 4) &&
+                !(mConnectorPtrs.first()->isFirstAndLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() == 2) &&
+                !(mConnectorPtrs.first()->isFirstOrLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() > 1) &&
+                (abs(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x()) < SNAPDISTANCE) &&
+                (abs(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x()) > 0.0) )
             {
-                if(this->mGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
+                if(this->mConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
-                    this->moveBy(mGUIConnectorPtrs.first()->getEndPoint().x() - mGUIConnectorPtrs.first()->getStartPoint().x(), 0);
+                    this->moveBy(mConnectorPtrs.first()->getEndPoint().x() - mConnectorPtrs.first()->getStartPoint().x(), 0);
                 }
                 else
                 {
-                    this->moveBy(mGUIConnectorPtrs.first()->getStartPoint().x() - mGUIConnectorPtrs.first()->getEndPoint().x(), 0);
+                    this->moveBy(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x(), 0);
                 }
             }
 
                 //Horizontal snap
-            if( (mGUIConnectorPtrs.size() == 1) &&
-                (mGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-                !(mGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-                !(mGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() > 2) &&
-                (abs(mGUIConnectorPtrs.first()->getStartPoint().y() - mGUIConnectorPtrs.first()->getEndPoint().y()) < SNAPDISTANCE) &&
-                (abs(mGUIConnectorPtrs.first()->getStartPoint().y() - mGUIConnectorPtrs.first()->getEndPoint().y()) > 0.0) )
+            if( (mConnectorPtrs.size() == 1) &&
+                (mConnectorPtrs.first()->getNumberOfLines() < 4) &&
+                !(mConnectorPtrs.first()->isFirstAndLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() == 2) &&
+                !(mConnectorPtrs.first()->isFirstOrLastDiagonal() && mConnectorPtrs.first()->getNumberOfLines() > 2) &&
+                (abs(mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y()) < SNAPDISTANCE) &&
+                (abs(mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y()) > 0.0) )
             {
-                if(this->mGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
+                if(this->mConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
-                    this->moveBy(0, mGUIConnectorPtrs.first()->getEndPoint().y() - mGUIConnectorPtrs.first()->getStartPoint().y());
+                    this->moveBy(0, mConnectorPtrs.first()->getEndPoint().y() - mConnectorPtrs.first()->getStartPoint().y());
                 }
                 else
                 {
-                    this->moveBy(0, mGUIConnectorPtrs.first()->getStartPoint().y() - mGUIConnectorPtrs.first()->getEndPoint().y());
+                    this->moveBy(0, mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y());
                 }
             }
         }
@@ -1033,9 +1033,9 @@ void GUIModelObject::rotate(qreal angle, undoStatus undoSettings)
         mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
     }
 
-    for(int i=0; i<mGUIConnectorPtrs.size(); ++i)
+    for(int i=0; i<mConnectorPtrs.size(); ++i)
     {
-        mGUIConnectorPtrs.at(i)->drawConnector(true);
+        mConnectorPtrs.at(i)->drawConnector(true);
     }
 }
 

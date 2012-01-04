@@ -29,7 +29,7 @@
 #include "GUIModelObjectAppearance.h"
 #include <QGraphicsSvgItem>
 
-class GUIConnector;
+class Connector;
 class GUIModelObjectDisplayName;
 class GUIPort;
 class GUISystem;
@@ -82,9 +82,9 @@ public:
     virtual void setModelFileInfo(QFile &rFile);
 
     //Connector methods
-    QList<GUIConnector*> getGUIConnectorPtrs();
-    void rememberConnector(GUIConnector *item);
-    void forgetConnector(GUIConnector *item);
+    QList<Connector*> getConnectorPtrs();
+    void rememberConnector(Connector *item);
+    void forgetConnector(Connector *item);
 
     //Port methods
     void showPorts(bool visible);
@@ -147,7 +147,7 @@ protected:
     qreal mLastIconScale;
 
     QList<GUIPort*> mPortListPtrs;
-    QList<GUIConnector*> mGUIConnectorPtrs;
+    QList<Connector*> mConnectorPtrs;
 
     GUIModelObjectDisplayName *mpNameText;
 

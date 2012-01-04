@@ -40,7 +40,7 @@
     //Forward Declarations
 class GUIModelObject;
 class GraphicsView;
-class GUIConnector;
+class Connector;
 class MainWindow;
 class GUIContainerObject;
 class GUIWidget;
@@ -61,11 +61,11 @@ public:
     void redoOneStep();
 
     void registerDeletedObject(GUIModelObject *item);
-    void registerDeletedConnector(GUIConnector *item);
+    void registerDeletedConnector(Connector *item);
     void registerAddedObject(GUIModelObject *item);
-    void registerAddedConnector(GUIConnector *item);
+    void registerAddedConnector(Connector *item);
     void registerRenameObject(QString oldName, QString newName);
-    void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);
+    void registerModifiedConnector(QPointF oldPos, QPointF newPos, Connector *item, int lineNumber);
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
     void registerRotatedObject(const QString objectName, const qreal angle);
     void registerVerticalFlip(QString objectName);

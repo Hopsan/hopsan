@@ -31,7 +31,7 @@
 #include <assert.h>
 
 //Forward declarations
-class GUIConnector;
+class Connector;
 class GUIPort;
 class GUIContainerObject;
 

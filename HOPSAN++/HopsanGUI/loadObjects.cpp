@@ -14,11 +14,11 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   loadObjects.cpp
+//! @file   loadFunctions.cpp
 //! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-01-01
 //!
-//! @brief Contains classes and functions used to recreate models from load data
+//! @brief Contains functions used when models are loaded from hmf
 //!
 //$Id$
 
@@ -91,29 +91,21 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
     GUIPort *endPort = pContainer->getGUIModelObjectPort(endComponentName, endPortName);
     if ((startPort != 0) && (endPort != 0))
     {
-        success = pContainer->getCoreSystemAccessPtr()->connect(startComponentName, startPortName, endComponentName, endPortName);
-        if (success)
+        Connector* pConn = pContainer->createConnector(startPort, endPort, NOUNDO);
+        if (pConn != 0)
         {
-            //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
-            GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, pointVector, pContainer, geometryList);
-
-            //Hide connected ports
-            startPort->hide();
-            endPort->hide();
-
-            pTempConnector->setDashed(isDashed);
-
-            QObject::connect(startPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-            QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-            pContainer->rememberSubConnector(pTempConnector);
+            pConn->setPointsAndGeometries(pointVector, geometryList);
+            pConn->setDashed(isDashed);
+            pConn->refreshConnectorAppearance();
 
             if(undoSettings == UNDO)
             {
-                pContainer->getUndoStackPtr()->registerAddedConnector(pTempConnector);
+                pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
             }
+            success = true;
         }
     }
+
     if (!success)
     {
         QString str;

@@ -216,7 +216,7 @@ void UndoStack::undoOneStep()
                 this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
                 return;
             }
-            GUIConnector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+            Connector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
             QPointF dXY = newPos - oldPos;
             item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
             item->updateLine(lineNumber);
@@ -483,7 +483,7 @@ void UndoStack::undoOneStep()
     }
 
         //Move all connectors that are connected between two components that has moved (must be done after components have been moved)
-    QList<GUIConnector *>::iterator itc;
+    QList<Connector *>::iterator itc;
     for(itc=mpParentContainerObject->mSubConnectorList.begin(); itc!=mpParentContainerObject->mSubConnectorList.end(); ++itc)
     {
         //Error check should not be necessary for this action, because it was already done when moving the objects
@@ -803,14 +803,14 @@ void UndoStack::redoOneStep()
             this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
             return;
         }
-        GUIConnector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+        Connector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
 
         item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
         item->updateLine(lineNumber);
     }
 
         //Move all connectors that are connected between two components that has moved
-    QList<GUIConnector *>::iterator itc;
+    QList<Connector *>::iterator itc;
     for(itc=mpParentContainerObject->mSubConnectorList.begin(); itc!=mpParentContainerObject->mSubConnectorList.end(); ++itc)
     {
         //No error checking necessary
@@ -861,7 +861,7 @@ void UndoStack::registerDeletedObject(GUIModelObject *item)
 
 //! @brief Register function for connectors
 //! @param item Pointer to the connector about to be deleted
-void UndoStack::registerDeletedConnector(GUIConnector *item)
+void UndoStack::registerDeletedConnector(Connector *item)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
@@ -901,7 +901,7 @@ void UndoStack::registerAddedObject(GUIModelObject *item)
 
 //! @brief Register function for added connectors
 //! @param item Pointer to the added connector
-void UndoStack::registerAddedConnector(GUIConnector *item)
+void UndoStack::registerAddedConnector(Connector *item)
 {
     if(!mpParentContainerObject->isUndoEnabled())
         return;
@@ -933,7 +933,7 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 //! @param oldPos Position of the line before it was moved
 //! @param item Pointer to the connector
 //! @param lineNumber Number of the line that was moved
-void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber)
+void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, Connector *item, int lineNumber)
 {
     //! @todo This if statement is a very very very ugly hack...
     if(!(getCurrentPost().attribute("type") == "paste"))    //Connectors are modified when undoing paste operations, but this will modify them twice, so don't register it

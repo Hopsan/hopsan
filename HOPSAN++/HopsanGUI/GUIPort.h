@@ -39,7 +39,7 @@
 class GUIModelObject;
 class GUISystem;
 class GUIContainerObject;
-class GUIConnector;
+class Connector;
 class PlotWindow;
 
 enum PortDirectionT {TOPBOTTOM, LEFTRIGHT};
@@ -80,9 +80,9 @@ public:
 
     bool getLastNodeData(QString dataName, double& rData);
 
-    virtual void addConnection(GUIConnector *pConnector);
-    virtual void removeConnection(GUIConnector *pConnector);
-    QVector<GUIConnector*> getAttachedConnectorPtrs() const;
+    virtual void addConnection(Connector *pConnector);
+    virtual void removeConnection(Connector *pConnector);
+    QVector<Connector*> getAttachedConnectorPtrs() const;
     bool isConnected();
     QVector<GUIPort *> getConnectedPorts();
 
@@ -106,7 +106,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openRightClickMenu(QPoint screenPos);
 
-    QVector<GUIConnector*> mConnectedConnectors;
+    QVector<Connector*> mConnectedConnectors;
 
 protected slots:
     void refreshPortOverlayScale(qreal scale);
@@ -139,7 +139,7 @@ private:
 class GroupPortCommonInfo
 {
 public:
-    QVector<GUIConnector*> mConnectedConnectors;
+    QVector<Connector*> mConnectedConnectors;
     QList<GUIPort*> mSharedPorts;
 };
 
@@ -152,8 +152,8 @@ public:
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
 
-    void addConnection(GUIConnector *pConnector);
-    void removeConnection(GUIConnector *pConnector);
+    void addConnection(Connector *pConnector);
+    void removeConnection(Connector *pConnector);
 
     GUIPort* getRealPort();
     SharedGroupInfoPtrT getSharedGroupPortInfo();
