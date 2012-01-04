@@ -274,6 +274,7 @@ protected:
     // Helpfunctions for creating connectors
     void startConnector(GUIPort *startPort);
     bool finilizeConnector(GUIPort *endPort);
+    void dissconnectGroupPortFromItsRealPort(GUIPort *pGroupPort, GUIPort *pRealPort);
 
     //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

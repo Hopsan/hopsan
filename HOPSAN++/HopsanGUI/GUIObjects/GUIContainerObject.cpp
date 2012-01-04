@@ -1062,6 +1062,39 @@ void GUIContainerObject::forgetSelectedSubConnector(Connector *pConnector)
     mSelectedSubConnectorsList.removeAll(pConnector);
 }
 
+void GUIContainerObject::dissconnectGroupPortFromItsRealPort(GUIPort *pGroupPort, GUIPort *pRealPort)
+{
+    QVector<GUIPort*> connPortsVect = pGroupPort->getConnectedPorts();
+    //! @todo what if a connected port is another group port
+
+    // The real port is the first so we skip it (begin at index 1), we cant dissconnect from ourself
+    // Dissconnect all secondary connections
+    for (int i=1; i<connPortsVect.size(); ++i)
+    {
+        this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
+                                                   connPortsVect[i]->getPortName(),
+                                                   pRealPort->getGuiModelObjectName(),
+                                                   pRealPort->getPortName());
+
+    }
+
+    connPortsVect.erase(connPortsVect.begin());
+
+    // Reconnect all secondary ports, to the new base port
+    if (connPortsVect.size() > 0)
+    {
+        // New base port will be
+        GUIPort* pNewGroupRealPort = connPortsVect[0];
+
+        for (int i=1; i<connPortsVect.size(); ++i)
+        {
+            this->getCoreSystemAccessPtr()->connect(pNewGroupRealPort->getGuiModelObjectName(),
+                                                    pNewGroupRealPort->getPortName(),
+                                                    connPortsVect[i]->getGuiModelObjectName(),
+                                                    connPortsVect[i]->getPortName());
+        }
+    }
+}
 
 //! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
@@ -1157,36 +1190,38 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
                          //Handle disconnection of start base port
                          if (dissconStartRealPort)
                          {
-                            connPortsVect = pStartP->getConnectedPorts();
-                            //! @todo what if a connected port is another group port
+                             dissconnectGroupPortFromItsRealPort(pStartP, pEndRealPort);
 
-                            // The base port is the first so we skip it (begin at index 1)
-                            // Dissconnect all secondary connections
-                            for (int i=1; i<connPortsVect.size(); ++i)
-                            {
-                                this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
-                                                                           connPortsVect[i]->getPortName(),
-                                                                           pEndRealPort->getGuiModelObjectName(),
-                                                                           pEndRealPort->getPortName());
+//                            connPortsVect = pStartP->getConnectedPorts();
+//                            //! @todo what if a connected port is another group port
 
-                            }
+//                            // The real port is the first so we skip it (begin at index 1), we cant dissconnect from ourself
+//                            // Dissconnect all secondary connections
+//                            for (int i=1; i<connPortsVect.size(); ++i)
+//                            {
+//                                this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
+//                                                                           connPortsVect[i]->getPortName(),
+//                                                                           pEndRealPort->getGuiModelObjectName(),
+//                                                                           pEndRealPort->getPortName());
 
-                            connPortsVect.erase(connPortsVect.begin());
+//                            }
 
-                            // Reconnect all secondary ports, to the new base port
-                            if (connPortsVect.size() > 0)
-                            {
-                                // New base port will be
-                                pStartRealPort = connPortsVect[0];
+//                            connPortsVect.erase(connPortsVect.begin());
 
-                                for (int i=1; i<connPortsVect.size(); ++i)
-                                {
-                                    this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
-                                                                            pStartRealPort->getPortName(),
-                                                                            connPortsVect[i]->getGuiModelObjectName(),
-                                                                            connPortsVect[i]->getPortName());
-                                }
-                            }
+//                            // Reconnect all secondary ports, to the new base port
+//                            if (connPortsVect.size() > 0)
+//                            {
+//                                // New base port will be
+//                                pStartRealPort = connPortsVect[0];
+
+//                                for (int i=1; i<connPortsVect.size(); ++i)
+//                                {
+//                                    this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
+//                                                                            pStartRealPort->getPortName(),
+//                                                                            connPortsVect[i]->getGuiModelObjectName(),
+//                                                                            connPortsVect[i]->getPortName());
+//                                }
+//                            }
 
                             success = true;
 
@@ -1195,36 +1230,37 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
                          //Handle disconnection of end base port
                          if (dissconEndRealPort)
                          {
-                             connPortsVect = pEndP->getConnectedPorts();
-                             //! @todo what if a connected port is another group port
+                             dissconnectGroupPortFromItsRealPort(pEndP, pStartRealPort);
+//                             connPortsVect = pEndP->getConnectedPorts();
+//                             //! @todo what if a connected port is another group port
 
-                             // The base port is the first so we skip it (begin at index 1)
-                             // Dissconnect all secondary connections
-                             for (int i=1; i<connPortsVect.size(); ++i)
-                             {
-                                 this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
-                                                                            connPortsVect[i]->getPortName(),
-                                                                            pStartRealPort->getGuiModelObjectName(),
-                                                                            pStartRealPort->getPortName());
+//                             // The real port is the first so we skip it (begin at index 1), we cant dissconnect from ourself
+//                             // Dissconnect all secondary connections
+//                             for (int i=1; i<connPortsVect.size(); ++i)
+//                             {
+//                                 this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
+//                                                                            connPortsVect[i]->getPortName(),
+//                                                                            pStartRealPort->getGuiModelObjectName(),
+//                                                                            pStartRealPort->getPortName());
 
-                             }
+//                             }
 
-                             connPortsVect.erase(connPortsVect.begin());
+//                             connPortsVect.erase(connPortsVect.begin());
 
-                             // Reconnect all secondary ports, to the new base port
-                             if (connPortsVect.size() > 0)
-                             {
-                                 // New base port will be
-                                 pEndRealPort = connPortsVect[0];
+//                             // Reconnect all secondary ports, to the new base port
+//                             if (connPortsVect.size() > 0)
+//                             {
+//                                 // New base port will be
+//                                 pEndRealPort = connPortsVect[0];
 
-                                 for (int i=1; i<connPortsVect.size(); ++i)
-                                 {
-                                     this->getCoreSystemAccessPtr()->connect(pEndRealPort->getGuiModelObjectName(),
-                                                                             pEndRealPort->getPortName(),
-                                                                             connPortsVect[i]->getGuiModelObjectName(),
-                                                                             connPortsVect[i]->getPortName());
-                                 }
-                             }
+//                                 for (int i=1; i<connPortsVect.size(); ++i)
+//                                 {
+//                                     this->getCoreSystemAccessPtr()->connect(pEndRealPort->getGuiModelObjectName(),
+//                                                                             pEndRealPort->getPortName(),
+//                                                                             connPortsVect[i]->getGuiModelObjectName(),
+//                                                                             connPortsVect[i]->getPortName());
+//                                 }
+//                             }
 
                              success = true;
 
