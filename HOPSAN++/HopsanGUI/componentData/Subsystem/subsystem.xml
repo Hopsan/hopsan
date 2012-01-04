@@ -2,8 +2,7 @@
 <hopsanobjectappearance version="0.2">
     <modelobject typename="Subsystem" displayname="">
         <icons>  
-            <icon type="user" iconrotation="ON" path="subsystemDefault.svg"/>
-	        <icon type="defaultmissing" iconrotation="ON" path="subsystemDefault.svg"/>
+	        <icon type="defaultmissing" iconrotation="ON" path="subsystemDefault.svg" scale="1.0"/>
 	    </icons>
     </modelobject>
 </hopsanobjectappearance>

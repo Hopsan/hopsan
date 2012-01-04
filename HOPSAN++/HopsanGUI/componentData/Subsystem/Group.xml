@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.2">
 	<modelobject typename="HopsanGUIGroup" displayname="Group">
 	    <icons>
-            <icon type="user" iconrotation="ON" path="group.svg" iconrotation="ON" scale="1.0"/>
+            <icon type="defaultmissing" iconrotation="ON" path="groupDefault.svg" scale="1.0"/>
 	    </icons>
 	</modelobject>
 </hopsanobjectappearance>
