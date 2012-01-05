@@ -53,8 +53,8 @@ namespace hopsan {
 
         void ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOrignialPort);
         void ifMultiportCleanupAfterConnect(Port *pSubPort, Port *pMultiPort, const bool wasSucess);
-        void ifMultiportPrepareForDissconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2);
-        void ifMultiportCleanupAfterDissconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess);
+        void ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2);
+        void ifMultiportCleanupAfterDisconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess);
 
     private:
         void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);

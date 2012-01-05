@@ -804,6 +804,27 @@ GUIPort* GroupPort::getRealPort()
     }
 }
 
+//! @brief Returns a vector with all ports connected to this port.
+QVector<GUIPort *> GroupPort::getConnectedPorts()
+{
+    QVector<GUIPort *> vector;
+    for(int i=0; i<mSharedGroupPortInfo->mConnectedConnectors.size(); ++i)
+    {
+        Connector *pCon = mSharedGroupPortInfo->mConnectedConnectors[i];
+
+        // If the startport is one of the shared ports, this or our sibling (internal <-> external), we should choose the other port instead
+        if (mSharedGroupPortInfo->mSharedPorts.contains(pCon->getStartPort()))
+        {
+            vector.append(pCon->getEndPort());
+        }
+        else
+        {
+            vector.append(pCon->getStartPort());
+        }
+    }
+    return vector;
+}
+
 SharedGroupInfoPtrT GroupPort::getSharedGroupPortInfo()
 {
     return mSharedGroupPortInfo;

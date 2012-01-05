@@ -844,7 +844,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
                 {
                     transitConnectors.append(connectorPtrs[i]);
 
-                    //! @todo for now we dissconnect the transit connection as we are noy yet capable of recreating the external connection
+                    //! @todo for now we disconnect the transit connection as we are noy yet capable of recreating the external connection
                     this->getCoreSystemAccessPtr()->disconnect(connectorPtrs[i]->getStartComponentName(),
                                                                connectorPtrs[i]->getStartPortName(),
                                                                connectorPtrs[i]->getEndComponentName(),
@@ -1062,13 +1062,17 @@ void GUIContainerObject::forgetSelectedSubConnector(Connector *pConnector)
     mSelectedSubConnectorsList.removeAll(pConnector);
 }
 
-void GUIContainerObject::dissconnectGroupPortFromItsRealPort(GUIPort *pGroupPort, GUIPort *pRealPort)
+void GUIContainerObject::disconnectGroupPortFromItsRealPort(GUIPort *pGroupPort, GUIPort *pRealPort)
 {
     QVector<GUIPort*> connPortsVect = pGroupPort->getConnectedPorts();
     //! @todo what if a connected port is another group port
 
-    // The real port is the first so we skip it (begin at index 1), we cant dissconnect from ourself
-    // Dissconnect all secondary connections
+    assert(connPortsVect[0] == pRealPort);
+
+    // The real port is the first so we skip it (begin at index 1), we cant disconnect from ourself
+    // The first connection to the group port does not have an actual core connection
+    // The GUI disconect will come later in the function calling this one
+    // Disconnect all secondary connections
     for (int i=1; i<connPortsVect.size(); ++i)
     {
         this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
@@ -1083,7 +1087,7 @@ void GUIContainerObject::dissconnectGroupPortFromItsRealPort(GUIPort *pGroupPort
     // Reconnect all secondary ports, to the new base port
     if (connPortsVect.size() > 0)
     {
-        // New base port will be
+        // New real port will be
         GUIPort* pNewGroupRealPort = connPortsVect[0];
 
         for (int i=1; i<connPortsVect.size(); ++i)
@@ -1139,8 +1143,8 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
                  // If one or both of the ports were a group port
                  else
                  {
-                     bool dissconStartRealPort=false;
-                     bool dissconEndRealPort=false;
+                     bool disconStartRealPort=false;
+                     bool disconEndRealPort=false;
 
                      // If start port is group port but not end port
                      if ( startPortIsGroupPort && !endPortIsGroupPort )
@@ -1148,10 +1152,10 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
                         pStartRealPort = pStartP->getRealPort();
                         pEndRealPort = pEndP;
 
-                        // Determine if the port beeing dissconnected is the actual REAL port, that is, the first port connected to the group port
+                        // Determine if the port beeing disconnected is the actual REAL port, that is, the first port connected to the group port
                         if (pStartRealPort == pEndRealPort)
                         {
-                            dissconStartRealPort = true;
+                            disconStartRealPort = true;
                         }
                      }
                      // If start port is not group port but end port is
@@ -1160,10 +1164,10 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
                          pStartRealPort = pStartP;
                          pEndRealPort = pEndP->getRealPort();
 
-                         // Determine if the port beeing dissconnected is the actual REAL port, that is, the first port connected to the group port
+                         // Determine if the port beeing disconnected is the actual REAL port, that is, the first port connected to the group port
                          if (pStartRealPort == pEndRealPort)
                          {
-                             dissconEndRealPort = true;
+                             disconEndRealPort = true;
                          }
                      }
                      // Else both were group ports
@@ -1177,101 +1181,31 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
                      }
 
                      // If one or both real ports are beeing disconnected
-                     if (dissconStartRealPort || dissconEndRealPort)
+                     if (disconStartRealPort || disconEndRealPort)
                      {
-                         QVector<GUIPort*> connPortsVect;
-
-                         if (dissconStartRealPort && dissconEndRealPort)
+                         if (disconStartRealPort && disconEndRealPort)
                          {
                              gpMainWindow->mpMessageWidget->printGUIErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
                              success = false;
                          }
 
                          //Handle disconnection of start base port
-                         if (dissconStartRealPort)
+                         if (disconStartRealPort)
                          {
-                             dissconnectGroupPortFromItsRealPort(pStartP, pEndRealPort);
-
-//                            connPortsVect = pStartP->getConnectedPorts();
-//                            //! @todo what if a connected port is another group port
-
-//                            // The real port is the first so we skip it (begin at index 1), we cant dissconnect from ourself
-//                            // Dissconnect all secondary connections
-//                            for (int i=1; i<connPortsVect.size(); ++i)
-//                            {
-//                                this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
-//                                                                           connPortsVect[i]->getPortName(),
-//                                                                           pEndRealPort->getGuiModelObjectName(),
-//                                                                           pEndRealPort->getPortName());
-
-//                            }
-
-//                            connPortsVect.erase(connPortsVect.begin());
-
-//                            // Reconnect all secondary ports, to the new base port
-//                            if (connPortsVect.size() > 0)
-//                            {
-//                                // New base port will be
-//                                pStartRealPort = connPortsVect[0];
-
-//                                for (int i=1; i<connPortsVect.size(); ++i)
-//                                {
-//                                    this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
-//                                                                            pStartRealPort->getPortName(),
-//                                                                            connPortsVect[i]->getGuiModelObjectName(),
-//                                                                            connPortsVect[i]->getPortName());
-//                                }
-//                            }
-
-                            success = true;
-
+                             disconnectGroupPortFromItsRealPort(pStartP, pEndRealPort);
+                             success = true;
                          }
 
                          //Handle disconnection of end base port
-                         if (dissconEndRealPort)
+                         if (disconEndRealPort)
                          {
-                             dissconnectGroupPortFromItsRealPort(pEndP, pStartRealPort);
-//                             connPortsVect = pEndP->getConnectedPorts();
-//                             //! @todo what if a connected port is another group port
-
-//                             // The real port is the first so we skip it (begin at index 1), we cant dissconnect from ourself
-//                             // Dissconnect all secondary connections
-//                             for (int i=1; i<connPortsVect.size(); ++i)
-//                             {
-//                                 this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
-//                                                                            connPortsVect[i]->getPortName(),
-//                                                                            pStartRealPort->getGuiModelObjectName(),
-//                                                                            pStartRealPort->getPortName());
-
-//                             }
-
-//                             connPortsVect.erase(connPortsVect.begin());
-
-//                             // Reconnect all secondary ports, to the new base port
-//                             if (connPortsVect.size() > 0)
-//                             {
-//                                 // New base port will be
-//                                 pEndRealPort = connPortsVect[0];
-
-//                                 for (int i=1; i<connPortsVect.size(); ++i)
-//                                 {
-//                                     this->getCoreSystemAccessPtr()->connect(pEndRealPort->getGuiModelObjectName(),
-//                                                                             pEndRealPort->getPortName(),
-//                                                                             connPortsVect[i]->getGuiModelObjectName(),
-//                                                                             connPortsVect[i]->getPortName());
-//                                 }
-//                             }
-
+                             disconnectGroupPortFromItsRealPort(pEndP, pStartRealPort);
                              success = true;
-
-
                          }
-
-
                      }
                      else
                      {
-                         // Dissconnect appropriate core ports (when non is a real ports but one is groupport)
+                         // Disconnect appropriate core ports (when non is a real ports but one is groupport)
                          success = this->getCoreSystemAccessPtr()->disconnect(pStartRealPort->getGuiModelObjectName(),
                                                                               pStartRealPort->getPortName(),
                                                                               pEndRealPort->getGuiModelObjectName(),

@@ -1443,7 +1443,7 @@ void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pSubPort, Port *p
     }
 }
 
-void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess)
+void ConnectionAssistant::ifMultiportCleanupAfterDisconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess)
 {
     if (pMultiPort != 0)
     {
@@ -1461,7 +1461,7 @@ void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *&rpSubPort, P
 }
 
 //! @brief Prepares port pointers for multiport disconnections,
-void ConnectionAssistant::ifMultiportPrepareForDissconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2)
+void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2)
 {
     //First make usre that multiport pointers are zero if no multiports are beeing connected
     rpMultiPort1=0;
@@ -1542,7 +1542,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         if ( ((pPort1->getConnectedPorts().size() > 1) || (pPort2->getConnectedPorts().size() > 1)) &&
              !pPort1->isMultiPort() && !pPort2->isMultiPort() )
         {
-            //! @todo what happens if we dissconnect a multiport from a port with multiple connections (can that even happen)
+            //! @todo what happens if we disconnect a multiport from a port with multiple connections (can that even happen)
             success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
         }
         // If BOTH ports will NOT become empty, and if the one becoming empty is a multiport
@@ -1571,13 +1571,13 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
             //Handle multiports
             Port* pOriginalPort1=0, *pOriginalPort2=0;
-            disconnAssistant.ifMultiportPrepareForDissconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
+            disconnAssistant.ifMultiportPrepareForDisconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
 
             success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
 
             //Handle multiport connection sucess or failure
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pOriginalPort1, success);
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pOriginalPort2, success);
+            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort1, pOriginalPort1, success);
+            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort2, pOriginalPort2, success);
 
         }
         // If both ports will become empty, and if one or both is a multiport
@@ -1585,13 +1585,13 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         {
             //Handle multiports
             Port* pOriginalPort1=0, *pOriginalPort2=0;
-            disconnAssistant.ifMultiportPrepareForDissconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
+            disconnAssistant.ifMultiportPrepareForDisconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
 
             success = disconnAssistant.deleteNodeConnection(pPort1, pPort2);
 
             //Handle multiport connection sucess or failure
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pOriginalPort1, success);
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pOriginalPort2, success);
+            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort1, pOriginalPort1, success);
+            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort2, pOriginalPort2, success);
         }
 
         disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);

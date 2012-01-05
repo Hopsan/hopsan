@@ -82,9 +82,9 @@ public:
 
     virtual void addConnection(Connector *pConnector);
     virtual void removeConnection(Connector *pConnector);
-    QVector<Connector*> getAttachedConnectorPtrs() const;
+    QVector<Connector*> getAttachedConnectorPtrs() const; //!< @todo should this be virtual also
+    virtual QVector<GUIPort *> getConnectedPorts();
     bool isConnected();
-    QVector<GUIPort *> getConnectedPorts();
 
     virtual GUIPort* getRealPort();
 
@@ -156,11 +156,11 @@ public:
     void removeConnection(Connector *pConnector);
 
     GUIPort* getRealPort();
+    QVector<GUIPort *> getConnectedPorts();
     SharedGroupInfoPtrT getSharedGroupPortInfo();
     void setSharedGroupPortInfo(SharedGroupInfoPtrT sharedGroupPortInfo);
 
 protected:
-    //GroupPortCommonInfo* mpCommonGroupPortInfo;
     SharedGroupInfoPtrT mSharedGroupPortInfo;
 
 };

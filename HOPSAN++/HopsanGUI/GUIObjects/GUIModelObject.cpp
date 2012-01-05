@@ -345,7 +345,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
                 mpIcon->setScale(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor()*iconScale);
                 connect(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)), Qt::UniqueConnection);
             }
-            //! @todo we need to dissconnect this also at some point, when swapping between systems or groups
+            //! @todo we need to disconnect this also at some point, when swapping between systems or groups
         }
 
         mLastIconPath = iconPath;
@@ -355,7 +355,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
 
 void GUIModelObject::refreshIconPosition()
 {
-    //Only move when we have dissconnected the icon from transformations
+    //Only move when we have disconnected the icon from transformations
     if (!mIconRotation)
     {
         mpIcon->setPos( this->mapFromScene(this->getCenterPos() - mpIcon->boundingRect().center() ));
@@ -364,7 +364,7 @@ void GUIModelObject::refreshIconPosition()
 
 void GUIModelObject::setIconZoom(const qreal zoom)
 {
-    //Only scale when we have dissconnected the icon from transformations
+    //Only scale when we have disconnected the icon from transformations
     if (!mIconRotation)
     {
         mpIcon->setScale(mGUIModelObjectAppearance.getIconScale(mIconType)*zoom);
