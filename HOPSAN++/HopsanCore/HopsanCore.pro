@@ -105,7 +105,8 @@ SOURCES += \
     src/ComponentUtilities/CSVParser.cc \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
-    ../componentLibraries/defaultLibrary/code/Components.cc
+    ../componentLibraries/defaultLibrary/code/Components.cc \
+    src/Parameters.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -140,7 +141,8 @@ HEADERS += \
     include/ComponentUtilities/CSVParser.h \
     include/ComponentUtilities/AuxiliarySimulationFunctions.h \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
-    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp
+    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
+    include/Parameters.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
