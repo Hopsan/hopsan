@@ -282,6 +282,8 @@ HEADERS += win32dll.h \
     Components/Electric/ElectricMotor.hpp \
     Components/Electric/ElectricMotorGear.hpp \
     Components/Electric/ElectricResistor.hpp \
+    Components/Electric/ElectricVarResistor.hpp \
+    Components/Electric/ElectricSwitch.hpp \
     Components/Electric/ElectricUsource.hpp \
     Components/Hydraulic/Hydraulic33ShuttleValve.hpp \
     Components/Hydraulic/Hydraulic22PoppetValve.hpp \
