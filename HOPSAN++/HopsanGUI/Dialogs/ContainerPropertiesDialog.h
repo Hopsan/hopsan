@@ -35,6 +35,7 @@
 
 //Forward Declaration
 class GUIContainerObject;
+class ParameterLayout;
 
 class ContainerPropertiesDialog : public QDialog
 {
@@ -88,15 +89,13 @@ private:
     QList<QLabel *> mSystemParameterLabels;
     QList<QLineEdit *> mSystemParameterLineEdits;
 
-    QPushButton *mpSVGModButton;
-
+    QVector<ParameterLayout *> mvSystemParameterLayout;
 
 private slots:
     void setValues();
     void browseUser();
     void browseIso();
     void browseScript();
-    void openSVGModWindow();
 };
 
 #endif // CONTAINERPROPERTIESDIALOG_H
