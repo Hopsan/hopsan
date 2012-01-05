@@ -195,11 +195,4 @@
 #include "DummyComponent.hpp"
 
 
-#include "ComponentEssentials.h"
-
-namespace hopsan {
-
-    DLLIMPORTEXPORT void register_components(ComponentFactory* pComponentFactory);
-}
-
 #endif // COMPONENTS_H_INCLUDED

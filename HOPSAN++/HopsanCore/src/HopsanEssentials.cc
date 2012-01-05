@@ -23,7 +23,7 @@
 //$Id$
 
 #include "HopsanEssentials.h"
-#include "Components.h"
+#include "defaultComponentLibrary.h"
 #include "Nodes.h"
 #include "version.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"

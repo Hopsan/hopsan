@@ -191,7 +191,7 @@ const string &Component::getName()
 
 
 //! Get the C, Q or S type of the component as enum
-Component::typeCQS Component::getTypeCQS()
+Component::CQSEnumT Component::getTypeCQS()
 {
     return mTypeCQS;
 }

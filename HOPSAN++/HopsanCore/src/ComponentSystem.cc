@@ -554,7 +554,7 @@ void ComponentSystem::deleteSystemPort(const string name)
 
 
 //! Set the type C, Q, or S of the subsystem
-void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
+void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
 {
     //! @todo should really try to figure out a better way to do this
     //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
@@ -597,7 +597,7 @@ void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
 }
 
 //! @brief Change the cqs type of a stored subsystem component
-bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
+bool ComponentSystem::changeTypeCQS(const string name, const CQSEnumT newType)
 {
     //First get the component ptr and check if we are requesting new type
     Component* tmpptr = getSubComponent(name);

@@ -105,8 +105,8 @@ SOURCES += \
     src/ComponentUtilities/CSVParser.cc \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
-    ../componentLibraries/defaultLibrary/code/Components.cc \
-    src/Parameters.cc
+    src/Parameters.cc \
+    ../componentLibraries/defaultLibrary/code/defaultComponentLibrary.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \

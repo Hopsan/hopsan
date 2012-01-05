@@ -168,7 +168,8 @@ HEADERS += \
     code/Electric/ElectricGround.hpp \
     code/Electric/ElectricCapacitance2.hpp \
     code/Electric/ElectricBattery.hpp \
-    code/Compgen/HydraulicLaminarOrificeCG.hpp
+    code/Compgen/HydraulicLaminarOrificeCG.hpp \
+    code/defaultComponentLibrary.h
 
 SOURCES += \
-    code/Components.cc
+    code/defaultComponentLibrary.cc

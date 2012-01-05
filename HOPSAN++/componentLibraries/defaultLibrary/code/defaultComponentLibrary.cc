@@ -14,13 +14,14 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Components.cc
+//! @file   defaultComponentLibrary.cc
 //! @author FluMeS
 //! @date   2010-01-08
 //! @brief Contains the register_components function that registers all built in components
 //!
 //$Id$
 
+#include "defaultComponentLibrary.h"
 #include "Components.h"
 #include "signal.h"
 #include "stdlib.h"

@@ -42,9 +42,8 @@ typedef struct HopsanExternalLibInfo
 }HopsanExternalLibInfoT;
 #pragma pack(pop)
 
-
-class ComponentSystem; //Forward declaration
-
+//Forward declaration
+class ComponentSystem;
 class HopsanEssentials;
 
 class DLLIMPORTEXPORT Component
@@ -55,7 +54,7 @@ class DLLIMPORTEXPORT Component
 public:
     virtual ~Component();
 
-    enum typeCQS {C, Q, S, UNDEFINEDCQSTYPE};
+    enum CQSEnumT {C, Q, S, UNDEFINEDCQSTYPE};
     //==========Public functions==========
     //Virtual functions
     virtual void loadStartValues();
@@ -73,7 +72,7 @@ public:
     void setName(std::string name, bool doOnlyLocalRename=false);
     const std::string &getName();
     const std::string &getTypeName();
-    typeCQS getTypeCQS();
+    CQSEnumT getTypeCQS();
     std::string getTypeCQSString();
 
     //Parameters
@@ -151,7 +150,7 @@ protected:
     virtual std::string determineUniquePortName(std::string portname);
 
     //==========Protected member variables==========
-    typeCQS mTypeCQS;
+    CQSEnumT mTypeCQS;
     bool mInheritTimestep;
     double mTimestep, mDesiredTimestep;
     double mTime;
