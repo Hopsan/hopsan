@@ -147,6 +147,7 @@ SOURCES += main.cpp \
     Dialogs/OptimizationDialog.cpp \
     Dialogs/SensitivityAnalysisDialog.cpp \
     Dialogs/ComponentGeneratorDialog.cpp \
+    Dialogs/MovePortsDialog.cpp \
     loadFunctions.cpp
 
 
@@ -202,6 +203,7 @@ HEADERS += MainWindow.h \
     Dialogs/SensitivityAnalysis.h \
     Dialogs/SensitivityAnalysisDialog.h \
     Dialogs/ComponentGeneratorDialog.h \
+    Dialogs/MovePortsDialog.h \
     loadFunctions.h
 
 OTHER_FILES += \
