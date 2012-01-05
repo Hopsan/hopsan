@@ -1,23 +1,36 @@
 #include "MovePortsDialog.h"
+#include "GUIObjects/GUIModelObject.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUIComponent.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
+#include "GUIPortAppearance.h"
 #include <algorithm>
 #include <sstream>
 
 
 using namespace std;
 
-MovePortsDialog::MovePortsDialog(QWidget *parent)
+MovePortsDialog::MovePortsDialog(Component *pGUIComponent, QWidget *parent)
     : QDialog(parent)
 {
     mpView = new QGraphicsView(this);
     mpView->setScene(new QGraphicsScene());
 
-    mpComponent = new QGraphicsSvgItem("../HopsanGUI/componentData/hydraulic/restrictors/checkvalve_iso.svg");
+    mpCompAppearance = pGUIComponent->getAppearanceData();
+    mpComponent = new QGraphicsSvgItem(mpCompAppearance->getIconPath(pGUIComponent->getParentContainerObject()->getGfxType(), ABSOLUTE));
     mpView->scene()->addRect(mpComponent->boundingRect(), QPen(Qt::DashLine));
     mpView->scene()->addItem(mpComponent);
 
-    mpPort = new DragPort("../HopsanGUI/graphics/porticons/HydraulicPort.svg");
-    mpPort->setPosOnComponent(mpComponent, 0.0, .5);
-    mpView->scene()->addItem(mpPort);
+    mPortAppearanceMap = mpCompAppearance->getPortAppearanceMap();
+
+    PortAppearanceMapT::Iterator it;
+    for(it=mPortAppearanceMap.begin(); it != mPortAppearanceMap.end(); ++it)
+    {
+        DragPort *pPort = new DragPort(it->mMainIconPath);
+        mvPorts.append(pPort);
+        pPort->setPosOnComponent(mpComponent, it->x, it->y, it->rot);
+        mpView->scene()->addItem(pPort);
+    }
 
     //mpView->setSceneRect(mpComponent->boundingRect());
     mViewScale = 5;
@@ -47,6 +60,9 @@ MovePortsDialog::MovePortsDialog(QWidget *parent)
 
     connect(mpOkButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(mpZoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(updateZoom()));
+
+    this->setModal(true);
+
     show();
 }
 
@@ -63,12 +79,19 @@ void MovePortsDialog::updateZoom()
 
 bool MovePortsDialog::close()
 {
-    QPointF p = mpPort->getPosOnComponent(mpComponent);
     stringstream ss;
-    ss << "x: " << p.x() << "   y: " << p.y();
+    PortAppearanceMapT::Iterator it;
+    int i = 0;
+    for(it=mPortAppearanceMap.begin(); it != mPortAppearanceMap.end(); ++it)
+    {
+        QPointF p = mvPorts.at(i)->getPosOnComponent(mpComponent);
+        ss << it.key().toStdString() << " - x: " << p.x() << "   y: " << p.y() << "\n";
+        ++i;
+    }
     qDebug() << ss;
     QMessageBox msgBox;
     msgBox.setText(QString::fromStdString(ss.str()));
+
     msgBox.exec();
 
     QWidget::close();
@@ -76,17 +99,22 @@ bool MovePortsDialog::close()
 
 
 DragPort::DragPort(QString path)
-    : QGraphicsSvgItem(path)
+    : QGraphicsWidget()
 {
+    mpSvg = new QGraphicsSvgItem(path, this);
+    setGeometry(mpSvg->boundingRect());
     setAcceptDrops(true);
     setFlags(QGraphicsItem::ItemIsMovable);
 }
 
 
-void DragPort::setPosOnComponent(QGraphicsItem *component, double x, double y)
+void DragPort::setPosOnComponent(QGraphicsItem *component, double x, double y, double rot)
 {
     double ox = this->boundingRect().width()/2.0;
     double oy = this->boundingRect().height()/2.0;
+
+    mpSvg->setTransformOriginPoint(mpSvg->boundingRect().center());
+    mpSvg->setRotation(rot);
 
     setPos(QPointF(component->boundingRect().topLeft().x()+component->boundingRect().width()*x-ox, component->boundingRect().topLeft().y()+component->boundingRect().height()*y-oy));
 }

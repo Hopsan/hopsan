@@ -6,16 +6,20 @@
 #include <QFile>
 #include <QGraphicsSvgItem>
 #include <QSvgRenderer>
+#include "GUIPortAppearance.h"
 
 
 class DragPort;
+class ModelObject;
+class Component;
+class ModelObjectAppearance;
 
 class MovePortsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    MovePortsDialog(QWidget *parent = 0);
+    MovePortsDialog(Component *pGUIComponent, QWidget *parent = 0);
     //~MovePortsWidget();
 
 public slots:
@@ -24,8 +28,10 @@ public slots:
 
 protected:
 
-    DragPort *mpPort;
+    QVector<DragPort*> mvPorts;
     QGraphicsSvgItem *mpComponent;
+    ModelObjectAppearance *mpCompAppearance;
+    PortAppearanceMapT mPortAppearanceMap;
 
     QGraphicsView *mpView;
     double mViewScale;
@@ -36,18 +42,18 @@ protected:
 };
 
 
-class DragPort : public QGraphicsSvgItem
+class DragPort : public QGraphicsWidget
 {
     Q_OBJECT
 
 public:
     DragPort(QString path);
 
-    void setPosOnComponent(QGraphicsItem *component, double x, double y);
+    void setPosOnComponent(QGraphicsItem *component, double x, double y, double rot);
     QPointF getPosOnComponent(QGraphicsItem *component);
 
 protected:
-
+    QGraphicsSvgItem *mpSvg;
 };
 
 
