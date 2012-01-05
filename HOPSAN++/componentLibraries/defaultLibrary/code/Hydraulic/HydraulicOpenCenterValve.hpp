@@ -1,0 +1,326 @@
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
+
+ Copyright (c) 2011 
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   HydraulicOpenCenterValve.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2011-01-03
+//!
+//! @brief Contains a hydraulic Open Center valve of Q-type
+//$Id$
+
+#ifndef HYDRAULICOPENCENTERVALVE_HPP_INCLUDED
+#define HYDRAULICOPENCENTERVALVE_HPP_INCLUDED
+
+
+
+#include <iostream>
+#include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
+
+namespace hopsan {
+
+    //!
+    //! @brief Hydraulic Open Center valve of Q-type.
+    //! @ingroup HydraulicComponents
+    //!
+    class HydraulicOpenCenterValve : public ComponentQ
+    {
+    private:
+        double Cq;
+        double d;
+        double f_pa, f_pb, f_at, f_bt, f_cc;
+        double xvmax;
+        double rho;
+        double overlap_pa;
+        double overlap_pb;
+        double overlap_at;
+        double overlap_bt;
+        double overlap_cc;
+        double omegah;
+        double deltah;
+
+        double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_pc1, *mpND_qc1, *mpND_cc1, *mpND_Zcc1, *mpND_pc2, *mpND_qc2, *mpND_cc2, *mpND_Zcc2;
+        double *mpND_xvin, *mpND_xvout;
+
+        SecondOrderTransferFunction filter;
+        TurbulentFlowFunction qTurb_pa;
+        TurbulentFlowFunction qTurb_pb;
+        TurbulentFlowFunction qTurb_at;
+        TurbulentFlowFunction qTurb_bt;
+        TurbulentFlowFunction qTurb_cc;
+        Port *mpPP, *mpPC1, *mpPT, *mpPA, *mpPC2, *mpPB, *mpIn, *mpOut;
+
+    public:
+        static Component *Creator()
+        {
+            return new HydraulicOpenCenterValve();
+        }
+
+        HydraulicOpenCenterValve() : ComponentQ()
+        {
+            Cq = 0.67;
+            d = 0.01;
+            f_pa = 1.0;
+            f_pb = 1.0;
+            f_at = 1.0;
+            f_bt = 1.0;
+            f_cc = 1.0;
+            xvmax = 0.01;
+            rho = 890;
+            overlap_pa = -1e-6;
+            overlap_pb = -1e-6;
+            overlap_at = -1e-6;
+            overlap_bt = -1e-6;
+            overlap_cc = -1e-6;
+            omegah = 100.0;
+            deltah = 1.0;
+
+            mpPP = addPowerPort("PP", "NodeHydraulic");
+            mpPT = addPowerPort("PT", "NodeHydraulic");
+            mpPA = addPowerPort("PA", "NodeHydraulic");
+            mpPB = addPowerPort("PB", "NodeHydraulic");
+            mpPC1 = addPowerPort("PC1", "NodeHydraulic");
+            mpPC2 = addPowerPort("PC2", "NodeHydraulic");
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
+
+            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
+            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
+            registerParameter("d", "Diameter", "[m]", d);
+            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
+            registerParameter("f_pb", "Fraction of spool circumference that is opening P-B", "[-]", f_pb);
+            registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
+            registerParameter("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", f_bt);
+            registerParameter("f_cc", "Fraction of spool circumference that is opening C-C", "[-]", f_cc);
+            registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
+            registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
+            registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
+            registerParameter("x_pa", "Spool Overlap From Port B To T", "[m]", overlap_bt);
+            registerParameter("x_cc", "Spool Overlap From Port C1 To C2", "[m]", overlap_bt);
+            registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
+            registerParameter("delta_h", "Damping Factor", "[-]", deltah);
+        }
+
+
+        void initialize()
+        {
+            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::PRESSURE);
+            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::FLOW);
+            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CHARIMP);
+
+            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::PRESSURE);
+            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::FLOW);
+            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CHARIMP);
+
+            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
+            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
+            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
+
+            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::PRESSURE);
+            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::FLOW);
+            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CHARIMP);
+
+            mpND_pc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::PRESSURE);
+            mpND_qc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::FLOW);
+            mpND_cc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::CHARIMP);
+
+            mpND_pc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::PRESSURE);
+            mpND_qc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::FLOW);
+            mpND_cc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::WAVEVARIABLE);
+            mpND_Zcc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::CHARIMP);
+
+            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
+            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+
+            double xvin  = (*mpND_xvin);
+            double num[3] = {1.0, 0.0, 0.0};
+            double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
+            filter.initialize(mTimestep, num, den, xvin, xvin, -xvmax, xvmax);
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Declare local variables
+            double xv, xpanom, xpbnom, xatnom, xbtnom, xccnom, Kcpa, Kcpb, Kcat, Kcbt, Kccc, qpa, qpb, qat, qbt, qcc;
+            double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pc1, qc1, cc1, Zcc1, pc2, qc2, cc2, Zcc2;
+            bool cav = false;
+
+            //Get variable values from nodes
+            cp = (*mpND_cp);
+            Zcp = (*mpND_Zcp);
+            ct  = (*mpND_ct);
+            Zct = (*mpND_Zct);
+            ca  = (*mpND_ca);
+            Zca = (*mpND_Zca);
+            cb  = (*mpND_cb);
+            Zcb = (*mpND_Zcb);
+            cc1  = (*mpND_cc1);
+            Zcc1 = (*mpND_Zcc1);
+            cc2  = (*mpND_cc2);
+            Zcc2 = (*mpND_Zcc2);
+            xvin  = (*mpND_xvin);
+
+            limitValue(xvin, -xvmax, xvmax);
+            filter.update(xvin);
+            xv = filter.value();
+
+            //Valve equations
+            xpanom = std::max(xv-overlap_pa,0.0);                       //These orifices are closed in central position, and fully opened at -xvmax and xvmax
+            xpbnom = std::max(-xv-overlap_pb,0.0);
+            xatnom = std::max(-xv-overlap_at,0.0);
+            xbtnom = std::max(xv-overlap_bt,0.0);
+            xccnom = xvmax - std::max(fabs(xv-overlap_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
+
+            Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
+            Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);
+            Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/rho);
+            Kcbt = Cq*f_bt*pi*d*xbtnom*sqrt(2.0/rho);
+            Kccc = Cq*f_cc*pi*d*xccnom*sqrt(2.0/rho);
+
+            //With TurbulentFlowFunction:
+            qTurb_pa.setFlowCoefficient(Kcpa);
+            qTurb_pb.setFlowCoefficient(Kcpb);
+            qTurb_at.setFlowCoefficient(Kcat);
+            qTurb_bt.setFlowCoefficient(Kcbt);
+            qTurb_cc.setFlowCoefficient(Kccc);
+
+            qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+            qpb = qTurb_pb.getFlow(cp, cb, Zcp, Zcb);
+            qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
+            qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
+            qcc = qTurb_cc.getFlow(cc1, cc2, Zcc1, Zcc2);
+
+            qc1 = -qcc;
+            qc2 = qcc;
+            if (xv >= 0.0)
+            {
+                qp = -qpa;
+                qa = qpa;
+                qb = -qbt;
+                qt = qbt;
+            }
+            else
+            {
+                qp = -qpb;
+                qa = -qat;
+                qb = qpb;
+                qt = qat;
+            }
+
+            pp = cp + qp*Zcp;
+            pt = ct + qt*Zct;
+            pa = ca + qa*Zca;
+            pb = cb + qb*Zcb;
+            pc1 = cc1 + qc1*Zcc1;
+            pc2 = cc2 + qc2*Zcc2;
+
+            //Cavitation check
+            if(pa < 0.0)
+            {
+                ca = 0.0;
+                Zca = 0;
+                cav = true;
+            }
+            if(pb < 0.0)
+            {
+                cb = 0.0;
+                Zcb = 0;
+                cav = true;
+            }
+            if(pp < 0.0)
+            {
+                cp = 0.0;
+                Zcp = 0;
+                cav = true;
+            }
+            if(pt < 0.0)
+            {
+                ct = 0.0;
+                Zct = 0;
+                cav = true;
+            }
+            if(pc1 < 0.0)
+            {
+                cc1 = 0.0;
+                Zcc1 = 0;
+                cav = true;
+            }
+            if(pc2 < 0.0)
+            {
+                cc2 = 0.0;
+                Zcc2 = 0;
+                cav = true;
+            }
+
+            if(cav)
+            {
+                qpa = qTurb_pa.getFlow(cp, ca, Zcp, Zca);
+                qpb = qTurb_pb.getFlow(cp, cb, Zcp, Zcb);
+                qat = qTurb_at.getFlow(ca, ct, Zca, Zct);
+                qbt = qTurb_bt.getFlow(cb, ct, Zcb, Zct);
+                qcc = qTurb_cc.getFlow(cc1, cc2, Zcc1, Zcc2);
+
+                if (xv >= 0.0)
+                {
+                    qp = -qpa;
+                    qa = qpa;
+                    qb = -qbt;
+                    qt = qbt;
+                }
+                else
+                {
+                    qp = -qpb;
+                    qa = -qat;
+                    qb = qpb;
+                    qt = qat;
+                }
+
+                pp = cp + qp*Zcp;
+                pt = ct + qt*Zct;
+                pa = ca + qa*Zca;
+                pb = cb + qb*Zcb;
+                pc1 = cc1 + qc1*Zcc1;
+                pc2 = cc2 + qc2*Zcc2;
+            }
+
+            //Write new values to nodes
+
+            (*mpND_pp) = cp + qp*Zcp;
+            (*mpND_qp) = qp;
+            (*mpND_pt) = ct + qt*Zct;
+            (*mpND_qt) = qt;
+            (*mpND_pa) = ca + qa*Zca;
+            (*mpND_qa) = qa;
+            (*mpND_pb) = cb + qb*Zcb;
+            (*mpND_qb) = qb;
+            (*mpND_pc1) = cc1 + qc1*Zcc1;
+            (*mpND_qc1) = qc1;
+            (*mpND_pc2) = cc2 + qc2*Zcc2;
+            (*mpND_qc2) = qc2;
+            (*mpND_xvout) = xv;
+        }
+    };
+}
+
+#endif // HYDRAULICOPENCENTERVALVE_HPP_INCLUDED
+

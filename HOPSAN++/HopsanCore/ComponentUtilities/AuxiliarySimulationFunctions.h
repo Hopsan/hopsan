@@ -28,6 +28,9 @@
 #include "win32dll.h"
 
 namespace hopsan {
+
+const double pi = 3.14159265358979323846;
+
 extern "C" {
     void DLLIMPORTEXPORT limitValue(double &value, double min, double max);
     bool DLLIMPORTEXPORT doubleToBool(double value);
