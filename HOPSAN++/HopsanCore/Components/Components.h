@@ -202,6 +202,8 @@
 #include "Electric/ElectricInductance.hpp"
 #include "Electric/ElectricIsource.hpp"
 #include "Electric/ElectricResistor.hpp"
+#include "Electric/ElectricVarResistor.hpp"
+#include "Electric/ElectricSwitch.hpp"
 #include "Electric/ElectricUsource.hpp"
 
 /* Special Component */
