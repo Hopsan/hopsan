@@ -10,7 +10,7 @@
 //!
 //! @file ElectricVarResistor.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 5 Dec 2011 20:46:29
+//! @date Wed 7 Dec 2011 13:19:06
 //! @brief Variable resistor
 //! @ingroup ElectricComponents
 //!
