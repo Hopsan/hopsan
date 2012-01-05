@@ -38,24 +38,24 @@
 #include "Widgets/PyDockWidget.h"
 #include "Configuration.h"
 
-GUISystem::GUISystem(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
-    : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
+SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+    : ContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
     this->commonConstructorCode();
 }
 
 //Root system specific constructor
-GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
-    : GUIContainerObject(QPointF(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, pParent)
+SystemContainer::SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
+    : ContainerObject(QPointF(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, pParent)
 {
-    this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
+    this->mModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
     this->mpUndoStack->newPost();
 }
 
-GUISystem::~GUISystem()
+SystemContainer::~SystemContainer()
 {
     this->setUndoEnabled(false, true); //The last true means DONT ASK
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";
@@ -75,7 +75,7 @@ GUISystem::~GUISystem()
 }
 
 //! @brief This code is common among the two constructors, we use one function to avoid code duplication
-void GUISystem::commonConstructorCode()
+void SystemContainer::commonConstructorCode()
 {
         //Set the hmf save tag name
     mHmfTagName = HMF_SYSTEMTAG;
@@ -100,7 +100,7 @@ void GUISystem::commonConstructorCode()
     {
         //Create subsystem
         qDebug() << "creating subsystem and setting name in " << mpParentContainerObject->getCoreSystemAccessPtr()->getRootSystemName();
-        mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName()));
+        mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName()));
         qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentContainerObject->getName();
         mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentContainerObject->getCoreSystemAccessPtr());
     }
@@ -114,7 +114,7 @@ void GUISystem::commonConstructorCode()
 //! @brief This function sets the desired subsystem name
 //! @param [in] newName The new name
 //!
-void GUISystem::setName(QString newName)
+void SystemContainer::setName(QString newName)
 {
     if (mpParentContainerObject == 0)
     {
@@ -122,13 +122,13 @@ void GUISystem::setName(QString newName)
     }
     else
     {
-        mpParentContainerObject->renameGUIModelObject(this->getName(), newName);
+        mpParentContainerObject->renameModelObject(this->getName(), newName);
     }
 }
 
 
 //! Returns a string with the sub system type.
-QString GUISystem::getTypeName()
+QString SystemContainer::getTypeName()
 {
     //! @todo is this OK should really ask the subsystem but result should be subsystem i think
     return HOPSANGUISYSTEMTYPENAME;
@@ -136,26 +136,26 @@ QString GUISystem::getTypeName()
 
 //! @brief Get the system cqs type
 //! @returns A string containing the CQS type
-QString GUISystem::getTypeCQS()
+QString SystemContainer::getTypeCQS()
 {
     return mpCoreSystemAccess->getRootSystemTypeCQS();
 }
 
 //! @brief get The parameter names of this system
 //! @returns A QVector containing the parameter names
-QStringList GUISystem::getParameterNames()
+QStringList SystemContainer::getParameterNames()
 {
     return mpCoreSystemAccess->getParameterNames(this->getName());
 }
 
 //! @brief Get a pointer the the CoreSystemAccess object that this system is representing
-CoreSystemAccess* GUISystem::getCoreSystemAccessPtr()
+CoreSystemAccess* SystemContainer::getCoreSystemAccessPtr()
 {
     return this->mpCoreSystemAccess;
 }
 
 //! @brief Overloaded version that returns self if root system
-GUIContainerObject *GUISystem::getParentContainerObject()
+ContainerObject *SystemContainer::getParentContainerObject()
 {
     if (mpParentContainerObject==0)
     {
@@ -168,14 +168,14 @@ GUIContainerObject *GUISystem::getParentContainerObject()
 }
 
 
-int GUISystem::type() const
+int SystemContainer::type() const
 {
     return Type;
 }
 
 
 //! @brief Opens the GUISystem properties dialog
-void GUISystem::openPropertiesDialog()
+void SystemContainer::openPropertiesDialog()
 {
     //! @todo shouldnt this be in the containerproperties class, right now groups are not working thats is why it is here, the containerproperties dialog only works with systems for now
     ContainerPropertiesDialog dialog(this, gpMainWindow);
@@ -186,9 +186,9 @@ void GUISystem::openPropertiesDialog()
 
 //! @brief Saves the System specific coredata to XML DOM Element
 //! @param[in] rDomElement The DOM Element to save to
-void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
+void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    GUIModelObject::saveCoreDataToDomElement(rDomElement);
+    ModelObject::saveCoreDataToDomElement(rDomElement);
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 
     QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
@@ -236,7 +236,7 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 }
 
 
-void GUISystem::saveOptSettingsToDomElement(QDomElement &rDomElement)
+void SystemContainer::saveOptSettingsToDomElement(QDomElement &rDomElement)
 {
     QDomElement XMLopt = appendDomElement(rDomElement, "optimization");
     QDomElement XMLsetting = appendDomElement(XMLopt, "settings");
@@ -296,7 +296,7 @@ void GUISystem::saveOptSettingsToDomElement(QDomElement &rDomElement)
 }
 
 
-void GUISystem::loadOptSettingsFromDomElement(QDomElement &rDomElement)
+void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
 {
     qDebug() << rDomElement.toDocument().toString();
 
@@ -386,13 +386,13 @@ void GUISystem::loadOptSettingsFromDomElement(QDomElement &rDomElement)
 }
 
 
-OptimizationSettings GUISystem::getOptimizationSettings()
+OptimizationSettings SystemContainer::getOptimizationSettings()
 {
     return mOptSettings;
 }
 
 
-void GUISystem::setOptimizationSettings(OptimizationSettings optSettings)
+void SystemContainer::setOptimizationSettings(OptimizationSettings optSettings)
 {
     mOptSettings = optSettings;
 }
@@ -400,9 +400,9 @@ void GUISystem::setOptimizationSettings(OptimizationSettings optSettings)
 
 //! @brief Saves the System specific GUI data to XML DOM Element
 //! @param[in] rDomElement The DOM Element to save to
-QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
+QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
-    QDomElement guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
+    QDomElement guiStuff = ModelObject::saveGuiDataToDomElement(rDomElement);
 
     //Should we try to append appearancedata stuff, we dont want this in external systems as they contain their own appearance
     if (mLoadType!="EXTERNAL")
@@ -429,9 +429,9 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
         //Before we save the modelobjectappearance data we need to set the correct basepath, (we ask our parent it will know)
         if (this->getParentContainerObject() != 0)
         {
-            this->mGUIModelObjectAppearance.setBasePath(this->getParentContainerObject()->getAppearanceData()->getBasePath());
+            this->mModelObjectAppearance.setBasePath(this->getParentContainerObject()->getAppearanceData()->getBasePath());
         }
-        this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
+        this->mModelObjectAppearance.saveToDomElement(xmlApp);
     }
 
     saveOptSettingsToDomElement(guiStuff);
@@ -443,7 +443,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 //! @brief Overloaded special XML DOM save function for System Objects
 //! @param[in] rDomElement The DOM Element to save to
-void GUISystem::saveToDomElement(QDomElement &rDomElement)
+void SystemContainer::saveToDomElement(QDomElement &rDomElement)
 {
     //qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
     QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
@@ -471,7 +471,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
 
         //Save the name and type that we have set for this subsystem, this name will overwrite the defualt one in the external file
-        GUIModelObject::saveCoreDataToDomElement(xmlSubsystem); //!< @todo Not sure why we should not use savecoredata in GUISystem instead, but it seems to be embeded specific
+        ModelObject::saveCoreDataToDomElement(xmlSubsystem); //!< @todo Not sure why we should not use savecoredata in GUISystem instead, but it seems to be embeded specific
     }
 
     //Save gui object stuff
@@ -485,14 +485,14 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
             //Save subcomponents and subsystems
         QDomElement xmlObjects = appendDomElement(xmlSubsystem, HMF_OBJECTS);
-        GUIModelObjectMapT::iterator it;
-        for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+        ModelObjectMapT::iterator it;
+        for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
         {
             it.value()->saveToDomElement(xmlObjects);
         }
 
             //Save all widgets
-        QMap<size_t, GUIWidget *>::iterator itw;
+        QMap<size_t, Widget *>::iterator itw;
         for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
         {
             itw.value()->saveToDomElement(xmlObjects);
@@ -509,7 +509,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
 //! @brief Loads a System from an XML DOM Element
 //! @param[in] rDomElement The element to load from
-void GUISystem::loadFromDomElement(QDomElement &rDomElement)
+void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 {
     double hmfVersion = rDomElement.parentNode().toElement().attribute("hmfversion").toDouble();
 
@@ -535,7 +535,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-        this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
+        this->mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
         this->setDisplayName(realName); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
         this->mSubComponentNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
         this->mSubComponentPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
@@ -581,7 +581,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             verifyHmfSubComponentCompatibility(xmlSubObject, hmfVersion);
-            GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            ModelObject* pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             if(pObj == NULL)
             {
                 gpMainWindow->mpMessageWidget->printGUIErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
@@ -589,7 +589,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
                 // Insert missing component dummy instead
                 xmlSubObject.setAttribute(HMF_TYPETAG, "MissingComponent");
-                pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+                pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             }
             else
             {
@@ -627,7 +627,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
-            loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
@@ -726,7 +726,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 }
 
 
-void GUISystem::saveToWrappedCode()
+void SystemContainer::saveToWrappedCode()
 {
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
@@ -753,8 +753,8 @@ void GUISystem::saveToWrappedCode()
     QStringList mechQinterfaces;
     QStringList hydCinterfaces;
     QStringList hydQinterfaces;
-    GUIModelObjectMapT::iterator it;
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    ModelObjectMapT::iterator it;
+    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SignalInputInterface")
         {
@@ -1035,14 +1035,14 @@ void GUISystem::saveToWrappedCode()
     fileStream << "long USER_Initialize() \n";
     fileStream << "{\n";
     fileStream << "    createSystem(1e-3);\n\n";
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
         fileStream << "    addComponent(\"" << it.value()->getName() << "\", \"" << it.value()->getTypeName() << "\");\n";
     fileStream << "    \n";
     for(int i = 0; i != mSubConnectorList.size(); ++i)
         fileStream <<    "    connect(\"" << mSubConnectorList[i]->getStartComponentName() << "\", \"" << mSubConnectorList[i]->getStartPortName() <<
                       "\", \"" << mSubConnectorList[i]->getEndComponentName() << "\", \"" << mSubConnectorList[i]->getEndPortName() << "\");\n";
     fileStream << "    \n";
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
         for(int i=0; i<it.value()->getParameterNames().size(); ++i)
             fileStream << "    setParameter(\"" << it.value()->getName() << "\", \"" << it.value()->getParameterNames().at(i) <<  "\", " << it.value()->getParameterValue(it.value()->getParameterNames().at(i)) << ");\n";
     fileStream << "    \n";
@@ -1239,7 +1239,7 @@ void GUISystem::saveToWrappedCode()
 }
 
 
-void GUISystem::createFMUSourceFiles()
+void SystemContainer::createFMUSourceFiles()
 {
     QDialog *pExportFmuDialog = new QDialog(gpMainWindow);
     pExportFmuDialog->setWindowTitle("Export to Functional Mockup Interface");
@@ -1270,7 +1270,7 @@ void GUISystem::createFMUSourceFiles()
 }
 
 
-void GUISystem::createFMUSourceFilesFromDialog()
+void SystemContainer::createFMUSourceFilesFromDialog()
 {
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
@@ -1328,8 +1328,8 @@ void GUISystem::createFMUSourceFilesFromDialog()
     QStringList inputPorts;
     QList<int> inputDatatypes;
 
-    GUIModelObjectMapT::iterator it;
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    ModelObjectMapT::iterator it;
+    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SignalInputInterface")
         {
@@ -1347,7 +1347,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
     QStringList outputPorts;
     QList<int> outputDatatypes;
 
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SignalOutputInterface")
         {
@@ -1787,7 +1787,7 @@ void GUISystem::createFMUSourceFilesFromDialog()
 }
 
 
-void GUISystem::createSimulinkSourceFiles()
+void SystemContainer::createSimulinkSourceFiles()
 {
     QMessageBox::information(gpMainWindow, gpMainWindow->tr("Create Simulink Source Files"),
                              gpMainWindow->tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console.\n\nVisual Studio 2008 compiler is supported, although other versions might work as well.."));
@@ -1837,8 +1837,8 @@ void GUISystem::createSimulinkSourceFiles()
     QStringList mechanicRotationalCComponents;
     QStringList mechanicRotationalCPorts;
 
-    GUIModelObjectMapT::iterator it;
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    ModelObjectMapT::iterator it;
+    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SignalInputInterface")
         {
@@ -2320,7 +2320,7 @@ void GUISystem::createSimulinkSourceFiles()
 
 //! @brief Sets the modelfile info from the file representing this system
 //! @param[in] rFile The QFile objects representing the file we want to information about
-void GUISystem::setModelFileInfo(QFile &rFile)
+void SystemContainer::setModelFileInfo(QFile &rFile)
 {
     this->mModelFileInfo.setFile(rFile);
 }
@@ -2328,7 +2328,7 @@ void GUISystem::setModelFileInfo(QFile &rFile)
 //! Function that updates start time value of the current project to the one in the simulation setup widget.
 //! @see updateTimeStep()
 //! @see updateStopTime()
-void GUISystem::updateStartTime()
+void SystemContainer::updateStartTime()
 {
     mStartTime = gpMainWindow->getStartTimeFromToolBar();
 }
@@ -2337,7 +2337,7 @@ void GUISystem::updateStartTime()
 //! Function that updates time step value of the current project to the one in the simulation setup widget.
 //! @see updateStartTime()
 //! @see updateStopTime()
-void GUISystem::updateTimeStep()
+void SystemContainer::updateTimeStep()
 {
     mTimeStep = gpMainWindow->getTimeStepFromToolBar();
 }
@@ -2346,7 +2346,7 @@ void GUISystem::updateTimeStep()
 //! Function that updates stop time value of the current project to the one in the simulation setup widget.
 //! @see updateStartTime()
 //! @see updateTimeStep()
-void GUISystem::updateStopTime()
+void SystemContainer::updateStopTime()
 {
     mStopTime = gpMainWindow->getFinishTimeFromToolBar();
 }
@@ -2355,7 +2355,7 @@ void GUISystem::updateStopTime()
 //! Returns the start time value of the current project.
 //! @see getTimeStep()
 //! @see getStopTime()
-double GUISystem::getStartTime()
+double SystemContainer::getStartTime()
 {
     return mStartTime;
 }
@@ -2364,7 +2364,7 @@ double GUISystem::getStartTime()
 //! Returns the time step value of the current project.
 //! @see getStartTime()
 //! @see getStopTime()
-double GUISystem::getTimeStep()
+double SystemContainer::getTimeStep()
 {
     return mTimeStep;
 }
@@ -2373,7 +2373,7 @@ double GUISystem::getTimeStep()
 //! Returns the stop time value of the current project.
 //! @see getStartTime()
 //! @see getTimeStep()
-double GUISystem::getStopTime()
+double SystemContainer::getStopTime()
 {
     return mStopTime;
 }
@@ -2381,7 +2381,7 @@ double GUISystem::getStopTime()
 
 //! Returns the number of samples value of the current project.
 //! @see setNumberOfLogSamples(double)
-size_t GUISystem::getNumberOfLogSamples()
+size_t SystemContainer::getNumberOfLogSamples()
 {
     return mNumberOfLogSamples;
 }
@@ -2389,13 +2389,13 @@ size_t GUISystem::getNumberOfLogSamples()
 
 //! Sets the number of samples value for the current project
 //! @see getNumberOfLogSamples()
-void GUISystem::setNumberOfLogSamples(size_t nSamples)
+void SystemContainer::setNumberOfLogSamples(size_t nSamples)
 {
     mNumberOfLogSamples = nSamples;
 }
 
 //! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
-void GUISystem::updateSimulationParametersInToolBar()
+void SystemContainer::updateSimulationParametersInToolBar()
 {
     gpMainWindow->setStartTimeInToolBar(mStartTime);
     gpMainWindow->setTimeStepInToolBar(mTimeStep);

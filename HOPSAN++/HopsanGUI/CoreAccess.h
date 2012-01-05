@@ -135,7 +135,7 @@ public:
     bool isPortConnected(QString componentName, QString portName);
 
 private:
-    hopsan::Port* getPortPtr(QString componentName, QString portName);
+    hopsan::Port* getCorePortPtr(QString componentName, QString portName);
 
     //*****Core Interaction*****
     hopsan::ComponentSystem *mpCoreComponentSystem;

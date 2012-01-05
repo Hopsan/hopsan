@@ -80,13 +80,13 @@ public:
 };
 
 
-class GUISystem : public GUIContainerObject
+class SystemContainer : public ContainerObject
 {
     Q_OBJECT
 public:
-    GUISystem( QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
-    GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent);
-    ~GUISystem();
+    SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent);
+    ~SystemContainer();
 
     double getStartTime();
     double getTimeStep();
@@ -112,12 +112,12 @@ public:
     QStringList getParameterNames();
 
     CoreSystemAccess* getCoreSystemAccessPtr();
-    GUIContainerObject *getParentContainerObject();
+    ContainerObject *getParentContainerObject();
 
     OptimizationSettings getOptimizationSettings();
     void setOptimizationSettings(OptimizationSettings optSettings);
 
-    enum { Type = GUISYSTEM };
+    enum { Type = SYSTEMCONTAINER };
     int type() const;
 
 public slots:

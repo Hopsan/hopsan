@@ -176,7 +176,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         mpContainerObject->getUndoStackPtr()->newPost();
         event->accept();
         QPointF position = event->pos();
-        mpContainerObject->addGUIModelObject(text, this->mapToScene(position.toPoint()).toPoint());
+        mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()).toPoint());
         this->setFocus();
     }
 
@@ -203,14 +203,14 @@ void GraphicsView::updateViewPort()
 }
 
 //! @brief Set the system that the view is representing
-void GraphicsView::setContainerPtr(GUIContainerObject *pContainer)
+void GraphicsView::setContainerPtr(ContainerObject *pContainer)
 {
     this->mpContainerObject = pContainer;
 }
 
 
 //! @brief Returns a pointer to the container object in the graphics view
-GUIContainerObject *GraphicsView::getContainerPtr()
+ContainerObject *GraphicsView::getContainerPtr()
 {
     return this->mpContainerObject;
 }

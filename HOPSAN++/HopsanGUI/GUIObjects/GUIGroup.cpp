@@ -55,19 +55,19 @@
 //!
 
 
-int GUIGroup::type() const
+int GroupContainer::type() const
 {
     return Type;
 }
 
 
-QString GUIGroup::getTypeName()
+QString GroupContainer::getTypeName()
 {
     return HOPSANGUIGROUPTYPENAME;
 }
 
 //! @brief Returns the core access ptr in the parent system, groups are GUI only objects
-CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
+CoreSystemAccess* GroupContainer::getCoreSystemAccessPtr()
 {
     return this->mpParentContainerObject->getCoreSystemAccessPtr();
 }
@@ -77,8 +77,8 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GUIGroup::GUIGroup(QPointF position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer)
-    :   GUIContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, pParentContainer, pParentContainer)
+GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer)
+    :   ContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, pParentContainer, pParentContainer)
 {
     qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
     //Set the hmf save tag name
@@ -92,7 +92,7 @@ GUIGroup::GUIGroup(QPointF position, qreal rotation, const GUIModelObjectAppeara
 }
 
 
-GUIGroup::~GUIGroup()
+GroupContainer::~GroupContainer()
 {
     qDebug() << ",,,,,,,,,GuiGroupDestructor";
 
@@ -336,13 +336,13 @@ GUIGroup::~GUIGroup()
 
 
 
-void GUIGroup::setName(QString newName)
+void GroupContainer::setName(QString newName)
 {
-    this->mGUIModelObjectAppearance.setName(newName);
+    this->mModelObjectAppearance.setName(newName);
     this->refreshDisplayName();
 }
 
-void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+void GroupContainer::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
 
@@ -358,10 +358,10 @@ void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
 }
 
-void GUIGroup::addExternalContainerPortObject(GUIModelObject *pModelObject)
+void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 {
     GroupPort* pGPin = dynamic_cast<GroupPort*>(pModelObject->getPort(pModelObject->getName()));
-    GUIContainerObject::addExternalContainerPortObject(pModelObject);
+    ContainerObject::addExternalContainerPortObject(pModelObject);
     GroupPort *pGPext = dynamic_cast<GroupPort*>(this->getPort(pModelObject->getName()));
     pGPext->setSharedGroupPortInfo(pGPin->getSharedGroupPortInfo());
 }

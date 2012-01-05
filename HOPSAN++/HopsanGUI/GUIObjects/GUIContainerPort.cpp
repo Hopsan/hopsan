@@ -28,17 +28,17 @@
 #include "Dialogs/ContainerPortPropertiesDialog.h"
 #include "MainWindow.h"
 
-GUIContainerPort::GUIContainerPort(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
-        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
+ContainerPort::ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+        : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    mIsSystemPort = (pParentContainer->type() == GUISYSTEM); //determine if I am a system port
+    mIsSystemPort = (pParentContainer->type() == SYSTEMCONTAINER); //determine if I am a system port
     this->mHmfTagName = HMF_SYSTEMPORTTAG;
     //Sets the ports
     createPorts();
     refreshDisplayName();
 }
 
-GUIContainerPort::~GUIContainerPort()
+ContainerPort::~ContainerPort()
 {
     qDebug() << "GuiContainerPort destructor: " << this->getName();
     if (mIsSystemPort)
@@ -52,21 +52,21 @@ GUIContainerPort::~GUIContainerPort()
 }
 
 //! @brief Help function to create ports in the SystemPort Object when it is created
-void GUIContainerPort::createPorts()
+void ContainerPort::createPorts()
 {
     //A system port only contains one port, which should be first in the map, ignore any others (should not be any more)
-    PortAppearanceMapT::iterator i = mGUIModelObjectAppearance.getPortAppearanceMap().begin();
+    PortAppearanceMapT::iterator i = mModelObjectAppearance.getPortAppearanceMap().begin();
 
     //Check if a systemport name is given in appearance data (for example if the systemport is loaded from file)
     //In that case override the default port name with this name
     QString desiredportname;
-    if (mGUIModelObjectAppearance.getName().isEmpty())
+    if (mModelObjectAppearance.getName().isEmpty())
     {
         desiredportname = i.key();
     }
     else
     {
-        desiredportname = mGUIModelObjectAppearance.getName();
+        desiredportname = mModelObjectAppearance.getName();
     }
 
     qreal x = i.value().x;
@@ -79,40 +79,40 @@ void GUIContainerPort::createPorts()
     if (mIsSystemPort)
     {
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
-        mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mGUIModelObjectAppearance.getName();
-        mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
+        mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mModelObjectAppearance.getName();
+        mpPort = new Port(mModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
     }
     else
     {
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with desired name: " << desiredportname;
-        mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname));
-        mpGuiPort = new GroupPort(mGUIModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
+        mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname));
+        mpPort = new GroupPort(mModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
         SharedGroupInfoPtrT shp(new GroupPortCommonInfo);
-        static_cast<GroupPort*>(mpGuiPort)->setSharedGroupPortInfo(shp);
+        static_cast<GroupPort*>(mpPort)->setSharedGroupPortInfo(shp);
     }
 
-    mPortListPtrs.append(mpGuiPort);
+    mPortListPtrs.append(mpPort);
 }
 
 
 //! Returns a string with the GUIObject type.
-QString GUIContainerPort::getTypeName()
+QString ContainerPort::getTypeName()
 {
     return HOPSANGUICONTAINERPORTTYPENAME;
 }
 
 //! @brief Sets the name of the modelobject ContainerPort and the contained GUIPort
 //! Note, this function will NOT change the core name of the component
-void GUIContainerPort::setDisplayName(QString name)
+void ContainerPort::setDisplayName(QString name)
 {
-    mGUIModelObjectAppearance.setName(name);
+    mModelObjectAppearance.setName(name);
     mPortListPtrs[0]->setDisplayName(name);
     refreshDisplayName();
 }
 
 //! @brief ContainerPorts shal only save their port name if they are systemports, if they are group ports no core data should be saved
-void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
+void ContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     if (mIsSystemPort)
     {
@@ -121,7 +121,7 @@ void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
 }
 
 //! @brief Opens the properties dialog
-void GUIContainerPort::openPropertiesDialog()
+void ContainerPort::openPropertiesDialog()
 {
     ContainerPortPropertiesDialog *pDialog = new ContainerPortPropertiesDialog(this, gpMainWindow);
     pDialog->exec();
@@ -130,14 +130,14 @@ void GUIContainerPort::openPropertiesDialog()
 
 
 //! @brief Event when double clicking on container port icon.
-void GUIContainerPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void ContainerPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsWidget::mouseDoubleClickEvent(event);
     openPropertiesDialog();
 }
 
 
-int GUIContainerPort::type() const
+int ContainerPort::type() const
 {
     return Type;
 }

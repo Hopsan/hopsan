@@ -30,19 +30,19 @@
 #include <QGraphicsSvgItem>
 
 class Connector;
-class GUIModelObjectDisplayName;
-class GUIPort;
-class GUISystem;
+class ModelObjectDisplayName;
+class Port;
+class SystemContainer;
 
-class GUIModelObject : public GUIObject
+class ModelObject : public WorkspaceObject
 {
     Q_OBJECT
 
 public:
-    GUIModelObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
-    virtual ~GUIModelObject();
+    ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    virtual ~ModelObject();
 
-    virtual void setParentContainerObject(GUIContainerObject *pParentContainer);
+    virtual void setParentContainerObject(ContainerObject *pParentContainer);
 
     //Name methods
     virtual void setName(QString name);
@@ -58,7 +58,7 @@ public:
 
     //Appearance methods
     void setAppearanceDataBasePath(const QString basePath);
-    virtual GUIModelObjectAppearance* getAppearanceData();
+    virtual ModelObjectAppearance* getAppearanceData();
     virtual void refreshAppearance();
     bool isVisible();
 
@@ -88,10 +88,10 @@ public:
 
     //Port methods
     void showPorts(bool visible);
-    GUIPort *getPort(QString name);
-    QList<GUIPort*> &getPortListPtrs();
+    Port *getPort(QString name);
+    QList<Port*> &getPortListPtrs();
 
-    enum { Type = GUIMODELOBJECT };
+    enum { Type = MODELOBJECT };
     int type() const;
 
     void getLosses(double &total, double &hydraulic, double &mechanic);
@@ -135,7 +135,7 @@ protected:
     virtual void createPorts() {assert(false);} //Need to be overloaded
 
     //Protected members
-    GUIModelObjectAppearance mGUIModelObjectAppearance;
+    ModelObjectAppearance mModelObjectAppearance;
 
     double mTextOffset;
     int mNameTextPos;
@@ -146,10 +146,10 @@ protected:
     QString mLastIconPath;
     qreal mLastIconScale;
 
-    QList<GUIPort*> mPortListPtrs;
+    QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;
 
-    GUIModelObjectDisplayName *mpNameText;
+    ModelObjectDisplayName *mpNameText;
 
     QGraphicsTextItem *mpLossesDisplay;
 
@@ -170,12 +170,12 @@ private:
 };
 
 
-class GUIModelObjectDisplayName : public QGraphicsTextItem
+class ModelObjectDisplayName : public QGraphicsTextItem
 {
     Q_OBJECT
 
 public:
-    GUIModelObjectDisplayName(GUIModelObject *pParent);
+    ModelObjectDisplayName(ModelObject *pParent);
 
 public slots:
     void deselect();
@@ -190,7 +190,7 @@ protected:
 
 protected:
     //Protected members
-    GUIModelObject* mpParentGUIModelObject;
+    ModelObject* mpParentModelObject;
 };
 
 #endif // GUIMODELOBJECT_H

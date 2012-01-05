@@ -47,8 +47,8 @@
 using namespace std;
 
 
-GUIWidget::GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
-    : GUIObject(pos, rot, startSelected, pSystem, pParent)
+Widget::Widget(QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
+    : WorkspaceObject(pos, rot, startSelected, pSystem, pParent)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -58,24 +58,24 @@ GUIWidget::GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIC
 }
 
 
-void GUIWidget::setOldPos()
+void Widget::setOldPos()
 {
     mOldPos = this->pos();
 }
 
 
-void GUIWidget::setWidgetIndex(int idx)
+void Widget::setWidgetIndex(int idx)
 {
     mWidgetIndex = idx;
 }
 
 
-int GUIWidget::getWidgetIndex()
+int Widget::getWidgetIndex()
 {
     return mWidgetIndex;
 }
 
-QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if(change == QGraphicsItem::ItemSelectedHasChanged)
     {
@@ -89,23 +89,23 @@ QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
         }
     }
 
-    return GUIObject::itemChange(change, value);
+    return WorkspaceObject::itemChange(change, value);
 }
 
 
-void GUIWidget::deleteMe(undoStatus /*undoSettings*/)
+void Widget::deleteMe(undoStatus /*undoSettings*/)
 {
     assert(1 == 2);
 }
 
 
-void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    QList<GUIWidget *>::iterator it;
+    QList<Widget *>::iterator it;
 
         //Loop through all selected widgets and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    QList<GUIWidget *> selectedWidgets = mpParentContainerObject->getSelectedGUIWidgetPtrs();
+    QList<Widget *> selectedWidgets = mpParentContainerObject->getSelectedGUIWidgetPtrs();
     for(int i=0; i<selectedWidgets.size(); ++i)
     {
         if((selectedWidgets[i]->mOldPos != selectedWidgets[i]->pos()) && (event->button() == Qt::LeftButton) && !selectedWidgets[i]->mIsResizing)
@@ -130,12 +130,12 @@ void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         selectedWidgets[i]->mIsResizing = false;
     }
 
-    GUIObject::mouseReleaseEvent(event);
+    WorkspaceObject::mouseReleaseEvent(event);
 }
 
 
-GUITextBoxWidget::GUITextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
-    : GUIWidget(pos, rot, startSelected, pSystem, pParent)
+TextBoxWidget::TextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+    : Widget(pos, rot, startSelected, pSystem, pParent)
 {
     mType="TextBoxWidget";
 
@@ -177,7 +177,7 @@ GUITextBoxWidget::GUITextBoxWidget(QString text, QPointF pos, qreal rot, selecti
     mWidgetIndex = widgetIndex;
 }
 
-void GUITextBoxWidget::saveToDomElement(QDomElement &rDomElement)
+void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
 {
     QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
 
@@ -215,7 +215,7 @@ void GUITextBoxWidget::saveToDomElement(QDomElement &rDomElement)
     xmlLine.setAttribute(HMF_STYLETAG, style);
 }
 
-void GUITextBoxWidget::setText(QString text)
+void TextBoxWidget::setText(QString text)
 {
     mpTextItem->setPlainText(text);
     mpRectItem->setRect(mpRectItem->rect().united(mpTextItem->boundingRect()));
@@ -225,7 +225,7 @@ void GUITextBoxWidget::setText(QString text)
 }
 
 
-void GUITextBoxWidget::setFont(QFont font)
+void TextBoxWidget::setFont(QFont font)
 {
     mpTextItem->setFont(font);
     mpRectItem->setRect(mpRectItem->rect().united(mpTextItem->boundingRect()));
@@ -235,7 +235,7 @@ void GUITextBoxWidget::setFont(QFont font)
 }
 
 
-void GUITextBoxWidget::setLineWidth(int value)
+void TextBoxWidget::setLineWidth(int value)
 {
     QPen tempPen;
     tempPen = mpRectItem->pen();
@@ -244,7 +244,7 @@ void GUITextBoxWidget::setLineWidth(int value)
 }
 
 
-void GUITextBoxWidget::setLineStyle(Qt::PenStyle style)
+void TextBoxWidget::setLineStyle(Qt::PenStyle style)
 {
     QPen tempPen;
     tempPen = mpRectItem->pen();
@@ -253,7 +253,7 @@ void GUITextBoxWidget::setLineStyle(Qt::PenStyle style)
 }
 
 
-void GUITextBoxWidget::setColor(QColor color)
+void TextBoxWidget::setColor(QColor color)
 {
     mpTextItem->setDefaultTextColor(color);
 
@@ -264,7 +264,7 @@ void GUITextBoxWidget::setColor(QColor color)
 }
 
 
-void GUITextBoxWidget::setSize(qreal w, qreal h)
+void TextBoxWidget::setSize(qreal w, qreal h)
 {
     QPointF posBeforeResize = this->pos();
     mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), w, h);
@@ -282,13 +282,13 @@ void GUITextBoxWidget::setSize(qreal w, qreal h)
 }
 
 
-void GUITextBoxWidget::setBoxVisible(bool boxVisible)
+void TextBoxWidget::setBoxVisible(bool boxVisible)
 {
     mpRectItem->setVisible(boxVisible);
 }
 
 
-void GUITextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
+void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
 {
     //! @todo Make a separate file for this dialog
 
@@ -380,9 +380,9 @@ void GUITextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/
     connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditDialog,SLOT(close()));
 }
 
-void GUITextBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+void TextBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    GUIObject::hoverMoveEvent(event);
+    WorkspaceObject::hoverMoveEvent(event);
 
     this->setCursor(Qt::ArrowCursor);
     mResizeLeft = false;
@@ -419,7 +419,7 @@ void GUITextBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
         this->setCursor(Qt::SizeVerCursor);
 }
 
-void GUITextBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void TextBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mResizeLeft || mResizeRight || mResizeTop || mResizeBottom)
     {
@@ -432,13 +432,13 @@ void GUITextBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         mIsResizing = false;
     }
-    GUIObject::mousePressEvent(event);
+    WorkspaceObject::mousePressEvent(event);
 }
 
 
-void GUITextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void TextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    GUIObject::mouseMoveEvent(event);
+    WorkspaceObject::mouseMoveEvent(event);
 
     if(mResizeLeft && mResizeTop)
     {
@@ -509,9 +509,9 @@ void GUITextBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-void GUITextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void TextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    GUIWidget::mouseReleaseEvent(event);
+    Widget::mouseReleaseEvent(event);
     if(mWidthBeforeResize != mpRectItem->rect().width() || mHeightBeforeResize != mpRectItem->rect().height())
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
@@ -522,13 +522,13 @@ void GUITextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void GUITextBoxWidget::deleteMe(undoStatus undoSettings)
+void TextBoxWidget::deleteMe(undoStatus undoSettings)
 {
     mpParentContainerObject->removeWidget(this, undoSettings);
 }
 
 
-void GUITextBoxWidget::updateWidgetFromDialog()
+void TextBoxWidget::updateWidgetFromDialog()
 {
     Qt::PenStyle selectedStyle;
     if(mpStyleBoxInDialog->currentIndex() == 0)
@@ -577,7 +577,7 @@ void GUITextBoxWidget::updateWidgetFromDialog()
 }
 
 
-void GUITextBoxWidget::openFontDialog()
+void TextBoxWidget::openFontDialog()
 {
     bool ok;
     QFont font = QFontDialog::getFont(&ok, mpTextBoxInDialog->font(), gpMainWindow);
@@ -588,7 +588,7 @@ void GUITextBoxWidget::openFontDialog()
     }
 }
 
-void GUITextBoxWidget::openColorDialog()
+void TextBoxWidget::openColorDialog()
 {
     QColor color;
     color = QColorDialog::getColor(mSelectedColor, gpMainWindow);

@@ -31,27 +31,27 @@
 
 //Forward Declarations
 class LibraryWidget;
-class GUIModelObject;
-class GUIContainerObject;
-class GUITextBoxWidget;
+class ModelObject;
+class ContainerObject;
+class TextBoxWidget;
 
 
-GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings=UNDO);
+ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings=UNDO);
 
-GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings=UNDO);
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings=UNDO);
 
-bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, undoStatus undoSettings=UNDO);
+bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoStatus undoSettings=UNDO);
 
-void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
+void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus undoSettings=UNDO);
 
-void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
+void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus undoSettings=UNDO);
 
-void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, GUIContainerObject* pContainer);
+void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, ContainerObject* pContainer);
 
-void loadFavoriteVariable(QDomElement &rDomElement, GUIContainerObject* pContainer);
+void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer);
 
-void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pContainer);
+void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer);
 
-GUITextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings=UNDO);
+TextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, undoStatus undoSettings=UNDO);
 
 #endif // LOADFUNCTIONS_H

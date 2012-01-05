@@ -33,7 +33,7 @@
 class QGraphicsScene;
 class GraphicsView;
 class ProjectTab;
-class GUISystem;
+class SystemContainer;
 
 class ProjectTabWidget : public QTabWidget
 {
@@ -43,10 +43,10 @@ public:
     ProjectTabWidget(MainWindow *parent = 0);
     ProjectTab *getCurrentTab();
     ProjectTab *getTab(int index);
-    GUISystem *getCurrentTopLevelSystem();
-    GUIContainerObject *getContainer(int index);
-    GUIContainerObject *getCurrentContainer();
-    GUISystem *getSystem(int index);
+    SystemContainer *getCurrentTopLevelSystem();
+    ContainerObject *getContainer(int index);
+    ContainerObject *getCurrentContainer();
+    SystemContainer *getSystem(int index);
 
     //Public member variables
 
@@ -85,7 +85,7 @@ public:
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
-    GUISystem *getSystem();
+    SystemContainer *getSystem();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
     void setLastSimulationTime(int time);
@@ -114,7 +114,7 @@ private:
     void saveModel(saveTarget saveAsFlag);
 
     bool mIsSaved;
-    GUISystem *mpSystem;
+    SystemContainer *mpSystem;
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWidget;
     int mLastSimulationTime;

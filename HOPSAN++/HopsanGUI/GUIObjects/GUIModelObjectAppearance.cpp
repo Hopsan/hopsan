@@ -92,7 +92,7 @@ ModelObjectIconAppearance::ModelObjectIconAppearance()
     mRotationBehaviour = "ON";
 }
 
-GUIModelObjectAppearance::GUIModelObjectAppearance()
+ModelObjectAppearance::ModelObjectAppearance()
 {
     mPortAppearanceMap.clear();
     mDefaultMissingIconPath = "missingcomponenticon.svg";
@@ -100,14 +100,14 @@ GUIModelObjectAppearance::GUIModelObjectAppearance()
 
 //! @brief get the type-name
 //! @returns The type-name
-QString GUIModelObjectAppearance::getTypeName()
+QString ModelObjectAppearance::getTypeName()
 {
     return mTypeName;
 }
 
 //! @brief get the display name, even if it is empty
 //! @returns The display name
-QString GUIModelObjectAppearance::getName()
+QString ModelObjectAppearance::getName()
 {
     return mDisplayName;
 }
@@ -115,7 +115,7 @@ QString GUIModelObjectAppearance::getName()
 //! @brief This function returns the name or typename (if name is empty)
 //! Useful if display name has not been specified, then we use the type name
 //! @returns A non-empty name
-QString GUIModelObjectAppearance::getNonEmptyName()
+QString ModelObjectAppearance::getNonEmptyName()
 {
     if (mDisplayName.isEmpty())
     {
@@ -128,13 +128,13 @@ QString GUIModelObjectAppearance::getNonEmptyName()
 }
 
 
-QString GUIModelObjectAppearance::getHelpPicture()
+QString ModelObjectAppearance::getHelpPicture()
 {
     return mHelpPicture;
 }
 
 
-QString GUIModelObjectAppearance::getHelpText()
+QString ModelObjectAppearance::getHelpText()
 {
     return mHelpText;
 }
@@ -143,7 +143,7 @@ QString GUIModelObjectAppearance::getHelpText()
 //! @param [in] gfxType The graphics type enum (ISO or USER)
 //! If the specified type is missing, return the other type.
 //! If that is also missing return a path to the missing graphics icon
-QString GUIModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
+QString ModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
 {
     QFileInfo iconUserFileInfo(mUserIconAppearance.mAbsolutePath);
     QFileInfo iconISOFileInfo(mIsoIconAppearance.mAbsolutePath);
@@ -183,7 +183,7 @@ QString GUIModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
 }
 
 //! @brief Returns the path to the graphics icon of requested type, regardles of wheter it is valid or not
-QString GUIModelObjectAppearance::getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrel)
+QString ModelObjectAppearance::getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrel)
 {
     if (gfxType == USERGRAPHICS)
     {
@@ -213,7 +213,7 @@ QString GUIModelObjectAppearance::getIconPath(const graphicsType gfxType, const 
     }
 }
 
-qreal GUIModelObjectAppearance::getIconScale(const graphicsType gfxType)
+qreal ModelObjectAppearance::getIconScale(const graphicsType gfxType)
 {
     if (gfxType == USERGRAPHICS)
     {
@@ -229,7 +229,7 @@ qreal GUIModelObjectAppearance::getIconScale(const graphicsType gfxType)
     }
 }
 
-void GUIModelObjectAppearance::setRelativePathFromAbsolute()
+void ModelObjectAppearance::setRelativePathFromAbsolute()
 {
     QFileInfo absUserPath(mUserIconAppearance.mAbsolutePath);
     QFileInfo absIsoPath(mIsoIconAppearance.mAbsolutePath);
@@ -246,7 +246,7 @@ void GUIModelObjectAppearance::setRelativePathFromAbsolute()
     }
 }
 
-void GUIModelObjectAppearance::setAbsoultePathFromRelative()
+void ModelObjectAppearance::setAbsoultePathFromRelative()
 {
     QFileInfo relUserPath(mUserIconAppearance.mRelativePath);
     QFileInfo relIsoPath(mIsoIconAppearance.mRelativePath);
@@ -267,7 +267,7 @@ void GUIModelObjectAppearance::setAbsoultePathFromRelative()
 }
 
 
-QString GUIModelObjectAppearance::getIconRotationBehaviour(const graphicsType gfxType)
+QString ModelObjectAppearance::getIconRotationBehaviour(const graphicsType gfxType)
 {
     if (gfxType == USERGRAPHICS)
     {
@@ -284,21 +284,21 @@ QString GUIModelObjectAppearance::getIconRotationBehaviour(const graphicsType gf
     }
 }
 
-QPointF GUIModelObjectAppearance::getNameTextPos()
+QPointF ModelObjectAppearance::getNameTextPos()
 {
     return mNameTextPos;
 }
 
 //! @brief Returns a reference to the map containing port appearance
 //! @returns Reference to mPortAppearanceMap
-PortAppearanceMapT &GUIModelObjectAppearance::getPortAppearanceMap()
+PortAppearanceMapT &ModelObjectAppearance::getPortAppearanceMap()
 {
     return mPortAppearanceMap;
 }
 
 //! @brief Removes a port appearance post for a specified portname
 //! @param[in] portName The port name for the port Appearance to be erased
-void GUIModelObjectAppearance::erasePortAppearance(const QString portName)
+void ModelObjectAppearance::erasePortAppearance(const QString portName)
 {
     PortAppearanceMapT::iterator pait = mPortAppearanceMap.find(portName);
     if (pait != mPortAppearanceMap.end())
@@ -314,7 +314,7 @@ void GUIModelObjectAppearance::erasePortAppearance(const QString portName)
 //! @brief Adds or updates a port appearance post for a specified portname
 //! @param[in] portName The port name for the port Appearance to be added
 //! @param[in] pPortAppearance A pointer to the port Appearance to add, if 0 then a new undefined appearance will be created
-void GUIModelObjectAppearance::addPortAppearance(const QString portName, PortAppearance *pPortAppearance)
+void ModelObjectAppearance::addPortAppearance(const QString portName, PortAppearance *pPortAppearance)
 {
     if (pPortAppearance == 0)
     {
@@ -327,13 +327,13 @@ void GUIModelObjectAppearance::addPortAppearance(const QString portName, PortApp
 }
 
 //! @brief Get the base path that all icon paths are relative
-QString GUIModelObjectAppearance::getBasePath()
+QString ModelObjectAppearance::getBasePath()
 {
     return mBasePath;
 }
 
 //! @brief Read the ModelObjectAppearance contents from an XML DOM Element
-void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
+void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
     mTypeName       = domElement.attribute(CAF_TYPENAME);
@@ -422,7 +422,7 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 
 //! @brief Writes the ModelObjectAppearance contents to an XML DOM Element
 //! @param rDomElement The DOM element to write to
-void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
+void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 {
     // Save type and name data
     QDomElement xmlObject = appendDomElement(rDomElement, CAF_MODELOBJECT);
@@ -468,7 +468,7 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 }
 
 //! @brief Save Appearancedata to XML file, currently used as a test function
-void GUIModelObjectAppearance::saveToXMLFile(QString filename)
+void ModelObjectAppearance::saveToXMLFile(QString filename)
 {
     //Save to file
     QDomDocument doc;
@@ -491,32 +491,32 @@ void GUIModelObjectAppearance::saveToXMLFile(QString filename)
 
 
 //! @brief Access method to manually set the TypeName
-void GUIModelObjectAppearance::setTypeName(QString name)
+void ModelObjectAppearance::setTypeName(QString name)
 {
     mTypeName = name;
 }
 
 //! @brief Access method to manually set the Name
-void GUIModelObjectAppearance::setName(QString name)
+void ModelObjectAppearance::setName(QString name)
 {
     mDisplayName = name;
 }
 
 //! @brief Access method to manually set the HelpText
-void GUIModelObjectAppearance::setHelpText(QString text)
+void ModelObjectAppearance::setHelpText(QString text)
 {
     mHelpText = text;
 }
 
 //! @brief Access method to manually set the BaseIconPath
-void GUIModelObjectAppearance::setBasePath(QString path)
+void ModelObjectAppearance::setBasePath(QString path)
 {
     mBasePath = path;
     setRelativePathFromAbsolute(); //Reset relative path to new basepath
 }
 
 //! @brief Access method to manually set the BasePath relative UserIconPath
-void GUIModelObjectAppearance::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel)
+void ModelObjectAppearance::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel)
 {
 
     if (absrel == ABSOLUTE)
@@ -546,7 +546,7 @@ void GUIModelObjectAppearance::setIconPath(const QString path, const graphicsTyp
     //else dont do anything
 }
 
-void GUIModelObjectAppearance::setIconScale(const qreal scale, const graphicsType gfxType)
+void ModelObjectAppearance::setIconScale(const qreal scale, const graphicsType gfxType)
 {
     if (gfxType == USERGRAPHICS)
     {
@@ -561,7 +561,7 @@ void GUIModelObjectAppearance::setIconScale(const qreal scale, const graphicsTyp
 
 
 //! @brief Check if specified Icon path is availiable and icon exists
-bool GUIModelObjectAppearance::hasIcon(const graphicsType gfxType)
+bool ModelObjectAppearance::hasIcon(const graphicsType gfxType)
 {
     if (gfxType == ISOGRAPHICS)
     {

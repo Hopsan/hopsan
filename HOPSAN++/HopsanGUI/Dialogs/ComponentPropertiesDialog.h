@@ -29,8 +29,8 @@
 
 #include "MainWindow.h"
 
-class GUIModelObject;
-class GUIComponent;
+class ModelObject;
+class Component;
 class ParameterLayout;
 
 class ComponentPropertiesDialog : public QDialog
@@ -38,7 +38,7 @@ class ComponentPropertiesDialog : public QDialog
     Q_OBJECT
 
 public:
-    ComponentPropertiesDialog(GUIComponent *pGUIComponent, MainWindow *parent = 0);
+    ComponentPropertiesDialog(Component *pGUIComponent, MainWindow *parent = 0);
 
 protected slots:
     void okPressed();
@@ -49,7 +49,7 @@ protected:
     void setParametersAndStartValues();
 
 private:
-    GUIComponent *mpGUIComponent;
+    Component *mpGUIComponent;
 
     void createEditStuff();
     bool interpretedAsStartValue(QString &parameterDescription);
@@ -78,7 +78,7 @@ class ParameterLayout : public QGridLayout
     friend class ComponentPropertiesDialog;
 public:
  //   ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", QString typeName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
+    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", QString typeName="", ModelObject *pGUIModelObject=0, QWidget *parent=0);
 
     QString getDescriptionName();
     QString getDataName();
@@ -92,7 +92,7 @@ protected slots:
     void pickColor();
 
 protected:
-    GUIModelObject *mpGUIModelObject;
+    ModelObject *mpGUIModelObject;
     QLabel mDataNameLabel;
     QLabel mDescriptionNameLabel;
     QLineEdit mDataValuesLineEdit;
@@ -103,7 +103,7 @@ protected:
     QString mDataName;
 
 private:
-    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="",  QString typeName="", GUIModelObject *pGUIModelObject=0);
+    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="",  QString typeName="", ModelObject *pGUIModelObject=0);
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

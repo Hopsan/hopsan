@@ -43,8 +43,8 @@
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
-        : GUIObject(position, rotation, startSelected, pParentContainer, pParent)
+ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+        : WorkspaceObject(position, rotation, startSelected, pParentContainer, pParent)
 {
         //Initialize variables
     mpIcon = 0;
@@ -58,7 +58,7 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
         //Make a local copy of the appearance data (that can safely be modified if needed)
     if (pAppearanceData != 0)
     {
-        mGUIModelObjectAppearance = *pAppearanceData;
+        mModelObjectAppearance = *pAppearanceData;
     }
 
         //Setup appearance
@@ -69,7 +69,7 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
     this->setSelected(startSelected);
 
         //Create the textbox containing the name
-    mpNameText = new GUIModelObjectDisplayName(this);
+    mpNameText = new ModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
     if(this->mpParentContainerObject != 0)
     {
@@ -107,14 +107,14 @@ GUIModelObject::GUIModelObject(QPointF position, qreal rotation, const GUIModelO
 
 
 //! @brief Destructor for GUI Objects
-GUIModelObject::~GUIModelObject()
+ModelObject::~ModelObject()
 {
     emit objectDeleted();
 }
 
-void GUIModelObject::setParentContainerObject(GUIContainerObject *pParentContainer)
+void ModelObject::setParentContainerObject(ContainerObject *pParentContainer)
 {
-    GUIObject::setParentContainerObject(pParentContainer);
+    WorkspaceObject::setParentContainerObject(pParentContainer);
 
     //Refresh the port signals and slots connections
     for (int i=0; i<mPortListPtrs.size(); ++i)
@@ -125,13 +125,13 @@ void GUIModelObject::setParentContainerObject(GUIContainerObject *pParentContain
 
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
-int GUIModelObject::type() const
+int ModelObject::type() const
 {
     return Type;
 }
 
 
-void GUIModelObject::getLosses(double &total, double &hydraulic, double &mechanic)
+void ModelObject::getLosses(double &total, double &hydraulic, double &mechanic)
 {
     total = mTotalLosses;
     hydraulic = mHydraulicLosses;
@@ -141,7 +141,7 @@ void GUIModelObject::getLosses(double &total, double &hydraulic, double &mechani
 
 //! @brief Updates name text position
 //! @param pos Position where name text was dropped
-void GUIModelObject::snapNameTextPosition(QPointF pos)
+void ModelObject::snapNameTextPosition(QPointF pos)
 {
     QVector<QPointF> pts;
     this->calcNameTextPositions(pts);
@@ -166,7 +166,7 @@ void GUIModelObject::snapNameTextPosition(QPointF pos)
     }
 }
 
-void GUIModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
+void ModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
 {
     rPts.clear();
 
@@ -214,7 +214,7 @@ void GUIModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
 
 
 //! @brief Slot that scales the name text
-void GUIModelObject::setNameTextScale(qreal scale)
+void ModelObject::setNameTextScale(qreal scale)
 {
     this->mpNameText->setScale(scale);
 }
@@ -222,7 +222,7 @@ void GUIModelObject::setNameTextScale(qreal scale)
 
 //! @brief Stores a connector pointer in the connector list
 //! @param item Pointer to connector that shall be stored
-void GUIModelObject::rememberConnector(Connector *item)
+void ModelObject::rememberConnector(Connector *item)
 {
     //Only append if new connector, prevents double registration if we connect to ourselves
     if ( !mConnectorPtrs.contains(item) )
@@ -235,25 +235,25 @@ void GUIModelObject::rememberConnector(Connector *item)
 
 //! @brief Removes a connector pointer from the connector list
 //! @param item Pointer to connector that shall be forgotten
-void GUIModelObject::forgetConnector(Connector *item)
+void ModelObject::forgetConnector(Connector *item)
 {
     mConnectorPtrs.removeAll(item);
     disconnect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
 }
 
 //! @param Returns a copy of the list with pointers to the connecetors connected to the object
-QList<Connector*> GUIModelObject::getConnectorPtrs()
+QList<Connector*> ModelObject::getConnectorPtrs()
 {
     return mConnectorPtrs;
 }
 
 
 //! @brief Refreshes the displayed name (HopsanCore may have changed it)
-void GUIModelObject::refreshDisplayName()
+void ModelObject::refreshDisplayName()
 {
     if (mpNameText != 0)
     {
-        mpNameText->setPlainText(mGUIModelObjectAppearance.getName());
+        mpNameText->setPlainText(mModelObjectAppearance.getName());
         mpNameText->setSelected(false);
         //Adjust the position of the text
         this->snapNameTextPosition(mpNameText->pos());
@@ -262,12 +262,12 @@ void GUIModelObject::refreshDisplayName()
 
 
 //! @brief Returns the name of the object
-QString GUIModelObject::getName()
+QString ModelObject::getName()
 {
-    return mGUIModelObjectAppearance.getName();
+    return mModelObjectAppearance.getName();
 }
 
-void GUIModelObject::setName(QString /*name*/)
+void ModelObject::setName(QString /*name*/)
 {
     //Must be overloaded
     assert(false);
@@ -276,7 +276,7 @@ void GUIModelObject::setName(QString /*name*/)
 
 
 //! @brief Returns a list with pointers to the ports in the object
-QList<GUIPort*> &GUIModelObject::getPortListPtrs()
+QList<Port*> &ModelObject::getPortListPtrs()
 {
     return mPortListPtrs;
 }
@@ -284,9 +284,9 @@ QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 
 //! @brief Sets the name of the object (may be modified by HopsanCore if name already exists)
 //! Note, this function will NOT change the core name of the component
-void GUIModelObject::setDisplayName(QString name)
+void ModelObject::setDisplayName(QString name)
 {
-    mGUIModelObjectAppearance.setName(name);
+    mModelObjectAppearance.setName(name);
     refreshDisplayName();
 
     emit nameChanged();
@@ -295,20 +295,20 @@ void GUIModelObject::setDisplayName(QString name)
 
 //! @brief Updates the icon of the object to user or iso style
 //! @param gfxType Graphics type that shall be used
-void GUIModelObject::setIcon(graphicsType gfxType)
+void ModelObject::setIcon(graphicsType gfxType)
 {
     QString iconPath;
     qreal iconScale;
-    if ( (gfxType == ISOGRAPHICS) && mGUIModelObjectAppearance.hasIcon(ISOGRAPHICS) )
+    if ( (gfxType == ISOGRAPHICS) && mModelObjectAppearance.hasIcon(ISOGRAPHICS) )
     {
-        iconPath = mGUIModelObjectAppearance.getFullAvailableIconPath(ISOGRAPHICS);
-        iconScale = mGUIModelObjectAppearance.getIconScale(ISOGRAPHICS);
+        iconPath = mModelObjectAppearance.getFullAvailableIconPath(ISOGRAPHICS);
+        iconScale = mModelObjectAppearance.getIconScale(ISOGRAPHICS);
         mIconType = ISOGRAPHICS;
     }
     else
     {
-        iconPath = mGUIModelObjectAppearance.getFullAvailableIconPath(USERGRAPHICS);
-        iconScale = mGUIModelObjectAppearance.getIconScale(USERGRAPHICS);
+        iconPath = mModelObjectAppearance.getFullAvailableIconPath(USERGRAPHICS);
+        iconScale = mModelObjectAppearance.getIconScale(USERGRAPHICS);
         mIconType = USERGRAPHICS;
     }
 
@@ -331,7 +331,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
 
         this->setTransformOriginPoint(this->boundingRect().center());
 
-        if(mGUIModelObjectAppearance.getIconRotationBehaviour(mIconType) == "ON")
+        if(mModelObjectAppearance.getIconRotationBehaviour(mIconType) == "ON")
         {
             mIconRotation = true;
             mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
@@ -353,7 +353,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     }
 }
 
-void GUIModelObject::refreshIconPosition()
+void ModelObject::refreshIconPosition()
 {
     //Only move when we have disconnected the icon from transformations
     if (!mIconRotation)
@@ -362,17 +362,17 @@ void GUIModelObject::refreshIconPosition()
     }
 }
 
-void GUIModelObject::setIconZoom(const qreal zoom)
+void ModelObject::setIconZoom(const qreal zoom)
 {
     //Only scale when we have disconnected the icon from transformations
     if (!mIconRotation)
     {
-        mpIcon->setScale(mGUIModelObjectAppearance.getIconScale(mIconType)*zoom);
+        mpIcon->setScale(mModelObjectAppearance.getIconScale(mIconType)*zoom);
     }
 }
 
 
-void GUIModelObject::showLosses()
+void ModelObject::showLosses()
 {
     QTime time;
 
@@ -394,7 +394,7 @@ void GUIModelObject::showLosses()
             //Power port, so we must cycle all connected ports and ask for their data
             if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
             {
-                QVector<GUIPort *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
+                QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
                 for(int i=0; i<vConnectedPorts.size(); ++i)
                 {
                     QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
@@ -429,7 +429,7 @@ void GUIModelObject::showLosses()
             //Power port, so we must cycle all connected ports and ask for their data
             if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
             {
-                QVector<GUIPort *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
+                QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
                 for(int i=0; i<vConnectedPorts.size(); ++i)
                 {
                     QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
@@ -533,20 +533,20 @@ void GUIModelObject::showLosses()
 }
 
 
-void GUIModelObject::hideLosses()
+void ModelObject::hideLosses()
 {
     mpLossesDisplay->setVisible(false);
 }
 
 
-bool GUIModelObject::isLossesDisplayVisible()
+bool ModelObject::isLossesDisplayVisible()
 {
     return mpLossesDisplay->isVisible();
 }
 
 
 //! @brief Returns a pointer to the port with the specified name
-GUIPort *GUIModelObject::getPort(QString name)
+Port *ModelObject::getPort(QString name)
 {
     //qDebug() << "Trying to find GUIPort with name: " << name;
     //! @todo use a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
@@ -566,7 +566,7 @@ GUIPort *GUIModelObject::getPort(QString name)
 
 //! @brief Virtual function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
-QString GUIModelObject::getParameterValue(QString /*name*/)
+QString ModelObject::getParameterValue(QString /*name*/)
 {
     //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -585,7 +585,7 @@ QString GUIModelObject::getParameterValue(QString /*name*/)
 
 
 //! @brief Virtual function that returns a vector with the names of the parameteres in the object
-QStringList GUIModelObject::getParameterNames()
+QStringList ModelObject::getParameterNames()
 {
     //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -596,7 +596,7 @@ QStringList GUIModelObject::getParameterNames()
 //! @brief Virtual function that sets specified parameter to specified system parameter
 //! @param name Name of parameter
 //! @param valueTxt System parameter
-bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, bool /*force*/)
+bool ModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, bool /*force*/)
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
@@ -606,7 +606,7 @@ bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/, b
 //! @brief Virtual function that returns the specified start value
 //! @param portName Name of the port to return value from
 //! @param variable Name of the parameter to return value from
-QString GUIModelObject::getStartValueTxt(QString /*portName*/, QString /*variable*/)
+QString ModelObject::getStartValueTxt(QString /*portName*/, QString /*variable*/)
 {
     //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -617,7 +617,7 @@ QString GUIModelObject::getStartValueTxt(QString /*portName*/, QString /*variabl
 //! @param portName Name of port
 //! @param variable Name of variable in port
 //! @param sysParName System parameter name
-bool GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QString /*sysParName*/)
+bool ModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QString /*sysParName*/)
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
@@ -625,27 +625,27 @@ bool GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, Q
 }
 
 
-void GUIModelObject::setModelFileInfo(QFile &/*rFile*/)
+void ModelObject::setModelFileInfo(QFile &/*rFile*/)
 {
     //Only available in GUISystem for now
     assert(false);
 }
 
 
-void GUIModelObject::saveToDomElement(QDomElement &rDomElement)
+void ModelObject::saveToDomElement(QDomElement &rDomElement)
 {
     QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
     saveCoreDataToDomElement(xmlObject);
     saveGuiDataToDomElement(xmlObject);
 }
 
-void GUIModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
+void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     rDomElement.setAttribute(HMF_TYPETAG, getTypeName());
     rDomElement.setAttribute(HMF_NAMETAG, getName());
 }
 
-QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
+QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
@@ -662,7 +662,7 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 }
 
 
-void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QGraphicsItem::contextMenuEvent(event);
 
@@ -681,18 +681,18 @@ void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 
 //! @brief Defines what happens when mouse starts hovering the object
-void GUIModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void ModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    GUIObject::hoverEnterEvent(event);
+    WorkspaceObject::hoverEnterEvent(event);
     this->setZValue(HOVEREDMODELOBJECT_Z);
     this->showPorts(true);
 }
 
 
 //! @brief Defines what happens when mouse stops hovering the object
-void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    GUIObject::hoverLeaveEvent(event);
+    WorkspaceObject::hoverLeaveEvent(event);
     this->setZValue(MODELOBJECT_Z);
     this->showPorts(false);
 }
@@ -719,9 +719,9 @@ void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //}
 
 
-void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    GUIObject::mousePressEvent(event);
+    WorkspaceObject::mousePressEvent(event);
 
     qDebug() << "mousePressEvent(), button = " << event->button();
 
@@ -749,7 +749,7 @@ void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-void GUIModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseMoveEvent(event);
 
@@ -767,7 +767,7 @@ void GUIModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
         QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->getGraphicsView());
         drag->setMimeData(mimeData);
-        drag->setPixmap(QIcon(QPixmap(this->mGUIModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
+        drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
         drag->setHotSpot(QPoint(20, 20));
         drag->exec(Qt::CopyAction | Qt::MoveAction);
 
@@ -777,17 +777,17 @@ void GUIModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 
 //! @brief Defines what happens if a mouse key is released while hovering an object
-void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     mDragCopying = false;
 
     qDebug() << "mouseReleaseEvent()";
 
-    QList<GUIModelObject *>::iterator it;
+    QList<ModelObject *>::iterator it;
 
         //Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    QList<GUIModelObject *> selectedObjects = mpParentContainerObject->getSelectedGUIModelObjectPtrs();
+    QList<ModelObject *> selectedObjects = mpParentContainerObject->getSelectedModelObjectPtrs();
     for(it = selectedObjects.begin(); it != selectedObjects.end(); ++it)
     {
         if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
@@ -796,7 +796,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                if(mpParentContainerObject->getSelectedGUIModelObjectPtrs().size() > 1)
+                if(mpParentContainerObject->getSelectedModelObjectPtrs().size() > 1)
                 {
                     mpParentContainerObject->getUndoStackPtr()->newPost("movedmultiple");
                 }
@@ -821,7 +821,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         this->contextMenuEvent(test);
     }
 
-    GUIObject::mouseReleaseEvent(event);
+    WorkspaceObject::mouseReleaseEvent(event);
 }
 
 //    }
@@ -836,7 +836,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //    }
 //}
 
-QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
+QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
 {
     rMenu.addSeparator();
     QAction *groupAction;
@@ -912,21 +912,21 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContex
 
 //! @brief Defines what happens when object is selected, deselected or has moved
 //! @param change Tells what it is that has changed
-QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    GUIObject::itemChange(change, value);   //This must be done BEFORE the snapping code to avoid an event loop. This is because snap uses "moveBy()", which triggers a new itemChange event.
+    WorkspaceObject::itemChange(change, value);   //This must be done BEFORE the snapping code to avoid an event loop. This is because snap uses "moveBy()", which triggers a new itemChange event.
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         if(this->isSelected())
         {
-            mpParentContainerObject->rememberSelectedGUIModelObject(this);
+            mpParentContainerObject->rememberSelectedModelObject(this);
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
         else
         {
-            mpParentContainerObject->forgetSelectedGUIModelObject(this);
+            mpParentContainerObject->forgetSelectedModelObject(this);
             disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
@@ -939,7 +939,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if(mpParentContainerObject != 0 && gConfig.getSnapping() &&
-           !mpParentContainerObject->isCreatingConnector() && mpParentContainerObject->getSelectedGUIModelObjectPtrs().size() == 1)
+           !mpParentContainerObject->isCreatingConnector() && mpParentContainerObject->getSelectedModelObjectPtrs().size() == 1)
         {
                 //Vertical snap
             if( (mConnectorPtrs.size() == 1) &&
@@ -985,9 +985,9 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
 //! @brief Shows or hides the port, depending on the input boolean and whether or not they are connected
 //! @param visible Tells whether the ports shall be shown or hidden
-void GUIModelObject::showPorts(bool visible)
+void ModelObject::showPorts(bool visible)
 {
-    QList<GUIPort*>::iterator i;
+    QList<Port*>::iterator i;
     if(visible)
     {
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
@@ -1007,7 +1007,7 @@ void GUIModelObject::showPorts(bool visible)
 
 
 //! @todo try to reuse the code in rotate guiobject,
-void GUIModelObject::rotate(qreal angle, undoStatus undoSettings)
+void ModelObject::rotate(qreal angle, undoStatus undoSettings)
 {
     mpParentContainerObject->mpParentProjectTab->hasChanged();
 
@@ -1044,7 +1044,7 @@ void GUIModelObject::rotate(qreal angle, undoStatus undoSettings)
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipHorizontal()
 //! @todo Fix name text position when flipping components
-void GUIModelObject::flipVertical(undoStatus undoSettings)
+void ModelObject::flipVertical(undoStatus undoSettings)
 {
     this->flipHorizontal(NOUNDO);
     this->rotate(180,NOUNDO);
@@ -1058,7 +1058,7 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
 //! @brief Slot that flips the object horizontally
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipVertical()
-void GUIModelObject::flipHorizontal(undoStatus undoSettings)
+void ModelObject::flipHorizontal(undoStatus undoSettings)
 {
     mpParentContainerObject->mpParentProjectTab->hasChanged();
     QTransform transf;
@@ -1101,7 +1101,7 @@ void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 //! @brief Returns an number of the current name text position
 //! @see setNameTextPos(int textPos)
 //! @see fixTextPosition(QPointF pos)
-int GUIModelObject::getNameTextPos()
+int ModelObject::getNameTextPos()
 {
     return mNameTextPos;
 }
@@ -1111,7 +1111,7 @@ int GUIModelObject::getNameTextPos()
 //! @param textPos Number of the desired text position
 //! @see getNameTextPos()
 //! @see fixTextPosition(QPointF pos)
-void GUIModelObject::setNameTextPos(int textPos)
+void ModelObject::setNameTextPos(int textPos)
 {
     QVector<QPointF> pts;
     this->calcNameTextPositions(pts);
@@ -1121,7 +1121,7 @@ void GUIModelObject::setNameTextPos(int textPos)
 
 
 //! @brief Slots that hides the name text of the object
-void GUIModelObject::hideName(undoStatus undoSettings)
+void ModelObject::hideName(undoStatus undoSettings)
 {
     bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(false);
@@ -1133,7 +1133,7 @@ void GUIModelObject::hideName(undoStatus undoSettings)
 
 
 //! @brief Slots that makes the name text of the object visible
-void GUIModelObject::showName(undoStatus undoSettings)
+void ModelObject::showName(undoStatus undoSettings)
 {
     bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(true);
@@ -1146,35 +1146,35 @@ void GUIModelObject::showName(undoStatus undoSettings)
 
 
 //! @brief Virtual dummy function that returns the type name of the object (must be reimplemented by children)
-QString GUIModelObject::getTypeName()
+QString ModelObject::getTypeName()
 {
     assert(false);
     return "";
 }
 
 
-void GUIModelObject::deleteMe()
+void ModelObject::deleteMe()
 {
     //qDebug() << "deleteMe in " << this->getName();
-    mpParentContainerObject->deleteGUIModelObject(this->getName());
+    mpParentContainerObject->deleteModelObject(this->getName());
 }
 
 //! @brief Sets or updates the appearance data specific base path to which all icon paths should be relative
 //! @todo Maybe this can be combined with the setModelFileInfo function
-void GUIModelObject::setAppearanceDataBasePath(const QString basePath)
+void ModelObject::setAppearanceDataBasePath(const QString basePath)
 {
-    mGUIModelObjectAppearance.setBasePath(basePath);
+    mModelObjectAppearance.setBasePath(basePath);
 }
 
 //! @brief Returns a pointer to the appearance data object
-GUIModelObjectAppearance* GUIModelObject::getAppearanceData()
+ModelObjectAppearance* ModelObject::getAppearanceData()
 {
-    return &mGUIModelObjectAppearance;
+    return &mModelObjectAppearance;
 }
 
 
 //! @brief Refreshes the appearance of the object
-void GUIModelObject::refreshAppearance()
+void ModelObject::refreshAppearance()
 {
     //! @todo should make sure we only do this if we really need to resize (after icon change)
     QPointF centerPos =  this->getCenterPos(); //Remember center pos for resize
@@ -1185,38 +1185,38 @@ void GUIModelObject::refreshAppearance()
 }
 
 
-QString GUIModelObject::getHelpPicture()
+QString ModelObject::getHelpPicture()
 {
-    return mGUIModelObjectAppearance.getHelpPicture();
+    return mModelObjectAppearance.getHelpPicture();
 }
 
 
 //! @brief Reimplementation - a model object is never "invisible", only its icon is
-bool GUIModelObject::isVisible()
+bool ModelObject::isVisible()
 {
     return mpIcon->isVisible();
 }
 
 
-QString GUIModelObject::getHelpText()
+QString ModelObject::getHelpText()
 {
-    return mGUIModelObjectAppearance.getHelpText();
+    return mModelObjectAppearance.getHelpText();
 }
 
 
 //! @brief Construtor for the name text object
 //! @param pParent Pointer to the object which the name text belongs to
-GUIModelObjectDisplayName::GUIModelObjectDisplayName(GUIModelObject *pParent)
+ModelObjectDisplayName::ModelObjectDisplayName(ModelObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
-    mpParentGUIModelObject = pParent;
+    mpParentModelObject = pParent;
     this->setTextInteractionFlags(Qt::NoTextInteraction);
     this->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 
 //! @brief Defines what happens when a mouse button is released (used to update position when text has moved)
-void GUIModelObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void ModelObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit textMoved(this->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
@@ -1225,7 +1225,7 @@ void GUIModelObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *even
 
 //! @brief Defines what happens when selection status of name text has changed
 //! @param change Type of change (only ItemSelectedHasChanged is used)
-QVariant GUIModelObjectDisplayName::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant ModelObjectDisplayName::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     QGraphicsTextItem::itemChange(change, value);
 
@@ -1233,12 +1233,12 @@ QVariant GUIModelObjectDisplayName::itemChange(GraphicsItemChange change, const 
     {
         if (this->isSelected())
         {
-            mpParentGUIModelObject->getParentContainerObject()->deselectSelectedNameText();
-            connect(mpParentGUIModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            mpParentModelObject->getParentContainerObject()->deselectSelectedNameText();
+            connect(mpParentModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
         else
         {
-            disconnect(mpParentGUIModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            disconnect(mpParentModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
     }
     return value;
@@ -1246,7 +1246,7 @@ QVariant GUIModelObjectDisplayName::itemChange(GraphicsItemChange change, const 
 
 
 //! @brief Slot that deselects the name text
-void GUIModelObjectDisplayName::deselect()
+void ModelObjectDisplayName::deselect()
 {
     this->setSelected(false);
 }

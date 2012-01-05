@@ -37,7 +37,7 @@
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
-ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(GUIContainerPort *pContainerPort, QWidget *pParentWidget)
+ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pContainerPort, QWidget *pParentWidget)
     : QDialog(pParentWidget)
 {
     mpContainerPort = pContainerPort;
@@ -81,6 +81,6 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(GUIContainerPort *p
 //! @brief Updates settings according to the selected values
 void ContainerPortPropertiesDialog::setValues()
 {
-    mpContainerPort->getParentContainerObject()->renameGUIModelObject(mpContainerPort->getName(), mpNameEdit->text());
+    mpContainerPort->getParentContainerObject()->renameModelObject(mpContainerPort->getName(), mpNameEdit->text());
     this->done(0);
 }

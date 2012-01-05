@@ -30,14 +30,14 @@
 #include <QButtonGroup>
 
 //Forward Declarations
-class GUIContainerObject;
+class ContainerObject;
 
 class QuickNavigationWidget : public QWidget
 {
     Q_OBJECT
 public:
     QuickNavigationWidget(QWidget *parent = 0);
-    void addOpenContainer(GUIContainerObject* pContainer);
+    void addOpenContainer(ContainerObject* pContainer);
 
 signals:
 
@@ -47,7 +47,7 @@ public slots:
 private:
     void refreshVisible();
 
-    QVector<GUIContainerObject*> mContainerObjectPtrs;
+    QVector<ContainerObject*> mContainerObjectPtrs;
     QVector<QPushButton*> mPushButtonPtrs;
     QButtonGroup *mpButtonGroup;
 };

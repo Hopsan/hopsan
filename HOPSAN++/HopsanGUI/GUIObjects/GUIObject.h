@@ -33,21 +33,20 @@
 #include "common.h"
 
 class QDomElement;
-class GUIObjectSelectionBox;
-class GUIContainerObject;
+class WorkspaceObjectSelectionBox;
+class ContainerObject;
 
-enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUIMODELOBJECT, GUICONTAINEROBJECT, GUISYSTEM, GUICOMPONENT, GUICONTAINERPORT, GUIGROUP, GUIGROUPPORT};
+enum GUIObjectEnumT {WORKSPACEOBJECT=QGraphicsItem::UserType+1, MODELOBJECT, CONTAINEROBJECT, SYSTEMCONTAINER, COMPONENT, CONTAINERPORT, GROUPCONTAINER};
 
-class GUIObject : public QGraphicsWidget
+class WorkspaceObject : public QGraphicsWidget
 {
     Q_OBJECT
 
 public:
-    GUIObject(QPointF pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
-    //virtual ~GUIObject();
+    WorkspaceObject(QPointF pos, qreal rot, selectionStatus=DESELECTED, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
 
-    virtual void setParentContainerObject(GUIContainerObject *pParentContainer);
-    virtual GUIContainerObject *getParentContainerObject();
+    virtual void setParentContainerObject(ContainerObject *pParentContainer);
+    virtual ContainerObject *getParentContainerObject();
 
     //Name methods
     virtual QString getTypeName() {assert(false);} //Maybe sould not bee here
@@ -64,11 +63,11 @@ public:
     //Other methods
     bool isFlipped();
 
-    enum { Type = GUIOBJECT };
+    enum { Type = WORKSPACEOBJECT };
     int type() const;
 
     //Public members
-    GUIContainerObject *mpParentContainerObject;
+    ContainerObject *mpParentContainerObject;
 
 public slots:
     virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
@@ -101,16 +100,16 @@ protected:
     //Protected members
     QString mHmfTagName;
     bool mIsFlipped;
-    GUIObjectSelectionBox *mpSelectionBox;
+    WorkspaceObjectSelectionBox *mpSelectionBox;
     QPointF mOldPos;
 };
 
 
 
-class GUIObjectSelectionBox : public QGraphicsItemGroup
+class WorkspaceObjectSelectionBox : public QGraphicsItemGroup
 {
 public:
-    GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent = 0);
+    WorkspaceObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, WorkspaceObject *parent = 0);
     void setSize(qreal x1, qreal y1, qreal x2, qreal y2);
 
     //Selection/active methods

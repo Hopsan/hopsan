@@ -22,8 +22,8 @@
 //!
 //$Id$
 
-#ifndef GUIPORT_H
-#define GUIPORT_H
+#ifndef PORT_H
+#define PORT_H
 
 #include <QGraphicsSvgItem>
 //#include <QGraphicsLineItem>
@@ -36,23 +36,23 @@
 #include "CoreAccess.h"
 
 //Forward declarations
-class GUIModelObject;
-class GUISystem;
-class GUIContainerObject;
+class ModelObject;
+class SystemContainer;
+class ContainerObject;
 class Connector;
 class PlotWindow;
 
 enum PortDirectionT {TOPBOTTOM, LEFTRIGHT};
 
-class GUIPort :public QGraphicsWidget
+class Port :public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
-    ~GUIPort();
+    Port(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParent = 0);
+    ~Port();
 
-    GUIContainerObject *getParentContainerObjectPtr();
-    GUIModelObject *getGuiModelObject();
+    ContainerObject *getParentContainerObjectPtr();
+    ModelObject *getGuiModelObject();
     QString getGuiModelObjectName();
 
     QString getPortName() const;
@@ -83,12 +83,12 @@ public:
     virtual void addConnection(Connector *pConnector);
     virtual void removeConnection(Connector *pConnector);
     QVector<Connector*> getAttachedConnectorPtrs() const; //!< @todo should this be virtual also
-    virtual QVector<GUIPort *> getConnectedPorts();
+    virtual QVector<Port *> getConnectedPorts();
     bool isConnected();
 
-    virtual GUIPort* getRealPort();
+    virtual Port* getRealPort();
 
-    GUIModelObject *mpParentGuiModelObject; //!< @todo make private
+    ModelObject *mpParentGuiModelObject; //!< @todo make private
 
 public slots:
     void showIfNotConnected(bool doShow=true);
@@ -140,23 +140,23 @@ class GroupPortCommonInfo
 {
 public:
     QVector<Connector*> mConnectedConnectors;
-    QList<GUIPort*> mSharedPorts;
+    QList<Port*> mSharedPorts;
 };
 
 typedef QSharedPointer<GroupPortCommonInfo>  SharedGroupInfoPtrT;
 
-class GroupPort : public GUIPort
+class GroupPort : public Port
 {
 public:
-    GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParentObject);
+    GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject);
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
 
     void addConnection(Connector *pConnector);
     void removeConnection(Connector *pConnector);
 
-    GUIPort* getRealPort();
-    QVector<GUIPort *> getConnectedPorts();
+    Port* getRealPort();
+    QVector<Port *> getConnectedPorts();
     SharedGroupInfoPtrT getSharedGroupPortInfo();
     void setSharedGroupPortInfo(SharedGroupInfoPtrT sharedGroupPortInfo);
 
@@ -165,6 +165,6 @@ protected:
 
 };
 
-QPointF getOffsetPointfromPort(GUIPort *pStartPortGUIPort, GUIPort *pEndPort);
+QPointF getOffsetPointfromPort(Port *pStartPortGUIPort, Port *pEndPort);
 
 #endif // GUIPORT_H

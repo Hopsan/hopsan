@@ -35,22 +35,22 @@
 class ProjectTabWidget;
 class GraphicsView;
 class Connector;
-class GUIPort;
-class GUIComponent;
+class Port;
+class Component;
 
-class GUIGroup : public GUIContainerObject
+class GroupContainer : public ContainerObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QPointF position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer);
-    ~GUIGroup();
+    GroupContainer(QPointF position, qreal rotation, const ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer);
+    ~GroupContainer();
 
 //    void setContents(CopyStack *pCopyStack);
 //    QString getName();
 
     void setName(QString newName);
 
-    enum { Type = GUIGROUP };
+    enum { Type = GROUPCONTAINER };
     int type() const;
 
     QString getTypeName();
@@ -58,9 +58,9 @@ public:
     CoreSystemAccess* getCoreSystemAccessPtr();
 
 protected:
-    void addExternalContainerPortObject(GUIModelObject *pModelObject);
+    void addExternalContainerPortObject(ModelObject *pModelObject);
 
-    QList<GUIModelObject*> mGUICompList;
+    QList<ModelObject*> mGUICompList;
     QList<Connector*> mGUIConnList;
     QList<Connector*> mGUITransitConnList;
 

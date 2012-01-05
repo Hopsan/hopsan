@@ -45,7 +45,7 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
 
 //! @brief Append a new opened container to teh navigation widget
 //! @param[in] pContainer A pointer to the Container Object
-void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
+void QuickNavigationWidget::addOpenContainer(ContainerObject* pContainer)
 {
     //! @todo we can use the button group as button storage instead of having an extra Qvector
     this->mContainerObjectPtrs.append(pContainer);                              //Add the container object ptr from storage

@@ -38,19 +38,19 @@
 #include <QDomDocument>
 
     //Forward Declarations
-class GUIModelObject;
+class ModelObject;
 class GraphicsView;
 class Connector;
 class MainWindow;
-class GUIContainerObject;
-class GUIWidget;
+class ContainerObject;
+class Widget;
 
 class UndoStack : public QObject
 {
 friend class UndoWidget;
 
 public:
-    UndoStack(GUIContainerObject *parentSystem);
+    UndoStack(ContainerObject *parentSystem);
 
     QDomElement toXml();
     void fromXml(QDomElement &undoElement);
@@ -60,9 +60,9 @@ public:
     void undoOneStep();
     void redoOneStep();
 
-    void registerDeletedObject(GUIModelObject *item);
+    void registerDeletedObject(ModelObject *item);
     void registerDeletedConnector(Connector *item);
-    void registerAddedObject(GUIModelObject *item);
+    void registerAddedObject(ModelObject *item);
     void registerAddedConnector(Connector *item);
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, Connector *item, int lineNumber);
@@ -74,14 +74,14 @@ public:
     void registerChangedStartValue(QString objectName, QString portName, QString parameterName, QString oldValueTxt, QString newValueTxt);
     void registerNameVisibilityChange(QString objectName, bool isVisible);
 
-    void registerAddedWidget(GUIWidget *item);
-    void registerDeletedWidget(GUIWidget *item);
-    void registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos);
+    void registerAddedWidget(Widget *item);
+    void registerDeletedWidget(Widget *item);
+    void registerMovedWidget(Widget *item, QPointF oldPos, QPointF newPos);
     void registerModifiedTextBoxWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color, int oldLineWidth, Qt::PenStyle oldLineStyle, int lineWidth, Qt::PenStyle lineStyle, bool boxVisibleBefore, bool boxVisible);
     void registerResizedTextBoxWidget(const int index, const qreal w_old, const qreal h_old, const qreal w_new, const qreal h_new, const QPointF oldPos, const QPointF newPos);
 
 private:
-    GUIContainerObject *mpParentContainerObject;
+    ContainerObject *mpParentContainerObject;
     int mCurrentStackPosition;
 
     QDomElement getCurrentPost();

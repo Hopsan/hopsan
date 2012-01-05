@@ -32,16 +32,16 @@
 
 //Forward declarations
 class Connector;
-class GUIPort;
-class GUIContainerObject;
+class Port;
+class ContainerObject;
 
-class GUIComponent : public GUIModelObject
+class Component : public ModelObject
 {
     Q_OBJECT
 
 public:
-    GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
-    ~GUIComponent();
+    Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    ~Component();
 
     void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     bool hasPowerPorts();
@@ -58,7 +58,7 @@ public:
     QString getTypeName();
     QString getTypeCQS();
 
-    enum { Type = GUICOMPONENT };
+    enum { Type = COMPONENT };
     int type() const;
     QString getDefaultParameter(QString name);
 

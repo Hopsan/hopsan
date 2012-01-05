@@ -77,7 +77,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpExternalSystemWidget->setLayout(pExternalSystemLayout);
     mpExternalSystemWidget->hide();
 
-    mpSystem = new GUISystem(this, 0);
+    mpSystem = new SystemContainer(this, 0);
 
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
@@ -154,7 +154,7 @@ void ProjectTab::hasChanged()
 
 
 //! @brief Returns a pointer to the system in the tab
-GUISystem *ProjectTab::getSystem()
+SystemContainer *ProjectTab::getSystem()
 {
     return mpSystem;
 }
@@ -365,17 +365,17 @@ void ProjectTab::setEditingEnabled(bool value)
 
     if(!mEditingEnabled)
     {
-        QStringList objects = mpGraphicsView->getContainerPtr()->getGUIModelObjectNames();
+        QStringList objects = mpGraphicsView->getContainerPtr()->getModelObjectNames();
         for(int i=0; i<objects.size(); ++i)
         {
-            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, false);
-            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, false);
+            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, false);
 
             QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
             grayEffect->setColor(QColor("gray"));
-            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setGraphicsEffect(grayEffect);
+            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setGraphicsEffect(grayEffect);
 
-            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getConnectorPtrs();
+            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->getConnectorPtrs();
             for(int j=0; j<connectors.size(); ++j)
             {
                 QGraphicsColorizeEffect *grayEffect2 = new QGraphicsColorizeEffect();
@@ -384,7 +384,7 @@ void ProjectTab::setEditingEnabled(bool value)
             }
         }
 
-        QList<GUIWidget*> widgetList = mpGraphicsView->getContainerPtr()->getGUIWidgets();
+        QList<Widget*> widgetList = mpGraphicsView->getContainerPtr()->getWidgets();
         for(int w=0; w<widgetList.size(); ++w)
         {
             QGraphicsColorizeEffect *grayEffect = new QGraphicsColorizeEffect();
@@ -394,16 +394,16 @@ void ProjectTab::setEditingEnabled(bool value)
     }
     else
     {
-        QStringList objects = mpGraphicsView->getContainerPtr()->getGUIModelObjectNames();
+        QStringList objects = mpGraphicsView->getContainerPtr()->getModelObjectNames();
         for(int i=0; i<objects.size(); ++i)
         {
-            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, true);
-            mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsMovable, true);
+            mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-            if(mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->graphicsEffect())
-                mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->graphicsEffect()->setEnabled(false);
+            if(mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->graphicsEffect())
+                mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->graphicsEffect()->setEnabled(false);
 
-            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getGUIModelObject(objects.at(i))->getConnectorPtrs();
+            QList<Connector*> connectors = mpGraphicsView->getContainerPtr()->getModelObject(objects.at(i))->getConnectorPtrs();
             for(int j=0; j<connectors.size(); ++j)
             {
                 if(connectors.at(j)->graphicsEffect())
@@ -411,7 +411,7 @@ void ProjectTab::setEditingEnabled(bool value)
             }
         }
 
-        QList<GUIWidget*> widgetList = mpGraphicsView->getContainerPtr()->getGUIWidgets();
+        QList<Widget*> widgetList = mpGraphicsView->getContainerPtr()->getWidgets();
         for(int w=0; w<widgetList.size(); ++w)
         {
             if(widgetList.at(w)->graphicsEffect())
@@ -438,7 +438,7 @@ void ProjectTab::collectPlotData()
 //! iterate through parent containers until it finds one that is.
 void ProjectTab::openCurrentContainerInNewTab()
 {
-    GUIContainerObject *pContainer = mpGraphicsView->getContainerPtr();
+    ContainerObject *pContainer = mpGraphicsView->getContainerPtr();
 
     while(true)
     {
@@ -586,21 +586,21 @@ ProjectTab *ProjectTabWidget::getTab(int index)
 
 //! @brief Returns a pointer to the current top level system model
 //! Be sure to check that the number of tabs is not zero before calling this.
-GUISystem *ProjectTabWidget::getCurrentTopLevelSystem()
+SystemContainer *ProjectTabWidget::getCurrentTopLevelSystem()
 {
     return getCurrentTab()->getSystem();
 }
 
 
 //! @brief Returns a pointer to the currently open container object in current tab
-GUIContainerObject *ProjectTabWidget::getCurrentContainer()
+ContainerObject *ProjectTabWidget::getCurrentContainer()
 {
     return getCurrentTab()->getGraphicsView()->getContainerPtr();
 }
 
 
 //! @brief Returns a pointer to the currently open container object in specified tab
-GUIContainerObject *ProjectTabWidget::getContainer(int index)
+ContainerObject *ProjectTabWidget::getContainer(int index)
 {
     return getTab(index)->getGraphicsView()->getContainerPtr();
 }
@@ -608,7 +608,7 @@ GUIContainerObject *ProjectTabWidget::getContainer(int index)
 
 //! @brief Returns a pointer to the top level system model at specified tab
 //! Be sure to check that the tab exist before calling this.
-GUISystem *ProjectTabWidget::getSystem(int index)
+SystemContainer *ProjectTabWidget::getSystem(int index)
 {
     return getTab(index)->getSystem();
 }
@@ -892,25 +892,25 @@ void ProjectTabWidget::tabChanged()
 
 void ProjectTabWidget::saveCurrentModelToWrappedCode()
 {
-    qobject_cast<GUISystem*>(getCurrentContainer())->saveToWrappedCode();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->saveToWrappedCode();
 }
 
 
 void ProjectTabWidget::createFMUFromCurrentModel()
 {
-    qobject_cast<GUISystem*>(getCurrentContainer())->createFMUSourceFiles();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->createFMUSourceFiles();
 }
 
 
 void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 {
-    qobject_cast<GUISystem*>(getCurrentContainer())->createSimulinkSourceFiles();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->createSimulinkSourceFiles();
 }
 
 
 void ProjectTabWidget::showLosses(bool show)
 {
-    qobject_cast<GUISystem*>(getCurrentContainer())->showLosses(show);
+    qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
 }
 
 
@@ -920,7 +920,7 @@ bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
 
     if(count() > 0)
     {
-        GUISystem *pMainSystem = getCurrentTopLevelSystem();     //All systems will use start time, stop time and time step from this system
+        SystemContainer *pMainSystem = getCurrentTopLevelSystem();     //All systems will use start time, stop time and time step from this system
 
         MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 

@@ -115,8 +115,8 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
 void SensitivityAnalysisDialog::open()
 {
     mpParametersList->clear();
-    GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
-    QStringList componentNames = pSystem->getGUIModelObjectNames();
+    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    QStringList componentNames = pSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {
         QTreeWidgetItem *pComponentItem = new QTreeWidgetItem(QStringList() << componentNames.at(c));
@@ -124,7 +124,7 @@ void SensitivityAnalysisDialog::open()
         componentFont.setBold(true);
         pComponentItem->setFont(0, componentFont);
         mpParametersList->insertTopLevelItem(0, pComponentItem);
-        QStringList parameterNames = pSystem->getGUIModelObject(componentNames.at(c))->getParameterNames();
+        QStringList parameterNames = pSystem->getModelObject(componentNames.at(c))->getParameterNames();
         for(int p=0; p<parameterNames.size(); ++p)
         {
             QTreeWidgetItem *pParameterItem = new QTreeWidgetItem(QStringList() << parameterNames.at(p));
@@ -142,7 +142,7 @@ void SensitivityAnalysisDialog::open()
         componentFont.setBold(true);
         pComponentItem->setFont(0, componentFont);
         mpOutputList->insertTopLevelItem(0, pComponentItem);
-        QList<GUIPort*> ports = pSystem->getGUIModelObject(componentNames.at(c))->getPortListPtrs();
+        QList<Port*> ports = pSystem->getModelObject(componentNames.at(c))->getPortListPtrs();
         for(int p=0; p<ports.size(); ++p)
         {
             QTreeWidgetItem *pPortItem = new QTreeWidgetItem(QStringList() << ports.at(p)->getPortName());
@@ -175,7 +175,7 @@ void SensitivityAnalysisDialog::updateChosenParameters(QTreeWidgetItem* item, in
         mSelectedParameters.append(item->text(0));
         QLabel *pLabel = new QLabel(item->parent()->text(0) + ", " + item->text(0) + ": ");
         //pLabel->setAlignment(Qt::AlignCenter);
-        QString averageValue = gpMainWindow->mpProjectTabs->getCurrentContainer()->getGUIModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+        QString averageValue = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
         QLineEdit *pAverageLineEdit = new QLineEdit(averageValue, this);
         QLineEdit *pSigmaLineEdit = new QLineEdit("0.0", this);
         pSigmaLineEdit->setValidator(new QDoubleValidator());
@@ -274,7 +274,7 @@ void SensitivityAnalysisDialog::run()
             for(int p=0; p<nParameteres; ++p)
             {
                 double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
-                pTabs->getContainer(t)->getGUIModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                pTabs->getContainer(t)->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
             }
         }
         pTabs->simulateAllOpenModels(noChange);
@@ -288,7 +288,7 @@ void SensitivityAnalysisDialog::run()
         QString component = mOutputVariables.at(v).at(0);
         QString port = mOutputVariables.at(v).at(1);
         QString variable = mOutputVariables.at(v).at(2);
-        pTabs->getContainer(0)->getGUIModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
+        pTabs->getContainer(0)->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
         gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->hideCurveInfo();
         gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->setLegendsVisible(false);
 

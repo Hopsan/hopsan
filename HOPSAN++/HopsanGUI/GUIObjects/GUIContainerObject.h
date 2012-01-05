@@ -36,16 +36,16 @@ class ProjectTab;
 class UndoStack;
 class MainWindow;
 class QGraphicsScene;
-class GUIPort;
+class Port;
 
-class GUIContainerObject : public GUIModelObject
+class ContainerObject : public ModelObject
 {
     friend class UndoStack;     //! @todo Not sure about this, but the alternative would be to have lots and lots of access functions only used by undo stack...
     Q_OBJECT
 public:
     enum ContainerEdgeT {RIGHTEDGE, BOTTOMEDGE, LEFTEDGE, TOPEDGE};
-    GUIContainerObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
-    virtual ~GUIContainerObject();
+    ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    virtual ~ContainerObject();
 
     ProjectTab *mpParentProjectTab;  //!< @todo not public
 
@@ -58,29 +58,27 @@ public:
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
     //GUIModelObjects and GUIWidgets methods
-    void takeOwnershipOf(QList<GUIModelObject*> &rModeObjectlist, QList<GUIWidget*> &rWidgetList);
+    void takeOwnershipOf(QList<ModelObject*> &rModeObjectlist, QList<Widget*> &rWidgetList);
 
     //GUIModelObject methods
-    GUIModelObject *addGUIModelObject(QString typeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
-    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
-    GUIModelObject *getGUIModelObject(const QString modelObjectName);
-    GUIPort *getGUIModelObjectPort(const QString modelObjectName, const QString portName);
-    void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
-    void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
-    bool hasGUIModelObject(QString name);
-    void rememberSelectedGUIModelObject(GUIModelObject *object);
-    void forgetSelectedGUIModelObject(GUIModelObject *object);
-    QList<GUIModelObject *> getSelectedGUIModelObjectPtrs();
+    ModelObject *addModelObject(QString typeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
+    ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
+    ModelObject *getModelObject(const QString modelObjectName);
+    Port *getModelObjectPort(const QString modelObjectName, const QString portName);
+    void deleteModelObject(QString componentName, undoStatus undoSettings=UNDO);
+    void renameModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
+    bool hasModelObject(QString name);
+    void rememberSelectedModelObject(ModelObject *object);
+    void forgetSelectedModelObject(ModelObject *object);
+    QList<ModelObject *> getSelectedModelObjectPtrs();
     bool isSubObjectSelected();
 
     //GUIWidgets methods
-    GUITextBoxWidget *addTextBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
-    //GUITextWidget *addTextWidget(QPointF position, undoStatus undoSettings=UNDO);
-    //GUIBoxWidget *addBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
-    void removeWidget(GUIWidget *pWidget, undoStatus undoSettings=UNDO);
-    void rememberSelectedWidget(GUIWidget *widget);
-    void forgetSelectedWidget(GUIWidget *widget);
-    QList<GUIWidget *> getSelectedGUIWidgetPtrs();
+    TextBoxWidget *addTextBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
+    void removeWidget(Widget *pWidget, undoStatus undoSettings=UNDO);
+    void rememberSelectedWidget(Widget *widget);
+    void forgetSelectedWidget(Widget *widget);
+    QList<Widget *> getSelectedGUIWidgetPtrs();
 
     //Handle connector methods
     bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
@@ -137,8 +135,8 @@ public:
     void setScriptFile(QString path);
     QString getScriptFile();
 
-    QStringList getGUIModelObjectNames();
-    QList<GUIWidget *> getGUIWidgets();
+    QStringList getModelObjectNames();
+    QList<Widget*> getWidgets();
 
     //Numbered sections methods
     void selectSection(int no, bool append=false);
@@ -168,8 +166,8 @@ public slots:
     void showSubcomponentPorts(bool doShowThem);
 
     //Connector slots
-    Connector* createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
-    Connector* createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings=UNDO);
+    Connector* createConnector(Port *pPort, undoStatus undoSettings=UNDO);
+    Connector* createConnector(Port *pPort1, Port *pPort2, undoStatus undoSettings=UNDO);
 
     //Section slots
     void groupSelected(QPointF pt);
@@ -269,12 +267,12 @@ protected:
     void refreshInternalContainerPortGraphics();
 
     //Help function for creating container ports
-    virtual void addExternalContainerPortObject(GUIModelObject *pModelObject);
+    virtual void addExternalContainerPortObject(ModelObject *pModelObject);
 
     // Helpfunctions for creating connectors
-    void startConnector(GUIPort *startPort);
-    bool finilizeConnector(GUIPort *endPort);
-    void disconnectGroupPortFromItsRealPort(GUIPort *pGroupPort, GUIPort *pRealPort);
+    void startConnector(Port *startPort);
+    bool finilizeConnector(Port *endPort);
+    void disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port *pRealPort);
 
     //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -288,10 +286,10 @@ protected:
     QString mScriptFilePath;
 
     //Model object members
-    typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
-    GUIModelObjectMapT mGUIModelObjectMap;
-    GUIModelObject *mpTempGUIModelObject;
-    QList<GUIModelObject *> mSelectedGUIModelObjectsList;
+    typedef QHash<QString, ModelObject*> ModelObjectMapT;
+    ModelObjectMapT mModelObjectMap;
+    ModelObject *mpTempGUIModelObject;
+    QList<ModelObject *> mSelectedModelObjectsList;
 
     //Connector members
     QList<Connector *> mSelectedSubConnectorsList;
@@ -300,8 +298,8 @@ protected:
     bool mIsCreatingConnector;
 
     //Widget members
-    QMap<size_t, GUIWidget *> mWidgetMap;
-    QList<GUIWidget *> mSelectedGUIWidgetsList;
+    QMap<size_t, Widget *> mWidgetMap;
+    QList<Widget *> mSelectedWidgetsList;
     size_t mHighestWidgetIndex;
 
     //Contained object appearance members
@@ -326,7 +324,7 @@ protected:
     double mPasteOffset;
 
     //Numbered sections members
-    QList< QList<GUIModelObject *> > mSection;
+    QList< QList<ModelObject *> > mSection;
 
     //Losses members
     bool mLossesVisible;

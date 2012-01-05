@@ -49,10 +49,10 @@ public:
     qreal mScale;
 };
 
-class GUIModelObjectAppearance
+class ModelObjectAppearance
 {
 public:
-    GUIModelObjectAppearance();
+    ModelObjectAppearance();
     void setTypeName(QString name);
     void setName(QString name);
     void setHelpText(QString text);

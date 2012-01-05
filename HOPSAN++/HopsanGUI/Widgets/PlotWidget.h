@@ -60,7 +60,7 @@
 
 
 class MainWindow;
-class GUIContainerObject;
+class ContainerObject;
 class PlotWindow;
 class PlotTreeWidget;
 class PlotVariableTree;
@@ -99,7 +99,7 @@ public:
     void reportClosedPlotWindow(PlotWindow *window);
 
     //MainWindow *mpParentMainWindow;
-    GUIContainerObject *mpCurrentContainer;
+    ContainerObject *mpCurrentContainer;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);

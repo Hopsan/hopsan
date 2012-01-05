@@ -39,12 +39,12 @@
 
 
     //Forward Declarations
-class GUIObject;
+class WorkspaceObject;
 class GraphicsView;
 class Connector;
 class MainWindow;
-class GUISystem;
-class GUIModelObject;
+class SystemContainer;
+class ModelObject;
 class SystemParameterTableWidget;
 
 

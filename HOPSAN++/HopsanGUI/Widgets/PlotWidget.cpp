@@ -141,10 +141,10 @@ void PlotVariableTree::updateList()
 
     QVector<double> time;
     bool timeVectorRetained = false;
-    QStringList names = mpCurrentContainer->getGUIModelObjectNames();
+    QStringList names = mpCurrentContainer->getModelObjectNames();
     for(int i=0; i<names.size(); ++i)
     {
-        GUIModelObject *pComponent = mpCurrentContainer->getGUIModelObject(names[i]);
+        ModelObject *pComponent = mpCurrentContainer->getModelObject(names[i]);
         tempComponentItem = new QTreeWidgetItem();
         tempComponentItem->setText(0, pComponent->getName());
         QFont tempFont;
@@ -153,8 +153,8 @@ void PlotVariableTree::updateList()
         tempComponentItem->setFont(0, tempFont);
         this->addTopLevelItem(tempComponentItem);
 
-        QList<GUIPort*> portListPtrs = pComponent->getPortListPtrs();
-        QList<GUIPort*>::iterator itp;
+        QList<Port*> portListPtrs = pComponent->getPortListPtrs();
+        QList<Port*>::iterator itp;
         for(itp = portListPtrs.begin(); itp !=portListPtrs.end(); ++itp)
         {
             //If the port is not connected it has nothing to plot
@@ -540,8 +540,8 @@ void PlotTreeWidget::loadFromXml()
             int axisY = curveElement.attribute("axis").toInt();
             if(foundModel &&
                gpMainWindow->mpProjectTabs->getContainer(i)->getNumberOfPlotGenerations() >= generation &&
-               gpMainWindow->mpProjectTabs->getContainer(i)->hasGUIModelObject(componentName) &&
-               gpMainWindow->mpProjectTabs->getContainer(i)->getGUIModelObject(componentName)->getPort(portName) != 0)
+               gpMainWindow->mpProjectTabs->getContainer(i)->hasModelObject(componentName) &&
+               gpMainWindow->mpProjectTabs->getContainer(i)->getModelObject(componentName)->getPort(portName) != 0)
 
             {
                 pPlotWindow->addPlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelName);

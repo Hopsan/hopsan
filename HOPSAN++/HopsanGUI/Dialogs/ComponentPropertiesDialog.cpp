@@ -52,7 +52,7 @@
 //! @brief Constructor for the parameter dialog for components
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-ComponentPropertiesDialog::ComponentPropertiesDialog(GUIComponent *pGUIComponent, MainWindow *parent)
+ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pGUIComponent, MainWindow *parent)
     : QDialog(parent)
 {
     mpGUIComponent = pGUIComponent;
@@ -280,7 +280,7 @@ void ComponentPropertiesDialog::createEditStuff()
 //! @brief Reads the values from the dialog and writes them into the core component
 void ComponentPropertiesDialog::okPressed()
 {
-    mpGUIComponent->getParentContainerObject()->renameGUIModelObject(mpGUIComponent->getName(), mpNameEdit->text());
+    mpGUIComponent->getParentContainerObject()->renameModelObject(mpGUIComponent->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
     setParametersAndStartValues();
@@ -361,14 +361,14 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
 //}
 
 
-ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, GUIModelObject *pGUIModelObject, QWidget *parent)
+ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, ModelObject *pGUIModelObject, QWidget *parent)
     : QGridLayout(parent)
 {
     commonConstructorCode(dataName, descriptionName, dataValue, unitName, typeName, pGUIModelObject);
 }
 
 
-void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString /*typeName*/, GUIModelObject *pGUIModelObject)
+void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString /*typeName*/, ModelObject *pGUIModelObject)
 {
     mDataName = dataName;
 

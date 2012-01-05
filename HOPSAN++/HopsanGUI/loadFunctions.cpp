@@ -41,7 +41,7 @@
 //! @param[in] rDomElement The DOM element to load from
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Wheter or not to register undo for the operation
-bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, undoStatus undoSettings)
+bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoStatus undoSettings)
 {
     // -----First read from DOM element-----
     QString startComponentName, endComponentName, startPortName, endPortName;
@@ -86,8 +86,8 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
 
     // -----Now establish the connection-----
     bool success=false;
-    GUIPort *startPort = pContainer->getGUIModelObjectPort(startComponentName, startPortName);
-    GUIPort *endPort = pContainer->getGUIModelObjectPort(endComponentName, endPortName);
+    Port *startPort = pContainer->getModelObjectPort(startComponentName, startPortName);
+    Port *endPort = pContainer->getModelObjectPort(endComponentName, endPortName);
     if ((startPort != 0) && (endPort != 0))
     {
         Connector* pConn = pContainer->createConnector(startPort, endPort, NOUNDO);
@@ -120,7 +120,7 @@ bool loadConnector(QDomElement &rDomElement, GUIContainerObject* pContainer, und
 
 //! @brief xml version
 //! @todo Make undo settings work or remove it
-void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus /*undoSettings*/)
+void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus /*undoSettings*/)
 {
     QString parameterName;
     QString parameterValue;
@@ -151,7 +151,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 
 
 //! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats
-void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus /*undoSettings*/)
+void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus /*undoSettings*/)
 {
     QString portName = rDomElement.attribute("portname");
     QString variable = rDomElement.attribute("variable");
@@ -177,7 +177,7 @@ void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatu
 //! @param[in] pLibrary a pointer to the library widget which holds appearance data
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Wheter or not to register undo for the operation
-GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings)
+ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings)
 {
     //Read core specific data
     QString type = rDomElement.attribute(HMF_TYPETAG);
@@ -196,10 +196,10 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
     //bool portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
     //bool namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
 
-    GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type);
+    ModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type);
     if (pAppearanceData != 0)
     {
-        GUIModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
+        ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setName(name);
 
         nameVisibility nameStatus;
@@ -212,7 +212,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
             nameStatus = NAMENOTVISIBLE;
         }
 
-        GUIModelObject* pObj = pContainer->addGUIModelObject(&appearanceData, QPointF(posX, posY), 0, DESELECTED, nameStatus, undoSettings);
+        ModelObject* pObj = pContainer->addModelObject(&appearanceData, QPointF(posX, posY), 0, DESELECTED, nameStatus, undoSettings);
         pObj->setNameTextPos(nameTextPos);
 
         //First set flip (before rotate, Important!)
@@ -294,17 +294,17 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
 
 
 //! @brief Loads a containerport object from a xml dom element
-GUIModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pContainer, undoStatus undoSettings)
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
     rDomElement.setAttribute(HMF_TYPETAG, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
-    return loadGUIModelObject(rDomElement, pLibrary, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
+    return loadModelObject(rDomElement, pLibrary, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
 }
 
 //! @brief Loads a SystemParameter from the supplied load data
 //! @param[in] rDomElement The SystemParameter DOM element to load from
 //! @param[in] pContainer The Container Object to load into
-void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, GUIContainerObject* pContainer)
+void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, ContainerObject* pContainer)
 {
     QString name = rDomElement.attribute(HMF_NAMETAG);
     QString value = rDomElement.attribute(HMF_VALUETAG);
@@ -322,18 +322,18 @@ void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, GUIContain
 //! @brief Loads a FavouriteParameter from the supplied load data
 //! @param[in] rDomElement The FavoriteVariableLoadData DOM element to load from
 //! @param[in] pContainer The Container Object to load into (Must be a system)
-void loadFavoriteVariable(QDomElement &rDomElement, GUIContainerObject* pContainer)
+void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
 {
     QString componentName = rDomElement.attribute("componentname");
     QString portName = rDomElement.attribute("portname");
     QString dataName = rDomElement.attribute("dataname");
     QString dataUnit = rDomElement.attribute("dataunit");
 
-    dynamic_cast<GUISystem *>(pContainer)->setFavoriteVariable(componentName, portName, dataName, dataUnit);
+    dynamic_cast<SystemContainer *>(pContainer)->setFavoriteVariable(componentName, portName, dataName, dataUnit);
 }
 
 
-void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pContainer)
+void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 {
     QString alias = rDomElement.attribute("alias");
     QString componentName = rDomElement.attribute("component");
@@ -344,7 +344,7 @@ void loadPlotAlias(QDomElement &rDomElement, GUIContainerObject* pContainer)
 }
 
 
-GUITextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject *pContainer, undoStatus undoSettings)
+TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, undoStatus undoSettings)
 {
     QString text;
     QFont font;
@@ -377,7 +377,7 @@ GUITextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, GUIContainerObject
     linewidth = lineTag.attribute("width").toDouble();
     linestyle = lineTag.attribute(HMF_STYLETAG);
 
-    GUITextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NOUNDO);
+    TextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NOUNDO);
     pWidget->setText(text);
     pWidget->setFont(font);
     pWidget->setColor(color);

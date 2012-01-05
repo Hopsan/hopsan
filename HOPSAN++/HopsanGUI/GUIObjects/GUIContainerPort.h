@@ -28,16 +28,16 @@
 #include "GUIModelObject.h"
 
 //! @todo Rename this and cpp file
-class GUIContainerPort : public GUIModelObject
+class ContainerPort : public ModelObject
 {
     Q_OBJECT
 public:
-    GUIContainerPort(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
-    ~GUIContainerPort();
+    ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
+    ~ContainerPort();
     QString getTypeName();
     void setDisplayName(QString name);
 
-    enum { Type = GUICONTAINERPORT };
+    enum { Type = CONTAINERPORT };
     int type() const;
 
 protected:
@@ -48,7 +48,7 @@ protected:
 
 private:
     bool mIsSystemPort;
-    GUIPort *mpGuiPort;
+    Port *mpPort;
 };
 
 #endif

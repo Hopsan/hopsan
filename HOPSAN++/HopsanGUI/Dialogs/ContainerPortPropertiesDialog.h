@@ -30,7 +30,7 @@
 #include <QLineEdit>
 
 //Forward Declaration
-class GUIContainerPort;
+class ContainerPort;
 
 //! @todo We have three different properties dialog with basically the same "style", maybe we could have a class hierarky, no big dela right now though
 class ContainerPortPropertiesDialog : public QDialog
@@ -38,10 +38,10 @@ class ContainerPortPropertiesDialog : public QDialog
     Q_OBJECT
 
 public:
-    ContainerPortPropertiesDialog(GUIContainerPort *pContainerPort, QWidget *pParentWidget=0);
+    ContainerPortPropertiesDialog(ContainerPort *pContainerPort, QWidget *pParentWidget=0);
 
 private:
-    GUIContainerPort *mpContainerPort;
+    ContainerPort *mpContainerPort;
     QLineEdit *mpNameEdit;
 
 private slots:

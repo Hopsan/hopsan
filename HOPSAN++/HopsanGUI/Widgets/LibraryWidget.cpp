@@ -1306,7 +1306,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
             continue;
         }
 
-        GUIModelObjectAppearance *pAppearanceData = new GUIModelObjectAppearance;
+        ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
 
         QDomDocument domDocument;        //Read appearance from file, First check if xml
         QString errorStr;
@@ -1442,7 +1442,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
             continue;
         }
 
-        GUIModelObjectAppearance *pAppearanceData = new GUIModelObjectAppearance;
+        ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
 
         QDomDocument domDocument;        //Read appearance from file, First check if xml
         QString errorStr;
@@ -1658,7 +1658,7 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
 
 //! @brief Retrieves the appearance data for a given type name.
 //! @param componentType Type name of the component
-GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
+ModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
 {
     LibraryComponent* pLibComp = mpContentsTree->findComponent(componentType);
     if(pLibComp == 0)
@@ -1753,7 +1753,7 @@ LibraryContentsTree *LibraryContentsTree::findChild(QString name)
 //! @brief Adds a new component to a node from an appearance data object.
 //! @param pAppearanceData Appearance data object to use
 //! @returns Pointer to the new component
-LibraryComponent *LibraryContentsTree::addComponent(GUIModelObjectAppearance *pAppearanceData)
+LibraryComponent *LibraryContentsTree::addComponent(ModelObjectAppearance *pAppearanceData)
 {
     LibraryComponent *pNewComponent = new LibraryComponent(pAppearanceData);
     mComponentPtrs.append(pNewComponent);
@@ -1783,7 +1783,7 @@ LibraryComponent *LibraryContentsTree::findComponent(QString typeName)
 
 //! @brief Constructor for library component class
 //! @param pAppearanceData Pointere to appearance data object that is used
-LibraryComponent::LibraryComponent(GUIModelObjectAppearance *pAppearanceData)
+LibraryComponent::LibraryComponent(ModelObjectAppearance *pAppearanceData)
 {
     mpAppearanceData = pAppearanceData;
 
@@ -1831,7 +1831,7 @@ QString LibraryComponent::getTypeName()
 
 
 //! @brief Returns a pointer to the appearance data object used by component.
-GUIModelObjectAppearance *LibraryComponent::getAppearanceData()
+ModelObjectAppearance *LibraryComponent::getAppearanceData()
 {
     return mpAppearanceData;
 }

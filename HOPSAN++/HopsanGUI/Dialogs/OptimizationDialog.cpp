@@ -293,7 +293,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 
 void OptimizationDialog::loadConfiguration()
 {
-    GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
 
     OptimizationSettings optSettings = pSystem->getOptimizationSettings();
 
@@ -384,7 +384,7 @@ void OptimizationDialog::saveConfiguration()
 
 
 
-    GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     pSystem->setOptimizationSettings(optSettings);
 }
 
@@ -413,8 +413,8 @@ void OptimizationDialog::open()
     mpParametersList->clear();
 
     //Populate parameters list
-    GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
-    QStringList componentNames = pSystem->getGUIModelObjectNames();
+    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    QStringList componentNames = pSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {
         QTreeWidgetItem *pComponentItem = new QTreeWidgetItem(QStringList() << componentNames.at(c));
@@ -422,7 +422,7 @@ void OptimizationDialog::open()
         componentFont.setBold(true);
         pComponentItem->setFont(0, componentFont);
         mpParametersList->insertTopLevelItem(0, pComponentItem);
-        QStringList parameterNames = pSystem->getGUIModelObject(componentNames.at(c))->getParameterNames();
+        QStringList parameterNames = pSystem->getModelObject(componentNames.at(c))->getParameterNames();
         for(int p=0; p<parameterNames.size(); ++p)
         {
             QTreeWidgetItem *pParameterItem = new QTreeWidgetItem(QStringList() << parameterNames.at(p));
@@ -441,7 +441,7 @@ void OptimizationDialog::open()
         componentFont.setBold(true);
         pComponentItem->setFont(0, componentFont);
         mpVariablesList->insertTopLevelItem(0, pComponentItem);
-        QList<GUIPort*> ports = pSystem->getGUIModelObject(componentNames.at(c))->getPortListPtrs();
+        QList<Port*> ports = pSystem->getModelObject(componentNames.at(c))->getPortListPtrs();
         for(int p=0; p<ports.size(); ++p)
         {
             QTreeWidgetItem *pPortItem = new QTreeWidgetItem(QStringList() << ports.at(p)->getPortName());
@@ -1286,7 +1286,7 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
         QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + trUtf8("  < "));
         pLabel->setAlignment(Qt::AlignCenter);
 
-        GUISystem *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+        SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
         OptimizationSettings optSettings = pSystem->getOptimizationSettings();
         QString min, max;
         for(int i=0; i<optSettings.mParamters.size(); ++i)

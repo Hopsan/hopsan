@@ -42,7 +42,7 @@ class UndoStack;
 //! @brief Constructor for creation of empty non connected connector
 //! @param [in] startPort The initial port the connector
 //! @param [in] pParentContainer The parent container object who ones this connector
-Connector::Connector(GUIContainerObject *pParentContainer)
+Connector::Connector(ContainerObject *pParentContainer)
         : QGraphicsWidget()
 {
     // Init members
@@ -101,7 +101,7 @@ void Connector::refreshConnectedSystemportsGraphics()
     }
 }
 
-void Connector::disconnectPortSigSlots(GUIPort* pPort)
+void Connector::disconnectPortSigSlots(Port* pPort)
 {
     bool sucess1 = true;
     bool sucess2 = true;
@@ -119,7 +119,7 @@ void Connector::disconnectPortSigSlots(GUIPort* pPort)
 }
 
 //! @todo if we would let the guimodelobjects connect to the connector we could avoid having two separate disconnect / connect functions we could just let the modelobject refresh the sigslot connections against the connector
-void Connector::connectPortSigSlots(GUIPort* pPort)
+void Connector::connectPortSigSlots(Port* pPort)
 {
     bool sucess1 = true;
     bool sucess2 = true;
@@ -136,7 +136,7 @@ void Connector::connectPortSigSlots(GUIPort* pPort)
     }
 }
 
-void Connector::setParentContainer(GUIContainerObject *pParentContainer)
+void Connector::setParentContainer(ContainerObject *pParentContainer)
 {
     if (mpParentContainerObject != 0)
     {
@@ -152,7 +152,7 @@ void Connector::setParentContainer(GUIContainerObject *pParentContainer)
     connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)),   this, SLOT(setIsoStyle(graphicsType)),  Qt::UniqueConnection);
 }
 
-GUIContainerObject *Connector::getParentContainer()
+ContainerObject *Connector::getParentContainer()
 {
     return mpParentContainerObject;
 }
@@ -256,7 +256,7 @@ void Connector::removePoint(bool deleteIfEmpty)
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
-void Connector::setStartPort(GUIPort *port)
+void Connector::setStartPort(Port *port)
 {
     this->disconnectPortSigSlots(mpStartPort);
     mpStartPort = port;
@@ -270,7 +270,7 @@ void Connector::setStartPort(GUIPort *port)
 //! @see setStartPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
-void Connector::setEndPort(GUIPort *port)
+void Connector::setEndPort(Port *port)
 {
     this->disconnectPortSigSlots(mpEndPort);
     mpEndPort = port;
@@ -411,7 +411,7 @@ connectorGeometry Connector::getGeometry(const int lineNumber)
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
 //! @see getEndPort()
-GUIPort *Connector::getStartPort()
+Port *Connector::getStartPort()
 {
     return mpStartPort;
 }
@@ -421,7 +421,7 @@ GUIPort *Connector::getStartPort()
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
-GUIPort *Connector::getEndPort()
+Port *Connector::getEndPort()
 {
     return mpEndPort;
 }

@@ -34,14 +34,14 @@
 #include "Widgets/ProjectTabWidget.h"
 
 
-GUIComponent::GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
-    : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
+Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+    : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     //Set the hmf save tag name
     mHmfTagName = HMF_COMPONENTTAG;
 
     //Create the object in core, and get its default core name
-    mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createComponent(mGUIModelObjectAppearance.getTypeName(), mGUIModelObjectAppearance.getName()));
+    mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getName()));
 
     //Sets the ports
     createPorts();
@@ -61,7 +61,7 @@ GUIComponent::GUIComponent(QPointF position, qreal rotation, GUIModelObjectAppea
     }
 }
 
-GUIComponent::~GUIComponent()
+Component::~Component()
 {
     //Remove in core
     //! @todo maybe change to delte instead of remove with dodelete yes
@@ -70,7 +70,7 @@ GUIComponent::~GUIComponent()
 
 
 //! @brief Returns whether or not the component has at least one power port
-bool GUIComponent::hasPowerPorts()
+bool Component::hasPowerPorts()
 {
     bool retval = false;
     for(int i=0; i<mPortListPtrs.size(); ++i)
@@ -86,7 +86,7 @@ bool GUIComponent::hasPowerPorts()
 
 //! Event when double clicking on component icon.
 //! @todo Fix the sink component so it works with this
-void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
         return;
@@ -136,40 +136,40 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 
 //! Returns a string with the component type.
-QString GUIComponent::getTypeName()
+QString Component::getTypeName()
 {
-    return mGUIModelObjectAppearance.getTypeName();
+    return mModelObjectAppearance.getTypeName();
 }
 
-QString GUIComponent::getTypeCQS()
+QString Component::getTypeCQS()
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(this->getName());
 }
 
 
-void GUIComponent::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+void Component::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->getParameters(this->getName(), qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
 }
 
 
 //! @brief Get a vector with the names of the available parameters
-QStringList GUIComponent::getParameterNames()
+QStringList Component::getParameterNames()
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
 }
 
-QString GUIComponent::getParameterUnit(QString name)
+QString Component::getParameterUnit(QString name)
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterUnit(this->getName(), name);
 }
 
-QString GUIComponent::getParameterDescription(QString name)
+QString Component::getParameterDescription(QString name)
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterDescription(this->getName(), name);
 }
 
-QString GUIComponent::getParameterValue(QString name)
+QString Component::getParameterValue(QString name)
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), name);
 }
@@ -180,13 +180,13 @@ QString GUIComponent::getParameterValue(QString name)
 //}
 
 //! @brief Set a parameter value to be mapped to a System parameter
-bool GUIComponent::setParameterValue(QString name, QString sysParName, bool force)
+bool Component::setParameterValue(QString name, QString sysParName, bool force)
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, sysParName, force);
 }
 
 //! @brief Set a start value to be mapped to a System parameter
-bool GUIComponent::setStartValue(QString portName, QString variable, QString sysParName)
+bool Component::setStartValue(QString portName, QString variable, QString sysParName)
 {
 //    QVector<QString> vVariable;
 //    QVector<QString> vSysParName;
@@ -200,7 +200,7 @@ bool GUIComponent::setStartValue(QString portName, QString variable, QString sys
 
 
 //! @brief Set a start value to be mapped to a System parameter
-QString GUIComponent::getStartValueTxt(QString portName, QString variable)
+QString Component::getStartValueTxt(QString portName, QString variable)
 {
     QVector<QString> vVariable, vSysParName, vUnit;
     this->getPort(portName)->getStartValueDataNamesValuesAndUnits(vVariable, vSysParName, vUnit);
@@ -213,7 +213,7 @@ QString GUIComponent::getStartValueTxt(QString portName, QString variable)
 
 
 //! @brief Slot that opens the parameter dialog for the component
-void GUIComponent::openPropertiesDialog()
+void Component::openPropertiesDialog()
 {
     ComponentPropertiesDialog *pDialog = new ComponentPropertiesDialog(this, gpMainWindow);
     pDialog->exec();
@@ -222,12 +222,12 @@ void GUIComponent::openPropertiesDialog()
 
 
 //! @brief Help function to create ports in the component when it is created
-void GUIComponent::createPorts()
+void Component::createPorts()
 {
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
     QString cqsType = mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(getName());
     PortAppearanceMapT::iterator i;
-    for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
+    for (i = mModelObjectAppearance.getPortAppearanceMap().begin(); i != mModelObjectAppearance.getPortAppearanceMap().end(); ++i)
     {
         QString nodeType = mpParentContainerObject->getCoreSystemAccessPtr()->getNodeType(this->getName(), i.key());
         QString portType = mpParentContainerObject->getCoreSystemAccessPtr()->getPortType(this->getName(), i.key());
@@ -236,20 +236,20 @@ void GUIComponent::createPorts()
         qreal x = i.value().x * this->boundingRect().width();
         qreal y = i.value().y * this->boundingRect().height();
 
-        GUIPort *pNewPort = new GUIPort(i.key(), x, y, &(i.value()), this);
+        Port *pNewPort = new Port(i.key(), x, y, &(i.value()), this);
         mPortListPtrs.append(pNewPort);
     }
 }
 
 
 
-int GUIComponent::type() const
+int Component::type() const
 {
     return Type;
 }
 
 
-QString GUIComponent::getDefaultParameter(QString name)
+QString Component::getDefaultParameter(QString name)
 {
     if(mDefaultParameters.contains(name))
         return mDefaultParameters.find(name).value();
@@ -258,7 +258,7 @@ QString GUIComponent::getDefaultParameter(QString name)
 }
 
 
-void GUIComponent::setVisible(bool visible)
+void Component::setVisible(bool visible)
 {
     this->mpIcon->setVisible(visible);
     for(int i=0; i<mPortListPtrs.size(); ++i)
@@ -270,9 +270,9 @@ void GUIComponent::setVisible(bool visible)
 
 //! @brief Save component coredata to XML Dom Element
 //! @param[in] rDomElement The dom element to save to
-void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
+void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    GUIModelObject::saveCoreDataToDomElement(rDomElement);
+    ModelObject::saveCoreDataToDomElement(rDomElement);
 
     //Save parameters (also core related)
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);

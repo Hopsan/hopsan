@@ -32,7 +32,7 @@
 
 //Forward Declarations
 class ProjectTab;
-class GUIContainerObject;
+class ContainerObject;
 
 class GraphicsView : public QGraphicsView
 {
@@ -43,8 +43,8 @@ public:
 
     void updateViewPort();
     void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
-    void setContainerPtr(GUIContainerObject *pContainer);
-    GUIContainerObject *getContainerPtr();
+    void setContainerPtr(ContainerObject *pContainer);
+    ContainerObject *getContainerPtr();
     bool isCtrlKeyPressed();
     bool isShiftKeyPressed();
     bool isLeftMouseButtonPressed();
@@ -93,7 +93,7 @@ private:
     bool mIgnoreNextContextMenuEvent;
     double mZoomFactor;
 
-    GUIContainerObject *mpContainerObject;
+    ContainerObject *mpContainerObject;
 };
 
 #endif // GRAPHICSVIEW_H

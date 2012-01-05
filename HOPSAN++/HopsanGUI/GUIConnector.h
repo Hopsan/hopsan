@@ -38,21 +38,21 @@
 
 class ConnectorLine;
 class GraphicsView;
-class GUIObject;
-class GUIPort;
-class GUISystem;
-class GUIContainerObject;
+class WorkspaceObject;
+class Port;
+class SystemContainer;
+class ContainerObject;
 
 class Connector : public QGraphicsWidget
 {
     Q_OBJECT
     friend class ConnectorLine;
 public:
-    Connector(GUIContainerObject *pParentContainer);
+    Connector(ContainerObject *pParentContainer);
     ~Connector();
 
-    void setParentContainer(GUIContainerObject *pParentContainer);
-    GUIContainerObject *getParentContainer();
+    void setParentContainer(ContainerObject *pParentContainer);
+    ContainerObject *getParentContainer();
 
     enum { Type = UserType + 1 };           //!< @todo is this really necessary, we dont check Type on connectors (only one version exist)
 
@@ -61,11 +61,11 @@ public:
     void finishCreation();
     void setPointsAndGeometries(const QVector<QPointF> &rPoints, const QStringList &rGeometries);
 
-    void setStartPort(GUIPort *port);
-    void setEndPort(GUIPort *port);
+    void setStartPort(Port *port);
+    void setEndPort(Port *port);
 
-    GUIPort *getStartPort();
-    GUIPort *getEndPort();
+    Port *getStartPort();
+    Port *getEndPort();
     QString getStartPortName();
     QString getEndPortName();
     QString getStartComponentName();
@@ -119,8 +119,8 @@ signals:
 private:
     void determineAppearance();
     void refreshConnectedSystemportsGraphics();
-    void disconnectPortSigSlots(GUIPort* pPort);
-    void connectPortSigSlots(GUIPort* pPort);
+    void disconnectPortSigSlots(Port* pPort);
+    void connectPortSigSlots(Port* pPort);
     void addLine(ConnectorLine *pLine);
     void removeAllLines();
 
@@ -129,10 +129,10 @@ private:
     bool mMakingDiagonal;
     bool mIsDashed;
 
-    GUIContainerObject *mpParentContainerObject;
+    ContainerObject *mpParentContainerObject;
     ConnectorAppearance *mpConnectorAppearance;
-    GUIPort *mpStartPort;
-    GUIPort *mpEndPort;
+    Port *mpStartPort;
+    Port *mpEndPort;
 
     QVector<ConnectorLine*> mpLines;
     QVector<connectorGeometry> mGeometries;

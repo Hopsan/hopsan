@@ -39,7 +39,7 @@
 #include <QVector>
 #include <QToolButton>
 
-class GUIModelObjectAppearance;
+class ModelObjectAppearance;
 class LibraryListWidgetItem;
 
 class LibraryComponent;
@@ -65,7 +65,7 @@ public:
     void unloadExternalLibrary(QString libName);
     void loadHiddenSecretDir(QString dir);
 
-    GUIModelObjectAppearance *getAppearanceData(QString componentType);
+    ModelObjectAppearance *getAppearanceData(QString componentType);
     QSize sizeHint() const;
 
     graphicsType mGfxType;
@@ -134,7 +134,7 @@ public:
     LibraryContentsTree *addChild(QString name);
     bool removeChild(QString name);
     LibraryContentsTree *findChild(QString name);
-    LibraryComponent *addComponent(GUIModelObjectAppearance *pAppearanceData);
+    LibraryComponent *addComponent(ModelObjectAppearance *pAppearanceData);
     LibraryComponent *findComponent(QString typeName);
 
     QString mName;
@@ -148,14 +148,14 @@ public:
 class LibraryComponent
 {
 public:
-    LibraryComponent(GUIModelObjectAppearance *pAppearanceData);
+    LibraryComponent(ModelObjectAppearance *pAppearanceData);
     QIcon getIcon(graphicsType gfxType);
     QString getName();
     QString getTypeName();
-    GUIModelObjectAppearance *getAppearanceData();
+    ModelObjectAppearance *getAppearanceData();
 
 private:
-    GUIModelObjectAppearance *mpAppearanceData;
+    ModelObjectAppearance *mpAppearanceData;
     QIcon mUserIcon;
     QIcon mIsoIcon;
 };

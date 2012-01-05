@@ -35,23 +35,22 @@
 #include "ComponentSystem.h"
 
 using namespace std;
-using namespace hopsan;
 
 
 bool CoreLibraryAccess::hasComponent(QString componentName)
 {
-    return HopsanEssentials::getInstance()->hasComponent(componentName.toStdString());
+    return hopsan::HopsanEssentials::getInstance()->hasComponent(componentName.toStdString());
 }
 
 
 bool CoreLibraryAccess::loadComponentLib(QString fileName)
 {
-    return HopsanEssentials::getInstance()->loadExternalComponentLib(fileName.toStdString());
+    return hopsan::HopsanEssentials::getInstance()->loadExternalComponentLib(fileName.toStdString());
 }
 
 bool CoreLibraryAccess::unLoadComponentLib(QString fileName)
 {
-    return HopsanEssentials::getInstance()->unLoadExternalComponentLib(fileName.toStdString());
+    return hopsan::HopsanEssentials::getInstance()->unLoadExternalComponentLib(fileName.toStdString());
 }
 
 //! @brief Reserves a type name in the Hopsan Core, to prevent external libs from loading components with that specific typename
@@ -63,13 +62,13 @@ bool CoreLibraryAccess::reserveComponentTypeName(const QString typeName)
 
 size_t CoreMessagesAccess::getNumberOfMessages()
 {
-    return HopsanEssentials::getInstance()->checkMessage();
+    return hopsan::HopsanEssentials::getInstance()->checkMessage();
 }
 
 void CoreMessagesAccess::getMessage(QString &rMessage, QString &rType, QString &rTag)
 {
     std::string msg, tag, type;
-    HopsanEssentials::getInstance()->getMessage(msg, type, tag);
+    hopsan::HopsanEssentials::getInstance()->getMessage(msg, type, tag);
     rMessage = QString::fromStdString(msg);
     rTag = QString::fromStdString(tag);
     rType = QString::fromStdString(type);
@@ -82,7 +81,7 @@ CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSy
     if (pParentCoreSystemAccess == 0)
     {
         //Create new root system
-        mpCoreComponentSystem = HopsanEssentials::getInstance()->createComponentSystem();
+        mpCoreComponentSystem = hopsan::HopsanEssentials::getInstance()->createComponentSystem();
     }
     else
     {
@@ -91,12 +90,12 @@ CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSy
     }
 }
 
-ComponentSystem* CoreSystemAccess::getCoreSystemPtr()
+hopsan::ComponentSystem* CoreSystemAccess::getCoreSystemPtr()
 {
     return mpCoreComponentSystem;
 }
 
-ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
+hopsan::ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
 {
     qDebug() << " corecomponentsystemname: " <<  QString::fromStdString(mpCoreComponentSystem->getName()) << "  Subname: " << name;
     return mpCoreComponentSystem->getSubComponentSystem(name.toStdString());
@@ -180,7 +179,7 @@ QString CoreSystemAccess::setRootSystemName(QString name)
 QString CoreSystemAccess::renameSubComponent(QString componentName, QString name)
 {
     qDebug() << "rename subcomponent from " << componentName << " to: " << name;
-    Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    hopsan::Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
     pTempComponent->setName(name.toStdString());
     qDebug() << "name after: " << QString::fromStdString(pTempComponent->getName());
     return QString::fromStdString(pTempComponent->getName());
@@ -205,7 +204,7 @@ void CoreSystemAccess::stop()
 
 void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelsHaveNotChanged)
 {
-    std::vector<ComponentSystem *> systemVector;
+    std::vector<hopsan::ComponentSystem *> systemVector;
     for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
     {
         systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
@@ -226,7 +225,7 @@ QString CoreSystemAccess::getPortType(const QString componentName, const QString
 {
     //qDebug() << "name for port fetch " << componentName << " " << portName;
 
-    Port *pPort = this->getPortPtr(componentName, portName);
+    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
     if(pPort)
     {
         switch (portTypeIndicator)
@@ -253,7 +252,7 @@ QString CoreSystemAccess::getPortType(const QString componentName, const QString
 
 QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
 {
-    Port *pPort = this->getPortPtr(componentName, portName);
+    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
     if(pPort)
     {
         return QString(pPort->getNodeType().c_str());
@@ -270,7 +269,7 @@ void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentNam
 {
     std::vector<std::string> stdNames, stdUnits;
     std::vector<double> stdValues;
-    Port *pPort = this->getPortPtr(componentName, portName);
+    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
     if(pPort)
     {
         pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValues, stdUnits);
@@ -291,7 +290,7 @@ void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentNam
 {
     std::vector<std::string> stdNames, stdUnits;
     std::vector<std::string> stdValuesTxt;
-    Port *pPort = this->getPortPtr(componentName, portName);
+    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
     if(pPort)
     {
         pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValuesTxt, stdUnits);
@@ -324,8 +323,8 @@ vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString po
 {
     //qDebug() << "getTimeVector, " << componentName << ", " << portName;
 
-    Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
-    Port* pPort = 0;
+    hopsan::Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    hopsan::Port* pPort = 0;
     if (pComp != 0)
     {
         pPort = pComp->getPort(portName.toStdString());
@@ -385,7 +384,7 @@ void CoreSystemAccess::finalize(double mStartTime, double mFinishTime)
 QString CoreSystemAccess::createComponent(QString type, QString name)
 {
     //qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
-    Component *pCoreComponent = HopsanEssentials::getInstance()->createComponent(type.toStdString());
+    hopsan::Component *pCoreComponent = hopsan::HopsanEssentials::getInstance()->createComponent(type.toStdString());
     if (pCoreComponent != 0)
     {
         mpCoreComponentSystem->addComponent(pCoreComponent);
@@ -405,7 +404,7 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
 
 QString CoreSystemAccess::createSubSystem(QString name)
 {
-    ComponentSystem *pTempComponentSystem = HopsanEssentials::getInstance()->createComponentSystem();
+    hopsan::ComponentSystem *pTempComponentSystem = hopsan::HopsanEssentials::getInstance()->createComponentSystem();
     mpCoreComponentSystem->addComponent(pTempComponentSystem);
     if (!name.isEmpty())
     {
@@ -498,7 +497,7 @@ void CoreSystemAccess::unReserveUniqueName(QString name)
 QString CoreSystemAccess::getPlotDataUnit(const QString compname, const QString portname, const QString dataname)
 {
     std::string dummy, unit;
-    Port* pPort = this->getPortPtr(compname, portname);
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if(pPort)
     {
         int idx = pPort->getNodeDataIdFromName(dataname.toStdString());
@@ -515,8 +514,8 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
     rNames.clear();
     rUnits.clear();
 
-    Port* pPort = this->getPortPtr(compname, portname);
-    if (pPort && pPort->getPortType() < MULTIPORT)
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
+    if (pPort && pPort->getPortType() < hopsan::MULTIPORT)
     {
         pPort->getNodeDataNamesAndUnits(corenames, coreunits);
         //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
@@ -531,7 +530,7 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
 void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData)
 {
     int dataId = -1;
-    Port* pPort = this->getPortPtr(compname, portname);
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
         if(pPort->isConnected())
         {
@@ -560,7 +559,7 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
 bool CoreSystemAccess::getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData)
 {
     int dataId = -1;
-    Port* pPort = this->getPortPtr(compname, portname);
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
     {
         dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
@@ -578,7 +577,7 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
 
 bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 {
-    Port* pPort = this->getPortPtr(componentName, portName);
+    hopsan::Port* pPort = this->getCorePortPtr(componentName, portName);
     if(pPort)
     {
         return pPort->isConnected();
@@ -593,11 +592,11 @@ bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 //! @param [in] componentName The name of the component to which the port belongs
 //! @param [in] portName The name of the port
 //! @returns A pointer to the port or a 0 ptr if component or port not found
-hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portName)
+hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString portName)
 {
     //We must use getcomponent here if we want to be able to find root system ptr
     //! @todo see if we can reduce the number f public get functions one, the one which only searches subcomponents make function in core to solve the other access type like bellow
-    Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    hopsan::Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
     if (pComp)
     {
         return pComp->getPort(portName.toStdString());

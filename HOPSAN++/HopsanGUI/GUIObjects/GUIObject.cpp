@@ -33,7 +33,7 @@
 
 
 //! @todo should not pSystem and pParent be teh same ?
-GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
+WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, selectionStatus, ContainerObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     //Initi variables
@@ -52,7 +52,7 @@ GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject
 
     //Set position orientation and other appearance stuff
     //Initially we dont know the selection box size
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2), QPen(QColor("darkRed"),2), this);
+    mpSelectionBox = new WorkspaceObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2), QPen(QColor("darkRed"),2), this);
     mpSelectionBox->setZValue(SELECTIONBOX_Z);
     mpSelectionBox->setPassive();
     this->setGeometry(0,0,0,0);
@@ -63,13 +63,7 @@ GUIObject::GUIObject(QPointF pos, qreal rot, selectionStatus, GUIContainerObject
 }
 
 
-////! @brief Destructor for GUI Objects
-//GUIObject::~GUIObject()
-//{
-
-//}
-
-void GUIObject::setParentContainerObject(GUIContainerObject *pParentContainer)
+void WorkspaceObject::setParentContainerObject(ContainerObject *pParentContainer)
 {
     if(mpParentContainerObject != 0)
     {
@@ -85,12 +79,12 @@ void GUIObject::setParentContainerObject(GUIContainerObject *pParentContainer)
 
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
-int GUIObject::type() const
+int WorkspaceObject::type() const
 {
     return Type;
 }
 
-QPointF GUIObject::getCenterPos()
+QPointF WorkspaceObject::getCenterPos()
 {
     if (this->scene() != 0)
     {
@@ -102,7 +96,7 @@ QPointF GUIObject::getCenterPos()
     }
 }
 
-void GUIObject::setCenterPos(const QPointF cpos)
+void WorkspaceObject::setCenterPos(const QPointF cpos)
 {
     if (this->scene() != 0)
     {
@@ -115,30 +109,30 @@ void GUIObject::setCenterPos(const QPointF cpos)
     }
 }
 
-void GUIObject::saveToDomElement(QDomElement &/*rDomElement*/){}  //! @todo nothing for now
+void WorkspaceObject::saveToDomElement(QDomElement &/*rDomElement*/){}  //! @todo nothing for now
 
-GUIContainerObject *GUIObject::getParentContainerObject()
+ContainerObject *WorkspaceObject::getParentContainerObject()
 {
     return mpParentContainerObject;
 }
 
 
 //! @brief Slot that deselects the object
-void GUIObject::deselect()
+void WorkspaceObject::deselect()
 {
     this->setSelected(false);
 }
 
 
 //! @brief Slot that selects the object
-void GUIObject::select()
+void WorkspaceObject::select()
 {
     this->setSelected(true);
 }
 
 
 //! @brief Defines what happens when mouse starts hovering the object
-void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void WorkspaceObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
@@ -150,7 +144,7 @@ void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 
 //! @brief Defines what happens when mouse stops hovering the object
-void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void WorkspaceObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
@@ -162,7 +156,7 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
-void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true); //Make the component movable if not (it is not movable during creation of connector)
     setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not (it is not selectable during creation of connector)
@@ -192,7 +186,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 
 //! @brief Defines what happens if a mouse key is released while hovering an object
-void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void WorkspaceObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
         //Objects shall not be selectable while creating a connector
     if(mpParentContainerObject->isCreatingConnector())
@@ -207,7 +201,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 //! @brief Defines what happens when object is selected, deselected or has moved
 //! @param change Tells what it is that has changed
-QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
@@ -277,7 +271,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 //! @param angle Angle to rotate to
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @todo Clean up these rotate functino and make them more similar with those in modelobject, try to share code if possible
-void GUIObject::rotate(qreal angle, undoStatus /*undoSettings*/)
+void WorkspaceObject::rotate(qreal angle, undoStatus /*undoSettings*/)
 {
     this->setTransformOriginPoint(this->boundingRect().center());
     if(mIsFlipped)
@@ -299,7 +293,7 @@ void GUIObject::rotate(qreal angle, undoStatus /*undoSettings*/)
 //! @brief Rotates a component 90 degrees clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see rotate(qreal angle, undoStatus undoSettings)
-void GUIObject::rotate90cw(undoStatus undoSettings)
+void WorkspaceObject::rotate90cw(undoStatus undoSettings)
 {
     this->rotate(90, undoSettings);
 }
@@ -307,7 +301,7 @@ void GUIObject::rotate90cw(undoStatus undoSettings)
 //! @brief Rotates a component 90 degrees counter-clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see rotate(qreal angle, undoStatus undoSettings)
-void GUIObject::rotate90ccw(undoStatus undoSettings)
+void WorkspaceObject::rotate90ccw(undoStatus undoSettings)
 {
     this->rotate(-90, undoSettings);
 }
@@ -318,7 +312,7 @@ void GUIObject::rotate90ccw(undoStatus undoSettings)
 //! @see moveDown()
 //! @see moveLeft()
 //! @see moveRight()
-void GUIObject::moveUp()
+void WorkspaceObject::moveUp()
 {
     //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
@@ -330,7 +324,7 @@ void GUIObject::moveUp()
 //! @see moveUp()
 //! @see moveLeft()
 //! @see moveRight()
-void GUIObject::moveDown()
+void WorkspaceObject::moveDown()
 {
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
     mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
@@ -341,7 +335,7 @@ void GUIObject::moveDown()
 //! @see moveUp()
 //! @see moveDown()
 //! @see moveRight()
-void GUIObject::moveLeft()
+void WorkspaceObject::moveLeft()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
     mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
@@ -352,7 +346,7 @@ void GUIObject::moveLeft()
 //! @see moveUp()
 //! @see moveDown()
 //! @see moveLeft()
-void GUIObject::moveRight()
+void WorkspaceObject::moveRight()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
     mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
@@ -362,14 +356,14 @@ void GUIObject::moveRight()
 //! @brief Tells the component to ask its parent to delete it
 //! @todo The name of the function is silly
 //! @todo will not work with gui only objects like textboxes, as they ont have unique names
-void GUIObject::deleteMe()
+void WorkspaceObject::deleteMe()
 {
     //Should not be used
     assert(false);
 }
 
 
-bool GUIObject::isFlipped()
+bool WorkspaceObject::isFlipped()
 {
     return mIsFlipped;
 }
@@ -384,7 +378,7 @@ bool GUIObject::isFlipped()
 //! @param activePen Width and color of the box when the parent component is selected.
 //! @param hoverPen Width and color of the box when the parent component is hovered by the mouse cursor.
 //! @param *parent Pointer to the parent object.
-GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent)
+WorkspaceObjectSelectionBox::WorkspaceObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, WorkspaceObject *parent)
         : QGraphicsItemGroup(parent)
 {
     mActivePen = activePen;
@@ -402,7 +396,7 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
     this->setSize(x1,y1,x2,y2);
 }
 
-void GUIObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
+void WorkspaceObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
 {
     this->prepareGeometryChange(); //dont know if this is actually necessary but lets call it anyway
 
@@ -426,7 +420,7 @@ void GUIObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
 //! @brief Makes the box visible and makes it use "active" style
 //! @see setPassive();
 //! @see setHovered();
-void GUIObjectSelectionBox::setActive()
+void WorkspaceObjectSelectionBox::setActive()
 {
     this->setVisible(true);
     for(int i=0; i<mLines.size(); ++i)
@@ -439,7 +433,7 @@ void GUIObjectSelectionBox::setActive()
 //! @brief Makes the box invisible
 //! @see setActive();
 //! @see setHovered();
-void GUIObjectSelectionBox::setPassive()
+void WorkspaceObjectSelectionBox::setPassive()
 {
     this->setVisible(false);
 }
@@ -448,7 +442,7 @@ void GUIObjectSelectionBox::setPassive()
 //! @brief Makes the box visible and makes it use "hovered" style
 //! @see setActive();
 //! @see setPassive();
-void GUIObjectSelectionBox::setHovered()
+void WorkspaceObjectSelectionBox::setHovered()
 {
     this->setVisible(true);
     for(int i=0; i<mLines.size(); ++i)

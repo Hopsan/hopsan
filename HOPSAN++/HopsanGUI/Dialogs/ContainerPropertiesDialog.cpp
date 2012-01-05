@@ -44,7 +44,7 @@
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
-ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContainerObject, QWidget *pParentWidget)
+ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainerObject, QWidget *pParentWidget)
     : QDialog(pParentWidget)
 {
     mpContainerObject = pContainerObject;
@@ -148,7 +148,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     mpSettingsGroupBox->setLayout(mpSettingsLayout);
 
         //Set GuiSystem specific stuff
-    if (mpContainerObject->type() == GUISYSTEM)
+    if (mpContainerObject->type() == SYSTEMCONTAINER)
     {
             //Time step
         mpTimeStepCheckBox = new QCheckBox("Inherit time step from parent system", this);
@@ -327,7 +327,7 @@ void ContainerPropertiesDialog::setValues()
     }
 
     //Set GuiSystem specific stuff
-    if (mpContainerObject->type() == GUISYSTEM)
+    if (mpContainerObject->type() == SYSTEMCONTAINER)
     {
         mpContainerObject->getCoreSystemAccessPtr()->setInheritTimeStep(mpTimeStepCheckBox->isChecked());
         mpContainerObject->getCoreSystemAccessPtr()->setDesiredTimeStep(mpTimeStepEdit->text().toDouble());

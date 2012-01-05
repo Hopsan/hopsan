@@ -44,7 +44,7 @@
 class MainWindow;
 class PlotVariableTree;
 class PlotTreeWidget;
-class GUISystem;
+class SystemContainer;
 class PlotTabWidget;
 class PlotTab;
 class PlotMarker;
@@ -67,7 +67,7 @@ public:
     PlotTab *getCurrentPlotTab();
     void showHelpPopupMessage(QString message);
     void hideHelpPopupMessage();
-    GUISystem *mpCurrentGUISystem;
+    SystemContainer *mpCurrentGUISystem;
 
 signals:
     void curveAdded();
@@ -333,7 +333,7 @@ public:
     int getAxisY();
     QVector<double> getDataVector();
     QVector<double> getTimeVector();
-    GUIContainerObject *getContainerObjectPtr();
+    ContainerObject *getContainerObjectPtr();
     void setGeneration(int generation);
     void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
@@ -368,7 +368,7 @@ private:
     QString mPortName;
     QString mDataName;
     QString mDataUnit;
-    GUIContainerObject *mpContainerObject;
+    ContainerObject *mpContainerObject;
     QVector<double> mDataVector;
     QVector<double> mTimeVector;
     QColor mLineColor;

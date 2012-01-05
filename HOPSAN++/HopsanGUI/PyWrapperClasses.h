@@ -68,7 +68,7 @@ class PyGUIPortClassWrapper : public QObject
     Q_OBJECT
 
 public slots:
-    QString plot(GUIPort* o, const QString& dataName)
+    QString plot(Port* o, const QString& dataName)
     {
         QString res;
         if(!(o->plot(dataName)))
@@ -88,7 +88,7 @@ public slots:
         return res;
     }
 
-    double getLastValue(GUIPort* o, const QString& dataName)
+    double getLastValue(Port* o, const QString& dataName)
     {
         double data;
 
@@ -98,7 +98,7 @@ public slots:
             return data;
     }
 
-    QVector<double> getDataVector(GUIPort* o, const QString& dataName)
+    QVector<double> getDataVector(Port* o, const QString& dataName)
     {
         QPair<QVector<double>, QVector<double> > yData;
         o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getPortName(),dataName,yData);
@@ -106,7 +106,7 @@ public slots:
         return yData.second;
     }
 
-    QVector<double> getTimeVector(GUIPort* o)
+    QVector<double> getTimeVector(Port* o)
     {
         QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getPortName()));
 
@@ -121,19 +121,19 @@ class PyGUIObjectClassWrapper : public QObject
     Q_OBJECT
 
 public slots:
-    double getParameter(GUIModelObject* o, const QString& parName)
+    double getParameter(ModelObject* o, const QString& parName)
     {
         QString strParValue = o->getParameterValue(parName);
 
         return strParValue.toDouble(); //! @todo This is not good if parameter is not double
     }
 
-    void setParameter(GUIModelObject* o, const QString& parName, const double& value)
+    void setParameter(ModelObject* o, const QString& parName, const double& value)
     {
         o->setParameterValue(parName, QString::number(value));
     }
 
-    GUIPort* port(GUIModelObject* o, const QString& portName)
+    Port* port(ModelObject* o, const QString& portName)
     {
         return o->getPort(portName);
     }
@@ -194,9 +194,9 @@ public slots:
         o->mpMessageWidget->checkMessages();
     }
 
-    GUIObject* component(MainWindow* o, const QString& compName)
+    WorkspaceObject* component(MainWindow* o, const QString& compName)
     {
-        return o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName);
+        return o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName);
     }
 
     void setStartTime(MainWindow* o, const double& start)
@@ -253,9 +253,9 @@ public slots:
 
     double getParameter(MainWindow* o, const QString& compName, const QString& parName)
     {
-        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasGUIModelObject(compName))
+        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasModelObject(compName))
         {
-            QString strParValue = o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getParameterValue(parName);
+            QString strParValue = o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getParameterValue(parName);
             return strParValue.toDouble(); //! @todo Not good if parameter not double
         }
         assert(false);
@@ -264,9 +264,9 @@ public slots:
 
     void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
     {
-        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasGUIModelObject(compName))
+        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasModelObject(compName))
         {
-            o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->setParameterValue(parName, QString::number(value));
+            o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->setParameterValue(parName, QString::number(value));
         }
     }
 
@@ -280,7 +280,7 @@ public slots:
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
-        o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName, "");
+        o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
         qApp->processEvents();
     }
 
@@ -292,7 +292,7 @@ public slots:
             QString compName = variableDescription.at(0);
             QString portName = variableDescription.at(1);
             QString dataName = variableDescription.at(2);
-            o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName, "");
+            o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
         }
         else
         {

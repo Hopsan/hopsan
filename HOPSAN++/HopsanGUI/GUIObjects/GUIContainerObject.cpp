@@ -59,8 +59,8 @@
 //! @param gfxType Tells whether the initial graphics shall be user or ISO
 //! @param pParentContainer Pointer to the parent container object (leave empty if not a sub container)
 //! @param pParent Pointer to parent object
-GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
-        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
+ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+        : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
         //Initialize
     mIsCreatingConnector = false;
@@ -92,14 +92,14 @@ GUIContainerObject::GUIContainerObject(QPointF position, qreal rotation, const G
 
 
 //! @brief Destructor for container object
-GUIContainerObject::~GUIContainerObject()
+ContainerObject::~ContainerObject()
 {
     qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
 //! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
-void GUIContainerObject::connectMainWindowActions()
+void ContainerObject::connectMainWindowActions()
 {
     connect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
@@ -134,7 +134,7 @@ void GUIContainerObject::connectMainWindowActions()
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
-void GUIContainerObject::disconnectMainWindowActions()
+void ContainerObject::disconnectMainWindowActions()
 {
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
@@ -166,7 +166,7 @@ void GUIContainerObject::disconnectMainWindowActions()
 //! @param[in] center The center point of all objects to be compared with
 //! @param[in] pt The position of this object, used to determine the center relative posistion
 //! @returns An enum that indicates on which side the port should be placed
-GUIContainerObject::ContainerEdgeT GUIContainerObject::findPortEdge(QPointF center, QPointF pt)
+ContainerObject::ContainerEdgeT ContainerObject::findPortEdge(QPointF center, QPointF pt)
 {
     //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
     QPointF diff = pt-center;
@@ -201,15 +201,15 @@ GUIContainerObject::ContainerEdgeT GUIContainerObject::findPortEdge(QPointF cent
 }
 
 //! @brief Refreshes the appearance and postion of all external ports
-void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
+void ContainerObject::refreshExternalPortsAppearanceAndPosition()
 {
     //refresh the external port poses
-    GUIModelObjectMapT::iterator moit;
+    ModelObjectMapT::iterator moit;
     double val;
 
     //Set the initial values to be overwriten by the if bellow
     double xMin=std::numeric_limits<double>::max(), xMax=-xMin, yMin=xMin, yMax=xMax;
-    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
         //if(moit.value()->type() == GUICONTAINERPORT)
         //{
@@ -227,10 +227,10 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
     //qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
 
-    QMap<qreal, GUIPort*> leftEdge, rightEdge, topEdge, bottomEdge;
-    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    QMap<qreal, Port*> leftEdge, rightEdge, topEdge, bottomEdge;
+    for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == GUICONTAINERPORT)
+        if(moit.value()->type() == CONTAINERPORT)
         {
             //            QLineF line = QLineF(center, moit.value()->getCenterPos());
             //            this->getContainedScenePtr()->addLine(line); //debug-grej
@@ -260,7 +260,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     }
 
     //Now disperse the port icons evenly along each edge
-    QMap<qreal, GUIPort*>::iterator it;
+    QMap<qreal, Port*>::iterator it;
     qreal disp;  //Dispersion factor
     qreal sdisp; //sumofdispersionfactors
 
@@ -307,9 +307,9 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
 }
 
 //! @brief Overloaded refreshAppearance for containers, to make sure that port positions are updeted if graphics size is changed
-void GUIContainerObject::refreshAppearance()
+void ContainerObject::refreshAppearance()
 {
-    GUIModelObject::refreshAppearance();
+    ModelObject::refreshAppearance();
     this->refreshExternalPortsAppearanceAndPosition();
 }
 
@@ -320,7 +320,7 @@ void GUIContainerObject::refreshAppearance()
 //! @param[out] x the new calculated horizontal placement for the port
 //! @param[out] y the new calculated vertical placement for the port
 //! @todo rename this one and maybe change it a bit as it is now included in this class, it should be common for subsystems and groups
-void GUIContainerObject::calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
+void ContainerObject::calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
 {
     //! @todo make common PI declaration, maybe also PIhalf or include math.h and use M_PI
     double tanAngle = tan(angle);//Otherwise division by zero
@@ -353,7 +353,7 @@ void GUIContainerObject::calcSubsystemPortPosition(const double w, const double 
 
 //! @brief Returns a pointer to the CoreSystemAccess that this container represents
 //! @returns Pointer the the CoreSystemAccess that this container represents
-CoreSystemAccess *GUIContainerObject::getCoreSystemAccessPtr()
+CoreSystemAccess *ContainerObject::getCoreSystemAccessPtr()
 {
     //Should be overloaded
     return 0;
@@ -361,13 +361,13 @@ CoreSystemAccess *GUIContainerObject::getCoreSystemAccessPtr()
 
 
 //! @brief Retunrs a pointer to the contained scene
-QGraphicsScene *GUIContainerObject::getContainedScenePtr()
+QGraphicsScene *ContainerObject::getContainedScenePtr()
 {
     return this->mpScene;
 }
 
 
-void GUIContainerObject::createPorts()
+void ContainerObject::createPorts()
 {
     //! @todo maybe try to make this function the same as refreshExternal.... and have one common function in modelobject, component and containerports class,
     //This one should not be used in this class only for component and containerport
@@ -378,20 +378,20 @@ void GUIContainerObject::createPorts()
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
 //! @todo maybe defualt create that info if it is missing
-void GUIContainerObject::createExternalPort(QString portName)
+void ContainerObject::createExternalPort(QString portName)
 {
     //If port appearance is not already existing then we create it
-    if ( mGUIModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
+    if ( mModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
     {
-        mGUIModelObjectAppearance.addPortAppearance(portName);
+        mModelObjectAppearance.addPortAppearance(portName);
     }
 
     //Fetch appearance data
-    PortAppearanceMapT::iterator it = mGUIModelObjectAppearance.getPortAppearanceMap().find(portName);
-    if (it != mGUIModelObjectAppearance.getPortAppearanceMap().end())
+    PortAppearanceMapT::iterator it = mModelObjectAppearance.getPortAppearanceMap().find(portName);
+    if (it != mModelObjectAppearance.getPortAppearanceMap().end())
     {
         //Create new external port if it does not already exist (this is the usual case for individual components)
-        GUIPort *pPort = this->getPort(it.key());
+        Port *pPort = this->getPort(it.key());
         if ( pPort == 0 )
         {
             qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
@@ -405,13 +405,13 @@ void GUIContainerObject::createExternalPort(QString portName)
             qreal y = it.value().y;
             qDebug() << "x,y: " << x << " " << y;
 
-            if (this->type() == GUIGROUP)
+            if (this->type() == GROUPCONTAINER)
             {
                 pPort = new GroupPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
             }
             else
             {
-                pPort = new GUIPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
+                pPort = new Port(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
             }
 
 
@@ -449,16 +449,16 @@ void GUIContainerObject::createExternalPort(QString portName)
 //! @breif Removes an external Port from a container object
 //! @param[in] portName The name of the port to be removed
 //! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
-void GUIContainerObject::removeExternalPort(QString portName)
+void ContainerObject::removeExternalPort(QString portName)
 {
     //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
-    QList<GUIPort*>::iterator plit;
+    QList<Port*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
         if ((*plit)->getPortName() == portName )
         {
             //Delete the GUIPort its post in the portlist and its appearance data
-            mGUIModelObjectAppearance.erasePortAppearance(portName);
+            mModelObjectAppearance.erasePortAppearance(portName);
             delete *plit;
             mPortListPtrs.erase(plit);
             break;
@@ -472,17 +472,17 @@ void GUIContainerObject::removeExternalPort(QString portName)
 //! @param[in] oldName The name to be replaced
 //! @param[in] newName The new name
 //! This function assumes that oldName exist and that newName is correct, no error checking is done
-void GUIContainerObject::renameExternalPort(const QString oldName, const QString newName)
+void ContainerObject::renameExternalPort(const QString oldName, const QString newName)
 {
-    QList<GUIPort*>::iterator plit;
+    QList<Port*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
         if ((*plit)->getPortName() == oldName )
         {
             //Rename the port appearance data by remove and re-add
-            PortAppearance tmp = mGUIModelObjectAppearance.getPortAppearanceMap().value(oldName);
-            mGUIModelObjectAppearance.erasePortAppearance(oldName);
-            mGUIModelObjectAppearance.addPortAppearance(newName, &tmp);
+            PortAppearance tmp = mModelObjectAppearance.getPortAppearanceMap().value(oldName);
+            mModelObjectAppearance.erasePortAppearance(oldName);
+            mModelObjectAppearance.addPortAppearance(newName, &tmp);
 
             //Rename port
             (*plit)->setDisplayName(newName);
@@ -494,13 +494,13 @@ void GUIContainerObject::renameExternalPort(const QString oldName, const QString
 
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
 //! @todo Remove the other function and use only the typename version if possible
-GUIModelObject* GUIContainerObject::addGUIModelObject(QString typeName, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+ModelObject* ContainerObject::addModelObject(QString typeName, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
 {
-    GUIModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typeName);
+    ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typeName);
     if(!pAppearanceData)    //Not an existing component
         return 0;       //No error message here, it depends on from where this function is called
     else
-        return addGUIModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
+        return addModelObject(pAppearanceData, position, rotation, startSelected, nameStatus, undoSettings);
 }
 
 
@@ -510,7 +510,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(QString typeName, QPointF 
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *pAppearanceData, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -519,34 +519,34 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
     QString componentTypeName = pAppearanceData->getTypeName();
     if (componentTypeName == HOPSANGUISYSTEMTYPENAME)
     {
-        mpTempGUIModelObject= new GUISystem(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        mpTempGUIModelObject= new SystemContainer(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
     else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
         // We must create internal port FIRST before external one
-        mpTempGUIModelObject = new GUIContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        mpTempGUIModelObject = new ContainerPort(position, rotation, pAppearanceData, this, startSelected, mGfxType);
         this->addExternalContainerPortObject(mpTempGUIModelObject);
         this->refreshExternalPortsAppearanceAndPosition();
     }
     else if (componentTypeName == HOPSANGUIGROUPTYPENAME)
     {
-        mpTempGUIModelObject = new GUIGroup(position, rotation, pAppearanceData, this);
+        mpTempGUIModelObject = new GroupContainer(position, rotation, pAppearanceData, this);
     }
     else //Assume some standard component type
     {
-        mpTempGUIModelObject = new GUIComponent(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+        mpTempGUIModelObject = new Component(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
 
     emit checkMessages();
 
-    if ( mGUIModelObjectMap.contains(mpTempGUIModelObject->getName()) )
+    if ( mModelObjectMap.contains(mpTempGUIModelObject->getName()) )
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
         //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
     }
     else
     {
-        mGUIModelObjectMap.insert(mpTempGUIModelObject->getName(), mpTempGUIModelObject);
+        mModelObjectMap.insert(mpTempGUIModelObject->getName(), mpTempGUIModelObject);
     }
 
     if(undoSettings == UNDO)
@@ -571,7 +571,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance *
 
 
 //! @brief Returns a list with the favorite plot parameters.
-QList<QStringList> GUIContainerObject::getFavoriteVariables()
+QList<QStringList> ContainerObject::getFavoriteVariables()
 {
     return mFavoriteVariables;
 }
@@ -582,7 +582,7 @@ QList<QStringList> GUIContainerObject::getFavoriteVariables()
 //! @param portName Name of the port where the parameter is located
 //! @param dataName Name of the parameter
 //! @param dataUnit Unit of the parameter
-void GUIContainerObject::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
+void ContainerObject::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     QStringList tempParameter;
     tempParameter.append(componentName);
@@ -601,7 +601,7 @@ void GUIContainerObject::setFavoriteVariable(QString componentName, QString port
 
 //! @brief Removes all favorite variables which belongs to the specified component.
 //! @param componentName Name of the component
-void GUIContainerObject::removeFavoriteVariableByComponentName(QString componentName)
+void ContainerObject::removeFavoriteVariableByComponentName(QString componentName)
 {
     QList<QStringList>::iterator it;
     for(it=mFavoriteVariables.begin(); it!=mFavoriteVariables.end(); ++it)
@@ -616,16 +616,16 @@ void GUIContainerObject::removeFavoriteVariableByComponentName(QString component
 }
 
 
-bool GUIContainerObject::areLossesVisible()
+bool ContainerObject::areLossesVisible()
 {
     return mLossesVisible;
 }
 
 
-GUITextBoxWidget *GUIContainerObject::addTextBoxWidget(QPointF position, undoStatus undoSettings)
+TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, undoStatus undoSettings)
 {
-    GUITextBoxWidget *pTempTextBoxWidget;
-    pTempTextBoxWidget = new GUITextBoxWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
+    TextBoxWidget *pTempTextBoxWidget;
+    pTempTextBoxWidget = new TextBoxWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
     qDebug() << "Creating widget, index = " << pTempTextBoxWidget->getWidgetIndex();
     mWidgetMap.insert(mHighestWidgetIndex, pTempTextBoxWidget);
     qDebug() << "Inserting widget in map, index = " << mHighestWidgetIndex;
@@ -644,7 +644,7 @@ GUITextBoxWidget *GUIContainerObject::addTextBoxWidget(QPointF position, undoSta
 //! Works for both text and box widgets
 //! @param pWidget Pointer to widget to remove
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSettings)
+void ContainerObject::removeWidget(Widget *pWidget, undoStatus undoSettings)
 {
     if(undoSettings == UNDO)
     {
@@ -652,7 +652,7 @@ void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSetting
         mpUndoStack->registerDeletedWidget(pWidget);
     }
 
-    mSelectedGUIWidgetsList.removeAll(pWidget);
+    mSelectedWidgetsList.removeAll(pWidget);
     mWidgetMap.remove(pWidget->getWidgetIndex());
     delete(pWidget);
 }
@@ -660,13 +660,13 @@ void GUIContainerObject::removeWidget(GUIWidget *pWidget, undoStatus undoSetting
 
 //! @brief Delete GUIObject with specified name
 //! @param objectName is the name of the componenet to delete
-void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
+void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSettings)
 {
     //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
     this->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
 
-    GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
-    GUIModelObject* obj_ptr = it.value();
+    ModelObjectMapT::iterator it = mModelObjectMap.find(objectName);
+    ModelObject* obj_ptr = it.value();
 
         //Remove connectors that are connected to the model object
     QList<Connector *> pConnectorList = obj_ptr->getConnectorPtrs();
@@ -684,16 +684,16 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     }
 
 
-    if (it != mGUIModelObjectMap.end())
+    if (it != mModelObjectMap.end())
     {
         //! @todo maybe this should be handled somwhere else (not sure maybe this is the best place)
-        if ((*it)->type() == GUICONTAINERPORT )
+        if ((*it)->type() == CONTAINERPORT )
         {
             this->removeExternalPort((*it)->getName());
         }
 
-        mGUIModelObjectMap.erase(it);
-        mSelectedGUIModelObjectsList.removeOne(obj_ptr);
+        mModelObjectMap.erase(it);
+        mSelectedModelObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
         delete(obj_ptr);
     }
@@ -708,31 +708,31 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
 
 
 //! @brief This function is used to rename a SubGUIObject
-void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings)
+void ContainerObject::renameModelObject(QString oldName, QString newName, undoStatus undoSettings)
 {
     //Avoid work if no change is requested
     if (oldName != newName)
     {
         QString modNewName;
             //First find record with old name
-        GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(oldName);
-        if (it != mGUIModelObjectMap.end())
+        ModelObjectMapT::iterator it = mModelObjectMap.find(oldName);
+        if (it != mModelObjectMap.end())
         {
                 //Make a backup copy
-            GUIModelObject* obj_ptr = it.value();
+            ModelObject* obj_ptr = it.value();
                 //Erase old record
-            mGUIModelObjectMap.erase(it);
+            mModelObjectMap.erase(it);
                 //Set new name, first in core then in gui object
             //qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
             switch (obj_ptr->type())
             {
-            case GUICOMPONENT:
+            case COMPONENT:
                 //qDebug() << "GUICOMPONENT";
-            case GUISYSTEM :
+            case SYSTEMCONTAINER :
                 //qDebug() << "GUISYSTEM";
                 modNewName = this->getCoreSystemAccessPtr()->renameSubComponent(oldName, newName);
                 break;
-            case GUICONTAINERPORT : //!< @todo What will happen when we try to rename a groupport
+            case CONTAINERPORT : //!< @todo What will happen when we try to rename a groupport
                 //qDebug() << "GUISYSTEMPORT";
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
                 renameExternalPort(oldName, modNewName);
@@ -744,7 +744,7 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
             //qDebug() << "modNewName: " << modNewName;
             obj_ptr->setDisplayName(modNewName);
                 //Re insert
-            mGUIModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
+            mModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
         }
         else
         {
@@ -779,24 +779,24 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
 
 
 //! @brief Tells whether or not a component with specified name exist in the GraphicsView
-bool GUIContainerObject::hasGUIModelObject(QString name)
+bool ContainerObject::hasModelObject(QString name)
 {
-    return (mGUIModelObjectMap.count(name) > 0);
+    return (mModelObjectMap.count(name) > 0);
 }
 
 //! @brief Takes ownership of supplied objects, widgets and connectors
 //!
 //! This method assumes that the previous owner have forgotten all about these objects, it however sets iself as new Qtparent, parentContainer and scene, overwriting the old values
-void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectList, QList<GUIWidget*> &rWidgetList)
+void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QList<Widget*> &rWidgetList)
 {
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
         //! @todo if a containerport is received we must update the external port list also, we cant handle such objects right now
-        if (rModelObjectList[i]->type() != GUICONTAINERPORT)
+        if (rModelObjectList[i]->type() != CONTAINERPORT)
         {
             this->getContainedScenePtr()->addItem(rModelObjectList[i]);
             rModelObjectList[i]->setParentContainerObject(this);
-            mGUIModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
+            mModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
             //! @todo what if name already taken, dont care for now as we shal only move into groups when they are created
 
             //rModelObjectList[i]->refreshParentContainerSigSlotConnections();
@@ -822,7 +822,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
     //Determine what connectors are transitconnectors
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
-        GUIModelObject *pObj = rModelObjectList[i];
+        ModelObject *pObj = rModelObjectList[i];
 
         QList<Connector*> connectorPtrs = pObj->getConnectorPtrs();
         for(int i=0; i<connectorPtrs.size(); ++i)
@@ -889,7 +889,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
         }
 
         //Create the "transit port"
-        GUIModelObject *pTransPort = this->addGUIModelObject(HOPSANGUICONTAINERPORTTYPENAME, portpos.toPoint(),0);
+        ModelObject *pTransPort = this->addModelObject(HOPSANGUICONTAINERPORTTYPENAME, portpos.toPoint(),0);
 
         //Make previous parent container forget about the connector
         transitConnectors[i]->getParentContainer()->forgetSubConnector(transitConnectors[i]);
@@ -924,52 +924,52 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
 
 
 //! @brief Notifies container object that a gui widget has been selected
-void GUIContainerObject::rememberSelectedWidget(GUIWidget *widget)
+void ContainerObject::rememberSelectedWidget(Widget *widget)
 {
-    mSelectedGUIWidgetsList.append(widget);
+    mSelectedWidgetsList.append(widget);
 }
 
 
 //! @brief Notifies container object that a gui widget is no longer selected
-void GUIContainerObject::forgetSelectedWidget(GUIWidget *widget)
+void ContainerObject::forgetSelectedWidget(Widget *widget)
 {
-    mSelectedGUIWidgetsList.removeAll(widget);
+    mSelectedWidgetsList.removeAll(widget);
 }
 
 
 //! @brief Returns a list with pointers to the selected GUI widgets
-QList<GUIWidget *> GUIContainerObject::getSelectedGUIWidgetPtrs()
+QList<Widget *> ContainerObject::getSelectedGUIWidgetPtrs()
 {
-    return mSelectedGUIWidgetsList;
+    return mSelectedWidgetsList;
 }
 
 
 //! @brief Notifies container object that a gui model object has been selected
-void GUIContainerObject::rememberSelectedGUIModelObject(GUIModelObject *object)
+void ContainerObject::rememberSelectedModelObject(ModelObject *object)
 {
-    mSelectedGUIModelObjectsList.append(object);
+    mSelectedModelObjectsList.append(object);
 }
 
 
 //! @brief Notifies container object that a gui model object is no longer selected
-void GUIContainerObject::forgetSelectedGUIModelObject(GUIModelObject *object)
+void ContainerObject::forgetSelectedModelObject(ModelObject *object)
 {
-    mSelectedGUIModelObjectsList.removeAll(object);
+    mSelectedModelObjectsList.removeAll(object);
 }
 
 
 //! @brief Returns a list with pointers to the selected GUI model objects
-QList<GUIModelObject *> GUIContainerObject::getSelectedGUIModelObjectPtrs()
+QList<ModelObject *> ContainerObject::getSelectedModelObjectPtrs()
 {
-    return mSelectedGUIModelObjectsList;
+    return mSelectedModelObjectsList;
 }
 
 
 //! @brief Returns a pointer to the component with specified name, 0 if not found
-GUIModelObject *GUIContainerObject::getGUIModelObject(const QString modelObjectName)
+ModelObject *ContainerObject::getModelObject(const QString modelObjectName)
 {
-    GUIModelObjectMapT::Iterator moit = mGUIModelObjectMap.find(modelObjectName);
-    if (moit != mGUIModelObjectMap.end())
+    ModelObjectMapT::Iterator moit = mModelObjectMap.find(modelObjectName);
+    if (moit != mModelObjectMap.end())
     {
         return moit.value();
     }
@@ -980,9 +980,9 @@ GUIModelObject *GUIContainerObject::getGUIModelObject(const QString modelObjectN
 }
 
 //! @brief Get the port of a sub model object, returns 0 if modelobject or port not found
-GUIPort *GUIContainerObject::getGUIModelObjectPort(const QString modelObjectName, const QString portName)
+Port *ContainerObject::getModelObjectPort(const QString modelObjectName, const QString portName)
 {
-    GUIModelObject *pModelObject = this->getGUIModelObject(modelObjectName);
+    ModelObject *pModelObject = this->getModelObject(modelObjectName);
     if (pModelObject != 0)
     {
         return pModelObject->getPort(portName);
@@ -995,7 +995,7 @@ GUIPort *GUIContainerObject::getGUIModelObjectPort(const QString modelObjectName
 
 
 //! @brief Find a connector in the connector vector
-Connector* GUIContainerObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+Connector* ContainerObject::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
     Connector *item;
     item = 0;
@@ -1025,7 +1025,7 @@ Connector* GUIContainerObject::findConnector(QString startComp, QString startPor
 
 
 //! @brief Tells whether or not there is a connector between two specified ports
-bool GUIContainerObject::hasConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+bool ContainerObject::hasConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
@@ -1050,21 +1050,21 @@ bool GUIContainerObject::hasConnector(QString startComp, QString startPort, QStr
 
 
 //! @brief Notifies container object that a subconnector has been selected
-void GUIContainerObject::rememberSelectedSubConnector(Connector *pConnector)
+void ContainerObject::rememberSelectedSubConnector(Connector *pConnector)
 {
     mSelectedSubConnectorsList.append(pConnector);
 }
 
 
 //! @brief Notifies container object that a subconnector has been deselected
-void GUIContainerObject::forgetSelectedSubConnector(Connector *pConnector)
+void ContainerObject::forgetSelectedSubConnector(Connector *pConnector)
 {
     mSelectedSubConnectorsList.removeAll(pConnector);
 }
 
-void GUIContainerObject::disconnectGroupPortFromItsRealPort(GUIPort *pGroupPort, GUIPort *pRealPort)
+void ContainerObject::disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port *pRealPort)
 {
-    QVector<GUIPort*> connPortsVect = pGroupPort->getConnectedPorts();
+    QVector<Port*> connPortsVect = pGroupPort->getConnectedPorts();
     //! @todo what if a connected port is another group port
 
     assert(connPortsVect[0] == pRealPort);
@@ -1088,7 +1088,7 @@ void GUIContainerObject::disconnectGroupPortFromItsRealPort(GUIPort *pGroupPort,
     if (connPortsVect.size() > 0)
     {
         // New real port will be
-        GUIPort* pNewGroupRealPort = connPortsVect[0];
+        Port* pNewGroupRealPort = connPortsVect[0];
 
         for (int i=1; i<connPortsVect.size(); ++i)
         {
@@ -1103,7 +1103,7 @@ void GUIContainerObject::disconnectGroupPortFromItsRealPort(GUIPort *pGroupPort,
 //! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
-void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoSettings)
+void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoSettings)
 {
     bool success=false;
 
@@ -1117,8 +1117,8 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
              {
                  //GroupPort *pStartGroupPort=0, *pEndGroupPort=0;
                  bool startPortIsGroupPort=false, endPortIsGroupPort=false;
-                 GUIPort *pStartP = pConnector->getStartPort();
-                 GUIPort *pEndP = pConnector->getEndPort();
+                 Port *pStartP = pConnector->getStartPort();
+                 Port *pEndP = pConnector->getEndPort();
 
                  if (pStartP->getPortType() == "GroupPortType")
                  {
@@ -1131,7 +1131,7 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
                  }
 
                  qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
-                 GUIPort *pStartRealPort=0, *pEndRealPort=0;
+                 Port *pStartRealPort=0, *pEndRealPort=0;
                  // If no group ports, do normal disconnect
                  if ( !startPortIsGroupPort && !endPortIsGroupPort )
                  {
@@ -1264,7 +1264,7 @@ void GUIContainerObject::removeSubConnector(Connector* pConnector, undoStatus un
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 //! @return A pointer to the created connector, 0 if failed, or connector unfinnished
-Connector* GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings)
+Connector* ContainerObject::createConnector(Port *pPort, undoStatus undoSettings)
 {
         //When clicking start port (begin creation of connector)
     if (!mIsCreatingConnector)
@@ -1298,7 +1298,7 @@ Connector* GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSe
 }
 
 //! @brief Create a connector when both ports are known (when loading primarily)
-Connector* GUIContainerObject::createConnector(GUIPort *pPort1, GUIPort *pPort2, undoStatus undoSettings)
+Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, undoStatus undoSettings)
 {
     if (!mIsCreatingConnector)
     {
@@ -1313,7 +1313,7 @@ Connector* GUIContainerObject::createConnector(GUIPort *pPort1, GUIPort *pPort2,
     }
 }
 
-void GUIContainerObject::startConnector(GUIPort *startPort)
+void ContainerObject::startConnector(Port *startPort)
 {
     mpTempConnector = new Connector(this);
 
@@ -1332,12 +1332,12 @@ void GUIContainerObject::startConnector(GUIPort *startPort)
     mpTempConnector->drawConnector();
 }
 
-bool GUIContainerObject::finilizeConnector(GUIPort *endPort)
+bool ContainerObject::finilizeConnector(Port *endPort)
 {
     bool success = false;
 
     // Check if we are connecting group ports
-    GUIPort *pStartRealPort=0, *pEndRealPort=0;
+    Port *pStartRealPort=0, *pEndRealPort=0;
     bool startPortIsGroupPort=false, endPortIsGroupPort=false;
     if (mpTempConnector->getStartPort()->getPortType() == "GroupPortType")
     {
@@ -1430,7 +1430,7 @@ bool GUIContainerObject::finilizeConnector(GUIPort *endPort)
 //! @brief Copies the selected components, and then deletes them.
 //! @see copySelected()
 //! @see paste()
-void GUIContainerObject::cutSelected(CopyStack *xmlStack)
+void ContainerObject::cutSelected(CopyStack *xmlStack)
 {
     this->copySelected(xmlStack);
     this->mpUndoStack->newPost("cut");
@@ -1442,7 +1442,7 @@ void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 //! @brief Puts the selected components in the copy stack, and their positions in the copy position stack.
 //! @see cutSelected()
 //! @see paste()
-void GUIContainerObject::copySelected(CopyStack *xmlStack)
+void ContainerObject::copySelected(CopyStack *xmlStack)
 {
     //Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
     if(gpMainWindow->mpMessageWidget->textEditHasFocus())
@@ -1465,8 +1465,8 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
     appendCoordinateTag(*copyRoot, center.x(), center.y());
 
         //Copy components
-    QList<GUIModelObject *>::iterator it;
-    for(it = mSelectedGUIModelObjectsList.begin(); it!=mSelectedGUIModelObjectsList.end(); ++it)
+    QList<ModelObject *>::iterator it;
+    for(it = mSelectedModelObjectsList.begin(); it!=mSelectedModelObjectsList.end(); ++it)
     {
         qDebug() << "Copying " << (*it)->getName();
         (*it)->saveToDomElement(*copyRoot);
@@ -1482,7 +1482,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
     }
 
         //Copy widgets
-    QMap<size_t, GUIWidget *>::iterator itw;
+    QMap<size_t, Widget *>::iterator itw;
     for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
     {
         if((*itw)->isSelected())
@@ -1496,7 +1496,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 //! @brief Pastes the contents in the copy stack at the mouse position
 //! @see cutSelected()
 //! @see copySelected()
-void GUIContainerObject::paste(CopyStack *xmlStack)
+void ContainerObject::paste(CopyStack *xmlStack)
 {
 
     //gpMainWindow->mpMessageWidget->printGUIDebugMessage(gCopyStack.getXML());
@@ -1538,7 +1538,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement objectElement = copyRoot->firstChildElement(HMF_COMPONENTTAG);
     while(!objectElement.isNull())
     {
-        GUIModelObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
+        ModelObject *pObj = loadModelObject(objectElement, gpMainWindow->mpLibrary, this);
 
             //Apply parameter values
         QDomElement xmlParameters = objectElement.firstChildElement(HMF_PARAMETERS);
@@ -1564,7 +1564,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
     while (!systemElement.isNull())
     {
-        GUIModelObject* pObj = loadGUIModelObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
+        ModelObject* pObj = loadModelObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
         renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
 
@@ -1578,7 +1578,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
     while (!systemPortElement.isNull())
     {
-        GUIModelObject* pObj = loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, this, UNDO);
+        ModelObject* pObj = loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, this, UNDO);
         renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
 
@@ -1620,7 +1620,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement textBoxElement = copyRoot->firstChildElement(HMF_TEXTBOXWIDGETTAG);
     while(!textBoxElement.isNull())
     {
-        GUITextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, NOUNDO);
+        TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, NOUNDO);
 
         pWidget->setSelected(true);
         pWidget->moveBy(xOffset, yOffset);
@@ -1632,7 +1632,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QHash<QString, QString>::iterator itn;
     for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
     {
-        mGUIModelObjectMap.find(itn.value()).value()->setSelected(true);
+        mModelObjectMap.find(itn.value()).value()->setSelected(true);
     }
 
     mpParentProjectTab->getGraphicsView()->updateViewPort();
@@ -1640,20 +1640,20 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 
 
 //! @brief Aligns all selected objects vertically to the last selected object.
-void GUIContainerObject::alignX()
+void ContainerObject::alignX()
 {
-    if(mSelectedGUIModelObjectsList.size() > 1)
+    if(mSelectedModelObjectsList.size() > 1)
     {
         mpUndoStack->newPost("alignx");
-        for(int i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
+        for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
-            QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
-            mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.last()->getCenterPos().x(), mSelectedGUIModelObjectsList.at(i)->getCenterPos().y()));
-            QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
-            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
-            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
+            QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
+            mSelectedModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedModelObjectsList.last()->getCenterPos().x(), mSelectedModelObjectsList.at(i)->getCenterPos().y()));
+            QPointF newPos = mSelectedModelObjectsList.at(i)->pos();
+            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedModelObjectsList.at(i)->getName());
+            for(int j=0; j<mSelectedModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
             {
-                mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
+                mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
         }
         mpParentProjectTab->hasChanged();
@@ -1662,20 +1662,20 @@ void GUIContainerObject::alignX()
 
 
 //! @brief Aligns all selected objects horizontally to the last selected object.
-void GUIContainerObject::alignY()
+void ContainerObject::alignY()
 {
-    if(mSelectedGUIModelObjectsList.size() > 1)
+    if(mSelectedModelObjectsList.size() > 1)
     {
         mpUndoStack->newPost("aligny");
-        for(int i=0; i<mSelectedGUIModelObjectsList.size()-1; ++i)
+        for(int i=0; i<mSelectedModelObjectsList.size()-1; ++i)
         {
-            QPointF oldPos = mSelectedGUIModelObjectsList.at(i)->pos();
-            mSelectedGUIModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedGUIModelObjectsList.at(i)->getCenterPos().x(), mSelectedGUIModelObjectsList.last()->getCenterPos().y()));
-            QPointF newPos = mSelectedGUIModelObjectsList.at(i)->pos();
-            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedGUIModelObjectsList.at(i)->getName());
-            for(int j=0; j<mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
+            QPointF oldPos = mSelectedModelObjectsList.at(i)->pos();
+            mSelectedModelObjectsList.at(i)->setCenterPos(QPointF(mSelectedModelObjectsList.at(i)->getCenterPos().x(), mSelectedModelObjectsList.last()->getCenterPos().y()));
+            QPointF newPos = mSelectedModelObjectsList.at(i)->pos();
+            mpUndoStack->registerMovedObject(oldPos, newPos, mSelectedModelObjectsList.at(i)->getName());
+            for(int j=0; j<mSelectedModelObjectsList.at(i)->getConnectorPtrs().size(); ++j)
             {
-                mSelectedGUIModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
+                mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
         }
         mpParentProjectTab->hasChanged();
@@ -1684,21 +1684,21 @@ void GUIContainerObject::alignY()
 
 
 //! @brief Calculates the geometrical center position of the selected objects.
-QPointF GUIContainerObject::getCenterPointFromSelection()
+QPointF ContainerObject::getCenterPointFromSelection()
 {
     double sumX = 0;
     double sumY = 0;
     int nSelected = 0;
-    for(int i=0; i<mSelectedGUIModelObjectsList.size(); ++i)
+    for(int i=0; i<mSelectedModelObjectsList.size(); ++i)
     {
-        sumX += mSelectedGUIModelObjectsList.at(i)->getCenterPos().x();
-        sumY += mSelectedGUIModelObjectsList.at(i)->getCenterPos().y();
+        sumX += mSelectedModelObjectsList.at(i)->getCenterPos().x();
+        sumY += mSelectedModelObjectsList.at(i)->getCenterPos().y();
         ++nSelected;
     }
-    for(int i=0; i<mSelectedGUIWidgetsList.size(); ++i)
+    for(int i=0; i<mSelectedWidgetsList.size(); ++i)
     {
-        sumX += mSelectedGUIWidgetsList.at(i)->getCenterPos().x();
-        sumY += mSelectedGUIWidgetsList.at(i)->getCenterPos().y();
+        sumX += mSelectedWidgetsList.at(i)->getCenterPos().x();
+        sumY += mSelectedWidgetsList.at(i)->getCenterPos().y();
         ++nSelected;
     }
 
@@ -1707,24 +1707,24 @@ QPointF GUIContainerObject::getCenterPointFromSelection()
 
 
 //! @brief Groups the selected objects together.
-void GUIContainerObject::groupSelected(QPointF pt)
+void ContainerObject::groupSelected(QPointF pt)
 {
     gpMainWindow->mpMessageWidget->printGUIWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
     qDebug() << "pos where we want to create group: " << pt;
     qDebug() << "In group selected";
 
     //Copy the selected objects, the lists will be cleared by addGuiobject and we need to keep this information
-    QList<GUIModelObject*> modelObjects = mSelectedGUIModelObjectsList;
-    QList<GUIWidget*> widgets = mSelectedGUIWidgetsList;
+    QList<ModelObject*> modelObjects = mSelectedModelObjectsList;
+    QList<Widget*> widgets = mSelectedWidgetsList;
 
     //"Detach" the selected objects from this container, basically by removing pointers from the subobject storage maps, make this container forget aboout these objects
     for (int i=0; i<modelObjects.size(); ++i)
     {
         //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly, for now we just ignore them (maybe we should allways ignore them when grouping)
-        if (modelObjects[i]->type() != GUICONTAINERPORT)
+        if (modelObjects[i]->type() != CONTAINERPORT)
         {
             // Maybe take ownership should handle this
-            mGUIModelObjectMap.remove(modelObjects[i]->getName());
+            mModelObjectMap.remove(modelObjects[i]->getName());
         }
         else
         {
@@ -1742,8 +1742,8 @@ void GUIContainerObject::groupSelected(QPointF pt)
     if (modelObjects.size() > 0 || widgets.size() > 0)
     {
         //Create a new group at the location of the specified
-        GUIModelObject* pObj =  this->addGUIModelObject(HOPSANGUIGROUPTYPENAME, pt.toPoint(),0);
-        GUIContainerObject* pContainer =  qobject_cast<GUIContainerObject*>(pObj);
+        ModelObject* pObj =  this->addModelObject(HOPSANGUIGROUPTYPENAME, pt.toPoint(),0);
+        ContainerObject* pContainer =  qobject_cast<ContainerObject*>(pObj);
 
         //If dyncast sucessfull (it should allways be) then let new group take ownership of objects
         if (pContainer != 0)
@@ -1761,7 +1761,7 @@ void GUIContainerObject::groupSelected(QPointF pt)
 //! @brief Selects model objects in section with specified number.
 //! @param no Number of section
 //! @param append True if previously selected objects shall remain selected
-void GUIContainerObject::selectSection(int no, bool append)
+void ContainerObject::selectSection(int no, bool append)
 {
     if(!append)
     {
@@ -1781,21 +1781,21 @@ void GUIContainerObject::selectSection(int no, bool append)
 //! @brief Assigns the selected component to the section with specified number.
 //! This is used to "group" components into sections with Ctrl+#, so they can be selected quickly again by pressing #.
 //! @param no Number of section
-void GUIContainerObject::assignSection(int no)
+void ContainerObject::assignSection(int no)
 {
     if(!isSubObjectSelected()) return;
     while(mSection.size()<no+1)
     {
-        QList<GUIModelObject *> dummyList;
+        QList<ModelObject *> dummyList;
         mSection.append(dummyList);
     }
     mSection[no].clear();
-    mSection[no].append(mSelectedGUIModelObjectsList);
+    mSection[no].append(mSelectedModelObjectsList);
 }
 
 
 //! @brief Selects all objects and connectors.
-void GUIContainerObject::selectAll()
+void ContainerObject::selectAll()
 {
     emit selectAllGUIObjects();
     emit selectAllConnectors();
@@ -1803,7 +1803,7 @@ void GUIContainerObject::selectAll()
 
 
 //! @brief Deselects all objects and connectors.
-void GUIContainerObject::deselectAll()
+void ContainerObject::deselectAll()
 {
     emit deselectAllGUIObjects();
     emit deselectAllConnectors();
@@ -1812,7 +1812,7 @@ void GUIContainerObject::deselectAll()
 
 //! @brief Hides all component names.
 //! @see showNames()
-void GUIContainerObject::hideNames()
+void ContainerObject::hideNames()
 {
     mpUndoStack->newPost("hideallnames");
     emit deselectAllNameText();
@@ -1822,7 +1822,7 @@ void GUIContainerObject::hideNames()
 
 //! @brief Shows all component names.
 //! @see hideNames()
-void GUIContainerObject::showNames()
+void ContainerObject::showNames()
 {
     mpUndoStack->newPost("showallnames");
     emit showAllNameText();
@@ -1832,7 +1832,7 @@ void GUIContainerObject::showNames()
 //! @brief Toggles name text on or off
 //! @see showNames();
 //! @see hideNames();
-void GUIContainerObject::toggleNames(bool value)
+void ContainerObject::toggleNames(bool value)
 {
     if(value)
     {
@@ -1846,14 +1846,14 @@ void GUIContainerObject::toggleNames(bool value)
 }
 
 
-void GUIContainerObject::toggleSignals(bool value)
+void ContainerObject::toggleSignals(bool value)
 {
     mSignalsHidden = !value;
     emit showOrHideSignals(value);
 }
 
 //! @brief Slot that sets hide ports flag to true or false
-void GUIContainerObject::showSubcomponentPorts(bool doShowThem)
+void ContainerObject::showSubcomponentPorts(bool doShowThem)
 {
     mSubComponentPortsHidden = !doShowThem;
     emit showOrHideAllSubComponentPorts(doShowThem);
@@ -1863,7 +1863,7 @@ void GUIContainerObject::showSubcomponentPorts(bool doShowThem)
 //! @brief Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
 //! @see redo()
 //! @see clearUndo()
-void GUIContainerObject::undo()
+void ContainerObject::undo()
 {
     mpUndoStack->undoOneStep();
 }
@@ -1872,7 +1872,7 @@ void GUIContainerObject::undo()
 //! @brief Slot that tells the mUndoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see clearUndo()
-void GUIContainerObject::redo()
+void ContainerObject::redo()
 {
     mpUndoStack->redoOneStep();
 }
@@ -1880,7 +1880,7 @@ void GUIContainerObject::redo()
 //! @brief Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see redo()
-void GUIContainerObject::clearUndo()
+void ContainerObject::clearUndo()
 {
     qDebug() << "before mUndoStack->clear(); in GUIContainerObject: " << this->getName();
     mpUndoStack->clear();
@@ -1888,62 +1888,62 @@ void GUIContainerObject::clearUndo()
 
 
 //! @brief Returns true if at least one GUIObject is selected
-bool GUIContainerObject::isSubObjectSelected()
+bool ContainerObject::isSubObjectSelected()
 {
-    return (mSelectedGUIModelObjectsList.size() > 0);
+    return (mSelectedModelObjectsList.size() > 0);
 }
 
 
 //! @brief Returns true if at least one GUIConnector is selected
-bool GUIContainerObject::isConnectorSelected()
+bool ContainerObject::isConnectorSelected()
 {
     return (mSelectedSubConnectorsList.size() > 0);
 }
 
 
 //! @brief Tells the container object that one more plot curve is opened
-void GUIContainerObject::incrementOpenPlotCurves()
+void ContainerObject::incrementOpenPlotCurves()
 {
     ++nPlotCurves;
 }
 
 
 //! @brief Tells the container object that one less plot curve is opened
-void GUIContainerObject::decrementOpenPlotCurves()
+void ContainerObject::decrementOpenPlotCurves()
 {
     --nPlotCurves;
 }
 
 //! @brief Tells whether or not the container object has at least one plot curve opened in a plot window
-bool GUIContainerObject::hasOpenPlotCurves()
+bool ContainerObject::hasOpenPlotCurves()
 {
     return (nPlotCurves > 0);
 }
 
 
 //! @brief Returns a pointer to the undo stack
-UndoStack *GUIContainerObject::getUndoStackPtr()
+UndoStack *ContainerObject::getUndoStackPtr()
 {
     return mpUndoStack;
 }
 
 
 //! @brief Returns a pointer to the drag-copy copy stack
-CopyStack *GUIContainerObject::getDragCopyStackPtr()
+CopyStack *ContainerObject::getDragCopyStackPtr()
 {
     return mpDragCopyStack;
 }
 
 
 //! @brief Specifies model file for the container object
-void GUIContainerObject::setModelFile(QString path)
+void ContainerObject::setModelFile(QString path)
 {
     mModelFileInfo.setFile(path);
 }
 
 
 //! @brief Returns a copy of the model file info of the container object
-QFileInfo GUIContainerObject::getModelFileInfo()
+QFileInfo ContainerObject::getModelFileInfo()
 {
     return mModelFileInfo;
 }
@@ -1951,25 +1951,25 @@ QFileInfo GUIContainerObject::getModelFileInfo()
 
 //! @brief Specifies a script file to be executed when model is loaded
 //! @todo Shall we have this?
-void GUIContainerObject::setScriptFile(QString path)
+void ContainerObject::setScriptFile(QString path)
 {
     mScriptFilePath = path;
 }
 
 
 //! @brief Returns path to the script file
-QString GUIContainerObject::getScriptFile()
+QString ContainerObject::getScriptFile()
 {
     return mScriptFilePath;
 }
 
 
 //! @brief Returns a list with the names of the model objects in the container
-QStringList GUIContainerObject::getGUIModelObjectNames()
+QStringList ContainerObject::getModelObjectNames()
 {
     QStringList retval;
-    GUIContainerObject::GUIModelObjectMapT::iterator it;
-    for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
+    ContainerObject::ModelObjectMapT::iterator it;
+    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
     {
         retval.append(it.value()->getName());
     }
@@ -1978,10 +1978,10 @@ QStringList GUIContainerObject::getGUIModelObjectNames()
 
 
 //! @brief Returns a list with pointers to GUI widgets
-QList<GUIWidget *> GUIContainerObject::getGUIWidgets()
+QList<Widget *> ContainerObject::getWidgets()
 {
-    QList<GUIWidget *> list;
-    QMap<size_t, GUIWidget *>::iterator it;
+    QList<Widget *> list;
+    QMap<size_t, Widget *>::iterator it;
     for(it=mWidgetMap.begin(); it!=mWidgetMap.end(); ++it)
     {
         list.append(it.value());
@@ -1991,28 +1991,28 @@ QList<GUIWidget *> GUIContainerObject::getGUIWidgets()
 
 //! @brief Returns the path to the icon with iso graphics.
 //! @todo should we return full path or relative
-QString GUIContainerObject::getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrelType)
+QString ContainerObject::getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrelType)
 {
-    return mGUIModelObjectAppearance.getIconPath(gfxType, absrelType);
+    return mModelObjectAppearance.getIconPath(gfxType, absrelType);
 }
 
 
 //! @brief Sets the path to the icon of the specified type
-void GUIContainerObject::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrelType)
+void ContainerObject::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrelType)
 {
-    mGUIModelObjectAppearance.setIconPath(path, gfxType, absrelType);
+    mModelObjectAppearance.setIconPath(path, gfxType, absrelType);
 }
 
 
 //! @brief Access function for mIsCreatingConnector
-bool GUIContainerObject::isCreatingConnector()
+bool ContainerObject::isCreatingConnector()
 {
     return mIsCreatingConnector;
 }
 
 
 //! @brief Tells container object to remember a new sub connector
-void GUIContainerObject::rememberSubConnector(Connector *pConnector)
+void ContainerObject::rememberSubConnector(Connector *pConnector)
 {
     mSubConnectorList.append(pConnector);
 }
@@ -2022,18 +2022,18 @@ void GUIContainerObject::rememberSubConnector(Connector *pConnector)
 //!
 //! It does not delete the connector and connected components dos not forget about it
 //! use only when transfering ownership of objects to an other container
-void GUIContainerObject::forgetSubConnector(Connector *pConnector)
+void ContainerObject::forgetSubConnector(Connector *pConnector)
 {
     mSubConnectorList.removeAll(pConnector);
 }
 
 //! @brief Refresh the graphics of all internal container ports
-void GUIContainerObject::refreshInternalContainerPortGraphics()
+void ContainerObject::refreshInternalContainerPortGraphics()
 {
-    GUIModelObjectMapT::iterator moit;
-    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    ModelObjectMapT::iterator moit;
+    for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == GUICONTAINERPORT)
+        if(moit.value()->type() == CONTAINERPORT)
         {
             //We assume that a container port only have ONE gui port
             moit.value()->getPortListPtrs().first()->refreshPortGraphics(CoreSystemAccess::EXTERNALPORTTYPE);
@@ -2042,13 +2042,13 @@ void GUIContainerObject::refreshInternalContainerPortGraphics()
 }
 
 
-void GUIContainerObject::addExternalContainerPortObject(GUIModelObject* pModelObject)
+void ContainerObject::addExternalContainerPortObject(ModelObject* pModelObject)
 {
     this->createExternalPort(pModelObject->getName());
 }
 
 //! @brief Aborts creation of new connector.
-void GUIContainerObject::cancelCreatingConnector()
+void ContainerObject::cancelCreatingConnector()
 {
     if(mIsCreatingConnector)
     {
@@ -2067,7 +2067,7 @@ void GUIContainerObject::cancelCreatingConnector()
 
 //! @brief Swiches mode of connector being created to or from diagonal mode.
 //! @param diagonal Tells whether or not connector shall be diagonal or not
-void GUIContainerObject::makeConnectorDiagonal(bool diagonal)
+void ContainerObject::makeConnectorDiagonal(bool diagonal)
 {
     if (mIsCreatingConnector && (mpTempConnector->isMakingDiagonal() != diagonal))
     {
@@ -2080,7 +2080,7 @@ void GUIContainerObject::makeConnectorDiagonal(bool diagonal)
 
 //! @brief Redraws the connector being created.
 //! @param pos Position to draw connector to
-void GUIContainerObject::updateTempConnector(QPointF pos)
+void ContainerObject::updateTempConnector(QPointF pos)
 {
     mpTempConnector->updateEndPoint(pos);
     mpTempConnector->drawConnector();
@@ -2089,7 +2089,7 @@ void GUIContainerObject::updateTempConnector(QPointF pos)
 
 //! @brief Adds one new line to the connector being created.
 //! @param pos Position to add new line at
-void GUIContainerObject::addOneConnectorLine(QPointF pos)
+void ContainerObject::addOneConnectorLine(QPointF pos)
 {
     mpTempConnector->addPoint(pos);
 }
@@ -2097,7 +2097,7 @@ void GUIContainerObject::addOneConnectorLine(QPointF pos)
 
 //! @brief Removse one line from connector being created.
 //! @param pos Position to redraw connector to after removing the line
-void GUIContainerObject::removeOneConnectorLine(QPointF pos)
+void ContainerObject::removeOneConnectorLine(QPointF pos)
 {
     if((mpTempConnector->getNumberOfLines() == 1 && mpTempConnector->isMakingDiagonal()) ||  (mpTempConnector->getNumberOfLines() == 2 && !mpTempConnector->isMakingDiagonal()))
     {
@@ -2123,7 +2123,7 @@ void GUIContainerObject::removeOneConnectorLine(QPointF pos)
 }
 
 
-void GUIContainerObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
+void ContainerObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
 {
     setUndoEnabled(!disabled, dontAskJustDoIt);
 }
@@ -2132,7 +2132,7 @@ void GUIContainerObject::setUndoDisabled(bool disabled, bool dontAskJustDoIt)
 //! @brief Disables the undo function for the current model.
 //! @param enabled Tells whether or not to enable the undo stack
 //! @param dontAskJustDoIt If true, the warning box will not appear
-void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
+void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 {
     if(!enabled)
     {
@@ -2174,35 +2174,35 @@ void GUIContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 
 
 //! @brief Tells whether or not unconnected ports in container are hidden
-bool GUIContainerObject::areSubComponentPortsHidden()
+bool ContainerObject::areSubComponentPortsHidden()
 {
     return mSubComponentPortsHidden;
 }
 
 
 //! @brief Tells whether or not object names in container are hidden
-bool GUIContainerObject::areSubComponentNamesHidden()
+bool ContainerObject::areSubComponentNamesHidden()
 {
     return mSubComponentNamesHidden;
 }
 
 
 //! @brief Tells whether or not signal components are hidden
-bool GUIContainerObject::areSignalsHidden()
+bool ContainerObject::areSignalsHidden()
 {
     return mSignalsHidden;
 }
 
 
 //! @brief Tells whether or not undo/redo is enabled
-bool GUIContainerObject::isUndoEnabled()
+bool ContainerObject::isUndoEnabled()
 {
     return !mUndoDisabled;
 }
 
 
 //! @brief Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
-void GUIContainerObject::updateMainWindowButtons()
+void ContainerObject::updateMainWindowButtons()
 {
     gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
@@ -2213,7 +2213,7 @@ void GUIContainerObject::updateMainWindowButtons()
 
 
 //! @brief Sets the iso graphics option for the model
-void GUIContainerObject::setGfxType(graphicsType gfxType)
+void ContainerObject::setGfxType(graphicsType gfxType)
 {
     this->mGfxType = gfxType;
     this->mpParentProjectTab->getGraphicsView()->updateViewPort();
@@ -2222,21 +2222,21 @@ void GUIContainerObject::setGfxType(graphicsType gfxType)
 
 
 //! @brief Returns current graphics type used by container object
-graphicsType GUIContainerObject::getGfxType()
+graphicsType ContainerObject::getGfxType()
 {
     return mGfxType;
 }
 
 
 //! @brief A slot that opens the properties dialog
-void GUIContainerObject::openPropertiesDialogSlot()
+void ContainerObject::openPropertiesDialogSlot()
 {
     this->openPropertiesDialog();
 }
 
 
 //! @brief Slot that tells all selected name texts to deselect themselves
-void GUIContainerObject::deselectSelectedNameText()
+void ContainerObject::deselectSelectedNameText()
 {
     emit deselectAllNameText();
 }
@@ -2244,7 +2244,7 @@ void GUIContainerObject::deselectSelectedNameText()
 
 //! @brief Defines the right click menu for container objects.
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
-void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
     QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
@@ -2266,7 +2266,7 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             gConfig.setSubsystemDir(fileInfo.absolutePath());
 
             bool doIt = true;
-            if (mGUIModelObjectMap.size() > 0)
+            if (mModelObjectMap.size() > 0)
             {
                 QMessageBox clearAndLoadQuestionBox(QMessageBox::Warning, tr("Warning"),tr("All current contents of the system will be replaced. Do you want to continue?"), 0, 0);
                 clearAndLoadQuestionBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
@@ -2302,15 +2302,15 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 
 //! @brief Defines the double click event for container objects (used to enter containers).
-void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void ContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    GUIModelObject::mouseDoubleClickEvent(event);
+    ModelObject::mouseDoubleClickEvent(event);
     this->enterContainer();
 }
 
 
 //! @brief Opens the properites dialog for container objects.
-void GUIContainerObject::openPropertiesDialog()
+void ContainerObject::openPropertiesDialog()
 {
     //Do Nothing
 }
@@ -2319,19 +2319,19 @@ void GUIContainerObject::openPropertiesDialog()
 //! @brief Clears all of the contained objects (and delets them).
 //! This code cant be run in the desturctor as this wold cause wired behaviour in the derived susyem class.
 //! The core system would be deleted before container clear code is run, that is why we have it as a convenient protected function
-void GUIContainerObject::clearContents()
+void ContainerObject::clearContents()
 {
-    GUIModelObjectMapT::iterator mit;
-    QMap<size_t, GUIWidget *>::iterator wit;
+    ModelObjectMapT::iterator mit;
+    QMap<size_t, Widget *>::iterator wit;
 
     qDebug() << "Clearing model objects in " << getName();
     //We cant use for loop over iterators as the maps are modified on each delete (and iterators invalidated)
-    mit=mGUIModelObjectMap.begin();
-    while (mit!=mGUIModelObjectMap.end())
+    mit=mModelObjectMap.begin();
+    while (mit!=mModelObjectMap.end())
     {
         //This may lead to a crash if undo stack is not disabled before calling this
         (*mit)->deleteMe();
-        mit=mGUIModelObjectMap.begin();
+        mit=mModelObjectMap.begin();
     }
 
     qDebug() << "Clearing widget objects in " << getName();
@@ -2345,7 +2345,7 @@ void GUIContainerObject::clearContents()
 
 
 //! @brief Enters a container object and maks the view represent it contents.
-void GUIContainerObject::enterContainer()
+void ContainerObject::enterContainer()
 {
     // First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
@@ -2376,7 +2376,7 @@ void GUIContainerObject::enterContainer()
 }
 
 //! @brief Exit a container object and maks its the view represent its parents contents.
-void GUIContainerObject::exitContainer()
+void ContainerObject::exitContainer()
 {
     this->deselectAll();
 
@@ -2408,7 +2408,7 @@ void GUIContainerObject::exitContainer()
 
 
 //! @brief Rotates all selected objects right (clockwise)
-void GUIContainerObject::rotateSubObjects90cw()
+void ContainerObject::rotateSubObjects90cw()
 {
     if(this->isSubObjectSelected())
     {
@@ -2419,7 +2419,7 @@ void GUIContainerObject::rotateSubObjects90cw()
 
 
 //! @brief Rotates all selected objects left (counter-clockwise)
-void GUIContainerObject::rotateSubObjects90ccw()
+void ContainerObject::rotateSubObjects90ccw()
 {
     if(this->isSubObjectSelected())
     {
@@ -2430,7 +2430,7 @@ void GUIContainerObject::rotateSubObjects90ccw()
 
 
 //! @brief Flips selected contained objects horizontally
-void GUIContainerObject::flipSubObjectsHorizontal()
+void ContainerObject::flipSubObjectsHorizontal()
 {
     if(this->isSubObjectSelected())
     {
@@ -2441,7 +2441,7 @@ void GUIContainerObject::flipSubObjectsHorizontal()
 
 
 //! @brief Flips selected contained objects vertically
-void GUIContainerObject::flipSubObjectsVertical()
+void ContainerObject::flipSubObjectsVertical()
 {
     if(this->isSubObjectSelected())
     {
@@ -2452,14 +2452,14 @@ void GUIContainerObject::flipSubObjectsVertical()
 
 
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
-void GUIContainerObject::collectPlotData()
+void ContainerObject::collectPlotData()
 {
     //bool timeVectorObtained = false;
 
-    GUIModelObjectMapT::iterator moit;
-    QList<GUIPort*>::iterator pit;
+    ModelObjectMapT::iterator moit;
+    QList<Port*>::iterator pit;
     QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > componentMap;
-    for(moit=mGUIModelObjectMap.begin(); moit!=mGUIModelObjectMap.end(); ++moit)
+    for(moit=mModelObjectMap.begin(); moit!=mModelObjectMap.end(); ++moit)
     {
         QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > portMap;
         for(pit=moit.value()->getPortListPtrs().begin(); pit!=moit.value()->getPortListPtrs().end(); ++pit)
@@ -2497,7 +2497,7 @@ void GUIContainerObject::collectPlotData()
 }
 
 
-void GUIContainerObject::showLosses(bool show)
+void ContainerObject::showLosses(bool show)
 {
     if(!show)
     {
@@ -2558,7 +2558,7 @@ void GUIContainerObject::showLosses(bool show)
 }
 
 
-void GUIContainerObject::showLossesFromDialog()
+void ContainerObject::showLossesFromDialog()
 {
     mpLossesDialog->close();
     mLossesVisible=true;
@@ -2578,8 +2578,8 @@ void GUIContainerObject::showLossesFromDialog()
 
     //Calculate total losses in model
     double totalLosses=0;
-    GUIModelObjectMapT::iterator moit;
-    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    ModelObjectMapT::iterator moit;
+    for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
         moit.value()->showLosses();
         double componentTotal, componentHydraulic, componentMechanic;
@@ -2592,7 +2592,7 @@ void GUIContainerObject::showLossesFromDialog()
     int nComponents=0;
     QStringList componentNames;
     QList<double> componentLosses;
-    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
         double componentTotal, componentHydraulic, componentMechanic;
         moit.value()->getLosses(componentTotal, componentHydraulic, componentMechanic);
@@ -2692,17 +2692,17 @@ void GUIContainerObject::showLossesFromDialog()
 }
 
 
-void GUIContainerObject::hideLosses()
+void ContainerObject::hideLosses()
 {
-    GUIModelObjectMapT::iterator moit;
-    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    ModelObjectMapT::iterator moit;
+    for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
         moit.value()->hideLosses();
     }
 }
 
 
-bool GUIContainerObject::isAncestorOfExternalSubsystem()
+bool ContainerObject::isAncestorOfExternalSubsystem()
 {
     if(this == mpParentProjectTab->getSystem())
     {
@@ -2719,14 +2719,14 @@ bool GUIContainerObject::isAncestorOfExternalSubsystem()
 }
 
 
-bool GUIContainerObject::isExternal()
+bool ContainerObject::isExternal()
 {
     return !mModelFileInfo.filePath().isEmpty();
 }
 
 //! @brief Returns time vector for specified plot generation.
 //! @param generation Generation to fetch time vector from
-QVector<double> GUIContainerObject::getTimeVector(int generation, QString componentName, QString portName)
+QVector<double> ContainerObject::getTimeVector(int generation, QString componentName, QString portName)
 {
     return mPlotData.at(generation).find(componentName).value().find(portName).value().begin().value().first;
 }
@@ -2737,7 +2737,7 @@ QVector<double> GUIContainerObject::getTimeVector(int generation, QString compon
 //! @param componentName Name of component where variable is located
 //! @param portName Name of port where variable is located
 //! @param dataName Name of physical quantity of the variable
-QVector<double> GUIContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
+QVector<double> ContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
 {
     //qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
     //qDebug() << "Size of data: " << mPlotData.size();
@@ -2749,7 +2749,7 @@ QVector<double> GUIContainerObject::getPlotData(int generation, QString componen
 //! It does not if the generation was simulated before this component was added
 //! @param generation Generation to look for
 //! @param componentName Name of component to look in
-bool GUIContainerObject::componentHasPlotGeneration(int generation, QString componentName)
+bool ContainerObject::componentHasPlotGeneration(int generation, QString componentName)
 {
     return mPlotData.at(generation).contains(componentName);
 }
@@ -2757,7 +2757,7 @@ bool GUIContainerObject::componentHasPlotGeneration(int generation, QString comp
 
 //! @brief Returns a copy of all existing plot data in container.
 //! @note This object is gigantic, and will likey reduce performance if used too often.
-QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > GUIContainerObject::getAllPlotData()
+QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > ContainerObject::getAllPlotData()
 {
     return mPlotData;
 }
@@ -2765,7 +2765,7 @@ QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVecto
 
 //! @brief Returns total number of plot generation.
 //! I.e. how many times the container has been simulated since opened.
-int GUIContainerObject::getNumberOfPlotGenerations()
+int ContainerObject::getNumberOfPlotGenerations()
 {
     return mPlotData.size();
 }
@@ -2775,7 +2775,7 @@ int GUIContainerObject::getNumberOfPlotGenerations()
 //! @param componentName Name of component where variable is located
 //! @param portName Name of port where variable is located
 //! @param dataName Name of physical quantity of the variable
-void GUIContainerObject::definePlotAlias(QString componentName, QString portName, QString dataName)
+void ContainerObject::definePlotAlias(QString componentName, QString portName, QString dataName)
 {
     bool ok;
     QString d = QInputDialog::getText(gpMainWindow, tr("Define Variable Alias"),
@@ -2793,7 +2793,7 @@ void GUIContainerObject::definePlotAlias(QString componentName, QString portName
 //! @param componentName Name of component where variable is located
 //! @param portName Name of port where variable is located
 //! @param dataName Name of physical quantity of the variable
-bool GUIContainerObject::definePlotAlias(QString alias, QString componentName, QString portName, QString dataName)
+bool ContainerObject::definePlotAlias(QString alias, QString componentName, QString portName, QString dataName)
 {
     if(mPlotAliasMap.contains(alias)) return false;
     QStringList variableDescription;
@@ -2807,7 +2807,7 @@ bool GUIContainerObject::definePlotAlias(QString alias, QString componentName, Q
 
 //! @brief Undefines an existing plot alias.
 //! @param alias Name of alias to undefine
-void GUIContainerObject::undefinePlotAlias(QString alias)
+void ContainerObject::undefinePlotAlias(QString alias)
 {
     mPlotAliasMap.remove(alias);
 }
@@ -2815,7 +2815,7 @@ void GUIContainerObject::undefinePlotAlias(QString alias)
 
 //! @brief Returns the plot variable for specified alias.
 //! @returns A stringlist with componentName, portName and dataName of variable, or null if alias does not exist.
-QStringList GUIContainerObject::getPlotVariableFromAlias(QString alias)
+QStringList ContainerObject::getPlotVariableFromAlias(QString alias)
 {
     if(mPlotAliasMap.contains(alias))
         return mPlotAliasMap.find(alias).value();
@@ -2828,7 +2828,7 @@ QStringList GUIContainerObject::getPlotVariableFromAlias(QString alias)
 //! @param componentName Name of component where variable is located
 //! @param portName Name of port where variable is located
 //! @param dataName Name of physical quantity of the variable
-QString GUIContainerObject::getPlotAlias(QString componentName, QString portName, QString dataName)
+QString ContainerObject::getPlotAlias(QString componentName, QString portName, QString dataName)
 {
     QStringList variableDescription;
     variableDescription.append(componentName);
@@ -2846,7 +2846,7 @@ QString GUIContainerObject::getPlotAlias(QString componentName, QString portName
 
 //! @brief Removes oldest plot generation until number of generation is within specified limit.
 //! @todo Update open plot windows somehow (may not be necessary)
-void GUIContainerObject::limitPlotGenerations()
+void ContainerObject::limitPlotGenerations()
 {
     while(mPlotData.size() > gConfig.getGenerationLimit())
     {

@@ -2874,8 +2874,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
     connect(mpContainerObject, SIGNAL(objectDeleted()), mpParentPlotTab->mpParentPlotWindow, SLOT(closeIfEmpty()), Qt::UniqueConnection);
-    connect(mpContainerObject->getGUIModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
-    connect(mpContainerObject->getGUIModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
+    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
+    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
     connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));
 }
 
@@ -2985,7 +2985,7 @@ QVector<double> PlotCurve::getTimeVector()
 
 
 //! @brief Returns a pointer to the container object a curve origins from
-GUIContainerObject *PlotCurve::getContainerObjectPtr()
+ContainerObject *PlotCurve::getContainerObjectPtr()
 {
     return mpContainerObject;
 }
@@ -3276,7 +3276,7 @@ void PlotCurve::removeMe()
 //! @brief Slot that checks that the plotted port is still connected, and removes the curve if not
 void PlotCurve::removeIfNotConnected()
 {
-    if(!mpContainerObject->getGUIModelObject(mComponentName)->getPort(mPortName)->isConnected())
+    if(!mpContainerObject->getModelObject(mComponentName)->getPort(mPortName)->isConnected())
     {
         removeMe();
     }

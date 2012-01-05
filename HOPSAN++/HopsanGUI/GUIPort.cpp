@@ -42,7 +42,7 @@
 #include "Widgets/ProjectTabWidget.h"
 
 
-QPointF getOffsetPointfromPort(GUIPort *pStartPort, GUIPort *pEndPort)
+QPointF getOffsetPointfromPort(Port *pStartPort, Port *pEndPort)
 {
     QPointF point;
 
@@ -72,7 +72,7 @@ QPointF getOffsetPointfromPort(GUIPort *pStartPort, GUIPort *pEndPort)
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject)
+Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParentGUIModelObject)
     : QGraphicsWidget(pParentGUIModelObject)
 {
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
@@ -128,7 +128,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     connect(pView,                          SIGNAL(zoomChange(qreal)),                      this,   SLOT(refreshPortOverlayScale(qreal)),   Qt::UniqueConnection);
 }
 
-GUIPort::~GUIPort()
+Port::~Port()
 {
     //! @todo Hack, we need to mark this as 0 to avoid graphics refresh triggerd from connector deleteMe in case of subsystemport (bellow), The interaction between ports and connectors should be rewritten in a smarter way
     mpPortAppearance = 0; //
@@ -148,7 +148,7 @@ GUIPort::~GUIPort()
 
 //! Magnify the port with a class mebmer factor 'mMag'. Is used i.e. at hovering over disconnected port.
 //! @param blowup says if the port should be magnified or not.
-void GUIPort::magnify(bool doMagnify)
+void Port::magnify(bool doMagnify)
 {
     if( doMagnify && !mIsMagnified )
     {
@@ -169,7 +169,7 @@ void GUIPort::magnify(bool doMagnify)
 
 
 //! Reimplemented to call custom show hide instead
-void GUIPort::setVisible(bool value)
+void Port::setVisible(bool value)
 {
     if (value)
     {
@@ -184,7 +184,7 @@ void GUIPort::setVisible(bool value)
 
 //! Defines what happens when mouse cursor begins to hover a port.
 //! @param *event defines the mouse event.
-void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void Port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     //qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
     QGraphicsWidget::hoverEnterEvent(event);
@@ -198,7 +198,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 //! Defines what happens when mouse cursor stops hovering a port.
 //! @param *event defines the mouse event.
-void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void Port::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     this->setCursor(Qt::ArrowCursor);
     magnify(false);
@@ -211,7 +211,7 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 //! @brief Updates the gui port position on its parent object, taking coordinates in parent coordinate system
 //! @todo is it necessary to be able to update orientation also?
-void GUIPort::setCenterPos(const qreal x, const qreal y)
+void Port::setCenterPos(const qreal x, const qreal y)
 {
     //Place the guiport with center in x and y, in parent local coordinates
 //    QPointF posdiff = QPointF(x,y) - this->mapToParent(this->boundingRect().center());
@@ -220,21 +220,21 @@ void GUIPort::setCenterPos(const qreal x, const qreal y)
 }
 
 //! Conveniance function when fraction positions are known
-void GUIPort::setCenterPosByFraction(qreal x, qreal y)
+void Port::setCenterPosByFraction(qreal x, qreal y)
 {
     //! @todo for now root systems may not have an icon, if icon is empty ports will end up in zero, which is OK, maybe we should always force a default icon
     this->setCenterPos(x*mpParentGuiModelObject->boundingRect().width(), y*mpParentGuiModelObject->boundingRect().height());
 }
 
 //! Returns the center position in parent coordinates
-QPointF GUIPort::getCenterPos()
+QPointF Port::getCenterPos()
 {
     //return this->mapToParent(this->boundingRect().center());
     return pos();
 }
 
 //! @brief Overloaded setRotation to store rotation in appearance data
-void GUIPort::setRotation(qreal angle)
+void Port::setRotation(qreal angle)
 {
     mpPortAppearance->rot = angle;
     QGraphicsWidget::setRotation(angle);
@@ -242,7 +242,7 @@ void GUIPort::setRotation(qreal angle)
 
 //! Defines what happens when clicking on a port.
 //! @param *event defines the mouse event.
-void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
         return;
@@ -261,13 +261,13 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 //! Defines what happens when double clicking on a port. Nothing should happen.
 //! @param *event defines the mouse event.
-void GUIPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
+void Port::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
 {
     //Nothing to do, reimplemented just to do nothing
 }
 
 
-void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     //std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
@@ -291,7 +291,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 }
 
 
-void GUIPort::openRightClickMenu(QPoint screenPos)
+void Port::openRightClickMenu(QPoint screenPos)
 {
     QMenu menu;
 
@@ -322,7 +322,7 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
 }
 
 
-void GUIPort::refreshPortMainGraphics()
+void Port::refreshPortMainGraphics()
 {
     double rotAng = this->mpPortAppearance->rot; // OK, uggly, but has to be done in case the mpMainIcon is reset below
     if (mPortAppearanceAfterLastRefresh.mMainIconPath != mpPortAppearance->mMainIconPath)
@@ -347,7 +347,7 @@ void GUIPort::refreshPortMainGraphics()
 }
 
 
-void GUIPort::refreshPortOverlayGraphics()
+void Port::refreshPortOverlayGraphics()
 {
     //! @todo maybe put main icon in here also
 
@@ -403,7 +403,7 @@ void GUIPort::refreshPortOverlayGraphics()
 
 
 //! @brief Refreshes the port overlay graphics and lable position
-void GUIPort::refreshPortOverlayPosition()
+void Port::refreshPortOverlayPosition()
 {
     this->magnify(false); //We must turn magnification off or the pos adjustment calculation will be massivly brainfucked
 
@@ -459,7 +459,7 @@ void GUIPort::refreshPortOverlayPosition()
 //! @brief recreate the port graphics overlay
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
 //! @todo Maybe we should preload all cqs and multiport overlays (just three of them) and create som kind of shared svg renderer that all ports can share, then we dont need to reload graphics from file every freaking time it changes and in every systemport
-void GUIPort::refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ext_act)
+void Port::refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ext_act)
 {
     qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
 
@@ -506,7 +506,7 @@ void GUIPort::refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int
 }
 
 //! @brief Scales the port overlay graphics and tooltip
-void GUIPort::refreshPortOverlayScale(qreal scale)
+void Port::refreshPortOverlayScale(qreal scale)
 {
     mOverlaySetScale = scale;   //Remember what scale we are supposed to have
 
@@ -532,14 +532,14 @@ void GUIPort::refreshPortOverlayScale(qreal scale)
 }
 
 //! Returns a pointer to the GraphicsView that the port belongs to.
-GUIContainerObject *GUIPort::getParentContainerObjectPtr()
+ContainerObject *Port::getParentContainerObjectPtr()
 {
     return mpParentGuiModelObject->getParentContainerObject();
 }
 
 
 //! Returns a pointer to the GUIComponent the port belongs to.
-GUIModelObject *GUIPort::getGuiModelObject()
+ModelObject *Port::getGuiModelObject()
 {
     return mpParentGuiModelObject;
 }
@@ -548,7 +548,7 @@ GUIModelObject *GUIPort::getGuiModelObject()
 //! Plots the variable with name 'dataName' in the node the port is connected to.
 //! @param dataName tells which variable to plot.
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
-PlotWindow *GUIPort::plot(QString dataName, QString dataUnit, QColor desiredCurveColor)
+PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveColor)
 {
     if(this->isConnected())
     {
@@ -563,7 +563,7 @@ PlotWindow *GUIPort::plot(QString dataName, QString dataUnit, QColor desiredCurv
 //! @param pPlotWindow Pointer to plot window to add curve to
 //! @param dataName Name of the data variable to plot
 //! @param dataUnit Desired data unit (empty = use default)
-void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit, int axisY)
+void Port::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit, int axisY)
 {
     //Make sure plot data exists
     QPair<QVector<double>, QVector<double> > vectors;
@@ -581,26 +581,26 @@ void GUIPort::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QStrin
 
 
 //! Wrapper for the Core getPortTypeString() function
-QString GUIPort::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)
+QString Port::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)
 {
     return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getPortName(), ind);
 }
 
 
 //! Wrapper for the Core getNodeType() function
-QString GUIPort::getNodeType()
+QString Port::getNodeType()
 {
     return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(getGuiModelObjectName(), this->getPortName());
 }
 
 
-void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
+void Port::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
     mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getPortName(), rNames, rValues, rUnits);
 }
 
 
-void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
+void Port::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
 {
     mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getPortName(), rNames, rValuesTxt, rUnits);
 }
@@ -616,7 +616,7 @@ void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVe
 //    return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getPortName(), names, valuesTxt);
 //}
 
-PortDirectionT GUIPort::getPortDirection()
+PortDirectionT Port::getPortDirection()
 {
     //! @todo will this work if parentguimodelobject is flipped
     qreal scene_angle = normDeg360( this->mpParentGuiModelObject->rotation() + this->rotation() );
@@ -634,14 +634,14 @@ PortDirectionT GUIPort::getPortDirection()
 }
 
 
-void GUIPort::addConnection(Connector *pConnector)
+void Port::addConnection(Connector *pConnector)
 {
     mConnectedConnectors.append(pConnector);
     //qDebug() << "Adding connection, connections = " << mnConnections;
 }
 
 
-void GUIPort::removeConnection(Connector *pConnector)
+void Port::removeConnection(Connector *pConnector)
 {
     int idx = mConnectedConnectors.indexOf(pConnector);
     mConnectedConnectors.remove(idx);
@@ -650,7 +650,7 @@ void GUIPort::removeConnection(Connector *pConnector)
 
 //! @brief Return a copy of the currently connected connectors
 //! @return QVector with connector pointers
-QVector<Connector*> GUIPort::getAttachedConnectorPtrs() const
+QVector<Connector*> Port::getAttachedConnectorPtrs() const
 {
     return mConnectedConnectors;
 }
@@ -658,16 +658,16 @@ QVector<Connector*> GUIPort::getAttachedConnectorPtrs() const
 
 //! @brief Ask if the port is connected or not
 //! @return if the port is connected or not
-bool GUIPort::isConnected()
+bool Port::isConnected()
 {
     return (mConnectedConnectors.size() > 0);
 }
 
 
 //! @brief Returns a vector with all ports connected to this port.
-QVector<GUIPort *> GUIPort::getConnectedPorts()
+QVector<Port *> Port::getConnectedPorts()
 {
-    QVector<GUIPort *> vector;
+    QVector<Port *> vector;
     for(int i=0; i<mConnectedConnectors.size(); ++i)
     {
         if(mConnectedConnectors.at(i)->getStartPort() == this)
@@ -679,44 +679,44 @@ QVector<GUIPort *> GUIPort::getConnectedPorts()
 }
 
 //! @brief virtual function, only usefull for group port, guiport will return it self (this)
-GUIPort* GUIPort::getRealPort()
+Port* Port::getRealPort()
 {
     return this;
 }
 
 
 //! @brief Returns the rotation set by port appearance
-qreal GUIPort::getPortRotation()
+qreal Port::getPortRotation()
 {
     return mpPortAppearance->rot;
 }
 
-void GUIPort::hide()
+void Port::hide()
 {
     this->magnify(false);
     mpPortLabel->hide();
     QGraphicsWidget::hide();
 }
 
-void GUIPort::show()
+void Port::show()
 {
     QGraphicsWidget::show();
     mpPortLabel->hide();
 }
 
 
-QString GUIPort::getPortName() const
+QString Port::getPortName() const
 {
     return mPortDisplayName;
 }
 
-QString GUIPort::getGuiModelObjectName()
+QString Port::getGuiModelObjectName()
 {
     return mpParentGuiModelObject->getName();
 }
 
 
-void GUIPort::setDisplayName(const QString name)
+void Port::setDisplayName(const QString name)
 {
     mPortDisplayName = name;
     //Set the lable, &#160 menas extra white space, to make lable more readable
@@ -727,7 +727,7 @@ void GUIPort::setDisplayName(const QString name)
 }
 
 
-bool GUIPort::getLastNodeData(QString dataName, double& rData)
+bool Port::getLastNodeData(QString dataName, double& rData)
 {
     return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getLastNodeData(getGuiModelObjectName(), this->getPortName(), dataName, rData);
 }
@@ -735,7 +735,7 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 
 //! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
 //! @param doShow shall we show unconnected ports
-void GUIPort::showIfNotConnected(bool doShow)
+void Port::showIfNotConnected(bool doShow)
 {
     if(!isConnected() && doShow && mpParentGuiModelObject->isVisible())
     {
@@ -748,8 +748,8 @@ void GUIPort::showIfNotConnected(bool doShow)
 }
 
 
-GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIModelObject *pParentObject)
-    : GUIPort(name, xpos, ypos, pPortAppearance, pParentObject)
+GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject)
+    : Port(name, xpos, ypos, pPortAppearance, pParentObject)
 {
     //Nothing for now
 }
@@ -771,18 +771,18 @@ QString GroupPort::getNodeType()
 
 void GroupPort::addConnection(Connector *pConnector)
 {
-    GUIPort::addConnection(pConnector);
+    Port::addConnection(pConnector);
     mSharedGroupPortInfo->mConnectedConnectors.append(pConnector);
 }
 
 void GroupPort::removeConnection(Connector *pConnector)
 {
-    GUIPort::removeConnection(pConnector);
+    Port::removeConnection(pConnector);
     mSharedGroupPortInfo->mConnectedConnectors.remove(mSharedGroupPortInfo->mConnectedConnectors.indexOf(pConnector));
 }
 
 
-GUIPort* GroupPort::getRealPort()
+Port* GroupPort::getRealPort()
 {
     if (mSharedGroupPortInfo->mConnectedConnectors.size() == 0)
     {
@@ -805,9 +805,9 @@ GUIPort* GroupPort::getRealPort()
 }
 
 //! @brief Returns a vector with all ports connected to this port.
-QVector<GUIPort *> GroupPort::getConnectedPorts()
+QVector<Port *> GroupPort::getConnectedPorts()
 {
-    QVector<GUIPort *> vector;
+    QVector<Port *> vector;
     for(int i=0; i<mSharedGroupPortInfo->mConnectedConnectors.size(); ++i)
     {
         Connector *pCon = mSharedGroupPortInfo->mConnectedConnectors[i];

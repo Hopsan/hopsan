@@ -41,12 +41,12 @@
 #include <QCheckBox>
 
 
-class GUIWidget : public GUIObject
+class Widget : public WorkspaceObject
 {
     Q_OBJECT
 
 public:
-    GUIWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
+    Widget(QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
     QString mType;
     void setOldPos();
     void setWidgetIndex(int idx);
@@ -67,12 +67,12 @@ protected:
 };
 
 
-class GUITextBoxWidget : public GUIWidget
+class TextBoxWidget : public Widget
 {
     Q_OBJECT
 
 public:
-    GUITextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    TextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     void saveToDomElement(QDomElement &rDomElement);
 
     void setText(QString text);
@@ -128,96 +128,5 @@ private:
     qreal mWidthBeforeResize;
     qreal mHeightBeforeResize;
 };
-
-
-//class GUITextWidget : public GUIWidget
-//{
-//    Q_OBJECT
-//public:
-//    GUITextWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
-//    void saveToDomElement(QDomElement &rDomElement);
-//    void setText(QString text);
-//    void setTextColor(QColor color);
-//    void setTextFont(QFont font);
-
-//protected:
-//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-//public slots:
-//    void deleteMe(undoStatus undoSettings=UNDO);
-//    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
-//    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
-
-//private slots:
-//    void updateWidgetFromDialog();
-//    void openFontDialog();
-//    void openColorDialog();
-
-//private:
-//    QGraphicsTextItem *mpTextItem;
-//    QDialog *mpEditTextDialog;
-//    QPushButton *mpFontInDialogButton;
-//    QPushButton *mpColorInDialogButton;
-//    QPushButton *mpDoneInDialogButton;
-//    QPushButton *mpCancelInDialogButton;
-
-//    QTextEdit *mpTextBox;
-//    QFont mSelectedFont;
-//    QColor mSelectedColor;
-//    QLabel *mpExampleLabel;
-//};
-
-
-//class GUIBoxWidget : public GUIWidget
-//{
-//    Q_OBJECT
-//public:
-//    GUIBoxWidget(QPointF pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
-//    void saveToDomElement(QDomElement &rDomElement);
-//    void setLineWidth(int value);
-//    void setLineStyle(Qt::PenStyle style);
-//    void setLineColor(QColor color);
-//    void setSize(qreal w, qreal h);
-
-//public slots:
-//    void deleteMe(undoStatus undoSettings=UNDO);
-//    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
-//    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
-
-//protected:
-//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-//    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-//    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-//    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-//    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-//private slots:
-//    void openColorDialog();
-//    void updateWidgetFromDialog();
-
-//private:
-//    QGraphicsRectItem *mpRectItem;
-
-//    QDialog *mpEditBoxDialog;
-//    QLabel *mpWidthLabelInDialog;
-//    QSpinBox *mpWidthBoxInDialog;
-//    QLabel *mpColorLabelInDialog;
-//    QToolButton *mpColorInDialogButton;
-//    QLabel *mpStyleLabelInDialog;
-//    QComboBox *mpStyleBoxInDialog;
-//    QPushButton *mpDoneInDialogButton;
-//    QPushButton *mpCancelInDialogButton;
-
-//    QColor mSelectedColor;
-
-//    bool mResizeTop;
-//    bool mResizeBottom;
-//    bool mResizeLeft;
-//    bool mResizeRight;
-//    QPointF mPosBeforeResize;
-//    qreal mWidthBeforeResize;
-//    qreal mHeightBeforeResize;
-//};
-
 
 #endif // GUIWIDGETS_H

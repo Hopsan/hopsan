@@ -34,7 +34,7 @@
 #include <QDialogButtonBox>
 
 //Forward Declaration
-class GUIContainerObject;
+class ContainerObject;
 class ParameterLayout;
 
 class ContainerPropertiesDialog : public QDialog
@@ -42,10 +42,10 @@ class ContainerPropertiesDialog : public QDialog
     Q_OBJECT
 
 public:
-    ContainerPropertiesDialog(GUIContainerObject *pContainerObject, QWidget *pParentWidget);
+    ContainerPropertiesDialog(ContainerObject *pContainerObject, QWidget *pParentWidget);
 
 private:
-    GUIContainerObject *mpContainerObject;
+    ContainerObject *mpContainerObject;
 
     QLineEdit *mpNameEdit;
     QLineEdit *mpUserIconPath;
