@@ -80,7 +80,7 @@ namespace hopsan {
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
-            registerParameter("d", "Diameter", "[m]", d);
+            registerParameter("d", "Spool Diameter", "[m]", d);
             registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
             registerParameter("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", f_bt);
             registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
