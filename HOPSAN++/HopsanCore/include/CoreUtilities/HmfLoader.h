@@ -29,8 +29,8 @@
 #include <string>
 
 #include "win32dll.h"
-#include "Dependencies/rapidxml-1.13/rapidxml.hpp"
-#include "Dependencies/rapidxml-1.13/rapidxml_utils.hpp"
+#include "rapidxml.hpp"
+#include "rapidxml_utils.hpp"
 //#include "rapidxml_print.hpp"
 
 

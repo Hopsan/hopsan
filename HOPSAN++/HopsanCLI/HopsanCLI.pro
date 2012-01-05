@@ -21,7 +21,7 @@ CONFIG   -= app_bundle
 
 #--------------------------------------------------------
 # Set the rappidxml include path, should not be needed if we decide to include the loader in hopsan essentials (and wrap it)
-INCLUDEPATH *= $${PWD}/Dependencies/rapidxml-1.13
+INCLUDEPATH *= $${PWD}/../HopsanCore/Dependencies/rapidxml-1.13
 #--------------------------------------------------------
 
 #--------------------------------------------------------
