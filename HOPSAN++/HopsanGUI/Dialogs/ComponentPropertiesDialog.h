@@ -42,6 +42,7 @@ public:
 
 protected slots:
     void okPressed();
+    void editPortPos();
 
 protected:
     bool setValuesToSystem(QVector<ParameterLayout *> &vParLayout);
@@ -65,6 +66,7 @@ private:
     QDialogButtonBox *mpButtonBox;
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
+    QPushButton *mpEditPortPos;
     QWidget *mpExtension;
 };
 

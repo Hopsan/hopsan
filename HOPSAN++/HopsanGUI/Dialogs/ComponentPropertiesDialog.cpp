@@ -39,6 +39,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "Configuration.h"
 #include "Utilities/GUIUtilities.h"
+#include "Dialogs/MovePortsDialog.h"
 
 
 //! @class ComponentPropertiesDialog
@@ -175,7 +176,7 @@ void ComponentPropertiesDialog::createEditStuff()
     }
 
     //qDebug() << "after parnames";
-
+    mpEditPortPos = new QPushButton(tr("&Move ports"), this);
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpOkButton = new QPushButton(tr("&Ok"), this);
     mpOkButton->setDefault(true);
@@ -183,9 +184,11 @@ void ComponentPropertiesDialog::createEditStuff()
     mpButtonBox = new QDialogButtonBox(Qt::Vertical, this);
     mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpEditPortPos, QDialogButtonBox::ActionRole);
 
     connect(mpOkButton, SIGNAL(clicked()), SLOT(okPressed()));
     connect(mpCancelButton, SIGNAL(clicked()), SLOT(close()));
+    connect(mpEditPortPos, SIGNAL(clicked()), SLOT(editPortPos()));
 
     QGroupBox *pHelpGroupBox = new QGroupBox();
     QVBoxLayout *pHelpLayout = new QVBoxLayout();
@@ -281,6 +284,12 @@ void ComponentPropertiesDialog::okPressed()
     //qDebug() << mpNameEdit->text();
 
     setParametersAndStartValues();
+}
+
+
+void ComponentPropertiesDialog::editPortPos()
+{
+    new MovePortsDialog();
 }
 
 
