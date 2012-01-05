@@ -616,8 +616,42 @@ double normalDistribution(double average, double sigma)
 
 
 
+PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue)
+{
+    this->porttype = porttype;
+    this->nodetype = nodetype;
+    this->name = name;
+    this->notrequired = notrequired;
+    this->defaultvalue = defaultvalue;
+}
 
-ComponentDescription::ComponentDescription(QString typeName, QString displayName, QString cqsType)
+
+ParameterSpecification::ParameterSpecification(QString name, QString displayName, QString description, QString unit, QString init)
+{
+    this->name = name;
+    this->displayName = displayName;
+    this->description = description;
+    this->unit = unit;
+    this->init = init;
+}
+
+
+UtilitySpecification::UtilitySpecification(QString utility, QString name)
+{
+    this->utility = utility;
+    this->name = name;
+}
+
+
+StaticVariableSpecification::StaticVariableSpecification(QString datatype, QString name)
+{
+    this->datatype = datatype;
+    this->name = name;
+}
+
+
+
+ComponentSpecification::ComponentSpecification(QString typeName, QString displayName, QString cqsType)
 {
     this->typeName = typeName;
     this->displayName = displayName;
@@ -626,13 +660,14 @@ ComponentDescription::ComponentDescription(QString typeName, QString displayName
     this->cqsType = cqsType;
 }
 
+
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 {
     QString typeName = rDomElement.attribute("typename");
     QString displayName = rDomElement.attribute("displayname");
     QString cqsType = rDomElement.attribute("cqstype");
 
-    ComponentDescription comp = ComponentDescription(typeName, displayName, cqsType);
+    ComponentSpecification comp = ComponentSpecification(typeName, displayName, cqsType);
 
     QDomElement utilitiesElement = rDomElement.firstChildElement("utilities");
     QDomElement utilityElement = utilitiesElement.firstChildElement("utility");
@@ -696,21 +731,36 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 }
 
 
-void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QStringList sysEquations, QStringList stateVars, QStringList jacobian)
+void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType,
+                                 QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
+                                 QStringList sysEquations, QStringList stateVars, QStringList jacobian,
+                                 QStringList delayTerms, QStringList delaySteps)
 {
-    ComponentDescription comp(typeName, displayName, cqsType);
+    ComponentSpecification comp(typeName, displayName, cqsType);
 
-    comp.portNames << "P1" << "P2";
-    comp.portNodeTypes << "NodeHydraulic" << "NodeHydraulic";
-    comp.portTypes << "PowerPort" << "PowerPort";
-    comp.portNotReq << false << false;
-    comp.portDefaults << "" << "";
+    for(int i=0; i<delayTerms.size(); ++i)
+    {
+        comp.utilities << "Delay";
+        comp.utilityNames << "mDelay"+QString().setNum(i);
+    }
 
-    comp.parNames << "Kc";
-    comp.parDisplayNames << "K_c";
-    comp.parDescriptions << "Pressure-Flow Coefficient";
-    comp.parUnits << "[-]";
-    comp.parInits << "1e-11";
+    for(int i=0; i<ports.size(); ++i)
+    {
+        comp.portNames << ports[i].name;
+        comp.portNodeTypes << ports[i].nodetype;
+        comp.portTypes << ports[i].porttype;
+        comp.portNotReq << ports[i].notrequired;
+        comp.portDefaults << ports[i].defaultvalue;
+    }
+
+    for(int i=0; i<parameters.size(); ++i)
+    {
+        comp.parNames << parameters[i].name;
+        comp.parDisplayNames << parameters[i].displayName;
+        comp.parDescriptions << parameters[i].description;
+        comp.parUnits << parameters[i].unit;
+        comp.parInits << parameters[i].init;
+    }
 
     comp.varNames << "order["+QString().setNum(stateVars.size())+"]" << "jsyseqnweight[4]" << "jacobianMatrix" << "systemEquations";
     comp.varTypes << "int" << "double" << "Matrix" << "Vec";
@@ -723,6 +773,10 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     comp.initEquations << "jsyseqnweight[2]=0.5;";
     comp.initEquations << "jsyseqnweight[3]=0.5;";
     comp.initEquations << "";
+    for(int i=0; i<delayTerms.size(); ++i)
+    {
+        comp.initEquations << "mDelay"+QString().setNum(i)+".initialize("+QString().setNum(delaySteps.at(i).toInt()+1)+", "+delayTerms[i]+");";
+    }
 
     comp.simEquations << "Vec stateVar("+QString().setNum(stateVars.size())+");";
     comp.simEquations << "Vec stateVark("+QString().setNum(stateVars.size())+");";
@@ -767,13 +821,18 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     {
         comp.simEquations << stateVars[i]+"=stateVark["+QString().setNum(i)+"];";
     }
+    comp.simEquations << "";
+    for(int i=0; i<delayTerms.size(); ++i)
+    {
+        comp.simEquations << "mDelay"+QString().setNum(i)+".update("+delayTerms[i]+");";
+    }
 
     generateComponentSourceCode("equation.hpp", comp);
 }
 
 
 
-void generateComponentSourceCode(QString outputFile, ComponentDescription comp, bool overwriteStartValues)
+void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, bool overwriteStartValues)
 {
     //Initialize the file stream
     QFileInfo fileInfo;
@@ -954,21 +1013,13 @@ void generateComponentSourceCode(QString outputFile, ComponentDescription comp, 
         for(int i=0; i<comp.portNames.size(); ++i)
         {
             QStringList varNames;
-            if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "ReadPort")
+            if(comp.portNodeTypes[i] == "NodeSignal")
             {
                 varNames << comp.portNames[i];
             }
-            else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "Q")
+            else if(comp.portNodeTypes[i] == "NodeHydraulic")
             {
-                varNames << "c" << "Zc";
-            }
-            else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "C")
-            {
-                varNames << "p" << "q";
-            }
-            else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "S")
-            {
-                varNames << "p" << "q" << "c" << "Zc";
+               varNames << "p" << "q" << "c" << "Zc";
             }
 
             for(int v=0; v<varNames.size(); ++v)
@@ -1220,7 +1271,7 @@ void generateComponentSourceCode(QString outputFile, ComponentDescription comp, 
 
 
 
-void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables)
+void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &rightSideVariables)
 {
     QString word;
     bool leftSide=true;
@@ -1231,7 +1282,7 @@ void identifyVariables(QString equation, QStringList &leftSideVariables, QString
         {
             word.append(currentChar);
         }
-        else if(!word.isEmpty())
+        else if(!word.isEmpty() && currentChar != '(')
         {
             if(leftSide)
             {
@@ -1239,8 +1290,12 @@ void identifyVariables(QString equation, QStringList &leftSideVariables, QString
             }
             else
             {
-                righrSideVariables.append(word);
+                rightSideVariables.append(word);
             }
+            word.clear();
+        }
+        else
+        {
             word.clear();
         }
 
@@ -1249,4 +1304,217 @@ void identifyVariables(QString equation, QStringList &leftSideVariables, QString
             leftSide = false;
         }
     }
+    if(!word.isEmpty())
+    {
+        if(leftSide)
+        {
+            leftSideVariables.append(word);
+        }
+        else
+        {
+            rightSideVariables.append(word);
+        }
+    }
+    qDebug() << "Equation: " << equation;
+    qDebug() << "Identified: " << leftSideVariables << rightSideVariables;
+}
+
+
+void identifyFunctions(QString equation, QStringList &functions)
+{
+    QString word;
+    for(int i=0; i<equation.size(); ++i)
+    {
+        QChar currentChar = equation.at(i);
+        if(currentChar.isLetter() || (currentChar.isNumber() && !word.isEmpty()))
+        {
+            word.append(currentChar);
+        }
+        else if(!word.isEmpty() && currentChar == '(')
+        {
+            functions.append(word);
+            word.clear();
+        }
+        else
+        {
+            word.clear();
+        }
+    }
+}
+
+
+bool verifyEquations(QStringList equations)
+{
+    for(int i=0; i<equations.size(); ++i)
+    {
+        if(!verifyEquation(equations[i]))
+            return false;
+    }
+
+    //! @todo Verify equation system (number of unknowns etc)
+    return true;
+}
+
+
+bool verifyEquation(QString equation)
+{
+    //Verify that no unsupported functions are used
+    QStringList legalFunctions;
+    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "der";        //"der" is not Python!
+    QStringList usedFunctions;
+    identifyFunctions(equation, usedFunctions);
+    for(int i=0; i<usedFunctions.size(); ++i)
+    {
+        if(!legalFunctions.contains(usedFunctions[i]))
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Equations contain unsupported function: "+usedFunctions[i]);
+            return false;
+        }
+    }
+    return true;
+}
+
+
+void replaceReservedWords(QStringList &equations)
+{
+    for(int i=0; i<equations.size(); ++i)
+    {
+        replaceReservedWords(equations[i]);
+    }
+}
+
+
+void replaceReservedWords(QString &equation)
+{
+    QStringList reservedWords = QStringList() << "in";
+    QStringList replacementWords = QStringList() << "RESERVEDBYPYTHON1";
+
+    QString word;
+    for(int i=0; i<equation.size(); ++i)
+    {
+        QChar currentChar = equation.at(i);
+        if(currentChar.isLetter() || (currentChar.isNumber() && !word.isEmpty()))
+        {
+            word.append(currentChar);
+        }
+        else if(!word.isEmpty() && currentChar != '(')
+        {
+            qDebug() << "Word = " << word;
+            if(reservedWords.contains(word))
+            {
+                qDebug() << "Replacing: " << equation;
+                equation.remove(i-word.size(), word.size());
+                equation.insert(i-word.size(), replacementWords[reservedWords.indexOf(word)]);
+                qDebug() << "Replaced: " << equation;
+                i=0;
+            }
+            word.clear();
+        }
+        else
+        {
+            word.clear();
+        }
+    }
+
+    if(!word.isEmpty())
+    {
+        qDebug() << "Word = " << word;
+        if(reservedWords.contains(word))
+        {
+            qDebug() << "Replacing: " << equation;
+            equation.remove(equation.size()-word.size(), word.size());
+            equation.insert(equation.size(), replacementWords[reservedWords.indexOf(word)]);
+            qDebug() << "Replaced: " << equation;
+        }
+    }
+}
+
+
+
+void replaceReservedWords(QList<PortSpecification> &ports)
+{
+    QStringList reservedWords = QStringList() << "in";
+    QStringList replacementWords = QStringList() << "RESERVEDBYPYTHON1";
+
+    for(int i=0; i<ports.size(); ++i)
+    {
+        if(reservedWords.contains(ports[i].name))
+        {
+            ports[i].name = replacementWords[reservedWords.indexOf(ports[i].name)];
+        }
+    }
+}
+
+
+void identifyDerivatives(QStringList &equations)
+{
+    qDebug() << "Before derivative check: " << equations;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        while(equations[i].contains("der("))
+        {
+            int j = equations[i].indexOf("der(");
+            int k = equations[i].indexOf(")",j);
+            qDebug() << "j = " << j << ", k = " << k;
+            equations[i].remove(k, 1);
+            equations[i].remove(j, 4);
+            equations[i].insert(j, "s*");
+        }
+    }
+    qDebug() << "After derivative check: " << equations;
+}
+
+
+void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps)
+{
+    qDebug() << "Before delay translation: " << equations;
+
+    int delayNum = 0;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        QStringList plusTerms = equations.at(i).split("+");
+        QStringList terms;
+        for(int j=0; j<plusTerms.size(); ++j)
+        {
+            QStringList minusTerms = plusTerms.at(j).split("-");
+            terms.append(minusTerms);
+        }
+        //QStringList delayTerms;
+        for(int j=0; j<terms.size(); ++j)
+        {
+            if(terms.at(j).contains("qi00"))
+            {
+                delayTerms.append(terms.at(j));
+            }
+        }
+        qDebug() << "Terms with delay: " << delayTerms;
+        for(int j=0; j<delayTerms.size(); ++j)
+        {
+            QString before = delayTerms.at(j);
+            int steps = 0;
+            if(before.at(before.indexOf("ui00")+4) == '*' && before.at(before.indexOf("ui00")+5) == '*')
+            {
+                steps = QString(before.at(before.indexOf("ui00")+6)).toInt();
+            }
+
+            QString after = "mDelay"+QString().setNum(delayNum)+".getIdx("+QString().setNum(steps)+")";
+            equations[i].replace(delayTerms.at(j), after);
+            ++delayNum;
+
+            delayTerms[j] = before.replace("qi00", "1");        //Replace delay operators with ones, to "remove" them
+            while(delayTerms[j].endsWith(" "))
+                delayTerms[j].chop(1);
+            delayTerms[j] = delayTerms[j].replace("*1*", "*");  //Attempt to be "smart" and remove unnecessary ones
+            delayTerms[j] = delayTerms[j].replace("*1/", "/");
+            delayTerms[j] = delayTerms[j].replace("/1*", "*");
+            if(delayTerms[j].startsWith("1*"))
+                delayTerms[j].remove(0, 2);
+            if(delayTerms[j].endsWith("*1"))
+                delayTerms[j].chop(2);
+
+            delaySteps << QString().setNum(steps);
+        }
+    }
+    qDebug() << "After delay translation: " << equations;
+    qDebug() << "Delay terms: " << delayTerms;
 }

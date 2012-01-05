@@ -60,10 +60,47 @@ void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
 
 //Component generation
-class ComponentDescription
+class PortSpecification
 {
 public:
-    ComponentDescription(QString typeName, QString displayName, QString cqsType);
+    PortSpecification(QString porttype = "ReadPort", QString nodetype = "NodeSignal", QString name = QString(), bool notrequired=false, QString defaultvalue=QString());
+    QString porttype;
+    QString nodetype;
+    QString name;
+    bool notrequired;
+    QString defaultvalue;
+};
+
+class ParameterSpecification
+{
+public:
+    ParameterSpecification(QString name = QString(), QString displayName = QString(), QString description = QString(), QString unit = QString(), QString init = QString());
+    QString name;
+    QString displayName;
+    QString description;
+    QString unit;
+    QString init;
+};
+
+class UtilitySpecification
+{
+public:
+    UtilitySpecification(QString utility="FirstOrderTransferFunction", QString name=QString());
+    QString utility;
+    QString name;
+};
+
+class StaticVariableSpecification
+{
+public:
+    StaticVariableSpecification(QString datatype="double", QString name=QString());
+    QString datatype;
+    QString name;
+};
+class ComponentSpecification
+{
+public:
+    ComponentSpecification(QString typeName, QString displayName, QString cqsType);
     QString typeName;
     QString displayName;
     QString cqsType;
@@ -86,9 +123,17 @@ public:
     QStringList finalEquations;
 };
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement);
-void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QStringList sysEquations, QStringList stateVars, QStringList jacobian);
-void generateComponentSourceCode(QString outputFile, ComponentDescription comp, bool overwriteStartValues=false);
+void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps);
+void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
+void identifyFunctions(QString equation, QStringList &functions);
+bool verifyEquations(QStringList equations);
+bool verifyEquation(QString equation);
+void replaceReservedWords(QStringList &equations);
+void replaceReservedWords(QString &equation);
+void replaceReservedWords(QList<PortSpecification> &ports);
+void identifyDerivatives(QStringList &equations);
+void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps);
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

@@ -30,40 +30,6 @@
 #include "common.h"
 
 
-PortSpecification::PortSpecification(QString porttype, QString nodetype, QString name, bool notrequired, QString defaultvalue)
-{
-    this->porttype = porttype;
-    this->nodetype = nodetype;
-    this->name = name;
-    this->notrequired = notrequired;
-    this->defaultvalue = defaultvalue;
-}
-
-
-ParameterSpecification::ParameterSpecification(QString name, QString displayName, QString description, QString unit, QString init)
-{
-    this->name = name;
-    this->displayName = displayName;
-    this->description = description;
-    this->unit = unit;
-    this->init = init;
-}
-
-
-UtilitySpecification::UtilitySpecification(QString utility, QString name)
-{
-    this->utility = utility;
-    this->name = name;
-}
-
-
-StaticVariableSpecification::StaticVariableSpecification(QString datatype, QString name)
-{
-    this->datatype = datatype;
-    this->name = name;
-}
-
-
 //! @brief Constructor
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QDialog(parent)
@@ -96,8 +62,13 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpFinalizeWidget->setLayout(mpFinalizeLayout);
 
     mpEquationsTextField = new QTextEdit(this);
+    mpBoundaryEquationsTextField = new QTextEdit(this);
+    mpBoundaryEquationsTextField->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     mpEquationsLayout = new QGridLayout(this);
     mpEquationsLayout->addWidget(mpEquationsTextField, 0, 0);
+    mpEquationsLayout->addWidget(mpBoundaryEquationsTextField, 1, 0);
+    mpEquationsLayout->setRowStretch(0, 1);
+    mpEquationsLayout->setRowStretch(1, 0);
     mpEquationsWidget = new QWidget(this);
     mpEquationsWidget->setLayout(mpEquationsLayout);
 
@@ -135,6 +106,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpComponentTypeLabel = new QLabel("CQS Type: ");
     mpComponentTypeComboBox = new QComboBox(this);
     mpComponentTypeComboBox->addItems(QStringList() << "C" << "Q" << "S");
+    connect(mpComponentTypeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(update()));
     connect(mpComponentTypeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateValues()));
     mpAddItemButton = new QToolButton(this);
     mpAddItemButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
@@ -208,6 +180,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     setLayout(mpLayout);
 
     update();
+    updateValues();
 
     //Connections
     connect(mpCancelButton,    SIGNAL(clicked()), this, SLOT(reject()));
@@ -226,6 +199,7 @@ void ComponentGeneratorDialog::addPort()
 {
     mPortList.append(PortSpecification());
     update();
+    updateValues();
 }
 
 
@@ -290,6 +264,8 @@ void ComponentGeneratorDialog::removeStaticVariable()
 
 void ComponentGeneratorDialog::updateValues()
 {
+    qDebug() << "updateValues()";
+
     //Assume sender is a line edit
     QLineEdit *lineEdit = qobject_cast<QLineEdit *>(sender());
 
@@ -405,6 +381,22 @@ void ComponentGeneratorDialog::updateValues()
     soughtText.chop(2);
     mpGivenLabel->setText(givenText);
     mpSoughtLabel->setText(soughtText);
+
+
+    mpBoundaryEquationsTextField->clear();
+    int i=1;
+    for(int j=0; j<mPortList.size(); ++j)
+    {
+        if(mPortList[j].porttype == "PowerPort" && mPortList[j].nodetype != "NodeSignal")
+        {
+            QString iStr = QString().setNum(i);
+            mpBoundaryEquationsTextField->append("p"+iStr+" = c"+iStr+" + Zc"+iStr+"*q"+iStr);
+            ++i;
+        }
+    }
+    mpBoundaryEquationsTextField->setVisible(!mpBoundaryEquationsTextField->toPlainText().isEmpty());
+    mpBoundaryEquationsTextField->setFixedHeight(15*i);
+
 }
 
 
@@ -414,6 +406,8 @@ void ComponentGeneratorDialog::update()
     {
         mpCodeTabs->hide();
         mpEquationsWidget->show();
+        qDebug() << "CQSType = " << mpComponentTypeComboBox->currentText();
+        mpBoundaryEquationsTextField->setVisible(mpComponentTypeComboBox->currentText() == "Q");
     }
     else
     {
@@ -728,9 +722,27 @@ void ComponentGeneratorDialog::compile()
 {
     if(mpGenerateFromComboBox->currentIndex() == 0)
     {
+        qDebug() << "Compiling equations";
+
         QString plainEquations = mpEquationsTextField->toPlainText();
         QStringList equations = plainEquations.split("\n");
-        //! @todo Verify the equations!
+        QString plainBoundaryEquations = mpBoundaryEquationsTextField->toPlainText();
+        QStringList boundaryEquations = plainBoundaryEquations.split("\n");
+        equations.append(boundaryEquations);
+        equations.removeAll("");
+
+        identifyDerivatives(equations);
+
+        if(!verifyEquations(equations))
+        {
+            qDebug() << "Verification failed.";
+            return;
+        }
+
+        replaceReservedWords(equations);
+        replaceReservedWords(mPortList);
+
+        qDebug() << "Equations = " << equations;
 
         QStringList stateVars;
         for(int i=0; i<mPortList.size(); ++i)
@@ -773,6 +785,8 @@ void ComponentGeneratorDialog::compile()
             allSymbols.append(rightSymbols.at(i));
         }
         allSymbols.removeDuplicates();
+        allSymbols.append("mTimestep");
+        allSymbols.append("qi00");
 
         gpMainWindow->mpPyDockWidget->runCommand("from sympy import *");
         for(int i=0; i<allSymbols.size(); ++i)
@@ -794,6 +808,9 @@ void ComponentGeneratorDialog::compile()
             gpMainWindow->mpPyDockWidget->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
             gpMainWindow->mpPyDockWidget->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
             gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
+            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".subs(s, mTimestep/2*(1-qi00)/(1+qi00))");
+            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
+            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".simplify()");
         }
 
         QStringList jString;
@@ -803,7 +820,7 @@ void ComponentGeneratorDialog::compile()
             {
                 QString iStr = QString().setNum(i);
                 QString jStr = QString().setNum(j);
-                gpMainWindow->mpPyDockWidget->runCommand("j"+iStr+jStr+" = diff(f"+iStr+", "+stateVars.at(j)+")");
+                gpMainWindow->mpPyDockWidget->runCommand("j"+iStr+jStr+" = diff(f"+iStr+".subs(qi00, 0), "+stateVars.at(j)+")");
                 gpMainWindow->mpPyDockWidget->runCommand("print(j"+iStr+jStr+")");
                 jString.append(gpMainWindow->mpPyDockWidget->getLastOutput());
             }
@@ -820,11 +837,15 @@ void ComponentGeneratorDialog::compile()
         qDebug() << "System Equations = " << sysEquations;
         qDebug() << "State Variables = " << stateVars;
 
+        QStringList delayTerms;
+        QStringList delaySteps;
+        translateDelaysFromPython(sysEquations, delayTerms, delaySteps);
+
         QString typeName = mpComponentNameEdit->text();
         QString displayName = mpComponentDisplayEdit->text();
         QString cqsType = mpComponentTypeComboBox->currentText();
 
-        generateComponentSourceCode(typeName, displayName, cqsType, sysEquations, stateVars, jString);
+        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps);
     }
     else if(mpGenerateFromComboBox->currentIndex() == 1)
     {

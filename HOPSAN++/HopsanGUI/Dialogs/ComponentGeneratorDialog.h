@@ -28,47 +28,10 @@
 #include <QDialog>
 
 #include "MainWindow.h"
+#include "Utilities/GUIUtilities.h"
 
 class MainWindow;
 
-
-class PortSpecification
-{
-public:
-    PortSpecification(QString porttype = "ReadPort", QString nodetype = "NodeSignal", QString name = QString(), bool notrequired=false, QString defaultvalue=QString());
-    QString porttype;
-    QString nodetype;
-    QString name;
-    bool notrequired;
-    QString defaultvalue;
-};
-
-class ParameterSpecification
-{
-public:
-    ParameterSpecification(QString name = QString(), QString displayName = QString(), QString description = QString(), QString unit = QString(), QString init = QString());
-    QString name;
-    QString displayName;
-    QString description;
-    QString unit;
-    QString init;
-};
-
-class UtilitySpecification
-{
-public:
-    UtilitySpecification(QString utility="FirstOrderTransferFunction", QString name=QString());
-    QString utility;
-    QString name;
-};
-
-class StaticVariableSpecification
-{
-public:
-    StaticVariableSpecification(QString datatype="double", QString name=QString());
-    QString datatype;
-    QString name;
-};
 
 class ComponentGeneratorDialog : public QDialog
 {
@@ -110,6 +73,7 @@ private:
     QGridLayout *mpEquationsLayout;
     QWidget *mpEquationsWidget;
     QTextEdit *mpEquationsTextField;
+    QTextEdit *mpBoundaryEquationsTextField;
     QGridLayout *mpCodeLayout;
     QGroupBox *mpCodeGroupBox;
 
