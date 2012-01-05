@@ -15,7 +15,7 @@
 
 //$Id$
 
-#include "AuxiliarySimulationFunctions.h"
+#include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 #include <cmath>
 
 //! @brief Limits a value so it is between min and max

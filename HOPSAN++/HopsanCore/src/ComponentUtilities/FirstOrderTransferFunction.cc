@@ -25,7 +25,7 @@
 //#include <iostream>
 //#include <cassert>
 #include <algorithm>
-#include "FirstOrderTransferFunction.h"
+#include "ComponentUtilities/FirstOrderTransferFunction.h"
 
 using namespace hopsan;
 

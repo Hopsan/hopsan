@@ -34,8 +34,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
-#include "matrix.h"
-#include "ludcmp.h"
+#include "ComponentUtilities/matrix.h"
+#include "ComponentUtilities/ludcmp.h"
 
 
 using namespace hopsan;

@@ -35,7 +35,7 @@ QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
 
 #--------------------------------------------------------
 # Set HopsanCore Paths
-INCLUDEPATH *= $${PWD}/../HopsanCore
+INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------------
 
@@ -154,7 +154,6 @@ SOURCES += main.cpp \
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
     Widgets/LibraryWidget.h \
-    ../HopsanCore/HopsanCore.h \
     GUIConnector.h \
     GUIPort.h \
     Widgets/PlotWidget.h \
@@ -200,7 +199,6 @@ HEADERS += MainWindow.h \
     Dependencies/BarChartPlotter/barchartplotter.h \
     Dependencies/BarChartPlotter/axisbase.h \
     Dialogs/OptimizationDialog.h \
-    Dialogs/SensitivityAnalysis.h \
     Dialogs/SensitivityAnalysisDialog.h \
     Dialogs/ComponentGeneratorDialog.h \
     Dialogs/MovePortsDialog.h \

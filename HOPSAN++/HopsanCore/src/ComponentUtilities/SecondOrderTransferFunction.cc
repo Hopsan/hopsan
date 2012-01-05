@@ -25,7 +25,7 @@
 //#include <iostream>
 //#include <cassert>
 #include <algorithm>
-#include "SecondOrderTransferFunction.h"
+#include "ComponentUtilities/SecondOrderTransferFunction.h"
 
 using namespace hopsan;
 

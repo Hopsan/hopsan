@@ -24,7 +24,7 @@
 
 #include "HopsanEssentials.h"
 #include "Components.h"
-#include "Nodes/Nodes.h"
+#include "Nodes.h"
 #include "version.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include <string>

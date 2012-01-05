@@ -26,7 +26,7 @@
 #define LIBRARYWIDGET_H
 
 #include "common.h"
-#include "HopsanCore.h"
+//#include "HopsanCore.h"
 #include "CoreAccess.h"
 
 #include <QListWidget>

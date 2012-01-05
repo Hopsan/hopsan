@@ -36,7 +36,7 @@ INCLUDEPATH *= $${PWD}/../Utilities
 
 #--------------------------------------------------------
 # Set hopsan core paths
-INCLUDEPATH *= $${PWD}/../HopsanCore
+INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------------
 

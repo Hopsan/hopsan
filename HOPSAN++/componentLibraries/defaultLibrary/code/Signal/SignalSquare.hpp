@@ -25,7 +25,7 @@
 #ifndef SIGNALSQUARE_HPP_INCLUDED
 #define SIGNALSQUARE_HPP_INCLUDED
 
-#include "../../ComponentEssentials.h"
+#include "ComponentEssentials.h"
 
 namespace hopsan {
 

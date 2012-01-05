@@ -524,8 +524,8 @@ void copyIncludeFilesToDir(QString path)
 
     QDir nodesDir;
     nodesDir.mkdir(saveDir.path() + "/include/Nodes");
-    QFile nodesH(gExecPath + QString(INCLUDEPATH) + "/Nodes/Nodes.h");
-    nodesH.copy(saveDir.path() + "/include/Nodes/Nodes.h");
+    QFile nodesH(gExecPath + QString(INCLUDEPATH) + "/Nodes.h");
+    nodesH.copy(saveDir.path() + "/include/Nodes.h");
 
     QDir dependenciesDir;
     dependenciesDir.mkdir(saveDir.path() + "/include/Dependencies");

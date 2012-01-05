@@ -13,14 +13,36 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-#ifndef COMPONENTESSENTIALS_H_INCLUDED
-#define COMPONENTESSENTIALS_H_INCLUDED
+//!
+//! @file   ValveHysteresis.cc
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-13
+//!
+//! @brief Contains a hysteresis function for valves and signals
+//!
+//$Id$
 
-#include "Node.h"
-#include "Nodes/Nodes.h"
-#include "Component.h"
-#include "Port.h"
-#include "version.h"
+#include <math.h>
+#include "ComponentUtilities/ValveHysteresis.h"
 
+using namespace hopsan;
 
-#endif // COMPONENTESSENTIALS_H_INCLUDED
+ValveHysteresis::ValveHysteresis()
+{
+}
+
+double ValveHysteresis::getValue(double xs, double xh, double xd)
+{
+    if (xd < xs-xh/2)
+    {
+        return xs-xh/2;
+    }
+    else if (xd > xs+xh/2)
+    {
+        return xs+xh/2;
+    }
+    else
+    {
+        return xd;
+    }
+}

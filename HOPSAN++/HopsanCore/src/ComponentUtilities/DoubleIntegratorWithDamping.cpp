@@ -24,7 +24,7 @@
 
 //#include <iostream>
 //#include <cassert>
-#include "DoubleIntegratorWithDamping.h"
+#include "ComponentUtilities/DoubleIntegratorWithDamping.h"
 
 using namespace hopsan;
 

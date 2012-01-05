@@ -25,7 +25,7 @@
 //#include <iostream>
 //#include <cassert>
 //#include <math.h>
-#include "IntegratorLimited.h"
+#include "ComponentUtilities/IntegratorLimited.h"
 
 using namespace hopsan;
 

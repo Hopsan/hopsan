@@ -24,7 +24,7 @@
 
 //#include <iostream>
 //#include <cassert>
-#include "Integrator.h"
+#include "ComponentUtilities/Integrator.h"
 
 using namespace hopsan;
 

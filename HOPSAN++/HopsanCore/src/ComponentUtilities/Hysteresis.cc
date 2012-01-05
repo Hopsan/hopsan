@@ -24,7 +24,7 @@
 
 #include <math.h>
 #include <iostream>
-#include "Hysteresis.h"
+#include "ComponentUtilities/Hysteresis.h"
 #include "ComponentUtilities.h"
 
 using namespace hopsan;

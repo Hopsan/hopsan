@@ -25,7 +25,7 @@
 
 //#include <iostream>
 //#include <cassert>
-#include "DoubleIntegratorWithDampingAndCoulumbFriction.h"
+#include "ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h"
 
 using namespace hopsan;
 

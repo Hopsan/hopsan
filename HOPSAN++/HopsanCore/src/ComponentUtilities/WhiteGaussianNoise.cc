@@ -14,35 +14,30 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ValveHysteresis.cc
+//! @file   WhiteGaussianNoise.cc
 //! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-01-13
+//! @date   2011-06-09
 //!
-//! @brief Contains a hysteresis function for valves and signals
+//! @brief Contains a white gaussian noise generator
 //!
 //$Id$
 
+#include "win32dll.h"
 #include <math.h>
-#include "ValveHysteresis.h"
+#include "ComponentUtilities/WhiteGaussianNoise.h"
+#include <stdlib.h>
+#include <time.h>
 
 using namespace hopsan;
 
-ValveHysteresis::ValveHysteresis()
+WhiteGaussianNoise::WhiteGaussianNoise()
 {
 }
 
-double ValveHysteresis::getValue(double xs, double xh, double xd)
+double WhiteGaussianNoise::getValue()
 {
-    if (xd < xs-xh/2)
-    {
-        return xs-xh/2;
-    }
-    else if (xd > xs+xh/2)
-    {
-        return xs+xh/2;
-    }
-    else
-    {
-        return xd;
-    }
+    // Calc Gaussian random value
+     double random1 = (double)rand() / (double)RAND_MAX;
+     double random2 = (double)rand() / (double)RAND_MAX;
+     return sqrt((-1.0)*log(random1))*cos(3.1415*random2);
 }

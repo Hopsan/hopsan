@@ -1982,7 +1982,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "#include \"include/HopsanEssentials.h\"\n";
     wrapperStream << "#include \"include/Node.h\"\n";
     wrapperStream << "#include \"include/Port.h\"\n";
-    wrapperStream << "#include \"include/Nodes/Nodes.h\"\n";
+    wrapperStream << "#include \"include/Nodes.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/AuxiliarySimulationFunctions.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/CSVParser.h\"\n";
     wrapperStream << "#include \"include/ComponentUtilities/Delay.hpp\"\n";

@@ -16,7 +16,7 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------
 # Add the include path to our self, (HopsanCore)
-INCLUDEPATH *= $${PWD}/
+INCLUDEPATH *= $${PWD}/include/
 #--------------------------------------------------
 
 #--------------------------------------------------
@@ -81,64 +81,66 @@ unix {
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------
-SOURCES += Port.cc \
-    Node.cc \
-    Component.cc \
-    Nodes/Nodes.cc \
-    CoreUtilities/LoadExternal.cc \
-    HopsanEssentials.cc \
-    ComponentUtilities/ValveHysteresis.cc \
-    ComponentUtilities/TurbulentFlowFunction.cc \
-    ComponentUtilities/IntegratorLimited.cc \
-    ComponentUtilities/Integrator.cc \
-    CoreUtilities/HopsanCoreMessageHandler.cc \
-    ComponentUtilities/AuxiliarySimulationFunctions.cpp \
-    ComponentUtilities/DoubleIntegratorWithDamping.cpp \
-    ComponentUtilities/matrix.cc \
-    ComponentUtilities/ludcmp.cc \
-    CoreUtilities/HmfLoader.cc \
-    ComponentSystem.cc \
+SOURCES += \
+    src/Port.cc \
+    src/Nodes.cc \
+    src/Node.cc \
+    src/HopsanEssentials.cc \
+    src/ComponentSystem.cc \
+    src/Component.cc \
+    src/CoreUtilities/LoadExternal.cc \
+    src/CoreUtilities/HopsanCoreMessageHandler.cc \
+    src/CoreUtilities/HmfLoader.cc \
+    src/ComponentUtilities/WhiteGaussianNoise.cc \
+    src/ComponentUtilities/ValveHysteresis.cc \
+    src/ComponentUtilities/TurbulentFlowFunction.cc \
+    src/ComponentUtilities/SecondOrderTransferFunction.cc \
+    src/ComponentUtilities/matrix.cc \
+    src/ComponentUtilities/ludcmp.cc \
+    src/ComponentUtilities/IntegratorLimited.cc \
+    src/ComponentUtilities/Integrator.cc \
+    src/ComponentUtilities/FirstOrderTransferFunction.cc \
+    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
+    src/ComponentUtilities/DoubleIntegratorWithDamping.cpp \
+    src/ComponentUtilities/CSVParser.cc \
+    src/ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
-    ComponentUtilities/WhiteGaussianNoise.cc \
-    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
-    ComponentUtilities/SecondOrderTransferFunction.cc \
-    ComponentUtilities/FirstOrderTransferFunction.cc \
-    ComponentUtilities/CSVParser.cc \
     ../componentLibraries/defaultLibrary/code/Components.cc
-HEADERS += win32dll.h \
-    Port.h \
-    Node.h \
-    HopsanCore.h \
-    Component.h \
-    Nodes/Nodes.h \
-    CoreUtilities/LoadExternal.h \
-    CoreUtilities/ClassFactory.hpp \
-    ComponentEssentials.h \
-    ComponentUtilities.h \
-    HopsanEssentials.h \
-    ComponentUtilities/ValveHysteresis.h \
-    ComponentUtilities/TurbulentFlowFunction.h \
-    ComponentUtilities/IntegratorLimited.h \
-    ComponentUtilities/Integrator.h \
-    ComponentUtilities/Delay.hpp \
-    CoreUtilities/HopsanCoreMessageHandler.h \
-    version.h \
-    ComponentUtilities/AuxiliarySimulationFunctions.h \
-    ComponentUtilities/DoubleIntegratorWithDamping.h \
-    ComponentUtilities/matrix.h \
-    ComponentUtilities/ludcmp.h \
-    CoreUtilities/HmfLoader.h \
-    ComponentSystem.h \
-    CoreUtilities/FindUniqueName.h \
-    ComponentUtilities/CSVParser.h \
-    CoreUtilities/ClassFactoryStatusCheck.hpp \
-    ComponentUtilities/WhiteGaussianNoise.h \
-    ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h \
-    ComponentUtilities/SecondOrderTransferFunction.h \
-    ComponentUtilities/FirstOrderTransferFunction.h \
-    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
-    ComponentUtilities/num2string.hpp \
-    ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h
+HEADERS += \
+    include/win32dll.h \
+    include/version.h \
+    include/Port.h \
+    include/Nodes.h \
+    include/Node.h \
+    include/HopsanEssentials.h \
+    include/HopsanCore.h \
+    include/ComponentUtilities.h \
+    include/ComponentSystem.h \
+    include/ComponentEssentials.h \
+    include/Component.h \
+    include/CoreUtilities/LoadExternal.h \
+    include/CoreUtilities/HopsanCoreMessageHandler.h \
+    include/CoreUtilities/HmfLoader.h \
+    include/CoreUtilities/FindUniqueName.h \
+    include/CoreUtilities/ClassFactoryStatusCheck.hpp \
+    include/CoreUtilities/ClassFactory.hpp \
+    include/ComponentUtilities/WhiteGaussianNoise.h \
+    include/ComponentUtilities/ValveHysteresis.h \
+    include/ComponentUtilities/TurbulentFlowFunction.h \
+    include/ComponentUtilities/SecondOrderTransferFunction.h \
+    include/ComponentUtilities/num2string.hpp \
+    include/ComponentUtilities/matrix.h \
+    include/ComponentUtilities/ludcmp.h \
+    include/ComponentUtilities/IntegratorLimited.h \
+    include/ComponentUtilities/Integrator.h \
+    include/ComponentUtilities/FirstOrderTransferFunction.h \
+    include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h \
+    include/ComponentUtilities/DoubleIntegratorWithDamping.h \
+    include/ComponentUtilities/Delay.hpp \
+    include/ComponentUtilities/CSVParser.h \
+    include/ComponentUtilities/AuxiliarySimulationFunctions.h \
+    include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
+    Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

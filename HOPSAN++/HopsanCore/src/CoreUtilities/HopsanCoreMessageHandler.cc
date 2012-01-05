@@ -21,7 +21,7 @@
 //! @brief Contains the Classes for hopsancore -> main program message exchange
 //!
 //$Id$
-#include "HopsanCoreMessageHandler.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 using namespace std;
 using namespace hopsan;

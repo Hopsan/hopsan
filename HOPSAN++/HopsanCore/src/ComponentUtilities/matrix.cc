@@ -33,7 +33,7 @@
 #include <math.h>
 #include <iostream>
 using namespace std;
-#include "matrix.h"
+#include "ComponentUtilities/matrix.h"
 
 using namespace hopsan;
 

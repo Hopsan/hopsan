@@ -22,10 +22,10 @@
 //!
 //$Id$
 
-#include "LoadExternal.h"
+#include "CoreUtilities/LoadExternal.h"
 #include "Component.h"
 #include "Node.h"
-#include "ClassFactoryStatusCheck.hpp"
+#include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include "version.h"
 
 #include <sstream>

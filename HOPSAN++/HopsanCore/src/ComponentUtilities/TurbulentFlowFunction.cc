@@ -13,31 +13,44 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-//!
-//! @file   WhiteGaussianNoise.cc
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2011-06-09
-//!
-//! @brief Contains a white gaussian noise generator
-//!
-//$Id$
+/*
+ *  TurbulentFlow.cc
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-12.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
 
-#include "win32dll.h"
 #include <math.h>
-#include "WhiteGaussianNoise.h"
-#include <stdlib.h>
-#include <time.h>
+#include "ComponentUtilities/TurbulentFlowFunction.h"
 
 using namespace hopsan;
 
-WhiteGaussianNoise::WhiteGaussianNoise()
+TurbulentFlowFunction::TurbulentFlowFunction()
 {
 }
 
-double WhiteGaussianNoise::getValue()
+
+TurbulentFlowFunction::TurbulentFlowFunction(double ks)
 {
-    // Calc Gaussian random value
-     double random1 = (double)rand() / (double)RAND_MAX;
-     double random2 = (double)rand() / (double)RAND_MAX;
-     return sqrt((-1.0)*log(random1))*cos(3.1415*random2);
+    mKs = ks;
+}
+
+double TurbulentFlowFunction::getFlow(double c1, double c2, double Zc1, double Zc2)
+{
+    if (c1 > c2)
+    {
+        return mKs*(sqrt(c1-c2+(Zc1+Zc2)*(Zc1+Zc2)*mKs*mKs/4) - mKs*(Zc1+Zc2)/2);
+    }
+    else
+    {
+        return mKs*(mKs*(Zc1+Zc2)/2 - sqrt(c2-c1+(Zc1+Zc2)*(Zc1+Zc2)*mKs*mKs/4));
+    }
+}
+
+
+void TurbulentFlowFunction::setFlowCoefficient(double ks)
+{
+    mKs = ks;
 }

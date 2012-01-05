@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include "CSVParser.h"
+#include "ComponentUtilities/CSVParser.h"
 #include "Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp"
 #include <algorithm>
 #include <sstream>
