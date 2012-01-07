@@ -274,9 +274,9 @@ void SystemContainer::saveOptSettingsToDomElement(QDomElement &rDomElement)
         QDomElement XMLObjectiveVariables = appendDomElement(XMLobjective, "variables");
         if(!(mOptSettings.mObjectives.at(i).mVariableInfo.isEmpty()))
         {
-            QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, "variable");
             for(int j = 0; j < mOptSettings.mObjectives.at(i).mVariableInfo.size(); ++j)
             {
+                QDomElement XMLObjectiveVariable = appendDomElement(XMLObjectiveVariables, "variable");
                 appendDomTextNode(XMLObjectiveVariable, "componentname", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(0));
                 appendDomTextNode(XMLObjectiveVariable, "portname", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(1));
                 appendDomTextNode(XMLObjectiveVariable, "variablename", mOptSettings.mObjectives.at(i).mVariableInfo.at(j).at(2));
@@ -343,11 +343,11 @@ void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
     }
     if(!rDomElement.firstChildElement("objectives").isNull())
     {
-        Objectives objectives;
-
         QDomElement XMLobj = rDomElement.firstChildElement("objectives").firstChildElement("objective");
         while (!XMLobj.isNull())
         {
+            Objectives objectives;
+
             objectives.mFunctionName = XMLobj.firstChildElement("functionname").text();
             objectives.mWeight = XMLobj.firstChildElement("weight").text().toDouble();
             objectives.mNorm = XMLobj.firstChildElement("norm").text().toDouble();
@@ -356,16 +356,18 @@ void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
             if(!XMLobj.firstChildElement("variables").isNull())
             {
                 QDomElement XMLVars = XMLobj.firstChildElement("variables").firstChildElement("variable");
-                QStringList variableInfo;
                 while (!XMLVars.isNull())
                 {
+                    QStringList variableInfo;
+
                     variableInfo.append(XMLVars.firstChildElement("componentname").text());
                     variableInfo.append(XMLVars.firstChildElement("portname").text());
                     variableInfo.append(XMLVars.firstChildElement("variablename").text());
 
+                    objectives.mVariableInfo.append(variableInfo);
+
                     XMLVars = XMLVars.nextSiblingElement("variable");
                 }
-                objectives.mVariableInfo.append(variableInfo);
             }
 
             if(!XMLobj.firstChildElement("data").isNull())
@@ -380,8 +382,9 @@ void SystemContainer::loadOptSettingsFromDomElement(QDomElement &rDomElement)
             }
 
             XMLobj = XMLobj.nextSiblingElement("objective");
+
+            mOptSettings.mObjectives.append(objectives);
         }
-        mOptSettings.mObjectives.append(objectives);
     }
 }
 
