@@ -47,6 +47,7 @@ MovePortsDialog::MovePortsDialog(Component *pGUIComponent, QWidget *parent)
     mpView->setAcceptDrops(true);
 
     mpOkButton = new QPushButton("Ok");
+    mpCancelButton = new QPushButton("Cancel");
     mpZoomSlider = new QSlider(Qt::Vertical, this);
     mpZoomSlider->setRange(10, 200);
     mpZoomSlider->setSliderPosition(mViewScale*10);
@@ -54,11 +55,13 @@ MovePortsDialog::MovePortsDialog(Component *pGUIComponent, QWidget *parent)
     QHBoxLayout *buttons = new QHBoxLayout();
 
     buttons->addWidget(mpOkButton);
+    buttons->addWidget(mpCancelButton);
 
     mpMainLayout->addLayout(buttons, 1, 0);
     mpMainLayout->addWidget(mpZoomSlider, 0, 1, 2, 1);
 
-    connect(mpOkButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(mpOkButton, SIGNAL(clicked()), this, SLOT(okButtonPressed()));
+    connect(mpCancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonPressed()));
     connect(mpZoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(updateZoom()));
 
     this->setModal(true);
@@ -69,15 +72,15 @@ MovePortsDialog::MovePortsDialog(Component *pGUIComponent, QWidget *parent)
 
 void MovePortsDialog::updateZoom()
 {
-    mpView->setUpdatesEnabled(false);
-    mpView->scale(1/mViewScale, 1/mViewScale);
-    mpView->setUpdatesEnabled(true);
-    mpView->scale(mpZoomSlider->sliderPosition()/10, mpZoomSlider->sliderPosition()/10);
+   // mpView->setUpdatesEnabled(false);
+  //  mpView->scale(1/mViewScale, 1/mViewScale);
+  //  mpView->setUpdatesEnabled(true);
+    mpView->scale(mpZoomSlider->sliderPosition()/10/mViewScale, mpZoomSlider->sliderPosition()/10/mViewScale);
     mViewScale = mpZoomSlider->sliderPosition()/10;
 }
 
 
-bool MovePortsDialog::close()
+bool MovePortsDialog::okButtonPressed()
 {
     stringstream ss;
     PortAppearanceMapT::Iterator it;
@@ -94,7 +97,13 @@ bool MovePortsDialog::close()
 
     msgBox.exec();
 
-    QWidget::close();
+    return close();
+}
+
+
+bool MovePortsDialog::cancelButtonPressed()
+{
+    return close();
 }
 
 

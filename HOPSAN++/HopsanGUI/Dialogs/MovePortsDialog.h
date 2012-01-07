@@ -23,7 +23,8 @@ public:
     //~MovePortsWidget();
 
 public slots:
-    bool close();
+    bool okButtonPressed();
+    bool cancelButtonPressed();
     void updateZoom();
 
 protected:
@@ -39,6 +40,7 @@ protected:
 
     QSlider *mpZoomSlider;
     QPushButton *mpOkButton;
+    QPushButton *mpCancelButton;
 };
 
 

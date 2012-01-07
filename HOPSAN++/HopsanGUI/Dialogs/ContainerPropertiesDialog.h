@@ -35,7 +35,6 @@
 
 //Forward Declaration
 class ContainerObject;
-class ParameterLayout;
 
 class ContainerPropertiesDialog : public QDialog
 {
@@ -89,7 +88,6 @@ private:
     QList<QLabel *> mSystemParameterLabels;
     QList<QLineEdit *> mSystemParameterLineEdits;
 
-    QVector<ParameterLayout *> mvSystemParameterLayout;
 
 private slots:
     void setValues();
