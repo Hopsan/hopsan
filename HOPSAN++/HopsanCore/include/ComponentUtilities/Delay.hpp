@@ -27,9 +27,9 @@
 
 #include "win32dll.h"
 #include "assert.h"
-#include "math.h"
+#include <cmath>
 #include <iostream>
-#include <vector>
+//#include <vector>
 
 namespace hopsan {
 
@@ -41,15 +41,30 @@ namespace hopsan {
             mpArray = 0;
         }
 
-        void initialize(const double timeDelay, const double Ts, const double init_value)
+        ~Delay()
+        {
+            if (mpArray != 0)
+            {
+                delete mpArray;
+            }
+        }
+
+        //! @brief Initialize Delay size based on timeDelay at a given timestep
+        //! @param [in] timeDelay The total time delay for a value to come out on the other side of the circle buffer
+        //! @param [in] Ts The timestep between each call
+        //! @param [in] initValue The initial value of all buffer elements
+        void initialize(const double timeDelay, const double Ts, const double initValue)
         {
             //mFracStep = timeDelay/Ts;
             //Calculate stepdelay, round double to int
             //! @todo mayby need to behave differently if we want to use fractions, (rount to ceeling before), however we cant do that allways as we get one extra step every time
-            this->initialize((size_t)floor(timeDelay/Ts+0.5), init_value);
+            this->initialize( size_t(floor(timeDelay/Ts+0.5)), initValue);
         }
 
-        void initialize(const size_t delaySteps, const double init_value)
+        //! @brief Initialize Delay size based on known number of delay steps
+        //! @param [in] delaySteps The number of delay steps
+        //! @param [in] initValue The initial value of all buffer elements
+        void initialize(const size_t delaySteps, const double initValue)
         {
             if (mpArray != 0)
             {
@@ -59,37 +74,27 @@ namespace hopsan {
             mSize = delaySteps+1;
 
             mpArray = new double[mSize];
-            std::cout << "DelayBuffer, size: " << delaySteps << ", mSize: " << mSize << ", init_value: " << init_value << std::endl;
+            std::cout << "DelayBuffer, size: " << delaySteps << ", mSize: " << mSize << ", init_value: " << initValue << std::endl;
 
-            //! @todo use c++ vector to init, or some smarter init
+            //! @todo maybe use c++ vector to init, or some smarter init, does not really matter I think
             for (size_t i=0; i<mSize; ++i)
             {
-                mpArray[i] = init_value;
+                mpArray[i] = initValue;
             }
 
             newest = 0;
             oldest = 1;
         }
 
-        //! @todo This is a stupid temporary function
-        void initializeValues(double init_value)
+        //! @brief updates delay with a new value
+        //! @param [in] newValue The new value to insert into delay buffer
+        //! @return The odlest value of the delay buffer (After update this value will have been overwriten in the buffer)
+        double update(const double newValue)
         {
-            for (size_t i=0; i<mSize; ++i)
-            {
-                mpArray[i] = init_value;
-            }
-        }
+            // First get the oldes value
+            double oldestValue = mpArray[oldest];
 
-        double update(const double new_value)
-        {
-            //!< @todo is this OK, we increment after we write
-            double shifttmp = mpArray[oldest];
-            mpArray[newest] = new_value;
-
-            //Increment for next run
-            //  newest = (newest + 1) % mSize;  //Bad performance
-            //  oldest = (oldest + 1) % mSize;  //Bad performance
-
+            // Increment the pointers, newets will after incrementaion overwrite previous oldest
             ++newest;
             ++oldest;
 
@@ -102,25 +107,34 @@ namespace hopsan {
                 newest = 0;
             }
 
-            return shifttmp;
+            // Overwrite previous oldest with the new_value
+            mpArray[newest] = newValue;
+
+            return oldestValue;
         }
 
+        //! @brief Get the oldest value inte the buffer
+        //! @return The oldest value in the buffer
         double getOldest()
         {
             return mpArray[oldest];
         }
 
+        //! @brief Get the newest value inte the buffer
+        //! @return The newest value in the buffer
         double getNewest()
         {
             return mpArray[newest];
         }
 
         //! @brief Returns a specific value, 0=newest, 1=nextnewest, 2=nextnextnewest and so on, no range check is performed
+        //! @param [in] i Index of value to return
+        //! @return Value of specified index
         double getIdx(const size_t i)
         {
-            if (((int)newest-(int)i)<0) //!< @todo is this right
+            if ( (int(newest)-int(i)) < 0 )
             {
-                return mpArray[newest-i+mSize];
+                return mpArray[mSize+newest-i];
             }
             else
             {
@@ -129,6 +143,8 @@ namespace hopsan {
         }
 
         //! @brief Returns a specific value, 0=oldest, 1=nextoldest, 2=nextnextoldest and so on, no range check is performed
+        //! @param [in] i Index of value to return
+        //! @return Value of specified index
         double getOldIdx(const size_t i)
         {
             if (oldest+i >= mSize)
@@ -141,7 +157,9 @@ namespace hopsan {
             }
         }
 
-        size_t getSize()
+        //! @brief Get the size of the ring buffer (the number of elements)
+        //! @return The size of the buffer (the number of elements)
+        size_t getSize() const
         {
             return mSize-1;
         }
@@ -149,9 +167,7 @@ namespace hopsan {
     private:
         size_t mSize;
         double *mpArray;
-        //std::vector<double> mDataVector;
         size_t newest, oldest;
-        //double mshifttmp;
 
     };
 }
