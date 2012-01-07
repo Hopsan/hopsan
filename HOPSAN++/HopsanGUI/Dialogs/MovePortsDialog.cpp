@@ -1,5 +1,6 @@
 #include "MovePortsDialog.h"
 #include "GUIObjects/GUIModelObject.h"
+#include "GUIPort.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
@@ -16,10 +17,12 @@ MovePortsDialog::MovePortsDialog(Component *pGUIComponent, QWidget *parent)
     mpView = new QGraphicsView(this);
     mpView->setScene(new QGraphicsScene());
 
+    mpComponent = pGUIComponent;
+
     mpCompAppearance = pGUIComponent->getAppearanceData();
-    mpComponent = new QGraphicsSvgItem(mpCompAppearance->getIconPath(pGUIComponent->getParentContainerObject()->getGfxType(), ABSOLUTE));
-    mpView->scene()->addRect(mpComponent->boundingRect(), QPen(Qt::DashLine));
-    mpView->scene()->addItem(mpComponent);
+    mpSVGComponent = new QGraphicsSvgItem(mpCompAppearance->getIconPath(pGUIComponent->getParentContainerObject()->getGfxType(), ABSOLUTE));
+    mpView->scene()->addRect(mpSVGComponent->boundingRect(), QPen(Qt::DashLine));
+    mpView->scene()->addItem(mpSVGComponent);
 
     mPortAppearanceMap = mpCompAppearance->getPortAppearanceMap();
 
@@ -27,8 +30,8 @@ MovePortsDialog::MovePortsDialog(Component *pGUIComponent, QWidget *parent)
     for(it=mPortAppearanceMap.begin(); it != mPortAppearanceMap.end(); ++it)
     {
         DragPort *pPort = new DragPort(it->mMainIconPath);
-        mvPorts.append(pPort);
-        pPort->setPosOnComponent(mpComponent, it->x, it->y, it->rot);
+        mvSVGPorts.append(pPort);
+        pPort->setPosOnComponent(mpSVGComponent, it->x, it->y, it->rot);
         mpView->scene()->addItem(pPort);
     }
 
@@ -87,9 +90,12 @@ bool MovePortsDialog::okButtonPressed()
     int i = 0;
     for(it=mPortAppearanceMap.begin(); it != mPortAppearanceMap.end(); ++it)
     {
-        QPointF p = mvPorts.at(i)->getPosOnComponent(mpComponent);
+        QPointF p = mvSVGPorts.at(i)->getPosOnComponent(mpSVGComponent);
         ss << it.key().toStdString() << " - x: " << p.x() << "   y: " << p.y() << "\n";
         ++i;
+
+        Port *port = mpComponent->getPort(it.key());
+        port->setCenterPosByFraction(p.x(), p.y());
     }
     qDebug() << ss;
     QMessageBox msgBox;

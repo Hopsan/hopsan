@@ -29,8 +29,10 @@ public slots:
 
 protected:
 
-    QVector<DragPort*> mvPorts;
-    QGraphicsSvgItem *mpComponent;
+    Component *mpComponent;
+
+    QVector<DragPort*> mvSVGPorts;
+    QGraphicsSvgItem *mpSVGComponent;
     ModelObjectAppearance *mpCompAppearance;
     PortAppearanceMapT mPortAppearanceMap;
 
