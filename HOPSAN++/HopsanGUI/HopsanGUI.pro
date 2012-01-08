@@ -148,7 +148,8 @@ SOURCES += main.cpp \
     Dialogs/SensitivityAnalysisDialog.cpp \
     Dialogs/ComponentGeneratorDialog.cpp \
     Dialogs/MovePortsDialog.cpp \
-    loadFunctions.cpp
+    loadFunctions.cpp \
+    Utilities/ComponentGeneratorUtilities.cpp
 
 
 HEADERS += MainWindow.h \
@@ -202,7 +203,8 @@ HEADERS += MainWindow.h \
     Dialogs/SensitivityAnalysisDialog.h \
     Dialogs/ComponentGeneratorDialog.h \
     Dialogs/MovePortsDialog.h \
-    loadFunctions.h
+    loadFunctions.h \
+    Utilities/ComponentGeneratorUtilities.h
 
 OTHER_FILES += \
     ../hopsandefaults \

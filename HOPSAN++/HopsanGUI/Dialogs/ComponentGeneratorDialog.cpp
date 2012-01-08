@@ -24,7 +24,7 @@
 
 #include "Configuration.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
-#include "Utilities/GUIUtilities.h"
+#include "Utilities/ComponentGeneratorUtilities.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/PyDockWidget.h"
 #include "common.h"
@@ -808,7 +808,7 @@ void ComponentGeneratorDialog::compile()
             gpMainWindow->mpPyDockWidget->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
             gpMainWindow->mpPyDockWidget->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
             gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
-            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".subs(s, mTimestep/2*(1-qi00)/(1+qi00))");
+            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".subs(s, 2/mTimestep*(1-qi00)/(1+qi00))");
             gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
             gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".simplify()");
         }

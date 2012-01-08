@@ -28,7 +28,7 @@
 #include <QDialog>
 
 #include "MainWindow.h"
-#include "Utilities/GUIUtilities.h"
+#include "Utilities/ComponentGeneratorUtilities.h"
 
 class MainWindow;
 

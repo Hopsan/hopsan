@@ -60,7 +60,7 @@
 #define SCRIPTPATH "../Scripts/"
 #define BACKUPPATH "../Backup/"
 #define COMPONENTPATH "../componentLibraries/defaultLibrary/components/"
-#define INCLUDEPATH "../HopsanCore/"
+#define INCLUDEPATH "../HopsanCore/include/"
 #else
 #define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
 #define SCRIPTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
