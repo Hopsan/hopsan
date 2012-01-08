@@ -26,7 +26,7 @@
 //#include <QPoint>
 //#include <QDir>
 //#include <QDebug>
-//#include <QStringList>
+#include <QStringList>
 //#include <limits>
 //#include <math.h>
 //#include <complex>
@@ -983,4 +983,118 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
     }
     qDebug() << "After delay translation: " << equations;
     qDebug() << "Delay terms: " << delayTerms;
+}
+
+
+
+
+void parseModelicaModel(QString code, QString &typeName, QString &displayName, QStringList &equations, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList)
+{
+    qDebug() << "Hej1";
+    QStringList lines = code.split("\n");
+    qDebug() << "Hej2, lines = " << lines;
+    QStringList portNames;
+    bool equationPart = false;
+    for(int l=0; l<lines.size(); ++l)
+    {
+        if(!equationPart)
+        {
+            QStringList words = lines.at(l).trimmed().split(" ");
+            qDebug() << "Hej3, words = " << words;
+            if(words.at(0) == "model")
+            {
+                typeName = words.at(1);
+                if(words.size() > 2)
+                {
+                    displayName = words.at(2);
+                    displayName.remove(0, 1);       //Remove first "
+                    int j=2;
+                    while(!words.at(j).endsWith("\""))
+                    {
+                        ++j;
+                        displayName.append(" " + words.at(j));
+                    }
+                    displayName.chop(1);            //Remove last "
+                }
+            }
+            else if(words.at(0) == "parameter")
+            {
+                QString name = words.at(2).section("(",0,0);
+                QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
+                QString init;
+                if(!words.at(2).section(")", 1).isEmpty())
+                    init = words.at(2).section(")", 1).section("=", 1);                   //..blabla)=x
+                else if(words.at(2).endsWith("="))
+                    init = words.at(3);                                             //..blabla)= x
+                else if(words.at(3).startsWith("=") && words.at(3).size() > 1)
+                    init = words.at(3).section("=", 1);                              //..blabla) =x
+                else if(words.at(3) == "=")
+                    init = words.at(4);                                             // ...blabla) = x
+
+                displayName = lines.at(l).section("\"", -2, -2);
+
+                ParameterSpecification par(name, displayName, displayName, unit, init);
+                parametersList.append(par);
+            }
+            else if(words.at(0) == "NodeMechanic")
+            {
+                PortSpecification port("PowerPort", "NodeMechanic", words.at(1));
+                portList.append(port);
+                portNames << words.at(1);
+            }
+            else if(words.at(0) == "NodeMechanicRotational")
+            {
+                PortSpecification port("PowerPort", "NodeMechanicRotational", words.at(1));
+                portList.append(port);
+                portNames << words.at(1);
+            }
+            else if(words.at(0) == "NodeHydraulic")
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    qDebug() << "lines.at(l).trimmed() = " << lines.at(l).trimmed();
+                    qDebug() << "lines.at(l).trimmed().section(" ", 1) = " << lines.at(l).trimmed().section(" ", 1);
+                    qDebug() << "lines.at(l).trimmed().section(" ", 1).section(\",\", i)) = " << lines.at(l).trimmed().section(" ", 1).section(",",i,i);
+                    PortSpecification port("PowerPort", "NodeHydraulic", name);
+                    portList.append(port);
+                    portNames << name;
+                }
+            }
+            else if(words.at(0) == "NodePneumatic")
+            {
+                PortSpecification port("PowerPort", "NodePneumatic", words.at(1));
+                portList.append(port);
+                portNames << words.at(1);
+            }
+            else if(words.at(0) == "NodeElectric")
+            {
+                PortSpecification port("PowerPort", "NodeElectric", words.at(1));
+                portList.append(port);
+                portNames << words.at(1);
+            }
+            else if(words.at(0) == "equation")
+            {
+                equationPart = true;
+            }
+        }
+        else
+        {
+            if(lines.at(l).trimmed().startsWith("end "))            //Finished if this is the "end" line
+                return;
+            qDebug() << "Equation: " << lines.at(l).trimmed();
+            equations << lines.at(l).trimmed();
+            for(int i=0; i<portNames.size(); ++i)
+            {
+                QString temp = portNames.at(i)+".";
+                while(equations.last().contains(temp))
+                {
+                    int idx = equations.last().indexOf(temp);
+                    equations.last().insert(idx+temp.size()+1, QString().setNum(i+1));
+                    equations.last().remove(idx, temp.size());
+                }
+            }
+            equations.last().chop(1);
+        }
+    }
 }

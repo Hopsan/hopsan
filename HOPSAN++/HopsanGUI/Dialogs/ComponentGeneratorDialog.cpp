@@ -179,8 +179,21 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpLayout = new QGridLayout(this);
     setLayout(mpLayout);
 
+    QString code = "model LaminarOrifice \"Hydraulic Laminar Orifice\"\nparameter Real Kc(unit=\"-\") = 1e-11 \"Pressure-Flow Coefficient\";\n   NodeHydraulic P1, P2;\nequation\nP2.q = Kc*(P1.p-P2.p);\nP1.q = -P2.q;\nP1.p = P1.c + P1.Zc*P1.q;\nP2.p = P2.c + P2.Zc*P2.q;\nend LaminarOrifice;";
+    QString typeName, displayName;
+    QStringList equations;
+    parseModelicaModel(code, typeName, displayName, equations, mPortList, mParametersList);
+
     update();
     updateValues();
+
+    mpComponentNameEdit->setText(typeName);
+    mpComponentDisplayEdit->setText(displayName);
+
+    for(int i=0; i<equations.size(); ++i)
+    {
+        mpEquationsTextField->append(equations.at(i));
+    }
 
     //Connections
     connect(mpCancelButton,    SIGNAL(clicked()), this, SLOT(reject()));
