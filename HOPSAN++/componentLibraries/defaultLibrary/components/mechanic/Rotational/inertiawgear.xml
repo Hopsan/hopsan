@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicRotationalInertiaWithGearRatio" displayname="Rotational Gear with Inertia">
-        <help picture="inertiawgearhelp.svg"/>
-		<icon iconrotation="ON" userpath="inertiawgear_user.svg"/>
-        <portpose x="0" y="0.08" a="0" name="P1"/>
-        <portpose x="1" y="0.65" a="0" name="P2"/>
+        <icons>
+            <icon scale="1" path="inertiawgear_user.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <picture>inertiawgearhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0" y="0.08" a="0" name="P1"/>
+            <port x="1" y="0.65" a="0" name="P2"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

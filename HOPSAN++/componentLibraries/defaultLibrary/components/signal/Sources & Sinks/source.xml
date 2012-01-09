@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalSource" displayname="Constant">
-        <icon isopath="Source.svg" iconrotation="OFF" userpath=""/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="Source.svg" iconrotation="OFF" type="iso"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

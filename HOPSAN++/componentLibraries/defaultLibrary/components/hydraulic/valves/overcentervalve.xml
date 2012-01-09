@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicOverCenterValve" displayname="Over Center Valve">
-        <icon isopath="overcentervalve_user.svg" iconrotation="ON" userpath="overcentervalve_user.svg"/>
-        <portpose x="0.4762" y="0" a="90" name="P1"/>
-        <portpose x="0.4762" y="1" a="270" name="P2"/>
-        <portpose x="0" y="0.575" a="0" name="P_CONTROL"/>
+        <icons>
+            <icon scale="1" path="overcentervalve_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="overcentervalve_user.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.4762" y="0" a="90" name="P1"/>
+            <port x="0.4762" y="1" a="270" name="P2"/>
+            <port x="0" y="0.575" a="0" name="P_CONTROL"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

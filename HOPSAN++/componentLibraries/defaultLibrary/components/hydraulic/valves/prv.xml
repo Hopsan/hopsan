@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.2">
-	<modelobject typename="HydraulicPressureReliefValve" displayname="Adjustable Pressure Relief Valve">
-	    <icons>
-            <icon type="user" path="prv_user.svg" iconrotation="ON" scale="1.0"/>
-            <icon type="iso" path="prv_iso.svg" iconrotation="ON" scale="1.0"/>
-	    </icons>
-		<portpositions>
-		    <portpose name="P1" x="0.4762" y="0.0" a="270"/>
-		    <portpose name="P2" x="0.4762" y="1.0" a="90"/>
-		    <portpose name="in" x="1.0" y="0.5" a="0"/>
-  	</portpositions>
-	</modelobject>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HydraulicPressureReliefValve" displayname="Adjustable Pressure Relief Valve">
+        <icons>
+            <icon scale="1" path="prv_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="prv_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.4762" y="0" a="270" name="P1"/>
+            <port x="0.4762" y="1" a="90" name="P2"/>
+            <port x="1" y="0.5" a="0" name="in"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

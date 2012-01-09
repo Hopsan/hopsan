@@ -1,43 +1,19 @@
-<hopsanobjectappearance version='0.1'>
- 
- <modelobject typename='HydraulicValve416'
-     displayname='4/16 Valve'>
-  
-  <icon isopath='HydraulicValve416.svg'
-      iconrotation='ON'
-      userpath='HydraulicValve416.svg'/>
-   <portpose x='0.45'
-       y='1'
-       a='90'
-       name='Pp' />
-   <portpose x='0.71'
-       y='1'
-       a='90'
-       name='Pt' />
-   <portpose x='0.45'
-       y='0'
-       a='270'
-       name='Pa' />
-   <portpose x='0.71'
-       y='0'
-       a='270'
-       name='Pb' />
-   <portpose x='0'
-       y='0.37'
-       a='180'
-       name='Pxvpa' />
-   <portpose x='0'
-       y='0.47'
-       a='180'
-       name='Pxvpb' />
-   <portpose x='0'
-       y='0.68'
-       a='180'
-       name='Pxvta' />
-   <portpose x='0'
-       y='0.78'
-       a='180'
-       name='Pxvtb' />
-
-</modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HydraulicValve416" displayname="4/16 Valve">
+        <icons>
+            <icon scale="1" path="HydraulicValve416.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicValve416.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.45" y="0" a="270" name="Pa"/>
+            <port x="0.71" y="0" a="270" name="Pb"/>
+            <port x="0.71" y="1" a="90" name="Pt"/>
+            <port x="0" y="0.68" a="180" name="Pxvta"/>
+            <port x="0" y="0.78" a="180" name="Pxvtb"/>
+            <port x="0" y="0.37" a="180" name="Pxvpa"/>
+            <port x="0" y="0.47" a="180" name="Pxvpb"/>
+            <port x="0.45" y="1" a="90" name="Pp"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

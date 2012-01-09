@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalTimeDelay" displayname="Time Delay">
-        <icon isopath="" iconrotation="ON" userpath="delay.svg"/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="delay.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

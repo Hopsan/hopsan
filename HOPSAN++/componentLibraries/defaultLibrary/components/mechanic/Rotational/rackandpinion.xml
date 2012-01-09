@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicRackAndPinion" displayname="Rack and Pinion">
-		<icon iconrotation="ON" userpath="rackandpinion.svg"/>
-        <portpose x="0.0442" y="0.9743" a="0" name="P1"/>
-        <portpose x="1" y="0.4079" a="0" name="P2"/>
+        <icons>
+            <icon scale="1" path="rackandpinion.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.0442" y="0.9743" a="0" name="P1"/>
+            <port x="1" y="0.4079" a="0" name="P2"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

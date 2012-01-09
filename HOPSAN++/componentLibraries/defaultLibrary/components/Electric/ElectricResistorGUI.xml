@@ -1,8 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="ElectricResistor" displayname="Resistor">
-    <icon isopath="ElectricResistor.svg" iconrotation="ON" userpath="ElectricResistor.svg" />
-    <portpose x="0" y="0.5" a="180" name="Pel1" />
-    <portpose x="1" y="0.5" a="0" name="Pel2" />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="ElectricResistor" displayname="Resistor">
+        <icons>
+            <icon scale="1" path="ElectricResistor.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ElectricResistor.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="Pel1"/>
+            <port x="1" y="0.5" a="0" name="Pel2"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

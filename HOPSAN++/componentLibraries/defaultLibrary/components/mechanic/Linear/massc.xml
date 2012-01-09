@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicTranslationalMassWithCoulumbFriction" displayname="Translational Mass With Coulumb Friction">
-        <help picture="masschelp.svg"/>
-        <icon isopath="massc_iso.svg" iconrotation="ON" userpath="massc_user.svg"/>
-        <portpose x="0.1016875" y="0.416666666666667" a="0" name="P1"/>
-        <portpose x="0.8983125" y="0.416666666666667" a="0" name="P2"/>
+        <icons>
+            <icon scale="1" path="massc_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="massc_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <picture>masschelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0.1016875" y="0.4166666667" a="0" name="P1"/>
+            <port x="0.8983125" y="0.4166666667" a="0" name="P2"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

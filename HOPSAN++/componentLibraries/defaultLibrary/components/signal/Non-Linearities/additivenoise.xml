@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalAdditiveNoise" displayname="Additive White Gaussian Noise">
-        <icon isopath="" iconrotation="ON" userpath="additivenoise.svg"/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="additivenoise.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

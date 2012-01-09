@@ -1,9 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="SignalSecondOrderFilter" displayname="General second order filter">
-    <icon isopath="" iconrotation="ON" userpath="secondorder.svg" />
-    <help text="General second order filter using bilinear transform." picture="secondorderhelp.svg" />
-    <portpose x="0" y="0.5" a="180" name="in" />
-    <portpose x="1" y="0.5" a="0" name="out" />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalSecondOrderFilter" displayname="General second order filter">
+        <icons>
+            <icon scale="1" path="secondorder.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>General second order filter using bilinear transform.</text>
+            <picture>secondorderhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

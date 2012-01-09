@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.2">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalSink" displayname="Sink">
-		<help text="This component does nothing, but is required to plot values for non-connected ports."/>
         <icons>
-            <icon type="user" iconrotation="OFF" path="Sink.svg" scale="1.0"/>
+            <icon scale="1" path="Sink.svg" iconrotation="OFF" type="user"/>
         </icons>
-        <portpositions>
-            <portpose x="0.0" y="0.5" a="180" name="in"/>
-            <portpose x="1.0" y="0.5" a="0" name="in_right"/>
-            <portpose x="0.5" y="1.0" a="90" name="in_bottom"/>
-        </portpositions>
+        <help>
+            <text>This component does nothing, but is required to plot values for non-connected ports.</text>
+        </help>
+        <ports>
+            <port x="1" y="0.5" a="0" name="in_right"/>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="0.5" y="1" a="90" name="in_bottom"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

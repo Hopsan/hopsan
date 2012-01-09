@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicPressureSourceQ" displayname="Q-type Pressure Source">
-	<help text="Supplies the hydraulic port with the pressure obtained from signal port. Default pressure parameter value is used if signal port is not connected. Flow will be as large as is required. Warning! Connecting a Q-type pressure source directly to a fixed size volume component is physically incorrect, because the flow would be undefined."/> 
-        <icon isopath="pressuresource_iso.svg" iconrotation="ON" userpath="pressuresource_user.svg"/>
-        <portpose x="0.5" y="0" a="90" name="P1"/>
-        <portpose x="0.5" y="1" a="90" name="in"/>
+        <icons>
+            <icon scale="1" path="pressuresource_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="pressuresource_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Supplies the hydraulic port with the pressure obtained from signal port. Default pressure parameter value is used if signal port is not connected. Flow will be as large as is required. Warning! Connecting a Q-type pressure source directly to a fixed size volume component is physically incorrect, because the flow would be undefined.</text>
+        </help>
+        <ports>
+            <port x="0.5" y="0" a="90" name="P1"/>
+            <port x="0.5" y="1" a="90" name="in"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

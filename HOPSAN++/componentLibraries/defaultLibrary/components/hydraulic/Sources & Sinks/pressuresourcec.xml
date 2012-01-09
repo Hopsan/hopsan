@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicPressureSourceC" displayname="C-type Pressure Source">
-	<help text="Supplies the hydraulic port with the pressure obtained from signal port. Default pressure parameter value is used if signal port is not connected. Flow will be as large as is required."/>        
-	<icon isopath="pressuresource_iso.svg" iconrotation="ON" userpath="pressuresource_user.svg"/>
-        <portpose x="0.5" y="1" a="90" name="In"/>
-        <portpose x="0.5" y="0" a="90" name="P1"/>
+        <icons>
+            <icon scale="1" path="pressuresource_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="pressuresource_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Supplies the hydraulic port with the pressure obtained from signal port. Default pressure parameter value is used if signal port is not connected. Flow will be as large as is required.</text>
+        </help>
+        <ports>
+            <port x="0.5" y="1" a="90" name="In"/>
+            <port x="0.5" y="0" a="90" name="P1"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

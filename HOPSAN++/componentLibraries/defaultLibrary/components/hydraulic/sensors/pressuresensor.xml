@@ -1,10 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="HydraulicPressureSensor" displayname="Pressure Transducer">
-    <icon isopath="pressuresensor_iso.svg" iconrotation="ON" userpath="pressuresensor_user.svg" />
-    <portpositions>
-      <portpose x="0.5" y="1" a="90" name="P1" />
-      <portpose x="0.5" y="0" a="270" name="out" />
-    </portpositions>
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HydraulicPressureSensor" displayname="Pressure Transducer">
+        <icons>
+            <icon scale="1" path="pressuresensor_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="pressuresensor_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="1" a="90" name="P1"/>
+            <port x="0.5" y="0" a="270" name="out"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

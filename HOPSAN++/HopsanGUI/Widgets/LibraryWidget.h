@@ -94,6 +94,8 @@ private slots:
 private:
     void unLoadLibrarySubTree(LibraryContentsTree *pTree);
 
+    YesNoToAllEnumT mUpConvertAllCAF;
+
     LibraryContentsTree *mpContentsTree;
     LibraryContentsTree *mpSecretHiddenContentsTree;
 

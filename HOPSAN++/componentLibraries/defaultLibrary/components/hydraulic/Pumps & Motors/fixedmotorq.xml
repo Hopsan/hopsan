@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicFixedDisplacementMotorQ" displayname="Q-type Fixed Displacement Motor">
-        <icon isopath="fixedmotorq_iso.svg" iconrotation="ON" userpath="fixedmotorq_user.svg"/>
-        <portpose x="0.6667" y="0" a="90" name="P1"/>
-        <portpose x="0.6667" y="1" a="270" name="P2"/>
-        <portpose x="0" y="0.5" a="0" name="P3"/>
+        <icons>
+            <icon scale="1" path="fixedmotorq_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="fixedmotorq_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.6667" y="0" a="90" name="P1"/>
+            <port x="0.6667" y="1" a="270" name="P2"/>
+            <port x="0" y="0.5" a="0" name="P3"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

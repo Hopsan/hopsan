@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicInterfaceC" displayname="Hydraulic Interface of C-type">
-        <icon isopath="hydinterfacec.svg" iconrotation="ON" userpath="hydinterfacec.svg"/>
-        <portpose x="0.0" y="0.5" a="0" name="P1"/>
+        <icons>
+            <icon scale="1" path="hydinterfacec.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="hydinterfacec.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

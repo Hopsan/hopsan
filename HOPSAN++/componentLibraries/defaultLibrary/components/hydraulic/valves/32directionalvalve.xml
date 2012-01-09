@@ -1,12 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="Hydraulic32DirectionalValve" displayname="3/2 On/Off Valve">
-    <help text="Hydraulic directional valve with second order dynamics. Spool moves to position 1 if input signal is false (&lt; 0.5) or to position 2 if input signal is true (&gt; 0.5). Dynamics is modelled as a low-pass filter with bandwith and damping." />
-    <icon isopath="32directionalvalve_iso.svg" iconrotation="ON" userpath="32directionalvalve_user.svg" />
-    <portpose x="0.415966" y="1" a="90" name="PP" />
-    <portpose x="0.415966" y="0" a="270" name="PA" />
-    <portpose x="0.5798" y="1" a="90" name="PT" />
-    <portpose x="0" y="0.7" a="180" name="in" />
-    <portpose x="1" y="0.5" a="0" name="xv" />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="Hydraulic32DirectionalValve" displayname="3/2 On/Off Valve">
+        <icons>
+            <icon scale="1" path="32directionalvalve_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="32directionalvalve_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Hydraulic directional valve with second order dynamics. Spool moves to position 1 if input signal is false (&lt; 0.5) or to position 2 if input signal is true (> 0.5). Dynamics is modelled as a low-pass filter with bandwith and damping.</text>
+        </help>
+        <ports>
+            <port x="0.415966" y="1" a="90" name="PP"/>
+            <port x="0.415966" y="0" a="270" name="PA"/>
+            <port x="0.5798" y="1" a="90" name="PT"/>
+            <port x="0" y="0.7" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="xv"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

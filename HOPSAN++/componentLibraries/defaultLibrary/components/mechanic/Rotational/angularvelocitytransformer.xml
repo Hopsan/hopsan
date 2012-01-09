@@ -1,10 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
-    <icon isopath="angularvelocitytransformer.svg" iconrotation="ON" userpath="" />
-    <portpose x="0" y="0" a="180" name="thetain" />
-    <portpose x="0" y="1" a="180" name="win" />
-    <portpose x="1.0" y="0.5" a="0" name="Pmr1" />
-    <help text="Applies specified angle and velocity. Parameter values will be used if their corresponding input port is not connected. If velocity is connected but not angle, the angle will be integrated from the velocity. Connecting both inputs simultaneously or connecting only angle input is possible, but the kinematic relationship between angle and velocity must then be enforced manually." />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
+        <icons>
+            <icon scale="1" path="angularvelocitytransformer.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Applies specified angle and velocity. Parameter values will be used if their corresponding input port is not connected. If velocity is connected but not angle, the angle will be integrated from the velocity. Connecting both inputs simultaneously or connecting only angle input is possible, but the kinematic relationship between angle and velocity must then be enforced manually.</text>
+        </help>
+        <ports>
+            <port x="0" y="0" a="180" name="thetain"/>
+            <port x="0" y="1" a="180" name="win"/>
+            <port x="1" y="0.5" a="0" name="Pmr1"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

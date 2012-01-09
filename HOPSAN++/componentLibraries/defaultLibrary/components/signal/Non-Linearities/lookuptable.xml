@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalLookUpTable2D" displayname="LookUpTable2D">
-        <icon isopath="lookuptable.svg" iconrotation="ON" userpath=""/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="lookuptable.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

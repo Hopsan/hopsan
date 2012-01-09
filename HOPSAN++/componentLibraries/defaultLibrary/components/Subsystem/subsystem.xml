@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.2">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="Subsystem" displayname="">
-        <icons>  
-	        <icon type="defaultmissing" iconrotation="ON" path="subsystemDefault.svg" scale="1.0"/>
-	    </icons>
+        <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+        </icons>
+        <ports/>
     </modelobject>
 </hopsanobjectappearance>

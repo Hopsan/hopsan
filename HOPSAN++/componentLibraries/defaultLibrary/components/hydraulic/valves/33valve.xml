@@ -1,12 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="Hydraulic33Valve" displayname="3/3 Directional Valve">
-    <help picture="33valvehelp.svg" text="Hydraulic proportional closed-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction." />
-    <icon isopath="33valve_iso.svg" iconrotation="ON" userpath="33valve_user.svg" />
-    <portpose x="0.5624" y="1" a="90" name="PP" />
-    <portpose x="0.5624" y="0" a="270" name="PA" />
-    <portpose x="0.6885" y="1" a="90" name="PT" />
-    <portpose x="0" y="0.7" a="180" name="in" />
-    <portpose x="1" y="0.5" a="0" name="xv" />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="Hydraulic33Valve" displayname="3/3 Directional Valve">
+        <icons>
+            <icon scale="1" path="33valve_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="33valve_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Hydraulic proportional closed-center servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
+            <picture>33valvehelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0.5624" y="1" a="90" name="PP"/>
+            <port x="0.5624" y="0" a="270" name="PA"/>
+            <port x="0.6885" y="1" a="90" name="PT"/>
+            <port x="0" y="0.7" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="xv"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

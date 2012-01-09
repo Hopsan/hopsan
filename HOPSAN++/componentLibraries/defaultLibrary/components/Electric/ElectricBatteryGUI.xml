@@ -1,9 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="ElectricBattery" displayname="Battery">
-    <icon isopath="ElectricBattery.svg" iconrotation="ON" userpath="ElectricBattery.svg" />
-    <portpose x="0.5" y="0" a="270" name="Pel1" />
-    <portpose x="1" y="0.1" a="0" name="Psoc" />
-    <portpose x="1" y="0.3" a="0" name="Pubatt" />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="ElectricBattery" displayname="Battery">
+        <icons>
+            <icon scale="1" path="ElectricBattery.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ElectricBattery.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.3" a="0" name="Pubatt"/>
+            <port x="1" y="0.1" a="0" name="Psoc"/>
+            <port x="0.5" y="0" a="270" name="Pel1"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

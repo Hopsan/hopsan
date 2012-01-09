@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.2">
-  <modelobject typename="HopsanGUIContainerPort" displayname="Container Port">
-    <icons>
-      <icon type="user" path="systemporttmp.svg" iconrotation="ON" />
-    </icons>
-    <portpositions>
-      <portpose x="0.5" y="0.5" a="0" name="sysp" />
-    </portpositions>
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HopsanGUIContainerPort" displayname="Container Port">
+        <icons>
+            <icon scale="1" path="systemporttmp.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="0.5" a="0" name="sysp"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

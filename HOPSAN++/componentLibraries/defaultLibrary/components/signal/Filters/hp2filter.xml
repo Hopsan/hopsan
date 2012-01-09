@@ -1,9 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="SignalHP2Filter" displayname="Second order high pass filter">
-    <icon isopath="" iconrotation="ON" userpath="hp2filter.svg" />
-    <portpose x="0" y="0.5" a="180" name="in" />
-    <portpose x="1" y="0.5" a="0" name="out" />
-    <help text="Second order high pass filter using bilinear transform." picture="hp2filterhelp.svg" />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalHP2Filter" displayname="Second order high pass filter">
+        <icons>
+            <icon scale="1" path="hp2filter.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>Second order high pass filter using bilinear transform.</text>
+            <picture>hp2filterhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

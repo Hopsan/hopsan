@@ -1,14 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="Hydraulic43LoadSensingValve" displayname="4/3 Load Sensing Valve">
-    <help text="Hydraulic proportional closed-center load sensing servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction. Highest load pressure can be obtained from read port." />
-    <icon isopath="43lsvalve_iso.svg" iconrotation="ON" userpath="43lsvalve_user.svg" />
-    <portpose x="0.4977" y="1" a="90" name="PP" />
-    <portpose x="0.4977" y="0" a="270" name="PA" />
-    <portpose x="0.6779" y="0" a="270" name="PB" />
-    <portpose x="0.6779" y="1" a="90" name="PT" />
-    <portpose x="0.5878" y="1" a="90" name="PL" />
-    <portpose x="0" y="0.7" a="180" name="in" />
-    <portpose x="1" y="0.5" a="0" name="xv" />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="Hydraulic43LoadSensingValve" displayname="4/3 Load Sensing Valve">
+        <icons>
+            <icon scale="1" path="43lsvalve_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="43lsvalve_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>Hydraulic proportional closed-center load sensing servo valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction. Highest load pressure can be obtained from read port.</text>
+        </help>
+        <ports>
+            <port x="0.4977" y="1" a="90" name="PP"/>
+            <port x="0.4977" y="0" a="270" name="PA"/>
+            <port x="0.6779" y="0" a="270" name="PB"/>
+            <port x="0.6779" y="1" a="90" name="PT"/>
+            <port x="0" y="0.7" a="180" name="in"/>
+            <port x="0.5878" y="1" a="90" name="PL"/>
+            <port x="1" y="0.5" a="0" name="xv"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>

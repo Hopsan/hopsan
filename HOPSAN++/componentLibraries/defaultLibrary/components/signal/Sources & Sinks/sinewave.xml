@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalSineWave" displayname="Sine Wave">
-		<help picture="sinewavehelp.svg"/>
-        <icon isopath="sinewave.svg" iconrotation="OFF" userpath=""/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="sinewave.svg" iconrotation="OFF" type="iso"/>
+        </icons>
+        <help>
+            <picture>sinewavehelp.svg</picture>
+        </help>
+        <ports>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

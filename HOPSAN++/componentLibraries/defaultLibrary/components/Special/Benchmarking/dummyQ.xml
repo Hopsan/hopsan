@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicDummyQ" displayname="Q-Type Benchmark Component">
-		<help text="This is a benchmark component of Q-type. The time it take to simulate it is proportional to the input signal. Output signal does nothing." picture="turtle.png"/>
-        <icon isopath="dummyQ.svg" iconrotation="ON" userpath=""/>
-        <portpose x="1" y="0.5" a="0" name="P1"/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
+        <icons>
+            <icon scale="1" path="dummyQ.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>This is a benchmark component of Q-type. The time it take to simulate it is proportional to the input signal. Output signal does nothing.</text>
+            <picture>turtle.png</picture>
+        </help>
+        <ports>
+            <port x="1" y="0.5" a="0" name="P1"/>
+            <port x="0" y="0.5" a="180" name="in"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

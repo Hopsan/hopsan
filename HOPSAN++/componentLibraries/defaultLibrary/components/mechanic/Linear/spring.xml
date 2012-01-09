@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicTranslationalSpring" displayname="Translational Spring">
-        <help picture="springhelp.svg"/>
-		<icon isopath="spring_iso.svg" iconrotation="ON" userpath="spring_user.svg"/>
-        <portpose x="0" y="0.5" a="0" name="P1"/>
-        <portpose x="1" y="0.5" a="0" name="P2"/>
+        <icons>
+            <icon scale="1" path="spring_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="spring_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <picture>springhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+            <port x="1" y="0.5" a="0" name="P2"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

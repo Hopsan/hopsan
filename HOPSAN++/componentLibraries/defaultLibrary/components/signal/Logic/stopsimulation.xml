@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalStopSimulation" displayname="Stop simulation">
-        <icon isopath="stopsimulation_user.svg" iconrotation="ON" userpath="stopsimulation_user.svg"/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
+        <icons>
+            <icon scale="1" path="stopsimulation_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="stopsimulation_user.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicPressureDropValve" displayname="Pressure Drop Valve">
-        <icon isopath="pdrop_iso.svg" iconrotation="ON" userpath="pdrop_user.svg"/>
-        <portpose x="0.4762" y="0" a="90" name="P1"/>
-        <portpose x="0.4762" y="1" a="270" name="P2"/>
+        <icons>
+            <icon scale="1" path="pdrop_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="pdrop_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.4762" y="0" a="90" name="P1"/>
+            <port x="0.4762" y="1" a="270" name="P2"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

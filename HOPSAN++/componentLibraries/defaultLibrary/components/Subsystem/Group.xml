@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.2">
-	<modelobject typename="HopsanGUIGroup" displayname="Group">
-	    <icons>
-            <icon type="defaultmissing" iconrotation="ON" path="groupDefault.svg" scale="1.0"/>
-	    </icons>
-	</modelobject>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HopsanGUIGroup" displayname="Group">
+        <icons>
+            <icon path="groupDefault.svg" type="defaultmissing"/>
+        </icons>
+        <ports/>
+    </modelobject>
 </hopsanobjectappearance>

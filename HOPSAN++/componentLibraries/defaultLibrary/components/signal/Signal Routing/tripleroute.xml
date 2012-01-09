@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalTripleRoute" displayname="Route With Three Inputs">
-        <icon isopath="tripleroute.svg" iconrotation="ON" userpath=""/>
-        <portpose x="0.5" y="0" a="270" name="route"/>
-        <portpose x="0.0" y="0.25" a="180" name="in1"/>
-        <portpose x="0.0" y="0.50" a="180" name="in2"/>
-        <portpose x="0.0" y="0.75" a="180" name="in3"/>
-        <portpose x="1.0" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="tripleroute.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="0" a="270" name="route"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+            <port x="0" y="0.25" a="180" name="in1"/>
+            <port x="0" y="0.5" a="180" name="in2"/>
+            <port x="0" y="0.75" a="180" name="in3"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>
-

@@ -35,6 +35,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "common.h"
+#include "version_gui.h"
 
 using namespace std;
 using namespace hopsan;
@@ -49,6 +50,7 @@ class LibraryComponent;
 LibraryWidget::LibraryWidget(MainWindow *parent)
         :   QWidget(parent)
 {
+    mUpConvertAllCAF = UNDECIDED_TO_ALL;
     mpCoreAccess = new CoreLibraryAccess();
 
     //! @todo Dont know if this is the right place to do this, but we need to do it early
@@ -1465,6 +1467,62 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
                 QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
                 pAppearanceData->setBasePath(libDir + "/");
                 pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
+
+                // Check CAF version, and ask user if they want to update to latest version
+                QString caf_version = cafRoot.attribute(CAF_VERSION);
+
+                if (caf_version < CAF_VERSIONNUM)
+                {
+                    bool doSave=false;
+                    if (mUpConvertAllCAF==UNDECIDED_TO_ALL)
+                    {
+                        QMessageBox questionBox(this);
+                        QString text;
+                        QTextStream ts(&text);
+                        ts << file.fileName() << "\n"
+                           << "Your appearance data file format is old! " << caf_version << "<" << CAF_VERSIONNUM << " Do you want to auto update to the latest format?\n\n"
+                           << "NOTE! You should take a backup of your files BEFORE answering Yes to this question!!\n"
+                           << "NOTE! All non standard Hopsan contents will be lost\n"
+                           << "NOTE! Attributes may change order within a tag (but the order is not important)\n\n"
+                           << "If you want to update manually, see the documantation about the latest format version.";
+                        questionBox.setWindowTitle("Your appearance data file format is old!");
+                        questionBox.setText(text);
+                        QPushButton* pYes = questionBox.addButton(QMessageBox::Yes);
+                        questionBox.addButton(QMessageBox::No);
+                        QPushButton* pYesToAll = questionBox.addButton(QMessageBox::YesToAll);
+                        QPushButton* pNoToAll = questionBox.addButton(QMessageBox::NoToAll);
+                        questionBox.setDefaultButton(QMessageBox::No);
+                        questionBox.exec();
+                        QAbstractButton* pClickedButton = questionBox.clickedButton();
+
+                        if ( (pClickedButton == pYes) || (pClickedButton == pYesToAll) )
+                        {
+                            doSave = true;
+                        }
+
+                        if (pClickedButton == pYesToAll)
+                        {
+                            mUpConvertAllCAF = YES_TO_ALL;
+                        }
+                        else if (pClickedButton == pNoToAll)
+                        {
+                            mUpConvertAllCAF = NO_TO_ALL;
+                        }
+                    }
+                    else if (mUpConvertAllCAF==YES_TO_ALL)
+                    {
+                        doSave = true;
+                    }
+
+                    if (doSave)
+                    {
+                        //Close file
+                        file.close();
+
+                        pAppearanceData->saveToXMLFile(file.fileName());
+
+                    }
+                }
             }
         }
         else
@@ -1480,6 +1538,10 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
 
             continue;
         }
+
+        //Close file
+        file.close();
+
         //! @todo maybe use the convenient helpfunction for the stuff above (open file and check xml and root tagname) now that we have one
 
         bool success = true;
@@ -1502,9 +1564,6 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
             mLoadedComponents << pAppearanceData->getTypeName();
             qDebug() << "Adding: " << pAppearanceData->getTypeName();
         }
-
-        //Close file
-        file.close();
     }
 
     //Make sure empty external libraries are not loaded (because they would become invisible and not removeable)

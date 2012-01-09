@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalStepExponentialDelay" displayname="Step With Exponential Delay">
-		<help picture="stepexpdelayhelp.svg"/>
-        <icon isopath="" iconrotation="OFF" userpath="stepexpdelay.svg"/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="stepexpdelay.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <help>
+            <picture>stepexpdelayhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

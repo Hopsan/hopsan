@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalRamp" displayname="Ramp">
-		<help picture="ramphelp.svg"/>
-        <icon isopath="ramp.svg" iconrotation="OFF" userpath=""/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="ramp.svg" iconrotation="OFF" type="iso"/>
+        </icons>
+        <help>
+            <picture>ramphelp.svg</picture>
+        </help>
+        <ports>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

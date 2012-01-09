@@ -46,6 +46,8 @@
 #define CAF_HELPTEXT "text"
 #define CAF_HELPPICTURE "picture"
 
+#define CAF_PORTS "ports"
+#define CAF_PORT "port"
 #define CAF_PORTPOSITIONS "portpositions"
 #define CAF_PORTPOSE "portpose"
 
@@ -59,13 +61,13 @@
 //! @param[in] th The orientaion (angle)
 void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
 {
-    QDomElement pose = appendDomElement(rDomElement, CAF_PORTPOSE);
+    QDomElement pose = appendDomElement(rDomElement, CAF_PORT);
     pose.setAttribute(CAF_NAME,name);
     QString xString;
-    xString.setNum(x,'f',20);
+    xString.setNum(x,'g', 10);
     pose.setAttribute("x",xString);
     QString yString;
-    yString.setNum(y,'f',20);
+    yString.setNum(y,'g', 10);
     pose.setAttribute("y",yString);
     pose.setAttribute("a",th);
 }
@@ -342,8 +344,17 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     QDomElement xmlHelp = domElement.firstChildElement(CAF_HELP);
     if(!xmlHelp.isNull())
     {
-        mHelpPicture    = xmlHelp.attribute(CAF_HELPPICTURE);
-        mHelpText       = xmlHelp.attribute(CAF_HELPTEXT);
+        QDomElement xmlHelpText = xmlHelp.firstChildElement(CAF_HELPTEXT);
+        if (!xmlHelpText.isNull())
+        {
+            mHelpText = xmlHelpText.text();
+        }
+
+        QDomElement xmlHelpPicture = xmlHelp.firstChildElement(CAF_HELPPICTURE);
+        if (!xmlHelpPicture.isNull())
+        {
+            mHelpPicture = xmlHelpPicture.text();
+        }
     }
 
     //We assume only one icons element
@@ -374,11 +385,43 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         xmlIcon = xmlIcon.nextSiblingElement(CAF_ICON);
     }
 
-    QString portname;
-    QDomElement xmlPorts = domElement.firstChildElement(CAF_PORTPOSITIONS);
+    QDomElement xmlPorts = domElement.firstChildElement(CAF_PORTS);
     while (!xmlPorts.isNull())
     {
-        QDomElement xmlPortPose = xmlPorts.firstChildElement(CAF_PORTPOSE);
+        QString portname;
+        QDomElement xmlPort = xmlPorts.firstChildElement(CAF_PORT);
+        while (!xmlPort.isNull())
+        {
+            PortAppearance portApp;
+            parsePortPoseTag(xmlPort, portname, portApp.x, portApp.y, portApp.rot);
+            mPortAppearanceMap.insert(portname, portApp);
+            xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
+        }
+        // There should only be one <ports>, but lets check for more just in case
+        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTPOSITIONS);
+    }
+
+    // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format 0.2 Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+    QDomElement xmlHelp_02 = domElement.firstChildElement(CAF_HELP);
+    if(!xmlHelp_02.isNull())
+    {
+        if (xmlHelp_02.hasAttribute(CAF_HELPPICTURE))
+        {
+            mHelpPicture = xmlHelp_02.attribute(CAF_HELPPICTURE);
+        }
+
+        if (xmlHelp_02.hasAttribute(CAF_HELPTEXT))
+        {
+            mHelpText = xmlHelp_02.attribute(CAF_HELPTEXT);
+        }
+    }
+
+    QString portname;
+    QDomElement xmlPorts_02 = domElement.firstChildElement(CAF_PORTPOSITIONS);
+    while (!xmlPorts_02.isNull())
+    {
+        QDomElement xmlPortPose = xmlPorts_02.firstChildElement(CAF_PORTPOSE);
         while (!xmlPortPose.isNull())
         {
             PortAppearance portApp;
@@ -387,10 +430,10 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             xmlPortPose = xmlPortPose.nextSiblingElement(CAF_PORTPOSE);
         }
         // There should only be one <ports>, but lets check for more just in case
-        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTPOSITIONS);
+        xmlPorts_02 = xmlPorts_02.nextSiblingElement(CAF_PORTPOSITIONS);
     }
 
-    // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format 0.1 Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
     // Read old style icons
     QDomElement xmlIcon2 = domElement.firstChildElement("icon");
@@ -436,7 +479,7 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
         QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
         xmlIcon.setAttribute(CAF_TYPE, "user");
         xmlIcon.setAttribute(CAF_PATH, mUserIconAppearance.mRelativePath);
-        xmlIcon.setAttribute(CAF_SCALE, mUserIconAppearance.mScale);
+        setQrealAttribute(xmlIcon, CAF_SCALE, mUserIconAppearance.mScale, 6, 'g');
         xmlIcon.setAttribute(CAF_ICONROTATION, mUserIconAppearance.mRotationBehaviour);
     }
     if (hasIcon(ISOGRAPHICS))
@@ -444,22 +487,36 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
         QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
         xmlIcon.setAttribute(CAF_TYPE, "iso");
         xmlIcon.setAttribute(CAF_PATH, mIsoIconAppearance.mRelativePath);
-        setQrealAttribute(xmlIcon, CAF_SCALE, mIsoIconAppearance.mScale);
+        setQrealAttribute(xmlIcon, CAF_SCALE, mIsoIconAppearance.mScale, 6, 'g');
         xmlIcon.setAttribute(CAF_ICONROTATION, mIsoIconAppearance.mRotationBehaviour);
     }
 
+    // If default missing have changed, then save that data as well
+    //! @todo not hardcoded should be defined
+    if (mDefaultMissingIconPath != "missingcomponenticon.svg")
+    {
+        QDomElement xmlIcon = appendDomElement(xmlIcons, CAF_ICON);
+        xmlIcon.setAttribute(CAF_TYPE, "defaultmissing");
+        xmlIcon.setAttribute(CAF_PATH, mDefaultMissingIconPath);
+    }
+
     // Save help text and picture data
-    if(!mHelpText.isNull() || !mHelpPicture.isNull())
+    if(!mHelpText.isEmpty() || !mHelpPicture.isEmpty())
     {
         QDomElement xmlHelp = appendDomElement(xmlObject, CAF_HELP);
-        if(!mHelpText.isNull())
-            xmlHelp.setAttribute(CAF_HELPTEXT, mHelpText);
-        if(!mHelpPicture.isNull())
-            xmlHelp.setAttribute(CAF_HELPPICTURE, mHelpPicture);
+        if( !mHelpText.isEmpty() )
+        {
+            appendDomTextNode(xmlHelp, CAF_HELPTEXT, mHelpText);
+        }
+
+        if( !mHelpPicture.isEmpty() )
+        {
+            appendDomTextNode(xmlHelp, CAF_HELPPICTURE, mHelpPicture);
+        }
     }
 
     // Save port psoition data
-    QDomElement xmlPortPositions = appendDomElement(rDomElement, CAF_PORTPOSITIONS);
+    QDomElement xmlPortPositions = appendDomElement(xmlObject, CAF_PORTS);
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {

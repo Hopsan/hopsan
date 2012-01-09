@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.1">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="SignalIntegrator2" displayname="Integrator">
-		<help text="Integrator component using trapezoid method. Start value on output port will be used as initial value."/>
-        <icon isopath="" iconrotation="ON" userpath="integrator.svg"/>
-        <portpose x="0" y="0.5" a="180" name="in"/>
-        <portpose x="1" y="0.5" a="0" name="out"/>
+        <icons>
+            <icon scale="1" path="integrator.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>Integrator component using trapezoid method. Start value on output port will be used as initial value.</text>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

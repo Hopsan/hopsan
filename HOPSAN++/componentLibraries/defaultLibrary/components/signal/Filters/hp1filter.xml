@@ -1,9 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<hopsanobjectappearance version="0.1">
-  <modelobject typename="SignalHP1Filter" displayname="First order high pass filter">
-    <icon isopath="" iconrotation="ON" userpath="hp1filter.svg" />
-    <portpose x="0" y="0.5" a="180" name="in" />
-    <portpose x="1" y="0.5" a="0" name="out" />
-    <help picture="hp1filterhelp.svg" text="First order high pass filter using bilinear transform." />
-  </modelobject>
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalHP1Filter" displayname="First order high pass filter">
+        <icons>
+            <icon scale="1" path="hp1filter.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>First order high pass filter using bilinear transform.</text>
+            <picture>hp1filterhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
 </hopsanobjectappearance>
