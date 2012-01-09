@@ -49,18 +49,21 @@ Information about the component for the graphical interface, such as icon, port 
 
 \verbatim
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.2">
+<hopsanobjectappearance version="0.3">
   <modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice">
     <icons>
       <icon type="iso" path="laminarorifice_iso.svg" iconrotation="ON" scale="1.0"/>
       <icon type="user" path="laminarorifice_user.svg" iconrotation="ON" scale="1.0"/>
     </icons>
-    <portpositions>
-      <portpose name="P1" x="1.0" y="0.5" a="0"/>
-      <portpose name="P2" x="0.0" y="0.5" a="180"/>
-      <portpose name="Kc" x="0.5" y="0.0" a="270"/>
-    </portpositions>
-    <help text="Help Text" picture="helpPicture.svg"/>
+    <help>
+      <text>Help Text</text>
+      <picture>helpPicture.svg</picture>
+    </help>
+    <ports>
+      <port name="P1" x="1.0" y="0.5" a="0"/>
+      <port name="P2" x="0.0" y="0.5" a="180"/>
+      <port name="Kc" x="0.5" y="0.0" a="270"/>
+    </ports>
   </modelobject>
 </hopsanobjectappearance>
 \endverbatim
@@ -68,23 +71,24 @@ Information about the component for the graphical interface, such as icon, port 
 The first line contains basic information about the XML code, and should always look the same. A description of the remaining tags follows:
 
 - \b hopsanobjectappearance Main tag for appearance file
-  - \b version Should always be 0.2 with this XML layout
+  - \b version Should always be 0.3 with this XML layout
 - \b modelobject Main tag for the component
-  - \b typename Name of the component as registered in the simulation core, see \link writing-components Writing Components \endlink
-  - \b displayname Name for the component shown in the graphical interface
-- \b icons Contains paths to icons
-  - \b type Tells if icon is USER or ISO 1219 (ISO is not required)
+  - \b typename Name of the component as registered in the simulation core, see \link writing-components Writing Components \endlink. (Required)
+  - \b displayname Name for the component shown in the graphical interface. (If omitted typename will be used)
+- \b icons Contains information about icons. At least one type, user or iso is required.
+  - \b type The icon type, \e user or \e iso (ISO 1219)
   - \b path Relative path from the .xml file to the .svg
   - \b iconrotation Tells whether or not the icon rotates when the component is rotated in the workspace
   - \b scale Lets you adjust the scale of the .svg graphics (without modifying the actual .svg file) (default=1.0 if omitted)
-- \b portpositions Defines the positions for each port
+- \b help Allows you to specify help information explaining the function of the component. (Optional)
+  - \b text The help text. (Optional)
+  - \b picture The path to the .svg help picture. (Optional)
+- \b ports Defines the positions and orientations for each port (Required for each port)
   - \b name Name of the port as defined in the code
   - \b x X-position in percent of component icon (0 = left, 1 = right)
   - \b y Y-position in percent of component icon (0 = top, 1 = bottom)
   - \b a Angle of port, 0 = right, 90 = down etc., port shall normally point outwards from the component
-- \b help Allows you to specify a help information explaining the function of the component.
-  - \b text The help text
-  - \b picture The path to the .svg help picture
+
 
 
 \page writing-components Writing Components in C++

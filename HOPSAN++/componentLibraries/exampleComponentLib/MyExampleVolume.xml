@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanobjectappearance version="0.2">
+<hopsanobjectappearance version="0.3">
     <modelobject typename="MyExampleVolume" displayname="MyExampleVolume">
         <icons>
-            <icon type="user" iconrotation="ON" path="svg/volume_user.svg" scale="1.0"/>
+            <icon scale="1" path="svg/volume_user.svg" iconrotation="ON" type="user"/>
         </icons>
-        <portpositions>
-            <portpose x="0" y="0.5" a="0" name="P1"/>
-            <portpose x="1" y="0.5" a="0" name="P2"/>
-        </portpositions>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+            <port x="1" y="0.5" a="0" name="P2"/>
+        </ports>
     </modelobject>
 </hopsanobjectappearance>

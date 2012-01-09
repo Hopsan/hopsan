@@ -13,7 +13,7 @@ DESTDIR = $${PWD}/
 # The location to search for the Hopsan include files, by specifying the path here, you dont need to do this everywhere in all of your component .hpp files
 # You can also add additional paths for eg. your own Utility functions, just add additional INCLUDEPATH *= ... lines.
 # *= Means append unique
-INCLUDEPATH *= $${PWD}/../../HopsanCore
+INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 
 # The location of the HopsanCore .dll or .so file, needed to link against when compiling your library
 LIBS *= -L$${PWD}/../../bin
