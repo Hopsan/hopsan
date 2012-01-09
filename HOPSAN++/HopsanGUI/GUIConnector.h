@@ -179,6 +179,8 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
+    void clearArrows();
+
     Connector *mpParentConnector;
     ConnectorAppearance *mpConnectorAppearance;
 

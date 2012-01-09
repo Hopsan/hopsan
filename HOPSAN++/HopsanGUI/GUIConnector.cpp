@@ -1125,19 +1125,7 @@ ConnectorLine::ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAp
 //! @brief Destructor for connector lines
 ConnectorLine::~ConnectorLine()
 {
-    //! @todo do we maybe need to delete added arrow lines
-    if(mHasEndArrow)
-    {
-        delete(mArrowLine1);
-        delete(mArrowLine2);
-        mHasEndArrow = false;
-    }
-    else if(mHasStartArrow)
-    {
-        delete(mArrowLine1);
-        delete(mArrowLine2);
-        mHasStartArrow = false;
-    }
+    clearArrows();
 }
 
 
@@ -1347,14 +1335,10 @@ void ConnectorLine::setLine(QPointF pos1, QPointF pos2)
     this->mEndPos = this->mapFromParent(pos2);
     if(mHasEndArrow)
     {
-        delete(mArrowLine1);
-        delete(mArrowLine2);
         this->addEndArrow();
     }
     else if(mHasStartArrow)
     {
-        delete(mArrowLine1);
-        delete(mArrowLine2);
         this->addStartArrow();
     }
     QGraphicsLineItem::setLine(this->mapFromParent(pos1).x(),this->mapFromParent(pos1).y(),
@@ -1366,6 +1350,8 @@ void ConnectorLine::setLine(QPointF pos1, QPointF pos2)
 //! @see addStartArrow()
 void ConnectorLine::addEndArrow()
 {
+    clearArrows();
+
     qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mEndPos.x(),
                                         this->mEndPos.y(),
@@ -1384,6 +1370,8 @@ void ConnectorLine::addEndArrow()
 //! @see addEndArrow()
 void ConnectorLine::addStartArrow()
 {
+    clearArrows();
+
     qreal angle = atan2((this->mEndPos.y()-this->mStartPos.y()), (this->mEndPos.x()-this->mStartPos.x()));
     mArrowLine1 = new QGraphicsLineItem(this->mStartPos.x(),
                                         this->mStartPos.y(),
@@ -1395,6 +1383,18 @@ void ConnectorLine::addStartArrow()
                                         this->mStartPos.y()+mArrowSize*sin(angle-mArrowAngle), this);
     this->setPen(this->pen());
     mHasStartArrow = true;
+}
+
+//! @brief Clears all arrows
+void ConnectorLine::clearArrows()
+{
+    if (mHasStartArrow || mHasEndArrow)
+    {
+        delete mArrowLine1;
+        delete mArrowLine2;
+        mHasStartArrow = false;
+        mHasEndArrow = false;
+    }
 }
 
 
