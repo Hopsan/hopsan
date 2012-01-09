@@ -466,7 +466,7 @@ void PlotTreeWidget::loadFromXml()
     QFile file(fileName);                                                                       //File is not readable
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  "Unable to read XML file.\n");
         return;
     }
@@ -476,7 +476,7 @@ void PlotTreeWidget::loadFromXml()
     int errorLine, errorColumn;
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))             //Parse error in file
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  QString(file.fileName() + "Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
@@ -487,7 +487,7 @@ void PlotTreeWidget::loadFromXml()
     QDomElement plotRoot = domDocument.documentElement();                                       //File has wrong root tag
     if (plotRoot.tagName() != "hopsanplot")
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  "The file is not a plot window description file. Incorrect hmf root tag name: "
                                  + plotRoot.tagName() + " != hopsanplot");
         return;

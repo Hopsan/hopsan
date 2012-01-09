@@ -101,6 +101,10 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
 void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 void identifyFunctions(QString equation, QStringList &functions);
+bool verifyParameteres(QList<ParameterSpecification> parameters);
+bool verifyPorts(QList<PortSpecification> ports);
+bool verifyUtilities(QList<UtilitySpecification> utilities);
+bool verifyStaticVariables(QList<StaticVariableSpecification> variables);
 bool verifyEquations(QStringList equations);
 bool verifyEquation(QString equation);
 void replaceReservedWords(QStringList &equations);

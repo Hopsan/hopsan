@@ -702,9 +702,30 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     xmlFile.close();
 
     //Execute HopsanFMU compile script
+#ifdef win32
     QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << "cd " + gExecPath + " & compile.bat");
     p.waitForFinished();
+#else
+    QString command = "g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + INCLUDEPATH + " -L./ -lHopsanCore\n";
+    qDebug() << "Command = " << command;
+    FILE *fp;
+    char line[130];
+    command +=" 2>&1";
+    fp = popen(  (const char *) command.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not execute '" + command + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage((const QString &)line);
+        }
+    }
+#endif
 
     QDir componentsDir(QString(DOCSPATH));
     QDir generatedDir(QString(DOCSPATH) + "Generated Componentes/");
@@ -718,6 +739,9 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     QFile dllFile(gExecPath+comp.typeName+".dll");
     dllFile.copy(generatedDir.path() + "/" + comp.typeName + ".dll");
 
+    QFile soFile(gExecPath+comp.typeName+".so");
+    soFile.copy(generatedDir.path() + "/" + comp.typeName + ".so");
+
     QFile svgFile(QString(OBJECTICONPATH)+"generatedcomponenticon.svg");
     svgFile.copy(generatedDir.path() + "/generatedcomponenticon.svg");
 
@@ -725,6 +749,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     clBatchFile.remove();
     ccLibFile.remove();
     dllFile.remove();
+    soFile.remove();
     xmlFile.remove();*/
 
     //Load the library
@@ -818,6 +843,72 @@ bool verifyEquations(QStringList equations)
     }
 
     //! @todo Verify equation system (number of unknowns etc)
+    return true;
+}
+
+
+bool verifyParameteres(QList<ParameterSpecification> parameters)
+{
+    for(int i=0; i<parameters.size(); ++i)
+    {
+        if(parameters.at(i).name.isEmpty())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Parameter " + QString().setNum(i+1) + " has no name specified.");
+            return false;
+        }
+        if(parameters.at(i).init.isEmpty())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Parameter " + QString().setNum(i+1) + " has no initial value specified.");
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool verifyPorts(QList<PortSpecification> ports)
+{
+    for(int i=0; i<ports.size(); ++i)
+    {
+        if(ports.at(i).name.isEmpty())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Port " + QString().setNum(i+1) + " has no name specified.");
+            return false;
+        }
+        if(ports.at(i).notrequired && ports.at(i).defaultvalue.isEmpty())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Port \"" + ports.at(i).name + " is not required but has no default value.");
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool verifyUtilities(QList<UtilitySpecification> utilities)
+{
+    for(int i=0; i<utilities.size(); ++i)
+    {
+        if(utilities.at(i).name.isEmpty())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Utility " + QString().setNum(i+1) + " has no name specified.");
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool verifyStaticVariables(QList<StaticVariableSpecification> variables)
+{
+    for(int i=0; i<variables.size(); ++i)
+    {
+        if(variables.at(i).name.isEmpty())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Static variable " + QString().setNum(i+1) + " has no name specified.");
+            return false;
+        }
+    }
     return true;
 }
 
@@ -1031,9 +1122,9 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
                 else if(words.at(3) == "=")
                     init = words.at(4);                                             // ...blabla) = x
 
-                displayName = lines.at(l).section("\"", -2, -2);
+                QString parDisplayName = lines.at(l).section("\"", -2, -2);
 
-                ParameterSpecification par(name, displayName, displayName, unit, init);
+                ParameterSpecification par(name, parDisplayName, parDisplayName, unit, init);
                 parametersList.append(par);
             }
             else if(words.at(0) == "NodeMechanic")
@@ -1089,9 +1180,14 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
                 QString temp = portNames.at(i)+".";
                 while(equations.last().contains(temp))
                 {
+                    qDebug() << "BEFORE: " << equations.last();
                     int idx = equations.last().indexOf(temp);
-                    equations.last().insert(idx+temp.size()+1, QString().setNum(i+1));
+                    int idx2=idx+temp.size()+1;
+                    while(idx2 < equations.last().size()+1 && equations.last().at(idx2).isLetterOrNumber())
+                        ++idx2;
+                    equations.last().insert(idx2, QString().setNum(i+1));
                     equations.last().remove(idx, temp.size());
+                    qDebug() << "AFTER: " << equations.last();
                 }
             }
             equations.last().chop(1);

@@ -187,7 +187,7 @@ void Configuration::loadFromXml()
     int errorLine, errorColumn;
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  gpMainWindow->tr("hopsanconfig.xml: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
@@ -198,7 +198,7 @@ void Configuration::loadFromXml()
         QDomElement configRoot = domDocument.documentElement();
         if (configRoot.tagName() != "hopsanconfig")
         {
-            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                      "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
                                      + configRoot.tagName() + " != hopsanconfig");
         }
@@ -352,7 +352,7 @@ void Configuration::loadDefaultsFromXml()
     QFile file(gExecPath+QString(MAINPATH) + "hopsandefaults");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  "Unable to read default configuration file. Please reinstall program.\n" + gExecPath+QString(MAINPATH));
 
         qApp->quit();
@@ -362,7 +362,7 @@ void Configuration::loadDefaultsFromXml()
     int errorLine, errorColumn;
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  gpMainWindow->tr("hopsandefaults: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
@@ -373,7 +373,7 @@ void Configuration::loadDefaultsFromXml()
         QDomElement configRoot = domDocument.documentElement();
         if (configRoot.tagName() != "hopsandefaults")
         {
-            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                      "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
                                      + configRoot.tagName() + " != hopsandefaults");
         }

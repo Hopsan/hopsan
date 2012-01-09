@@ -1677,7 +1677,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
     QFile file(gExecPath+QString(SCRIPTPATH) + "OptimizationObjectiveFunctions.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  "Unable to read objective functions file. Please make sure that it is located in the Scripts directory.\n");
         return false;
     }
@@ -1686,7 +1686,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
     int errorLine, errorColumn;
     if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  gpMainWindow->tr("HopsanObjectiveFunctions: Parse error at line %1, column %2:\n%3")
                                  .arg(errorLine)
                                  .arg(errorColumn)
@@ -1699,7 +1699,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
         QDomElement functionsRoot = domDocument.documentElement();
         if (functionsRoot.tagName() != "hopsanobjectivefunctions")
         {
-            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                      "The file is not an Hopsan objective function file. Incorrect hmf root tag name: "
                                      + functionsRoot.tagName() + " != hopsanobjectivefunctions");
             file.close();

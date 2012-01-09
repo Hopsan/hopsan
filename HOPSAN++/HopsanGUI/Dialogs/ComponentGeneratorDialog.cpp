@@ -94,6 +94,22 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpButtonBox->addButton(mpCompileButton, QDialogButtonBox::ActionRole);
 
     //General settings
+    mpLoadButton = new QToolButton(this);
+    mpLoadButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
+    QAction *mpLoadFromModelicaAction = new QAction(tr("&Load Modelica File (.mo)"), this);
+    QAction *mpLoadFromXmlAction = new QAction(tr("&Load XML File"), this);
+    connect(mpLoadFromModelicaAction,   SIGNAL(triggered()), this, SLOT(loadFromModelica()));
+    connect(mpLoadFromXmlAction,        SIGNAL(triggered()), this, SLOT(loadFromXml()));
+    mpLoadMenu = new QMenu(this);
+    mpLoadMenu->addAction(mpLoadFromModelicaAction);
+    mpLoadMenu->addAction(mpLoadFromXmlAction);
+    mpLoadButton->setMenu(mpLoadMenu);
+    mpLoadButton->setPopupMode(QToolButton::InstantPopup);
+    mpLoadButton->setToolTip("Add Item");
+
+
+    mpSaveButton = new QToolButton(this);
+    mpSaveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Save.png"));
     mpGenerateFromLabel = new QLabel("Generate From: ");
     mpGenerateFromComboBox = new QComboBox(this);
     mpGenerateFromComboBox->addItems(QStringList() << "Equations" << "C++ Code");
@@ -179,21 +195,21 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpLayout = new QGridLayout(this);
     setLayout(mpLayout);
 
-    QString code = "model LaminarOrifice \"Hydraulic Laminar Orifice\"\nparameter Real Kc(unit=\"-\") = 1e-11 \"Pressure-Flow Coefficient\";\n   NodeHydraulic P1, P2;\nequation\nP2.q = Kc*(P1.p-P2.p);\nP1.q = -P2.q;\nP1.p = P1.c + P1.Zc*P1.q;\nP2.p = P2.c + P2.Zc*P2.q;\nend LaminarOrifice;";
-    QString typeName, displayName;
-    QStringList equations;
-    parseModelicaModel(code, typeName, displayName, equations, mPortList, mParametersList);
+//    QString code = "model LaminarOrifice \"Hydraulic Laminar Orifice\"\nparameter Real Kc(unit=\"-\") = 1e-11 \"Pressure-Flow Coefficient\";\n   NodeHydraulic P1, P2;\nequation\nP2.q = Kc*(P1.p-P2.p);\nP1.q = -P2.q;\nP1.p = P1.c + P1.Zc*P1.q;\nP2.p = P2.c + P2.Zc*P2.q;\nend LaminarOrifice;";
+//    QString typeName, displayName;
+//    QStringList equations;
+//    parseModelicaModel(code, typeName, displayName, equations, mPortList, mParametersList);
 
     update();
     updateValues();
 
-    mpComponentNameEdit->setText(typeName);
-    mpComponentDisplayEdit->setText(displayName);
+//    mpComponentNameEdit->setText(typeName);
+//    mpComponentDisplayEdit->setText(displayName);
 
-    for(int i=0; i<equations.size(); ++i)
-    {
-        mpEquationsTextField->append(equations.at(i));
-    }
+//    for(int i=0; i<equations.size(); ++i)
+//    {
+//        mpEquationsTextField->append(equations.at(i));
+//    }
 
     //Connections
     connect(mpCancelButton,    SIGNAL(clicked()), this, SLOT(reject()));
@@ -243,6 +259,7 @@ void ComponentGeneratorDialog::removePort()
     int i = mvRemovePortButtons.indexOf(button);
     mPortList.removeAt(i);
     qDebug() << "Removing port with index " << i;
+    updateValues();
     update();
 }
 
@@ -407,7 +424,7 @@ void ComponentGeneratorDialog::updateValues()
             ++i;
         }
     }
-    mpBoundaryEquationsTextField->setVisible(!mpBoundaryEquationsTextField->toPlainText().isEmpty());
+    mpBoundaryEquationsTextField->setVisible(!mpBoundaryEquationsTextField->toPlainText().isEmpty() && mpComponentTypeComboBox->currentText() == "Q");
     mpBoundaryEquationsTextField->setFixedHeight(15*i);
 
 }
@@ -420,7 +437,7 @@ void ComponentGeneratorDialog::update()
         mpCodeTabs->hide();
         mpEquationsWidget->show();
         qDebug() << "CQSType = " << mpComponentTypeComboBox->currentText();
-        mpBoundaryEquationsTextField->setVisible(mpComponentTypeComboBox->currentText() == "Q");
+        mpBoundaryEquationsTextField->setVisible(!mpBoundaryEquationsTextField->toPlainText().isEmpty() && mpComponentTypeComboBox->currentText() == "Q");
     }
     else
     {
@@ -710,21 +727,23 @@ void ComponentGeneratorDialog::update()
         mpLayout->removeItem(mpLayout->itemAt(0));
     }
 
-    mpLayout->addWidget(mpGenerateFromLabel,        0, 0);
-    mpLayout->addWidget(mpGenerateFromComboBox,     0, 1);
-    mpLayout->addWidget(mpComponentNameLabel,       0, 2);
-    mpLayout->addWidget(mpComponentNameEdit,        0, 3);
-    mpLayout->addWidget(mpComponentDisplayLabel,    0, 4);
-    mpLayout->addWidget(mpComponentDisplayEdit,     0, 5);
-    mpLayout->addWidget(mpComponentTypeLabel,       0, 6);
-    mpLayout->addWidget(mpComponentTypeComboBox,    0, 7);
-    mpLayout->addWidget(mpAddItemButton,            0, 8);
-    mpLayout->addWidget(mpPortsGroupBox,            1, 0, 1, 9);
-    mpLayout->addWidget(mpParametersGroupBox,       2, 0, 1, 9);
-    mpLayout->addWidget(mpUtilitiesGroupBox,        3, 0, 1, 9);
-    mpLayout->addWidget(mpStaticVariablesGroupBox,  4, 0, 1, 9);
-    mpLayout->addWidget(mpCodeGroupBox,        5, 0, 1, 9);
-    mpLayout->addWidget(mpButtonBox,                6, 0, 1, 9);
+    mpLayout->addWidget(mpLoadButton,               0, 0);
+    mpLayout->addWidget(mpSaveButton,               0, 1);
+    mpLayout->addWidget(mpGenerateFromLabel,        0, 2);
+    mpLayout->addWidget(mpGenerateFromComboBox,     0, 3);
+    mpLayout->addWidget(mpComponentNameLabel,       0, 4);
+    mpLayout->addWidget(mpComponentNameEdit,        0, 5);
+    mpLayout->addWidget(mpComponentDisplayLabel,    0, 6);
+    mpLayout->addWidget(mpComponentDisplayEdit,     0, 7);
+    mpLayout->addWidget(mpComponentTypeLabel,       0, 8);
+    mpLayout->addWidget(mpComponentTypeComboBox,    0, 9);
+    mpLayout->addWidget(mpAddItemButton,            0, 10);
+    mpLayout->addWidget(mpPortsGroupBox,            1, 0, 1, 11);
+    mpLayout->addWidget(mpParametersGroupBox,       2, 0, 1, 11);
+    mpLayout->addWidget(mpUtilitiesGroupBox,        3, 0, 1, 11);
+    mpLayout->addWidget(mpStaticVariablesGroupBox,  4, 0, 1, 11);
+    mpLayout->addWidget(mpCodeGroupBox,             5, 0, 1, 11);
+    mpLayout->addWidget(mpButtonBox,                6, 0, 1, 11);
     mpLayout->setRowStretch(5, 1);
 }
 
@@ -733,7 +752,31 @@ void ComponentGeneratorDialog::update()
 //! @todo Verify that everything is ok
 void ComponentGeneratorDialog::compile()
 {
-    if(mpGenerateFromComboBox->currentIndex() == 0)
+    if(!verifyParameteres(mParametersList))
+    {
+        qDebug() << "Verification of parameters failed.";
+        return;
+    }
+
+    if(!verifyPorts(mPortList))
+    {
+        qDebug() << "Verification of ports failed.";
+        return;
+    }
+
+    if(!verifyUtilities(mUtilitiesList))
+    {
+        qDebug() << "Verification of utilities failed.";
+        return;
+    }
+
+    if(!verifyStaticVariables(mStaticVariablesList))
+    {
+        qDebug() << "Verification of static variables failed.";
+        return;
+    }
+
+    if(mpGenerateFromComboBox->currentIndex() == 0)         //Compile from equations
     {
         qDebug() << "Compiling equations";
 
@@ -958,3 +1001,136 @@ void ComponentGeneratorDialog::compile()
     //QDialog::close();
 }
 
+
+void ComponentGeneratorDialog::loadFromModelica()
+{
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Modlica File"),
+                                                         gExecPath+"/",
+                                                         tr("Modelica File (*.mo)"));
+    if(modelFileName.isEmpty())
+    {
+        return;
+    }
+
+    QFile file(modelFileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read Modelica file.");
+        return;
+    }
+    QString code;
+    QTextStream t(&file);
+    code = t.readAll();
+    file.close();
+
+
+    QString typeName, displayName;
+    QStringList equations;
+    parseModelicaModel(code, typeName, displayName, equations, mPortList, mParametersList);
+
+    update();
+    updateValues();
+
+    mpComponentNameEdit->setText(typeName);
+    mpComponentDisplayEdit->setText(displayName);
+
+    for(int i=0; i<equations.size(); ++i)
+    {
+        mpEquationsTextField->append(equations.at(i));
+    }
+}
+
+
+
+void ComponentGeneratorDialog::loadFromXml()
+{
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Modlica File"),
+                                                         gExecPath+"/",
+                                                         tr("Modelica File (*.mo)"));
+    if(modelFileName.isEmpty())
+    {
+        return;
+    }
+
+    QFile file(QString(DATAPATH) + QString("hopsanconfig.xml"));
+    qDebug() << "Reading config from " << file.fileName();
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read XML file.");
+        return;
+    }
+
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
+                                 file.fileName()+gpMainWindow->tr(": Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+        return;
+    }
+
+    QDomElement modelRoot = domDocument.documentElement();
+
+    //! @todo Define a better XML syntax and implement this
+//    QDomElement utilitiesElement = modelRoot.firstChildElement("utilities");
+//    QDomElement utilityElement = utilitiesElement.firstChildElement("utility");
+//    while(!utilityElement.isNull())
+//    {
+//        comp.utilities.append(utilityElement.attribute ("utility"));
+//        comp.utilityNames.append(utilityElement.attribute("name"));
+//        utilityElement=utilityElement.nextSiblingElement("utility");
+//    }
+
+//    QDomElement parametersElement = modelRoot.firstChildElement("parameters");
+//    QDomElement parameterElement = parametersElement.firstChildElement("parameter");
+//    while(!parameterElement.isNull())
+//    {
+//        comp.parNames.append(parameterElement.attribute("name"));
+//        comp.parInits.append(parameterElement.attribute("init"));
+//        comp.parDisplayNames.append(parameterElement.attribute("displayname"));
+//        comp.parDescriptions.append(parameterElement.attribute("description"));
+//        comp.parUnits.append(parameterElement.attribute("unit"));
+//        parameterElement=parameterElement.nextSiblingElement("parameter");
+//    }
+
+//    QDomElement variablesElemenet = modelRoot.firstChildElement("staticvariables");
+//    QDomElement variableElement = variablesElemenet.firstChildElement("staticvariable");
+//    while(!variableElement.isNull())
+//    {
+//        comp.varNames.append(variableElement.attribute("name"));
+//        comp.varTypes.append(variableElement.attribute("datatype"));
+//        variableElement=variableElement.nextSiblingElement("staticvariable");
+//    }
+
+//    QDomElement portsElement = modelRoot.firstChildElement("ports");
+//    QDomElement portElement = portsElement.firstChildElement("port");
+//    while(!portElement.isNull())
+//    {
+//        comp.portNames.append(portElement.attribute("name"));
+//        comp.portTypes.append(portElement.attribute("type"));
+//        comp.portNodeTypes.append(portElement.attribute("nodetype"));
+//        comp.portDefaults.append(portElement.attribute("default"));
+//        comp.portNotReq.append(portElement.attribute("notrequired") == "True");
+//        portElement=portElement.nextSiblingElement("port");
+//    }
+
+//    QDomElement initializeElement = modelRoot.firstChildElement("initialize");
+//    QDomElement initEquationElement = initializeElement.firstChildElement("equation");
+//    while(!initEquationElement.isNull())
+//    {
+//        comp.initEquations.append(initEquationElement.text());
+//        initEquationElement=initEquationElement.nextSiblingElement("equation");
+//    }
+
+//    QDomElement simulateElement = modelRoot.firstChildElement("simulate");
+//    QDomElement equationElement = simulateElement.firstChildElement("equation");
+//    while(!equationElement.isNull())
+//    {
+//        comp.simEquations.append(equationElement.text());
+//        equationElement=equationElement.nextSiblingElement("equation");
+//    }
+}

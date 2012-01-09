@@ -55,6 +55,8 @@ private slots:
     void removeStaticVariable();
     void updateValues();
     void compile();
+    void loadFromModelica();
+    void loadFromXml();
 
 private:
     //Initialization & equations text edits
@@ -79,6 +81,11 @@ private:
 
 
     //General Settings
+    QToolButton *mpLoadButton;
+    QMenu *mpLoadMenu;
+    QAction *mpLoadFromModelicaAction;
+    QAction *mpLoadFromXmlAction;
+    QToolButton *mpSaveButton;
     QLabel *mpGenerateFromLabel;
     QComboBox *mpGenerateFromComboBox;
     QLabel *mpComponentNameLabel;
