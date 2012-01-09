@@ -124,7 +124,7 @@ TEMPLATE = lib
 
 TARGET = exampleComponentLib
 DESTDIR = $${PWD}/
-INCLUDEPATH *= $${PWD}/../../HopsanCore
+INCLUDEPATH *= $${PWD}/../../HopsanCore/include/
 LIBS *= -L$${PWD}/../../bin
 
 CONFIG(debug, debug|release) {
