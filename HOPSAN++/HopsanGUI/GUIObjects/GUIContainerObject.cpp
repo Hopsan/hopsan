@@ -1303,12 +1303,19 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, undoStat
     if (!mIsCreatingConnector)
     {
         createConnector(pPort1, undoSettings);
-        return createConnector(pPort2, undoSettings); //Return ptr to the created connector, or 0
+        Connector* pConn = createConnector(pPort2, undoSettings);
+        if ( pConn  == 0) //Returns ptr to the created connector, or 0
+        {
+            //We failed for some reason, cancle creation
+            cancelCreatingConnector();
+        }
+
+        return pConn;
     }
     else
     {
         // This should never happen, but just in case
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("could not create connector, connector creation already in progress");
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not create connector, connector creation already in progress");
         return 0;
     }
 }

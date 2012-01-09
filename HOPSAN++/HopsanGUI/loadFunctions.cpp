@@ -105,6 +105,8 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
         }
     }
 
+    gpMainWindow->mpMessageWidget->checkMessages();
+
     if (!success)
     {
         QString str;
