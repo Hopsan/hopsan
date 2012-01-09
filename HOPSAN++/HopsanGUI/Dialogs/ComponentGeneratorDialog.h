@@ -54,6 +54,7 @@ private slots:
     void removeUtility();
     void removeStaticVariable();
     void updateValues();
+    void updateGivenSoughtText();
     void compile();
     void loadFromModelica();
     void loadFromXml();
@@ -75,6 +76,7 @@ private:
     QGridLayout *mpEquationsLayout;
     QWidget *mpEquationsWidget;
     QTextEdit *mpEquationsTextField;
+    QLabel *mpBoundaryEquationsLabel;
     QTextEdit *mpBoundaryEquationsTextField;
     QGridLayout *mpCodeLayout;
     QGroupBox *mpCodeGroupBox;

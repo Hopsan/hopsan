@@ -87,6 +87,9 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 }
 
 
+//! @brief Transforms a DOM element component description to a ComponentSpecification object and calls actual generator utility
+//! @param outputFile Filename for output
+//! @param rDomElement Reference to dom element with information about component
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 {
     QString typeName = rDomElement.attribute("typename");
@@ -157,6 +160,17 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 }
 
 
+//! @brief Generates a ComponentSpecification object from equations and a jacobian
+//! @param typeName Type name of component
+//! @param displayName Display name of component
+//! @param cqsType CQS type of component
+//! @param ports List of port specifications
+//! @param parameteres List of parameter specifications
+//! @param sysEquations List of system equations
+//! @param stateVars List of state variables
+//! @param jacobian List of Jacobian elements
+//! @param delayTerms List of delay terms
+//! @param delaySteps List of number of delay steps for each delay term
 void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType,
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
@@ -238,7 +252,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     {
         for(int j=0; j<stateVars.size(); ++j)
         {
-            comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[4*i+j]+";";
+            comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[sysEquations.size()*i+j]+";";
         }
     }
     comp.simEquations << "";
@@ -268,12 +282,12 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     comp.simEquations << "    {";
     comp.simEquations << "        stateVark[i] = stateVar[i];";
     comp.simEquations << "    }";
-    comp.simEquations << "}";
     comp.simEquations << "";
     for(int i=0; i<stateVars.size(); ++i)
     {
-        comp.simEquations << stateVars[i]+"=stateVark["+QString().setNum(i)+"];";
+        comp.simEquations << "    " << stateVars[i]+"=stateVark["+QString().setNum(i)+"];";
     }
+    comp.simEquations << "}";
     comp.simEquations << "";
     for(int i=0; i<delayTerms.size(); ++i)
     {
@@ -296,7 +310,10 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
 }
 
 
-
+//! @brief Generates and compiles component source code from a ComponentSpecification object
+//! @param outputFile Name of output file
+//! @param comp Component specification object
+//! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
 void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, bool overwriteStartValues)
 {
     //Initialize the file stream
@@ -760,8 +777,10 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
 
 
 
-
-
+//! @brief Finds all variables in an equations
+//! @param equations Equation
+//! @param leftSideVariables List with variables left of the equality sign
+//! @param rightSideVariables list with variables right of the equatity sign
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &rightSideVariables)
 {
     QString word;
@@ -811,6 +830,9 @@ void identifyVariables(QString equation, QStringList &leftSideVariables, QString
 }
 
 
+//! @brief Identifies all function calls in an equation
+//! @param equation Equation
+//! @param functions List with all function names
 void identifyFunctions(QString equation, QStringList &functions)
 {
     QString word;
@@ -834,8 +856,10 @@ void identifyFunctions(QString equation, QStringList &functions)
 }
 
 
+//! @brief Verfies that a system of equations is Hopsan-solveable
 bool verifyEquations(QStringList equations)
 {
+    //Loop through and verify each equation
     for(int i=0; i<equations.size(); ++i)
     {
         if(!verifyEquation(equations[i]))
@@ -847,6 +871,8 @@ bool verifyEquations(QStringList equations)
 }
 
 
+//! @brief Verifies that a list of parameter specifications is correct
+//! @param parameters List of parameter specifications
 bool verifyParameteres(QList<ParameterSpecification> parameters)
 {
     for(int i=0; i<parameters.size(); ++i)
@@ -866,6 +892,8 @@ bool verifyParameteres(QList<ParameterSpecification> parameters)
 }
 
 
+//! @brief Verifies that a list of ports specifications is correct
+//! @param ports List of ports specifications
 bool verifyPorts(QList<PortSpecification> ports)
 {
     for(int i=0; i<ports.size(); ++i)
@@ -885,6 +913,8 @@ bool verifyPorts(QList<PortSpecification> ports)
 }
 
 
+//! @brief Verifies that a list of utilities specifications is correct
+//! @param utilities List of utilities specifications
 bool verifyUtilities(QList<UtilitySpecification> utilities)
 {
     for(int i=0; i<utilities.size(); ++i)
@@ -899,6 +929,8 @@ bool verifyUtilities(QList<UtilitySpecification> utilities)
 }
 
 
+//! @brief Verifies that a list of variables specifications is correct
+//! @param variables List of variables specifications
 bool verifyStaticVariables(QList<StaticVariableSpecification> variables)
 {
     for(int i=0; i<variables.size(); ++i)
@@ -913,11 +945,14 @@ bool verifyStaticVariables(QList<StaticVariableSpecification> variables)
 }
 
 
+//! @brief Verifies that an equation is correct
+//! @param equation Equation
 bool verifyEquation(QString equation)
 {
     //Verify that no unsupported functions are used
     QStringList legalFunctions;
-    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "der";        //"der" is not Python!
+    //! @todo Add built-in auxiliary functions somehow
+    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "der";        //"der" is not Python, but still allowed
     QStringList usedFunctions;
     identifyFunctions(equation, usedFunctions);
     for(int i=0; i<usedFunctions.size(); ++i)
@@ -932,6 +967,8 @@ bool verifyEquation(QString equation)
 }
 
 
+//! @brief Replaces reserved words in a system of equations
+//! @param equations List of system equations
 void replaceReservedWords(QStringList &equations)
 {
     for(int i=0; i<equations.size(); ++i)
@@ -941,6 +978,8 @@ void replaceReservedWords(QStringList &equations)
 }
 
 
+//! @brief Replaces reserved words in an equation with dummy words
+//! @param equation Equation
 void replaceReservedWords(QString &equation)
 {
     QStringList reservedWords = QStringList() << "in";
@@ -987,7 +1026,8 @@ void replaceReservedWords(QString &equation)
 }
 
 
-
+//! @brief Replaces reserved words in a list of port specifications
+//! @param ports List if ports
 void replaceReservedWords(QList<PortSpecification> &ports)
 {
     QStringList reservedWords = QStringList() << "in";
@@ -1003,6 +1043,9 @@ void replaceReservedWords(QList<PortSpecification> &ports)
 }
 
 
+//! @brief Identifies all derivatives in a system of equations and replaces them with s opereator
+//! Replaces der(x) with s*x
+//! @param equations List of system equations
 void identifyDerivatives(QStringList &equations)
 {
     qDebug() << "Before derivative check: " << equations;
@@ -1022,6 +1065,10 @@ void identifyDerivatives(QStringList &equations)
 }
 
 
+//! @brief Replaces delay operator in equations with Hopsan delay utilities
+//! @param equations List of system equations
+//! @param delayTerms List with delay terms, i.e. for "der(x+y)", the delay term is "x+y"
+//! @param delaySteps List with strings of integers telling how many steps each term is delayed
 void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps)
 {
     qDebug() << "Before delay translation: " << equations;
@@ -1029,6 +1076,7 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
     int delayNum = 0;
     for(int i=0; i<equations.size(); ++i)
     {
+        //Find all terms
         QStringList plusTerms = equations.at(i).split("+");
         QStringList terms;
         for(int j=0; j<plusTerms.size(); ++j)
@@ -1036,7 +1084,8 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
             QStringList minusTerms = plusTerms.at(j).split("-");
             terms.append(minusTerms);
         }
-        //QStringList delayTerms;
+
+        //Find all terms containing a delay operator
         for(int j=0; j<terms.size(); ++j)
         {
             if(terms.at(j).contains("qi00"))
@@ -1045,23 +1094,26 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
             }
         }
         qDebug() << "Terms with delay: " << delayTerms;
+
+        //Remove delay operators and make a delay of the term
         for(int j=0; j<delayTerms.size(); ++j)
         {
+            delayNum = j;
             QString before = delayTerms.at(j);
             int steps = 0;
+            //More than one delay step if the delay operator is raised to something
             if(before.at(before.indexOf("ui00")+4) == '*' && before.at(before.indexOf("ui00")+5) == '*')
             {
                 steps = QString(before.at(before.indexOf("ui00")+6)).toInt();
             }
 
-            QString after = "mDelay"+QString().setNum(delayNum)+".getIdx("+QString().setNum(steps+1)+")";
+            QString after = "mDelay"+QString().setNum(delayNum)+".getIdx("+QString().setNum(steps)+")";
             equations[i].replace(delayTerms.at(j), after);
-            ++delayNum;
 
             delayTerms[j] = before.replace("qi00", "1");        //Replace delay operators with ones, to "remove" them
             while(delayTerms[j].endsWith(" "))
                 delayTerms[j].chop(1);
-            delayTerms[j] = delayTerms[j].replace("*1*", "*");  //Attempt to be "smart" and remove unnecessary ones
+            delayTerms[j] = delayTerms[j].replace("*1*", "*");  //Attempt to be "smart" and remove unnecessary multiplications/divisions with one
             delayTerms[j] = delayTerms[j].replace("*1/", "/");
             delayTerms[j] = delayTerms[j].replace("/1*", "*");
             if(delayTerms[j].startsWith("1*"))
@@ -1077,48 +1129,55 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
 }
 
 
-
-
-void parseModelicaModel(QString code, QString &typeName, QString &displayName, QStringList &equations, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList)
+//! @brief Parses a modelica model code to Hopsan classes
+//! @param code Input Modelica code
+//! @param typeName Type name of new component
+//! @param displayName Display name of new component
+//! @param equations Equations for new component
+//! @param portList List of port specifications for new component
+//! @param parametersList List of parameter specifications for new component
+void parseModelicaModel(QString code, QString &typeName, QString &displayName, QStringList &equations,
+                        QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList)
 {
     qDebug() << "Hej1";
     QStringList lines = code.split("\n");
     qDebug() << "Hej2, lines = " << lines;
     QStringList portNames;
-    bool equationPart = false;
+    bool equationPart = false;          //Are we in the "equations" part or not?
     for(int l=0; l<lines.size(); ++l)
     {
         if(!equationPart)
         {
             QStringList words = lines.at(l).trimmed().split(" ");
             qDebug() << "Hej3, words = " << words;
-            if(words.at(0) == "model")
+            if(words.at(0) == "model")              //"model" keyword
             {
                 typeName = words.at(1);
                 if(words.size() > 2)
                 {
                     displayName = words.at(2);
-                    displayName.remove(0, 1);       //Remove first "
+                    displayName.remove(0, 1);
                     int j=2;
                     while(!words.at(j).endsWith("\""))
                     {
                         ++j;
                         displayName.append(" " + words.at(j));
                     }
-                    displayName.chop(1);            //Remove last "
+                    displayName.chop(1);
                 }
             }
-            else if(words.at(0) == "parameter")
+            else if(words.at(0) == "parameter")         //"parameter" keyword
             {
                 QString name = words.at(2).section("(",0,0);
                 QString unit = lines.at(l).section("unit=",1,1).section("\"",1,1);
                 QString init;
+                //Default value can be written with white spaces in different way, test them all
                 if(!words.at(2).section(")", 1).isEmpty())
-                    init = words.at(2).section(")", 1).section("=", 1);                   //..blabla)=x
+                    init = words.at(2).section(")", 1).section("=", 1);             //...blabla)=x
                 else if(words.at(2).endsWith("="))
-                    init = words.at(3);                                             //..blabla)= x
+                    init = words.at(3);                                             //...blabla)= x
                 else if(words.at(3).startsWith("=") && words.at(3).size() > 1)
-                    init = words.at(3).section("=", 1);                              //..blabla) =x
+                    init = words.at(3).section("=", 1);                             //...blabla) =x
                 else if(words.at(3) == "=")
                     init = words.at(4);                                             // ...blabla) = x
 
@@ -1127,54 +1186,68 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
                 ParameterSpecification par(name, parDisplayName, parDisplayName, unit, init);
                 parametersList.append(par);
             }
-            else if(words.at(0) == "NodeMechanic")
-            {
-                PortSpecification port("PowerPort", "NodeMechanic", words.at(1));
-                portList.append(port);
-                portNames << words.at(1);
-            }
-            else if(words.at(0) == "NodeMechanicRotational")
-            {
-                PortSpecification port("PowerPort", "NodeMechanicRotational", words.at(1));
-                portList.append(port);
-                portNames << words.at(1);
-            }
-            else if(words.at(0) == "NodeHydraulic")
+            else if(words.at(0) == "NodeMechanic")              //Mechanic connector
             {
                 for(int i=0; i<lines.at(l).count(",")+1; ++i)
                 {
                     QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    qDebug() << "lines.at(l).trimmed() = " << lines.at(l).trimmed();
-                    qDebug() << "lines.at(l).trimmed().section(" ", 1) = " << lines.at(l).trimmed().section(" ", 1);
-                    qDebug() << "lines.at(l).trimmed().section(" ", 1).section(\",\", i)) = " << lines.at(l).trimmed().section(" ", 1).section(",",i,i);
+                    PortSpecification port("PowerPort", "NodeMechanic", name);
+                    portList.append(port);
+                    portNames << name;
+                }
+            }
+            else if(words.at(0) == "NodeMechanicRotational")    //Mechanic rotational connector
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    PortSpecification port("PowerPort", "NodeMechanicRotational", name);
+                    portList.append(port);
+                    portNames << name;
+                }
+            }
+            else if(words.at(0) == "NodeHydraulic")             //Hydraulic connector
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
                     PortSpecification port("PowerPort", "NodeHydraulic", name);
                     portList.append(port);
                     portNames << name;
                 }
             }
-            else if(words.at(0) == "NodePneumatic")
+            else if(words.at(0) == "NodePneumatic")             //Pneumatic connector
             {
-                PortSpecification port("PowerPort", "NodePneumatic", words.at(1));
-                portList.append(port);
-                portNames << words.at(1);
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    PortSpecification port("PowerPort", "NodePneumatic", name);
+                    portList.append(port);
+                    portNames << name;
+                }
             }
-            else if(words.at(0) == "NodeElectric")
+            else if(words.at(0) == "NodeElectric")              //Electric connector
             {
-                PortSpecification port("PowerPort", "NodeElectric", words.at(1));
-                portList.append(port);
-                portNames << words.at(1);
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    PortSpecification port("PowerPort", "NodeElectric", name);
+                    portList.append(port);
+                    portNames << name;
+                }
             }
-            else if(words.at(0) == "equation")
+            else if(words.at(0) == "equation")                  //Equation part begins!
             {
                 equationPart = true;
             }
         }
         else
         {
-            if(lines.at(l).trimmed().startsWith("end "))            //Finished if this is the "end" line
+            if(lines.at(l).trimmed().startsWith("end "))        //"end" line, we are finished
                 return;
             qDebug() << "Equation: " << lines.at(l).trimmed();
             equations << lines.at(l).trimmed();
+            //Replace variables with Hopsan syntax, i.e. P2.q => q2
             for(int i=0; i<portNames.size(); ++i)
             {
                 QString temp = portNames.at(i)+".";
