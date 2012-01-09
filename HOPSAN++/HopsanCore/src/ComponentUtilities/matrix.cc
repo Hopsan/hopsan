@@ -194,52 +194,53 @@ Matrix diagonal(double *v, int size)
 	return out;
 }
 
-//! read Matrix from text file
-/*! @param mx destination Matrix
- *  @param title c-string comment (remainder of header line)
- *  @param in input file
- *  
-*  The first two entries are number of rows and columns.\n
-*  The rest of the line is a title.\n
-*  The body of the Matrix follows.\n
-*/
+////! read Matrix from text file
+///*! @param mx destination Matrix
+// *  @param title c-string comment (remainder of header line)
+// *  @param in input file
+// *  @todo Need to fix nrows and ncols uninitialized
+// *
+//*  The first two entries are number of rows and columns.\n
+//*  The rest of the line is a title.\n
+//*  The body of the Matrix follows.\n
+//*/
 
-int read_matrix(Matrix &mx, string &title, FILE *in)
-{
-	int i, j;
-	int nrows, ncols;
-	double *v;
-	double vin;
-	char *cp;
-	char buf[256];
+//int read_matrix(Matrix &mx, string &title, FILE *in)
+//{
+//	int i, j;
+//	int nrows, ncols;
+//	double *v;
+//	double vin;
+//	char *cp;
+//	char buf[256];
 
-    //	fscanf_s(in," %d %d",&nrows,&ncols);
-	if (feof(in)) return -1;
-	fgets(buf,255,in);
-	if (feof(in)) return -1;
-	cp = buf;
-	while (*cp) {
-		if (*cp=='\n') *cp = 0;
-		else cp++;
-	}
-	title = buf;
-	mx.create(nrows,ncols);
-	for (j=0; j<nrows; j++) {
-		v  = mx[j];
-		for (i=0; i<ncols; i++) {
-            //			fscanf_s(in," %lf",&vin);
-			*v++ = vin;
-		}
-		if (feof(in)) {
-                        printf("\nerror reading %s\n",title.c_str());
-			printf("Matrix has %d rows and %d columns\n",
-                   mx.rows(),mx.cols());
-			printf("Unexpected EOF reading row %d",j+1);
-			return -1;
-		}
-	}
-	return 0;
-}
+//    //	fscanf_s(in," %d %d",&nrows,&ncols);
+//	if (feof(in)) return -1;
+//	fgets(buf,255,in);
+//	if (feof(in)) return -1;
+//	cp = buf;
+//	while (*cp) {
+//		if (*cp=='\n') *cp = 0;
+//		else cp++;
+//	}
+//	title = buf;
+//	mx.create(nrows,ncols);
+//	for (j=0; j<nrows; j++) {
+//		v  = mx[j];
+//		for (i=0; i<ncols; i++) {
+//            //			fscanf_s(in," %lf",&vin);
+//			*v++ = vin;
+//		}
+//		if (feof(in)) {
+//                        printf("\nerror reading %s\n",title.c_str());
+//			printf("Matrix has %d rows and %d columns\n",
+//                   mx.rows(),mx.cols());
+//			printf("Unexpected EOF reading row %d",j+1);
+//			return -1;
+//		}
+//	}
+//	return 0;
+//}
 
 //Constructors
 Vec::Vec(): n(0), body(0) { }
