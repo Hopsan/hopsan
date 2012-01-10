@@ -62,9 +62,10 @@ namespace hopsan {
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
-            mIntegrator.initialize(mTimestep, startY, startY);
+            double startU = (*mpND_in);
+            mIntegrator.initialize(mTimestep, startU, startY);
 
-            (*mpND_out) = (*mpND_in);
+//            (*mpND_out) = (*mpND_in);
         }
 
 
