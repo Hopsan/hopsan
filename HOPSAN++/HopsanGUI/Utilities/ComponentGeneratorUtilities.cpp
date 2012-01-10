@@ -1281,7 +1281,7 @@ QStringList getQVariables(QString nodeType)
     }
     if(nodeType == "NodePneumatic")
     {
-        //! @todo Figure these out
+        retval << "p" << "qm" << "qe";
     }
     if(nodeType == "NodeElectric")
     {
@@ -1338,7 +1338,7 @@ QStringList getVariableLabels(QString nodeType)
     }
     if(nodeType == "NodePneumatic")
     {
-        //! @todo Figure these out
+        retval << "PRESSURE" << "MASSFLOW" << "ENERGYFLOW" << "WAVEVARIABLE" << "CHARIMP";
     }
     if(nodeType == "NodeElectric")
     {

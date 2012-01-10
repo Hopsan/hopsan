@@ -56,9 +56,13 @@ private slots:
     void updateValues();
     void updateGivenSoughtText();
     void updateBoundaryEquations();
+    void updateRecentList();
+    void loadRecentComponent();
     void compile();
     void loadFromModelica();
     void loadFromXml();
+    void loadFromXml(QString fileName);
+    void saveDialogToXml();
 
 private:
     //Initialization & equations text edits
@@ -84,6 +88,9 @@ private:
 
 
     //General Settings
+    QLabel *mpRecentLabel;
+    QComboBox *mpRecentComboBox;
+    QPushButton *mpLoadRecentButton;
     QToolButton *mpLoadButton;
     QMenu *mpLoadMenu;
     QAction *mpLoadFromModelicaAction;
@@ -163,6 +170,8 @@ private:
     QList<ParameterSpecification> mParametersList;
     QList<UtilitySpecification> mUtilitiesList;
     QList<StaticVariableSpecification> mStaticVariablesList;
+
+    QStringList mRecentComponentFileNames;
 };
 
 #endif // COMPONENTGENERATORDIALOG_H_INCLUDED

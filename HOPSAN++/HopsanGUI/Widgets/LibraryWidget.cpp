@@ -422,13 +422,13 @@ void LibraryWidget::loadLibrary(QString libDir, bool external)
     if(external)
     {
         LibraryContentsTree *pExternalTree;
-        if(!mpContentsTree->findChild("External Libraries"))
+        if(!mpContentsTree->findChildByName("External Libraries"))
         {
             pExternalTree = mpContentsTree->addChild("External Libraries");
         }
         else
         {
-            pExternalTree = mpContentsTree->findChild("External Libraries");
+            pExternalTree = mpContentsTree->findChildByName("External Libraries");
         }
 
         libDirObject.cdUp();
@@ -1269,7 +1269,7 @@ void LibraryWidget::importFmu()
     if(gConfig.hasUserLib(fmuDir.path()))
     {
         gConfig.removeUserLib(fmuDir.path());
-        mpContentsTree->findChild("External Libraries")->removeChild(fmuDir.path());
+        mpContentsTree->findChildByName("External Libraries")->removeChild(fmuDir.path());
         update();
     }
     gConfig.addUserLib(fmuDir.path());     //Register new library in configuration
@@ -1598,10 +1598,20 @@ void LibraryWidget::unloadExternalLibrary(QString libName)
 {
     if(gConfig.hasUserLib(libName))
     {
+        qDebug() << "Removing: " << libName;
         gConfig.removeUserLib(libName);
-        if(mpContentsTree->findChild("External Libraries")->findChild(libName))
+        QString path = gExecPath+libName;
+        qDebug() << "Looking for remove directory: " << QDir::cleanPath(path);
+        //! @todo This double check is crazy!
+        while(mpContentsTree->findChildByName("External Libraries")->findChildByPath(libName))     //Check both relative and absolute path to be sure
         {
-            unLoadLibrarySubTree(mpContentsTree->findChild("External Libraries")->findChild(libName));
+            qDebug() << "Unloading: " << libName;
+            unLoadLibrarySubTree(mpContentsTree->findChildByName("External Libraries")->findChildByPath(libName));
+        }
+        while(mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(path)))
+        {
+            qDebug() << "Unloading: " << libName;
+            unLoadLibrarySubTree(mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(path)));
         }
         update();
     }
@@ -1610,13 +1620,16 @@ void LibraryWidget::unloadExternalLibrary(QString libName)
 
 void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
 {
+    if(pTree == 0)
+        return;
+
     //First call unload on all dlls in core
     for (int i=0; i<pTree->mLoadedLibraryDLLs.size(); ++i)
     {
         mpCoreAccess->unLoadComponentLib(pTree->mLoadedLibraryDLLs[i]);
     }
     //Then remove the tree itself
-    mpContentsTree->findChild("External Libraries")->removeChild(pTree->mName);
+    mpContentsTree->findChildByName("External Libraries")->removeChild(pTree->mName);
     gpMainWindow->mpMessageWidget->checkMessages();
 }
 
@@ -1676,7 +1689,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     if(pSelectedAction == pUnloadLibraryFolder)
     {
         gConfig.removeUserLib(pTree->mLibDir);
-        unLoadLibrarySubTree(mpContentsTree->findChild("External Libraries")->findChild(pTree->mName));
+        unLoadLibrarySubTree(mpContentsTree->findChildByName("External Libraries")->findChildByName(pTree->mName));
         update();
     }
 
@@ -1779,11 +1792,11 @@ bool LibraryContentsTree::isEmpty()
 //! @returns Pointer to the new child node
 LibraryContentsTree *LibraryContentsTree::addChild(QString name)
 {
-    if(findChild(name))
+    if(findChildByName(name))
     {
         QString newName = name.append("_0");
         int i=1;
-        while(findChild(newName))
+        while(findChildByName(newName))
         {
             QString num;
             num.setNum(i);
@@ -1812,13 +1825,27 @@ bool LibraryContentsTree::removeChild(QString name)
     return false;       //Not found
 }
 
-//! @brief Returns a pointer to sub node with specified name, or zero if it does not exist.
+//! @brief Returns a pointer to sub library with specified name, or zero if it does not exist.
 //! @param name Name to look for
-LibraryContentsTree *LibraryContentsTree::findChild(QString name)
+LibraryContentsTree *LibraryContentsTree::findChildByName(QString name)
 {
     for(int i=0; i<mChildNodesPtrs.size(); ++i)
     {
         if(mChildNodesPtrs.at(i)->mName == name)
+            return mChildNodesPtrs.at(i);
+    }
+    return 0;
+}
+
+
+//! @brief Returns a pointer to sub library with specified path, or zero if it does not exist.
+//! @param name Name to look for
+LibraryContentsTree *LibraryContentsTree::findChildByPath(QString path)
+{
+    for(int i=0; i<mChildNodesPtrs.size(); ++i)
+    {
+        qDebug() << "Comparing: " << mChildNodesPtrs.at(i)->mLibDir << " with " << path;
+        if(mChildNodesPtrs.at(i)->mLibDir == path)
             return mChildNodesPtrs.at(i);
     }
     return 0;

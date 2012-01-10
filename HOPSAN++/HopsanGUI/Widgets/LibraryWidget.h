@@ -138,7 +138,8 @@ public:
     bool isEmpty();
     LibraryContentsTree *addChild(QString name);
     bool removeChild(QString name);
-    LibraryContentsTree *findChild(QString name);
+    LibraryContentsTree *findChildByName(QString name);
+    LibraryContentsTree *findChildByPath(QString path);
     LibraryComponent *addComponent(ModelObjectAppearance *pAppearanceData);
     LibraryComponent *findComponent(QString typeName);
 

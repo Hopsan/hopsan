@@ -28,6 +28,7 @@
 #include "Dialogs/ComponentGeneratorDialog.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
 #include "Utilities/XMLUtilities.h"
+#include "Widgets/MessageWidget.h"
 #include "Widgets/PyDockWidget.h"
 #include "common.h"
 
@@ -107,6 +108,11 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpButtonBox->addButton(mpCompileButton, QDialogButtonBox::ActionRole);
 
     //General settings
+    mpRecentLabel = new QLabel("Recent Models:");
+    mpRecentComboBox = new QComboBox(this);
+    mpLoadRecentButton = new QPushButton("Load Recent");
+    connect(mpLoadRecentButton,         SIGNAL(pressed()), this, SLOT(loadRecentComponent()));
+
     mpLoadButton = new QToolButton(this);
     mpLoadButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
     QAction *mpLoadFromModelicaAction = new QAction(tr("&Load Modelica File (.mo)"), this);
@@ -697,31 +703,33 @@ void ComponentGeneratorDialog::update()
         mpLayout->removeItem(mpLayout->itemAt(0));
     }
 
-    mpLayout->addWidget(mpLoadButton,               0, 0);
-    mpLayout->addWidget(mpSaveButton,               0, 1);
-    mpLayout->addWidget(mpGenerateFromLabel,        0, 2);
-    mpLayout->addWidget(mpGenerateFromComboBox,     0, 3);
-    mpLayout->addWidget(mpComponentNameLabel,       0, 4);
-    mpLayout->addWidget(mpComponentNameEdit,        0, 5);
-    mpLayout->addWidget(mpComponentDisplayLabel,    0, 6);
-    mpLayout->addWidget(mpComponentDisplayEdit,     0, 7);
-    mpLayout->addWidget(mpComponentTypeLabel,       0, 8);
-    mpLayout->addWidget(mpComponentTypeComboBox,    0, 9);
-    mpLayout->addWidget(mpAddItemButton,            0, 10);
-    mpLayout->addWidget(mpPortsGroupBox,            1, 0, 1, 11);
-    mpLayout->addWidget(mpParametersGroupBox,       2, 0, 1, 11);
-    mpLayout->addWidget(mpUtilitiesGroupBox,        3, 0, 1, 11);
-    mpLayout->addWidget(mpStaticVariablesGroupBox,  4, 0, 1, 11);
-    mpLayout->addWidget(mpCodeGroupBox,             5, 0, 1, 11);
-    mpLayout->addWidget(mpButtonBox,                6, 0, 1, 11);
-    mpLayout->setRowStretch(5, 1);
+    mpLayout->addWidget(mpRecentLabel,              0, 0, 1, 1);
+    mpLayout->addWidget(mpRecentComboBox,           0, 1, 1, 8);
+    mpLayout->addWidget(mpLoadRecentButton,         0, 9, 1, 2);
+    mpLayout->addWidget(mpLoadButton,               1, 0);
+    mpLayout->addWidget(mpSaveButton,               1, 1);
+    mpLayout->addWidget(mpGenerateFromLabel,        1, 2);
+    mpLayout->addWidget(mpGenerateFromComboBox,     1, 3);
+    mpLayout->addWidget(mpComponentNameLabel,       1, 4);
+    mpLayout->addWidget(mpComponentNameEdit,        1, 5);
+    mpLayout->addWidget(mpComponentDisplayLabel,    1, 6);
+    mpLayout->addWidget(mpComponentDisplayEdit,     1, 7);
+    mpLayout->addWidget(mpComponentTypeLabel,       1, 8);
+    mpLayout->addWidget(mpComponentTypeComboBox,    1, 9);
+    mpLayout->addWidget(mpAddItemButton,            1, 10);
+    mpLayout->addWidget(mpPortsGroupBox,            2, 0, 1, 11);
+    mpLayout->addWidget(mpParametersGroupBox,       3, 0, 1, 11);
+    mpLayout->addWidget(mpUtilitiesGroupBox,        4, 0, 1, 11);
+    mpLayout->addWidget(mpStaticVariablesGroupBox,  5, 0, 1, 11);
+    mpLayout->addWidget(mpCodeGroupBox,             6, 0, 1, 11);
+    mpLayout->addWidget(mpButtonBox,                7, 0, 1, 11);
+    mpLayout->setRowStretch(6, 1);
 
 
 
     updateGivenSoughtText();
-
-
     updateBoundaryEquations();
+    updateRecentList();
 }
 
 
@@ -803,6 +811,60 @@ void ComponentGeneratorDialog::updateBoundaryEquations()
 }
 
 
+void ComponentGeneratorDialog::updateRecentList()
+{
+    mpRecentComboBox->clear();
+
+    QString dirString = QString(DATAPATH)+"compgen/";
+    QDir dir(dirString);
+
+    QStringList filters;
+    filters << "*.xml";                     //Create the name filter
+    dir.setFilter(QDir::NoFilter); //Clear all filters
+    dir.setNameFilters(filters);   //Set the name filter
+
+    QStringList xmlList  = dir.entryList();    //Create a list with all name of the files in dir libDir
+    for (int i=0; i<xmlList.size(); ++i)        //Iterate over the file names
+    {
+        QString filename = dirString + "/" + xmlList.at(i);
+        QFile file(filename);   //Create a QFile object
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file or not a text file: " + filename);
+            continue;
+        }
+
+        QDomDocument domDocument;        //Read appearance from file, First check if xml
+        QString errorStr;
+        int errorLine, errorColumn;
+        if (domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+        {
+            QDomElement xmlRoot = domDocument.documentElement();
+            if (xmlRoot.tagName() != "hopsancomponent") //! @todo Hard coded xml tag
+            {
+                gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan Component Data file. Incorrect root tag name: " + xmlRoot.tagName() + " != hopsancomponent");
+                continue;
+            }
+            else
+            {
+                mpRecentComboBox->addItem(xmlRoot.attribute("displayname"));
+                mRecentComponentFileNames.append(filename);
+            }
+        }
+        file.close();
+    }
+}
+
+
+void ComponentGeneratorDialog::loadRecentComponent()
+{
+    QString fileName = mRecentComponentFileNames.at(mpRecentComboBox->currentIndex());
+    qDebug() << "Trying to open: " << fileName;
+
+    loadFromXml(fileName);
+}
+
+
 //! @brief Generates XML and compiles the new component
 void ComponentGeneratorDialog::compile()
 {
@@ -835,6 +897,10 @@ void ComponentGeneratorDialog::compile()
     if(mpGenerateFromComboBox->currentIndex() == 0)         //Compile from equations
     {
         qDebug() << "Compiling equations";
+
+
+        saveDialogToXml();
+
 
         //Create list of equqtions
         QString plainEquations = mpEquationsTextField->toPlainText();
@@ -1062,14 +1128,18 @@ void ComponentGeneratorDialog::compile()
         const int IndentSize = 4;
         if(!QDir(DATAPATH).exists())
             QDir().mkdir(DATAPATH);
-        QFile xmlsettings(gExecPath + "generated_component.xml");
-        if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        QFile xmlFile(gExecPath + "generated_component.xml");
+        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
             qDebug() << "Failed to open file for writing: " << gExecPath << "generated_component.xml";
             return;
         }
-        QTextStream out(&xmlsettings);
+        QTextStream out(&xmlFile);
         domDocument.save(out, IndentSize);
+
+        QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
+        QDir().mkpath(QString(DATAPATH)+"compgen/");
+        xmlFile.copy(QString(DATAPATH)+"compgen/component_"+dateString+".xml");
 
         //Call utility to generate and compile source code
         generateComponentSourceCode("temp.hpp", componentRoot);
@@ -1120,16 +1190,23 @@ void ComponentGeneratorDialog::loadFromModelica()
 //! @todo Finish implementation
 void ComponentGeneratorDialog::loadFromXml()
 {
-    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Modlica File"),
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose XML File"),
                                                          gExecPath+"/",
-                                                         tr("Modelica File (*.mo)"));
+                                                         tr("XML File (*.xml)"));
     if(modelFileName.isEmpty())
     {
         return;
     }
 
-    QFile file(QString(DATAPATH) + QString("hopsanconfig.xml"));
+    loadFromXml(modelFileName);
+}
+
+
+void ComponentGeneratorDialog::loadFromXml(QString fileName)
+{
+    QFile file(fileName);
     qDebug() << "Reading config from " << file.fileName();
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read XML file.");
@@ -1151,62 +1228,233 @@ void ComponentGeneratorDialog::loadFromXml()
 
     QDomElement modelRoot = domDocument.documentElement();
 
-    //! @todo Define a better XML syntax and implement this
-//    QDomElement utilitiesElement = modelRoot.firstChildElement("utilities");
-//    QDomElement utilityElement = utilitiesElement.firstChildElement("utility");
-//    while(!utilityElement.isNull())
-//    {
-//        comp.utilities.append(utilityElement.attribute ("utility"));
-//        comp.utilityNames.append(utilityElement.attribute("name"));
-//        utilityElement=utilityElement.nextSiblingElement("utility");
-//    }
+    mpComponentNameEdit->setText(modelRoot.attribute("typename"));
+    mpComponentDisplayEdit->setText(modelRoot.attribute("displayname"));
+    QStringList dummyCqs;
+    dummyCqs << "C" << "Q" << "S";
+    mpComponentTypeComboBox->setCurrentIndex(dummyCqs.indexOf(modelRoot.attribute("cqstype")));
 
-//    QDomElement parametersElement = modelRoot.firstChildElement("parameters");
-//    QDomElement parameterElement = parametersElement.firstChildElement("parameter");
-//    while(!parameterElement.isNull())
-//    {
-//        comp.parNames.append(parameterElement.attribute("name"));
-//        comp.parInits.append(parameterElement.attribute("init"));
-//        comp.parDisplayNames.append(parameterElement.attribute("displayname"));
-//        comp.parDescriptions.append(parameterElement.attribute("description"));
-//        comp.parUnits.append(parameterElement.attribute("unit"));
-//        parameterElement=parameterElement.nextSiblingElement("parameter");
-//    }
+    mUtilitiesList.clear();
+    QDomElement utilitiesElement = modelRoot.firstChildElement("utilities");
+    QDomElement utilityElement = utilitiesElement.firstChildElement("utility");
+    while(!utilityElement.isNull())
+    {
+        UtilitySpecification u;
+        u.utility = utilityElement.attribute ("utility");
+        u.name = utilityElement.attribute("name");
+        mUtilitiesList << u;
+        utilityElement=utilityElement.nextSiblingElement("utility");
+    }
 
-//    QDomElement variablesElemenet = modelRoot.firstChildElement("staticvariables");
-//    QDomElement variableElement = variablesElemenet.firstChildElement("staticvariable");
-//    while(!variableElement.isNull())
-//    {
-//        comp.varNames.append(variableElement.attribute("name"));
-//        comp.varTypes.append(variableElement.attribute("datatype"));
-//        variableElement=variableElement.nextSiblingElement("staticvariable");
-//    }
+    mParametersList.clear();
+    QDomElement parametersElement = modelRoot.firstChildElement("parameters");
+    QDomElement parameterElement = parametersElement.firstChildElement("parameter");
+    while(!parameterElement.isNull())
+    {
+        ParameterSpecification p;
+        p.name = parameterElement.attribute("name");
+        p.init = parameterElement.attribute("init");
+        p.displayName = parameterElement.attribute("displayname");
+        p.description = parameterElement.attribute("description");
+        p.unit = parameterElement.attribute("unit");
+        mParametersList << p;
+        qDebug() << "Appended a parameter!";
+        parameterElement=parameterElement.nextSiblingElement("parameter");
+    }
 
-//    QDomElement portsElement = modelRoot.firstChildElement("ports");
-//    QDomElement portElement = portsElement.firstChildElement("port");
-//    while(!portElement.isNull())
-//    {
-//        comp.portNames.append(portElement.attribute("name"));
-//        comp.portTypes.append(portElement.attribute("type"));
-//        comp.portNodeTypes.append(portElement.attribute("nodetype"));
-//        comp.portDefaults.append(portElement.attribute("default"));
-//        comp.portNotReq.append(portElement.attribute("notrequired") == "True");
-//        portElement=portElement.nextSiblingElement("port");
-//    }
+    mStaticVariablesList.clear();
+    QDomElement variablesElemenet = modelRoot.firstChildElement("staticvariables");
+    QDomElement variableElement = variablesElemenet.firstChildElement("staticvariable");
+    while(!variableElement.isNull())
+    {
+        StaticVariableSpecification s;
+        s.name = variableElement.attribute("name");
+        s.datatype = variableElement.attribute("datatype");
+        mStaticVariablesList << s;
+        variableElement=variableElement.nextSiblingElement("staticvariable");
+    }
 
-//    QDomElement initializeElement = modelRoot.firstChildElement("initialize");
-//    QDomElement initEquationElement = initializeElement.firstChildElement("equation");
-//    while(!initEquationElement.isNull())
-//    {
-//        comp.initEquations.append(initEquationElement.text());
-//        initEquationElement=initEquationElement.nextSiblingElement("equation");
-//    }
+    mPortList.clear();
+    QDomElement portsElement = modelRoot.firstChildElement("ports");
+    QDomElement portElement = portsElement.firstChildElement("port");
+    while(!portElement.isNull())
+    {
+        PortSpecification p;
+        p.name = portElement.attribute("name");
+        p.porttype = portElement.attribute("type");
+        p.nodetype = portElement.attribute("nodetype");
+        p.defaultvalue = portElement.attribute("default");
+        p.notrequired = (portElement.attribute("notrequired") == "True");
+        mPortList << p;
+        portElement=portElement.nextSiblingElement("port");
+    }
 
-//    QDomElement simulateElement = modelRoot.firstChildElement("simulate");
-//    QDomElement equationElement = simulateElement.firstChildElement("equation");
-//    while(!equationElement.isNull())
-//    {
-//        comp.simEquations.append(equationElement.text());
-//        equationElement=equationElement.nextSiblingElement("equation");
-//    }
+    mpInitTextField->clear();
+    QDomElement initializeElement = modelRoot.firstChildElement("initialize");
+    QDomElement initEquationElement = initializeElement.firstChildElement("equation");
+    while(!initEquationElement.isNull())
+    {
+        mpInitTextField->append(initEquationElement.text());
+        initEquationElement=initEquationElement.nextSiblingElement("equation");
+    }
+
+    mpSimulateTextField->clear();
+    QDomElement simulateElement = modelRoot.firstChildElement("simulate");
+    QDomElement simEquationElement = simulateElement.firstChildElement("equation");
+    while(!simEquationElement.isNull())
+    {
+        mpSimulateTextField->append(simEquationElement.text());
+        simEquationElement=simEquationElement.nextSiblingElement("equation");
+    }
+
+    mpFinalizeTextField->clear();
+    QDomElement finalizeElement = modelRoot.firstChildElement("finalize");
+    QDomElement finalEquationElement = finalizeElement.firstChildElement("equation");
+    while(!finalEquationElement.isNull())
+    {
+        mpFinalizeTextField->append(finalEquationElement.text());
+        finalEquationElement=finalEquationElement.nextSiblingElement("equation");
+    }
+
+    mpEquationsTextField->clear();
+    QDomElement equationsElement = modelRoot.firstChildElement("equations");
+    QDomElement equationElement = equationsElement.firstChildElement("equation");
+    while(!equationElement.isNull())
+    {
+        mpEquationsTextField->append(equationElement.text());
+        equationElement = equationElement.nextSiblingElement("equation");
+    }
+
+    mpBoundaryEquationsTextField->clear();
+    QDomElement boundaryEquations = modelRoot.firstChildElement("boundaryequations");
+    QDomElement boundaryEquation = boundaryEquations.firstChildElement("equation");
+    while(!boundaryEquation.isNull())
+    {
+        mpBoundaryEquationsTextField->append(boundaryEquation.text());
+        boundaryEquation = boundaryEquation.nextSiblingElement("equation");
+    }
+
+    update();
+}
+
+
+
+void ComponentGeneratorDialog::saveDialogToXml()
+{
+    QDomDocument domDocument;
+    QDomElement componentRoot = domDocument.createElement("hopsancomponent");
+    componentRoot.setAttribute("typename", mpComponentNameEdit->text());
+    componentRoot.setAttribute("displayname", mpComponentDisplayEdit->text());
+    componentRoot.setAttribute("cqstype", mpComponentTypeComboBox->currentText());
+    domDocument.appendChild(componentRoot);
+
+    QDomElement portsElement = appendDomElement(componentRoot,"ports");
+    for(int i=0; i<mPortList.size(); ++i)
+    {
+        QDomElement portElement = appendDomElement(portsElement,"port");
+        portElement.setAttribute("name", mPortList.at(i).name);
+        portElement.setAttribute("type", mPortList.at(i).porttype);
+        portElement.setAttribute("nodetype", mPortList.at(i).nodetype);
+        if(mPortList.at(i).notrequired)
+            portElement.setAttribute("notrequired", "True");
+        else
+            portElement.setAttribute("notrequired", "False");
+        portElement.setAttribute("default", mPortList.at(i).defaultvalue);
+    }
+
+    QDomElement parametersElement = appendDomElement(componentRoot,"parameters");
+    for(int i=0; i<mParametersList.size(); ++i)
+    {
+        QDomElement parElement = appendDomElement(parametersElement,"parameter");
+        parElement.setAttribute("name", mParametersList.at(i).name);
+        parElement.setAttribute("displayname", mParametersList.at(i).displayName);
+        parElement.setAttribute("description", mParametersList.at(i).description);
+        parElement.setAttribute("unit", mParametersList.at(i).unit);
+        parElement.setAttribute("init", mParametersList.at(i).init);
+    }
+
+    QDomElement utilitiesElement = appendDomElement(componentRoot,"utilities");
+    for(int i=0; i<mUtilitiesList.size(); ++i)
+    {
+        QDomElement utilityElement = appendDomElement(utilitiesElement,"utility");
+        utilityElement.setAttribute("utility", mUtilitiesList[i].utility);
+        utilityElement.setAttribute("name", mUtilitiesList[i].name);
+    }
+
+    QDomElement variablesElement = appendDomElement(componentRoot,"staticvariables");
+    for(int i=0; i<mStaticVariablesList.size(); ++i)
+    {
+        QDomElement variableElement = appendDomElement(variablesElement,"staticvariable");
+        variableElement.setAttribute("name", mStaticVariablesList[i].name);
+        variableElement.setAttribute("datatype", "double");
+    }
+
+    QDomElement initializeElement = appendDomElement(componentRoot,"initialize");
+    QString plainInitEquations = mpInitTextField->toPlainText();
+    QStringList initEquations = plainInitEquations.split("\n");
+    for(int i=0; i<initEquations.size(); ++i)
+    {
+        appendDomTextNode(initializeElement,"equation",initEquations.at(i));
+    }
+
+    QDomElement simulateElement = appendDomElement(componentRoot,"simulate");
+    QString plainSimEquations = mpSimulateTextField->toPlainText();
+    QStringList simEquations = plainSimEquations.split("\n");
+    for(int i=0; i<simEquations.size(); ++i)
+    {
+        appendDomTextNode(simulateElement,"equation",simEquations.at(i));
+    }
+
+    QDomElement finalizeElement = appendDomElement(componentRoot,"finalize");
+    QString plainFinalEquations = mpFinalizeTextField->toPlainText();
+    QStringList finalEquations = plainFinalEquations.split("\n");
+    for(int i=0; i<finalEquations.size(); ++i)
+    {
+        appendDomTextNode(finalizeElement,"equation",finalEquations.at(i));
+    }
+
+    QDomElement equationsElement = appendDomElement(componentRoot,"equations");
+    QString plainEquations = mpEquationsTextField->toPlainText();
+    QStringList equations = plainEquations.split("\n");
+    for(int i=0; i<equations.size(); ++i)
+    {
+        appendDomTextNode(equationsElement,"equation",equations.at(i));
+    }
+
+    QDomElement boundaryEquationsElement = appendDomElement(componentRoot,"boundaryequations");
+    QString plainBoundaryEquations = mpEquationsTextField->toPlainText();
+    QStringList boundaryEquations = plainBoundaryEquations.split("\n");
+    for(int i=0; i<boundaryEquations.size(); ++i)
+    {
+        appendDomTextNode(boundaryEquationsElement,"equation",boundaryEquations.at(i));
+    }
+
+    appendRootXMLProcessingInstruction(domDocument);
+
+    //Save to file
+    const int IndentSize = 4;
+    if(!QDir(DATAPATH).exists())
+        QDir().mkdir(DATAPATH);
+    QFile xmlFile(gExecPath + "generated_component.xml");
+    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: " << gExecPath << "generated_component.xml";
+        return;
+    }
+    QTextStream out(&xmlFile);
+    domDocument.save(out, IndentSize);
+
+    QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
+    dateString.replace(":", "_");
+    dateString.replace(".", "_");
+    dateString.replace(" ", "_");
+    dateString.replace("/", "_");
+    QDir().mkpath(QString(DATAPATH)+"compgen/");
+    qDebug() << "Copying to: " << QString(DATAPATH)+"compgen/component_"+dateString+".xml";
+    if(xmlFile.copy(QString(DATAPATH)+"compgen/component_"+dateString+".xml"))
+        qDebug() << "Copy succesful!";
+    else
+        qDebug() << "Copy failed!";
+
+    update();
 }
