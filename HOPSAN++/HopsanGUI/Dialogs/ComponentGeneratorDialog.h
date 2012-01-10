@@ -55,6 +55,7 @@ private slots:
     void removeStaticVariable();
     void updateValues();
     void updateGivenSoughtText();
+    void updateBoundaryEquations();
     void compile();
     void loadFromModelica();
     void loadFromXml();

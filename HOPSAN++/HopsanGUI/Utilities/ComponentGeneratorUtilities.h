@@ -113,5 +113,8 @@ void replaceReservedWords(QList<PortSpecification> &ports);
 void identifyDerivatives(QStringList &equations);
 void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps);
 void parseModelicaModel(QString code, QString &typeName, QString &displayName, QStringList &equations, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);
+QStringList getQVariables(QString nodeType);
+QStringList getCVariables(QString nodeType);
+QStringList getVariableLabels(QString nodeType);
 
 #endif // COMPONENTGENERATORUTILITIES_H

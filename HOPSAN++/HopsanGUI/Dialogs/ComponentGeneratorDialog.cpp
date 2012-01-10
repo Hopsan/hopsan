@@ -22,6 +22,8 @@
 //!
 //$Id$
 
+#include <QFont>
+
 #include "Configuration.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
@@ -43,28 +45,36 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpGivenLabel = new QLabel("Given: ");
     mpSoughtLabel = new QLabel("Sought: ");
 
+    QFont monoFont = QFont("Monospace", 10, 63);
+    monoFont.setStyleHint(QFont::Monospace);
+
     mpInitTextField = new QTextEdit(this);                                      //Initialize code text field
+    mpInitTextField->setFont(monoFont);
     mpInitLayout = new QGridLayout(this);
     mpInitLayout->addWidget(mpInitTextField, 0, 0);
     mpInitWidget = new QWidget(this);
     mpInitWidget->setLayout(mpInitLayout);
 
     mpSimulateTextField = new QTextEdit(this);                                  //SimulateOneTimeStep code text field
+    mpSimulateTextField->setFont(monoFont);
     mpSimulateLayout = new QGridLayout(this);
     mpSimulateLayout->addWidget(mpSimulateTextField, 0, 0);
     mpSimulateWidget = new QWidget(this);
     mpSimulateWidget->setLayout(mpSimulateLayout);
 
     mpFinalizeTextField = new QTextEdit(this);                                  //Finalize code text field
+    mpFinalizeTextField->setFont(monoFont);
     mpFinalizeLayout = new QGridLayout(this);
     mpFinalizeLayout->addWidget(mpFinalizeTextField, 0, 0);
     mpFinalizeWidget = new QWidget(this);
     mpFinalizeWidget->setLayout(mpFinalizeLayout);
 
     mpEquationsTextField = new QTextEdit(this);                                 //Equation text field
+    mpEquationsTextField->setFont(monoFont);
     mpBoundaryEquationsLabel = new QLabel("Boundary Equations:", this);
     mpBoundaryEquationsTextField = new QTextEdit(this);
     mpBoundaryEquationsTextField->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    mpBoundaryEquationsTextField->setFont(monoFont);
     mpEquationsLayout = new QGridLayout(this);
     mpEquationsLayout->addWidget(mpEquationsTextField, 0, 0);
     mpEquationsLayout->addWidget(mpBoundaryEquationsLabel, 1, 0);
@@ -311,6 +321,7 @@ void ComponentGeneratorDialog::updateValues()
         int i = mvPortNameEdits.indexOf(lineEdit);
         mPortList[i].name = lineEdit->text();
         updateGivenSoughtText();
+        updateBoundaryEquations();
         return;
     }
     else if(mvPortDefaultEdits.contains(lineEdit))
@@ -321,6 +332,7 @@ void ComponentGeneratorDialog::updateValues()
     else if(mvParameterNameEdits.contains(lineEdit))
     {
         int i = mvParameterNameEdits.indexOf(lineEdit);
+        mParametersList[i].name = lineEdit->text();
         updateGivenSoughtText();
         return;
     }
@@ -370,6 +382,7 @@ void ComponentGeneratorDialog::updateValues()
         int i = mvPortTypeComboBoxes.indexOf(comboBox);
         mPortList[i].porttype = comboBox->currentText();
         updateGivenSoughtText();
+        updateBoundaryEquations();
         return;
     }
     else if(mvNodeTypeComboBoxes.contains(comboBox))
@@ -377,6 +390,7 @@ void ComponentGeneratorDialog::updateValues()
         int i = mvNodeTypeComboBoxes.indexOf(comboBox);
         mPortList[i].nodetype = comboBox->currentText();
         updateGivenSoughtText();
+        updateBoundaryEquations();
         return;
     }
     else if(mvUtilitiesComboBoxes.contains(comboBox))
@@ -406,7 +420,7 @@ void ComponentGeneratorDialog::update()
 
 
     QLayoutItem *pChild;
-    while(pChild = mpPortsLayout->takeAt(0))
+    while((pChild = mpPortsLayout->takeAt(0)))
     {
         delete(pChild);
     }
@@ -707,24 +721,11 @@ void ComponentGeneratorDialog::update()
     updateGivenSoughtText();
 
 
-    mpBoundaryEquationsTextField->clear();
-    int i=1;
-    for(int j=0; j<mPortList.size(); ++j)
-    {
-        if(mPortList[j].porttype == "PowerPort" && mPortList[j].nodetype != "NodeSignal")
-        {
-            QString iStr = QString().setNum(i);
-            mpBoundaryEquationsTextField->append("p"+iStr+" = c"+iStr+" + Zc"+iStr+"*q"+iStr);
-            ++i;
-        }
-    }
-    mpBoundaryEquationsTextField->setVisible(!mpBoundaryEquationsTextField->toPlainText().isEmpty() && mpComponentTypeComboBox->currentText() == "Q");
-    mpBoundaryEquationsLabel->setVisible(mpBoundaryEquationsTextField->isVisible());
-    mpBoundaryEquationsTextField->setFixedHeight(15*i);
+    updateBoundaryEquations();
 }
 
 
-
+//! @brief Help function that updates "given variables" and "sought variables" label
 void ComponentGeneratorDialog::updateGivenSoughtText()
 {
     QString cqs = mpComponentTypeComboBox->currentText();
@@ -747,18 +748,28 @@ void ComponentGeneratorDialog::updateGivenSoughtText()
         }
         else if(mPortList[i].porttype == "PowerPort" && cqs == "C")
         {
-            if(mPortList[i].nodetype == "NodeHydraulic")
+            QStringList qVars = getQVariables(mPortList[i].nodetype);
+            QStringList cVars = getCVariables(mPortList[i].nodetype);
+            for(int v=0; v<qVars.size(); ++v)
             {
-                givenText.append("p"+num+", q"+num+", ");
-                soughtText.append("c"+num+", Zc"+num+", ");
+                givenText.append(qVars[v]+num+", ");
+            }
+            for(int v=0; v<cVars.size(); ++v)
+            {
+                soughtText.append(cVars[v]+num+", ");
             }
         }
         else if(mPortList[i].porttype == "PowerPort" && cqs == "Q")
         {
-            if(mPortList[i].nodetype == "NodeHydraulic")
+            QStringList qVars = getQVariables(mPortList[i].nodetype);
+            QStringList cVars = getCVariables(mPortList[i].nodetype);
+            for(int v=0; v<qVars.size(); ++v)
             {
-                givenText.append("c"+num+", Zc"+num+", ");
-                soughtText.append("p"+num+", q"+num+", ");
+                soughtText.append(qVars[v]+num+", ");
+            }
+            for(int v=0; v<cVars.size(); ++v)
+            {
+                givenText.append(cVars[v]+num+", ");
             }
         }
     }
@@ -767,6 +778,30 @@ void ComponentGeneratorDialog::updateGivenSoughtText()
     mpGivenLabel->setText(givenText);
     mpSoughtLabel->setText(soughtText);
 }
+
+
+//! @brief Help function that updates boundary equations box
+void ComponentGeneratorDialog::updateBoundaryEquations()
+{
+    mpBoundaryEquationsTextField->clear();
+    int i=1;
+    for(int j=0; j<mPortList.size(); ++j)
+    {
+        QStringList qVars = getQVariables(mPortList[j].nodetype);
+        QStringList cVars = getCVariables(mPortList[j].nodetype);
+
+        if(!qVars.isEmpty() && !cVars.isEmpty())
+        {
+            QString iStr = QString().setNum(i);
+            mpBoundaryEquationsTextField->append(qVars.first()+iStr+" = "+cVars.first()+iStr+" + "+cVars.last()+iStr+"*"+qVars.last()+iStr);
+        }
+        ++i;
+    }
+    mpBoundaryEquationsTextField->setVisible(!mpBoundaryEquationsTextField->toPlainText().isEmpty() && mpComponentTypeComboBox->currentText() == "Q");
+    mpBoundaryEquationsLabel->setVisible(mpBoundaryEquationsTextField->isVisible());
+    mpBoundaryEquationsTextField->setFixedHeight(15*i);
+}
+
 
 //! @brief Generates XML and compiles the new component
 void ComponentGeneratorDialog::compile()
@@ -836,16 +871,20 @@ void ComponentGeneratorDialog::compile()
             }
             else if(mPortList[i].porttype == "PowerPort" && mpComponentTypeComboBox->currentText() == "C")
             {
-                if(mPortList[i].nodetype == "NodeHydraulic")
+                QStringList cVars;
+                cVars << getCVariables(mPortList[i].nodetype);
+                for(int v=0; v<cVars.size(); ++v)
                 {
-                    stateVars << "c"+num << "Zc"+num;
+                    stateVars << cVars[v]+num;
                 }
             }
             else if(mPortList[i].porttype == "PowerPort" && mpComponentTypeComboBox->currentText() == "Q")
             {
-                if(mPortList[i].nodetype == "NodeHydraulic")
+                QStringList qVars;
+                qVars << getQVariables(mPortList[i].nodetype);
+                for(int v=0; v<qVars.size(); ++v)
                 {
-                    stateVars << "p"+num << "q"+num;
+                    stateVars << qVars[v]+num;
                 }
             }
         }

@@ -338,19 +338,19 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     fileStream << "namespace hopsan {\n\n";
     fileStream << "    class " << comp.typeName << " : public Component" << comp.cqsType << "\n";
     fileStream << "    {\n";
-    fileStream << "    private:\n";
+    fileStream << "    private:\n";                         // Private section
     fileStream << "        double ";
     int portId=1;
-    for(int i=0; i<comp.portNames.size(); ++i)
+    for(int i=0; i<comp.portNames.size(); ++i)              //Declare variables
     {
         QStringList varNames;
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
             varNames << comp.portNames[i];
         }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic")
+        else
         {
-            varNames << "p" << "q" << "c" << "Zc";
+            varNames << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
         }
 
         for(int v=0; v<varNames.size()-1; ++v)
@@ -375,7 +375,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         }
     }
     fileStream << ";\n";
-    for(int i=0; i<comp.parNames.size(); ++i)
+    for(int i=0; i<comp.parNames.size(); ++i)                   //Declare parameters
     {
         fileStream << "        double " << comp.parNames[i] << ";\n";
     }
@@ -389,7 +389,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     }
     fileStream << "        double ";
     portId=1;
-    QStringList allVarNames;
+    QStringList allVarNames;                                    //Declare node data pointers
     for(int i=0; i<comp.portNames.size(); ++i)
     {
         QString id = QString().setNum(portId);
@@ -397,9 +397,15 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         {
             allVarNames << comp.portNames[i];
         }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic")
+        else
         {
-            allVarNames << "p"+id << "q"+id << "c"+id << "Zc"+id;
+            QStringList vars;
+            vars << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
+
+            for(int v=0; v<vars.size(); ++v)
+            {
+                allVarNames << vars[v]+id;
+            }
         }
         ++portId;
     }
@@ -412,7 +418,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         }
     }
     fileStream << ";\n";
-    fileStream << "        Port ";
+    fileStream << "        Port ";                              //Declare ports
     for(int i=0; i<comp.portNames.size(); ++i)
     {
         fileStream << "*mp" << comp.portNames[i];
@@ -422,7 +428,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         }
     }
     fileStream << ";\n\n";
-    fileStream << "    public:\n";
+    fileStream << "    public:\n";                              //Public section
     fileStream << "        static Component *Creator()\n";
     fileStream << "        {\n";
     fileStream << "            return new " << comp.typeName << "();\n";
@@ -467,10 +473,10 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
             varNames << comp.portNames[i];
             varLabels << "VALUE";
         }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic")
+        else
         {
-            varNames << "p" << "q" << "c" << "Zc";
-            varLabels << "PRESSURE" << "FLOW" << "WAVEVARIABLE" << "CHARIMP";
+            varNames << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
+            varLabels << getVariableLabels(comp.portNodeTypes[i]);
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -500,9 +506,9 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
             {
                 varNames << comp.portNames[i];
             }
-            else if(comp.portNodeTypes[i] == "NodeHydraulic")
+            else
             {
-               varNames << "p" << "q" << "c" << "Zc";
+                varNames << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
             }
 
             for(int v=0; v<varNames.size(); ++v)
@@ -532,19 +538,14 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
                 {
                     varNames << comp.portNames[i];
                 }
-                else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "C")
+                if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
                 {
-                    varNames << "c" << "Zc";
+                    varNames << getQVariables(comp.portNodeTypes[i]);
                 }
-                else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "Q")
+                if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
                 {
-                    varNames << "p" << "q";
+                    varNames << getCVariables(comp.portNodeTypes[i]);
                 }
-                else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "S")
-                {
-                    varNames << "p" << "q" << "c" << "Zc";
-                }
-
                 for(int v=0; v<varNames.size(); ++v)
                 {
                     QString varName;
@@ -572,17 +573,13 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         {
             varNames << comp.portNames[i];
         }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "Q")
+        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
         {
-            varNames << "c" << "Zc";
+            varNames << getQVariables(comp.portNodeTypes[i]);
         }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "C")
+        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
         {
-            varNames << "p" << "q";
-        }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "S")
-        {
-            varNames << "p" << "q" << "c" << "Zc";
+            varNames << getCVariables(comp.portNodeTypes[i]);
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -610,17 +607,13 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         {
             varNames << comp.portNames[i];
         }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "C")
+        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
         {
-            varNames << "c" << "Zc";
+            varNames << getQVariables(comp.portNodeTypes[i]);
         }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "Q")
+        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
         {
-            varNames << "p" << "q";
-        }
-        else if(comp.portNodeTypes[i] == "NodeHydraulic" && comp.cqsType == "S")
-        {
-            varNames << "p" << "q" << "c" << "Zc";
+            varNames << getCVariables(comp.portNodeTypes[i]);
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -1266,4 +1259,90 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
             equations.last().chop(1);
         }
     }
+}
+
+
+
+//! @note First and last q-type variable must represent intensity and flow
+QStringList getQVariables(QString nodeType)
+{
+    QStringList retval;
+    if(nodeType == "NodeMechanic")
+    {
+        retval << "F" << "x" << "v";
+    }
+    if(nodeType == "NodeMechanicRotational")
+    {
+        retval << "T" << "th" << "w";
+    }
+    if(nodeType == "NodeHydraulic")
+    {
+        retval << "p" << "q";
+    }
+    if(nodeType == "NodePneumatic")
+    {
+        //! @todo Figure these out
+    }
+    if(nodeType == "NodeElectric")
+    {
+        retval << "U" << "i";
+    }
+    return retval;
+}
+
+
+//! @note c must come first and Zc last
+QStringList getCVariables(QString nodeType)
+{
+    QStringList retval;
+    if(nodeType == "NodeMechanic")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodeMechanicRotational")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodeHydraulic")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodePneumatic")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodeElectric")
+    {
+        retval << "c" << "Zc";
+    }
+    return retval;
+}
+
+
+
+//! @note c must come first and Zc last
+QStringList getVariableLabels(QString nodeType)
+{
+    QStringList retval;
+    if(nodeType == "NodeMechanic")
+    {
+        retval << "FORCE" << "POSITION" << "VELOCITY" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodeMechanicRotational")
+    {
+        retval << "TORQUE" << "ANGLE" << "ANGULARVELOCITY" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodeHydraulic")
+    {
+        retval << "PRESSURE" << "FLOW" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodePneumatic")
+    {
+        //! @todo Figure these out
+    }
+    if(nodeType == "NodeElectric")
+    {
+        retval << "VOLTAGE" << "CURRENT" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    return retval;
 }
