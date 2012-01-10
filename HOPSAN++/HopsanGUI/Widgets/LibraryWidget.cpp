@@ -416,14 +416,23 @@ void LibraryWidget::loadLibrary(QString libDir, bool external)
     //Create a QDir object that contains the info about the library directory
     QDir libDirObject(libDir);
 
+    // Determine where to store any backups of updated appearance xml files
+    mUpdateXmlBackupDir.setPath(QString(BACKUPPATH) + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
+
     if(external)
     {
         LibraryContentsTree *pExternalTree;
         if(!mpContentsTree->findChild("External Libraries"))
+        {
             pExternalTree = mpContentsTree->addChild("External Libraries");
+        }
         else
+        {
             pExternalTree = mpContentsTree->findChild("External Libraries");
-        loadLibraryFolder(libDir, pExternalTree);
+        }
+
+        libDirObject.cdUp();
+        loadLibraryFolder(libDir, libDirObject.absolutePath()+"/", pExternalTree);
     }
     else
     {
@@ -434,7 +443,7 @@ void LibraryWidget::loadLibrary(QString libDir, bool external)
         subDirList.removeAll(".svn");
         for(int i=0; i<subDirList.size(); ++i)
         {
-            loadLibraryFolder(libDir+"/"+subDirList.at(i), mpContentsTree);
+            loadLibraryFolder(libDir+"/"+subDirList.at(i), libDir+"/", mpContentsTree);
         }
     }
 
@@ -1364,7 +1373,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
 //! @brief Recursive function that searches through subdirectories and adds components to the library contents tree
 //! @param libDir Current directory
 //! @param pParentTree Current contents tree node
-void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree)
+void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, LibraryContentsTree *pParentTree)
 {
     //qDebug() << "loadLibraryFolder() " << libDir;
 
@@ -1379,7 +1388,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     //qDebug() << "Adding tree entry: " << libName;
     LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
     pTree->mLibDir = libDir;
-    libName = pTree->mName; //Reset name vaariable to new unique name
+    libName = pTree->mName; //Reset name variable to new unique name
 
         // Load DLL or SO files
     QStringList filters;
@@ -1423,7 +1432,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     subDirList.removeAll(".svn");
     for(int i=0; i<subDirList.size(); ++i)
     {
-        loadLibraryFolder(libDir+"/"+subDirList.at(i), pTree);
+        loadLibraryFolder(libDir+"/"+subDirList.at(i), libRootDir, pTree);
     }
 
     //Append components
@@ -1432,11 +1441,10 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
     libDirObject.setFilter(QDir::NoFilter);
     libDirObject.setNameFilters(filters);   //Set the name filter
 
-    //! @todo Reusing variable libList for xml files as well is not nice programming. Make an xmlList object instead!
-    libList  = libDirObject.entryList();    //Create a list with all name of the files in dir libDir
-    for (int i = 0; i < libList.size(); ++i)        //Iterate over the file names
+    QStringList xmlFileList  = libDirObject.entryList();    //Create a list with all name of the files in dir libDir
+    for (int i = 0; i < xmlFileList.size(); ++i)        //Iterate over the file names
     {
-        QString filename = libDir + "/" + libList.at(i);
+        QString filename = libDir + "/" + xmlFileList.at(i);
         QFile file(filename);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
         {
@@ -1480,12 +1488,12 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
                         QString text;
                         QTextStream ts(&text);
                         ts << file.fileName() << "\n"
-                           << "Your appearance data file format is old! " << caf_version << "<" << CAF_VERSIONNUM << " Do you want to auto update to the latest format?\n\n"
-                           << "NOTE! You should take a backup of your files BEFORE answering Yes to this question!!\n"
-                           << "NOTE! All non standard Hopsan contents will be lost\n"
+                           << "Your file format is older than the newest version! " << caf_version << "<" << CAF_VERSIONNUM << " Do you want to auto update to the latest format?\n\n"
+                           << "NOTE! Your old files will be copied to the hopsan Backup folder, but you should make sure that you have a backup in case something goes wrong.\n"
+                           << "NOTE! All non-standard Hopsan contents will be lost\n"
                            << "NOTE! Attributes may change order within a tag (but the order is not important)\n\n"
                            << "If you want to update manually, see the documantation about the latest format version.";
-                        questionBox.setWindowTitle("Your appearance data file format is old!");
+                        questionBox.setWindowTitle("A NEW appearance data format is available!");
                         questionBox.setText(text);
                         QPushButton* pYes = questionBox.addButton(QMessageBox::Yes);
                         questionBox.addButton(QMessageBox::No);
@@ -1519,6 +1527,13 @@ void LibraryWidget::loadLibraryFolder(QString libDir, LibraryContentsTree *pPare
                         //Close file
                         file.close();
 
+                        // Make backup of original file
+                        QFileInfo newBakFile(mUpdateXmlBackupDir.absolutePath() + "/" + relativePath(file, QDir(libRootDir)));
+                        QDir dir;
+                        dir.mkpath(newBakFile.absoluteDir().absolutePath());
+                        file.copy(newBakFile.absoluteFilePath());
+
+                        // Save (overwrite original file)
                         pAppearanceData->saveToXMLFile(file.fileName());
 
                     }
@@ -1745,9 +1760,10 @@ void LibraryWidget::setGfxType(graphicsType gfxType)
 
 //! @brief Constructor for a library contents tree node.
 //! @param name Name of the node (empty for top node, which is never displayed)
-LibraryContentsTree::LibraryContentsTree(QString name)
+LibraryContentsTree::LibraryContentsTree(QString name, LibraryContentsTree *pParent)
 {
     mName = name;
+    mpParent = pParent;
 }
 
 
@@ -1776,7 +1792,7 @@ LibraryContentsTree *LibraryContentsTree::addChild(QString name)
             ++i;
         }
     }
-    LibraryContentsTree *pNewChild = new LibraryContentsTree(name);
+    LibraryContentsTree *pNewChild = new LibraryContentsTree(name, this);
     mChildNodesPtrs.append(pNewChild);
     return pNewChild;
 }

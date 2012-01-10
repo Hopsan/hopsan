@@ -38,6 +38,7 @@
 #include <QStringList>
 #include <QVector>
 #include <QToolButton>
+#include <QDir>
 
 class ModelObjectAppearance;
 class LibraryListWidgetItem;
@@ -61,7 +62,6 @@ public:
     void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
     void loadLibrary(QString libDir, bool external = false);
     void loadExternalLibrary(QString libDir);
-    void loadLibraryFolder(QString libDir, LibraryContentsTree *pParentTree=0);
     void unloadExternalLibrary(QString libName);
     void loadHiddenSecretDir(QString dir);
 
@@ -92,6 +92,7 @@ private slots:
     void initializeDrag(QTreeWidgetItem* item, int dummy);
 
 private:
+    void loadLibraryFolder(QString libDir, const QString libRootDir, LibraryContentsTree *pParentTree=0);
     void unLoadLibrarySubTree(LibraryContentsTree *pTree);
 
     YesNoToAllEnumT mUpConvertAllCAF;
@@ -113,6 +114,8 @@ private:
     QMap<QListWidgetItem *, LibraryComponent *> mListItemToContentsMap;
     QMap<QTreeWidgetItem *, LibraryComponent *> mTreeItemToContentsMap;
     QMap<QTreeWidgetItem *, LibraryContentsTree *> mTreeItemToContentsTreeMap;
+
+    QDir mUpdateXmlBackupDir;
 };
 
 
@@ -131,7 +134,7 @@ private:
 class LibraryContentsTree
 {
 public:
-    LibraryContentsTree(QString name = QString());
+    LibraryContentsTree(QString name = QString(), LibraryContentsTree* pParent=0);
     bool isEmpty();
     LibraryContentsTree *addChild(QString name);
     bool removeChild(QString name);
@@ -144,6 +147,8 @@ public:
     QVector<QString> mLoadedLibraryDLLs;
     QVector<LibraryContentsTree *> mChildNodesPtrs;
     QVector<LibraryComponent *> mComponentPtrs;
+    LibraryContentsTree* mpParent;
+
 };
 
 
