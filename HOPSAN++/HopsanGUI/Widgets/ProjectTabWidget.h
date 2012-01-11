@@ -71,6 +71,7 @@ signals:
     void simulationFinished();
 
 private:
+    void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
     size_t mNumberOfUntitledTabs;
 };
 

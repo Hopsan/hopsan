@@ -122,10 +122,6 @@ void ContainerObject::connectMainWindowActions()
     connect(gpMainWindow->mpFlipVerticalAction,   SIGNAL(triggered()),        this,     SLOT(flipSubObjectsVertical()), Qt::UniqueConnection);
     connect(gpMainWindow->mpPropertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
 
-    connect(gpMainWindow->getStartTimeLineEdit(), SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
-    connect(gpMainWindow->getTimeStepLineEdit(),  SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()), Qt::UniqueConnection);
-    connect(gpMainWindow->getFinishTimeLineEdit(),SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()), Qt::UniqueConnection);
-
     // Update the main window toolbar action buttons that are system specific
     gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
     gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
@@ -156,10 +152,6 @@ void ContainerObject::disconnectMainWindowActions()
     disconnect(gpMainWindow->mpFlipHorizontalAction,  SIGNAL(triggered()),        this,    SLOT(flipSubObjectsHorizontal()));
     disconnect(gpMainWindow->mpFlipVerticalAction,    SIGNAL(triggered()),        this,    SLOT(flipSubObjectsVertical()));
     disconnect(gpMainWindow->mpPropertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
-
-    disconnect(gpMainWindow->getStartTimeLineEdit(),   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
-    disconnect(gpMainWindow->getTimeStepLineEdit(),    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
-    disconnect(gpMainWindow->getFinishTimeLineEdit(),  SIGNAL(editingFinished()),  this,    SLOT(updateStopTime()));
 }
 
 //! @brief A helpfunction that determines on which edge an external port should be placed based on its internal position

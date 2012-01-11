@@ -50,8 +50,8 @@ public:
     ProjectTab *mpParentProjectTab;  //!< @todo not public
 
     //Signal/slot connection methods
-    void connectMainWindowActions();
-    void disconnectMainWindowActions();
+    virtual void connectMainWindowActions();
+    virtual void disconnectMainWindowActions();
 
     //Scene and core access methods
     QGraphicsScene *getContainedScenePtr();

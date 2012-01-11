@@ -710,9 +710,9 @@ void MainWindow::createActions()
     mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
     mpTimeLabelDeliminator2 = new QLabel(tr(" :: "));
 
-    connect(mpStartTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()));
-    connect(mpTimeStepLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()));
-    connect(mpFinishTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()));
+    connect(mpStartTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()), Qt::UniqueConnection);
+    connect(mpTimeStepLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()), Qt::UniqueConnection);
+    connect(mpFinishTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()), Qt::UniqueConnection);
 }
 
 
@@ -1225,8 +1225,7 @@ void MainWindow::setStartTimeInToolBar(double startTime)
     QString valueTxt;
     valueTxt.setNum(startTime, 'g', 6 );
     mpStartTimeLineEdit->setText(valueTxt);
-    fixTimeStep();
-    fixFinishTime();
+    fixSimulationParameterValues();
 }
 
 
@@ -1237,8 +1236,7 @@ void MainWindow::setTimeStepInToolBar(double timeStep)
     QString valueTxt;
     valueTxt.setNum(timeStep, 'g', 6 );
     mpTimeStepLineEdit->setText(valueTxt);
-    fixTimeStep();
-    fixFinishTime();
+    fixSimulationParameterValues();
 }
 
 
@@ -1249,8 +1247,7 @@ void MainWindow::setFinishTimeInToolBar(double finishTime)
     QString valueTxt;
     valueTxt.setNum(finishTime, 'g', 6 );
     mpFinishTimeLineEdit->setText(valueTxt);
-    fixTimeStep();
-    fixFinishTime();
+    fixSimulationParameterValues();
 }
 
 
@@ -1311,7 +1308,9 @@ void MainWindow::fixSimulationParameterValues()
 void MainWindow::fixFinishTime()
 {
     if (getFinishTimeFromToolBar() < getStartTimeFromToolBar())
+    {
         setFinishTimeInToolBar(getStartTimeFromToolBar());
+    }
 }
 
 
@@ -1322,10 +1321,12 @@ void MainWindow::fixTimeStep()
 {
     //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
     if (getTimeStepFromToolBar() > (getFinishTimeFromToolBar() - getStartTimeFromToolBar()))
+    {
         setTimeStepInToolBar(getFinishTimeFromToolBar() - getStartTimeFromToolBar());
+    }
 
     if (mpProjectTabs->count() > 0)
     {
-        mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->setDesiredTimeStep(getTimeStepFromToolBar());
+        mpProjectTabs->getCurrentTopLevelSystem()->updateTimeStep();
    }
 }

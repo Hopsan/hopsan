@@ -2343,6 +2343,7 @@ void SystemContainer::updateStartTime()
 void SystemContainer::updateTimeStep()
 {
     mTimeStep = gpMainWindow->getTimeStepFromToolBar();
+    mpCoreSystemAccess->setDesiredTimeStep(mTimeStep); //!< @todo it is quite dangerous to have this here, if we by mistake call this on a non root system the timestep for that system will be changed
 }
 
 
@@ -2395,14 +2396,6 @@ size_t SystemContainer::getNumberOfLogSamples()
 void SystemContainer::setNumberOfLogSamples(size_t nSamples)
 {
     mNumberOfLogSamples = nSamples;
-}
-
-//! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
-void SystemContainer::updateSimulationParametersInToolBar()
-{
-    gpMainWindow->setStartTimeInToolBar(mStartTime);
-    gpMainWindow->setTimeStepInToolBar(mTimeStep);
-    gpMainWindow->setFinishTimeInToolBar(mStopTime);
 }
 
 

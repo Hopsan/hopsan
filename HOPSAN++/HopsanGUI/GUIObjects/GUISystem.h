@@ -97,11 +97,9 @@ public:
 
     QString getTypeName();
     void setName(QString newName);
-    //void setTypeCQS(QString typestring);
     QString getTypeCQS();
 
     void saveToDomElement(QDomElement &rDomElement);
-    //void loadFromHMF(QString modelFilePath=QString());
     void loadFromDomElement(QDomElement &rDomElement);
     void setModelFileInfo(QFile &rFile);
 
@@ -124,7 +122,6 @@ public slots:
     void updateStartTime();
     void updateTimeStep();
     void updateStopTime();
-    void updateSimulationParametersInToolBar();
 
 private slots:
     void createFMUSourceFilesFromDialog();

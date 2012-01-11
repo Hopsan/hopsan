@@ -79,9 +79,9 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     mpSystem = new SystemContainer(this, 0);
 
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
-    connect(mpParentProjectTabWidget, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()));
+    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
+    connect(mpParentProjectTabWidget, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
 
     emit checkMessages();
 
@@ -552,16 +552,16 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 {
     this->setPalette(gConfig.getPalette());
 
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(updateToolBarsToNewTab()));
-    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(refreshUndoWidgetList()));
+    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
+    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
 
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
 
-    connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
-    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
-    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
+    connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()), Qt::UniqueConnection);
+    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)), Qt::UniqueConnection);
+    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()), Qt::UniqueConnection);
 
     this->hide();
 }
@@ -722,6 +722,10 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),    getTab(index),                      SLOT(saveAs()));
 
+    disconnect(gpMainWindow->getStartTimeLineEdit(),   SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStartTime()));
+    disconnect(gpMainWindow->getTimeStepLineEdit(),    SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateTimeStep()));
+    disconnect(gpMainWindow->getFinishTimeLineEdit(),  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStopTime()));
+
     getContainer(index)->disconnectMainWindowActions();
 
     getCurrentContainer()->setUndoEnabled(false, true);  //This is necessary to prevent each component from registering it being deleted in the undo stack
@@ -846,7 +850,7 @@ void ProjectTabWidget::tabChanged()
 
     for(int i=0; i<count(); ++i)
     {
-            //If you add a disconnect here, remember to also add it to the close tab function!
+        //If you add a disconnect here, remember to also add it to the close tab function!
         //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
         disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(resetZoom()));
         disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(zoomIn()));
@@ -856,26 +860,36 @@ void ProjectTabWidget::tabChanged()
 
         getContainer(i)->disconnectMainWindowActions();
 
+        // Disconnect start stop ts sig slots from root system
+        disconnect(gpMainWindow->getStartTimeLineEdit(),   SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStartTime()));
+        disconnect(gpMainWindow->getTimeStepLineEdit(),    SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateTimeStep()));
+        disconnect(gpMainWindow->getFinishTimeLineEdit(),  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStopTime()));
+
         disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
         disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),        getTab(i),          SLOT(save()));
         disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),        getTab(i),          SLOT(saveAs()));
     }
     if(this->count() != 0)
     {
-        connect(gpMainWindow->mpSimulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()));
-        connect(gpMainWindow->mpSaveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()));
-        connect(gpMainWindow->mpSaveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()));
+        connect(gpMainWindow->mpSimulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpSaveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpSaveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
 
-        connect(gpMainWindow->mpResetZoomAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()));
-        connect(gpMainWindow->mpZoomInAction,         SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()));
-        connect(gpMainWindow->mpZoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()));
-        connect(gpMainWindow->mpExportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()));
-        connect(gpMainWindow->mpCenterViewAction,     SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(centerView()));
+        connect(gpMainWindow->mpResetZoomAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpZoomInAction,         SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpZoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpCenterViewAction,     SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
 
         getCurrentContainer()->connectMainWindowActions();
 
+        //Connect the start stop ts signal and slots to root system
+        connect(gpMainWindow->getStartTimeLineEdit(), SIGNAL(editingFinished()),  getCurrentTopLevelSystem(), SLOT(updateStartTime()), Qt::UniqueConnection);
+        connect(gpMainWindow->getTimeStepLineEdit(),  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(), SLOT(updateTimeStep()), Qt::UniqueConnection);
+        connect(gpMainWindow->getFinishTimeLineEdit(),SIGNAL(editingFinished()),  getCurrentTopLevelSystem(), SLOT(updateStopTime()), Qt::UniqueConnection);
+
         getCurrentContainer()->updateMainWindowButtons();
-        getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
+        setToolBarSimulationTimeParametersFromSystem(getCurrentTopLevelSystem());
 
         if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->getSystem()->getGfxType())
         {
@@ -888,7 +902,13 @@ void ProjectTabWidget::tabChanged()
     }
 }
 
-
+//! help function to update teh toolbar simulation time parameters from a system (the current root system)
+void ProjectTabWidget::setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem)
+{
+    gpMainWindow->setStartTimeInToolBar(pSystem->getStartTime());
+    gpMainWindow->setTimeStepInToolBar(pSystem->getTimeStep());
+    gpMainWindow->setFinishTimeInToolBar(pSystem->getStopTime());
+}
 
 void ProjectTabWidget::saveCurrentModelToWrappedCode()
 {
