@@ -44,7 +44,7 @@ using namespace std;
 using namespace hopsan;
 
 //!This function loads a library with given path
-bool LoadExternal::load(string libpath)
+bool LoadExternal::load(const string libpath)
 {
     typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
     typedef void (*get_hopsan_info_t)(HopsanExternalLibInfoT *pHopsanExternalLibInfo);
@@ -215,18 +215,33 @@ bool LoadExternal::load(string libpath)
     checkClassFactoryStatus(mpComponentFactory);
     checkClassFactoryStatus(mpNodeFactory);
 
-    // Ok everything seems Ok, now register the library ptr and registreed components in map so that we can unload it later
-    LoadedLibInfoPairT lelInfoPair(static_cast<void*>(lib_ptr), vector<string>() );
+    // Ok everything seems Ok, now register the library ptr and registred components and nodes in map so that we can unload them later
+    LoadedLibInfo lelInfo;
+    // Remember a ptr to the lib
+    lelInfo.mpLib = static_cast<void*>(lib_ptr);
+
+    // Remeber which components belong to the lib
     ComponentFactory::RegStatusVectorT regCompVec = mpComponentFactory->getRegisterStatusMap();
     for (size_t i=0; i<regCompVec.size(); ++i)
     {
         if ( regCompVec[i].second == ComponentFactory::REGISTEREDOK )
         {
-            lelInfoPair.second.push_back(regCompVec[i].first);
+            lelInfo.mRegistredComponents.push_back(regCompVec[i].first);
         }
     }
-    mLoadedExtLibsMap.insert( std::pair<string, LoadedLibInfoPairT>( libpath, lelInfoPair ) );
-    //!  @todo We also need to remember what nodes were loaded
+
+    // Remeber which nodes belong to the lib
+    ComponentFactory::RegStatusVectorT regNodeVec = mpNodeFactory->getRegisterStatusMap();
+    for (size_t i=0; i<regNodeVec.size(); ++i)
+    {
+        if ( regNodeVec[i].second == ComponentFactory::REGISTEREDOK )
+        {
+            lelInfo.mRegistredNodes.push_back(regNodeVec[i].first);
+        }
+    }
+
+    // Insert lib info in map
+    mLoadedExtLibsMap.insert( std::pair<string, LoadedLibInfo>( libpath, lelInfo ) );
 
     //Clear factory status
     mpComponentFactory->clearRegisterStatusMap();
@@ -235,29 +250,38 @@ bool LoadExternal::load(string libpath)
     return true;
 }
 
-bool LoadExternal::unLoad(std::string libpath)
+//! @brief This function unloads a library and its components and nodes
+bool LoadExternal::unLoad(const std::string libpath)
 {
     stringstream ss;
     LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(libpath);
     if (lelit != mLoadedExtLibsMap.end())
     {
-        for (size_t i=0; i<lelit->second.second.size(); ++i)
+        for (size_t i=0; i<lelit->second.mRegistredComponents.size(); ++i)
         {
-            mpComponentFactory->unRegisterCreatorFunction( lelit->second.second[i] );
+            mpComponentFactory->unRegisterCreatorFunction( lelit->second.mRegistredComponents[i] );
             //! @todo we should check register status to make sure unregistered
         }
 
-        //! @todo we should really need to unregister nodes also
+        for (size_t i=0; i<lelit->second.mRegistredNodes.size(); ++i)
+        {
+            mpNodeFactory->unRegisterCreatorFunction( lelit->second.mRegistredNodes[i] );
+            //! @todo we should check register status to make sure unregistered
+        }
 
 #ifdef WIN32
-        HINSTANCE lib_ptr = static_cast<HINSTANCE>(lelit->second.first);
+        HINSTANCE lib_ptr = static_cast<HINSTANCE>(lelit->second.mpLib);
         FreeLibrary(lib_ptr);
         //! @todo handle error messages after close
 #else
-        void* lib_ptr = (*lelit).second.first;
+        void* lib_ptr = lelit->second.mpLib;
         dlclose(lib_ptr);
         //! @todo handle error messages after close
 #endif
+
+        // Remove from lib map
+        mLoadedExtLibsMap.erase(lelit);
+
         ss << "Sucessfully unloaded: " << libpath;
         gCoreMessageHandler.addInfoMessage(ss.str());
     }
@@ -270,7 +294,7 @@ bool LoadExternal::unLoad(std::string libpath)
     return true;
 }
 
-//!This function sets the node and component factory pointers
+//! @brief This function sets the node and component factory pointers
 void LoadExternal::setFactory(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
 {
     mpComponentFactory = pComponentFactory;

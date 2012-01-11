@@ -31,6 +31,14 @@
 
 namespace hopsan {
 
+    class LoadedLibInfo
+    {
+    public:
+        void* mpLib;
+        std::vector<std::string> mRegistredComponents;
+        std::vector<std::string> mRegistredNodes;
+    };
+
     //! @brief This class handles loading and unloading of external component and node libs
     class DLLIMPORTEXPORT LoadExternal
     {
@@ -38,13 +46,12 @@ namespace hopsan {
         ComponentFactory *mpComponentFactory;
         NodeFactory *mpNodeFactory;
 
-        typedef std::pair<void*, std::vector<std::string> > LoadedLibInfoPairT;
-        typedef std::map<std::string, LoadedLibInfoPairT> LoadedExtLibsMapT;
+        typedef std::map<std::string, LoadedLibInfo> LoadedExtLibsMapT;
         LoadedExtLibsMapT mLoadedExtLibsMap;
 
     public:
-        bool load(std::string libpath);
-        bool unLoad(std::string libpath);
+        bool load(const std::string libpath);
+        bool unLoad(const std::string libpath);
         void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
     };
 }
