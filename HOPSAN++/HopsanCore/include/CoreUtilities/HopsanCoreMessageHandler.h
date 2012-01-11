@@ -35,6 +35,14 @@ namespace hopsan {
     {
     public:
         enum MessageTypes {INFO, WARNING, ERROR, DEBUG};
+        HopsanCoreMessage()
+        {
+            type = 0;
+            debuglevel = 0;
+            message = "";
+            tag = "";
+        }
+
         int type;
         int debuglevel;
         std::string message;
@@ -45,19 +53,18 @@ namespace hopsan {
     {
     private:
         std::queue<HopsanCoreMessage> mMessageQueue;
-        void addMessage(int type, std::string preFix, std::string message, std::string tag, int debuglevel=0);
+        void addMessage(const int type, const std::string preFix, const std::string message, const std::string tag, const int debuglevel=0);
         size_t mMaxQueueSize;
 
     public:
         HopsanCoreMessageHandler();
-        void addInfoMessage(std::string message, std::string tag="", int dbglevel=0);
-        void addWarningMessage(std::string message, std::string tag="", int dbglevel=0);
-        void addErrorMessage(std::string message, std::string tag="", int dbglevel=0);
-        void addDebugMessage(std::string message, std::string tag="", int dbglevel=0);
+        void addInfoMessage(const std::string message, const std::string tag="", const int dbglevel=0);
+        void addWarningMessage(const std::string message, const std::string tag="", const int dbglevel=0);
+        void addErrorMessage(const std::string message, const std::string tag="", const int dbglevel=0);
+        void addDebugMessage(const std::string message, const std::string tag="", const int dbglevel=0);
 
-        //const HopsanCoreMessage &peakMessage();
         HopsanCoreMessage getMessage();
-        size_t nWaitingMessages();
+        size_t getNumWaitingMessages();
     };
 
     extern HopsanCoreMessageHandler gCoreMessageHandler;

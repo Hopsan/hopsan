@@ -184,7 +184,7 @@ void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std
 
 size_t HopsanEssentials::checkMessage()
 {
-    return mpMessageHandler->nWaitingMessages();
+    return mpMessageHandler->getNumWaitingMessages();
 }
 
 bool HopsanEssentials::loadExternalComponentLib(const string path)

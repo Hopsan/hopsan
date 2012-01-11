@@ -31,7 +31,7 @@ HopsanCoreMessageHandler::HopsanCoreMessageHandler()
     mMaxQueueSize = 10000;
 }
 
-void HopsanCoreMessageHandler::addMessage(int type, string preFix, string message, string tag, int debuglevel)
+void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, const string message, const string tag, const int debuglevel)
 {
     HopsanCoreMessage msg;
     msg.type = type;
@@ -47,22 +47,22 @@ void HopsanCoreMessageHandler::addMessage(int type, string preFix, string messag
 }
 
 
-void HopsanCoreMessageHandler::addInfoMessage(string message, string tag, int dbglevel)
+void HopsanCoreMessageHandler::addInfoMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::INFO, "Info: ", message, tag, dbglevel);
 }
 
-void HopsanCoreMessageHandler::addWarningMessage(string message, string tag, int dbglevel)
+void HopsanCoreMessageHandler::addWarningMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::WARNING, "Warning: ", message, tag, dbglevel);
 }
 
-void HopsanCoreMessageHandler::addErrorMessage(string message, string tag, int dbglevel)
+void HopsanCoreMessageHandler::addErrorMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::ERROR, "Error: ", message, tag, dbglevel);
 }
 
-void HopsanCoreMessageHandler::addDebugMessage(string message, string tag, int dbglevel)
+void HopsanCoreMessageHandler::addDebugMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::DEBUG, "Debug: ", message, tag, dbglevel);
 }
@@ -75,18 +75,17 @@ HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
     {
         msg = mMessageQueue.front();
         mMessageQueue.pop();
-        return msg;
     }
     else
     {
         msg.type = HopsanCoreMessage::ERROR;
         msg.debuglevel = 0;
         msg.message = "Error: You requested a message even though the message queue is empty";
-        return msg;
     }
+    return msg;
 }
 
-size_t HopsanCoreMessageHandler::nWaitingMessages()
+size_t HopsanCoreMessageHandler::getNumWaitingMessages()
 {
     return mMessageQueue.size();
 }
