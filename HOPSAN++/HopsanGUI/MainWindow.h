@@ -69,6 +69,7 @@ public:
     void setStartTimeInToolBar(double startTime);
     void setTimeStepInToolBar(double timeStep);
     void setFinishTimeInToolBar(double finishTime);
+    void setSimulationTimeParameters(const double startTime, const double timeStep, const double stopTime);
     double getStartTimeFromToolBar();
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
@@ -148,10 +149,14 @@ public slots:
     void initializeWorkspace();
     void updateToolBarsToNewTab();
     void refreshUndoWidgetList();
-    void fixSimulationParameterValues();
+    void fixSimulationTimeParameterValues();
+    void finalizeAndSetSimulationTimeParameterValues();
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
     void launchAutoUpdate();
+
+signals:
+    void refreshSimulationTimeParameters();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);

@@ -565,6 +565,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 
         //Load simulation time
         parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), mStartTime, mTimeStep, mStopTime);
+        //! @todo dont do this for non root systems
         gpMainWindow->setStartTimeInToolBar(mStartTime);
         gpMainWindow->setTimeStepInToolBar(mTimeStep);
         gpMainWindow->setFinishTimeInToolBar(mStopTime);

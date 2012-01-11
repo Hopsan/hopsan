@@ -861,9 +861,9 @@ void ProjectTabWidget::tabChanged()
         getContainer(i)->disconnectMainWindowActions();
 
         // Disconnect start stop ts sig slots from root system
-        disconnect(gpMainWindow->getStartTimeLineEdit(),   SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStartTime()));
-        disconnect(gpMainWindow->getTimeStepLineEdit(),    SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateTimeStep()));
-        disconnect(gpMainWindow->getFinishTimeLineEdit(),  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStopTime()));
+        disconnect(gpMainWindow,    SIGNAL(refreshSimulationTimeParameters()),  getSystem(i),    SLOT(updateStartTime()));
+        disconnect(gpMainWindow,    SIGNAL(refreshSimulationTimeParameters()),  getSystem(i),    SLOT(updateTimeStep()));
+        disconnect(gpMainWindow,    SIGNAL(refreshSimulationTimeParameters()),  getSystem(i),    SLOT(updateStopTime()));
 
         disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
         disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),        getTab(i),          SLOT(save()));
@@ -884,9 +884,9 @@ void ProjectTabWidget::tabChanged()
         getCurrentContainer()->connectMainWindowActions();
 
         //Connect the start stop ts signal and slots to root system
-        connect(gpMainWindow->getStartTimeLineEdit(), SIGNAL(editingFinished()),  getCurrentTopLevelSystem(), SLOT(updateStartTime()), Qt::UniqueConnection);
-        connect(gpMainWindow->getTimeStepLineEdit(),  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(), SLOT(updateTimeStep()), Qt::UniqueConnection);
-        connect(gpMainWindow->getFinishTimeLineEdit(),SIGNAL(editingFinished()),  getCurrentTopLevelSystem(), SLOT(updateStopTime()), Qt::UniqueConnection);
+        connect(gpMainWindow,   SIGNAL(refreshSimulationTimeParameters()),  getCurrentTopLevelSystem(), SLOT(updateStartTime()), Qt::UniqueConnection);
+        connect(gpMainWindow,   SIGNAL(refreshSimulationTimeParameters()),  getCurrentTopLevelSystem(), SLOT(updateTimeStep()), Qt::UniqueConnection);
+        connect(gpMainWindow,   SIGNAL(refreshSimulationTimeParameters()),  getCurrentTopLevelSystem(), SLOT(updateStopTime()), Qt::UniqueConnection);
 
         getCurrentContainer()->updateMainWindowButtons();
         setToolBarSimulationTimeParametersFromSystem(getCurrentTopLevelSystem());
@@ -905,9 +905,10 @@ void ProjectTabWidget::tabChanged()
 //! help function to update teh toolbar simulation time parameters from a system (the current root system)
 void ProjectTabWidget::setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem)
 {
-    gpMainWindow->setStartTimeInToolBar(pSystem->getStartTime());
-    gpMainWindow->setTimeStepInToolBar(pSystem->getTimeStep());
-    gpMainWindow->setFinishTimeInToolBar(pSystem->getStopTime());
+//    gpMainWindow->setStartTimeInToolBar(pSystem->getStartTime());
+//    gpMainWindow->setTimeStepInToolBar(pSystem->getTimeStep());
+//    gpMainWindow->setFinishTimeInToolBar(pSystem->getStopTime());
+    gpMainWindow->setSimulationTimeParameters(pSystem->getStartTime(), pSystem->getTimeStep(), pSystem->getStopTime());
 }
 
 void ProjectTabWidget::saveCurrentModelToWrappedCode()

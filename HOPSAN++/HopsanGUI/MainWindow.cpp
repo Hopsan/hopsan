@@ -710,9 +710,9 @@ void MainWindow::createActions()
     mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
     mpTimeLabelDeliminator2 = new QLabel(tr(" :: "));
 
-    connect(mpStartTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()), Qt::UniqueConnection);
-    connect(mpTimeStepLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()), Qt::UniqueConnection);
-    connect(mpFinishTimeLineEdit, SIGNAL(textChanged()), SLOT(fixSimulationParameterValues()), Qt::UniqueConnection);
+    connect(mpStartTimeLineEdit, SIGNAL(editingFinished()), SLOT(finalizeAndSetSimulationTimeParameterValues()), Qt::UniqueConnection);
+    connect(mpTimeStepLineEdit, SIGNAL(editingFinished()), SLOT(finalizeAndSetSimulationTimeParameterValues()), Qt::UniqueConnection);
+    connect(mpFinishTimeLineEdit, SIGNAL(editingFinished()), SLOT(finalizeAndSetSimulationTimeParameterValues()), Qt::UniqueConnection);
 }
 
 
@@ -1225,7 +1225,7 @@ void MainWindow::setStartTimeInToolBar(double startTime)
     QString valueTxt;
     valueTxt.setNum(startTime, 'g', 6 );
     mpStartTimeLineEdit->setText(valueTxt);
-    fixSimulationParameterValues();
+    fixSimulationTimeParameterValues();
 }
 
 
@@ -1236,7 +1236,7 @@ void MainWindow::setTimeStepInToolBar(double timeStep)
     QString valueTxt;
     valueTxt.setNum(timeStep, 'g', 6 );
     mpTimeStepLineEdit->setText(valueTxt);
-    fixSimulationParameterValues();
+    fixSimulationTimeParameterValues();
 }
 
 
@@ -1247,7 +1247,22 @@ void MainWindow::setFinishTimeInToolBar(double finishTime)
     QString valueTxt;
     valueTxt.setNum(finishTime, 'g', 6 );
     mpFinishTimeLineEdit->setText(valueTxt);
-    fixSimulationParameterValues();
+    fixSimulationTimeParameterValues();
+}
+
+void MainWindow::setSimulationTimeParameters(const double startTime, const double timeStep, const double stopTime)
+{
+    QString valueTxt;
+    valueTxt.setNum(startTime, 'g', 6 );
+    mpStartTimeLineEdit->setText(valueTxt);
+    valueTxt.setNum(timeStep, 'g', 6 );
+    mpTimeStepLineEdit->setText(valueTxt);
+    valueTxt.setNum(stopTime, 'g', 6 );
+    mpFinishTimeLineEdit->setText(valueTxt);
+
+    fixSimulationTimeParameterValues();
+
+    emit refreshSimulationTimeParameters();
 }
 
 
@@ -1295,10 +1310,16 @@ QLineEdit *MainWindow::getFinishTimeLineEdit()
 
 //! @brief Make sure the values make sense.
 //! @see fixTimeStep()
-void MainWindow::fixSimulationParameterValues()
+void MainWindow::fixSimulationTimeParameterValues()
 {
     fixFinishTime();
     fixTimeStep();
+}
+
+void MainWindow::finalizeAndSetSimulationTimeParameterValues()
+{
+    fixSimulationTimeParameterValues();
+    emit refreshSimulationTimeParameters();
 }
 
 
@@ -1325,8 +1346,8 @@ void MainWindow::fixTimeStep()
         setTimeStepInToolBar(getFinishTimeFromToolBar() - getStartTimeFromToolBar());
     }
 
-    if (mpProjectTabs->count() > 0)
-    {
-        mpProjectTabs->getCurrentTopLevelSystem()->updateTimeStep();
-   }
+//    if (mpProjectTabs->count() > 0)
+//    {
+//        mpProjectTabs->getCurrentTopLevelSystem()->updateTimeStep();
+//    }
 }
