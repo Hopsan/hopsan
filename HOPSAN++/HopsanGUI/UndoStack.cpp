@@ -75,7 +75,7 @@ void UndoStack::fromXml(QDomElement &undoElement)
 //! @param errorMsg (optional) Error message that will be displayed in message widget
 void UndoStack::clear(QString errorMsg)
 {
-    gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
+    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
 
     mCurrentStackPosition = -1;
     mUndoRoot.clear();
