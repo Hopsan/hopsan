@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2441,500000000005" y="2518,000000000005" zoom="0,9999999999999982"/>
+            <viewport x="2441.500000000005" y="2518.000000000005" zoom="0.9999999999999982"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -1231,7 +1231,7 @@
                 </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="10" timestep="0,001" start="-25"/>
+        <simulationtime stop="10" timestep="0.001" start="-25"/>
         <parameters>
             <parameter typename="double" value="0.001" name="Cyl_A1"/>
             <parameter typename="double" value="0.001" name="Cyl_A2"/>

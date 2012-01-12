@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500,323422935855" y="2499,80714719294" zoom="0,9684747092264965"/>
+            <viewport x="2500.323422935855" y="2499.80714719294" zoom="0.9684747092264965"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -21,7 +21,7 @@
                 <post number="2"/>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="10" timestep="0,001" start="0"/>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters/>
         <objects>
             <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_3">
@@ -211,7 +211,7 @@
                 <hopsangui>
                     <pose x="2468" y="2432"/>
                     <textobject fontcolor="#005500" text="Pump" font="Calibri,16,-1,5,75,0,0,0,0,0"/>
-                    <size width="463,4581230119438" height="213,5806634412315"/>
+                    <size width="463.4581230119438" height="213.5806634412315"/>
                     <line width="2" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>

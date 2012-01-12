@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500,500000000001" y="2500,000000000001" zoom="0,9999999999999996"/>
+            <viewport x="2500.500000000001" y="2500.000000000001" zoom="0.9999999999999996"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -101,7 +101,7 @@
                 <post number="38"/>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="10" timestep="0,001" start="0"/>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters>
             <parameter typename="double" value="5e-11" name="Kpf"/>
             <parameter typename="double" value="9" name="w_cutoff"/>
@@ -117,7 +117,7 @@
                     <parameter value="1" name="f_pb"/>
                     <parameter value="1" name="f_at"/>
                     <parameter value="1" name="f_bt"/>
-                    <parameter value="0.01" name="x_v,max"/>
+                    <parameter value="0.01" name="x_v.max"/>
                     <parameter value="0" name="x_pa"/>
                     <parameter value="0" name="x_pb"/>
                     <parameter value="0" name="x_at"/>
