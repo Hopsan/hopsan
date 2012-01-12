@@ -290,7 +290,7 @@ void ComponentPropertiesDialog::okPressed()
 void ComponentPropertiesDialog::editPortPos()
 {
     MovePortsDialog *dialog = new MovePortsDialog(mpGUIComponent->getAppearanceData(), mpGUIComponent->getParentContainerObject()->getGfxType());
-    connect(dialog, SIGNAL(finished()), mpGUIComponent, SLOT(refreshAppearance()));
+    connect(dialog, SIGNAL(finished()), mpGUIComponent, SLOT(refreshAppearance()), Qt::UniqueConnection);
 }
 
 
