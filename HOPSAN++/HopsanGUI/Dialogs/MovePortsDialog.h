@@ -7,6 +7,7 @@
 #include <QGraphicsSvgItem>
 #include <QSvgRenderer>
 #include "GUIPortAppearance.h"
+#include "common.h"
 
 
 class DragPort;
@@ -14,12 +15,13 @@ class ModelObject;
 class Component;
 class ModelObjectAppearance;
 
+
 class MovePortsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    MovePortsDialog(Component *pGUIComponent, QWidget *parent = 0);
+    MovePortsDialog(ModelObjectAppearance *pComponentAppearance, graphicsType gfxType = USERGRAPHICS, QWidget *parent = 0);
     //~MovePortsWidget();
 
 public slots:
@@ -28,8 +30,6 @@ public slots:
     void updateZoom();
 
 protected:
-
-    Component *mpComponent;
 
     QVector<DragPort*> mvSVGPorts;
     QGraphicsSvgItem *mpSVGComponent;

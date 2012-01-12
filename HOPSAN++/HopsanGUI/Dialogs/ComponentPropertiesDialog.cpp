@@ -289,7 +289,7 @@ void ComponentPropertiesDialog::okPressed()
 
 void ComponentPropertiesDialog::editPortPos()
 {
-    new MovePortsDialog(mpGUIComponent);
+    new MovePortsDialog(mpGUIComponent->getAppearanceData(), mpGUIComponent->getParentContainerObject()->getGfxType());
 }
 
 

@@ -11,16 +11,15 @@
 
 using namespace std;
 
-MovePortsDialog::MovePortsDialog(Component *pGUIComponent, QWidget *parent)
+
+MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, graphicsType gfxType, QWidget *parent)
     : QDialog(parent)
 {
     mpView = new QGraphicsView(this);
     mpView->setScene(new QGraphicsScene());
 
-    mpComponent = pGUIComponent;
-
-    mpCompAppearance = pGUIComponent->getAppearanceData();
-    mpSVGComponent = new QGraphicsSvgItem(mpCompAppearance->getIconPath(pGUIComponent->getParentContainerObject()->getGfxType(), ABSOLUTE));
+    mpCompAppearance = pComponentAppearance;
+    mpSVGComponent = new QGraphicsSvgItem(mpCompAppearance->getIconPath(gfxType, ABSOLUTE));
     mpView->scene()->addRect(mpSVGComponent->boundingRect(), QPen(Qt::DashLine));
     mpView->scene()->addItem(mpSVGComponent);
 
@@ -94,14 +93,16 @@ bool MovePortsDialog::okButtonPressed()
         ss << it.key().toStdString() << " - x: " << p.x() << "   y: " << p.y() << "\n";
         ++i;
 
-        Port *port = mpComponent->getPort(it.key());
-        port->setCenterPosByFraction(p.x(), p.y());
+        //Port *port = mpComponent->getPort(it.key());
+        //port->setCenterPosByFraction(p.x(), p.y());
     }
     qDebug() << ss;
     QMessageBox msgBox;
     msgBox.setText(QString::fromStdString(ss.str()));
 
     msgBox.exec();
+
+    //mpComponent->redrawConnectors();
 
     return close();
 }

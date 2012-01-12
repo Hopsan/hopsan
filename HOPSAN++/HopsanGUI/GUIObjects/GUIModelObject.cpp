@@ -539,6 +539,15 @@ void ModelObject::hideLosses()
 }
 
 
+void ModelObject::redrawConnectors()
+{
+    for(int i=0; i<mConnectorPtrs.size(); ++i)
+    {
+        mConnectorPtrs.at(i)->drawConnector();
+    }
+}
+
+
 bool ModelObject::isLossesDisplayVisible()
 {
     return mpLossesDisplay->isVisible();

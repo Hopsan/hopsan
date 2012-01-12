@@ -109,6 +109,7 @@ public slots:
     void setIcon(graphicsType);
     void showLosses();
     void hideLosses();
+    void redrawConnectors();
 
 signals:
     void nameChanged();
