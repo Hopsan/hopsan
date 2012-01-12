@@ -31,6 +31,7 @@
 class PortAppearance
 {
 public:
+    PortAppearance();
     void selectPortIcon(QString cqstype, QString porttype, QString nodetype);
 
     qreal x,y,rot;
