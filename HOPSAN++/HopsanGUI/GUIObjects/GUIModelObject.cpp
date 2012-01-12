@@ -1191,6 +1191,17 @@ void ModelObject::refreshAppearance()
     this->setCenterPos(centerPos); //Re-set center pos after resize
 
     this->refreshDisplayName();
+
+    PortAppearanceMapT::Iterator it;
+    for(it=mModelObjectAppearance.getPortAppearanceMap().begin(); it != mModelObjectAppearance.getPortAppearanceMap().end(); ++it)
+    {
+        Port *port = getPort(it.key());
+        if(port)
+        {
+            port->setCenterPosByFraction(it.value().x, it.value().y);
+        }
+    }
+    redrawConnectors();
 }
 
 

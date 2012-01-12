@@ -29,12 +29,15 @@ public slots:
     bool cancelButtonPressed();
     void updateZoom();
 
+signals:
+    void finished();
+
 protected:
 
     QVector<DragPort*> mvSVGPorts;
     QGraphicsSvgItem *mpSVGComponent;
     ModelObjectAppearance *mpCompAppearance;
-    PortAppearanceMapT mPortAppearanceMap;
+    PortAppearanceMapT *mpPortAppearanceMap;
 
     QGraphicsView *mpView;
     double mViewScale;

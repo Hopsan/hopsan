@@ -23,10 +23,10 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     mpView->scene()->addRect(mpSVGComponent->boundingRect(), QPen(Qt::DashLine));
     mpView->scene()->addItem(mpSVGComponent);
 
-    mPortAppearanceMap = mpCompAppearance->getPortAppearanceMap();
+    mpPortAppearanceMap = &(mpCompAppearance->getPortAppearanceMap());
 
     PortAppearanceMapT::Iterator it;
-    for(it=mPortAppearanceMap.begin(); it != mPortAppearanceMap.end(); ++it)
+    for(it=mpPortAppearanceMap->begin(); it != mpPortAppearanceMap->end(); ++it)
     {
         DragPort *pPort = new DragPort(it->mMainIconPath);
         mvSVGPorts.append(pPort);
@@ -87,11 +87,14 @@ bool MovePortsDialog::okButtonPressed()
     stringstream ss;
     PortAppearanceMapT::Iterator it;
     int i = 0;
-    for(it=mPortAppearanceMap.begin(); it != mPortAppearanceMap.end(); ++it)
+    for(it=mpPortAppearanceMap->begin(); it != mpPortAppearanceMap->end(); ++it)
     {
         QPointF p = mvSVGPorts.at(i)->getPosOnComponent(mpSVGComponent);
         ss << it.key().toStdString() << " - x: " << p.x() << "   y: " << p.y() << "\n";
         ++i;
+
+        it.value().x = p.x();
+        it.value().y = p.y();
 
         //Port *port = mpComponent->getPort(it.key());
         //port->setCenterPosByFraction(p.x(), p.y());
@@ -103,6 +106,8 @@ bool MovePortsDialog::okButtonPressed()
     msgBox.exec();
 
     //mpComponent->redrawConnectors();
+
+    emit finished();
 
     return close();
 }

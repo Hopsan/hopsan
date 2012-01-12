@@ -289,7 +289,8 @@ void ComponentPropertiesDialog::okPressed()
 
 void ComponentPropertiesDialog::editPortPos()
 {
-    new MovePortsDialog(mpGUIComponent->getAppearanceData(), mpGUIComponent->getParentContainerObject()->getGfxType());
+    MovePortsDialog *dialog = new MovePortsDialog(mpGUIComponent->getAppearanceData(), mpGUIComponent->getParentContainerObject()->getGfxType());
+    connect(dialog, SIGNAL(finished()), mpGUIComponent, SLOT(refreshAppearance()));
 }
 
 

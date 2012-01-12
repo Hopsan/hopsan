@@ -59,7 +59,9 @@ public:
     //Appearance methods
     void setAppearanceDataBasePath(const QString basePath);
     virtual ModelObjectAppearance* getAppearanceData();
+public slots:
     virtual void refreshAppearance();
+public:
     bool isVisible();
 
     //Help methods
