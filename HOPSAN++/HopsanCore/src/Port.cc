@@ -384,6 +384,10 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
             //! @note This pointer is commented to avoid a warning, recomment it before using it...
             //double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
 
+
+            assert(false); //If you crash here, please report it to Bjorn who don't think it will happen :-)
+
+
             //Check if the nodeDataPtr is in the System parameters
             //! @todo Should be done by Bjorn!
 
