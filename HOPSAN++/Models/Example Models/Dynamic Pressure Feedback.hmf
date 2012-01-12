@@ -16,90 +16,6 @@
                 </modelobject>
                 <portpositions/>
             </hopsanobjectappearance>
-            <hopsanundo>
-                <post number="-1"/>
-                <post number="0"/>
-                <post number="1"/>
-                <post number="2"/>
-                <post number="3"/>
-                <post number="4"/>
-                <post number="5" type="paste"/>
-                <post number="6"/>
-                <post number="7" type="alignx"/>
-                <post number="8"/>
-                <post number="9" type="alignx"/>
-                <post number="10"/>
-                <post number="11"/>
-                <post number="12"/>
-                <post number="13"/>
-                <post number="14"/>
-                <post number="15"/>
-                <post number="16"/>
-                <post number="17"/>
-                <post number="18"/>
-                <post number="19"/>
-                <post number="20"/>
-                <post number="21"/>
-                <post number="22"/>
-                <post number="23"/>
-                <post number="24"/>
-                <post number="25"/>
-                <post number="26"/>
-                <post number="27"/>
-                <post number="28"/>
-                <post number="29"/>
-                <post number="30"/>
-                <post number="31">
-                    <stuff what="modifiedconnector" linenumber="1">
-                        <oldpos>0 0</oldpos>
-                        <newpos>0 -23</newpos>
-                        <connect endport="in2" endcomponent="Route With Three Inputs" startport="out" startcomponent="Subtract">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2487.00000000000000000000" y="2384.50000000000000000000"/>
-                                    <coordinate x="2487.00000000000000000000" y="2340.00000000000000000000"/>
-                                    <coordinate x="2644.00000000000000000000" y="2340.00000000000000000000"/>
-                                    <coordinate x="2644.00000000000000000000" y="2401.50000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="32"/>
-                <post number="33"/>
-                <post number="34"/>
-                <post number="35">
-                    <stuff what="modifiedconnector" linenumber="1">
-                        <oldpos>0 -23</oldpos>
-                        <newpos>0 -31</newpos>
-                        <connect endport="in2" endcomponent="Route With Three Inputs" startport="out" startcomponent="Subtract">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2487.00000000000000000000" y="2384.50000000000000000000"/>
-                                    <coordinate x="2487.00000000000000000000" y="2332.00000000000000000000"/>
-                                    <coordinate x="2644.00000000000000000000" y="2332.00000000000000000000"/>
-                                    <coordinate x="2644.00000000000000000000" y="2401.50000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="36"/>
-                <post number="37"/>
-                <post number="38"/>
-            </hopsanundo>
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters>
@@ -117,7 +33,7 @@
                     <parameter value="1" name="f_pb"/>
                     <parameter value="1" name="f_at"/>
                     <parameter value="1" name="f_bt"/>
-                    <parameter value="0.01" name="x_v.max"/>
+                    <parameter value="0.01" name="x_v,max"/>
                     <parameter value="0" name="x_pa"/>
                     <parameter value="0" name="x_pb"/>
                     <parameter value="0" name="x_at"/>
