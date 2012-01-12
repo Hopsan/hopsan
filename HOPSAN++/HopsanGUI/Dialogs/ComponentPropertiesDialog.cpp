@@ -410,7 +410,7 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
 
     connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
     connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
-    connect(&mDataValuesLineEdit, SIGNAL(editingFinished()), this, SLOT(pickColor()));
+    connect(&mDataValuesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickColor()));
 }
 
 
