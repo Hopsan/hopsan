@@ -1038,6 +1038,14 @@ void ComponentGeneratorDialog::compile()
         QStringList delaySteps;
         translateDelaysFromPython(sysEquations, delayTerms, delaySteps);
 
+        //Translate all "x**y" to "pow(x,y)"
+        translatePowersFromPython(sysEquations);
+        translatePowersFromPython(jString);
+
+        //Make sure all variables have double precision (to make sure "1.0/2.0 = 0.5" instead of "1/2 = 0")
+        translateIntsToDouble(sysEquations);
+        translateIntsToDouble(jString);
+
         //General component data
         QString typeName = mpComponentNameEdit->text();
         QString displayName = mpComponentDisplayEdit->text();

@@ -712,7 +712,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     xmlFile.close();
 
     //Execute HopsanFMU compile script
-#ifdef win32
+#ifdef WIN32
     QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << "cd " + gExecPath + " & compile.bat");
     p.waitForFinished();
@@ -1119,6 +1119,132 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
     }
     qDebug() << "After delay translation: " << equations;
     qDebug() << "Delay terms: " << delayTerms;
+}
+
+
+//! @brief Replaces all Python power operators ("**") in the equations with C++ pow() functions
+//! @param equations Equations to check
+void translatePowersFromPython(QStringList &equations)
+{
+    for(int e=0; e<equations.size(); ++e)
+    {
+        qDebug() << "Equation before: " << equations[e];
+
+        while(equations[e].contains("**"))
+        {
+            QString before, after;
+            int idx = equations[e].indexOf("**");
+            int idxb = max(idx-1, 0);
+            int idxa = min(idx+2, equations[e].size()-1);
+            if(equations[e][idx-1] != ')' && idxb != 0)      //Not a paretheses before
+            {
+                while(equations[e][idxb].isLetterOrNumber())
+                {
+                    --idxb;
+                }
+                ++idxb;
+            }
+            else if(idxb != 0)                           //Parenthesis before
+            {
+                int parBalance=-1;
+                --idxb;
+                while(parBalance != 0)
+                {
+                    if(equations[e][idxb] == ')')
+                        --parBalance;
+                    if(equations[e][idxb] == '(')
+                        ++parBalance;
+                    --idxb;
+                }
+                ++idxb;
+            }
+            if(equations[e][idx+2] != '(' && idxa != equations[e].size()-1)      //Not a paretheses after
+            {
+                while(equations[e][idxa].isLetterOrNumber())
+                {
+                    ++idxa;
+                }
+                --idxa;
+            }
+            else if('(' && idxa != equations[e].size()-1)            //Parenthesis after
+            {
+                int parBalance=1;
+                ++idxa;
+                while(parBalance != 0)
+                {
+                    if(equations[e][idxa] == ')')
+                        --parBalance;
+                    if(equations[e][idxa] == '(')
+                        ++parBalance;
+                    ++idxa;
+                }
+                --idxa;
+            }
+            before = equations[e].mid(idxb, idx-idxb);
+            after = equations[e].mid(idx+2, idxa-idx-1);
+
+            qDebug() << "idx = " << idx << ", idxb = " << idxb << ", idxa = " << idxa;
+
+            equations[e].remove(idxb, idxa-idxb+1);
+            equations[e].insert(idxb, "pow("+before+","+after+")");
+
+            qDebug() << "Equation changed: " << equations[e];
+        }
+    }
+}
+
+
+//! @brief Makes sure all variables in equations are float (to avoid 1/2=0 phenomena)
+//! @param equations Equations to check
+void translateIntsToDouble(QStringList &equations)
+{
+    for(int e=0; e<equations.size(); ++e)
+    {
+        int startId = 0;
+        int stopId = 0;
+        bool par = false;
+        bool var = false;
+        for(int i=0; i<equations[e].size(); ++i)
+        {
+            if(equations[e][i].isLetter())
+            {
+                par = true;
+            }
+
+            if(equations[e][i].isNumber() && !par && !var)
+            {
+                startId = i;
+                var = true;
+            }
+
+            if(!equations[e][i].isLetterOrNumber())
+            {
+                par = false;
+
+                if(var)
+                {
+                    stopId = i-1;
+                    //qDebug() << "Found variable at " << startId << ", " << stopId;
+                    if(equations[e][startId-1] != '.' && equations[e][stopId+1] != '.')     //Don't modify float numbers
+                    {
+                        equations[e].insert(stopId+1, ".0");
+                        i=i+2;
+                    }
+                    var = false;
+                }
+            }
+        }
+        if(var)
+        {
+            stopId = equations[e].size()-1;
+            if(equations[e][startId-1] != '.')     //Don't modify float numbers
+            {
+                equations[e].append(".0");
+            }
+        }
+        qDebug() << "Equation2: " << equations[e];
+    }
+
 }
 
 
