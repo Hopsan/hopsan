@@ -25,7 +25,10 @@
 #include <QFont>
 
 #include "Configuration.h"
+#include "GUIPort.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
+#include "Dialogs/MovePortsDialog.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/MessageWidget.h"
@@ -227,8 +230,9 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     updateValues();
 
     //Connections
-    connect(mpCancelButton,    SIGNAL(clicked()), this, SLOT(reject()));
-    connect(mpCompileButton,   SIGNAL(clicked()), this, SLOT(compile()));
+    connect(mpCancelButton,     SIGNAL(clicked()), this, SLOT(reject()));
+    connect(mpCompileButton,    SIGNAL(clicked()), this, SLOT(compile()));
+    connect(mpAppearanceButton, SIGNAL(clicked()), this, SLOT(openAppearanceDialog()));
 }
 
 
@@ -1488,4 +1492,66 @@ void ComponentGeneratorDialog::saveDialogToXml()
         qDebug() << "Copy failed!";
 
     update();
+}
+
+
+void ComponentGeneratorDialog::openAppearanceDialog()
+{
+    ModelObjectAppearance *app = new ModelObjectAppearance();
+    app->setIconPath(QString(OBJECTICONPATH)+"generatedcomponenticon.svg", USERGRAPHICS, ABSOLUTE);
+    for(int p=0; p<mPortList.size(); ++p)
+    {
+        PortAppearance PortApp;
+        PortApp.selectPortIcon(mpComponentTypeComboBox->currentText(), mPortList.at(p).porttype, mPortList.at(p).nodetype);
+
+    }
+
+
+    QStringList leftPortNames, rightPortNames, topPortNames;
+    QList<PortAppearance> leftPorts, rightPorts, topPorts;
+    for(int p=0; p<mPortList.size(); ++p)
+    {
+        PortAppearance PortApp;
+        PortApp.selectPortIcon(mpComponentTypeComboBox->currentText(), mPortList.at(p).porttype.toUpper(), mPortList.at(p).nodetype);
+
+        if(mPortList.at(p).nodetype == "NodeSignal" && mPortList.at(p).porttype == "ReadPort")
+        {
+            leftPorts << PortApp;
+            leftPortNames << mPortList.at(p).name;
+        }
+        else if(mPortList.at(p).nodetype == "NodeSignal" && mPortList.at(p).porttype == "WritePort")
+        {
+            rightPorts << PortApp;
+            rightPortNames << mPortList.at(p).name;
+        }
+        else
+        {
+            topPorts << PortApp;
+            topPortNames << mPortList.at(p).name;
+        }
+    }
+    for(int i=0; i<leftPorts.size(); ++i)
+    {
+        leftPorts[i].x = 0.0;
+        leftPorts[i].y = (double(i)+1)/(double(leftPorts.size())+1.0);
+        leftPorts[i].rot = 180;
+        app->addPortAppearance(leftPortNames[i], &leftPorts[i]);
+    }
+    for(int i=0; i<rightPorts.size(); ++i)
+    {
+        rightPorts[i].x = 1.0;
+        rightPorts[i].y = (double(i)+1)/(double(rightPorts.size())+1.0);
+        rightPorts[i].rot = 0;
+        app->addPortAppearance(rightPortNames[i], &rightPorts[i]);
+    }
+    for(int i=0; i<topPorts.size(); ++i)
+    {
+        topPorts[i].x = (double(i)+1)/(double(topPorts.size())+1.0);
+        topPorts[i].y = 0.0;
+        topPorts[i].rot = 270;
+        app->addPortAppearance(topPortNames[i], &topPorts[i]);
+    }
+
+    MovePortsDialog *mpMP = new MovePortsDialog(app,USERGRAPHICS,this);
+    mpMP->open();
 }

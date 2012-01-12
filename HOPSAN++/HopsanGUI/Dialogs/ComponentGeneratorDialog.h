@@ -64,6 +64,7 @@ private slots:
     void loadFromXml();
     void loadFromXml(QString fileName);
     void saveDialogToXml();
+    void openAppearanceDialog();
 
 private:
     //Initialization & equations text edits
