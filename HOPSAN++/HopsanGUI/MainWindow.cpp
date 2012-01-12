@@ -552,8 +552,8 @@ void MainWindow::createActions()
     connect(mpSimulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
-    mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+O)"));
-    mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+O"));
+    mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
+    mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+z"));
     connect(mpOptimizeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpOptimizeAction, SIGNAL(triggered()), mpOptimizationDialog, SLOT(open()));
 
