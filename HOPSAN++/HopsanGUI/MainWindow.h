@@ -151,10 +151,14 @@ public slots:
     void updateRecentList();
     void launchAutoUpdate();
 
+signals:
+    void simulateKeyPressed();
+
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
 
 private slots:
+    void simulateKeyWasPressed();
     void openPlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();

@@ -186,27 +186,33 @@ void Port::setVisible(bool value)
 //! @param *event defines the mouse event.
 void Port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    //qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
-    QGraphicsWidget::hoverEnterEvent(event);
+    if (mpPortAppearance->mVisible)
+    {
+        //qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
+        QGraphicsWidget::hoverEnterEvent(event);
 
-    this->setCursor(Qt::CrossCursor);
+        this->setCursor(Qt::CrossCursor);
 
-    magnify(true);
-    this->setZValue(HOVEREDPORT_Z);
-    mpPortLabel->show();
+        magnify(true);
+        this->setZValue(HOVEREDPORT_Z);
+        mpPortLabel->show();
+    }
 }
 
 //! Defines what happens when mouse cursor stops hovering a port.
 //! @param *event defines the mouse event.
 void Port::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    this->setCursor(Qt::ArrowCursor);
-    magnify(false);
+    if (mpPortAppearance->mVisible)
+    {
+        this->setCursor(Qt::ArrowCursor);
+        magnify(false);
 
-    mpPortLabel->hide();
-    this->setZValue(PORT_Z);
+        mpPortLabel->hide();
+        this->setZValue(PORT_Z);
 
-    QGraphicsWidget::hoverLeaveEvent(event);
+        QGraphicsWidget::hoverLeaveEvent(event);
+    }
 }
 
 //! @brief Updates the gui port position on its parent object, taking coordinates in parent coordinate system
@@ -244,17 +250,20 @@ void Port::setRotation(qreal angle)
 //! @param *event defines the mouse event.
 void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
-        return;
+    if (mpPortAppearance->mVisible)
+    {
+        if(!mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+            return;
 
-    //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
-    if (event->button() == Qt::LeftButton)
-    {
-        getParentContainerObjectPtr()->createConnector(this);
-    }
-    else if (event->button() == Qt::RightButton)
-    {
-        //Nothing
+        //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
+        if (event->button() == Qt::LeftButton)
+        {
+            getParentContainerObjectPtr()->createConnector(this);
+        }
+        else if (event->button() == Qt::RightButton)
+        {
+            //Nothing
+        }
     }
 }
 
@@ -269,24 +278,27 @@ void Port::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
 
 void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    //std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
+    if (mpPortAppearance->mVisible)
+    {
+        //std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected()) || (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getPortName()).empty()))
-    {
-        event->ignore();
-    }
-    //Disables the user from plotting MULTIPORTS.
-    else if(getPortType() == QString("POWERMULTIPORT"))
-    {
-        QMenu menu;
-        QAction *action;
-        action = menu.addAction(QString("Cannot plot MultiPorts"));
-        action->setDisabled(true);
-        menu.exec(event->screenPos());
-    }
-    else
-    {
-        openRightClickMenu(event->screenPos());
+        if ((!this->isConnected()) || (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getPortName()).empty()))
+        {
+            event->ignore();
+        }
+        //Disables the user from plotting MULTIPORTS.
+        else if(getPortType() == QString("POWERMULTIPORT"))
+        {
+            QMenu menu;
+            QAction *action;
+            action = menu.addAction(QString("Cannot plot MultiPorts"));
+            action->setDisabled(true);
+            menu.exec(event->screenPos());
+        }
+        else
+        {
+            openRightClickMenu(event->screenPos());
+        }
     }
 }
 
@@ -700,7 +712,10 @@ void Port::hide()
 
 void Port::show()
 {
-    QGraphicsWidget::show();
+    if (mpPortAppearance->mVisible)
+    {
+        QGraphicsWidget::show();
+    }
     mpPortLabel->hide();
 }
 

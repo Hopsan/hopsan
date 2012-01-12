@@ -37,6 +37,7 @@ public:
     QString mMainIconPath;
     QString mCQSOverlayPath;
     QString mMultiPortOverlayPath;
+    bool mVisible;
 };
 
 typedef QHash<QString, PortAppearance> PortAppearanceMapT;

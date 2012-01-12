@@ -394,7 +394,9 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         {
             PortAppearance portApp;
             parsePortPoseTag(xmlPort, portname, portApp.x, portApp.y, portApp.rot);
+            portApp.mVisible = (xmlPort.attribute("visible", "true") == HMF_TRUETAG);
             mPortAppearanceMap.insert(portname, portApp);
+
             xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
         }
         // There should only be one <ports>, but lets check for more just in case

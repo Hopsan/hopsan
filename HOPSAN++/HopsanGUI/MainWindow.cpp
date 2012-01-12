@@ -550,6 +550,8 @@ void MainWindow::createActions()
     mpSimulateAction->setToolTip(tr("Simulate Current Project (Ctrl+Shift+S)"));
     mpSimulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
     connect(mpSimulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    connect(mpSimulateAction, SIGNAL(triggered()), this, SLOT(simulateKeyWasPressed()));
+
 
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
     mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
@@ -1287,4 +1289,21 @@ double MainWindow::getFinishTimeFromToolBar()
 void MainWindow::setProjectSimulationTimeParameterValues()
 {
     mpProjectTabs->setCurrentTopLevelSimulationTimeParameters(mpStartTimeLineEdit->text(), mpTimeStepLineEdit->text(), mpStopTimeLineEdit->text() );
+}
+
+void MainWindow::simulateKeyWasPressed()
+{
+    if (mpStartTimeLineEdit->hasFocus())
+    {
+        mpStartTimeLineEdit->clearFocus();
+    }
+    if (mpStopTimeLineEdit->hasFocus())
+    {
+        mpStopTimeLineEdit->clearFocus();
+    }
+    if (mpTimeStepLineEdit->hasFocus())
+    {
+        mpTimeStepLineEdit->clearFocus();
+    }
+    emit simulateKeyPressed();
 }

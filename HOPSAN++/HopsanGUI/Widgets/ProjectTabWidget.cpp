@@ -768,7 +768,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPDF()));
     disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(centerView()));
 
-    disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),    getTab(index),                      SLOT(simulate()));
+    disconnect(gpMainWindow,        SIGNAL(simulateKeyPressed()),    getTab(index),                      SLOT(simulate()));
     disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),    getTab(index),                      SLOT(saveAs()));
 
@@ -906,21 +906,21 @@ void ProjectTabWidget::tabChanged()
 
         getContainer(i)->disconnectMainWindowActions();
 
-        disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
-        disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),        getTab(i),          SLOT(save()));
-        disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),        getTab(i),          SLOT(saveAs()));
+        disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate()));
+        disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),            getTab(i),  SLOT(save()));
+        disconnect(gpMainWindow->mpSaveAsAction,    SIGNAL(triggered()),            getTab(i),  SLOT(saveAs()));
     }
     if(this->count() != 0)
     {
-        connect(gpMainWindow->mpSimulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
+        connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpSaveAction,         SIGNAL(triggered()),            getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpSaveAsAction,       SIGNAL(triggered()),            getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
 
-        connect(gpMainWindow->mpResetZoomAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomInAction,         SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpCenterViewAction,     SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportPDFAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
 
         getCurrentContainer()->connectMainWindowActions();
 

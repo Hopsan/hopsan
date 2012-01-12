@@ -60,9 +60,9 @@ Information about the component for the graphical interface, such as icon, port 
       <picture>helpPicture.svg</picture>
     </help>
     <ports>
-      <port name="P1" x="1.0" y="0.5" a="0"/>
-      <port name="P2" x="0.0" y="0.5" a="180"/>
-      <port name="Kc" x="0.5" y="0.0" a="270"/>
+      <port name="P1" x="1.0" y="0.5" a="0" visible="true"/>
+      <port name="P2" x="0.0" y="0.5" a="180" visible="true"/>
+      <port name="Kc" x="0.5" y="0.0" a="270" visible="true"/>
     </ports>
   </modelobject>
 </hopsanobjectappearance>
@@ -88,6 +88,7 @@ The first line contains basic information about the XML code, and should always 
   - \b x X-position in percent of component icon (0 = left, 1 = right)
   - \b y Y-position in percent of component icon (0 = top, 1 = bottom)
   - \b a Angle of port, 0 = right, 90 = down etc., port shall normally point outwards from the component
+  - \b visible Is the port is visible by default, \e true or \e false. A hidden port is never shown. (If omitted defaults to true)
 
 
 
