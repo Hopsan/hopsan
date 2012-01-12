@@ -64,6 +64,7 @@ public slots:
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
     bool simulateAllOpenModels(bool modelsHaveNotChanged=false);
+    void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
 
 signals:
     void checkMessages();
@@ -83,10 +84,15 @@ public:
     ProjectTab(ProjectTabWidget *parent = 0);
     ~ProjectTab();
 
+    void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
+    void setToolBarSimulationTimeParametersFromTab();
+    QString getStartTime();
+    QString getTimeStep();
+    QString getStopTime();
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
-    SystemContainer *getSystem();
+    SystemContainer *getTopLevelSystem();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
     void setLastSimulationTime(int time);
@@ -113,6 +119,8 @@ signals:
 
 private:
     void saveModel(saveTarget saveAsFlag);
+
+    QString mStartTime, mStopTime;
 
     bool mIsSaved;
     SystemContainer *mpSystem;

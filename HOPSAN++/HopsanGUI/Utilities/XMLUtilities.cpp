@@ -361,11 +361,11 @@ void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom
 //! @param[out] rStart The starttime
 //! @param[out] rStep The timestep size
 //! @param[out] rStop The stoptime
-void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop)
+void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rStep, QString &rStop)
 {
-    rStart = domElement.attribute("start").toDouble();
-    rStep = domElement.attribute("timestep").toDouble();
-    rStop = domElement.attribute("stop").toDouble();
+    rStart = domElement.attribute("start");
+    rStep = domElement.attribute("timestep");
+    rStop = domElement.attribute("stop");
 }
 
 qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue)

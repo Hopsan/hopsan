@@ -211,7 +211,7 @@ public slots:
 
     void setFinishTime(MainWindow* o, const double& stop)
     {
-        o->setFinishTimeInToolBar(stop);
+        o->setStopTimeInToolBar(stop);
     }
 
     double getStartTime(MainWindow* o)

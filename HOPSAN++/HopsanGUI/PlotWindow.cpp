@@ -2805,7 +2805,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     {
         for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
         {
-            if(gpMainWindow->mpProjectTabs->getTab(i)->getSystem()->getModelFileInfo().filePath() == modelPath)
+            if(gpMainWindow->mpProjectTabs->getTab(i)->getTopLevelSystem()->getModelFileInfo().filePath() == modelPath)
             {
                 mpContainerObject = gpMainWindow->mpProjectTabs->getContainer(i);
                 break;

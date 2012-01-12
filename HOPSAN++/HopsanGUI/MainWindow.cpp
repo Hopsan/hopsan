@@ -703,16 +703,16 @@ void MainWindow::createActions()
     mpTimeStepLineEdit->setMaximumWidth(70);
     mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 999.0, 6, mpStartTimeLineEdit));
-    mpFinishTimeLineEdit = new QLineEdit("10.0");
-    mpFinishTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpFinishTimeLineEdit));
-    mpFinishTimeLineEdit->setMaximumWidth(70);
-    mpFinishTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+    mpStopTimeLineEdit = new QLineEdit("10.0");
+    mpStopTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStopTimeLineEdit));
+    mpStopTimeLineEdit->setMaximumWidth(70);
+    mpStopTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
     mpTimeLabelDeliminator2 = new QLabel(tr(" :: "));
 
-    connect(mpStartTimeLineEdit, SIGNAL(editingFinished()), SLOT(finalizeAndSetSimulationTimeParameterValues()), Qt::UniqueConnection);
-    connect(mpTimeStepLineEdit, SIGNAL(editingFinished()), SLOT(finalizeAndSetSimulationTimeParameterValues()), Qt::UniqueConnection);
-    connect(mpFinishTimeLineEdit, SIGNAL(editingFinished()), SLOT(finalizeAndSetSimulationTimeParameterValues()), Qt::UniqueConnection);
+    connect(mpStartTimeLineEdit, SIGNAL(editingFinished()), SLOT(setProjectSimulationTimeParameterValues()), Qt::UniqueConnection);
+    connect(mpTimeStepLineEdit, SIGNAL(editingFinished()), SLOT(setProjectSimulationTimeParameterValues()), Qt::UniqueConnection);
+    connect(mpStopTimeLineEdit, SIGNAL(editingFinished()), SLOT(setProjectSimulationTimeParameterValues()), Qt::UniqueConnection);
 }
 
 
@@ -864,7 +864,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator1);
     mpSimToolBar->addWidget(mpTimeStepLineEdit);
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
-    mpSimToolBar->addWidget(mpFinishTimeLineEdit);
+    mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
 #ifdef DEVELOPMENT
     mpSimToolBar->addAction(mpOptimizeAction);
@@ -1116,7 +1116,7 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
     {
-        mpTogglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->getSystem()->areSubComponentPortsHidden());
+        mpTogglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->getTopLevelSystem()->areSubComponentPortsHidden());
     }
 
     bool noTabs = !(mpProjectTabs->count() > 0);
@@ -1144,7 +1144,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpFlipVerticalAction->setEnabled(!noTabs);
     mpStartTimeLineEdit->setEnabled(!noTabs);
     mpTimeStepLineEdit->setEnabled(!noTabs);
-    mpFinishTimeLineEdit->setEnabled(!noTabs);
+    mpStopTimeLineEdit->setEnabled(!noTabs);
     mpSimulateAction->setEnabled(!noTabs);
     mpOptimizeAction->setEnabled(!noTabs);
     mpPlotAction->setEnabled(!noTabs);
@@ -1220,49 +1220,43 @@ ComponentGeneratorDialog *MainWindow::getComponentGeneratorDialog()
 
 //! @brief Sets a new startvalue.
 //! @param startTime is the new value
-void MainWindow::setStartTimeInToolBar(double startTime)
+void MainWindow::setStartTimeInToolBar(const double startTime)
 {
     QString valueTxt;
-    valueTxt.setNum(startTime, 'g', 6 );
+    valueTxt.setNum(startTime, 'g', 10 );
     mpStartTimeLineEdit->setText(valueTxt);
-    fixSimulationTimeParameterValues();
+    setProjectSimulationTimeParameterValues();
 }
 
 
 //! @brief Sets a new timestep.
 //! @param timeStep is the new value
-void MainWindow::setTimeStepInToolBar(double timeStep)
+void MainWindow::setTimeStepInToolBar(const double timeStep)
 {
     QString valueTxt;
-    valueTxt.setNum(timeStep, 'g', 6 );
+    valueTxt.setNum(timeStep, 'g', 10 );
     mpTimeStepLineEdit->setText(valueTxt);
-    fixSimulationTimeParameterValues();
+    setProjectSimulationTimeParameterValues();
 }
 
 
 //! @brief Sets a new finish value.
 //! @param finishTime is the new value
-void MainWindow::setFinishTimeInToolBar(double finishTime)
+void MainWindow::setStopTimeInToolBar(const double finishTime)
 {
     QString valueTxt;
-    valueTxt.setNum(finishTime, 'g', 6 );
-    mpFinishTimeLineEdit->setText(valueTxt);
-    fixSimulationTimeParameterValues();
+    valueTxt.setNum(finishTime, 'g', 10 );
+    mpStopTimeLineEdit->setText(valueTxt);
+    setProjectSimulationTimeParameterValues();
 }
 
-void MainWindow::setSimulationTimeParameters(const double startTime, const double timeStep, const double stopTime)
+//! @brief Special function to set start step and stop time as QStrings
+//! @note ONLY! call this function to write back changes to toolbar, it will not try to sent the changes back to teh project tab as that would risk endles loop in some cases
+void MainWindow::displaySimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
 {
-    QString valueTxt;
-    valueTxt.setNum(startTime, 'g', 6 );
-    mpStartTimeLineEdit->setText(valueTxt);
-    valueTxt.setNum(timeStep, 'g', 6 );
-    mpTimeStepLineEdit->setText(valueTxt);
-    valueTxt.setNum(stopTime, 'g', 6 );
-    mpFinishTimeLineEdit->setText(valueTxt);
-
-    fixSimulationTimeParameterValues();
-
-    emit refreshSimulationTimeParameters();
+    mpStartTimeLineEdit->setText(startTime);
+    mpTimeStepLineEdit->setText(timeStep);
+    mpStopTimeLineEdit->setText(stopTime);
 }
 
 
@@ -1286,68 +1280,11 @@ double MainWindow::getTimeStepFromToolBar()
 //! @returns the finish value
 double MainWindow::getFinishTimeFromToolBar()
 {
-    return mpFinishTimeLineEdit->text().toDouble();
+    return mpStopTimeLineEdit->text().toDouble();
 }
 
 
-QLineEdit *MainWindow::getStartTimeLineEdit()
+void MainWindow::setProjectSimulationTimeParameterValues()
 {
-    return mpStartTimeLineEdit;
-}
-
-
-QLineEdit *MainWindow::getTimeStepLineEdit()
-{
-    return mpTimeStepLineEdit;
-}
-
-
-QLineEdit *MainWindow::getFinishTimeLineEdit()
-{
-    return mpFinishTimeLineEdit;
-}
-
-
-//! @brief Make sure the values make sense.
-//! @see fixTimeStep()
-void MainWindow::fixSimulationTimeParameterValues()
-{
-    fixFinishTime();
-    fixTimeStep();
-}
-
-void MainWindow::finalizeAndSetSimulationTimeParameterValues()
-{
-    fixSimulationTimeParameterValues();
-    emit refreshSimulationTimeParameters();
-}
-
-
-//! @brief Make sure that the finishs time of the simulation is not smaller than start time.
-//! @see fixTimeStep()
-//! @see fixLabelValues()
-void MainWindow::fixFinishTime()
-{
-    if (getFinishTimeFromToolBar() < getStartTimeFromToolBar())
-    {
-        setFinishTimeInToolBar(getStartTimeFromToolBar());
-    }
-}
-
-
-//! @brief Make sure that the timestep is in the right range i.e. not larger than the simulation time.
-//! @see fixFinishTime()
-//! @see fixLabelValues()
-void MainWindow::fixTimeStep()
-{
-    //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
-    if (getTimeStepFromToolBar() > (getFinishTimeFromToolBar() - getStartTimeFromToolBar()))
-    {
-        setTimeStepInToolBar(getFinishTimeFromToolBar() - getStartTimeFromToolBar());
-    }
-
-//    if (mpProjectTabs->count() > 0)
-//    {
-//        mpProjectTabs->getCurrentTopLevelSystem()->updateTimeStep();
-//    }
+    mpProjectTabs->setCurrentTopLevelSimulationTimeParameters(mpStartTimeLineEdit->text(), mpTimeStepLineEdit->text(), mpStopTimeLineEdit->text() );
 }

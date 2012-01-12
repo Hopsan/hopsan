@@ -63,13 +63,10 @@ public:
     PyDockWidget *getPythonDock();
 
     //Set and get methods for simulation parameters in toolbar
-    QLineEdit *getStartTimeLineEdit();
-    QLineEdit *getTimeStepLineEdit();
-    QLineEdit *getFinishTimeLineEdit();
-    void setStartTimeInToolBar(double startTime);
-    void setTimeStepInToolBar(double timeStep);
-    void setFinishTimeInToolBar(double finishTime);
-    void setSimulationTimeParameters(const double startTime, const double timeStep, const double stopTime);
+    void setStartTimeInToolBar(const double startTime);
+    void setTimeStepInToolBar(const double timeStep);
+    void setStopTimeInToolBar(const double finishTime);
+    void displaySimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
     double getStartTimeFromToolBar();
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
@@ -149,14 +146,10 @@ public slots:
     void initializeWorkspace();
     void updateToolBarsToNewTab();
     void refreshUndoWidgetList();
-    void fixSimulationTimeParameterValues();
-    void finalizeAndSetSimulationTimeParameterValues();
+    void setProjectSimulationTimeParameterValues();
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
     void launchAutoUpdate();
-
-signals:
-    void refreshSimulationTimeParameters();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
@@ -176,10 +169,6 @@ private slots:
     void commenceAutoUpdate(QNetworkReply* reply);
 
 private:
-    //Methods that adjusts simulation parameters if they are illegal
-    void fixFinishTime();
-    void fixTimeStep();
-
     void createActions();
     void createMenus();
     void createToolbars();
@@ -196,7 +185,7 @@ private:
     //Simulation setup line edits
     QLineEdit *mpStartTimeLineEdit;
     QLineEdit *mpTimeStepLineEdit;
-    QLineEdit *mpFinishTimeLineEdit;
+    QLineEdit *mpStopTimeLineEdit;
 
     //Dock area widgets
     QDockWidget *mpMessageDock;

@@ -53,6 +53,9 @@
 ProjectTab::ProjectTab(ProjectTabWidget *parent)
     : QWidget(parent)
 {
+    mStartTime.setNum(0.0,'g',10);
+    mStopTime.setNum(10.0,'g',10);
+
     mEditingEnabled = true;
     this->setPalette(gConfig.getPalette());
     this->setMouseTracking(true);
@@ -132,6 +135,57 @@ ProjectTab::~ProjectTab()
     delete mpSystem;
 }
 
+void ProjectTab::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
+{
+    mStartTime = startTime;
+    mStopTime = stopTime;
+
+    // First fix Stop time
+    if (mStopTime.toDouble() < mStartTime.toDouble())
+    {
+        mStopTime = mStartTime; //This line must come before the mainWindowSet
+        gpMainWindow->setStopTimeInToolBar(mStartTime.toDouble());
+    }
+
+    //Then fix timestep
+    if ( timeStep.toDouble() > (mStopTime.toDouble() - mStartTime.toDouble()) )
+    {
+        mpSystem->setTimeStep(mStopTime.toDouble() - mStartTime.toDouble()); //This line must come before the mainWindowSet
+        gpMainWindow->setTimeStepInToolBar( mStopTime.toDouble() - mStartTime.toDouble() );
+    }
+    else
+    {
+        getTopLevelSystem()->setTimeStep(timeStep.toDouble());
+    }
+
+    //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
+}
+
+//! help function to update teh toolbar simulation time parameters from a tab
+void ProjectTab::setToolBarSimulationTimeParametersFromTab()
+{
+    QString ts;
+    ts.setNum(mpSystem->getTimeStep(),'g',10);
+    gpMainWindow->displaySimulationTimeParameters(mStartTime, ts, mStopTime);
+}
+
+QString ProjectTab::getStartTime()
+{
+    return mStartTime;
+}
+
+QString ProjectTab::getTimeStep()
+{
+    QString num;
+    num.setNum(getTopLevelSystem()->getTimeStep());
+    return num;
+}
+
+QString ProjectTab::getStopTime()
+{
+    return mStopTime;
+}
+
 
 //! Should be called when a model has changed in some sense,
 //! e.g. a component added or a connection has changed.
@@ -154,7 +208,7 @@ void ProjectTab::hasChanged()
 
 
 //! @brief Returns a pointer to the system in the tab
-SystemContainer *ProjectTab::getSystem()
+SystemContainer *ProjectTab::getTopLevelSystem()
 {
     return mpSystem;
 }
@@ -222,15 +276,11 @@ bool ProjectTab::simulate()
 {
     MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 
-    mpSystem->updateStartTime();
-    mpSystem->updateStopTime();
-    mpSystem->updateTimeStep();
-
-        //Setup simulation parameters
-    double startTime = mpSystem->getStartTime();
-    double finishTime = mpSystem->getStopTime();
+    // Setup simulation parameters
+    double startTime = mStartTime.toDouble();
+    double finishTime = mStopTime.toDouble();
     double dt = finishTime - startTime;
-    size_t nSteps = dt/mpSystem->getCoreSystemAccessPtr()->getDesiredTimeStep();
+    size_t nSteps = dt/mpSystem->getTimeStep();
     size_t nSamples = mpSystem->getNumberOfLogSamples();
 
     if(!mpSystem->getCoreSystemAccessPtr()->isSimulationOk())
@@ -588,7 +638,7 @@ ProjectTab *ProjectTabWidget::getTab(int index)
 //! Be sure to check that the number of tabs is not zero before calling this.
 SystemContainer *ProjectTabWidget::getCurrentTopLevelSystem()
 {
-    return getCurrentTab()->getSystem();
+    return getCurrentTab()->getTopLevelSystem();
 }
 
 
@@ -610,7 +660,7 @@ ContainerObject *ProjectTabWidget::getContainer(int index)
 //! Be sure to check that the tab exist before calling this.
 SystemContainer *ProjectTabWidget::getSystem(int index)
 {
-    return getTab(index)->getSystem();
+    return getTab(index)->getTopLevelSystem();
 }
 
 
@@ -634,7 +684,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     tabName.append(QString::number(mNumberOfUntitledTabs));
 
     ProjectTab *newTab = new ProjectTab(this);
-    newTab->getSystem()->setName(tabName);
+    newTab->getTopLevelSystem()->setName(tabName);
 
     this->addTab(newTab, tabName);
     this->setCurrentWidget(newTab);
@@ -684,7 +734,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     }
 
 
-    if (getTab(index)->getSystem()->hasOpenPlotCurves())
+    if (getTab(index)->getTopLevelSystem()->hasOpenPlotCurves())
     {
         QMessageBox msgBox;
         msgBox.setWindowIcon(gpMainWindow->windowIcon());
@@ -721,10 +771,6 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),    getTab(index),                      SLOT(simulate()));
     disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),    getTab(index),                      SLOT(saveAs()));
-
-    disconnect(gpMainWindow->getStartTimeLineEdit(),   SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStartTime()));
-    disconnect(gpMainWindow->getTimeStepLineEdit(),    SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateTimeStep()));
-    disconnect(gpMainWindow->getFinishTimeLineEdit(),  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),    SLOT(updateStopTime()));
 
     getContainer(index)->disconnectMainWindowActions();
 
@@ -817,7 +863,7 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
 
     this->addProjectTab(new ProjectTab(this), fileInfo.baseName());
     ProjectTab *pCurrentTab = this->getCurrentTab();
-    pCurrentTab->getSystem()->setUndoEnabled(false, true);
+    pCurrentTab->getTopLevelSystem()->setUndoEnabled(false, true);
 
     //Check if this is an expected hmf xml file
     //! @todo maybe write helpfunction that does this directly in system (or container)
@@ -827,9 +873,9 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     {
         //! @todo check if we could load else give error message and dont attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
-        pCurrentTab->getSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-        pCurrentTab->getSystem()->setAppearanceDataBasePath(pCurrentTab->getSystem()->getModelFileInfo().absolutePath());
-        pCurrentTab->getSystem()->loadFromDomElement(systemElement);
+        pCurrentTab->getTopLevelSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+        pCurrentTab->getTopLevelSystem()->setAppearanceDataBasePath(pCurrentTab->getTopLevelSystem()->getModelFileInfo().absolutePath());
+        pCurrentTab->getTopLevelSystem()->loadFromDomElement(systemElement);
     }
     else
     {
@@ -837,7 +883,7 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     }
     pCurrentTab->setSaved(true);
 
-    pCurrentTab->getSystem()->setUndoEnabled(true, true);
+    pCurrentTab->getTopLevelSystem()->setUndoEnabled(true, true);
 
     emit newTabAdded();
 }
@@ -860,11 +906,6 @@ void ProjectTabWidget::tabChanged()
 
         getContainer(i)->disconnectMainWindowActions();
 
-        // Disconnect start stop ts sig slots from root system
-        disconnect(gpMainWindow,    SIGNAL(refreshSimulationTimeParameters()),  getSystem(i),    SLOT(updateStartTime()));
-        disconnect(gpMainWindow,    SIGNAL(refreshSimulationTimeParameters()),  getSystem(i),    SLOT(updateTimeStep()));
-        disconnect(gpMainWindow,    SIGNAL(refreshSimulationTimeParameters()),  getSystem(i),    SLOT(updateStopTime()));
-
         disconnect(gpMainWindow->mpSimulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
         disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),        getTab(i),          SLOT(save()));
         disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),        getTab(i),          SLOT(saveAs()));
@@ -883,32 +924,19 @@ void ProjectTabWidget::tabChanged()
 
         getCurrentContainer()->connectMainWindowActions();
 
-        //Connect the start stop ts signal and slots to root system
-        connect(gpMainWindow,   SIGNAL(refreshSimulationTimeParameters()),  getCurrentTopLevelSystem(), SLOT(updateStartTime()), Qt::UniqueConnection);
-        connect(gpMainWindow,   SIGNAL(refreshSimulationTimeParameters()),  getCurrentTopLevelSystem(), SLOT(updateTimeStep()), Qt::UniqueConnection);
-        connect(gpMainWindow,   SIGNAL(refreshSimulationTimeParameters()),  getCurrentTopLevelSystem(), SLOT(updateStopTime()), Qt::UniqueConnection);
-
         getCurrentContainer()->updateMainWindowButtons();
-        setToolBarSimulationTimeParametersFromSystem(getCurrentTopLevelSystem());
+        getCurrentTab()->setToolBarSimulationTimeParametersFromTab();
 
-        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->getSystem()->getGfxType())
+
+        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->getTopLevelSystem()->getGfxType())
         {
-            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->getSystem()->getGfxType());
+            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->getTopLevelSystem()->getGfxType());
         }
 
         gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentContainer()->areSubComponentNamesHidden());
         gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentContainer()->areSubComponentPortsHidden());
         gpMainWindow->mpShowLossesAction->setChecked(getCurrentContainer()->areLossesVisible());
     }
-}
-
-//! help function to update teh toolbar simulation time parameters from a system (the current root system)
-void ProjectTabWidget::setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem)
-{
-//    gpMainWindow->setStartTimeInToolBar(pSystem->getStartTime());
-//    gpMainWindow->setTimeStepInToolBar(pSystem->getTimeStep());
-//    gpMainWindow->setFinishTimeInToolBar(pSystem->getStopTime());
-    gpMainWindow->setSimulationTimeParameters(pSystem->getStartTime(), pSystem->getTimeStep(), pSystem->getStopTime());
 }
 
 void ProjectTabWidget::saveCurrentModelToWrappedCode()
@@ -945,18 +973,11 @@ bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
 
         MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 
-        for(int i=0; i<count(); ++i)
-        {
-            pMainSystem->updateStartTime();
-            pMainSystem->updateStopTime();
-            pMainSystem->updateTimeStep();
-        }
-
             //Setup simulation parameters
-        double startTime = pMainSystem->getStartTime();
-        double finishTime = pMainSystem->getStopTime();
+        double startTime = getCurrentTab()->getStartTime().toDouble();
+        double finishTime = getCurrentTab()->getStopTime().toDouble();
         double dt = finishTime - startTime;
-        size_t nSteps = dt/pMainSystem->getCoreSystemAccessPtr()->getDesiredTimeStep();
+        size_t nSteps = dt/pMainSystem->getTimeStep();
         size_t nSamples = pMainSystem->getNumberOfLogSamples();
 
         for(int i=0; i<count(); ++i)
@@ -1082,4 +1103,12 @@ bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
     }
 
     return false;       //No tabs open
+}
+
+void ProjectTabWidget::setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
+{
+    if (count() > 0)
+    {
+        getCurrentTab()->setTopLevelSimulationTime(startTime, timeStep, stopTime);
+    }
 }

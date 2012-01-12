@@ -88,9 +88,7 @@ public:
     SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent);
     ~SystemContainer();
 
-    double getStartTime();
     double getTimeStep();
-    double getStopTime();
 
     size_t getNumberOfLogSamples();
     void setNumberOfLogSamples(size_t nSamples);
@@ -119,9 +117,7 @@ public:
     int type() const;
 
 public slots:
-    void updateStartTime();
-    void updateTimeStep();
-    void updateStopTime();
+    void setTimeStep(const double timeStep);
 
 private slots:
     void createFMUSourceFilesFromDialog();
@@ -140,9 +136,6 @@ protected:
 private:
     void commonConstructorCode();
 
-    double mStartTime;
-    double mStopTime;
-    double mTimeStep;
     size_t mNumberOfLogSamples;
 
     QString mLoadType;

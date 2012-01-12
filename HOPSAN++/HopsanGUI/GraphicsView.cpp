@@ -50,7 +50,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
         : QGraphicsView(parent)
 {
     mpParentProjectTab = parent;
-    mpContainerObject = mpParentProjectTab->getSystem();
+    mpContainerObject = mpParentProjectTab->getTopLevelSystem();
 
     mIgnoreNextContextMenuEvent = false;
     mCtrlKeyPressed = false;
@@ -188,11 +188,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Also changes to the correct background color if it is not the correct one.
 void GraphicsView::updateViewPort()
 {
-    if( (mpParentProjectTab->getSystem()->getGfxType() == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
+    if( (mpParentProjectTab->getTopLevelSystem()->getGfxType() == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
     {
         this->setBackgroundBrush(gConfig.getBackgroundColor());
     }
-    else if( (mpParentProjectTab->getSystem()->getGfxType() == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
+    else if( (mpParentProjectTab->getTopLevelSystem()->getGfxType() == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
     {
         this->setBackgroundBrush(mIsoColor);
     }

@@ -63,7 +63,7 @@ void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const 
 void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, bool &rFlipped);
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
 void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
-void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop);
+void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rStep, QString &rStop);
 
 qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue);
 

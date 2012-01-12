@@ -2370,7 +2370,7 @@ void ContainerObject::enterContainer()
     this->collectPlotData();
 
     mpParentProjectTab->setExternalSystem((this->isExternal() &&
-                                           this != mpParentProjectTab->getSystem()) ||
+                                           this != mpParentProjectTab->getTopLevelSystem()) ||
                                            this->isAncestorOfExternalSubsystem());
 }
 
@@ -2384,7 +2384,7 @@ void ContainerObject::exitContainer()
     mpParentProjectTab->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
 
     mpParentProjectTab->setExternalSystem((mpParentContainerObject->isExternal() &&
-                                           mpParentContainerObject != mpParentProjectTab->getSystem()) ||
+                                           mpParentContainerObject != mpParentProjectTab->getTopLevelSystem()) ||
                                            mpParentContainerObject->isAncestorOfExternalSubsystem());
 
     // Disconnect this system and connect parent system with undo and redo actions
@@ -2703,7 +2703,7 @@ void ContainerObject::hideLosses()
 
 bool ContainerObject::isAncestorOfExternalSubsystem()
 {
-    if(this == mpParentProjectTab->getSystem())
+    if(this == mpParentProjectTab->getTopLevelSystem())
     {
         return false;
     }

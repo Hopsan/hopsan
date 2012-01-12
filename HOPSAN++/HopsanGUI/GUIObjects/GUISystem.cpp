@@ -82,9 +82,6 @@ void SystemContainer::commonConstructorCode()
 
         //Set default values
     mLoadType = "EMBEDED";
-    mStartTime = 0;     //! @todo These default values should be options for the user
-    mTimeStep = 0.001;
-    mStopTime = 10;
     mNumberOfLogSamples = 2048;
 
         //Create the object in core, and update name
@@ -105,7 +102,6 @@ void SystemContainer::commonConstructorCode()
         mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentContainerObject->getCoreSystemAccessPtr());
     }
 
-    mpCoreSystemAccess->setDesiredTimeStep(mTimeStep);
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 }
 
@@ -189,7 +185,7 @@ void SystemContainer::openPropertiesDialog()
 void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     ModelObject::saveCoreDataToDomElement(rDomElement);
-    appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
+    appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble());
 
     QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
     QList<QStringList> favPars = this->getFavoriteVariables();
@@ -564,11 +560,16 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         //! @todo load viewport and pose and stuff
 
         //Load simulation time
-        parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), mStartTime, mTimeStep, mStopTime);
-        //! @todo dont do this for non root systems
-        gpMainWindow->setStartTimeInToolBar(mStartTime);
-        gpMainWindow->setTimeStepInToolBar(mTimeStep);
-        gpMainWindow->setFinishTimeInToolBar(mStopTime);
+        QString startT,stepT,stopT;
+        parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT);
+        this->setTimeStep(stepT.toDouble());
+
+        //Only set start stop time for the top level system
+        if (mpParentContainerObject == 0)
+        {
+            mpParentProjectTab->setTopLevelSimulationTime(startT,stepT,stopT);
+            mpParentProjectTab->setToolBarSimulationTimeParametersFromTab();
+        }
 
         //1. Load global parameters
         QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
@@ -2329,58 +2330,17 @@ void SystemContainer::setModelFileInfo(QFile &rFile)
     this->mModelFileInfo.setFile(rFile);
 }
 
-//! Function that updates start time value of the current project to the one in the simulation setup widget.
-//! @see updateTimeStep()
-//! @see updateStopTime()
-void SystemContainer::updateStartTime()
+
+//! Function to set the time step of the current system
+void SystemContainer::setTimeStep(const double timeStep)
 {
-    mStartTime = gpMainWindow->getStartTimeFromToolBar();
+    mpCoreSystemAccess->setDesiredTimeStep(timeStep);
 }
-
-
-//! Function that updates time step value of the current project to the one in the simulation setup widget.
-//! @see updateStartTime()
-//! @see updateStopTime()
-void SystemContainer::updateTimeStep()
-{
-    mTimeStep = gpMainWindow->getTimeStepFromToolBar();
-    mpCoreSystemAccess->setDesiredTimeStep(mTimeStep); //!< @todo it is quite dangerous to have this here, if we by mistake call this on a non root system the timestep for that system will be changed
-}
-
-
-//! Function that updates stop time value of the current project to the one in the simulation setup widget.
-//! @see updateStartTime()
-//! @see updateTimeStep()
-void SystemContainer::updateStopTime()
-{
-    mStopTime = gpMainWindow->getFinishTimeFromToolBar();
-}
-
-
-//! Returns the start time value of the current project.
-//! @see getTimeStep()
-//! @see getStopTime()
-double SystemContainer::getStartTime()
-{
-    return mStartTime;
-}
-
 
 //! Returns the time step value of the current project.
-//! @see getStartTime()
-//! @see getStopTime()
 double SystemContainer::getTimeStep()
 {
-    return mTimeStep;
-}
-
-
-//! Returns the stop time value of the current project.
-//! @see getStartTime()
-//! @see getTimeStep()
-double SystemContainer::getStopTime()
-{
-    return mStopTime;
+    return mpCoreSystemAccess->getDesiredTimeStep();
 }
 
 
