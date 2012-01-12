@@ -31,7 +31,7 @@
 #include "Utilities/ComponentGeneratorUtilities.h"
 
 class MainWindow;
-
+class ModelObjectAppearance;
 
 class ComponentGeneratorDialog : public QDialog
 {
@@ -176,6 +176,8 @@ private:
     QList<StaticVariableSpecification> mStaticVariablesList;
 
     QStringList mRecentComponentFileNames;
+
+    ModelObjectAppearance *mpAppearance;
 };
 
 #endif // COMPONENTGENERATORDIALOG_H_INCLUDED

@@ -40,6 +40,9 @@
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QDialog(parent)
 {
+    mpAppearance = 0;
+
+
     //Set the name and size of the main window
     this->resize(640,480);
     this->setWindowTitle("Component Generator");
@@ -1497,61 +1500,83 @@ void ComponentGeneratorDialog::saveDialogToXml()
 
 void ComponentGeneratorDialog::openAppearanceDialog()
 {
-    ModelObjectAppearance *app = new ModelObjectAppearance();
-    app->setIconPath(QString(OBJECTICONPATH)+"generatedcomponenticon.svg", USERGRAPHICS, ABSOLUTE);
-    for(int p=0; p<mPortList.size(); ++p)
+    if(mpAppearance == 0)
     {
-        PortAppearance PortApp;
-        PortApp.selectPortIcon(mpComponentTypeComboBox->currentText(), mPortList.at(p).porttype, mPortList.at(p).nodetype);
-
+        mpAppearance = new ModelObjectAppearance();
     }
 
+    mpAppearance->setIconPath(QString(OBJECTICONPATH)+"generatedcomponenticon.svg", USERGRAPHICS, ABSOLUTE);
 
     QStringList leftPortNames, rightPortNames, topPortNames;
     QList<PortAppearance> leftPorts, rightPorts, topPorts;
+
     for(int p=0; p<mPortList.size(); ++p)
     {
-        PortAppearance PortApp;
-        PortApp.selectPortIcon(mpComponentTypeComboBox->currentText(), mPortList.at(p).porttype.toUpper(), mPortList.at(p).nodetype);
+        PortAppearanceMapT portMap = mpAppearance->getPortAppearanceMap();
+        if(!portMap.contains(mPortList.at(p).name))
+        {
+            PortAppearance PortApp;
+            PortApp.selectPortIcon(mpComponentTypeComboBox->currentText(), mPortList.at(p).porttype.toUpper(), mPortList.at(p).nodetype);
 
-        if(mPortList.at(p).nodetype == "NodeSignal" && mPortList.at(p).porttype == "ReadPort")
-        {
-            leftPorts << PortApp;
-            leftPortNames << mPortList.at(p).name;
-        }
-        else if(mPortList.at(p).nodetype == "NodeSignal" && mPortList.at(p).porttype == "WritePort")
-        {
-            rightPorts << PortApp;
-            rightPortNames << mPortList.at(p).name;
-        }
-        else
-        {
-            topPorts << PortApp;
-            topPortNames << mPortList.at(p).name;
+            if(mPortList.at(p).nodetype == "NodeSignal" && mPortList.at(p).porttype == "ReadPort")
+            {
+                leftPorts << PortApp;
+                leftPortNames << mPortList.at(p).name;
+            }
+            else if(mPortList.at(p).nodetype == "NodeSignal" && mPortList.at(p).porttype == "WritePort")
+            {
+                rightPorts << PortApp;
+                rightPortNames << mPortList.at(p).name;
+            }
+            else
+            {
+                topPorts << PortApp;
+                topPortNames << mPortList.at(p).name;
+            }
         }
     }
+
+    PortAppearanceMapT portMap = mpAppearance->getPortAppearanceMap();
+    PortAppearanceMapT::iterator it;
+    QStringList keysToRemove;
+    for(it=portMap.begin(); it!=portMap.end(); ++it)
+    {
+        bool exists=false;
+        for(int j=0; j<mPortList.size(); ++j)
+        {
+            if(mPortList.at(j).name == it.key())
+                exists=true;
+        }
+        if(!exists)
+            keysToRemove << it.key();
+    }
+    for(int i=0; i<keysToRemove.size(); ++i)
+    {
+        mpAppearance->getPortAppearanceMap().remove(keysToRemove.at(i));
+    }
+
     for(int i=0; i<leftPorts.size(); ++i)
     {
         leftPorts[i].x = 0.0;
         leftPorts[i].y = (double(i)+1)/(double(leftPorts.size())+1.0);
         leftPorts[i].rot = 180;
-        app->addPortAppearance(leftPortNames[i], &leftPorts[i]);
+        mpAppearance->addPortAppearance(leftPortNames[i], &leftPorts[i]);
     }
     for(int i=0; i<rightPorts.size(); ++i)
     {
         rightPorts[i].x = 1.0;
         rightPorts[i].y = (double(i)+1)/(double(rightPorts.size())+1.0);
         rightPorts[i].rot = 0;
-        app->addPortAppearance(rightPortNames[i], &rightPorts[i]);
+        mpAppearance->addPortAppearance(rightPortNames[i], &rightPorts[i]);
     }
     for(int i=0; i<topPorts.size(); ++i)
     {
         topPorts[i].x = (double(i)+1)/(double(topPorts.size())+1.0);
         topPorts[i].y = 0.0;
         topPorts[i].rot = 270;
-        app->addPortAppearance(topPortNames[i], &topPorts[i]);
+        mpAppearance->addPortAppearance(topPortNames[i], &topPorts[i]);
     }
 
-    MovePortsDialog *mpMP = new MovePortsDialog(app,USERGRAPHICS,this);
+    MovePortsDialog *mpMP = new MovePortsDialog(mpAppearance,USERGRAPHICS,this);
     mpMP->open();
 }
