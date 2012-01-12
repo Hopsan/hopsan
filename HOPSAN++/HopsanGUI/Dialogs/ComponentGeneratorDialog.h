@@ -57,6 +57,7 @@ private slots:
     void updateGivenSoughtText();
     void updateBoundaryEquations();
     void updateRecentList();
+    void removeRecentComponent();
     void loadRecentComponent();
     void compile();
     void loadFromModelica();
@@ -91,6 +92,7 @@ private:
     QLabel *mpRecentLabel;
     QComboBox *mpRecentComboBox;
     QPushButton *mpLoadRecentButton;
+    QPushButton *mpRemoveRecentButton;
     QToolButton *mpLoadButton;
     QMenu *mpLoadMenu;
     QAction *mpLoadFromModelicaAction;
@@ -159,6 +161,7 @@ private:
 
     //Buttons
     QPushButton *mpCancelButton;
+    QPushButton *mpAppearanceButton;
     QPushButton *mpCompileButton;
     QDialogButtonBox *mpButtonBox;
 

@@ -36,7 +36,7 @@
 #include "MainWindow.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
-//#include "Configuration.h"
+#include "Configuration.h"
 #include "Widgets/LibraryWidget.h"
 
 using namespace std;
@@ -763,8 +763,19 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     xmlFile.remove();*/
 
     //Load the library
-    gpMainWindow->mpLibrary->unloadExternalLibrary(generatedDir.path());
-    gpMainWindow->mpLibrary->loadExternalLibrary(generatedDir.path());    //Load the library
+
+    QString libPath = QDir().cleanPath(gExecPath + generatedDir.path());
+
+    if(gConfig.hasUserLib(libPath))
+    {
+        qDebug() << "Loaded user libs: " << gConfig.getUserLibs();
+        gpMainWindow->mpLibrary->updateExternalLibraries();
+    }
+    else
+    {
+        qDebug() << "Loaded user libs: " << gConfig.getUserLibs();
+        gpMainWindow->mpLibrary->loadExternalLibrary(libPath);
+    }
 }
 
 
@@ -1225,7 +1236,7 @@ void translateIntsToDouble(QStringList &equations)
                 {
                     stopId = i-1;
                     //qDebug() << "Found variable at " << startId << ", " << stopId;
-                    if(equations[e][startId-1] != '.' && equations[e][stopId+1] != '.')     //Don't modify float numbers
+                    if((startId>0 && equations[e][startId-1] != '.') && (stopId < equations[e].size()-1 && equations[e][stopId+1] != '.'))     //Don't modify float numbers
                     {
                         equations[e].insert(stopId+1, ".0");
                         i=i+2;
@@ -1237,7 +1248,7 @@ void translateIntsToDouble(QStringList &equations)
         if(var)
         {
             stopId = equations[e].size()-1;
-            if(equations[e][startId-1] != '.')     //Don't modify float numbers
+            if(startId>0 && equations[e][startId-1] != '.')     //Don't modify float numbers
             {
                 equations[e].append(".0");
             }

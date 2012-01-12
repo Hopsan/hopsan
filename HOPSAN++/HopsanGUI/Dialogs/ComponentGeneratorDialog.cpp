@@ -101,16 +101,21 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     //Buttons
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpCancelButton->setAutoDefault(false);
+    mpAppearanceButton = new QPushButton(tr("&Appearance"), this);
+    mpAppearanceButton->setAutoDefault(false);
     mpCompileButton = new QPushButton(tr("&Compile"), this);
     mpCompileButton->setDefault(true);
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::RejectRole);
+    mpButtonBox->addButton(mpAppearanceButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpCompileButton, QDialogButtonBox::ActionRole);
 
     //General settings
     mpRecentLabel = new QLabel("Recent Models:");
     mpRecentComboBox = new QComboBox(this);
     mpLoadRecentButton = new QPushButton("Load Recent");
+    mpRemoveRecentButton = new QPushButton("Remove");
+    connect(mpRemoveRecentButton,       SIGNAL(pressed()), this, SLOT(removeRecentComponent()));
     connect(mpLoadRecentButton,         SIGNAL(pressed()), this, SLOT(loadRecentComponent()));
 
     mpLoadButton = new QToolButton(this);
@@ -703,9 +708,16 @@ void ComponentGeneratorDialog::update()
         mpLayout->removeItem(mpLayout->itemAt(0));
     }
 
-    mpLayout->addWidget(mpRecentLabel,              0, 0, 1, 1);
-    mpLayout->addWidget(mpRecentComboBox,           0, 1, 1, 8);
-    mpLayout->addWidget(mpLoadRecentButton,         0, 9, 1, 2);
+    QHBoxLayout *pRecentLayout = new QHBoxLayout(this);
+    pRecentLayout->addWidget(mpRecentLabel);
+    pRecentLayout->addWidget(mpRecentComboBox);
+    pRecentLayout->addWidget(mpLoadRecentButton);
+    pRecentLayout->addWidget(mpRemoveRecentButton);
+    pRecentLayout->setStretch(1, 1);
+    QWidget *pRecentWidget = new QWidget(this);
+    pRecentWidget->setLayout(pRecentLayout);
+
+    mpLayout->addWidget(pRecentWidget,              0, 0, 1, 11);
     mpLayout->addWidget(mpLoadButton,               1, 0);
     mpLayout->addWidget(mpSaveButton,               1, 1);
     mpLayout->addWidget(mpGenerateFromLabel,        1, 2);
@@ -853,6 +865,17 @@ void ComponentGeneratorDialog::updateRecentList()
         }
         file.close();
     }
+}
+
+
+void ComponentGeneratorDialog::removeRecentComponent()
+{
+    int index = mpRecentComboBox->currentIndex();
+    QString fileName = mRecentComponentFileNames.at(index);
+    QFile().remove(fileName);
+    mRecentComponentFileNames.removeAt(index);
+    updateRecentList();
+    mpRecentComboBox->setCurrentIndex(std::min(index, mpRecentComboBox->count()-1));
 }
 
 

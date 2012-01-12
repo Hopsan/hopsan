@@ -1381,6 +1381,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
     if(!libDirObject.exists() && gConfig.hasUserLib(libDir))
     {
         gConfig.removeUserLib(libDir);      //Remove user lib if it does not exist
+        //! @todo Shouldn't we do a return here? The code bellow will probably crash if the directory does not exist.
     }
 
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
@@ -1594,6 +1595,229 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
 }
 
 
+
+
+void LibraryWidget::updateLibraryFolder(LibraryContentsTree *pTree)
+{
+//    QDir libDirObject(pTree->mLibDir);
+//    //if(!libDirObject.exists() && gConfig.hasUserLib(libDir))
+//    //{
+//    //    gConfig.removeUserLib(libDir);      //Remove user lib if it does not exist
+//        //! @todo Shouldn't we do a return here? The code bellow will probably crash if the directory does not exist.
+//    //}
+
+//    //QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
+
+
+//    //LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
+//    //pTree->mLibDir = libDir;
+//    //libName = pTree->mName; //Reset name variable to new unique name
+
+//        // Load DLL or SO files
+//    QStringList filters;
+//    #ifdef WIN32
+//        filters << "*.dll";
+//    #else
+//        filters << "*.so";
+//    #endif
+//    libDirObject.setNameFilters(filters);
+//    QStringList libList = libDirObject.entryList();
+//    bool success=false;
+//    for (int i = 0; i < libList.size(); ++i)
+//    {
+//        QString filename = libDir + "/" + libList.at(i);
+//        if(!pTree->mLoadedLibraryDLLs.contains(filename))       //Only add new components
+//        {
+//            qDebug() << "Trying to load: " << filename << " in Core";
+//            if(mpCoreAccess->loadComponentLib(filename))
+//            {
+//                success=true;
+//                pTree->mLoadedLibraryDLLs.append(filename); // Remember dlls loaded in this subtree
+//            }
+//        }
+//    }
+
+//    if(!success && libList.size()>0)
+//    {
+//        gpMainWindow->mpMessageWidget->printGUIInfoMessage(libDirObject.path() + ": Could not find any new library files in specified folder.");
+//        gpMainWindow->mpMessageWidget->checkMessages();
+//        return;     //Nothing to do since no new libraries found
+//    }
+//    gpMainWindow->mpMessageWidget->checkMessages();
+
+//    // Load XML files and recursively load subfolder
+
+//    //! @todo Subfolders should be updated as well
+//    //Append subnodes recursively
+////    libDirObject.setFilter(QDir::AllDirs);
+////    QStringList subDirList = libDirObject.entryList();
+////    subDirList.removeAll(".");
+////    subDirList.removeAll("..");
+////    subDirList.removeAll(".svn");
+////    for(int i=0; i<subDirList.size(); ++i)
+////    {
+////        loadLibraryFolder(libDir+"/"+subDirList.at(i), libRootDir, pTree);
+////    }
+
+//    //Append components
+//    filters.clear();
+//    filters << "*.xml";                     //Create the name filter
+//    libDirObject.setFilter(QDir::NoFilter);
+//    libDirObject.setNameFilters(filters);   //Set the name filter
+
+//    QStringList xmlFileList  = libDirObject.entryList();    //Create a list with all name of the files in dir libDir
+//    for (int i = 0; i < xmlFileList.size(); ++i)        //Iterate over the file names
+//    {
+//        QString filename = libDir + "/" + xmlFileList.at(i);
+//        QFile file(filename);   //Create a QFile object
+//        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
+//        {
+//            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file or not a text file: " + filename);
+//            continue;
+//        }
+
+//        ModelObjectAppearance *pAppearanceData = new ModelObjectAppearance;
+
+//        QDomDocument domDocument;        //Read appearance from file, First check if xml
+//        QString errorStr;
+//        int errorLine, errorColumn;
+//        if (domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))      //Load dom document
+//        {
+//            QDomElement cafRoot = domDocument.documentElement();
+//            if (cafRoot.tagName() != CAF_ROOT)                      //Not an appearance file
+//            {
+//                gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+//                continue;
+//            }
+//            else
+//            {
+//                //Read appearance data from the caf xml file, begin with the first
+//                QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement(CAF_MODELOBJECT); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+//                pAppearanceData->setBasePath(libDir + "/");
+//                pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
+
+//                // Check CAF version, and ask user if they want to update to latest version
+//                QString caf_version = cafRoot.attribute(CAF_VERSION);
+
+//                if (caf_version < CAF_VERSIONNUM)
+//                {
+//                    bool doSave=false;
+//                    if (mUpConvertAllCAF==UNDECIDED_TO_ALL)
+//                    {
+//                        QMessageBox questionBox(this);
+//                        QString text;
+//                        QTextStream ts(&text);
+//                        ts << file.fileName() << "\n"
+//                           << "Your file format is older than the newest version! " << caf_version << "<" << CAF_VERSIONNUM << " Do you want to auto update to the latest format?\n\n"
+//                           << "NOTE! Your old files will be copied to the hopsan Backup folder, but you should make sure that you have a backup in case something goes wrong.\n"
+//                           << "NOTE! All non-standard Hopsan contents will be lost\n"
+//                           << "NOTE! Attributes may change order within a tag (but the order is not important)\n\n"
+//                           << "If you want to update manually, see the documantation about the latest format version.";
+//                        questionBox.setWindowTitle("A NEW appearance data format is available!");
+//                        questionBox.setText(text);
+//                        QPushButton* pYes = questionBox.addButton(QMessageBox::Yes);
+//                        questionBox.addButton(QMessageBox::No);
+//                        QPushButton* pYesToAll = questionBox.addButton(QMessageBox::YesToAll);
+//                        QPushButton* pNoToAll = questionBox.addButton(QMessageBox::NoToAll);
+//                        questionBox.setDefaultButton(QMessageBox::No);
+//                        questionBox.exec();
+//                        QAbstractButton* pClickedButton = questionBox.clickedButton();
+
+//                        if ( (pClickedButton == pYes) || (pClickedButton == pYesToAll) )
+//                        {
+//                            doSave = true;
+//                        }
+
+//                        if (pClickedButton == pYesToAll)
+//                        {
+//                            mUpConvertAllCAF = YES_TO_ALL;
+//                        }
+//                        else if (pClickedButton == pNoToAll)
+//                        {
+//                            mUpConvertAllCAF = NO_TO_ALL;
+//                        }
+//                    }
+//                    else if (mUpConvertAllCAF==YES_TO_ALL)
+//                    {
+//                        doSave = true;
+//                    }
+
+//                    if (doSave)
+//                    {
+//                        //Close file
+//                        file.close();
+
+//                        // Make backup of original file
+//                        QFileInfo newBakFile(mUpdateXmlBackupDir.absolutePath() + "/" + relativePath(file, QDir(libRootDir)));
+//                        QDir dir;
+//                        dir.mkpath(newBakFile.absoluteDir().absolutePath());
+//                        file.copy(newBakFile.absoluteFilePath());
+
+//                        // Save (overwrite original file)
+//                        pAppearanceData->saveToXMLFile(file.fileName());
+
+//                    }
+//                }
+//            }
+//        }
+//        else
+//        {
+//            QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData in %4"),
+//                                     QString(file.fileName() + "Parse error at line %1, column %2:\n%3")
+//                                     .arg(errorLine)
+//                                     .arg(errorColumn)
+//                                     .arg(errorStr)
+//                                     .arg(file.fileName()));
+
+//            //! @todo give smart warning message, this is not an xml file
+
+//            continue;
+//        }
+
+//        //Close file
+//        file.close();
+
+//        //! @todo maybe use the convenient helpfunction for the stuff above (open file and check xml and root tagname) now that we have one
+
+//        bool success = true;
+
+//        //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
+//        if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
+//        {
+//            //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
+//                //Check that component is registered in core
+//            success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
+//            if (!success)
+//            {
+//                gpMainWindow->mpMessageWidget->printGUIWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+//            }
+//        }
+
+//        if (success)
+//        {
+//            if(!mLoadedComponents.contains(pAppearanceData->getTypename()))
+//            {
+//                pTree->addComponent(pAppearanceData);
+//                mLoadedComponents << pAppearanceData->getTypeName();
+//                qDebug() << "Adding: " << pAppearanceData->getTypeName();
+//            }
+//        }
+//    }
+
+//    //Make sure empty external libraries are not loaded (because they would become invisible and not removeable)
+//    if(pTree->isEmpty())
+//    {
+//        pParentTree->removeChild(libName);
+//        if(gConfig.hasUserLib(libDir))
+//        {
+//            gConfig.removeUserLib(libDir);
+//        }
+//        delete pTree;
+//    }
+}
+
+
+
 void LibraryWidget::unloadExternalLibrary(QString libName)
 {
     if(gConfig.hasUserLib(libName))
@@ -1618,6 +1842,17 @@ void LibraryWidget::unloadExternalLibrary(QString libName)
 }
 
 
+void LibraryWidget::updateExternalLibraries()
+{
+    QStringList libs = gConfig.getUserLibs();
+    for(int i=0; i<libs.size(); ++i)
+    {
+        unloadExternalLibrary(libs[i]);
+        loadExternalLibrary(libs[i]);
+    }
+}
+
+
 void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
 {
     if(pTree == 0)
@@ -1630,7 +1865,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
     }
     //Then remove the tree itself
     mpContentsTree->findChildByName("External Libraries")->removeChild(pTree->mName);
-    gpMainWindow->mpMessageWidget->checkMessages();
+    //gpMainWindow->mpMessageWidget->checkMessages();
 }
 
 //! @brief Slot that sets view mode to single tree and redraws the library

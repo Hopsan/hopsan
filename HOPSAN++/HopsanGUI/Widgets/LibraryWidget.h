@@ -63,6 +63,7 @@ public:
     void loadLibrary(QString libDir, bool external = false);
     void loadExternalLibrary(QString libDir);
     void unloadExternalLibrary(QString libName);
+    void updateExternalLibraries();
     void loadHiddenSecretDir(QString dir);
 
     ModelObjectAppearance *getAppearanceData(QString componentType);
@@ -93,6 +94,7 @@ private slots:
 
 private:
     void loadLibraryFolder(QString libDir, const QString libRootDir, LibraryContentsTree *pParentTree=0);
+    void updateLibraryFolder(LibraryContentsTree *pTree);
     void unLoadLibrarySubTree(LibraryContentsTree *pTree);
 
     YesNoToAllEnumT mUpConvertAllCAF;
