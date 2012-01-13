@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 
 CONFIG += ordered
-SUBDIRS = HopsanCore HopsanGUI HopsanCLI
+SUBDIRS = HopsanCore DefaultComponentLibrary HopsanGUI HopsanCLI
+DefaultComponentLibrary.subdir = componentLibraries/defaultLibrary
