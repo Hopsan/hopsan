@@ -26,6 +26,7 @@
 #include "Nodes.h"
 #include "version.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
+#include "Components/DummyComponent.hpp"
 #include <string>
 
 #ifdef INTERNALDEFAULTCOMPONENTS
@@ -46,6 +47,7 @@ void HopsanEssentials::initialize()
 
     //Make sure that internal Nodes and Components register
     register_nodes(mpNodeFactory);
+    mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
 #ifdef INTERNALDEFAULTCOMPONENTS
     register_components(mpComponentFactory);
 #endif

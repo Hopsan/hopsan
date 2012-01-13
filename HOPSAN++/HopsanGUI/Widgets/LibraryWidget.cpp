@@ -441,10 +441,11 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
         }
 
         libDirObject.cdUp();
-        loadLibraryFolder(libDir, libDirObject.absolutePath()+"/", pExternalTree);
+        loadLibraryFolder(libDir, libDirObject.absolutePath()+"/", true, pExternalTree);
     }
     else
     {
+        loadLibraryFolder(libDir+"/", libDir+"/", false, mpContentsTree);
         libDirObject.setFilter(QDir::AllDirs);
         QStringList subDirList = libDirObject.entryList();
         subDirList.removeAll(".");
@@ -452,7 +453,7 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
         subDirList.removeAll(".svn");
         for(int i=0; i<subDirList.size(); ++i)
         {
-            loadLibraryFolder(libDir+"/"+subDirList.at(i), libDir+"/", mpContentsTree);
+            loadLibraryFolder(libDir+"/"+subDirList.at(i), libDir+"/", true, mpContentsTree);
         }
     }
 
@@ -1381,15 +1382,13 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
 //! @brief Recursive function that searches through subdirectories and adds components to the library contents tree
 //! @param libDir Current directory
 //! @param pParentTree Current contents tree node
-void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, LibraryContentsTree *pParentTree)
+void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree)
 {
-    //qDebug() << "loadLibraryFolder() " << libDir;
-
     QDir libDirObject(libDir);
     if(!libDirObject.exists() && gConfig.hasUserLib(libDir))
     {
         gConfig.removeUserLib(libDir);      //Remove user lib if it does not exist
-        //! @todo Shouldn't we do a return here? The code bellow will probably crash if the directory does not exist.
+        return;
     }
 
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
@@ -1431,20 +1430,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
     }
     gpMainWindow->mpMessageWidget->checkMessages();
 
-    // Load XML files and recursively load subfolder
-
-    //Append subnodes recursively
-    libDirObject.setFilter(QDir::AllDirs);
-    QStringList subDirList = libDirObject.entryList();
-    subDirList.removeAll(".");
-    subDirList.removeAll("..");
-    subDirList.removeAll(".svn");
-    for(int i=0; i<subDirList.size(); ++i)
-    {
-        loadLibraryFolder(libDir+"/"+subDirList.at(i), libRootDir, pTree);
-    }
-
-    //Append components
+    // Load Component XML (CAF Files)
     filters.clear();
     filters << "*.xml";                     //Create the name filter
     libDirObject.setFilter(QDir::NoFilter);
@@ -1587,6 +1573,20 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
             pTree->addComponent(pAppearanceData);
             mLoadedComponents << pAppearanceData->getTypeName();
             qDebug() << "Adding: " << pAppearanceData->getTypeName();
+        }
+    }
+
+    if (doRecurse)
+    {
+        // Append subfolders recursively
+        libDirObject.setFilter(QDir::AllDirs);
+        QStringList subDirList = libDirObject.entryList();
+        subDirList.removeAll(".");
+        subDirList.removeAll("..");
+        subDirList.removeAll(".svn");
+        for(int i=0; i<subDirList.size(); ++i)
+        {
+            loadLibraryFolder(libDir+"/"+subDirList.at(i), libRootDir, doRecurse, pTree);
         }
     }
 

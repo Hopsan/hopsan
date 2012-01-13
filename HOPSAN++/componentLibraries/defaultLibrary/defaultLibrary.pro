@@ -8,7 +8,7 @@ TEMPLATE = lib
 TARGET = defaulComponentLibrary
 
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build
-DESTDIR = $${PWD}/
+DESTDIR = $${PWD}/components
 
 # The location to search for the Hopsan include files, by specifying the path here, you dont need to do this everywhere in all of your component .hpp files
 # You can also add additional paths for eg. your own Utility functions, just add additional INCLUDEPATH *= ... lines.
@@ -34,7 +34,6 @@ CONFIG(release, debug|release) {
 # Project files
 # -------------------------------------------------
 HEADERS += \
-    code/DummyComponent.hpp \
     code/Components.h \
     code/Signal/SignalXor.hpp \
     code/Signal/SignalUndefinedConnection.hpp \

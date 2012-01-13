@@ -191,8 +191,4 @@
 #include "Electric/ElectricSwitch.hpp"
 #include "Electric/ElectricUsource.hpp"
 
-/* Special Component */
-#include "DummyComponent.hpp"
-
-
 #endif // COMPONENTS_H_INCLUDED

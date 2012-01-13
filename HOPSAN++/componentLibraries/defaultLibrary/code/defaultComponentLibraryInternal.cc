@@ -239,6 +239,6 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("ElectricUsource", ElectricUsource::Creator);
 
     // Special component
-    pComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
+
 
 }

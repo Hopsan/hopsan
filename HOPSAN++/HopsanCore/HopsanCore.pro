@@ -40,7 +40,7 @@ CONFIG(release, debug|release) {
   DEFINES *= RELEASECOMPILING
 }
 
-DEFINES *= INTERNALDEFAULTCOMPONENTS
+#DEFINES *= INTERNALDEFAULTCOMPONENTS
 
 # -------------------------------------------------
 # Platform specific additional project options
@@ -145,7 +145,8 @@ HEADERS += \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
     Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     include/Parameters.h \
-    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h
+    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h \
+    include/Components/DummyComponent.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
