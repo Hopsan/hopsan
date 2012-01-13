@@ -473,7 +473,6 @@ void LibraryWidget::generateComponent()
 void LibraryWidget::addExternalLibrary(QString libDir)
 {
     QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
-
     if(libDir.isEmpty())    //Let user select a directory if no directory is specified
     {
         libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
@@ -483,8 +482,7 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     }
     if(!gConfig.hasUserLib(libDir))     //Check so that path does not already exist
     {
-        gConfig.addUserLib(libDir);     //Register new library in configuration
-        loadAndRememberExternalLibrary(libDir);    //Load the library
+        loadAndRememberExternalLibrary(libDir);    //Load and register the library in configuration
     }
     else
     {
@@ -1298,7 +1296,6 @@ void LibraryWidget::importFmu()
 //! @param libDir Directory to the library
 void LibraryWidget::loadAndRememberExternalLibrary(const QString libDir)
 {
-    qDebug() << "LOADING Library dir " << libDir;
     gConfig.addUserLib(libDir);     //Register new library in configuration
     loadLibrary(libDir, EXTERNAL);
 }
