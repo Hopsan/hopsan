@@ -769,7 +769,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     else
     {
         qDebug() << "Loaded user libs: " << gConfig.getUserLibs();
-        gpMainWindow->mpLibrary->loadExternalLibrary(libPath);
+        gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath);
     }
 }
 

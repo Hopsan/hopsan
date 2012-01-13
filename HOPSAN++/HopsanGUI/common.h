@@ -43,6 +43,7 @@
 //Path definitions (development and release)
 #define MAINPATH "../"
 #define OBJECTICONPATH ":graphics/objecticons/"
+#define BUILTINCAFPATH ":graphics/builtinCAF/"
 #define ICONPATH ":graphics/uiicons/"
 #define PORTICONPATH ":graphics/porticons/"
 #define GRAPHICSPATH ":graphics/"
@@ -91,6 +92,7 @@ enum ContainerChildrenZValues {WIDGET_Z, CONNECTOR_Z, MODELOBJECT_Z, HOVEREDCONN
 enum ModelObjectZValues {PORT_Z, SELECTIONBOX_Z, HOVEREDPORT_Z, LOSSESDISPLAY_Z};
 enum PortZValues {MULTIPORTOVERLAY_Z, CQSVERLAY_Z, PORTLABEL_Z};
 enum YesNoToAllEnumT {UNDECIDED_TO_ALL, NO_TO_ALL, YES_TO_ALL};
+enum InternalExternalEnumT {INTERNAL, EXTERNAL};
 
 //Global pointer to the main window
 class MainWindow;

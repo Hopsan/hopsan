@@ -251,18 +251,20 @@ MainWindow::~MainWindow()
 void MainWindow::initializeWorkspace()
 {
     // Load HopsanGui built in secret components
-    //! @todo this is handled kind of ugly, but OK for now
-    QString componentPath = OBJECTICONPATH;
-    componentPath.chop(1);
-    mpLibrary->loadHiddenSecretDir(componentPath);
+    mpLibrary->loadHiddenSecretDir(QString(BUILTINCAFPATH) + "hidden/");
 
     // Load default and user specified libraries
-    componentPath = gExecPath + QString(COMPONENTPATH);
-    componentPath.chop(1);
-    mpLibrary->loadLibrary(componentPath);
+    QString componentPath = gExecPath + QString(COMPONENTPATH);
+
+    // Load built in default Library
+    mpLibrary->loadLibrary(componentPath, INTERNAL);
+
+    // Load builtIn library (Container special components)
+    mpLibrary->loadLibrary(QString(BUILTINCAFPATH) + "visible/", INTERNAL);
+
     for(int i=0; i<gConfig.getUserLibs().size(); ++i)
     {
-        mpLibrary->loadExternalLibrary(gConfig.getUserLibs().at(i));
+        mpLibrary->loadAndRememberExternalLibrary(gConfig.getUserLibs().at(i));
     }
 
     // Create the plot widget, only once! :)

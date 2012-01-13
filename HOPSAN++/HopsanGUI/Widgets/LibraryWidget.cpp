@@ -408,10 +408,19 @@ void LibraryWidget::initializeDrag(QTreeWidgetItem *item, int /*dummy*/)
 //! First loads DLL files, then XML. DLL files are not necessary if component is already loaded.
 //! @param libDir Directory to check
 //! @param external Used to indicate that the library is external (places contents under "External Libraries")
-void LibraryWidget::loadLibrary(QString libDir, bool external)
+void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_ext)
 {
-    if (libDir.isEmpty() == true)       // Don't add empty folders to the library
+    // Don't add empty folders to the library
+    if (libDir.isEmpty())
+    {
         return;
+    }
+
+    // Chop the final / if it exists will be added back bellow
+    if ( libDir.endsWith('/') )
+    {
+        libDir.chop(1);
+    }
 
     //Create a QDir object that contains the info about the library directory
     QDir libDirObject(libDir);
@@ -419,7 +428,7 @@ void LibraryWidget::loadLibrary(QString libDir, bool external)
     // Determine where to store any backups of updated appearance xml files
     mUpdateXmlBackupDir.setPath(QString(BACKUPPATH) + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
-    if(external)
+    if(int_ext == EXTERNAL)
     {
         LibraryContentsTree *pExternalTree;
         if(!mpContentsTree->findChildByName("External Libraries"))
@@ -474,7 +483,7 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     if(!gConfig.hasUserLib(libDir))     //Check so that path does not already exist
     {
         gConfig.addUserLib(libDir);     //Register new library in configuration
-        loadExternalLibrary(libDir);    //Load the library
+        loadAndRememberExternalLibrary(libDir);    //Load the library
     }
     else
     {
@@ -1273,7 +1282,7 @@ void LibraryWidget::importFmu()
         update();
     }
     gConfig.addUserLib(fmuDir.path());     //Register new library in configuration
-    loadExternalLibrary(fmuDir.path());    //Load the library
+    loadAndRememberExternalLibrary(fmuDir.path());    //Load the library
 
 
 
@@ -1286,12 +1295,11 @@ void LibraryWidget::importFmu()
 
 //! @brief Wrapper function that loads an external library
 //! @param libDir Directory to the library
-//! @todo Why do we need this?
-void LibraryWidget::loadExternalLibrary(QString libDir)
+void LibraryWidget::loadAndRememberExternalLibrary(const QString libDir)
 {
     qDebug() << "LOADING Library dir " << libDir;
     gConfig.addUserLib(libDir);     //Register new library in configuration
-    loadLibrary(libDir, true);
+    loadLibrary(libDir, EXTERNAL);
 }
 
 //! @brief Load contents (xml files) of dir into SecretHidden library map that is not vissible in the libary
@@ -1818,7 +1826,7 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree *pTree)
 
 
 
-void LibraryWidget::unloadExternalLibrary(QString libName)
+void LibraryWidget::unloadExternalLibrary(const QString libName)
 {
     if(gConfig.hasUserLib(libName))
     {
@@ -1848,7 +1856,7 @@ void LibraryWidget::updateExternalLibraries()
     for(int i=0; i<libs.size(); ++i)
     {
         unloadExternalLibrary(libs[i]);
-        loadExternalLibrary(libs[i]);
+        loadAndRememberExternalLibrary(libs[i]);
     }
 }
 

@@ -60,9 +60,9 @@ public:
     void update();
     void loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
     void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
-    void loadLibrary(QString libDir, bool external = false);
-    void loadExternalLibrary(QString libDir);
-    void unloadExternalLibrary(QString libName);
+    void loadLibrary(QString libDir, const InternalExternalEnumT int_ext = INTERNAL);
+    void loadAndRememberExternalLibrary(const QString libDir);
+    void unloadExternalLibrary(const QString libName);
     void updateExternalLibraries();
     void loadHiddenSecretDir(QString dir);
 
