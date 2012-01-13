@@ -32,6 +32,32 @@
 
 class MainWindow;
 class ModelObjectAppearance;
+class QTextDocument;
+
+
+class ModelicaHighlighter : public QSyntaxHighlighter
+{
+    Q_OBJECT
+
+public:
+    ModelicaHighlighter(QTextDocument *parent = 0);
+
+protected:
+    void highlightBlock(const QString &text);
+
+private:
+    struct HighlightingRule
+    {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+    QVector<HighlightingRule> highlightingRules;
+
+    QTextCharFormat keywordFormat;
+};
+
+
+
 
 class ComponentGeneratorDialog : public QDialog
 {
@@ -64,6 +90,7 @@ private slots:
     void loadFromXml();
     void loadFromXml(QString fileName);
     void saveDialogToXml();
+    void generateAppearance();
     void openAppearanceDialog();
 
 private:
@@ -83,8 +110,10 @@ private:
     QGridLayout *mpEquationsLayout;
     QWidget *mpEquationsWidget;
     QTextEdit *mpEquationsTextField;
+    ModelicaHighlighter *mpEquationHighLighter;
     QLabel *mpBoundaryEquationsLabel;
     QTextEdit *mpBoundaryEquationsTextField;
+    ModelicaHighlighter *mpBoundaryEquationHighLighter;
     QGridLayout *mpCodeLayout;
     QGroupBox *mpCodeGroupBox;
 

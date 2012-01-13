@@ -36,6 +36,44 @@
 #include "common.h"
 
 
+
+
+ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
+    : QSyntaxHighlighter(parent)
+{
+    HighlightingRule rule;
+
+    keywordFormat.setForeground(Qt::darkBlue);
+    keywordFormat.setFontWeight(QFont::Bold);
+    QStringList keywordPatterns;
+    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsqrt\\b";
+
+    foreach (const QString &pattern, keywordPatterns)
+    {
+        rule.pattern = QRegExp(pattern);
+        rule.format = keywordFormat;
+        highlightingRules.append(rule);
+    }
+}
+
+
+void ModelicaHighlighter::highlightBlock(const QString &text)
+{
+    foreach (const HighlightingRule &rule, highlightingRules)
+    {
+        QRegExp expression(rule.pattern);
+        int index = expression.indexIn(text);
+        while (index >= 0)
+        {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expression.indexIn(text, index + length);
+        }
+    }
+}
+
+
+
 //! @brief Constructor
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QDialog(parent)
@@ -52,7 +90,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpGivenLabel = new QLabel("Given: ");
     mpSoughtLabel = new QLabel("Sought: ");
 
-    QFont monoFont = QFont("Monospace", 10, 63);
+    QFont monoFont = QFont("Monospace", 10, 50);
     monoFont.setStyleHint(QFont::Monospace);
 
     mpInitTextField = new QTextEdit(this);                                      //Initialize code text field
@@ -78,10 +116,12 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
     mpEquationsTextField = new QTextEdit(this);                                 //Equation text field
     mpEquationsTextField->setFont(monoFont);
+    mpEquationHighLighter = new ModelicaHighlighter(mpEquationsTextField->document());
     mpBoundaryEquationsLabel = new QLabel("Boundary Equations:", this);
     mpBoundaryEquationsTextField = new QTextEdit(this);
     mpBoundaryEquationsTextField->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     mpBoundaryEquationsTextField->setFont(monoFont);
+    mpBoundaryEquationHighLighter = new ModelicaHighlighter(mpBoundaryEquationsTextField->document());
     mpEquationsLayout = new QGridLayout(this);
     mpEquationsLayout->addWidget(mpEquationsTextField, 0, 0);
     mpEquationsLayout->addWidget(mpBoundaryEquationsLabel, 1, 0);
@@ -91,6 +131,8 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpEquationsLayout->setRowStretch(2, 0);
     mpEquationsWidget = new QWidget(this);
     mpEquationsWidget->setLayout(mpEquationsLayout);
+
+
 
     mpCodeTabs = new QTabWidget(this);                                          //Tab layout
     mpCodeTabs->addTab(mpInitWidget, "Initialize");
@@ -1110,8 +1152,11 @@ void ComponentGeneratorDialog::compile()
         QString displayName = mpComponentDisplayEdit->text();
         QString cqsType = mpComponentTypeComboBox->currentText();
 
+        //Make sure appearance is updated
+        generateAppearance();
+
         //Call utility to generate and compile the source code
-        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars);
+        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, mpAppearance);
     }
     else if(mpGenerateFromComboBox->currentIndex() == 1)        //Compile from C++ code
     {
@@ -1208,8 +1253,11 @@ void ComponentGeneratorDialog::compile()
         QDir().mkpath(QString(DATAPATH)+"compgen/");
         xmlFile.copy(QString(DATAPATH)+"compgen/component_"+dateString+".xml");
 
+        //Make sure appearance is updated
+        generateAppearance();
+
         //Call utility to generate and compile source code
-        generateComponentSourceCode("temp.hpp", componentRoot);
+        generateComponentSourceCode("temp.hpp", componentRoot, mpAppearance);
     }
 }
 
@@ -1527,7 +1575,7 @@ void ComponentGeneratorDialog::saveDialogToXml()
 }
 
 
-void ComponentGeneratorDialog::openAppearanceDialog()
+void ComponentGeneratorDialog::generateAppearance()
 {
     if(mpAppearance == 0)
     {
@@ -1605,6 +1653,12 @@ void ComponentGeneratorDialog::openAppearanceDialog()
         topPorts[i].rot = 270;
         mpAppearance->addPortAppearance(topPortNames[i], &topPorts[i]);
     }
+}
+
+
+void ComponentGeneratorDialog::openAppearanceDialog()
+{
+    generateAppearance();
 
     MovePortsDialog *mpMP = new MovePortsDialog(mpAppearance,USERGRAPHICS,this);
     mpMP->open();

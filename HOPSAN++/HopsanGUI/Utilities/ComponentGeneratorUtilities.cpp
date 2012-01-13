@@ -32,12 +32,14 @@
 //#include <complex>
 #include <QProcess>
 
-#include "ComponentGeneratorUtilities.h"
+
+#include "Configuration.h"
 #include "MainWindow.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
+#include "Utilities/ComponentGeneratorUtilities.h"
+#include "Widgets/LibraryWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
-#include "Configuration.h"
-#include "Widgets/LibraryWidget.h"
 
 using namespace std;
 
@@ -90,7 +92,7 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 //! @brief Transforms a DOM element component description to a ComponentSpecification object and calls actual generator utility
 //! @param outputFile Filename for output
 //! @param rDomElement Reference to dom element with information about component
-void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
+void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance)
 {
     QString typeName = rDomElement.attribute("typename");
     QString displayName = rDomElement.attribute("displayname");
@@ -156,7 +158,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
         equationElement=equationElement.nextSiblingElement("equation");
     }
 
-    generateComponentSourceCode(outputFile, comp, true);
+    generateComponentSourceCode(outputFile, comp, pAppearance, true);
 }
 
 
@@ -174,7 +176,8 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType,
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
-                                 QStringList delayTerms, QStringList delaySteps, QStringList localVars)
+                                 QStringList delayTerms, QStringList delaySteps, QStringList localVars,
+                                 ModelObjectAppearance *pAppearance)
 {
     ComponentSpecification comp(typeName, displayName, cqsType);
 
@@ -311,7 +314,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
 
     //END DEBUG
 
-    generateComponentSourceCode("equation.hpp", comp);
+    generateComponentSourceCode("equation.hpp", comp, pAppearance);
 }
 
 
@@ -319,7 +322,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, bool overwriteStartValues)
+void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues)
 {
     //Initialize the file stream
     QFileInfo fileInfo;
@@ -686,30 +689,13 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     xmlStream << "    <icons>\n";
     //! @todo Make it possible to choose icon files
     //! @todo In the meantime, use a default "generated component" icon
-    xmlStream << "      <icon type=\"user\" path=\"generatedcomponenticon.svg\" iconrotation=\"ON\"/>\n";
+    xmlStream << "      <icon type=\"user\" path=\""+pAppearance->getIconPath(USERGRAPHICS, ABSOLUTE)+"\" iconrotation=\""+pAppearance->getIconRotationBehaviour()+"\"/>\n";
     xmlStream << "    </icons>\n";
     xmlStream << "    <portpositions>\n";
-    QStringList leftPorts, rightPorts, topPorts;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
-        if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "ReadPort")
-            leftPorts << comp.portNames[i];
-        else if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "WritePort")
-            rightPorts << comp.portNames[i];
-        else
-            topPorts << comp.portNames[i];
-    }
-    for(int i=0; i<leftPorts.size(); ++i)
-    {
-        xmlStream << "      <portpose name=\"" << leftPorts[i] << "\" x=\"0.0\" y=\"" << QString().setNum((double(i)+1)/(double(leftPorts.size())+1.0)) << "\" a=\"180\"/>\n";
-    }
-    for(int i=0; i<rightPorts.size(); ++i)
-    {
-        xmlStream << "      <portpose name=\"" << rightPorts[i] << "\" x=\"1.0\" y=\"" << QString().setNum((double(i)+1)/(double(rightPorts.size())+1.0)) << "\" a=\"0\"/>\n";
-    }
-    for(int i=0; i<topPorts.size(); ++i)
-    {
-        xmlStream << "      <portpose name=\"" << topPorts[i] << "\" x=\"" << QString().setNum((double(i)+1)/(double(topPorts.size())+1.0)) << "\" y=\"0.0\" a=\"270\"/>\n";
+        PortAppearance portApp = pAppearance->getPortAppearanceMap().find(comp.portNames[i]).value();
+        xmlStream << "      <portpose name=\"" << comp.portNames[i] << "\" x=\"" << portApp.x << "\" y=\"" << portApp.y << "\" a=\"" << portApp.rot << "\"/>\n";
     }
     xmlStream << "    </portpositions>\n";
     xmlStream << "  </modelobject>\n";
