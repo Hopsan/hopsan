@@ -48,28 +48,28 @@
 
 #define CAF_PORTS "ports"
 #define CAF_PORT "port"
+#define CAF_DESCRIPTION "description"
 #define CAF_PORTPOSITIONS "portpositions"
 #define CAF_PORTPOSE "portpose"
 
 // =============== Help Functions ===============
 
 //! @brief Special purpose function for adding a Hopsan specific XML tag containing PortPose information
-//! @param[in] rDomElement The DOM Element to append to
+//! @param[in] rPortDomElement The DOM Element to append to
 //! @param[in] name The port name
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
 //! @param[in] th The orientaion (angle)
-void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
+void appendPortPoseTag(QDomElement &rPortDomElement, QString name, qreal x, qreal y, qreal th)
 {
-    QDomElement pose = appendDomElement(rDomElement, CAF_PORT);
-    pose.setAttribute(CAF_NAME,name);
+    rPortDomElement.setAttribute(CAF_NAME,name);
     QString xString;
     xString.setNum(x,'g', 10);
-    pose.setAttribute("x",xString);
+    rPortDomElement.setAttribute("x",xString);
     QString yString;
     yString.setNum(y,'g', 10);
-    pose.setAttribute("y",yString);
-    pose.setAttribute("a",th);
+    rPortDomElement.setAttribute("y",yString);
+    rPortDomElement.setAttribute("a",th);
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing PortPose information
@@ -395,6 +395,13 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             PortAppearance portApp;
             parsePortPoseTag(xmlPort, portname, portApp.x, portApp.y, portApp.rot);
             portApp.mVisible = (xmlPort.attribute("visible", "true") == HMF_TRUETAG);
+
+            QDomElement xmlPortDescription = xmlPort.firstChildElement(CAF_DESCRIPTION);
+            if (!xmlPortDescription.isNull())
+            {
+                portApp.mDescription = xmlPortDescription.text();
+            }
+
             mPortAppearanceMap.insert(portname, portApp);
 
             xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
@@ -517,12 +524,26 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
         }
     }
 
-    // Save port psoition data
-    QDomElement xmlPortPositions = appendDomElement(xmlObject, CAF_PORTS);
+    // Save port data
+    //! @todo maybe make the port appearance  class kapable of saving itself to DOM
+    QDomElement xmlPorts = appendDomElement(xmlObject, CAF_PORTS);
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
-        appendPortPoseTag(xmlPortPositions, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
+        QDomElement xmlPort = appendDomElement(xmlPorts, CAF_PORT);
+        appendPortPoseTag(xmlPort, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
+        // Save visible or not, only write if hidden is set, as default is visible (to avoid clutter in xml file)
+        //! @todo maybe should always write
+        if (!pit.value().mVisible)
+        {
+            xmlPort.setAttribute("visible", HMF_FALSETAG);
+        }
+
+        // Save description if any
+        if (!pit.value().mDescription.isEmpty())
+        {
+            appendDomTextNode(xmlPort, CAF_DESCRIPTION, pit.value().mDescription);
+        }
     }
 }
 
