@@ -49,6 +49,13 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
+    // Make sure backup folder exists, create it if not
+    QDir backupDir(BACKUPPATH);
+    if (!backupDir.exists())
+    {
+        backupDir.mkpath(BACKUPPATH);
+    }
+
     //Create global variables
     gExecPath = qApp->applicationDirPath().append('/');
     gConfig = Configuration();
