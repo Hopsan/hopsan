@@ -23,11 +23,14 @@
 //$Id$
 
 #include "HopsanEssentials.h"
-#include "defaultComponentLibrary.h"
 #include "Nodes.h"
 #include "version.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include <string>
+
+#ifdef INTERNALDEFAULTCOMPONENTS
+#include "defaultComponentLibraryInternal.h"
+#endif
 
 using namespace std;
 using namespace hopsan;
@@ -43,7 +46,9 @@ void HopsanEssentials::initialize()
 
     //Make sure that internal Nodes and Components register
     register_nodes(mpNodeFactory);
+#ifdef INTERNALDEFAULTCOMPONENTS
     register_components(mpComponentFactory);
+#endif
 
     //Check for register errors and status
     checkClassFactoryStatus(mpComponentFactory);

@@ -14,21 +14,21 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   defaultComponentLibrary.h
+//! @file   defaultComponentLibraryInternal.h
 //! @author FluMeS
-//! @date   2010-01-08
+//! @date   2012-01-13
 //! @brief Contains the register_components function that registers all built in components
 //!
 //$Id$
 
-#ifndef DEFAULTCOMPONENTLIBRARY_H
-#define DEFAULTCOMPONENTLIBRARY_H
+#ifndef DEFAULTCOMPONENTLIBRARYINTERNAL_H
+#define DEFAULTCOMPONENTLIBRARYINTERNAL_H
 
 #include "ComponentEssentials.h"
 
 namespace hopsan {
 
-    DLLIMPORTEXPORT void register_components(ComponentFactory* pComponentFactory);
+    void register_components(ComponentFactory* pComponentFactory);
 }
 
-#endif // DEFAULTCOMPONENTLIBRARY_H
+#endif

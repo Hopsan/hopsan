@@ -40,6 +40,8 @@ CONFIG(release, debug|release) {
   DEFINES *= RELEASECOMPILING
 }
 
+DEFINES *= INTERNALDEFAULTCOMPONENTS
+
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
@@ -106,7 +108,7 @@ SOURCES += \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
     src/Parameters.cc \
-    ../componentLibraries/defaultLibrary/code/defaultComponentLibrary.cc
+    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -142,7 +144,8 @@ HEADERS += \
     include/ComponentUtilities/AuxiliarySimulationFunctions.h \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
     Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
-    include/Parameters.h
+    include/Parameters.h \
+    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
