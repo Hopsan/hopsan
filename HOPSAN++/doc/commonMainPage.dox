@@ -1,13 +1,24 @@
 /*!
-\mainpage Hopsan Documentation
+
+\if DEVELOPERDOCUMENTATION
+\mainpage Hopsan Manual
+- \subpage userDocumentation
+- \subpage devDocumentation
+\else
+\mainpage User Manual
+\endif
 
 \if DEVELOPERDOCUMENTATION
 
-\section userGuides User Documentation
+\page devDocumentation Developer Manual
+-# \subpage devHowtoBuildDocumentation \n
+-# \subpage devBuildHopsan \n
+-# \subpage devCodingConventions \n
+-# \subpage devSubversionAutoProps \n
+
+\page userDocumentation User Manual
 
 \endif
-
-
 -# \subpage userGettingStarted \n
 -# \subpage userAnalysisTools \n
 -# \subpage userModelExport \n
@@ -15,20 +26,6 @@
 -# \subpage userPythonScripting \n
 -# \subpage userMultiThreaded \n
 -# \subpage userTransmissionLineElementMethod \n
-
-\if DEVELOPERDOCUMENTATION
-
-\section devGuides Developer Documentation
-
--# \subpage devHowtoBuildDocumentation \n
--# \subpage devBaseRequirements \n
--# \subpage devHopsanCoreRequirements \n
--# \subpage devHopsanGuiRequirements \n
--# \subpage devHopsanCLIRequirements \n
--# \subpage devBuildHopsan \n
--# \subpage devCodingConventions \n
--# \subpage devSubversionAutoProps \n
-
 
 \endif
 

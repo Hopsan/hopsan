@@ -20,6 +20,7 @@ This means that if you add new files some necessary file properties for those fi
 *.hmf = svn:eol-style=native
 *.txt = svn:eol-style=native
 *.bat = svn:eol-style=native;svn:executable
+*.sh = svn:eol-style=native;svn:executable
 \endverbatim 
 -# Save the file and you are Done!
 
