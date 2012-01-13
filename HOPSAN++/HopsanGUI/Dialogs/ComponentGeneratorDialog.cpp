@@ -956,35 +956,6 @@ void ComponentGeneratorDialog::compile()
 
         qDebug() << "Equations = " << equations;
 
-        //Generate a list of state variables (= "output" variables)
-        QStringList stateVars;
-        for(int i=0; i<mPortList.size(); ++i)
-        {
-            QString num = QString().setNum(i+1);
-            if(mPortList[i].porttype == "WritePort")
-            {
-                stateVars << mPortList[i].name;
-            }
-            else if(mPortList[i].porttype == "PowerPort" && mpComponentTypeComboBox->currentText() == "C")
-            {
-                QStringList cVars;
-                cVars << getCVariables(mPortList[i].nodetype);
-                for(int v=0; v<cVars.size(); ++v)
-                {
-                    stateVars << cVars[v]+num;
-                }
-            }
-            else if(mPortList[i].porttype == "PowerPort" && mpComponentTypeComboBox->currentText() == "Q")
-            {
-                QStringList qVars;
-                qVars << getQVariables(mPortList[i].nodetype);
-                for(int v=0; v<qVars.size(); ++v)
-                {
-                    stateVars << qVars[v]+num;
-                }
-            }
-        }
-
         //Identify used variables in each equation
         QList<QStringList> leftSymbols, rightSymbols;
         for(int i=0; i<equations.size(); ++i)
@@ -1002,6 +973,64 @@ void ComponentGeneratorDialog::compile()
             allSymbols.append(rightSymbols.at(i));
         }
         allSymbols.removeDuplicates();
+
+
+        //Generate a list of state variables (= "output" variables & local variables)
+        QStringList stateVars = allSymbols;
+        for(int i=0; i<mPortList.size(); ++i)
+        {
+            QString num = QString().setNum(i+1);
+            if(mPortList[i].porttype == "ReadPort")
+            {
+                stateVars.removeAll(mPortList[i].name);
+            }
+            else if(mPortList[i].porttype == "PowerPort" && mpComponentTypeComboBox->currentText() == "C")
+            {
+                QStringList qVars;
+                qVars << getQVariables(mPortList[i].nodetype);
+                for(int v=0; v<qVars.size(); ++v)
+                {
+                    stateVars.removeAll(qVars[v]+num);
+                }
+            }
+            else if(mPortList[i].porttype == "PowerPort" && mpComponentTypeComboBox->currentText() == "Q")
+            {
+                QStringList cVars;
+                cVars << getCVariables(mPortList[i].nodetype);
+                for(int v=0; v<cVars.size(); ++v)
+                {
+                    stateVars.removeAll(cVars[v]+num);
+                }
+            }
+        }
+
+        //Generate list of local variables (variables that are neither input nor output)
+        QStringList localVars = allSymbols;
+        for(int i=0; i<mPortList.size(); ++i)
+        {
+            QString num = QString().setNum(i+1);
+            if(mPortList[i].porttype == "ReadPort" || mPortList[i].porttype == "WritePort")
+            {
+                localVars.removeAll(mPortList[i].name);
+            }
+            else if(mPortList[i].porttype == "PowerPort")
+            {
+                QStringList qVars;
+                QStringList cVars;
+                qVars << getQVariables(mPortList[i].nodetype);
+                cVars << getCVariables(mPortList[i].nodetype);
+                for(int v=0; v<qVars.size(); ++v)
+                {
+                    localVars.removeAll(qVars[v]+num);
+                }
+                for(int v=0; v<cVars.size(); ++v)
+                {
+                    localVars.removeAll(cVars[v]+num);
+                }
+            }
+        }
+
+        //Add "special" variables to symbols vector
         allSymbols.append("mTime");         //Simulation time
         allSymbols.append("mTimestep");     //Simulation time step
         allSymbols.append("qi00");          //Delay operator
@@ -1082,7 +1111,7 @@ void ComponentGeneratorDialog::compile()
         QString cqsType = mpComponentTypeComboBox->currentText();
 
         //Call utility to generate and compile the source code
-        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps);
+        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars);
     }
     else if(mpGenerateFromComboBox->currentIndex() == 1)        //Compile from C++ code
     {

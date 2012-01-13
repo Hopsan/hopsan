@@ -174,7 +174,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement)
 void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType,
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
-                                 QStringList delayTerms, QStringList delaySteps)
+                                 QStringList delayTerms, QStringList delaySteps, QStringList localVars)
 {
     ComponentSpecification comp(typeName, displayName, cqsType);
 
@@ -294,6 +294,11 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.simEquations << "mDelay"+QString().setNum(i)+".update("+delayTerms[i]+");";
     }
 
+    for(int i=0; i<localVars.size(); ++i)
+    {
+        comp.varNames << localVars[i];
+        comp.varTypes << "double";
+    }
 
     //DEBUG
 
@@ -744,15 +749,19 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         componentsDir.mkdir("Generated Componentes");
     }
 
+    QFile::remove(generatedDir.path() + "/" + xmlFile.fileName());
     xmlFile.copy(generatedDir.path() + "/" + xmlFile.fileName());
 
     QFile dllFile(gExecPath+comp.typeName+".dll");
+    QFile::remove(generatedDir.path() + "/" + comp.typeName + ".dll");
     dllFile.copy(generatedDir.path() + "/" + comp.typeName + ".dll");
 
     QFile soFile(gExecPath+comp.typeName+".so");
+    QFile::remove(generatedDir.path() + "/" + comp.typeName + ".so");
     soFile.copy(generatedDir.path() + "/" + comp.typeName + ".so");
 
     QFile svgFile(QString(OBJECTICONPATH)+"generatedcomponenticon.svg");
+    QFile::remove(generatedDir.path() + "/generatedcomponenticon.svg");
     svgFile.copy(generatedDir.path() + "/generatedcomponenticon.svg");
 
 /*    file.remove();

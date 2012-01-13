@@ -97,7 +97,7 @@ public:
     QStringList finalEquations;
 };
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement);
-void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps);
+void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars);
 void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 void identifyFunctions(QString equation, QStringList &functions);
