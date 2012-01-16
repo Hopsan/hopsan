@@ -105,7 +105,6 @@ SOURCES += \
     src/ComponentUtilities/CSVParser.cc \
     Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
     src/Parameters.cc \
-    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
     src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc
