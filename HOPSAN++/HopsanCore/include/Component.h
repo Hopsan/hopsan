@@ -132,12 +132,12 @@ protected:
     void stopSimulation();
 
     //Port functions
-    Port* addPort(const std::string portname, PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
-    Port* addPowerMultiPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addPowerPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addReadMultiPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addReadPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addWritePort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addPort(const std::string portname, const PORTTYPE porttype, const NodeTypeT nodetype, const Port::CONREQ connection_requirement);
+    Port* addPowerMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addPowerPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addReadMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addReadPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addWritePort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
     bool getPort(const std::string portname, Port* &rpPort);
     std::string renamePort(const std::string oldname, const std::string newname);
     void deletePort(const std::string name);

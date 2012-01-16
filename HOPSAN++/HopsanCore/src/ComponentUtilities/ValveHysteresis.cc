@@ -27,9 +27,9 @@
 
 using namespace hopsan;
 
-ValveHysteresis::ValveHysteresis()
-{
-}
+//ValveHysteresis::ValveHysteresis()
+//{
+//}
 
 double ValveHysteresis::getValue(double xs, double xh, double xd)
 {

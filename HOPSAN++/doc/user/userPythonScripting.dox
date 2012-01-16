@@ -64,7 +64,7 @@ Sets the system parameter "parName" to "value" in current system.
 \subsection plot plot(compName, portName, dataName)
 Plots the variable "dataName" in the port "portName" of the component "compName". Example: hopsan.plot("sink", "in", "Value")
 
-\subsetion plot2 plot(alias)
+\subsection plot2 plot(alias)
 Plots the variable with alias name "alias".
 	
 \subsection plottowindow plotToWindow(compName, portName, dataName, windowNumber)

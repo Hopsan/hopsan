@@ -39,7 +39,7 @@ using namespace hopsan;
 
 //! Node base class constructor
 //! @param [in] datalength The length of the data vector
-Node::Node(size_t datalength)
+Node::Node(const size_t datalength)
 {
     //Make sure clear (should not really be needed)
     mDataVector.clear();
@@ -119,6 +119,8 @@ void Node::setDataCharacteristics(size_t id, string name, string unit, Node::PLO
 
 //! Get a specific data name and unit
 //! @param [in] id This is the ENUM data id
+//! @param [out] rName A reference to the name variable
+//! @param [out] rUnit A reference to the Unite variable
 void Node::getDataNameAndUnit(const size_t id, std::string &rName, std::string &rUnit)
 {
     rName = mDataNames[id];
@@ -174,9 +176,10 @@ bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values
 
 
 //! Get all data names and units
-//! @param [in,out] rNames This vector will contain the names
-//! @param [in,out] rUnits This vector will contain the units
-void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits, bool getAll)
+//! @param [out] rNames A referece to a vector that will contain the names
+//! @param [out] rUnits A reference to a vector that will contain the units
+//! @param [in] getAll Should all variables be returned or only the main variables
+void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits, const bool getAll)
 {
     //std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
     for(size_t i=0; i<mDataNames.size(); ++i)

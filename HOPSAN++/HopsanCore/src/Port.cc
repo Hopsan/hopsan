@@ -369,7 +369,7 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 
 //! @brief Read the start values to a start value node in the port
 //! @param[out] rNames is the Vector of names of the star values
-//! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the name of this will be here
+//! @param[out] rValuesTxt is the Vector of values of the star values, if it is mapped to a System parameter the name of this will be here
 //! @param[out] rUnits is the Vector of units of the star values
 void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t /*portIdx*/)
 {

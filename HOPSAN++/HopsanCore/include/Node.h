@@ -57,7 +57,7 @@ namespace hopsan {
 
     protected:
         //Protected member functions
-        Node(size_t datalength);
+        Node(const size_t datalength);
         const NodeTypeT getNodeType() const;
 
         enum PLOTORNOT {PLOT, NOPLOT};
@@ -78,7 +78,7 @@ namespace hopsan {
         void setDataCharacteristics(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
         void getDataNameAndUnit(const size_t id, std::string &rName, std::string &rUnit);
         int getDataIdFromName(const std::string name);
-        void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, bool getAll=false);
+        void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const bool getAll=false);
         void getDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, bool getAll=false);
         bool setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
         int getNumberOfPortsByType(int type);

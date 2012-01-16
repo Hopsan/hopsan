@@ -142,7 +142,7 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 
 
 //! Remove a sub component from a system, can also be used to actually delete the component
-//! @param[in] c_ptr A pointer to the component to remove
+//! @param[in] pComponent A pointer to the component to remove
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 {
@@ -1415,8 +1415,8 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
 }
 
 //! @brief Detects if a port is a multiport, adds a subport and swaps the pointer, storing original port in argument two ptr
-//! @param [in out] rpPort A refrence to a pointer to the port, will be swapped to new subport if multiport
-//! @param [in out] rpOriginalPort A refrence to a pointer to the original multiport, will be 0 if not a multiport, will point to the multiport otherwise
+//! @param [in,out] rpPort A refrence to a pointer to the port, will be swapped to new subport if multiport
+//! @param [in,out] rpOriginalPort A refrence to a pointer to the original multiport, will be 0 if not a multiport, will point to the multiport otherwise
 void ConnectionAssistant::ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOriginalPort)
 {
     rpOriginalPort = 0; //Make sure null if not multiport

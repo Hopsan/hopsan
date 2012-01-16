@@ -358,7 +358,8 @@ double *Component::getTimePtr()
 //! @param [in] portname The desired name of the port (may be automatically changed)
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addPort(const string portname, PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
+//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+Port* Component::addPort(const string portname, const PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
 {
     std::stringstream ss;
     ss << getName() << "::addPort";
@@ -388,47 +389,56 @@ Port* Component::addPort(const string portname, PORTTYPE porttype, const NodeTyp
 
 
 //! @brief Convenience method to add a PowerPort
-//! @param [in] porttype The type of port
+//! @param [in] portname The desired name of the port (may be automatically changed)
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addPowerPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+Port* Component::addPowerPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
 {
     return addPort(portname, POWERPORT, nodetype, connection_requirement);
 }
 
 //! @brief Convenience method to add a PowerMultiPort
-//! @param [in] porttype The type of port
+//! @param [in] portname The desired name of the port (may be automatically changed)
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addPowerMultiPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+Port* Component::addPowerMultiPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
 {
     return addPort(portname, POWERMULTIPORT, nodetype, connection_requirement);
 }
 
 //! @brief Convenience method to add a ReadMultiPort
-//! @param [in] porttype The type of port
+//! @param [in] portname The desired name of the port (may be automatically changed)
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addReadMultiPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+Port* Component::addReadMultiPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
 {
     return addPort(portname, READMULTIPORT, nodetype, connection_requirement);
 }
 
 //! @brief Convenience method to add a ReadPort
-//! @param [in] porttype The type of port
+//! @param [in] portname The desired name of the port (may be automatically changed)
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addReadPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+Port* Component::addReadPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
 {
     return addPort(portname, READPORT, nodetype, connection_requirement);
 }
 
 
 //! @brief Convenience method to add a WritePort
-//! @param [in] porttype The type of port
+//! @param [in] portname The desired name of the port (may be automatically changed)
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addWritePort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
+//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+Port* Component::addWritePort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
 {
     return addPort(portname, WRITEPORT, nodetype, connection_requirement);
 }
 
 
+//! @brief Rename a port
+//! @param [in] oldname The name of the the port to rename
+//! @param [in] newname The desired new name of the the port
+//! @return The actual new name of the port or old name if not renamed
 //! @todo this could be a template function to use with all rename in map
 string Component::renamePort(const string oldname, const string newname)
 {
@@ -452,6 +462,7 @@ string Component::renamePort(const string oldname, const string newname)
     }
 }
 
+//! @brief removes and deleates a port from a component
 //! @todo Do we ever actually DELETE the ports?, dosnt seem so
 void Component::deletePort(const string name)
 {
@@ -472,7 +483,8 @@ void Component::deletePort(const string name)
 //! @brief This is a help function that returns a pointer to desired NodeData
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] dataId The enum id for the node value to fetch pointer to
-//! @param[in] defaultvalue Optional default value if port should not be connected (optional), if ommitet it will be 0
+//! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
+//! @param[in] portIdx The index of the subport in a multiport
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
 //! It is only ment to be used insed individual component code and automatically handles creation of dummy veriables
 //! in case optional ports are not connected
