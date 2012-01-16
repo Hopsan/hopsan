@@ -654,6 +654,7 @@ INPUT                  = ../HopsanCore \
                          ./dev \
                          ./user \
                          ../Utilities \
+                         ../componentLibraries/defaultLibrary/code/ \
                          ./commonMainPage.dox
 
 # This tag can be used to specify the character encoding of the source files

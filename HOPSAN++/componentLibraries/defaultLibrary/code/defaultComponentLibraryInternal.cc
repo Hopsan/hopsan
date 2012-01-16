@@ -36,6 +36,11 @@
 //!
 //! @defgroup SignalComponents SignalComponents
 //! @ingroup Components
+//!
+//! @defgroup ElectricComponents ElectricComponents
+//! @ingroup Components
+
+
 
 //using namespace hopsan;
 
