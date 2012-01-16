@@ -102,13 +102,13 @@ SOURCES += \
     src/ComponentUtilities/IntegratorLimited.cc \
     src/ComponentUtilities/Integrator.cc \
     src/ComponentUtilities/FirstOrderTransferFunction.cc \
-    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
-    src/ComponentUtilities/DoubleIntegratorWithDamping.cpp \
     src/ComponentUtilities/CSVParser.cc \
-    src/ComponentUtilities/AuxiliarySimulationFunctions.cpp \
     Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp \
     src/Parameters.cc \
-    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc
+    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \
+    src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
+    src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
+    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \

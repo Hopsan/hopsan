@@ -67,14 +67,14 @@ extern "C" {
 
 //! @brief Converts a float point number to a boolean
 //! @param value Double value to convert, 1.0 means true, 0.0 means false
-inline bool hopsan::doubleToBool(const double value)
+inline bool doubleToBool(const double value)
 {
     return(value > 0.5);
 }
 
 //! @brief Converts a boolean value to a float point number
 //! @param value Boolean to convert, will return 1.0 if true and 0.0 if false
-inline double hopsan::boolToDouble(const bool value)
+inline double boolToDouble(const bool value)
 {
     if(value)
     {
