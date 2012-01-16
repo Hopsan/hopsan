@@ -27,16 +27,6 @@
 
 using namespace hopsan;
 
-TurbulentFlowFunction::TurbulentFlowFunction()
-{
-}
-
-
-TurbulentFlowFunction::TurbulentFlowFunction(double ks)
-{
-    mKs = ks;
-}
-
 double TurbulentFlowFunction::getFlow(double c1, double c2, double Zc1, double Zc2)
 {
     if (c1 > c2)

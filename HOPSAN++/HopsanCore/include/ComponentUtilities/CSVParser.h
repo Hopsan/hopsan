@@ -31,6 +31,7 @@
 
 namespace hopsan {
 
+    //! @ingroup ComponentUtilityClasses
     class DLLIMPORTEXPORT CSVParser
     {
     public:

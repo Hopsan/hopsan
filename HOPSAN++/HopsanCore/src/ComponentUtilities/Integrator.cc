@@ -29,11 +29,6 @@
 using namespace hopsan;
 
 
-Integrator::Integrator()
-{
-}
-
-
 void Integrator::initialize(double timestep, double u0, double y0)
 {
 

@@ -49,10 +49,10 @@
 
 namespace hopsan {
 
+    //! @ingroup ComponentUtilityClasses
     class DLLIMPORTEXPORT ValveHysteresis
     {
     public:
-        //ValveHysteresis();
         double getValue(double xs, double xh, double xd);
     };
 }

@@ -25,7 +25,15 @@
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 #include <cmath>
 
+//! @defgroup ComponentUtilities
+//! @defgroup AuxiliarySimulationFunctions AuxiliarySimulationFunctions
+//! @ingroup ComponentUtilities
+//! @defgroup ComponentUtilityClasses ComponentUtilityClasses
+//! @ingroup ComponentUtilities
+
+
 //! @brief Limits a value so it is between min and max
+//! @ingroup AuxiliarySimulationFunctions
 //! @param &value Reference pointer to the value
 //! @param min Lower limit of the value
 //! @param max Upper limit of the value
@@ -50,6 +58,7 @@ void hopsan::limitValue(double &value, double min, double max)
 
 
 //! @brief Returns the sign of a double (-1.0 or +1.0)
+//! @ingroup AuxiliarySimulationFunctions
 //! @param x Value to determine sign on
 double hopsan::sign(double x)
 {
@@ -64,43 +73,8 @@ double hopsan::sign(double x)
 }
 
 
-//! @brief Returns 1.0 if x is positive, else returns 0.0
-//! @param x Value to determine if it is positive
-double hopsan::onPositive(double x)
-{
-    if (x < 0.0) { return 0.0; }
-    return 1.0;
-}
-
-
-
-double hopsan::dxOnPositive(double /*x*/)
-{
-    return 0.0;
-}
-
-
-//! @brief Returns 1.0 if x is negative, else returns 0.0
-//! @param x Value to determine if it is positive
-double hopsan::onNegative(double x)
-{
-    if (x < 0.0) { return 1.0; }
-    return 0.0;
-}
-
-
-double hopsan::dxOnNegative(double /*x*/)
-{
-    return 0.0;
-}
-
-double hopsan::dxAbs(double x)
-{
-    if (x < 0.0) { return -1; }
-    return 1;
-}
-
 //! @brief Returns y1 or y2 depending on the value of x.
+//! @ingroup AuxiliarySimulationFunctions
 //! @param x input value
 //! @param y1 if x is positive
 //! @param y2 otherwise
@@ -113,6 +87,7 @@ double hopsan::ifPositive(double x, double y1, double y2)
 
 
 //! @brief Derivative of IfPositive with respect to y1.
+//! @ingroup AuxiliarySimulationFunctions
 //! @param x input value
 //! @param y1 dummy
 //! @param y2 dummy
@@ -124,6 +99,7 @@ double hopsan::dtIfPositive(double x, double /*y1*/, double /*y2*/)
 }
 
 //! @brief Derivative of IfPositive with respect to y1.
+//! @ingroup AuxiliarySimulationFunctions
 //! @param x input value
 //! @param y1 dummy
 //! @param y2 dummy
@@ -135,29 +111,34 @@ double hopsan::dfIfPositive(double x, double /*y1*/, double /*y2*/)
 }
 
 
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::signedSquareL(double x, double x0)
 {
     return (-sqrt(x0) + sqrt(x0 + fabs(x))) * hopsan::sign(x);
 }
 
 
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::dxSignedSquareL(double x, double x0)
 {
     return (1.0 / (sqrt(x0 + fabs(x)) * 2.0));
 }
 
 
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::squareAbsL(double x, double x0)
 {
     return (-sqrt(x0) + sqrt(x0 + fabs(x)));
 }
 
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::dxSquareAbsL(double x, double x0)
 {
     return 1.0 / (sqrt(x0 + fabs(x)) * 2.0) * hopsan::sign(x);
 }
 
 //! @brief Safe variant of atan2
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::Atan2L(double y, double x)
 {
     if (x >0. || x<0.)
@@ -166,20 +147,8 @@ double hopsan::Atan2L(double y, double x)
     {return 0.;}
 }
 
-double hopsan::d1Atan2L(double y, double x)
-{
-    //return x/(0.001 + pow(x,2) + pow(y,2));
-    return x/(0.001 + x*x + y*y);
-}
-
-//! @brief Derivative of ATAN2L with respect to x
-double hopsan::d2Atan2L(double y, double x)
-{
-    //return -y/(0.001 + pow(x,2) + pow(y,2));
-    return -y/(0.001 + x*x + y*y);
-}
-
 //! @brief Returns 1.0 if input variables have same sign, else returns 0.0
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::equalSigns(double x, double y)
 {
     if (hopsan::sign(x) != hopsan::sign(y)) {
@@ -189,18 +158,21 @@ double hopsan::equalSigns(double x, double y)
 }
 
 //! @brief Safe variant of asin
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::ArcSinL(double x)
 {
     return asin(limit(x,-0.999,0.999));
 }
 
 //! @brief derivative of AsinL
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::dxArcSinL(double x)
 {
     return 1.0/sqrt(1 - pow(limit(x,-0.999,0.999),2));
 }
 
 //! @brief difference between two angles, fi1-fi2
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::diffAngle(double fi1, double fi2)
 {   double output;
     double output0 = fi1-fi2;
@@ -218,6 +190,7 @@ double hopsan::diffAngle(double fi1, double fi2)
 }
 
 //! @brief Induced drag coefficient for aircraft model
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::CLift( double alpha,double CLalpha,double ap,double an,double expclp,double expcln)
 {
     return sin(2.0*alpha)/sqrt(2.0) + ((-(1.0/sqrt(2.0)) + CLalpha/2.0)*sin(2.0*alpha))/
@@ -226,6 +199,7 @@ double hopsan::CLift( double alpha,double CLalpha,double ap,double an,double exp
 }
 
 //! @brief Induced drag coefficient for aircraft model
+//! @ingroup AuxiliarySimulationFunctions
 double hopsan::CDragInd(double alpha,double AR,double e,double CLalpha,double ap,double an,double expclp,double expcln)
 {
     return 0.35355*(1.0 - 1.0/
@@ -238,6 +212,7 @@ double hopsan::CDragInd(double alpha,double AR,double e,double CLalpha,double ap
 }
 
 //! @brief Overloads void hopsan::limitValue() with a return value.
+//! @ingroup AuxiliarySimulationFunctions
 //! @see void hopsan::limitValue(&value, min, max)
 //! @param x Value to be limited
 //! @param xmin Minimum value of x
@@ -251,6 +226,7 @@ double hopsan::limit(double x, double xmin, double xmax)
 
 
 //! @brief Sets the derivative of x to zero if x is outside of limits.
+//! @ingroup AuxiliarySimulationFunctions
 //! Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
 //! @param x Value whos derivative is to be limited
 //! @param xmin Minimum value of x
@@ -265,6 +241,7 @@ double hopsan::dxLimit(double x, double xmin, double xmax)
 
 
 //! @brief Overloads double hopsan::limit() to also include sx (derivative of x) as input
+//! @ingroup AuxiliarySimulationFunctions
 //! @see void hopsan::limit(&x, min, max)
 //! @param x Value to be limited
 //! @param sx Derivative of x
@@ -278,6 +255,7 @@ double hopsan::limit2(double x, double /*sx*/, double xmin, double xmax)
 
 
 //! @brief Limits the derivative of x when x is outside of its limits.
+//! @ingroup AuxiliarySimulationFunctions
 //! Returns 1.0 if x is within borders, or if x is outside borders but derivative has opposite sign (so that x can only move back to the limited range).
 //! @param x Value whos derivative is to be limited
 //! @param xmin Minimum value of x

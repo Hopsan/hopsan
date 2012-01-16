@@ -29,6 +29,8 @@
 
 namespace hopsan {
 
+//! @brief A const double definition of pi that you can use in your code
+//! @ingroup AuxiliarySimulationFunctions
 const double pi = 3.14159265358979323846;
 
 extern "C" {
@@ -36,11 +38,6 @@ extern "C" {
     double DLLIMPORTEXPORT sign(double x);
 
     // ----------Functions converted from auxhop in old Hopsan----------
-    double DLLIMPORTEXPORT onPositive(double x);
-    double DLLIMPORTEXPORT dxOnPositive(double x);
-    double DLLIMPORTEXPORT onNegative(double x);
-    double DLLIMPORTEXPORT dxOnNegative(double x);
-    double DLLIMPORTEXPORT dxAbs(double x);
     double DLLIMPORTEXPORT ifPositive(double x, double y1, double y2);
     double DLLIMPORTEXPORT dtIfPositive(double x, double y1, double y2);
     double DLLIMPORTEXPORT dfIfPositive(double x, double y1, double y2);
@@ -49,8 +46,6 @@ extern "C" {
     double DLLIMPORTEXPORT squareAbsL(double x, double x0);
     double DLLIMPORTEXPORT dxSquareAbsL(double x, double x0);
     double DLLIMPORTEXPORT Atan2L(double y, double x);
-    double DLLIMPORTEXPORT d1Atan2L(double y, double x);
-    double DLLIMPORTEXPORT d2Atan2L(double y, double x);
     double DLLIMPORTEXPORT ArcSinL(double x);
     double DLLIMPORTEXPORT dxArcSinL(double x);
     double DLLIMPORTEXPORT diffAngle(double fi1, double fi2);
@@ -66,6 +61,7 @@ extern "C" {
 // ----------Inline Functions converted from auxhop in old Hopsan----------
 
 //! @brief Converts a float point number to a boolean
+//! @ingroup AuxiliarySimulationFunctions
 //! @param value Double value to convert, 1.0 means true, 0.0 means false
 inline bool doubleToBool(const double value)
 {
@@ -73,6 +69,7 @@ inline bool doubleToBool(const double value)
 }
 
 //! @brief Converts a boolean value to a float point number
+//! @ingroup AuxiliarySimulationFunctions
 //! @param value Boolean to convert, will return 1.0 if true and 0.0 if false
 inline double boolToDouble(const bool value)
 {
@@ -81,6 +78,60 @@ inline double boolToDouble(const bool value)
         return 1.0;
     }
     return 0.0;
+}
+
+//! @brief Returns 1.0 if x is positive, else returns 0.0
+//! @ingroup AuxiliarySimulationFunctions
+//! @param x Value to determine if it is positive
+inline double onPositive(const double x)
+{
+    if (x < 0.0) { return 0.0; }
+    return 1.0;
+}
+
+
+//! @ingroup AuxiliarySimulationFunctions
+inline double dxOnPositive(const double /*x*/)
+{
+    return 0.0;
+}
+
+//! @brief Returns 1.0 if x is negative, else returns 0.0
+//! @ingroup AuxiliarySimulationFunctions
+//! @param x Value to determine if it is positive
+inline double onNegative(const double x)
+{
+    if (x < 0.0) { return 1.0; }
+    return 0.0;
+}
+
+
+//! @ingroup AuxiliarySimulationFunctions
+inline double dxOnNegative(const double /*x*/)
+{
+    return 0.0;
+}
+
+//! @ingroup AuxiliarySimulationFunctions
+inline double dxAbs(const double x)
+{
+    if (x < 0.0) { return -1; }
+    return 1;
+}
+
+//! @ingroup AuxiliarySimulationFunctions
+inline double d1Atan2L(const double y, const double x)
+{
+    //return x/(0.001 + pow(x,2) + pow(y,2));
+    return x/(0.001 + x*x + y*y);
+}
+
+//! @brief Derivative of ATAN2L with respect to x
+//! @ingroup AuxiliarySimulationFunctions
+inline double d2Atan2L(const double y, const double x)
+{
+    //return -y/(0.001 + pow(x,2) + pow(y,2));
+    return -y/(0.001 + x*x + y*y);
 }
 
 }

@@ -29,10 +29,10 @@
 
 namespace hopsan {
 
+//! @ingroup ComponentUtilityClasses
 class DLLIMPORTEXPORT Integrator
 {
     public:
-        Integrator();
         void initialize(double timestep, double u0=0.0, double y0=0.0);
         void initializeValues(double u0, double y0);
         double update(double &u);

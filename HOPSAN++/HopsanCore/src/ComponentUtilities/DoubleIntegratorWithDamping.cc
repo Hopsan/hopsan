@@ -28,11 +28,6 @@
 
 using namespace hopsan;
 
-DoubleIntegratorWithDamping::DoubleIntegratorWithDamping()
-{
-}
-
-
 void DoubleIntegratorWithDamping::initialize(double timestep, double w0, double u0, double y0, double sy0)
 {
     mW0 = w0;

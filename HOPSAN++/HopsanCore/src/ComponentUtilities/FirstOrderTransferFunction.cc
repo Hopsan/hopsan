@@ -30,6 +30,7 @@
 using namespace hopsan;
 
 //! @class hopsan::FirstOrderTransferFunction
+//! @ingroup ComponentUtilityClasses
 //! @brief The FirstOrderTransferFunction class implements a first order time discrete transfer function using bilinear transform
 //!
 //! To declare a filter like \f[G=\frac{a_1 s + a_0}{b_1 s + b_0}\f]
@@ -37,10 +38,6 @@ using namespace hopsan;
 //! where \f$num[0]=a_0\f$, \f$num[1]=a_1\f$
 //! and \f$den[0]=b_0\f$, \f$den[1]=b_1\f$
 //!
-
-//FirstOrderTransferFunction::FirstOrderTransferFunction()
-//{
-//}
 
 
 void FirstOrderTransferFunction::initialize(double timestep, double num[2], double den[2], double u0, double y0, double min, double max)

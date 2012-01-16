@@ -30,6 +30,7 @@
 using namespace hopsan;
 
 //! @class hopsan::SecondOrderTransferFunction
+//! @ingroup ComponentUtilityClasses
 //! @brief The SecondOrderTransferFunction class implements a second order transfer function using bilinear transform
 //!
 //! To declare a filter like \f[G=\frac{a_2 s^2 + a_1 s + a_0}{b_2 s^2 + b_1 s + b_0}\f]
@@ -37,11 +38,6 @@ using namespace hopsan;
 //! where \f$num[0]=a_0\f$, \f$num[1]=a_1\f$, \f$num[2]=a_2\f$
 //! and \f$den[0]=b_0\f$, \f$den[1]=b_1\f$, \f$den[2]=b_2\f$,
 //!
-
-//SecondOrderTransferFunction::SecondOrderTransferFunction()
-//{
-//}
-
 
 void SecondOrderTransferFunction::initialize(double timestep, double num[3], double den[3], double u0, double y0, double min, double max)
 {

@@ -30,10 +30,10 @@
 
 namespace hopsan {
 
+    //! @ingroup ComponentUtilityClasses
     class DLLIMPORTEXPORT WhiteGaussianNoise
     {
     public:
-        WhiteGaussianNoise();
         double getValue();
     };
 }

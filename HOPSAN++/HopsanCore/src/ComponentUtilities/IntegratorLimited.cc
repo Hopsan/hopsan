@@ -30,6 +30,7 @@
 using namespace hopsan;
 
 /*! @class hopsan::IntegratorLimited
+ *  @ingroup ComponentUtilityClasses
  *  @brief The IntegratorLimited class implements a integrator using bilinear
  *  transform which integrates a variable with limited output signal and wind-up protection
  *
@@ -55,11 +56,6 @@ using namespace hopsan;
 
 //  \f[y=\left\{\begin{array}{ll} y_{min} & \mbox{if } \int u \, dt + y_0 < y_{min} \\ y_{max} & \mbox{if } \int u \, dt + y_0 > y_{max} \\ \displaystyle{\int_{0}^{t} u \, dt + y_0} & \mbox{otherwise} \end{array} \right.\f]
 //!
-
-IntegratorLimited::IntegratorLimited()
-{
-}
-
 
 void IntegratorLimited::initialize(double timestep, double u0, double y0, double min, double max)
 {

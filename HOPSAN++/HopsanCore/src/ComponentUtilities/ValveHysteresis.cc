@@ -27,10 +27,6 @@
 
 using namespace hopsan;
 
-//ValveHysteresis::ValveHysteresis()
-//{
-//}
-
 double ValveHysteresis::getValue(double xs, double xh, double xd)
 {
     if (xd < xs-xh/2)

@@ -31,6 +31,8 @@
 
 namespace hopsan {
 
+//! @brief Delay template class, implementing a circle buffer
+//! @ingroup ComponentUtilityClasses
 template<typename T>
 class Delay_
 {
@@ -168,6 +170,7 @@ private:
     T *mpArray;
 };
 
+//! @ingroup ComponentUtilityClasses
 typedef Delay_<double> Delay; //!< @todo My we should only have template class and let users choose data type themselfs
 
 }

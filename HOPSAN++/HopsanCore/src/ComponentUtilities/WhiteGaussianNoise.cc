@@ -30,10 +30,6 @@
 
 using namespace hopsan;
 
-WhiteGaussianNoise::WhiteGaussianNoise()
-{
-}
-
 double WhiteGaussianNoise::getValue()
 {
     // Calc Gaussian random value

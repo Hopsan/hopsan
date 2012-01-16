@@ -29,10 +29,10 @@
 
 namespace hopsan {
 
+    //! @ingroup ComponentUtilityClasses
     class DLLIMPORTEXPORT DoubleIntegratorWithDampingAndCoulumbFriction
     {
     public:
-        DoubleIntegratorWithDampingAndCoulumbFriction();
         void initialize(double timestep, double w0, double mass, double Fs, double Fk, double u0, double y0, double sy0);
         void initializeValues(double u0, double y0, double sy0);
         void setDamping(double w0);

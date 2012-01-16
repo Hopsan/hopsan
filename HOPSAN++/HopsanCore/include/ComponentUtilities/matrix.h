@@ -39,6 +39,7 @@ namespace hopsan {
     typedef double (*V_FCT_PTR)(double);
 
     //! defines a vector of doubles
+    //! @ingroup ComponentUtilityClasses
     class DLLIMPORTEXPORT Vec {
     public:
         Vec(); //!< default no-argument constructor
@@ -83,6 +84,7 @@ namespace hopsan {
     std::ostream& operator << (std::ostream& s, const Vec& v);
 
     //! defines a two-dimensional Matrix of doubles
+    //! @ingroup ComponentUtilityClasses
     class DLLIMPORTEXPORT Matrix {
     public:
         //! default (no argument) constructor

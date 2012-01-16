@@ -34,7 +34,6 @@ namespace hopsan {
     class DLLIMPORTEXPORT IntegratorLimited
     {
     public:
-        IntegratorLimited();
         void initialize(double timestep, double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
         void initializeValues(double u0, double y0);
         void setMinMax(double min, double max);
