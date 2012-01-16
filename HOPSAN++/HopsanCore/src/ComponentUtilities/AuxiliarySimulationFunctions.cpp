@@ -13,6 +13,13 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
+//!
+//! @file   AuxiliarySimulationFunctions.cc
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-06-30
+//!
+//! @brief Contiains a second order integrator utility with provision for some damping
+//!
 //$Id$
 
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
@@ -41,25 +48,6 @@ void hopsan::limitValue(double &value, double min, double max)
     }
 }
 
-
-//! @brief Converts a float point number to a boolean
-//! @param value Double value to convert, 1.0 means true, 0.0 means false
-bool hopsan::doubleToBool(double value)
-{
-    return(value > 0.5);
-}
-
-
-//! @brief Converts a boolean value to a float point number
-//! @param value Boolean to convert, will return 1.0 if true and 0.0 if false
-double hopsan::boolToDouble(bool value)
-{
-    if(value)
-    {
-        return 1.0;
-    }
-    return 0.0;
-}
 
 //! @brief Returns the sign of a double (-1.0 or +1.0)
 //! @param x Value to determine sign on

@@ -33,11 +33,9 @@ const double pi = 3.14159265358979323846;
 
 extern "C" {
     void DLLIMPORTEXPORT limitValue(double &value, double min, double max);
-    bool DLLIMPORTEXPORT doubleToBool(double value);
-    double DLLIMPORTEXPORT boolToDouble(bool value);
     double DLLIMPORTEXPORT sign(double x);
 
-    //! Functions converted from auxhop in old Hopsan
+    // ----------Functions converted from auxhop in old Hopsan----------
     double DLLIMPORTEXPORT onPositive(double x);
     double DLLIMPORTEXPORT dxOnPositive(double x);
     double DLLIMPORTEXPORT onNegative(double x);
@@ -64,5 +62,26 @@ extern "C" {
     double DLLIMPORTEXPORT limit2(double x, double sx, double xmin, double xmax);
     double DLLIMPORTEXPORT dxLimit2(double x, double sx, double xmin, double xmax);
 }
+
+// ----------Inline Functions converted from auxhop in old Hopsan----------
+
+//! @brief Converts a float point number to a boolean
+//! @param value Double value to convert, 1.0 means true, 0.0 means false
+inline bool hopsan::doubleToBool(const double value)
+{
+    return(value > 0.5);
+}
+
+//! @brief Converts a boolean value to a float point number
+//! @param value Boolean to convert, will return 1.0 if true and 0.0 if false
+inline double hopsan::boolToDouble(const bool value)
+{
+    if(value)
+    {
+        return 1.0;
+    }
+    return 0.0;
+}
+
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H

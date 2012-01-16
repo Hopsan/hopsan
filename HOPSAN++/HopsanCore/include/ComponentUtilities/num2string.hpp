@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   num2str.hpp
+//! @file   num2string.hpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-12-21
 //!
