@@ -229,9 +229,16 @@ MyExampleOrifice() : ComponentQ()
 }
 \endcode
 
-This is the constructor for the class, which is ran every time a new component is created (added to the model). First we give the restrictor coefficient a default value. Then we register the parameter with a name, a description and a unit. This will make it available to the user in the graphical interface. Finally we define the ports, in this case we want two hydraulic power ports. The following port types and node types are available:
+This is the constructor for the class, which is run every time a new component is created (added to the model). First we give the restrictor coefficient a default value. Then we register the parameter with a name, a description and a unit. This will make it available to the user in the graphical interface. Finally we define the ports, in this case we want two hydraulic power ports. The following port types and node types are available:
 
 Port types
+\code 
+Port* hopsan::Component::addPowerPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+Port* hopsan::Component::addReadPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+Port* hopsan::Component::addWritePort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+Port* hopsan::Component::addReadMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+Port* hopsan::Component::addPowerMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+\endcode
   - addPowerPort
   - addPowerMultiPort
   - addReadPort
