@@ -66,6 +66,10 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
         {
             mMainIconPath.append("HydraulicPort");
         }
+        else if (nodetype == "NodePneumatic")
+        {
+                mMainIconPath.append("PneumaticPort");
+        }
         else if (nodetype == "NodeElectric")
         {
             mMainIconPath.append("ElectricPort");
