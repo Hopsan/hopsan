@@ -86,7 +86,7 @@ namespace hopsan {
         void unReserveUniqueName(std::string name);
 
         //Handle system ports
-        Port* addSystemPort(std::string portname);
+        Port* addSystemPort(std::string portName);
         std::string renameSystemPort(const std::string oldname, const std::string newname);
         void deleteSystemPort(const std::string name);
 

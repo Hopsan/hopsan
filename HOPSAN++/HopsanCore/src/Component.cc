@@ -40,6 +40,12 @@
 using namespace std;
 using namespace hopsan;
 
+//! @defgroup ConvenientFunctions ConvenientFunctions
+//! @defgroup ConvenientPortFunctions ConvenientPortFunctions
+//! @ingroup ConvenientFunctions
+//! @defgroup ConvenientParameterFunctions ConvenientParameterFunctions
+//! @ingroup ConvenientFunctions
+
 //Constructor
 Component::Component()
 {
@@ -94,7 +100,7 @@ bool Component::checkParameters(std::string &errParName)
 }
 
 
-//! Virtual Function, base version which gives you an error if you try to use it.
+//! @brief Virtual Function, base version which gives you an error if you try to use it.
 void Component::finalize(const double /*startT*/, const double /*stopT*/)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use finalize() instead" << endl;
@@ -102,6 +108,9 @@ void Component::finalize(const double /*startT*/, const double /*stopT*/)
 }
 
 
+//! @brief Simulates the component from startT to stopT using previously set timestep
+//! @param [in] startT Start time
+//! @param [in] stopT Stop time
 //! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
 void Component::simulate(const double startT, const double stopT)
 {
@@ -145,6 +154,7 @@ void Component::finalize()
 //! Set the desired component name, if name is already taken in a subsystem the desired name will be modified with a suffix.
 //! If you set doOnlyLocalRename to true, the smart rename will not be atempted, avoid doing this as the component storage map will not be updated on anme change
 //! This is a somewhat ugly fix for some special situations where we want to make sure that a smart rename is not atempted
+//!
 void Component::setName(string name, bool doOnlyLocalRename)
 {
     //! @todo fix the trailing _ removal
@@ -183,22 +193,22 @@ void Component::setName(string name, bool doOnlyLocalRename)
 }
 
 
-//! Get the component name
-const string &Component::getName()
+//! @brief Get the component name
+const string Component::getName() const
 {
     return mName;
 }
 
 
-//! Get the C, Q or S type of the component as enum
-Component::CQSEnumT Component::getTypeCQS()
+//! @brief Get the C, Q or S type of the component as enum
+Component::CQSEnumT Component::getTypeCQS() const
 {
     return mTypeCQS;
 }
 
 
-//! Get the CQStype as string
-string Component::getTypeCQSString()
+//! @brief Get the CQStype as string
+string Component::getTypeCQSString() const
 {
     switch (mTypeCQS)
     {
@@ -221,8 +231,8 @@ string Component::getTypeCQSString()
 }
 
 
-//! Get the type name of the component
-const string &Component::getTypeName()
+//! @brief Get the type name of the component
+const string Component::getTypeName() const
 {
     return mTypeName;
 }
@@ -243,8 +253,13 @@ void Component::stopSimulation()
 }
 
 
-//! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
+//! @brief Register a double parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! @ingroup ConvenientParameterFunctions
+//! @param [in] name The name of the parameter
+//! @param [in] description A description of the parameter
+//! @param [in] unit The unit of the parameter value
+//! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
+//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
     if(mParameters->exist(name))
@@ -262,8 +277,13 @@ void Component::registerParameter(const string name, const string description, c
 }
 
 
-//! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
+//! @brief Register a string parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! @ingroup ConvenientParameterFunctions
+//! @param [in] name The name of the parameter
+//! @param [in] description A description of the parameter
+//! @param [in] unit The unit of the parameter value
+//! @param [in] rValue A reference to the string variable representing the value, its adress will be registered
+//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, string &rValue)
 {
     if(mParameters->exist(name))
@@ -273,8 +293,13 @@ void Component::registerParameter(const string name, const string description, c
 }
 
 
-//! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
+//! @brief Register a bool parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! @ingroup ConvenientParameterFunctions
+//! @param [in] name The name of the parameter
+//! @param [in] description A description of the parameter
+//! @param [in] unit The unit of the parameter value
+//! @param [in] rValue A reference to the bool variable representing the value, its adress will be registered
+//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, bool &rValue)
 {
     if(mParameters->exist(name))
@@ -323,25 +348,30 @@ bool Component::isSimulationOk()
 	return false;
 }
 
-
+//! @brief Check if a component is a C-Component
+//! @returns true or false
+//! @see getTypeCQS() getTypeCQSString()
 bool Component::isComponentC()
 {
     return mTypeCQS == C;
 }
 
-
+//! @brief Check if a component is a Q-Component
+//! @returns true or false
 bool Component::isComponentQ()
 {
     return mTypeCQS == Q;
 }
 
-
+//! @brief Check if a component is a System-Component
+//! @returns true or false
 bool Component::isComponentSystem()
 {
     return mIsComponentSystem;
 }
 
-
+//! @brief Check if a component is a Signal-Component
+//! @returns true or false
 bool Component::isComponentSignal()
 {
     return mTypeCQS == S;
@@ -355,23 +385,24 @@ double *Component::getTimePtr()
 
 
 //! @brief Adds a port to the component
-//! @param [in] portname The desired name of the port (may be automatically changed)
+//! @param [in] portName The desired name of the port (may be automatically changed)
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
 //! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
-Port* Component::addPort(const string portname, const PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
+//! @return A pointer to the created port
+Port* Component::addPort(const string portName, const PortTypesEnumT portType, const NodeTypeT nodeType, const Port::ReqConnEnumT reqConnection)
 {
     std::stringstream ss;
     ss << getName() << "::addPort";
     addLogMess(ss.str());
 
     //Make sure name is unique before insert
-    string newname = this->determineUniquePortName(portname);
+    string newname = this->determineUniquePortName(portName);
 
-    Port* new_port = createPort(porttype, nodetype, newname, this);
+    Port* new_port = createPort(portType, nodeType, newname, this);
 
     //Set wheter the port must be connected before simulation
-    if (connection_requirement == Port::NOTREQUIRED)
+    if (reqConnection == Port::NOTREQUIRED)
     {
         //! @todo maybe use a string for OPTIONAL instead, to reduce the number of compiletime dependencies, will need to think about that a bit more
         new_port->mConnectionRequired = false;
@@ -380,58 +411,68 @@ Port* Component::addPort(const string portname, const PORTTYPE porttype, const N
     mPortPtrMap.insert(PortPtrPairT(newname, new_port));
 
     //Signal autmatic name change
-    if (newname != portname)
+    if (newname != portName)
     {
-        gCoreMessageHandler.addDebugMessage("Automatically changed name of added port from: {" + portname + "} to {" + newname + "}");
+        gCoreMessageHandler.addDebugMessage("Automatically changed name of added port from: {" + portName + "} to {" + newname + "}");
     }
     return new_port;
 }
 
 
 //! @brief Convenience method to add a PowerPort
-//! @param [in] portname The desired name of the port (may be automatically changed)
-//! @param [in] nodetype The type of node that must be connected to the port
-//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
-Port* Component::addPowerPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
+//! @ingroup ConvenientPortFunctions
+//! @param [in] portName The desired name of the port (may be automatically changed)
+//! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (REQUIRED or NOTREQUIRED)
+//! @return A pointer to the created port
+Port* Component::addPowerPort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect)
 {
-    return addPort(portname, POWERPORT, nodetype, connection_requirement);
+    return addPort(portName, POWERPORT, nodeType, reqConnect);
 }
 
 //! @brief Convenience method to add a PowerMultiPort
-//! @param [in] portname The desired name of the port (may be automatically changed)
-//! @param [in] nodetype The type of node that must be connected to the port
-//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
-Port* Component::addPowerMultiPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
+//! @ingroup ConvenientPortFunctions
+//! @param [in] portName The desired name of the port (may be automatically changed)
+//! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (REQUIRED or NOTREQUIRED)
+//! @return A pointer to the created port
+Port* Component::addPowerMultiPort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect)
 {
-    return addPort(portname, POWERMULTIPORT, nodetype, connection_requirement);
+    return addPort(portName, POWERMULTIPORT, nodeType, reqConnect);
 }
 
 //! @brief Convenience method to add a ReadMultiPort
-//! @param [in] portname The desired name of the port (may be automatically changed)
-//! @param [in] nodetype The type of node that must be connected to the port
-//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
-Port* Component::addReadMultiPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
+//! @ingroup ConvenientPortFunctions
+//! @param [in] portName The desired name of the port (may be automatically changed)
+//! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (REQUIRED or NOTREQUIRED)
+//! @return A pointer to the created port
+Port* Component::addReadMultiPort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect)
 {
-    return addPort(portname, READMULTIPORT, nodetype, connection_requirement);
+    return addPort(portName, READMULTIPORT, nodeType, reqConnect);
 }
 
 //! @brief Convenience method to add a ReadPort
-//! @param [in] portname The desired name of the port (may be automatically changed)
-//! @param [in] nodetype The type of node that must be connected to the port
-//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
-Port* Component::addReadPort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
+//! @ingroup ConvenientPortFunctions
+//! @param [in] portName The desired name of the port (may be automatically changed)
+//! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (REQUIRED or NOTREQUIRED)
+//! @return A pointer to the created port
+Port* Component::addReadPort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect)
 {
-    return addPort(portname, READPORT, nodetype, connection_requirement);
+    return addPort(portName, READPORT, nodeType, reqConnect);
 }
 
 
 //! @brief Convenience method to add a WritePort
-//! @param [in] portname The desired name of the port (may be automatically changed)
-//! @param [in] nodetype The type of node that must be connected to the port
-//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
-Port* Component::addWritePort(const string portname, const string nodetype, const Port::CONREQ connection_requirement)
+//! @ingroup ConvenientPortFunctions
+//! @param [in] portName The desired name of the port (may be automatically changed)
+//! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (REQUIRED or NOTREQUIRED)
+//! @return A pointer to the created port
+Port* Component::addWritePort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect)
 {
-    return addPort(portname, WRITEPORT, nodetype, connection_requirement);
+    return addPort(portName, WRITEPORT, nodeType, reqConnect);
 }
 
 
@@ -480,14 +521,14 @@ void Component::deletePort(const string name)
     }
 }
 
-//! @brief This is a help function that returns a pointer to desired NodeData
+//! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
+//! @ingroup ConvenientPortFunctions
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] dataId The enum id for the node value to fetch pointer to
 //! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
 //! @param[in] portIdx The index of the subport in a multiport
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
-//! It is only ment to be used insed individual component code and automatically handles creation of dummy veriables
-//! in case optional ports are not connected
+//! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue, int portIdx)
 {
@@ -495,7 +536,7 @@ double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const doubl
     ss << getName() << "::getSafeNodeDataPtr";
     addLogMess(ss.str());
 
-    //If this is one of the multiports and we have NOT given a subport idx to use then give an error message to the user sothat they KNOW that they have made a mistake
+    //If this is one of the multiports and we have NOT given a subport idx to use then give an error message to the user so that they KNOW that they have made a mistake
     //! @todo it would be nice to solve this in some other way to avoid unecessary code, duoble implemntation in the function bellow is one way but that is even worse, this check would still be needed
     if ((pPort->getPortType() >= MULTIPORT) && (portIdx<0))
     {
@@ -506,6 +547,15 @@ double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const doubl
     return pPort->getSafeNodeDataPtr(dataId, defaultValue, portIdx);
 }
 
+//! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
+//! @ingroup ConvenientPortFunctions
+//! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
+//! @param[in] dataId The enum id for the node value to fetch pointer to
+//! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
+//! @param[in] portIdx The index of the subport in a multiport
+//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
+//! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
+//! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const int portIdx, const int dataId, const double defaultValue)
 {
     return getSafeNodeDataPtr(pPort, dataId, defaultValue, portIdx);

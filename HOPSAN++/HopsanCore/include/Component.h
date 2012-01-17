@@ -54,7 +54,9 @@ class DLLIMPORTEXPORT Component
 public:
     virtual ~Component();
 
+    //! @brief Enum typ for all CQS types
     enum CQSEnumT {C, Q, S, UNDEFINEDCQSTYPE};
+
     //==========Public functions==========
     //Virtual functions
     virtual void loadStartValues();
@@ -70,10 +72,10 @@ public:
 
     //Name and type
     void setName(std::string name, bool doOnlyLocalRename=false);
-    const std::string &getName();
-    const std::string &getTypeName();
-    CQSEnumT getTypeCQS();
-    std::string getTypeCQSString();
+    const std::string getName() const;
+    const std::string getTypeName() const;
+    CQSEnumT getTypeCQS() const;
+    std::string getTypeCQSString() const;
 
     //Parameters
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
@@ -132,12 +134,13 @@ protected:
     void stopSimulation();
 
     //Port functions
-    Port* addPort(const std::string portname, const PORTTYPE porttype, const NodeTypeT nodetype, const Port::CONREQ connection_requirement);
-    Port* addPowerMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addPowerPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addReadMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addReadPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addWritePort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addPort(const std::string portName, const PortTypesEnumT portType, const NodeTypeT nodeType, const Port::ReqConnEnumT reqConnection);
+    Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+    Port* addReadPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+    Port* addWritePort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+    Port* addPowerMultiPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+    Port* addReadMultiPort(const std::string portname, const std::string nodetype, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+
     bool getPort(const std::string portname, Port* &rpPort);
     std::string renamePort(const std::string oldname, const std::string newname);
     void deletePort(const std::string name);

@@ -526,16 +526,16 @@ void ComponentSystem::logAllNodes(const double time)
 
 
 //! Adds a transparent SubSystemPort
-Port* ComponentSystem::addSystemPort(string portname)
+Port* ComponentSystem::addSystemPort(string portName)
 {
-    if (portname.empty())
+    if (portName.empty())
     {
         //Force default portname p, if nothing else specified
-        portname = "p";
+        portName = "p";
     }
 
     //! @todo not hardcode, "undefined_nodetype" maybe define or something, it is used elsevere also
-    return addPort(portname, SYSTEMPORT, "undefined_nodetype", Port::REQUIRED);
+    return addPort(portName, SYSTEMPORT, "undefined_nodetype", Port::REQUIRED);
 }
 
 

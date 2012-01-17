@@ -1,0 +1,20 @@
+/*!
+\page userAcknowledgements Acknowledgements
+\section userAcknowledgements_externalDependecies External Dependencies
+Different parts of Hopsan depend on various third-party projects for some functionality. We would like to acknowledge these projects.
+
+\subsection userAcknowledgements_externalDependecies_core HopsanCore
+- Intel http://threadingbuildingblocks.org/ For multicore thread managment
+- http://code.google.com/p/csv-parser-cplusplus/ For the CSV parser utility
+- http://rapidxml.sourceforge.net/ For Hopsan Model file Loading (if HopsanGUI not used)
+
+\subsection userAcknowledgements_externalDependecies_cli HopsanCLI
+- http://tclap.sourceforge.net/ For command-line argument parsing
+
+\subsection userAcknowledgements_externalDependecies_gui HopsanGUI
+- http://qt.nokia.com/ For Qt - Cross-platform application and UI framework
+- http://pythonqt.sourceforge.net/ For giving python scripts access to GUI functions
+- http://python.org/ For python scripting support
+- http://qwt.sourceforge.net/ For technical plotting support in Qt
+
+*/

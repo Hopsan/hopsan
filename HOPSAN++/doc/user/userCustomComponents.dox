@@ -1,3 +1,4 @@
+namespace hopsan::Component {
 /*!
 \page userCustomComponents Custom Components & Libraries
 
@@ -115,6 +116,12 @@ The examples bellow are based on the exampleComponentLibrary that should be incl
 
 The exampleComponentLibrary project file is specific for the Qt Creator C++ IDE but technically it is possible to use any IDE (code writing software). Knowledge about TLM is not required for writing arithmetic components. See \link userTransmissionLineElementMethod the Transmission Line Element Method \endlink for more information.
 
+If you install the Qt SDK you will get Qt Creator and the MinGW32 compiler. You do not need to install the entire Qt SDK. See this screenshot for an example on the things you need to be able to build hopsan external libs.
+\htmlonly
+  <br><a href="../../graphics/QtSDK_custom_install_options.jpg"><img src="../../graphics/QtSDK_custom_install_options.jpg" width=100 border=0></a><br>
+\endhtmlonly
+
+
 \section writingcomponents_libraryfiles Component Library Project Files
 
 \subsection writingcomponents_file_pro exampleComponentLib.pro
@@ -186,116 +193,88 @@ These files contains the source code for the components, see below.
 \section writingcomponents_codestructure Component Code Structure
 Components are written in header-only C++ files (.hpp). Let's take a look at "MyExampleOrifice.hpp". The file consist of the following parts:
 
-\code
-#include "ComponentEssentials.h"
-\endcode
+This first line includes the essential functions for the component from the simulation core. It may be necessary to include more files, for example "ComponentUtilities.h" for accessing built-in component utilities in Hopsan, or external header files.
+\dontinclude MyExampleOrifice.hpp
+\skipline #include
 
-This line includes the essential functions for the component from the simulation core. It may be necessary to include more files, for example "ComponentUtilities.h" for accessing built-in component utilities in Hopsan, or external header files.
+Next the component class is declared. We inherit from a \b ComponentQ as this is a Q-type component.
+This could also be \b ComponentC or \b ComponentS for C-type or Signal-type components.
+\skipline class MyExampleOrifice
 
-\code
-class MyExampleOrifice : public ComponentQ
-\endcode
+First the \e private part of the component is specified. Here we declare member variables, (variables that should be persistent in the component).
+In this case we have a restriction coefficient called \b mKc and two port pointers called \b mpP1 and \b mpP2 ("m" is an abbreviation of "member" and "mp" means "member and pointer").
+\skip private:
+\until Port
 
-Here the class is declared. ComponentQ means that this is a Q-type component. It could also be ComponentC or ComponentS for C-type or signal components.
+In the \e public part we first define a static creator function, which is used to create instances of the component in the simulation core. Nothing needs to be changed except the name of the class.
+\skip static Component *Creator()
+\until }
 
-\code
-double mKc;
-Port *mpP1, *mpP2;
-\endcode
+The second member function you need to define is the so called \e Constructor for the class. This function is run once every time a new object of the class is created (added to the model).
+The constructor is used to configure the component and to set default values of member variables.
+First we give the restrictor coefficient a default value. Then we create the ports used for communication with surrounding components, in this case two hydraulic powerports.
+Finally we register the restrictor coefficient as parameter with a name, description and unit. This will make it available to the user in the graphical interface. 
+\skip MyExampleOrifice() : ComponentQ()
+\until }
 
-This is the member variables in the class. In this case we have a restriction coefficient called mKc and two ports called mpP1 and mpP2 ("m" is an abbreviation of "member" and "mp" means "member pointer").
-
-\code
-static Component *Creator()
-{
-    return new MyExampleOrifice();
-}
-\endcode
-
-Here we see the creator function, which is used to generate instances of the component in the simulation core. Nothing needs to be changed except the name of the class.
-
-\code
-MyExampleOrifice() : ComponentQ()
-{
-    // Set initial member variable values
-    mKc = 1.0e-11;
-
-    // Add ports to the component
-    mpP1 = addPowerPort("P1", "NodeHydraulic");
-    mpP2 = addPowerPort("P2", "NodeHydraulic");
-
-    // Register component parameters that can be changed by the user
-    registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
-}
-\endcode
-
-This is the constructor for the class, which is run every time a new component is created (added to the model). First we give the restrictor coefficient a default value. Then we register the parameter with a name, a description and a unit. This will make it available to the user in the graphical interface. Finally we define the ports, in this case we want two hydraulic power ports. The following port types and node types are available:
-
-Port types
+The following functions are available for port creation:
+You need to specify a unique (within the component) portname, which node type it should use, and whether a connection to it is Port::REQUIRED or Port::NOTREQUIRED. If the final argument is omitted it will default to REQUIRED.
 \code 
-Port* hopsan::Component::addPowerPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-Port* hopsan::Component::addReadPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-Port* hopsan::Component::addWritePort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-Port* hopsan::Component::addReadMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
-Port* hopsan::Component::addPowerMultiPort(const std::string portname, const std::string nodetype, const Port::CONREQ connection_requirement=Port::REQUIRED);
+Port* addPowerPort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+Port* addReadPort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+Port* addWritePort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+Port* addPowerMultiPort(const string portName, const string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+Port* addReadMultiPort(const string portname, const string nodetype, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
 \endcode
-  - addPowerPort
-  - addPowerMultiPort
-  - addReadPort
-  - addReadMultiPort
-  - addWritePort
 
-Node types
-  - NodeSignal
-  - NodeMechanic
-  - NodeMechanicRotational
-  - NodeHydraulic
-  - NodePneumatic
-  - NodeElectric
+The currently available built-in node types can be found here: \ref Nodes "NodeTypes"\n
+New node types can be added through external libraries, but this should be avoided if possible.
 
-Node types can be extended, these are just the current built-in types.
-
+For parameter registration the following functions are available. The correct register function will automatically be selected depending on the value type.
+The register functions will register the given name, unit and description and connect this information to a pointer pointing at the variable you specify as the \b rValue argument.
 \code
-void initialize()
-{
-    //Nothing to initialize
-}
+void registerParameter(const string name, const string description, const string unit, double &rValue);
+void registerParameter(const string name, const string description, const string unit, string &rValue);
+void registerParameter(const string name, const string description, const string unit, bool &rValue);
 \endcode
 
-The initialize function is ran before the first time step in the simulation. In this example case we have nothing that needs to be initialized. 
+For more useful functions see \ref ConvenientFunctions
 
-\code
-void simulateOneTimestep()
-{
-    //Get variable values from nodes
-    double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-    double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-    double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-    double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+The next member function that must be defined is the \e Initialize function.
+This function is run once before the first time step in the simulation. As this function is run after connections have been establish you can read or write to/from connected components. 
+If needed you can use this information to initialize your component properly. This is also the place to allocate aditional memory if needed. 
+In this function you also typically initialize more advanced utilities such as (but not limited to) Delays, Integrators or Transfer-functions. 
+In this example case we have nothing that needs to be initialized.
+\skip void initialize()
+\until }
 
-    //Orifice equations
-    double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
-    double q1 = -q2;
-    double p1 = c1 + q1*Zc1;
-    double p2 = c2 + q2*Zc2;
+ 
+The next function is the most important member function. It contains the model equations that are executed each time step.
+We begin with creating local variables from the connected ports, and we end by writing back the new values we have calculated.
+This procedure is intended to make the actual equations more readable. The middle part is the actual equations. 
+In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighbouring C-type components.
+\skip void simulateOneTimestep()
+\until }
 
-    //Write new values to nodes
-    mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-    mpP1->writeNode(NodeHydraulic::FLOW, q1);
-    mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-    mpP2->writeNode(NodeHydraulic::FLOW, q2);
-}
-\endcode
-
-This is the most important code, the model equations that are executed each time step. We begin with creating local variables from the node pointers, and we end by writing back the values we have calculated. This procedure is intended to make the actual equations more readable. The middle part is the actual equations. In this case we calculate flow and pressure through the orifice from wave variables and impedance in the neighbouring C-type components.
+The last member function is optional. It is only useful if you want some code to be run after simulation has finished.
+This is usually only needed if you want to free memory that you have additionally allocated in the \e initialize function.
+\skip void finalize()
+\until }
 
 \section writingcomponents_compilation Compilation
 
-When everything is finished, the project must be compiled. It is necessary to use the MinGW32 compiler, because Hopsan is compiled with this. The project must also be compiled in "release" mode.
+When everything is finished, the project must be compiled. It is necessary to use the MinGW32 compiler, because Hopsan is compiled with this compiler. The project must also be compiled in "release" mode.
+Compilation goes through two phases, first the .cc file or files are compiled and then they are linked into one .dll or .so file.
 
-If compilation was successful, a .dll file will appear in the directory. It should now be possible to load the library from Hopsan, by pointing out the directory - see \link userCustomComponents Introduction \endlink.
+If you have written something wrong in your code you may get a compilation error that you need to correct. Usually these error messages are quite descriptive.
+You may also get linker errors which are usually a bit more difficult to understand if you are not used to compiling you own code.
+
+If you get something similar to the following error message: \"<tt>cannot find -lHopsanCore</tt>\" you have probably set the LIBS path incorrectly in your project file.\n
+
+If compilation was successful, a .dll or.so file will appear in the directory. It should now be possible to load the library from Hopsan, by pointing out the directory - see \ref introduction-component-libraries "Introduction".
 
 \page generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
 */
+}
 

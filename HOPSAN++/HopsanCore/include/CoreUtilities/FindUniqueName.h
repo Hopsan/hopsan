@@ -13,6 +13,15 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
+//!
+//! @file   FindUniqueName.h
+//! @author <peter.nordin@liu.se>
+//! @date   2010-01-10
+//!
+//! @brief Contains template functions for generating a unique name based on map keys
+//!
+//$Id$
+
 #ifndef FINDUNIQUENAME_H
 #define FINDUNIQUENAME_H
 

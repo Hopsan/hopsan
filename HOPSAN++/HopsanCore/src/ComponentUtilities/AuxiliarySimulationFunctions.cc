@@ -25,7 +25,7 @@
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 #include <cmath>
 
-//! @defgroup ComponentUtilities
+//! @defgroup ComponentUtilities ComponentUtilities
 //! @defgroup AuxiliarySimulationFunctions AuxiliarySimulationFunctions
 //! @ingroup ComponentUtilities
 //! @defgroup ComponentUtilityClasses ComponentUtilityClasses

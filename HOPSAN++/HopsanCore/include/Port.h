@@ -37,9 +37,9 @@ namespace hopsan {
     class ConnectionAssistant;
     class MultiPort;
 
+    //! @brief This enum type specifies all porttypes
     //It is VERY important the MultiPort enums commes LAST, MULTIPORT is never instasiated but enum MUST be present
-    enum PORTTYPE {UNDEFINEDPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, MULTIPORT, POWERMULTIPORT, READMULTIPORT};
-    std::string DLLIMPORTEXPORT portTypeToString(const PORTTYPE type);
+    enum PortTypesEnumT {UNDEFINEDPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, MULTIPORT, POWERMULTIPORT, READMULTIPORT};
 
     class DLLIMPORTEXPORT Port
     {
@@ -49,10 +49,11 @@ namespace hopsan {
         friend class MultiPort;
 
     public:
-        enum CONREQ {REQUIRED, NOTREQUIRED};
+        //! @brief This enum specifies the RequiredConnection enums
+        enum ReqConnEnumT {REQUIRED, NOTREQUIRED};
 
         //Constructors - Destructors
-        Port(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        Port(const std::string nodeType, const std::string portName, Component *pPortOwner, Port *pParentPort=0);
         virtual ~Port();
 
         virtual double readNode(const size_t idx, const size_t portIdx=0);
@@ -85,21 +86,21 @@ namespace hopsan {
 
         bool isMultiPort() const;
         const std::string getNodeType() const;
-        PORTTYPE getPortType() const;
-        virtual PORTTYPE getExternalPortType();
-        virtual PORTTYPE getInternalPortType();
+        PortTypesEnumT getPortType() const;
+        virtual PortTypesEnumT getExternalPortType();
+        virtual PortTypesEnumT getInternalPortType();
 
-        const std::string &getPortName();
-        const std::string &getComponentName();
+        const std::string getPortName() const;
+        const std::string getComponentName() const;
 
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
 
-        Component* getComponent();
+        Component* getComponent() const;
 
 
     protected:
-        PORTTYPE mPortType;
+        PortTypesEnumT mPortType;
         NodeTypeT mNodeType;
 
         Node* mpStartNode;
@@ -140,8 +141,8 @@ namespace hopsan {
     public:
         //Constructors
         SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
-        PORTTYPE getExternalPortType();
-        PORTTYPE getInternalPortType();
+        PortTypesEnumT getExternalPortType();
+        PortTypesEnumT getInternalPortType();
     };
 
 
@@ -263,7 +264,8 @@ namespace hopsan {
         double readNode(const size_t idx);
     };
 
-    Port* createPort(PORTTYPE porttype, NodeTypeT nodetype, std::string name, Component *portOwner, Port *pParentPort=0);
+    Port* createPort(const PortTypesEnumT portType, const NodeTypeT nodeType, const std::string name, Component *pPortOwner, Port *pParentPort=0);
+    std::string DLLIMPORTEXPORT portTypeToString(const PortTypesEnumT type);
 }
 
 #endif // PORT_H_INCLUDED

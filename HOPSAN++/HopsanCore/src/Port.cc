@@ -36,12 +36,12 @@ using namespace std;
 using namespace hopsan;
 
 //! Port base class constructor
-Port::Port(string node_type, string portname, Component *portOwner, Port *pParentPort)
+Port::Port(const string nodeType, const string portName, Component *pPortOwner, Port *pParentPort)
 {
     mPortType = UNDEFINEDPORT;
-    mPortName = portname;
-    mNodeType = node_type;
-    mpComponent = portOwner;
+    mPortName = portName;
+    mNodeType = nodeType;
+    mpComponent = pPortOwner;
     mpParentPort = pParentPort; //Only used by subports in multiports
     mConnectionRequired = true;
     mConnectedPorts.clear();
@@ -83,7 +83,7 @@ const string Port::getNodeType() const
 
 
 //! Returns the parent component
-Component* Port::getComponent()
+Component* Port::getComponent() const
 {
     if(mpParentPort)
         return mpParentPort->getComponent();
@@ -503,33 +503,33 @@ bool Port::isMultiPort() const
 }
 
 //! Get the port type
-PORTTYPE Port::getPortType() const
+PortTypesEnumT Port::getPortType() const
 {
     return mPortType;
 }
 
 //! Get the External port type (virtual, should be overloaded in systemports only)
-PORTTYPE Port::getExternalPortType()
+PortTypesEnumT Port::getExternalPortType()
 {
     return getPortType();
 }
 
 //! Get the Internal port type (virtual, should be overloaded in systemports only)
-PORTTYPE Port::getInternalPortType()
+PortTypesEnumT Port::getInternalPortType()
 {
     return getPortType();
 }
 
 
 //! Get the port name
-const string &Port::getPortName()
+const string Port::getPortName() const
 {
     return mPortName;
 }
 
 
 //! Get the name of the commponent that the port is attached to
-const string &Port::getComponentName()
+const string Port::getComponentName() const
 {
     return getComponent()->getName();
 }
@@ -542,7 +542,7 @@ SystemPort::SystemPort(std::string node_type, std::string portname, Component *p
 }
 
 //! Get the External port type (virtual, should be overloaded in systemports only)
-PORTTYPE SystemPort::getExternalPortType()
+PortTypesEnumT SystemPort::getExternalPortType()
 {
     std::vector<Port*>::iterator pit;
     for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
@@ -560,7 +560,7 @@ PORTTYPE SystemPort::getExternalPortType()
 }
 
 //! Get the Internal port type (virtual, should be overloaded in systemports only)
-PORTTYPE SystemPort::getInternalPortType()
+PortTypesEnumT SystemPort::getInternalPortType()
 {
     std::vector<Port*>::iterator pit;
     for (pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
@@ -779,30 +779,34 @@ Port* ReadMultiPort::addSubPort()
     return mSubPortsVector.back();
 }
 
-//!
-//! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
-//!
-Port* hopsan::createPort(PORTTYPE porttype, NodeTypeT nodetype, string name, Component *portOwner, Port *pParentPort)
+//! @brief A very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
+//! @param [in] portType The type of port to create
+//! @param [in] nodeType The type of node that the port should contain
+//! @param [in] name The name of the port
+//! @param [in] pPortOwner A pointer to the owner component
+//! @param [in] pParentPort A pointer to the parent port in case of creation of a subport to a multiport
+//! @return A pointer to the created port
+Port* hopsan::createPort(const PortTypesEnumT portType, const NodeTypeT nodeType, const string name, Component *pPortOwner, Port *pParentPort)
 {
-    switch (porttype)
+    switch (portType)
     {
     case POWERPORT :
-        return new PowerPort(nodetype, name, portOwner, pParentPort);
+        return new PowerPort(nodeType, name, pPortOwner, pParentPort);
         break;
     case WRITEPORT :
-        return new WritePort(nodetype, name, portOwner, pParentPort);
+        return new WritePort(nodeType, name, pPortOwner, pParentPort);
         break;
     case READPORT :
-        return new ReadPort(nodetype, name, portOwner, pParentPort);
+        return new ReadPort(nodeType, name, pPortOwner, pParentPort);
         break;
     case SYSTEMPORT :
-        return new SystemPort(nodetype, name, portOwner, pParentPort);
+        return new SystemPort(nodeType, name, pPortOwner, pParentPort);
         break;
     case POWERMULTIPORT :
-        return new PowerMultiPort(nodetype, name, portOwner, pParentPort);
+        return new PowerMultiPort(nodeType, name, pPortOwner, pParentPort);
         break;
     case READMULTIPORT :
-        return new ReadMultiPort(nodetype, name, portOwner, pParentPort);
+        return new ReadMultiPort(nodeType, name, pPortOwner, pParentPort);
         break;
     default :
        assert(false); //Should not be able to create any other port type
@@ -810,8 +814,10 @@ Port* hopsan::createPort(PORTTYPE porttype, NodeTypeT nodetype, string name, Com
     }
 }
 
-//! @brief Get the port type as a string
-std::string hopsan::portTypeToString(const PORTTYPE type)
+//! @brief Converts a PortTypeEnum to string
+//! @param [in] type The port type enum
+//! @return The port type in string format
+std::string hopsan::portTypeToString(const PortTypesEnumT type)
 {
     switch (type)
     {
