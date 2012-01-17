@@ -44,7 +44,7 @@ DLLIMPORTEXPORT void hopsan::register_nodes(NodeFactory* pNodeFactory)
 {
     pNodeFactory->registerCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
-    pNodeFactory->registerCreatorFunction("NodePneumatic", NodeHydraulic::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodePneumatic", NodePneumatic::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeElectric", NodeElectric::CreatorFunction);
