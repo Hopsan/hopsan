@@ -27,23 +27,32 @@ public:
 public slots:
     bool okButtonPressed();
     bool cancelButtonPressed();
+    void updatePortXPos(QString x);
+    void updatePortYPos(QString y);
+    void updatePortInfo(QString portName, QString x, QString y);
     void updateZoom();
 
 signals:
     void finished();
 
 protected:
-
     QVector<DragPort*> mvSVGPorts;
     QGraphicsSvgItem *mpSVGComponent;
     ModelObjectAppearance *mpCompAppearance;
     PortAppearanceMapT *mpPortAppearanceMap;
+    QMap<QString,DragPort*> mDragPortMap;
 
     QGraphicsView *mpView;
     double mViewScale;
     QGridLayout *mpMainLayout;
 
     QSlider *mpZoomSlider;
+    QLabel *mpSelectedPortLabel;
+    QLabel *mpPortNameLabel;
+    QLabel *mpSelectedPortXLabel;
+    QLineEdit *mpPortXLineEdit;
+    QLabel *mpSelectedPortYLabel;
+    QLineEdit *mpPortYLineEdit;
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
 };
@@ -54,13 +63,22 @@ class DragPort : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    DragPort(QString path);
+    DragPort(PortAppearance *appearance, QString name, QGraphicsItem *parentComponent);
 
-    void setPosOnComponent(QGraphicsItem *component, double x, double y, double rot);
-    QPointF getPosOnComponent(QGraphicsItem *component);
+    void setPosOnComponent(double x, double y, double rot);
+    QPointF getPosOnComponent();
+
+signals:
+    void activePort(QString portName, QString x, QString y);
 
 protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void portMoved();
+
+    QGraphicsItem *mpParentComponent;
     QGraphicsSvgItem *mpSvg;
+    QGraphicsTextItem *mpName;
 };
 
 
