@@ -34,10 +34,10 @@
 
 //! @brief Limits a value so it is between min and max
 //! @ingroup AuxiliarySimulationFunctions
-//! @param &value Reference pointer to the value
+//! @param &rValue Reference pointer to the value
 //! @param min Lower limit of the value
 //! @param max Upper limit of the value
-void hopsan::limitValue(double &value, double min, double max)
+void hopsan::limitValue(double &rValue, double min, double max)
 {
     if(min>max)
     {
@@ -46,100 +46,46 @@ void hopsan::limitValue(double &value, double min, double max)
         max = min;
         min = temp;
     }
-    if(value > max)
+    if(rValue > max)
     {
-        value = max;
+        rValue = max;
     }
-    else if(value < min)
+    else if(rValue < min)
     {
-        value = min;
-    }
-}
-
-
-//! @brief Returns the sign of a double (-1.0 or +1.0)
-//! @ingroup AuxiliarySimulationFunctions
-//! @param x Value to determine sign on
-double hopsan::sign(double x)
-{
-    if (x>=0.0)
-    {
-        return 1.0;
-    }
-    else
-    {
-        return -1.0;
+        rValue = min;
     }
 }
 
 
-//! @brief Returns y1 or y2 depending on the value of x.
 //! @ingroup AuxiliarySimulationFunctions
-//! @param x input value
-//! @param y1 if x is positive
-//! @param y2 otherwise
-//! @returns Limited derivative of x
-double hopsan::ifPositive(double x, double y1, double y2)
-{
-    if (x >= 0) { return y1; }
-    else { return y2; }
-}
-
-
-//! @brief Derivative of IfPositive with respect to y1.
-//! @ingroup AuxiliarySimulationFunctions
-//! @param x input value
-//! @param y1 dummy
-//! @param y2 dummy
-//! @returns Limited derivative of x
-double hopsan::dtIfPositive(double x, double /*y1*/, double /*y2*/)
-{
-    if (x >= 0) { return 1.; }
-    else { return 0.; }
-}
-
-//! @brief Derivative of IfPositive with respect to y1.
-//! @ingroup AuxiliarySimulationFunctions
-//! @param x input value
-//! @param y1 dummy
-//! @param y2 dummy
-//! @returns Limited derivative of x
-double hopsan::dfIfPositive(double x, double /*y1*/, double /*y2*/)
-{
-    if (x >= 0) { return 1.; }
-    else { return 0.; }
-}
-
-
-//! @ingroup AuxiliarySimulationFunctions
-double hopsan::signedSquareL(double x, double x0)
+double hopsan::signedSquareL(const double x, const double x0)
 {
     return (-sqrt(x0) + sqrt(x0 + fabs(x))) * hopsan::sign(x);
 }
 
 
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::dxSignedSquareL(double x, double x0)
+double hopsan::dxSignedSquareL(const double x, const double x0)
 {
     return (1.0 / (sqrt(x0 + fabs(x)) * 2.0));
 }
 
 
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::squareAbsL(double x, double x0)
+double hopsan::squareAbsL(const double x, const double x0)
 {
     return (-sqrt(x0) + sqrt(x0 + fabs(x)));
 }
 
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::dxSquareAbsL(double x, double x0)
+double hopsan::dxSquareAbsL(const double x, const double x0)
 {
     return 1.0 / (sqrt(x0 + fabs(x)) * 2.0) * hopsan::sign(x);
 }
 
 //! @brief Safe variant of atan2
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::Atan2L(double y, double x)
+double hopsan::Atan2L(const double y, const double x)
 {
     if (x >0. || x<0.)
     { return atan2(y,x);}
@@ -149,35 +95,45 @@ double hopsan::Atan2L(double y, double x)
 
 //! @brief Returns 1.0 if input variables have same sign, else returns 0.0
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::equalSigns(double x, double y)
+double hopsan::equalSigns(const double x, const double y)
 {
-    if (hopsan::sign(x) != hopsan::sign(y)) {
+//    //! @warning This will NOT work (double != double)
+//    if (hopsan::sign(x) != hopsan::sign(y)) {
+//        return 0.0;
+//    }
+//    return 1.0;
+
+    if ( ((x < 0.0) && ( y < 0.0)) || ((x >= 0.0) && (y >= 0.0)) )
+    {
+        return 1.0;
+    }
+    else
+    {
         return 0.0;
     }
-    return 1.0;
 }
 
 //! @brief Safe variant of asin
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::ArcSinL(double x)
+double hopsan::ArcSinL(const double x)
 {
-    return asin(limit(x,-0.999,0.999));
+    return asin(hopsan::limit(x,-0.999,0.999));
 }
 
 //! @brief derivative of AsinL
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::dxArcSinL(double x)
+double hopsan::dxArcSinL(const double x)
 {
     return 1.0/sqrt(1 - pow(limit(x,-0.999,0.999),2));
 }
 
 //! @brief difference between two angles, fi1-fi2
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::diffAngle(double fi1, double fi2)
+double hopsan::diffAngle(const double fi1, const double fi2)
 {   double output;
     double output0 = fi1-fi2;
-    double output1 = fi1-fi2 + 2*3.14159;
-    double output2 = fi1-fi2 - 2*3.14159;
+    double output1 = fi1-fi2 + 2.0*pi;//3.14159;
+    double output2 = fi1-fi2 - 2.0*pi;//3.14159;
     if (fabs(output0)> fabs(output1))
       {output = output1;}
     else if (fabs(output0)< fabs(output2))
@@ -191,7 +147,7 @@ double hopsan::diffAngle(double fi1, double fi2)
 
 //! @brief Induced drag coefficient for aircraft model
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::CLift( double alpha,double CLalpha,double ap,double an,double expclp,double expcln)
+double hopsan::CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln)
 {
     return sin(2.0*alpha)/sqrt(2.0) + ((-(1.0/sqrt(2.0)) + CLalpha/2.0)*sin(2.0*alpha))/
             (1 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
@@ -200,7 +156,7 @@ double hopsan::CLift( double alpha,double CLalpha,double ap,double an,double exp
 
 //! @brief Induced drag coefficient for aircraft model
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::CDragInd(double alpha,double AR,double e,double CLalpha,double ap,double an,double expclp,double expcln)
+double hopsan::CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln)
 {
     return 0.35355*(1.0 - 1.0/
                     (1.0 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
@@ -217,7 +173,7 @@ double hopsan::CDragInd(double alpha,double AR,double e,double CLalpha,double ap
 //! @param x Value to be limited
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
-double hopsan::limit(double x, double xmin, double xmax)
+double hopsan::limit(const double x, const double xmin, const double xmax)
 {
     double output = x;
     hopsan::limitValue(output, xmin, xmax);
@@ -227,31 +183,18 @@ double hopsan::limit(double x, double xmin, double xmax)
 
 //! @brief Sets the derivative of x to zero if x is outside of limits.
 //! @ingroup AuxiliarySimulationFunctions
-//! Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
+//! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
 //! @param x Value whos derivative is to be limited
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
 //! @returns Limited derivative of x
-double hopsan::dxLimit(double x, double xmin, double xmax)
+double hopsan::dxLimit(const double x, const double xmin, const double xmax)
 {
     if (x >= xmax) { return 0.0; }
     if (x <= xmin) { return 0.0; }
     return 1.0;
 }
 
-
-//! @brief Overloads double hopsan::limit() to also include sx (derivative of x) as input
-//! @ingroup AuxiliarySimulationFunctions
-//! @see void hopsan::limit(&x, min, max)
-//! @param x Value to be limited
-//! @param sx Derivative of x
-//! @param xmin Minimum value of x
-//! @param xmax Maximum value of x
-//! @returns Limited x value
-double hopsan::limit2(double x, double /*sx*/, double xmin, double xmax)
-{
-    return hopsan::limit(x, xmin, xmax);
-}
 
 
 //! @brief Limits the derivative of x when x is outside of its limits.
@@ -261,7 +204,7 @@ double hopsan::limit2(double x, double /*sx*/, double xmin, double xmax)
 //! @param xmin Minimum value of x
 //! @param xmax Maximum value of x
 //! @returns Limited derivative of x
-double hopsan::dxLimit2(double x, double sx, double xmin, double xmax)
+double hopsan::dxLimit2(const double x, const double sx, const double xmin, const double xmax)
 {
     if (x >= xmax && sx >= 0.0) { return 0.0; }
     if (x <= xmin && sx <= 0.0) { return 0.0; }

@@ -118,7 +118,7 @@ The exampleComponentLibrary project file is specific for the Qt Creator C++ IDE 
 
 If you install the Qt SDK you will get Qt Creator and the MinGW32 compiler. You do not need to install the entire Qt SDK. See this screenshot for an example on the things you need to be able to build hopsan external libs.
 \htmlonly
-  <br><a href="../../graphics/QtSDK_custom_install_options.jpg"><img src="../../graphics/QtSDK_custom_install_options.jpg" width=100 border=0></a><br>
+  <br><a href="../../graphics/QtSDK_custom_install_options.png"><img src="../../graphics/QtSDK_custom_install_options.png" width=100 border=0></a><br>
 \endhtmlonly
 
 

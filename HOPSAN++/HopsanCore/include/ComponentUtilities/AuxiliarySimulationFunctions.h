@@ -34,31 +34,38 @@ namespace hopsan {
 const double pi = 3.14159265358979323846;
 
 extern "C" {
-    void DLLIMPORTEXPORT limitValue(double &value, double min, double max);
-    double DLLIMPORTEXPORT sign(double x);
+    void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
 
     // ----------Functions converted from auxhop in old Hopsan----------
-    double DLLIMPORTEXPORT ifPositive(double x, double y1, double y2);
-    double DLLIMPORTEXPORT dtIfPositive(double x, double y1, double y2);
-    double DLLIMPORTEXPORT dfIfPositive(double x, double y1, double y2);
-    double DLLIMPORTEXPORT signedSquareL(double x, double x0);
-    double DLLIMPORTEXPORT dxSignedSquareL(double x, double x0);
-    double DLLIMPORTEXPORT squareAbsL(double x, double x0);
-    double DLLIMPORTEXPORT dxSquareAbsL(double x, double x0);
-    double DLLIMPORTEXPORT Atan2L(double y, double x);
-    double DLLIMPORTEXPORT ArcSinL(double x);
-    double DLLIMPORTEXPORT dxArcSinL(double x);
-    double DLLIMPORTEXPORT diffAngle(double fi1, double fi2);
-    double DLLIMPORTEXPORT CLift( double alpha,double CLalpha,double ap,double an,double expclp,double expcln);
-    double DLLIMPORTEXPORT CDragInd(double alpha,double AR,double e,double CLalpha,double ap,double an,double expclp,double expcln);
-    double DLLIMPORTEXPORT equalSigns(double x, double y);
-    double DLLIMPORTEXPORT limit(double x, double xmin, double xmax);
-    double DLLIMPORTEXPORT dxLimit(double x, double xmin, double xmax);
-    double DLLIMPORTEXPORT limit2(double x, double sx, double xmin, double xmax);
-    double DLLIMPORTEXPORT dxLimit2(double x, double sx, double xmin, double xmax);
+    double DLLIMPORTEXPORT signedSquareL(const double x, const double x0);
+    double DLLIMPORTEXPORT dxSignedSquareL(const double x, const double x0);
+    double DLLIMPORTEXPORT squareAbsL(const double x, const double x0);
+    double DLLIMPORTEXPORT dxSquareAbsL(const double x, const double x0);
+    double DLLIMPORTEXPORT Atan2L(const double y, const double x);
+    double DLLIMPORTEXPORT ArcSinL(const double x);
+    double DLLIMPORTEXPORT dxArcSinL(const double x);
+    double DLLIMPORTEXPORT diffAngle(const double fi1, const double fi2);
+    double DLLIMPORTEXPORT CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
+    double DLLIMPORTEXPORT CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
+    double DLLIMPORTEXPORT equalSigns(const double x, const double y);
+    double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
+    double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
+    double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
 }
 
 // ----------Inline Functions converted from auxhop in old Hopsan----------
+
+//! @brief Returns y1 or y2 depending on the value of x.
+//! @ingroup AuxiliarySimulationFunctions
+//! @param x input value
+//! @param y1 if x is positive
+//! @param y2 otherwise
+//! @returns Limited derivative of x
+inline double ifPositive(const double x, const double y1, const double y2)
+{
+    if (x >= 0) { return y1; }
+    else { return y2; }
+}
 
 //! @brief Converts a float point number to a boolean
 //! @ingroup AuxiliarySimulationFunctions
@@ -132,6 +139,58 @@ inline double d2Atan2L(const double y, const double x)
 {
     //return -y/(0.001 + pow(x,2) + pow(y,2));
     return -y/(0.001 + x*x + y*y);
+}
+
+//! @brief Returns the sign of a double (-1.0 or +1.0)
+//! @ingroup AuxiliarySimulationFunctions
+//! @param x Value to determine sign on
+inline double sign(const double x)
+{
+    if (x>=0.0)
+    {
+        return 1.0;
+    }
+    else
+    {
+        return -1.0;
+    }
+}
+
+//! @brief Derivative of IfPositive with respect to y1.
+//! @ingroup AuxiliarySimulationFunctions
+//! @param x input value
+//! @param y1 dummy
+//! @param y2 dummy
+//! @returns Limited derivative of x
+inline double dtIfPositive(const double x, const double /*y1*/, const double /*y2*/)
+{
+    if (x >= 0) { return 1.; }
+    else { return 0.; }
+}
+
+//! @brief Derivative of IfPositive with respect to y1.
+//! @ingroup AuxiliarySimulationFunctions
+//! @param x input value
+//! @param y1 dummy
+//! @param y2 dummy
+//! @returns Limited derivative of x
+inline double dfIfPositive(const double x, const double /*y1*/, const double /*y2*/)
+{
+    if (x >= 0) { return 1.; }
+    else { return 0.; }
+}
+
+//! @brief Overloads double hopsan::limit() to also include sx (derivative of x) as input
+//! @ingroup AuxiliarySimulationFunctions
+//! @see void hopsan::limit(&x, min, max)
+//! @param x Value to be limited
+//! @param sx Derivative of x
+//! @param xmin Minimum value of x
+//! @param xmax Maximum value of x
+//! @returns Limited x value
+inline double limit2(const double x, const double /*sx*/, const double xmin, const double xmax)
+{
+    return hopsan::limit(x, xmin, xmax);
 }
 
 }
