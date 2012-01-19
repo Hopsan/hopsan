@@ -12,6 +12,10 @@
 using namespace std;
 
 
+//! @brief Constructor for the move port dialog
+//! @param[in] pComponentAppearance Pointer to the component appearance data of the compoennt which has the ports
+//! @param[in] gfxType USER or ISO graphics for the port
+//! @param[in] parent Pointer to the parent widget
 MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, graphicsType gfxType, QWidget *parent)
     : QDialog(parent)
 {
@@ -95,6 +99,8 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
 }
 
 
+//! @brief Updates the x-position of a port in the move port dialog window
+//! @param[in] x The new x-position
 void MovePortsDialog::updatePortXPos(QString x)
 {
     PortAppearance app = *(mpPortAppearanceMap->find(mpPortNameLabel->text()));
@@ -102,6 +108,8 @@ void MovePortsDialog::updatePortXPos(QString x)
 }
 
 
+//! @brief Updates the y-position of a port in the move port dialog window
+//! @param[in] y The new y-position
 void MovePortsDialog::updatePortYPos(QString y)
 {
     PortAppearance app = *(mpPortAppearanceMap->find(mpPortNameLabel->text()));
@@ -109,6 +117,10 @@ void MovePortsDialog::updatePortYPos(QString y)
 }
 
 
+//! @brief Updates the name, x- and y-position information of a port in the move port dialog window
+//! @param[in] portName The portname to be displayed
+//! @param[in] x The x-position to be displayed
+//! @param[in] y The y-position to be displayed
 void MovePortsDialog::updatePortInfo(QString portName, QString x, QString y)
 {
     mpPortNameLabel->setText(portName);
@@ -117,6 +129,7 @@ void MovePortsDialog::updatePortInfo(QString portName, QString x, QString y)
 }
 
 
+//! @brief Updates the zoom of the component and ports
 void MovePortsDialog::updateZoom()
 {
    // mpView->setUpdatesEnabled(false);
@@ -127,6 +140,7 @@ void MovePortsDialog::updateZoom()
 }
 
 
+//! @brief Ok button is pressed
 bool MovePortsDialog::okButtonPressed()
 {
     stringstream ss;
@@ -158,12 +172,17 @@ bool MovePortsDialog::okButtonPressed()
 }
 
 
+//! @brief Cancel button pressed
 bool MovePortsDialog::cancelButtonPressed()
 {
     return close();
 }
 
 
+//! @brief Constructor for the port that can be draged around
+//! @param[in] appearance Pointer to the port appearance data of the port that should be used
+//! @param[in] name Name of the port
+//! @param[in] parentComponent Pointer to the parent component on which the port is placed on
 DragPort::DragPort(PortAppearance *appearance, QString name, QGraphicsItem *parentComponent)
     : QGraphicsWidget()
 {
@@ -179,6 +198,8 @@ DragPort::DragPort(PortAppearance *appearance, QString name, QGraphicsItem *pare
 }
 
 
+//! @brief Re-implemented event function when mouse is moved
+//! @param[in] event The mouse event
 void DragPort::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     portMoved();
@@ -186,6 +207,8 @@ void DragPort::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
+//! @brief Re-implemented event function when mouse is pressed
+//! @param[in] event The mouse event
 void DragPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     portMoved();
@@ -193,6 +216,7 @@ void DragPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
+//! @brief Emits a signal when a port is moved
 void DragPort::portMoved()
 {
     QPointF p = getPosOnComponent();
@@ -203,6 +227,10 @@ void DragPort::portMoved()
 }
 
 
+//! @brief Moves the position and rotation of the port in the dialog window
+//! @param[in] x The new x-position
+//! @param[in] y The new y-position
+//! @param[in] rot The new rot-position
 void DragPort::setPosOnComponent(double x, double y, double rot)
 {
     double ox = this->boundingRect().width()/2.0;
@@ -215,6 +243,8 @@ void DragPort::setPosOnComponent(double x, double y, double rot)
 }
 
 
+//! @brief Calculates the position of the port on its parent component in scene coordinates
+//! @return QPoint The resulting point
 QPointF DragPort::getPosOnComponent()
 {
     double ox = this->boundingRect().width()/2.0;
