@@ -90,8 +90,8 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     connect(mpOkButton, SIGNAL(clicked()), this, SLOT(okButtonPressed()));
     connect(mpCancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonPressed()));
     connect(mpZoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(updateZoom()));
-    connect(mpPortXLineEdit, SIGNAL(textChanged(QString)), this, SLOT(updatePortXPos(QString)));
-    connect(mpPortYLineEdit, SIGNAL(textChanged(QString)), this, SLOT(updatePortYPos(QString)));
+    connect(mpPortXLineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortXPos(QString)));
+    connect(mpPortYLineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortYPos(QString)));
 
     this->setModal(true);
 
