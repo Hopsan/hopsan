@@ -65,10 +65,10 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     mpPortNameLabel->setMinimumWidth(50);
     mpSelectedPortXLabel = new QLabel("X: ", this);
     mpPortXLineEdit = new QLineEdit(this);
-    mpPortXLineEdit->setValidator(new QDoubleValidator);
+    mpPortXLineEdit->setValidator(new QDoubleValidator(-.1, 1.1, 2, mpPortXLineEdit));
     mpSelectedPortYLabel = new QLabel("Y: ", this);
     mpPortYLineEdit = new QLineEdit(this);
-    mpPortYLineEdit->setValidator(new QDoubleValidator);
+    mpPortYLineEdit->setValidator(new QDoubleValidator(-.1, 1.1, 2, mpPortYLineEdit));
 
     QHBoxLayout *buttons = new QHBoxLayout();
 
@@ -158,11 +158,11 @@ bool MovePortsDialog::okButtonPressed()
         //Port *port = mpComponent->getPort(it.key());
         //port->setCenterPosByFraction(p.x(), p.y());
     }
-    qDebug() << ss;
-    QMessageBox msgBox;
-    msgBox.setText(QString::fromStdString(ss.str()));
+//    qDebug() << ss;
+//    QMessageBox msgBox;
+//    msgBox.setText(QString::fromStdString(ss.str()));
 
-    msgBox.exec();
+//    msgBox.exec();
 
     //mpComponent->redrawConnectors();
 
@@ -221,8 +221,8 @@ void DragPort::portMoved()
 {
     QPointF p = getPosOnComponent();
     QString x,y;
-    x.setNum(p.x());
-    y.setNum(p.y());
+    x.setNum(p.x(), 'g', 2);
+    y.setNum(p.y(), 'g', 2);
     emit activePort(mpName->toPlainText(), x, y);
 }
 
