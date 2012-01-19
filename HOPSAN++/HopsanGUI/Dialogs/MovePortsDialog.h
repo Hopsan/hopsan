@@ -20,7 +20,7 @@
 //!
 //! @brief Contains a class for moving ports at GUI model objects
 //!
-//$$
+//$Id$
 
 #ifndef MOVEPORTSDIALOG_H
 #define MOVEPORTSDIALOG_H
