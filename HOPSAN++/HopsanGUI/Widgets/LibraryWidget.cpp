@@ -1535,7 +1535,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         else
         {
             QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData in %4"),
-                                     QString(file.fileName() + "Parse error at line %1, column %2:\n%3")
+                                     QString(file.fileName() + "\nParse error at line %1, column %2:\n%3")
                                      .arg(errorLine)
                                      .arg(errorColumn)
                                      .arg(errorStr)

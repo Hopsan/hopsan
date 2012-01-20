@@ -135,7 +135,7 @@ Port::~Port()
 
     //If any connectors are present they need to be deleated also
     // We need to use while and access first element every time as Vector will be modified when connector removes itself
-    //! @todo What about Undo, right now these deleations are not registerd
+    //! @todo What about Undo, right now these deleations are not registered
     while (mConnectedConnectors.size() > 0)
     {
         mConnectedConnectors[0]->deleteMeWithNoUndo();
@@ -543,6 +543,24 @@ void Port::refreshPortOverlayScale(qreal scale)
     }
 }
 
+//! @brief Updates the port lable text
+void Port::refreshPortLabelText()
+{
+    //Set the lable, &#160 means extra white space, to make lable more readable
+    QString label("<p><span style=\"background-color:lightyellow;font-size:14px;text-align:center\">&#160;&#160;");
+
+    label.append(mPortDisplayName).append("&#160;&#160;");
+    if (!mpPortAppearance->mDescription.isEmpty())
+    {
+        //Append description
+        label.append("<br>\"" + mpPortAppearance->mDescription + "\"");
+    }
+    label.append("</span></p>");
+
+    mpPortLabel->setHtml(label);
+    mpPortLabel->adjustSize();
+}
+
 //! Returns a pointer to the GraphicsView that the port belongs to.
 ContainerObject *Port::getParentContainerObjectPtr()
 {
@@ -734,11 +752,7 @@ QString Port::getGuiModelObjectName()
 void Port::setDisplayName(const QString name)
 {
     mPortDisplayName = name;
-    //Set the lable, &#160 menas extra white space, to make lable more readable
-    QString label("<p><span style=\"background-color:lightyellow;font-size:14px;text-align:center\">&#160;&#160;");
-    label.append(this->mPortDisplayName).append("&#160;&#160;</span></p>");
-    mpPortLabel->setHtml(label);
-    mpPortLabel->adjustSize();
+    refreshPortLabelText();
 }
 
 

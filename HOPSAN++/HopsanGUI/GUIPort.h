@@ -114,6 +114,7 @@ protected slots:
 private:
     void refreshPortMainGraphics();
     void refreshPortOverlayGraphics();
+    void refreshPortLabelText();
 
 //    QColor myLineColor;
 //    qreal myLineWidth;
