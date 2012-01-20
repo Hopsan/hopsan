@@ -2847,12 +2847,12 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
     }
 }
 
-
 #else
+
         //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
 //! @brief Simulate function that overrides multi-threaded simulation call with a single-threaded call
 //! In case multi-threaded support is not available
-void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/)
+void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/)
 {
     this->simulate(startT, stopT);
 }
@@ -2860,7 +2860,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
 //! @brief Simulate function that overrides multi-threaded multiple systems in parallel simulation call with a single-threaded call
 //! In case multi-threaded support is not available
-void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector)
+void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool /*noChanges*/)
 {
     this->simulateMultipleSystems(startT, stopT, systemVector);
 }
