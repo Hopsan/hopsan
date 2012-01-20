@@ -46,7 +46,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsqrt\\b";
+    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b";
 
     foreach (const QString &pattern, keywordPatterns)
     {
@@ -1045,6 +1045,11 @@ void ComponentGeneratorDialog::compile()
                 }
             }
         }
+        for(int i=0; i<mParametersList.size(); ++i)
+        {
+            stateVars.removeAll(mParametersList[i].name);
+        }
+        stateVars.removeAll("s");       //Laplace 's' is not a state variable
 
         //Generate list of local variables (variables that are neither input nor output)
         QStringList localVars = allSymbols;
@@ -1071,6 +1076,11 @@ void ComponentGeneratorDialog::compile()
                 }
             }
         }
+        for(int i=0; i<mParametersList.size(); ++i)
+        {
+            localVars.removeAll(mParametersList[i].name);
+        }
+        localVars.removeAll("s");       //Laplace 's' is not a local variable
 
         //Add "special" variables to symbols vector
         allSymbols.append("mTime");         //Simulation time
@@ -1139,6 +1149,9 @@ void ComponentGeneratorDialog::compile()
         QStringList delaySteps;
         translateDelaysFromPython(sysEquations, delayTerms, delaySteps);
 
+        translateFunctionsFromPython(sysEquations);
+        translateFunctionsFromPython(jString);
+
         //Translate all "x**y" to "pow(x,y)"
         translatePowersFromPython(sysEquations);
         translatePowersFromPython(jString);
@@ -1161,6 +1174,10 @@ void ComponentGeneratorDialog::compile()
     else if(mpGenerateFromComboBox->currentIndex() == 1)        //Compile from C++ code
     {
         //Generate a DOM document from member variables
+
+        qDebug() << "Compiling C++";
+
+        saveDialogToXml();
 
         QDomDocument domDocument;
         QDomElement componentRoot = domDocument.createElement("hopsancomponent");
@@ -1431,13 +1448,23 @@ void ComponentGeneratorDialog::loadFromXml(QString fileName)
         finalEquationElement=finalEquationElement.nextSiblingElement("equation");
     }
 
+    bool useEquations=false;
     mpEquationsTextField->clear();
     QDomElement equationsElement = modelRoot.firstChildElement("equations");
     QDomElement equationElement = equationsElement.firstChildElement("equation");
     while(!equationElement.isNull())
     {
+        useEquations=true;
         mpEquationsTextField->append(equationElement.text());
         equationElement = equationElement.nextSiblingElement("equation");
+    }
+    if(useEquations)
+    {
+        mpGenerateFromComboBox->setCurrentIndex(0);
+    }
+    else
+    {
+        mpGenerateFromComboBox->setCurrentIndex(1);
     }
 
     mpBoundaryEquationsTextField->clear();
@@ -1537,7 +1564,7 @@ void ComponentGeneratorDialog::saveDialogToXml()
     }
 
     QDomElement boundaryEquationsElement = appendDomElement(componentRoot,"boundaryequations");
-    QString plainBoundaryEquations = mpEquationsTextField->toPlainText();
+    QString plainBoundaryEquations = mpBoundaryEquationsTextField->toPlainText();
     QStringList boundaryEquations = plainBoundaryEquations.split("\n");
     for(int i=0; i<boundaryEquations.size(); ++i)
     {

@@ -115,6 +115,7 @@ void replaceReservedWords(QList<PortSpecification> &ports);
 void identifyDerivatives(QStringList &equations);
 void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps);
 void translatePowersFromPython(QStringList &equations);
+void translateFunctionsFromPython(QStringList &equations);
 void translateIntsToDouble(QStringList &equations);
 void parseModelicaModel(QString code, QString &typeName, QString &displayName, QStringList &equations, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);
 QStringList getQVariables(QString nodeType);

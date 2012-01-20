@@ -951,7 +951,7 @@ bool verifyEquation(QString equation)
     //Verify that no unsupported functions are used
     QStringList legalFunctions;
     //! @todo Add built-in auxiliary functions somehow
-    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "der";        //"der" is not Python, but still allowed
+    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "sign" << "abs" << "der";        //"der" is not Python, but still allowed
     QStringList usedFunctions;
     identifyFunctions(equation, usedFunctions);
     for(int i=0; i<usedFunctions.size(); ++i)
@@ -1134,8 +1134,6 @@ void translatePowersFromPython(QStringList &equations)
 {
     for(int e=0; e<equations.size(); ++e)
     {
-        qDebug() << "Equation before: " << equations[e];
-
         while(equations[e].contains("**"))
         {
             QString before, after;
@@ -1189,13 +1187,83 @@ void translatePowersFromPython(QStringList &equations)
             before = equations[e].mid(idxb, idx-idxb);
             after = equations[e].mid(idx+2, idxa-idx-1);
 
-            qDebug() << "idx = " << idx << ", idxb = " << idxb << ", idxa = " << idxa;
-
             equations[e].remove(idxb, idxa-idxb+1);
             equations[e].insert(idxb, "pow("+before+","+after+")");
-
-            qDebug() << "Equation changed: " << equations[e];
         }
+    }
+}
+
+
+void translateFunctionsFromPython(QStringList &equations)
+{
+    for(int e=0; e<equations.size(); ++e)
+    {
+        qDebug() << "Equation before functiontransform: " << equations[e];
+
+        //Replace "abs()" with "fabs()"
+        int idx = equations[e].indexOf("abs", 0);
+        while(idx > -1)
+        {
+            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+3) == '(')
+            {
+                equations[e].insert(idx, "f");
+            }
+            idx = equations[e].indexOf("abs", idx+3);
+        }
+
+
+        //Replace "D(sign(x), x)" with 0 (derivative of sign(x) = 0 for all x except 0, but it should be ok)
+        idx = equations[e].indexOf("D(sign(", 0);
+        while(idx > -1)
+        {
+            int parBal = 2;         //Find index of end parenthesis
+            int idx2 = idx+6;
+            while(parBal != 0)
+            {
+                ++idx2;
+                if(equations[e].at(idx2) == '(')
+                    ++parBal;
+                if(equations[e].at(idx2) == ')')
+                    --parBal;
+            }
+
+            equations[e].remove(idx, idx2-idx+1);
+            equations[e].insert(idx, "0");
+
+            idx = equations[e].indexOf("D(sign(", idx);
+        }
+
+
+        //Replace "re(x)" with "x" (we only work with real numbers anyway)
+        idx = equations[e].indexOf("re(", 0);
+        while(idx > -1)
+        {
+            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+2) == '(')
+            {
+                qDebug() << "Found \"re\" at index: " << idx;
+                int parBal = 1;         //Find index of end parenthesis
+                int idx2 = idx+3;
+                while(parBal != 0)
+                {
+                    ++idx2;
+                    if(equations[e].at(idx2) == '(')
+                        ++parBal;
+                    if(equations[e].at(idx2) == ')')
+                        --parBal;
+                }
+
+                equations[e].remove(idx2, 1);
+                equations[e].remove(idx, 3);
+
+                idx = equations[e].indexOf("re(", idx);
+            }
+            else
+            {
+                idx = equations[e].indexOf("re(", idx+1);
+            }
+        }
+
+        qDebug() << "Equation after functiontransform: " << equations[e];
     }
 }
 
@@ -1230,7 +1298,6 @@ void translateIntsToDouble(QStringList &equations)
                 if(var)
                 {
                     stopId = i-1;
-                    //qDebug() << "Found variable at " << startId << ", " << stopId;
                     if((startId>0 && equations[e][startId-1] != '.') && (stopId < equations[e].size()-1 && equations[e][stopId+1] != '.'))     //Don't modify float numbers
                     {
                         equations[e].insert(stopId+1, ".0");
@@ -1248,7 +1315,6 @@ void translateIntsToDouble(QStringList &equations)
                 equations[e].append(".0");
             }
         }
-        qDebug() << "Equation2: " << equations[e];
     }
 
 }
