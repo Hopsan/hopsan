@@ -29,10 +29,16 @@
 #include "HopsanEssentials.h"
 #include "ComponentSystem.h"
 
+#include "rapidxml.hpp"
+#include "rapidxml_utils.hpp"
+//#include "rapidxml_print.hpp"
+
 using namespace std;
 using namespace hopsan;
 
-//Help functions
+// vvvvvvvvvv Help Functions vvvvvvvvvv
+
+//! @brief Helpfunction, reads a double xml attribute
 double readDoubleAttribute(rapidxml::xml_node<> *pNode, string attrName, double defaultValue)
 {
     rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
@@ -47,6 +53,7 @@ double readDoubleAttribute(rapidxml::xml_node<> *pNode, string attrName, double 
     }
 }
 
+//! @brief Helpfunction, reads a string xml attribute
 string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string defaultValue)
 {
     rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
@@ -59,54 +66,55 @@ string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string 
     {
         return defaultValue;
     }
+}
 
+//! @brief This help function loads a component
+void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
+{
+    string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
+    string displayName =  readStringAttribute(pComponentNode, "name", typeName);
+
+    Component *pComp = HopsanEssentials::getInstance()->createComponent(typeName);
+    pComp->setName(displayName);
+    //cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
+    pSystem->addComponent(pComp);
+    //cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
+
+    //Load parameters
+    rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
+    if (pParams)
+    {
+        rapidxml::xml_node<> *pParam = pParams->first_node();
+        while (pParam != 0)
+        {
+            if (strcmp(pParam->name(), "parameter")==0)
+            {
+                string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
+                string val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+
+                pComp->setParameterValue(paramName, val);
+            }
+            pParam = pParam->next_sibling();
+        }
+    }
 }
 
 
-HmfLoader::HmfLoader()
+//! @brief This help function loads a connection
+void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem)
 {
-    //Nothing
-}
+    string startcomponent = readStringAttribute(pConnectNode, "startcomponent", "ERROR_NOSTARTCOMPNAME_GIVEN");
+    string startport = readStringAttribute(pConnectNode, "startport", "ERROR_NOSTARTPORTNAME_GIVEN");
+    string endcomponent = readStringAttribute(pConnectNode, "endcomponent", "ERROR_NOENDCOMPNAME_GIVEN");
+    string endport = readStringAttribute(pConnectNode, "endport", "ERROR_NOENDPORTNAME_GIVEN");
 
-//! @todo Update this code
-ComponentSystem* HmfLoader::loadModel(string filename, double &rStartTime, double &rStopTime)
-{
-    cout << "Loading from file: " << filename << endl;
-    //! @todo do not crash if file is missing, send error message
-    rapidxml::file<> hmfFile(filename.c_str());
-
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(hmfFile.data());
-
-    rapidxml::xml_node<> *pRootNode = doc.first_node();
-
-    //Check for correct root node name
-    if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
-    {
-        rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
-        //! @todo error check
-        //We only want to read toplevel simulation time settings here
-        rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
-        rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
-        rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
-
-        ComponentSystem * pSys = HopsanEssentials::getInstance()->createComponentSystem(); //Create root system
-        loadSystemContents(pSysNode, pSys);
-
-        return pSys;
-    }
-    else
-    {
-        cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
-        assert(false);
-        return 0;
-    }
+    pSystem->connect(startcomponent, startport, endcomponent, endport);
 }
 
 
 //! @brief This function can be used to load subsystem contents from a stream into an existing subsystem
 //! @todo Update this code
-void HmfLoader::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
+void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
 {
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
     assert(pSimtimeNode != 0); //!< @todo smarter error handling
@@ -151,43 +159,45 @@ void HmfLoader::loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSyst
     }
 }
 
-void HmfLoader::loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
+
+//vvvvvvvvvv This is the function exported vvvvvvvvvv
+
+//! @brief This function is used to load a HMF file.
+//! @param [in] filePath The name (path) of the HMF file
+//! @param [in,out] rStartTime A reference to the starttime variable
+//! @param [in,out] rStopTime A reference to the stoptime variable
+//! @returns A pointer to the rootsystem of the loaded model
+//! @todo Update this code
+ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime)
 {
-    string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
-    string displayName =  readStringAttribute(pComponentNode, "name", typeName);
+    cout << "Loading from file: " << filePath << endl;
+    //! @todo do not crash if file is missing, send error message
+    rapidxml::file<> hmfFile(filePath.c_str());
 
-    Component *pComp = HopsanEssentials::getInstance()->createComponent(typeName);
-    pComp->setName(displayName);
-    //cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
-    pSystem->addComponent(pComp);
-    //cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
+    rapidxml::xml_document<> doc;
+    doc.parse<0>(hmfFile.data());
 
-    //Load parameters
-    rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
-    if (pParams)
+    rapidxml::xml_node<> *pRootNode = doc.first_node();
+
+    //Check for correct root node name
+    if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
     {
-        rapidxml::xml_node<> *pParam = pParams->first_node();
-        while (pParam != 0)
-        {
-            if (strcmp(pParam->name(), "parameter")==0)
-            {
-                string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
-                string val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+        rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
+        //! @todo error check
+        //We only want to read toplevel simulation time settings here
+        rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
+        rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
+        rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
 
-                pComp->setParameterValue(paramName, val);
-            }
-            pParam = pParam->next_sibling();
-        }
+        ComponentSystem * pSys = HopsanEssentials::getInstance()->createComponentSystem(); //Create root system
+        loadSystemContents(pSysNode, pSys);
+
+        return pSys;
+    }
+    else
+    {
+        cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
+        assert(false);
+        return 0;
     }
 }
-
-void HmfLoader::loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem)
-{
-    string startcomponent = readStringAttribute(pConnectNode, "startcomponent", "ERROR_NOSTARTCOMPNAME_GIVEN");
-    string startport = readStringAttribute(pConnectNode, "startport", "ERROR_NOSTARTPORTNAME_GIVEN");
-    string endcomponent = readStringAttribute(pConnectNode, "endcomponent", "ERROR_NOENDCOMPNAME_GIVEN");
-    string endport = readStringAttribute(pConnectNode, "endport", "ERROR_NOENDPORTNAME_GIVEN");
-
-    pSystem->connect(startcomponent, startport, endcomponent, endport);
-}
-

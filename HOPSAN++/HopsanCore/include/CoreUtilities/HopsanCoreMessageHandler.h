@@ -49,7 +49,7 @@ namespace hopsan {
         std::string tag;
     };
 
-    class DLLIMPORTEXPORT HopsanCoreMessageHandler
+    class HopsanCoreMessageHandler
     {
     private:
         std::queue<HopsanCoreMessage> mMessageQueue;

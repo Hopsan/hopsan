@@ -62,7 +62,7 @@ extern "C" {
 
         std::string getCoreVersion();
 
-        Component* createComponent(const std::string &rString);
+        Component* createComponent(const std::string &rTypeName);
         ComponentSystem* createComponentSystem();
         bool hasComponent(const std::string type);
         bool reserveComponentTypeName(const std::string typeName);
@@ -74,10 +74,12 @@ extern "C" {
 
         bool loadExternalComponentLib(const std::string path);
         bool unLoadExternalComponentLib(const std::string path);
+
+        ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
     };
 }
 
-void addLogMess(std::string log);
+void addLogMess(const std::string log);
 
 static std::ofstream hopsanLogFile;
 }

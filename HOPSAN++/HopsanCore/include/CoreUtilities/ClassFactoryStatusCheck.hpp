@@ -29,11 +29,12 @@
 #include "HopsanCoreMessageHandler.h"
 #include <string>
 
+namespace hopsan
+{
+
 //! @brief Template help function that checks status messages from the registration status in a class factory
-//!
-//! This functionality is not included in the actual class factory as we want to keep the class factory clean
+//! @details This functionality is not included in the actual class factory as we want to keep the class factory clean
 //! Hopsan should depend on the ClassFactory but the ClassFactory should not depend on Hopsan
-//!
 template<typename FactoryT>
 void checkClassFactoryStatus(FactoryT  *pFactory)
 {
@@ -57,4 +58,5 @@ void checkClassFactoryStatus(FactoryT  *pFactory)
     }
 }
 
+}
 #endif // CLASSFACTORYSTATUSCHECK_HPP

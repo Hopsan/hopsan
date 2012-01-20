@@ -28,6 +28,9 @@
 #include <string>
 #include <sstream>
 
+namespace hopsan
+{
+
 //! @brief Helper function to create a unique name among names from one Map
 //! @todo try to merge these to help functions into one (the next one bellow which is very similar)
 template<typename MapType>
@@ -159,5 +162,5 @@ std::string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &
     return name;
 }
 
-
+}
 #endif // FINDUNIQUENAME_H

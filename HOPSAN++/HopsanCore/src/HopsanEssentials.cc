@@ -27,6 +27,7 @@
 #include "version.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include "Components/DummyComponent.hpp"
+#include "CoreUtilities/HmfLoader.h"
 #include <string>
 
 #ifdef INTERNALDEFAULTCOMPONENTS
@@ -40,7 +41,7 @@ using namespace hopsan;
 bool HopsanEssentials::mHasInstance = false;
 HopsanEssentials* HopsanEssentials::mpInstance = 0;
 
-
+//! @brief This function initializes the HopsanEssential singleton object
 void HopsanEssentials::initialize()
 {
     reserveComponentTypeName("Subsystem");
@@ -67,7 +68,7 @@ void HopsanEssentials::initialize()
     hopsanLogFile << "This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n";
 }
 
-
+//! @brief HopsanEssentials Constructor
 HopsanEssentials::HopsanEssentials()
 {
     mpNodeFactory = new NodeFactory;
@@ -77,7 +78,7 @@ HopsanEssentials::HopsanEssentials()
     initialize();
 }
 
-
+//! @brief Get a pointer to the HopsanEssentials Singelton, create it if it does not already exist.
 HopsanEssentials* HopsanEssentials::getInstance()
 {
     if(! mHasInstance)
@@ -92,7 +93,7 @@ HopsanEssentials* HopsanEssentials::getInstance()
     }
 }
 
-
+//! @brief HopsanEssentials Destructor
 HopsanEssentials::~HopsanEssentials()
 {
     //Clear the factories
@@ -108,21 +109,22 @@ HopsanEssentials::~HopsanEssentials()
     mHasInstance = false;
 }
 
-//! Returns the hopsa core version as a string
+//! Returns the hopsan core version as a string
 std::string HopsanEssentials::getCoreVersion()
 {
     return HOPSANCOREVERSION;
 }
 
 //! Creates a component with the specified key-value and returns a pointer to this component.
-Component* HopsanEssentials::createComponent(const string &rString)
+//! @param [in] rString The
+Component* HopsanEssentials::createComponent(const string &rTypeName)
 {
-    addLogMess(rString + "::createComponent");
-    Component* pComp = mpComponentFactory->createInstance(rString.c_str());
+    addLogMess(rTypeName + "::createComponent");
+    Component* pComp = mpComponentFactory->createInstance(rTypeName.c_str());
     if (pComp)
     {
-        pComp->setTypeName(rString);
-        pComp->setName(rString);
+        pComp->setTypeName(rTypeName);
+        pComp->setName(rTypeName);
     }
     else
     {
@@ -132,23 +134,32 @@ Component* HopsanEssentials::createComponent(const string &rString)
     return pComp;
 }
 
+//! @brief Check if a component with given typename exist in the ComponentFactory
+//! @param [in] type The typename to check
+//! @returns True or False depending on if type exist
 bool HopsanEssentials::hasComponent(const string type)
 {
     return mpComponentFactory->hasKey(type.c_str());
 }
 
+//! @brief Reserves a component TypeName in the component factory map
+//! @param [in] typeName The TypeName to reserve
 bool HopsanEssentials::reserveComponentTypeName(const std::string typeName)
 {
     return mpComponentFactory->reserveKey(typeName);
 }
 
 
-//! @todo for now a ugly special fix for component system, (It can not be created by the factory that only deals with Component* objects)
+//! @brief Creates a ComponentSystem
+//! @returns A pointer to the ComponentSystem created
 ComponentSystem* HopsanEssentials::createComponentSystem()
 {
     return new ComponentSystem();
 }
 
+//! @brief Creates a Node of given node type
+//! @param [in] rNodeType The type of node to create
+//! @returns A pointer to the created node
 Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
 {
     Node *pNode = mpNodeFactory->createInstance(rNodeType.c_str());
@@ -164,7 +175,21 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
     return pNode;
 }
 
+//! @brief This function is used to load a HMF file.
+//! @param [in] filePath The name (path) of the HMF file
+//! @param [in,out] rStartTime A reference to the starttime variable
+//! @param [in,out] rStopTime A reference to the stoptime variable
+//! @returns A pointer to the rootsystem of the loaded model
+ComponentSystem* HopsanEssentials::loadHMFModel(const string filePath, double &rStartTime, double &rStopTime)
+{
+    loadHMFModel(filePath, rStartTime, rStopTime);
+}
 
+
+//! @brief Get the message waiting on the message queue
+//! @param [in,out] rMessage A reference to the message string
+//! @param [in,out] rType A reference to the message type string
+//! @param [in,out] rTag A reference to the message type Tag
 void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std::string &rTag)
 {
     HopsanCoreMessage msg = mpMessageHandler->getMessage();
@@ -188,23 +213,31 @@ void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std
     }
 }
 
-
+//! @brief Check if there are any messages waiting in the queue
+//! @returns The number of waiting messages
 size_t HopsanEssentials::checkMessage()
 {
     return mpMessageHandler->getNumWaitingMessages();
 }
 
+//! @brief Loads an external component library
+//! @param [in] path The path to the library DLL or SO file
+//! @returns True if loaded sucessfully, otherwise false
 bool HopsanEssentials::loadExternalComponentLib(const string path)
 {
     return mExternalLoader.load(path);
 }
 
+//! @brief Unloads an external component library
+//! @param [in] path The path to the library DLL or SO file to unload
+//! @returns True if unloaded sucessfully, otherwise false
 bool HopsanEssentials::unLoadExternalComponentLib(const std::string path)
 {
     return mExternalLoader.unLoad(path);
 }
 
-void hopsan::addLogMess(std::string log)
+//! @brief Adds a message to the HopsanCore runtime log
+void hopsan::addLogMess(const std::string log)
 {
     hopsanLogFile << log << "\n";
 }

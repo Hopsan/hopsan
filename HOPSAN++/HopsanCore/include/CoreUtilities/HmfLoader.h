@@ -18,7 +18,7 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2011-03-20
 //!
-//! @brief Contains the HopsanCore hmf loader functions
+//! @brief Contains the HopsanCore HMF file load function
 //!
 //$Id$
 
@@ -27,30 +27,16 @@
 
 
 #include <string>
-
 #include "win32dll.h"
-#include "rapidxml.hpp"
-#include "rapidxml_utils.hpp"
-//#include "rapidxml_print.hpp"
-
 
 
 namespace hopsan {
-    //Forward declaration
-    class ComponentSystem;
 
-    class DLLIMPORTEXPORT HmfLoader
-    {
-    public:
-        HmfLoader();
-        ComponentSystem* loadModel(std::string filename, double &rStartTime, double &rStopTime);
+//Forward declaration
+class ComponentSystem;
 
-    private:
-        void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem *pSystem);
-        void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem *pSystem);
-        void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem *pSystem);
+ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
 
-    };
 }
 
 #endif

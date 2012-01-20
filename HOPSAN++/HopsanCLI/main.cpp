@@ -45,10 +45,8 @@ int main(int argc, char *argv[])
         // Get the value parsed by each arg.
         string hmfFilePath = hmfPathOption.getValue();
 
-        HmfLoader coreHmfLoader;
-
         double startTime=0, stopTime=2;
-        ComponentSystem* pRootSystem = coreHmfLoader.loadModel(hmfFilePath, startTime, stopTime);
+        ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startTime, stopTime);
 
         std::string msg,type,tag;
         cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;

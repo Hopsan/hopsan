@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -31,29 +31,29 @@
 
 namespace hopsan {
 
-    class LoadedLibInfo
-    {
-    public:
-        void* mpLib;
-        std::vector<std::string> mRegistredComponents;
-        std::vector<std::string> mRegistredNodes;
-    };
+class LoadedLibInfo
+{
+public:
+    void* mpLib;
+    std::vector<std::string> mRegistredComponents;
+    std::vector<std::string> mRegistredNodes;
+};
 
-    //! @brief This class handles loading and unloading of external component and node libs
-    class DLLIMPORTEXPORT LoadExternal
-    {
-    private:
-        ComponentFactory *mpComponentFactory;
-        NodeFactory *mpNodeFactory;
+//! @brief This class handles loading and unloading of external component and node libs
+class LoadExternal
+{
+private:
+    ComponentFactory *mpComponentFactory;
+    NodeFactory *mpNodeFactory;
 
-        typedef std::map<std::string, LoadedLibInfo> LoadedExtLibsMapT;
-        LoadedExtLibsMapT mLoadedExtLibsMap;
+    typedef std::map<std::string, LoadedLibInfo> LoadedExtLibsMapT;
+    LoadedExtLibsMapT mLoadedExtLibsMap;
 
-    public:
-        bool load(const std::string libpath);
-        bool unLoad(const std::string libpath);
-        void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
-    };
+public:
+    bool load(const std::string libpath);
+    bool unLoad(const std::string libpath);
+    void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
+};
 }
 
 #endif // LOADEXTERNAL_H
