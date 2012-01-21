@@ -2172,6 +2172,12 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
 }
 
 
+void ContainerObject::setSaveUndo(bool save)
+{
+    mSaveUndoStack = save;
+}
+
+
 //! @brief Tells whether or not unconnected ports in container are hidden
 bool ContainerObject::areSubComponentPortsHidden()
 {
@@ -2197,6 +2203,13 @@ bool ContainerObject::areSignalsHidden()
 bool ContainerObject::isUndoEnabled()
 {
     return !mUndoDisabled;
+}
+
+
+//! @brief Tells whether or not the save undo option is active
+bool ContainerObject::getSaveUndo()
+{
+    return !mSaveUndoStack;
 }
 
 

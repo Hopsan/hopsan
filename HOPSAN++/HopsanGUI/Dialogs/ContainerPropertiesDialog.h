@@ -54,6 +54,7 @@ private:
     QLineEdit *mpUserIconScaleEdit;
     QCheckBox *mpIsoCheckBox;
     QCheckBox *mpDisableUndoCheckBox;
+    QCheckBox *mpSaveUndoCheckBox;
     QHBoxLayout *mpNameLayout;
     QLabel *mpNameLabel;
     QLabel *mpUserIconLabel;

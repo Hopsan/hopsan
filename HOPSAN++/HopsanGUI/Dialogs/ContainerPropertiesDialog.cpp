@@ -127,10 +127,15 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpAppearanceLayout->addWidget(mpIsoCheckBox, 5, 0, 1, -1);
     mpAppearanceGroupBox->setLayout(mpAppearanceLayout);
 
-        //Undo checkbox
+        //Disable undo checkbox
     mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), this);
     mpDisableUndoCheckBox->setCheckable(true);
     mpDisableUndoCheckBox->setChecked(!mpContainerObject->isUndoEnabled());
+
+        //Save undo checkbox
+    mpSaveUndoCheckBox = new QCheckBox(tr("Save Undo Function In Model File"), this);
+    mpSaveUndoCheckBox->setCheckable(true);
+    mpSaveUndoCheckBox->setChecked(!mpContainerObject->getSaveUndo());
 
         //Startup python script file
     mpPyScriptLabel = new QLabel("Script File:", this);
@@ -142,10 +147,11 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         //Settings Group Box
     mpSettingsGroupBox = new QGroupBox("Settings", this);
     mpSettingsLayout = new QGridLayout(this);
-    mpSettingsLayout->addWidget(mpPyScriptLabel, 0, 0);
-    mpSettingsLayout->addWidget(mpPyScriptPath, 0, 1);
+    mpSettingsLayout->addWidget(mpPyScriptLabel,        0, 0);
+    mpSettingsLayout->addWidget(mpPyScriptPath,         0, 1);
     mpSettingsLayout->addWidget(mpPyScriptBrowseButton, 0, 2);
-    mpSettingsLayout->addWidget(mpDisableUndoCheckBox, 2, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpDisableUndoCheckBox,  1, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpSaveUndoCheckBox,     2, 0, 1, 2);
     mpSettingsGroupBox->setLayout(mpSettingsLayout);
 
         //Set GuiSystem specific stuff
@@ -288,6 +294,8 @@ void ContainerPropertiesDialog::setValues()
     {
         mpContainerObject->setUndoEnabled(!mpDisableUndoCheckBox->isChecked());
     }
+
+    mpContainerObject->setSaveUndo(mpSaveUndoCheckBox->isChecked());
 
     //Set the icon paths, only update and refresh appearance if a change has occured
     if ( mpContainerObject->getIconPath(ISOGRAPHICS, ABSOLUTE) != mpIsoIconPath->text() )

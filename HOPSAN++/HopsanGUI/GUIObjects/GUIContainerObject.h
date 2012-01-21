@@ -187,7 +187,9 @@ public slots:
     void clearUndo();
     void setUndoDisabled(bool disabled, bool dontAskJustDoIt=false);
     void setUndoEnabled(bool enabled, bool dontAskJustDoIt=false);
+    void setSaveUndo(bool save);
     bool isUndoEnabled();
+    bool getSaveUndo();
     void updateMainWindowButtons();
 
     //Appearance slots
@@ -318,6 +320,7 @@ protected:
     //Undo-redo members
     UndoStack *mpUndoStack;
     bool mUndoDisabled;
+    bool mSaveUndoStack;
 
     //Copy-paste members
     CopyStack *mpDragCopyStack;

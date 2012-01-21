@@ -53,6 +53,7 @@ SystemContainer::SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pP
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
     this->mpUndoStack->newPost();
+    this->mSaveUndoStack = false;       //Do not save undo stack by default
 }
 
 SystemContainer::~SystemContainer()
@@ -435,7 +436,11 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 
     saveOptSettingsToDomElement(guiStuff);
 
-    guiStuff.appendChild(mpUndoStack->toXml());
+    //Save undo stack if setting is activated
+    if(mSaveUndoStack)
+    {
+        guiStuff.appendChild(mpUndoStack->toXml());
+    }
 
     return guiStuff;
 }
@@ -551,6 +556,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
             QDomElement undoElement = guiStuff.firstChildElement(HMF_UNDO);
             mpUndoStack->fromXml(undoElement);
             dontClearUndo = true;
+            mSaveUndoStack = true;      //Set save undo stack setting to true if loading a hmf file with undo stack saved
         }
 
         mpParentProjectTab->getGraphicsView()->setZoomFactor(zoom);
