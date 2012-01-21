@@ -47,6 +47,7 @@ public:
     //MainWindow *mpParentMainWindow;
 
 public slots:
+    void reset();
     void updateValues();
     void colorDialog();
     void show();
@@ -124,6 +125,7 @@ private:
     QWidget *mpPlottingWidget;
     QGridLayout *mpPlottingLayout;
 
+    QPushButton *mpResetButton;
     QPushButton *mpCancelButton;
     QPushButton *mpApplyButton;
     QPushButton *mpOkButton;

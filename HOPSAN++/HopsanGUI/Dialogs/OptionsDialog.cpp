@@ -220,18 +220,23 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpPlottingLayout->setRowStretch(10, 1);
     mpPlottingWidget->setLayout(mpPlottingLayout);
 
+
+    mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
+    mpResetButton->setAutoDefault(false);
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpCancelButton->setAutoDefault(false);
     mpOkButton = new QPushButton(tr("&Done"), this);
     mpOkButton->setDefault(true);
 
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    mpButtonBox->addButton(mpResetButton, QDialogButtonBox::ResetRole);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
 
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarLabel,     SLOT(setEnabled(bool)));
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarSpinBox,   SLOT(setEnabled(bool)));
     connect(mpBackgroundColorButton,        SIGNAL(clicked()),      this,                   SLOT(colorDialog()));
+    connect(mpResetButton,                  SIGNAL(clicked()),      this,                   SLOT(reset()));
     connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
     connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(updateValues()));
 
@@ -261,6 +266,24 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 //    pLayout->addWidget(mpPlottingGroupBox);
     pLayout->addWidget(mpButtonBox, 1, 0);
     setLayout(pLayout);
+}
+
+
+//! @brief Resets all program settings to default values. Asks user first.
+void OptionsDialog::reset()
+{
+    QMessageBox resetWarningBox(QMessageBox::Warning, tr("Warning"),tr("This will reset ALL settings to default values. Do you want to continue?"), 0, 0);
+    resetWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
+    resetWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
+    resetWarningBox.setWindowIcon(gpMainWindow->windowIcon());
+    bool doIt = (resetWarningBox.exec() == QMessageBox::AcceptRole);
+
+    if(doIt)
+    {
+        gConfig.loadDefaultsFromXml();
+        gConfig.saveToXml();
+        show();
+    }
 }
 
 
