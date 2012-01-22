@@ -5,6 +5,9 @@
             <icon scale="1" path="losslesstconnector_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="losslesstconnector_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+	<help>
+            <text>This is a three-port version of the lossless connector. It is implemented as a laminar orifice with unrestricted flow. Using this between two volumes will cause the volumes behave as one large volume. A time delay will however be introduced, possibly reducing the numerical stability. Note that this component will not define the flow in the system. A system with only volumes and lossless connectors will result in undefined flows.</text>
+	</help>
         <ports>
             <port x="1" y="0.10606" a="0" name="P1"/>
             <port x="0" y="0.10606" a="180" name="P2"/>
