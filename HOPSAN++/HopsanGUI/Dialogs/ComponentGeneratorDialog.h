@@ -94,6 +94,8 @@ private slots:
     void openAppearanceDialog();
 
 private:
+    void showOutputDialog(QStringList jacobian, QStringList equations, QStringList variables);
+
     //Initialization & equations text edits
     QLabel *mpGivenLabel;
     QLabel *mpSoughtLabel;

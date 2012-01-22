@@ -1168,6 +1168,8 @@ void ComponentGeneratorDialog::compile()
         //Make sure appearance is updated
         generateAppearance();
 
+        showOutputDialog(jString, sysEquations, stateVars);
+
         //Call utility to generate and compile the source code
         generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, mpAppearance);
     }
@@ -1276,6 +1278,84 @@ void ComponentGeneratorDialog::compile()
         //Call utility to generate and compile source code
         generateComponentSourceCode("temp.hpp", componentRoot, mpAppearance);
     }
+}
+
+
+void ComponentGeneratorDialog::showOutputDialog(QStringList jacobian, QStringList equations, QStringList variables)
+{
+    QDialog *pDialog = new QDialog(this);
+
+    //Description label
+    QLabel *pDescription = new QLabel("Resulting equations:", this);
+
+    //Jacobian matrix
+    QLabel *pJacobianLabel = new QLabel("J", this);
+    pJacobianLabel->setAlignment(Qt::AlignCenter);
+
+    QGridLayout *pJacobianLayout = new QGridLayout(this);
+    for(int i=0; i<equations.size(); ++i)
+    {
+        for(int j=0; j<equations.size(); ++j)
+        {
+            QLabel *pElement = new QLabel(jacobian[j*equations.size()+i], this);
+            pElement->setAlignment(Qt::AlignCenter);
+            pJacobianLayout->addWidget(pElement, j, i+1);
+        }
+    }
+    QGroupBox *pJacobianBox = new QGroupBox(this);
+    pJacobianBox->setLayout(pJacobianLayout);
+
+    //Variables vector
+    QLabel *pVariablesLabel = new QLabel("x", this);
+    pVariablesLabel->setAlignment(Qt::AlignCenter);
+
+    QGridLayout *pVariablesLayout = new QGridLayout(this);
+    for(int i=0; i<variables.size(); ++i)
+    {
+            QLabel *pElement = new QLabel(variables[i], this);
+            pElement->setAlignment(Qt::AlignCenter);
+            pVariablesLayout->addWidget(pElement, i, 0);
+    }
+    QGroupBox *pVariablesBox = new QGroupBox(this);
+    pVariablesBox->setLayout(pVariablesLayout);
+
+    //Equality sign
+    QLabel *pEqualityLabel = new QLabel("=", this);
+    pEqualityLabel->setAlignment(Qt::AlignCenter);
+
+    //Equations vector
+    QLabel *pEquationsLabel = new QLabel("b", this);
+    pEquationsLabel->setAlignment(Qt::AlignCenter);
+
+    QGridLayout *pEquationsLayout = new QGridLayout(this);
+    for(int i=0; i<equations.size(); ++i)
+    {
+            QLabel *pElement = new QLabel(equations[i], this);
+            pElement->setAlignment(Qt::AlignCenter);
+            pEquationsLayout->addWidget(pElement, i, 0);
+    }
+    QGroupBox *pEquationsBox = new QGroupBox(this);
+    pEquationsBox->setLayout(pEquationsLayout);
+
+    QPushButton *pOkButton = new QPushButton("Okay", this);
+    QDialogButtonBox *pButtonGroup = new QDialogButtonBox(pDialog);
+    pButtonGroup->addButton(pOkButton, QDialogButtonBox::AcceptRole);
+    connect(pOkButton, SIGNAL(pressed()), pDialog, SLOT(close()));
+
+    QGridLayout *pDialogLayout = new QGridLayout(this);
+    pDialogLayout->addWidget(pDescription,      0, 0);
+    pDialogLayout->addWidget(pJacobianLabel,    1, 0);
+    pDialogLayout->addWidget(pJacobianBox,      2, 0);
+    pDialogLayout->addWidget(pVariablesLabel,   1, 1);
+    pDialogLayout->addWidget(pVariablesBox,     2, 1);
+    pDialogLayout->addWidget(pEqualityLabel,    2, 2);
+    pDialogLayout->addWidget(pEquationsLabel,   1, 3);
+    pDialogLayout->addWidget(pEquationsBox,     2, 3);
+    pDialogLayout->addWidget(pButtonGroup,      3, 0, 1, 4);
+
+    pDialog->setLayout(pDialogLayout);
+
+    pDialog->show();
 }
 
 

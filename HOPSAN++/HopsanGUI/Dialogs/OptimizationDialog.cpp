@@ -1384,6 +1384,8 @@ QTreeWidgetItem* OptimizationDialog::findParameterTreeItem(QString componentName
                 return foundItem;
         }
     }
+
+    return 0;
 }
 
 

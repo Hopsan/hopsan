@@ -98,6 +98,8 @@ QString PyDockWidget::getLastOutput()
     {
         return lines[lines.size()-3];
     }
+
+    return QString();
 }
 
 
