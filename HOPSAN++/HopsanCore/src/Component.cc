@@ -61,7 +61,7 @@ Component::Component()
     mpSystemParent = 0;
     mModelHierarchyDepth = 0;
 
-    mParameters = new Parameters(this);
+    mpParameters = new Parameters(this);
 
     //registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
@@ -78,25 +78,25 @@ bool Component::initialize(const double /*startT*/, const double /*stopT*/, cons
 
 void Component::getParameters(vector<string> &parameterNames, vector<string> &parameterValues, vector<string> &descriptions, vector<string> &units, vector<string> &types)
 {
-    mParameters->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    mpParameters->getParameters(parameterNames, parameterValues, descriptions, units, types);
 }
 
 
 bool Component::setParameterValue(const std::string name, const std::string value, bool force)
 {
-    return mParameters->setParameterValue(name, value, force);
+    return mpParameters->setParameterValue(name, value, force);
 }
 
 
 void Component::updateParameters()
 {
-    mParameters->evaluateParameters();
+    mpParameters->evaluateParameters();
 }
 
 
 bool Component::checkParameters(std::string &errParName)
 {
-    return mParameters->checkParameters(errParName);
+    return mpParameters->checkParameters(errParName);
 }
 
 
@@ -262,13 +262,13 @@ void Component::stopSimulation()
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
-    if(mParameters->exist(name))
-        mParameters->deleteParameter(name);     //Remove parameter if it is already registered
+    if(mpParameters->exist(name))
+        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
     stringstream ss;
     if(ss << rValue)
     {
-        mParameters->addParameter(name, ss.str(), description, unit, "double", &rValue);
+        mpParameters->addParameter(name, ss.str(), description, unit, "double", &rValue);
     }
     else
     {
@@ -286,10 +286,10 @@ void Component::registerParameter(const string name, const string description, c
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, string &rValue)
 {
-    if(mParameters->exist(name))
-        mParameters->deleteParameter(name);     //Remove parameter if it is already registered
+    if(mpParameters->exist(name))
+        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
-    mParameters->addParameter(name, rValue, description, unit, "string", &rValue);
+    mpParameters->addParameter(name, rValue, description, unit, "string", &rValue);
 }
 
 
@@ -302,20 +302,20 @@ void Component::registerParameter(const string name, const string description, c
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, bool &rValue)
 {
-    if(mParameters->exist(name))
-        mParameters->deleteParameter(name);     //Remove parameter if it is already registered
+    if(mpParameters->exist(name))
+        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
     if(rValue)
-        mParameters->addParameter(name, "true", description, unit, "bool", &rValue);
+        mpParameters->addParameter(name, "true", description, unit, "bool", &rValue);
     else
-        mParameters->addParameter(name, "false", description, unit, "bool", &rValue);
+        mpParameters->addParameter(name, "false", description, unit, "bool", &rValue);
 }
 
 
 //! @brief Removes a parameter value from the component
 void Component::unRegisterParameter(const string name)
 {
-    mParameters->deleteParameter(name);
+    mpParameters->deleteParameter(name);
 }
 
 
@@ -736,7 +736,7 @@ Component::~Component()
         delete (*ppmit).second;
     }
 
-    delete mParameters;
+    delete mpParameters;
 }
 
 

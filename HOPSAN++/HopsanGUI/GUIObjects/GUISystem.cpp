@@ -145,6 +145,11 @@ QStringList SystemContainer::getParameterNames()
     return mpCoreSystemAccess->getParameterNames(this->getName());
 }
 
+void SystemContainer::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+{
+    this->getCoreSystemAccessPtr()->getSystemParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+}
+
 //! @brief Get a pointer the the CoreSystemAccess object that this system is representing
 CoreSystemAccess* SystemContainer::getCoreSystemAccessPtr()
 {

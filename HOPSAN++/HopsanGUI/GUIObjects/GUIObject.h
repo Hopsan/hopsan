@@ -66,9 +66,6 @@ public:
     enum { Type = WORKSPACEOBJECT };
     int type() const;
 
-    //Public members
-    ContainerObject *mpParentContainerObject;
-
 public slots:
     virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
     virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}  //!< @todo nothing for now
@@ -98,6 +95,7 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     //Protected members
+    ContainerObject *mpParentContainerObject;
     QString mHmfTagName;
     bool mIsFlipped;
     WorkspaceObjectSelectionBox *mpSelectionBox;

@@ -43,24 +43,22 @@ public:
     Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
     ~Component();
 
-    void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     bool hasPowerPorts();
+
+    void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     QStringList getParameterNames();
     QString getParameterUnit(QString name);
     QString getParameterDescription(QString name);
     QString getParameterValue(QString name);
-//    QString getParameterValueTxt(QString name);
-    bool setParameterValue(QString name, QString sysParName, bool force=0);
+    bool setParameterValue(QString name, QString value, bool force=0);
     QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 
-    //void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();
     QString getTypeCQS();
 
     enum { Type = COMPONENT };
     int type() const;
-    QString getDefaultParameter(QString name);
 
 private slots:
     virtual void setVisible(bool visible);
@@ -70,7 +68,6 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void openPropertiesDialog();
     void createPorts();
-    QMap<QString, QString> mDefaultParameters;
 };
 
 #endif // GUICOMPONENT_H

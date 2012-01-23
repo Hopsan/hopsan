@@ -362,18 +362,18 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
 //}
 
 
-ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, ModelObject *pGUIModelObject, QWidget *parent)
-    : QGridLayout(parent)
+ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, ModelObject *pModelObject, QWidget *pParent)
+    : QGridLayout(pParent)
 {
-    commonConstructorCode(dataName, descriptionName, dataValue, unitName, typeName, pGUIModelObject);
+    commonConstructorCode(dataName, descriptionName, dataValue, unitName, typeName, pModelObject);
 }
 
 
-void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString /*typeName*/, ModelObject *pGUIModelObject)
+void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString /*typeName*/, ModelObject *pModelObject)
 {
     mDataName = dataName;
 
-    mpGUIModelObject = pGUIModelObject;
+    mpModelObject = pModelObject;
 
     mDescriptionNameLabel.setMinimumWidth(100);
     mDescriptionNameLabel.setMaximumWidth(1000);
@@ -446,9 +446,9 @@ void ParameterLayout::setDataValueTxt(QString valueTxt)
 //! @brief Sets the value in the text field to the default parameter value
 void ParameterLayout::setDefaultValue()
 {
-    if(mpGUIModelObject)
+    if(mpModelObject)
     {
-        QString defaultText = mpGUIModelObject->getDefaultParameter(mDataName);
+        QString defaultText = mpModelObject->getDefaultParameterValue(mDataName);
         if(defaultText != QString())
             mDataValuesLineEdit.setText(defaultText);
         pickColor();
@@ -462,7 +462,8 @@ void ParameterLayout::showListOfSystemParameters()
 
     QMenu menu;
 
-    QMap<std::string, std::string> SystemMap = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    //QMap<std::string, std::string> SystemMap = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    QMap<std::string, std::string> SystemMap = mpModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getSystemParametersMap();
     QMap<std::string, std::string>::iterator it;
     for(it=SystemMap.begin(); it!=SystemMap.end(); ++it)
     {
@@ -483,9 +484,9 @@ void ParameterLayout::showListOfSystemParameters()
 
 void ParameterLayout::pickColor()
 {
-    if(mpGUIModelObject)
+    if(mpModelObject)
     {
-        if(mDataValuesLineEdit.text() == mpGUIModelObject->getDefaultParameter(mDataName))
+        if(mDataValuesLineEdit.text() == mpModelObject->getDefaultParameterValue(mDataName))
         {
             QPalette palette( mDataValuesLineEdit.palette() );
             palette.setColor( QPalette::Text, QColor("gray") );
@@ -507,7 +508,7 @@ void ParameterLayout::pickColor()
 //! @param value String with parameter that shall be verified
 void ComponentPropertiesDialog::verifyNewValue(QString &value)
 {
-    if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().contains(value.toStdString()))
+    if(mpGUIComponent->getParentContainerObject()->getCoreSystemAccessPtr()->getSystemParametersMap().contains(value.toStdString()))
     {
         return;
     }

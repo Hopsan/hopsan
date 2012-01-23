@@ -70,10 +70,10 @@ void ComponentSystem::stopSimulation()
     mStopSimulation = true;
 }
 
-
+//! @todo this one (if it should even exist) should be in component as parameter map is there, best is if we can code around having one
 Parameters &ComponentSystem::getSystemParameters()
 {
-    return *mParameters;
+    return *mpParameters;
 }
 
 

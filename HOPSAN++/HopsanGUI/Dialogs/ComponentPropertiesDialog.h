@@ -76,9 +76,11 @@ class ParameterLayout : public QGridLayout
 {
     Q_OBJECT
     friend class ComponentPropertiesDialog;
+    friend class ContainerPropertiesDialog;
+
 public:
  //   ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", QString typeName="", ModelObject *pGUIModelObject=0, QWidget *parent=0);
+    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", QString typeName="", ModelObject *pModelObject=0, QWidget *pParent=0);
 
     QString getDescriptionName();
     QString getDataName();
@@ -92,7 +94,7 @@ protected slots:
     void pickColor();
 
 protected:
-    ModelObject *mpGUIModelObject;
+    ModelObject *mpModelObject;
     QLabel mDataNameLabel;
     QLabel mDescriptionNameLabel;
     QLineEdit mDataValuesLineEdit;
@@ -103,7 +105,7 @@ protected:
     QString mDataName;
 
 private:
-    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="",  QString typeName="", ModelObject *pGUIModelObject=0);
+    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="",  QString typeName="", ModelObject *pModelObject=0);
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

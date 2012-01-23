@@ -190,40 +190,45 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
 
 
         //System Parameters Group Box
-    if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && !mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().isEmpty())
+    mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
+    QGridLayout *parameterLayout = new QGridLayout();
+
+    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
+    mpContainerObject->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+    int nParam=0;
+    for(int i=0; i<qParameterNames.size(); ++i)
     {
-        mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
-        mpSystemParametersLayout = new QGridLayout(this);
-
-        QMap<std::string, std::string>::iterator it;
-        QMap<std::string, std::string> tempMap;
-        tempMap = mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap();
-
-        int row = 0;
-        for(it=tempMap.begin(); it!=tempMap.end(); ++it)
-//            for(it=tempMap.begin(); it!=tempMap.end(); ++it)
-        {
-            QLabel *pParameterLabel = new QLabel(QString(it.key().c_str()), this);
-            pParameterLabel->setMinimumWidth(100);
-            QString numStr = QString(it.value().c_str());
-            //            numStr.setNum(it.value());
-            QLineEdit *pParameterLineEdit = new QLineEdit(numStr, this);
-            pParameterLineEdit->setValidator(new QDoubleValidator(this));
-            mpSystemParametersLayout->addWidget(pParameterLabel, row, 0);
-            mpSystemParametersLayout->addWidget(pParameterLineEdit, row, 1);
-            mSystemParameterLabels.append(pParameterLabel);
-            mSystemParameterLineEdits.append(pParameterLineEdit);
-            ++row;
-        }
-        mpSystemParametersGroupBox->setLayout(mpSystemParametersLayout);
+        mvParameterLayoutPtrs.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
+                                                        qParameterValues[i],
+                                                        qUnits[i],
+                                                        qTypes[i],
+                                                        mpContainerObject));
+        parameterLayout->addLayout(mvParameterLayoutPtrs.back(), nParam, 0);
+        ++nParam;
     }
+    //Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
+    int descriptionSize=30;
+    int nameSize = 10;
+    //Paramters
+    for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
+    {
+        descriptionSize = std::max(descriptionSize, mvParameterLayoutPtrs.at(i)->mDescriptionNameLabel.width());
+        nameSize = std::max(nameSize, mvParameterLayoutPtrs.at(i)->mDataNameLabel.width());
+    }
+    //Paramters
+    for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
+    {
+        mvParameterLayoutPtrs.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+        mvParameterLayoutPtrs.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
+    }
+    mpSystemParametersGroupBox->setLayout(parameterLayout);
 
         //This is the main Vertical layout of the dialog
     mpScrollLayout = new QVBoxLayout(this);
     mpScrollLayout->addWidget(pInfoGroupBox);
     mpScrollLayout->addWidget(mpAppearanceGroupBox);
     mpScrollLayout->addWidget(mpSettingsGroupBox);
-    if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && !mpContainerObject->getCoreSystemAccessPtr()->getSystemParametersMap().isEmpty())
+    if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && nParam>0)
     {
         mpScrollLayout->addWidget(mpSystemParametersGroupBox);
     }
@@ -331,9 +336,9 @@ void ContainerPropertiesDialog::setValues()
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }
 
-    for(int i=0; i<mSystemParameterLabels.size(); ++i)
+    for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
     {
-        mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mSystemParameterLabels.at(i)->text(), mSystemParameterLineEdits.at(i)->text());
+        mpContainerObject->setParameterValue(mvParameterLayoutPtrs[i]->getDataName(), mvParameterLayoutPtrs[i]->getDataValueTxt());
     }
 
     this->done(0);

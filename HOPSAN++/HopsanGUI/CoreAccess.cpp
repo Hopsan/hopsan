@@ -618,6 +618,7 @@ bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString d
 //    }
 //    else
     {
+        //! @todo We should not access parameters map directly, should use ONE add/set method in component system (that could be the same as register in component)
         if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), force)))
         {
             success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), 0, force);
@@ -626,7 +627,7 @@ bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString d
     return success;
 }
 
-
+//! @todo This is totaly strange, needs fixing
 QString CoreSystemAccess::getSystemParameter(QString /*name*/)
 {
     std::string value;
@@ -635,6 +636,7 @@ QString CoreSystemAccess::getSystemParameter(QString /*name*/)
 }
 
 
+//! @todo This is totaly strange, needs fixing
 bool CoreSystemAccess::hasSystemParameter(QString /*name*/)
 {
     std::string dummy;
@@ -644,7 +646,8 @@ bool CoreSystemAccess::hasSystemParameter(QString /*name*/)
 
 void CoreSystemAccess::removeSystemParameter(QString name)
 {
-    mpCoreComponentSystem->getSystemParameters().deleteParameter(name.toStdString());
+    mpCoreComponentSystem->unRegisterParameter(name.toStdString());
+    //mpCoreComponentSystem->getSystemParameters().deleteParameter(name.toStdString());
 }
 
 

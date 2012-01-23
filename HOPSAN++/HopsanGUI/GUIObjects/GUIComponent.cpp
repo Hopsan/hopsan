@@ -54,10 +54,11 @@ Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pA
         connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)));
     }
 
+    //! @todo maybe set default param values for ALL ModelObjects
     QStringList defaultParameterNames = getParameterNames();
     for(int i=0; i<defaultParameterNames.size(); ++i)
     {
-        mDefaultParameters.insert(defaultParameterNames.at(i), getParameterValue(defaultParameterNames.at(i)));
+        mDefaultParameterValues.insert(defaultParameterNames.at(i), getParameterValue(defaultParameterNames.at(i)));
     }
 }
 
@@ -174,15 +175,10 @@ QString Component::getParameterValue(QString name)
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), name);
 }
 
-//QString GUIComponent::getParameterValueTxt(QString name)
-//{
-//    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), name);
-//}
-
 //! @brief Set a parameter value to be mapped to a System parameter
-bool Component::setParameterValue(QString name, QString sysParName, bool force)
+bool Component::setParameterValue(QString name, QString value, bool force)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, sysParName, force);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value, force);
 }
 
 //! @brief Set a start value to be mapped to a System parameter
@@ -248,14 +244,6 @@ int Component::type() const
     return Type;
 }
 
-
-QString Component::getDefaultParameter(QString name)
-{
-    if(mDefaultParameters.contains(name))
-        return mDefaultParameters.find(name).value();
-    else
-        return QString();
-}
 
 
 void Component::setVisible(bool visible)

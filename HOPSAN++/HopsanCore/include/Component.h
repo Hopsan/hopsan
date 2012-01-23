@@ -174,7 +174,7 @@ private:
     //Private member variables
     std::string mName;
     std::string mTypeName;
-    Parameters *mParameters;
+    Parameters *mpParameters;
     PortPtrMapT mPortPtrMap;
     double mMeasuredTime;
 };

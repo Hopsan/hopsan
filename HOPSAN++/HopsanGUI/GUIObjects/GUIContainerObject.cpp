@@ -935,6 +935,18 @@ QList<Widget *> ContainerObject::getSelectedGUIWidgetPtrs()
     return mSelectedWidgetsList;
 }
 
+void ContainerObject::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+{
+    //Do nothing, this function should be overloaded
+}
+
+//! @brief Set a system parameter value
+//! @todo how will this work in groups
+bool ContainerObject::setParameterValue(QString name, QString value, bool force)
+{
+    return this->getCoreSystemAccessPtr()->setSystemParameter(name, value, "", "", "", force);
+}
+
 
 //! @brief Notifies container object that a gui model object has been selected
 void ContainerObject::rememberSelectedModelObject(ModelObject *object)

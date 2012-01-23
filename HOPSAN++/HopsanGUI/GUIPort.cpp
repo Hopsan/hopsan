@@ -252,7 +252,7 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (mpPortAppearance->mVisible)
     {
-        if(!mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+        if(!mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->isEditingEnabled())
             return;
 
         //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
@@ -597,7 +597,7 @@ void Port::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString d
 {
     //Make sure plot data exists
     QPair<QVector<double>, QVector<double> > vectors;
-    mpParentGuiModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(mpParentGuiModelObject->getName(), this->getPortName(), dataName, vectors);
+    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotData(mpParentGuiModelObject->getName(), this->getPortName(), dataName, vectors);
 
     QVector<double> xVector = vectors.first;
     QVector<double> yVector = vectors.second;
@@ -606,7 +606,7 @@ void Port::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString d
         return;         //Return if it does not
 
     //Add new curve to the plot window
-    pPlotWindow->addPlotCurve(mpParentGuiModelObject->mpParentContainerObject->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
+    pPlotWindow->addPlotCurve(mpParentGuiModelObject->getParentContainerObject()->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
 }
 
 

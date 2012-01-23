@@ -59,9 +59,6 @@ public:
     //Appearance methods
     void setAppearanceDataBasePath(const QString basePath);
     virtual ModelObjectAppearance* getAppearanceData();
-public slots:
-    virtual void refreshAppearance();
-public:
     bool isVisible();
 
     //Help methods
@@ -69,14 +66,15 @@ public:
     QString getHelpText();
 
     //Parameter methods
+    virtual QString getDefaultParameterValue(const QString paramName) const;
     virtual QStringList getParameterNames();
     virtual QString getParameterUnit(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual QString getParameterDescription(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual QString getParameterValue(QString name);
-//    virtual QString getParameterValueTxt(QString name);
-    virtual bool setParameterValue(QString name, QString valueTxt, bool force=0);
+    virtual bool setParameterValue(QString name, QString valueTxt, bool force=false);
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
+
     //Load and save methods
     virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISystem for now
@@ -99,9 +97,8 @@ public:
     void getLosses(double &total, double &hydraulic, double &mechanic);
     bool isLossesDisplayVisible();
 
-    virtual QString getDefaultParameter(QString /*name*/) {assert(false);}
-
 public slots:
+    virtual void refreshAppearance();
     void deleteMe();
     void rotate(qreal angle, undoStatus undoSettings = UNDO);
     void flipVertical(undoStatus undoSettings = UNDO);
@@ -148,6 +145,8 @@ protected:
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;
     qreal mLastIconScale;
+
+    QMap<QString, QString> mDefaultParameterValues;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

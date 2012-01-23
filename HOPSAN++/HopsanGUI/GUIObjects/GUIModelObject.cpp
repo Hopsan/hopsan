@@ -572,6 +572,21 @@ Port *ModelObject::getPort(QString name)
     return 0;
 }
 
+//! @brief Get the default value of a parameter
+//! @param [in] paramName The name of the parameter
+//! @returns QString with default value for parameter, or empty QString if paramName not found
+QString ModelObject::getDefaultParameterValue(const QString paramName) const
+{
+    if(mDefaultParameterValues.contains(paramName))
+    {
+        return mDefaultParameterValues.find(paramName).value();
+    }
+    else
+    {
+        return QString();
+    }
+}
+
 
 //! @brief Virtual function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
@@ -1196,7 +1211,7 @@ void ModelObject::refreshAppearance()
     for(it=mModelObjectAppearance.getPortAppearanceMap().begin(); it != mModelObjectAppearance.getPortAppearanceMap().end(); ++it)
     {
         Port *port = getPort(it.key());
-        if(port)
+        if(port != 0)
         {
             port->setCenterPosByFraction(it.value().x, it.value().y);
         }

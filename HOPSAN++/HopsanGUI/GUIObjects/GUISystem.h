@@ -105,7 +105,9 @@ public:
     void createFMUSourceFiles();
     void createSimulinkSourceFiles();
 
+    // Parameter methods
     QStringList getParameterNames();
+    void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
 
     CoreSystemAccess* getCoreSystemAccessPtr();
     ContainerObject *getParentContainerObject();

@@ -375,7 +375,6 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
 
 
 //! @brief Deletes a parameter
-//!
 //! @param parameterName The name of the paramter to delete
 void Parameters::deleteParameter(std::string parameterName)
 {
