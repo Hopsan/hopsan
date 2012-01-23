@@ -81,6 +81,11 @@ void Component::getParameters(vector<string> &parameterNames, vector<string> &pa
     mpParameters->getParameters(parameterNames, parameterValues, descriptions, units, types);
 }
 
+void Component::getParameterValue(const std::string name, std::string &rValue)
+{
+    mpParameters->getParameterValue(name, rValue);
+}
+
 
 bool Component::setParameterValue(const std::string name, const std::string value, bool force)
 {

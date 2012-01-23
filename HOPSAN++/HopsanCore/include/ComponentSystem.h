@@ -114,7 +114,7 @@ namespace hopsan {
         void simulateMultiThreadedOld(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
         void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool noChanges=false);
-        #ifdef USETBB
+#ifdef USETBB
         void simulateAndMeasureTime(size_t steps = 1);
         double getTotalMeasuredTime();
         void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> systemVector);
@@ -125,7 +125,7 @@ namespace hopsan {
         void distributeQcomponents(std::vector< std::vector<Component*> > &rSplitQVector, size_t nThreads);
         void distributeSignalcomponents(std::vector< std::vector<Component*> > &rSplitSignalVector, size_t nThreads);
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
-        #endif
+#endif
         void simulate(const double startT, const double stopT);
         void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem *> systemVector);
         void finalize(const double startT, const double stopT);
@@ -141,9 +141,9 @@ namespace hopsan {
         //Stop a running init or simulation
         void stopSimulation();
 
-        #ifdef USETBB
+#ifdef USETBB
         tbb::mutex *mpStopMutex;
-        #endif
+#endif
 
         //System parameters
         Parameters &getSystemParameters();

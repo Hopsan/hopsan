@@ -307,7 +307,7 @@ void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentNam
 }
 
 
-bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString value, bool force)
+bool CoreSystemAccess::setParameterValue(QString componentName, QString parameterName, QString value, bool force)
 {
     return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value.toStdString(), force);
 }
@@ -627,24 +627,36 @@ bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString d
     return success;
 }
 
-//! @todo This is totaly strange, needs fixing
-QString CoreSystemAccess::getSystemParameter(QString /*name*/)
+//! @brief Get the value of a parameter in the system
+//! @returns The aprameter value as a QString or "" if parameter not found
+QString CoreSystemAccess::getSystemParameterValue(const QString name)
 {
     std::string value;
-    //mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), value);
+    mpCoreComponentSystem->getParameterValue(name.toStdString(), value);
     return QString::fromStdString(value);
 }
 
 
-//! @todo This is totaly strange, needs fixing
-bool CoreSystemAccess::hasSystemParameter(QString /*name*/)
+//! @todo Dont know if this is actually used
+bool CoreSystemAccess::hasSystemParameter(const QString name)
 {
-    std::string dummy;
-    return true;//mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), dummy);
+    //! @todo this code assumes that a parameter can not have value = "", is this assumtion OK!
+    std::string value;
+    mpCoreComponentSystem->getParameterValue(name.toStdString(), value);
+    if (value != "")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    //return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), dummy);
 }
 
-
-void CoreSystemAccess::removeSystemParameter(QString name)
+//! @brief Removes the parameter with given name
+//! @param [in] name The name of the system parameter to remove
+void CoreSystemAccess::removeSystemParameter(const QString name)
 {
     mpCoreComponentSystem->unRegisterParameter(name.toStdString());
     //mpCoreComponentSystem->getSystemParameters().deleteParameter(name.toStdString());

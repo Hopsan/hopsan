@@ -71,7 +71,7 @@ class SystemParameterTableWidget : public QTableWidget
 public:
     SystemParameterTableWidget(int rows, int columns, QWidget *parent=0);
 
-    QString getParameter(QString name);
+    QString getParameterValue(QString name);
     bool hasParameter(QString name);
 
 public slots:

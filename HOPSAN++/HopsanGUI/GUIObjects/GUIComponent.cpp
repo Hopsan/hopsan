@@ -178,7 +178,7 @@ QString Component::getParameterValue(QString name)
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value, force);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), name, value, force);
 }
 
 //! @brief Set a start value to be mapped to a System parameter
@@ -191,7 +191,7 @@ bool Component::setStartValue(QString portName, QString variable, QString sysPar
 //    return this->getPort(portName)->setStartValueDataByNames(vVariable, vSysParName);
     QString dataName;
     dataName = portName + QString("::Value");
-    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), dataName, sysParName);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), dataName, sysParName);
 }
 
 

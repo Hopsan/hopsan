@@ -155,7 +155,7 @@ bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEval
 
 //! @brief Returns the type of the parameter
 //! @return The type of the parameter
-std::string Parameter::getType()
+std::string Parameter::getType() const
 {
     return mType;
 }
@@ -271,6 +271,16 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
 
     rResult = evaluatedParameterValue;
     return success;
+}
+
+std::string Parameter::getName() const
+{
+    return mParameterName;
+}
+
+std::string Parameter::getValue() const
+{
+    return mParameterValue;
 }
 
 //! @class hopsan::Parameters
@@ -414,6 +424,22 @@ void Parameters::getParameters(std::vector<std::string> &rParameterNames, std::v
     {
         mParameters[i]->getParameter(rParameterNames[i], rParameterValues[i], rDescriptions[i], rUnits[i], rTypes[i]);
     }
+}
+
+//! @brief Get the value of specified parameter
+//! @param [in] name The parameter name to get value of
+//! @param [out] rValue Reference to the string variable that will contain the parameter value. The variable will be "" if parameter not found
+void Parameters::getParameterValue(const std::string name, std::string &rValue)
+{
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (mParameters[i]->getName() == name)
+        {
+            rValue = mParameters[i]->getValue();
+            return; //Abort function as value has been set
+        }
+    }
+    rValue = "";
 }
 
 

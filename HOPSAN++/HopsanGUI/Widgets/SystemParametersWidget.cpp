@@ -171,7 +171,7 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem */*item*/)
 
 //        QString apa = item->text();
 //        double ko = getParameter(parName);
-        if(parValue != getParameter(parName))
+        if(parValue != getParameterValue(parName))
         {
             gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
         }
@@ -183,9 +183,9 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem */*item*/)
 }
 
 
-QString SystemParameterTableWidget::getParameter(QString name)
+QString SystemParameterTableWidget::getParameterValue(QString name)
 {
-    return gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameter(name);
+    return gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameterValue(name);
 }
 
 
