@@ -264,15 +264,15 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
 
     //Save parameters (also core related)
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
-    //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
     QVector<QString> parameterNames, parameterValues, descriptions, units, types;
     getParameters(parameterNames, parameterValues, descriptions, units, types);
-    QVector<QString>::iterator pit;
-    for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
+    for(int pit=0; pit<parameterNames.size(); ++pit)
     {
         QDomElement xmlParam = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
-        xmlParam.setAttribute(HMF_NAMETAG, *pit);
-        xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
+        xmlParam.setAttribute(HMF_NAMETAG, parameterNames[pit]);
+        xmlParam.setAttribute(HMF_VALUETAG, parameterValues[pit]);
+        xmlParam.setAttribute(HMF_TYPE, types[pit]);
+
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {
             xmlParam.setAttribute(HMF_SYSTEMPARAMETERTAG, this->getSystemParameterKey(*pit));

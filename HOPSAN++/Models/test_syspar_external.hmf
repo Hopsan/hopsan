@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3884" hopsancoreversion="0">
     <system typename="Subsystem" name="test_syspar_external">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <aliases/>
+        <parameters>
+            <parameter value="55" type="double" name="HUND"/>
+        </parameters>
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
@@ -19,6 +24,7 @@
                     </ports>
                 </modelobject>
             </hopsanobjectappearance>
+            <favoritevariables/>
             <optimization>
                 <settings>
                     <niter>100</niter>
@@ -36,12 +42,13 @@
                 <objectives/>
             </optimization>
         </hopsangui>
-        <simulationtime stop="10" timestep="0.001" start="0"/>
-        <parameters>
-            <parameter typename="double" value="55" name="HUND"/>
-        </parameters>
         <objects>
             <system typename="Subsystem" name="ComponentSystem">
+                <simulationtime stop="10" timestep="0.001" start="0"/>
+                <aliases/>
+                <parameters>
+                    <parameter value="HUND" type="double" name="RUMPA"/>
+                </parameters>
                 <hopsangui>
                     <pose x="2394" y="2515" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -60,6 +67,7 @@
                             </ports>
                         </modelobject>
                     </hopsanobjectappearance>
+                    <favoritevariables/>
                     <optimization>
                         <settings>
                             <niter>100</niter>
@@ -76,97 +84,7 @@
                         <parameters/>
                         <objectives/>
                     </optimization>
-                    <hopsanundo>
-                        <post number="-1"/>
-                        <post number="0">
-                            <stuff what="addedcontainerport">
-                                <systemport name="Container Port">
-                                    <hopsangui>
-                                        <pose x="2321" y="2552" flipped="0" a="0"/>
-                                        <nametext position="0" visible="1"/>
-                                    </hopsangui>
-                                </systemport>
-                            </stuff>
-                        </post>
-                        <post number="1">
-                            <stuff what="addedcontainerport">
-                                <systemport name="Container Port_1">
-                                    <hopsangui>
-                                        <pose x="2633" y="2542" flipped="0" a="0"/>
-                                        <nametext position="0" visible="1"/>
-                                    </hopsangui>
-                                </systemport>
-                            </stuff>
-                        </post>
-                        <post number="2">
-                            <stuff what="addedobject">
-                                <component typename="SignalGain" name="Gain">
-                                    <parameters>
-                                        <parameter value="0" name="out::Value"/>
-                                        <parameter value="1" name="k"/>
-                                    </parameters>
-                                    <hopsangui>
-                                        <pose x="2451" y="2542" flipped="0" a="0"/>
-                                        <nametext position="0" visible="1"/>
-                                    </hopsangui>
-                                </component>
-                            </stuff>
-                        </post>
-                        <post number="3">
-                            <stuff what="addedconnector">
-                                <connect endport="in" endcomponent="Gain" startport="Container Port" startcomponent="Container Port">
-                                    <hopsangui>
-                                        <coordinates>
-                                            <coordinate x="2321.00000000000000000000" y="2552.00000000000000000000"/>
-                                            <coordinate x="2418.50000000000000000000" y="2552.00000000000000000000"/>
-                                            <coordinate x="2418.50000000000000000000" y="2542.00000000000000000000"/>
-                                            <coordinate x="2438.50000000000000000000" y="2542.00000000000000000000"/>
-                                        </coordinates>
-                                        <geometries>
-                                            <geometry>vertical</geometry>
-                                            <geometry>horizontal</geometry>
-                                            <geometry>vertical</geometry>
-                                        </geometries>
-                                        <style>solid</style>
-                                    </hopsangui>
-                                </connect>
-                            </stuff>
-                        </post>
-                        <post number="4">
-                            <stuff what="addedconnector">
-                                <connect endport="Container Port_1" endcomponent="Container Port_1" startport="out" startcomponent="Gain">
-                                    <hopsangui>
-                                        <coordinates>
-                                            <coordinate x="2463.50000000000000000000" y="2542.00000000000000000000"/>
-                                            <coordinate x="2613.00000000000000000000" y="2542.00000000000000000000"/>
-                                            <coordinate x="2613.00000000000000000000" y="2542.00000000000000000000"/>
-                                            <coordinate x="2633.00000000000000000000" y="2542.00000000000000000000"/>
-                                        </coordinates>
-                                        <geometries>
-                                            <geometry>vertical</geometry>
-                                            <geometry>horizontal</geometry>
-                                            <geometry>vertical</geometry>
-                                        </geometries>
-                                        <style>solid</style>
-                                    </hopsangui>
-                                </connect>
-                            </stuff>
-                        </post>
-                        <post number="5">
-                            <stuff what="movedobject" name="Container Port">
-                                <oldpos>2301 2542</oldpos>
-                                <newpos>2300 2532</newpos>
-                            </stuff>
-                        </post>
-                        <post number="6" type="changedparameters">
-                            <stuff newvalue="RUMPA" what="changedparameter" oldvalue="1" parametername="k" objectname="Gain"/>
-                        </post>
-                    </hopsanundo>
                 </hopsangui>
-                <simulationtime stop="10" timestep="0.001" start="0"/>
-                <parameters>
-                    <parameter typename="double" value="HUND" name="RUMPA"/>
-                </parameters>
                 <objects>
                     <systemport name="Container Port_1">
                         <hopsangui>
@@ -182,8 +100,8 @@
                     </systemport>
                     <component typename="SignalGain" name="Gain">
                         <parameters>
-                            <parameter value="0" name="out::Value"/>
-                            <parameter value="RUMPA" name="k"/>
+                            <parameter value="0" type="double" name="out::Value"/>
+                            <parameter value="RUMPA" type="double" name="k"/>
                         </parameters>
                         <hopsangui>
                             <pose x="2451" y="2542" flipped="0" a="0"/>

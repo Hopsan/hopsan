@@ -191,67 +191,42 @@ void SystemContainer::openPropertiesDialog()
 void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     ModelObject::saveCoreDataToDomElement(rDomElement);
-    appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble());
 
-    QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
-    QList<QStringList> favPars = this->getFavoriteVariables();
-    QList<QStringList>::iterator itf;
-    for(itf = favPars.begin(); itf != favPars.end(); ++itf)
+    if (mLoadType == "EXTERNAL" )
     {
-        QDomElement favoriteElement = appendDomElement(parElement, HMF_FAVORITEVARIABLETAG);
-        favoriteElement.setAttribute("componentname", (*itf).at(0));
-        favoriteElement.setAttribute("portname", (*itf).at(1));
-        favoriteElement.setAttribute("dataname", (*itf).at(2));
-        favoriteElement.setAttribute("dataunit", (*itf).at(3));
+        //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
+        //If it would be, the load function will fail
+        rDomElement.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
     }
 
-    QVector<QString> parameterNames, parameterValues, descriptions, units, types;
-    mpCoreSystemAccess->getSystemParameters(parameterNames, parameterValues, descriptions, units, types);
-    for(int i=0; i<parameterNames.size(); ++i)
+    if (mLoadType != "EXTERNAL" )
     {
-        QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
-        mappedElement.setAttribute(HMF_NAMETAG, parameterNames[i]);
-        mappedElement.setAttribute(HMF_VALUETAG, parameterValues[i]);
-        mappedElement.setAttribute(HMF_TYPETAG, types[i]);
+        appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble());
+
+        QMap<QString, QStringList>::iterator ita;
+        QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
+        for(ita=mPlotAliasMap.begin(); ita!=mPlotAliasMap.end(); ++ita)
+        {
+            QDomElement aliasElement = appendDomElement(xmlAliases, HMF_ALIAS);
+            aliasElement.setAttribute("alias", ita.key());
+            aliasElement.setAttribute("component", ita.value().at(0));
+            aliasElement.setAttribute("port",ita.value().at(1));
+            aliasElement.setAttribute("data",ita.value().at(2));
+        }
     }
 
-
-//    QMap<std::string, std::string>::iterator it;
-//    QMap<std::string, std::string> parMap = mpCoreSystemAccess->getSystemParametersMap();
-//    for(it = parMap.begin(); it != parMap.end(); ++it)
-//    {
-//        QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
-//        mappedElement.setAttribute("name", QString(it.key().c_str()));
-//        mappedElement.setAttribute("value", QString(it.value().c_str()));
-//    }
-
-    QMap<QString, QStringList>::iterator ita;
-    for(ita=mPlotAliasMap.begin(); ita!=mPlotAliasMap.end(); ++ita)
-    {
-        QDomElement aliasElement = appendDomElement(parElement, "alias");
-        aliasElement.setAttribute("alias", ita.key());
-        aliasElement.setAttribute("component", ita.value().at(0));
-        aliasElement.setAttribute("port",ita.value().at(1));
-        aliasElement.setAttribute("data",ita.value().at(2));
-    }
-
-}
-
-void SystemContainer::saveExternalSystemCoreDataToDomElement(QDomElement &rDomElement)
-{
-    ModelObject::saveCoreDataToDomElement(rDomElement);
-
-    //Save the parameter values for this external system (in case thay have been changed)
+    //Save the parameter values for the system
+    // In case of external system save those that have been changed
     //! @todo right now we save all of them, but I think this is good even if they have not changed
     QVector<QString> parameterNames, parameterValues, descriptions, units, types;
     this->getParameters(parameterNames, parameterValues, descriptions, units, types);
-    QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
+    QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
     for(int i=0; i<parameterNames.size(); ++i)
     {
-        QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
-        mappedElement.setAttribute(HMF_NAMETAG, parameterNames[i]);
-        mappedElement.setAttribute(HMF_VALUETAG, parameterValues[i]);
-        mappedElement.setAttribute(HMF_TYPETAG, types[i]);
+        QDomElement xmlParameter = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
+        xmlParameter.setAttribute(HMF_NAMETAG, parameterNames[i]);
+        xmlParameter.setAttribute(HMF_VALUETAG, parameterValues[i]);
+        xmlParameter.setAttribute(HMF_TYPE, types[i]);
     }
 }
 
@@ -455,6 +430,19 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
             this->mModelObjectAppearance.setBasePath(this->getParentContainerObject()->getAppearanceData()->getBasePath());
         }
         this->mModelObjectAppearance.saveToDomElement(xmlApp);
+
+        //Save favorite variables
+        QDomElement xmlFavVars = appendDomElement(guiStuff, HMF_FAVORITEVARIABLES);
+        QList<QStringList> favVars = this->getFavoriteVariables();
+        QList<QStringList>::iterator itf;
+        for(itf = favVars.begin(); itf != favVars.end(); ++itf)
+        {
+            QDomElement favoriteElement = appendDomElement(xmlFavVars, HMF_FAVORITEVARIABLETAG);
+            favoriteElement.setAttribute("componentname", (*itf).at(0));
+            favoriteElement.setAttribute("portname", (*itf).at(1));
+            favoriteElement.setAttribute("dataname", (*itf).at(2));
+            favoriteElement.setAttribute("dataunit", (*itf).at(3));
+        }
     }
 
     saveOptSettingsToDomElement(guiStuff);
@@ -490,27 +478,15 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement)
         mLoadType = "EMBEDED";
     }
 
-    //! @todo do we really need both systemtype and external path, en empty path could indicate embeded
-    if ((mpParentContainerObject != 0) && (mLoadType=="EXTERNAL"))
-    {
-        //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
-        //If it would be, the load function will fail
-        xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
+    // Save Core related stuff
+    this->saveCoreDataToDomElement(xmlSubsystem);
 
-        //Save Core data
-        //The name (and type) that we have set for this subsystem will overwrite the defualt one in the external file
-        saveExternalSystemCoreDataToDomElement(xmlSubsystem);
-    }
-
-    //Save gui object stuff
+    // Save gui object stuff
     this->saveGuiDataToDomElement(xmlSubsystem);
 
         //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
     {
-            //Save Core related stuff
-        this->saveCoreDataToDomElement(xmlSubsystem); //Only save core stuff in root and embeded systems
-
             //Save subcomponents and subsystems
         QDomElement xmlObjects = appendDomElement(xmlSubsystem, HMF_OBJECTS);
         ModelObjectMapT::iterator it;
@@ -528,7 +504,7 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement)
 
             //Save the connectors
         QDomElement xmlConnections = appendDomElement(xmlSubsystem, HMF_CONNECTIONS);
-        for(int i = 0; i != mSubConnectorList.size(); ++i)
+        for(int i=0; i<mSubConnectorList.size(); ++i)
         {
             mSubConnectorList[i]->saveToDomElement(xmlConnections);
         }
@@ -620,10 +596,10 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
             if(pObj == NULL)
             {
                 gpMainWindow->mpMessageWidget->printGUIErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
-                                                                    xmlSubObject.attribute(HMF_TYPETAG) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
+                                                                    xmlSubObject.attribute(HMF_TYPENAME) + QString(", Name: ") + xmlSubObject.attribute(HMF_NAMETAG));
 
                 // Insert missing component dummy instead
-                xmlSubObject.setAttribute(HMF_TYPETAG, "MissingComponent");
+                xmlSubObject.setAttribute(HMF_TYPENAME, "MissingComponent");
                 pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             }
             else
@@ -701,7 +677,18 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
             if(i>stop) break;
         }
 
+
         //8. Load favorite variables
+        QDomElement xmlFavVariables = guiStuff.firstChildElement(HMF_FAVORITEVARIABLES);
+        QDomElement xmlFavVariable = xmlFavVariables.firstChildElement(HMF_FAVORITEVARIABLETAG);
+        while (!xmlFavVariable.isNull())
+        {
+            loadFavoriteVariable(xmlFavVariable, this);
+            xmlFavVariable = xmlFavVariable.nextSiblingElement(HMF_FAVORITEVARIABLETAG);
+        }
+
+        //8.1 Load favorite variables, from old place among core data (which is wrong)
+        //! @deprecated Remove this block of code later on in the future
         xmlSubObject = xmlParameters.firstChildElement(HMF_FAVORITEVARIABLETAG);
         while (!xmlSubObject.isNull())
         {
@@ -710,6 +697,16 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         }
 
         //9. Load plot variable aliases
+        QDomElement xmlAliases = rDomElement.firstChildElement(HMF_ALIASES);
+        QDomElement xmlAlias = xmlAliases.firstChildElement(HMF_ALIAS);
+        while (!xmlAlias.isNull())
+        {
+            loadPlotAlias(xmlAlias, this);
+            xmlAlias = xmlAlias.nextSiblingElement(HMF_ALIAS);
+        }
+
+        //9.1 Load plot variable aliases
+        //! @deprecated Remove in teh future when hmf format stabilized and everyone has upgraded
         xmlSubObject = xmlParameters.firstChildElement("alias");
         while (!xmlSubObject.isNull())
         {
@@ -749,14 +746,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
     }
     else
     {
-        //Load external system
-        //! @todo use some code that opens the atual file in this case
-        //! @todo this code does not seem to ever run right now, this will probalby never be called as loadobjects handle this
-//        QFile file(external_path);
-//        QDomElement externalRoot = loadXMLDomDocument(file, HMF_ROOTTAG);
-//        QDomElement systemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
-//        loadSubsystemGUIObject(systemRoot, gpMainWindow->mpLibrary, this, NOUNDO);
-
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage("A system you tried to load is taged as an external system, but the ContainerSystem load function only loads embeded systems");
     }
 }
 

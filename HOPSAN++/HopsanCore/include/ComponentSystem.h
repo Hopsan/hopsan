@@ -146,6 +146,7 @@ namespace hopsan {
 #endif
 
         //System parameters
+        void setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="");
         Parameters &getSystemParameters();
 
     private:

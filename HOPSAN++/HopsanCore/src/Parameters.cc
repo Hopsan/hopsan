@@ -60,6 +60,7 @@ Parameter::Parameter(std::string parameterName, std::string parameterValue, std:
     }
     else
     {
+        //! @todo we should not assert false here, need to handle in some nicer way
         assert(false);
     }
     mpData = pDataPtr;

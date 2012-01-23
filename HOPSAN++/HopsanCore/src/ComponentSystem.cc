@@ -76,6 +76,20 @@ Parameters &ComponentSystem::getSystemParameters()
     return *mpParameters;
 }
 
+//! @todo should check returned bools if OK
+void ComponentSystem::setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description, const std::string unit)
+{
+    if(mpParameters->exist(name))
+    {
+        mpParameters->setParameter(name, value, description, unit, type);
+    }
+    else
+    {
+        mpParameters->addParameter(name, value, description, unit, type);
+    }
+
+}
+
 
 void ComponentSystem::addComponents(vector<Component*> components)
 {

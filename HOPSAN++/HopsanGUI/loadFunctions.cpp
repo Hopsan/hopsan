@@ -131,7 +131,8 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStat
 
     parameterName = rDomElement.attribute(HMF_NAMETAG);
     parameterValue = rDomElement.attribute(HMF_VALUETAG);
-    parameterType = rDomElement.attribute(HMF_TYPETAG);
+    parameterType = rDomElement.attribute(HMF_TYPE);
+    parameterType = rDomElement.attribute(HMF_TYPENAME, parameterType); //!< @deprecated load old typename
 
     //    bool isDbl;
     //    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
@@ -183,7 +184,7 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus /
 ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings)
 {
     //Read core specific data
-    QString type = rDomElement.attribute(HMF_TYPETAG);
+    QString type = rDomElement.attribute(HMF_TYPENAME);
     QString name = rDomElement.attribute(HMF_NAMETAG);
 
     //Read gui specific data
@@ -230,30 +231,16 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
             pObj->rotate(target_rotation, undoSettings); //This assumes object created with initial rotation 0 in addGuiModelObject above
         }
 
+        //Read system specific core and gui data
         if (rDomElement.tagName() == HMF_SYSTEMTAG)
         {
-            QString externalfilepath;
-            QDomElement embededSystemDomElement;
-
-            //Overwrite the typename with the gui specific one for systems, or set the type if it is missing (which is should be)
-            //! @todo or maybe core should contain system typename for systems
-            //type = HOPSANGUISYSTEMTYPENAME;
-
-            //Read system specific corea and gui data
-            externalfilepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
-
-            //Save the domElement to read embeded system
-            if (externalfilepath.isEmpty())
-            {
-                embededSystemDomElement = rDomElement;
-            }
-
-            //Check if we should load a embeded or external system
+            //Check if we should load an embeded or external system
+            QString externalfilepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
             if (externalfilepath.isEmpty())
             {
                 //Load embeded system
                 pObj->getAppearanceData()->setBasePath(pContainer->getAppearanceData()->getBasePath()); // Set the basepath for relative icon paths
-                pObj->loadFromDomElement(embededSystemDomElement);
+                pObj->loadFromDomElement(rDomElement);
             }
             else
             {
@@ -289,12 +276,10 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                     loadSystemParameter(xmlParameter, 10, pCont);
                     xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
                 }
-
             }
         }
 
         return pObj;
-
     }
     else
     {
@@ -311,7 +296,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
 ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
-    rDomElement.setAttribute(HMF_TYPETAG, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
+    rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
     return loadModelObject(rDomElement, pLibrary, pContainer, undoSettings); //We use the loadGUIModelObject function as it does what is needed
 }
 
@@ -322,7 +307,8 @@ void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, ContainerO
 {
     QString name = rDomElement.attribute(HMF_NAMETAG);
     QString value = rDomElement.attribute(HMF_VALUETAG);
-    QString type = rDomElement.attribute(HMF_TYPETAG);
+    QString type = rDomElement.attribute(HMF_TYPE);
+    type = rDomElement.attribute(HMF_TYPENAME, type); //!< @deprecated load old typename
 
     if(hmfVersion <= 0.3 && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
     {
@@ -346,7 +332,7 @@ void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
     dynamic_cast<SystemContainer *>(pContainer)->setFavoriteVariable(componentName, portName, dataName, dataUnit);
 }
 
-
+//! @todo We should remove Plot from the name as this is suposed to be useable for more then plotting only
 void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 {
     QString alias = rDomElement.attribute("alias");

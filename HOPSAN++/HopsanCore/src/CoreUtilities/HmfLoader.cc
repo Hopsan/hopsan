@@ -112,8 +112,9 @@ void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem
 }
 
 
-//! @brief This function can be used to load subsystem contents from a stream into an existing subsystem
+//! @brief This function loads a subsystem
 //! @todo Update this code
+//! @todo Make this function able to load external systems
 void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
 {
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
@@ -157,6 +158,25 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
             pConnection = pConnection->next_sibling();
         }
     }
+
+    //Load system parameters
+    rapidxml::xml_node<> *pParameters = pSysNode->first_node("parameters");
+    if (pParameters)
+    {
+        rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
+        while (pParameter != 0)
+        {
+            string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
+            string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+            string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
+
+            pSystem->setSystemParameter(paramName, val, type);
+
+            pParameter = pParameter->next_sibling("parameter");
+        }
+    }
+
+    //! @todo load ALIASES
 }
 
 

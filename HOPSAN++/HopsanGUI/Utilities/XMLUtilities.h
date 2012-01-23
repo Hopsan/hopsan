@@ -87,7 +87,10 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 #define HMF_CONNECTORTAG "connect"
 #define HMF_PARAMETERTAG "parameter"
 #define HMF_PARAMETERS "parameters"
+#define HMF_FAVORITEVARIABLES "favoritevariables"
 #define HMF_FAVORITEVARIABLETAG "favoritevariable"
+#define HMF_ALIASES "aliases"
+#define HMF_ALIAS "alias"
 #define HMF_STARTVALUES "startvalues"
 #define HMF_STARTVALUE "startvalue"
 #define HMF_GROUPTAG "group"
@@ -98,8 +101,9 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 #define HMF_NAMESTAG "names"
 
 #define HMF_NAMETAG "name"
-#define HMF_TYPETAG "typename"
+#define HMF_TYPENAME "typename"
 #define HMF_CQSTYPETAG "cqs_type"
+#define HMF_TYPE "type"
 
 #define HMF_HOPSANGUITAG "hopsangui"
 #define HMF_COORDINATES "coordinates"

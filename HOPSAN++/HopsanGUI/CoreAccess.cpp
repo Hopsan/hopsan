@@ -618,6 +618,7 @@ bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString d
 //    }
 //    else
     {
+        //! @todo should use the setSystemPArameter function in core instead
         //! @todo We should not access parameters map directly, should use ONE add/set method in component system (that could be the same as register in component)
         if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), force)))
         {
