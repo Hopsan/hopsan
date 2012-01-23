@@ -237,6 +237,24 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
 
 }
 
+void SystemContainer::saveExternalSystemCoreDataToDomElement(QDomElement &rDomElement)
+{
+    ModelObject::saveCoreDataToDomElement(rDomElement);
+
+    //Save the parameter values for this external system (in case thay have been changed)
+    //! @todo right now we save all of them, but I think this is good even if they have not changed
+    QVector<QString> parameterNames, parameterValues, descriptions, units, types;
+    this->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
+    for(int i=0; i<parameterNames.size(); ++i)
+    {
+        QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
+        mappedElement.setAttribute(HMF_NAMETAG, parameterNames[i]);
+        mappedElement.setAttribute(HMF_VALUETAG, parameterValues[i]);
+        mappedElement.setAttribute(HMF_TYPETAG, types[i]);
+    }
+}
+
 
 void SystemContainer::saveOptSettingsToDomElement(QDomElement &rDomElement)
 {
@@ -479,8 +497,9 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement)
         //If it would be, the load function will fail
         xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
 
-        //Save the name and type that we have set for this subsystem, this name will overwrite the defualt one in the external file
-        ModelObject::saveCoreDataToDomElement(xmlSubsystem); //!< @todo Not sure why we should not use savecoredata in GUISystem instead, but it seems to be embeded specific
+        //Save Core data
+        //The name (and type) that we have set for this subsystem will overwrite the defualt one in the external file
+        saveExternalSystemCoreDataToDomElement(xmlSubsystem);
     }
 
     //Save gui object stuff

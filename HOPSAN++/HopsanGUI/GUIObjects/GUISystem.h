@@ -129,6 +129,7 @@ signals:
 protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     void saveCoreDataToDomElement(QDomElement &rDomElement);
+    void saveExternalSystemCoreDataToDomElement(QDomElement &rDomElement);
 
     void openPropertiesDialog();
 

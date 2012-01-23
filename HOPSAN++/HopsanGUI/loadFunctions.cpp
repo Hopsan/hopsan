@@ -122,6 +122,7 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
 
 //! @brief xml version
 //! @todo Make undo settings work or remove it
+//! @todo Make loadParameterValue and loadSystemParameter same function
 void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus /*undoSettings*/)
 {
     QString parameterName;
@@ -264,6 +265,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                 {
                     qDebug() << "file: " << path << " does not exist";
                 }
+                //! @todo need error handling if file does not exist
                 QDomDocument domDocument;
                 QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
                 QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
@@ -276,6 +278,16 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                 if (!name.isEmpty())
                 {
                     pObj->setName(name);
+                }
+
+                // Now load all overwriten parameters
+                QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
+                QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+                while (!xmlParameter.isNull())
+                {
+                    ContainerObject* pCont = dynamic_cast<ContainerObject*>(pObj);
+                    loadSystemParameter(xmlParameter, 10, pCont);
+                    xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
                 }
 
             }
