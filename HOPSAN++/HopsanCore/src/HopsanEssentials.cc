@@ -182,7 +182,7 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
 //! @returns A pointer to the rootsystem of the loaded model
 ComponentSystem* HopsanEssentials::loadHMFModel(const string filePath, double &rStartTime, double &rStopTime)
 {
-    return loadHMFModel(filePath, rStartTime, rStopTime);
+    return loadHopsanModelFile(filePath, rStartTime, rStopTime);
 }
 
 

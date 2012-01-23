@@ -14,7 +14,6 @@
 -----------------------------------------------------------------------------*/
 
 #include "HopsanEssentials.h"
-#include "CoreUtilities/HmfLoader.h"
 #include <iostream>
 #include <string>
 

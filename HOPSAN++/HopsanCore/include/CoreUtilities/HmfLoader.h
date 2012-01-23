@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -35,7 +35,7 @@ namespace hopsan {
 //Forward declaration
 class ComponentSystem;
 
-ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
+ComponentSystem* loadHopsanModelFile(const std::string filePath, double &rStartTime, double &rStopTime);
 
 }
 
