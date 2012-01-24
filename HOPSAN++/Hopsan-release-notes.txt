@@ -11,6 +11,68 @@ Hopsan Release Notes
 
 
 -- Version History --
+
+0.5.0
+- Feature: Changed hydraulic ports in C-type piston component to multiports
+
+0.4.5
+- Fixed: Added missing include files for external dependencies
+- Fixed: Simulink export now copies all required include file to export directory
+
+0.4.4
+- Fixed: Renamed "Diameter" parameter in valves to "Spool Diameter" to make it clearer
+- Fixed: Prevent simulation from running if time step is to low (if it is zero). To avoid getting stuck in simulation loop.
+- Fixed: (Workaround) If running with some non English locale settings, numbers in XML would be saved with decimal point , instead of . (Files could not be loaded) 
+- Fixed: Signal connector arrows getting stuck in the view when entering a subsystem
+- Fixed: Incorrect index increment order in the Delay utility class
+- Fixed: Welcome dialog does not have mouse focus on startup
+
+0.4.3
+- Fixed: Connector graphics will now be refreshed when subsystem ports have changed type or node, (solves gray connectors between subsystems)
+- Fixed: Ports sometimes hidden when they should be visible
+- Fixed: Made sure hide/show port and nametext buttons work as they should, refresh when moving between subsystems.
+- Fixed: Hide signal components function is now system specific
+- Fixed: Hide signal components function now also hide unconnected ports
+- Fixed: Allowed both comma and point as decimal delimiter for parameters (comma is changed to point automatically)
+- Fixed: List of system parameters in component properties dialog was always based on top level system, even if component was in subsystem
+- Fixed: Crash if double clicking sink component after simulation when creating connector from sink component multiport
+- Fixed: Missing parmeter (Xpa) in load sensing 4/3 valve component
+- Fixed: When undoing deleting a component the parameters were reset
+- Fixed: Start value units are not affected by changing units in options dialog (they always use SI units)
+- Fixed: Plots exported to Matlab now keep their logarithmic scales in the script file
+- Fixed: Flipping an object does not add * to tab (to indicate changes that need to be saved)
+- Fixed: Read and write port invert icon in subsystem external ports
+- Fixed: Connectors between container ports and subsystems are gray even when connected
+
+- Feature: C-type and Q-type components are now sorted in the correct order if they are connected with signal ports
+- Feature: It is now possible to use system parameters from parent system as value for system parameters in subsystem
+- Feature: Subsystem ports with signal nodes will change to mirror internal or external port type, (Read or Write icon will make more sense).
+- Feature: Program now remembers the paths for all file access functions
+- Feature: Rearranged the buttons in the add system parameter dialog so that they make sense
+- Feature: Make it possible to copy with ctrl+c in message widget
+- Feature: Added help text in pressure source components
+- Feature: Added shortcut descriptions for actions in component right-click menus
+
+0.4.2
+- Fixed: Graphics for external component libraries will not be shown if library failed to load
+- Fixed: Crash when double clicking sink that has not been connected
+- Fixed: Flip button now works on containerobjects (subsystems)
+- Fixed: Correct error message when trying to connect readports to multiports
+- Fixed: No longer registers startvalues for subports in multiports
+- Fixed: No longer reregister startvaules while initializing (disabled values would reapear)
+- Fixed: ; At end of vectors in matlab .m script plot data export
+- Fixed: Exporting both amplitude and phase curve to .m file
+- Fixed: Added scrollbar to subsystem properties, (usefull if you have many systemparameters)
+- Fixed: Removed initial "../" from #include paths to avoid build issues with external libraries using Component Utilites
+- Fixed: Removed anoying popup window telling the user about .xml files not containing appearance data, (in case user has other .xml files)
+- Fixed: Highlighted drop area in plot window does not correspond exactly with the actual drop areas
+- Fixed: Changing standard units will update plot unit in ports
+
+- Feature: Load and save function remembers last used directory (while the program is running)
+- Feature: Added an initial simple ExternalComponent example library, (with plenty of comments in the code)
+
+- New Components: sin, cos, tan (Trigonometric functions)
+
 0.4.1
 - Fixed: Options dialog now resets its values next time after pressing cancel
 - Fixed: Made default start values for components work again
