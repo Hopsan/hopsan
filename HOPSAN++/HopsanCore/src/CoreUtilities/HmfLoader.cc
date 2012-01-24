@@ -27,7 +27,6 @@
 #include <cstring>
 #include "CoreUtilities/HmfLoader.h"
 #include "HopsanEssentials.h"
-#include "ComponentSystem.h"
 
 #include "rapidxml.hpp"
 #include "rapidxml_utils.hpp"
@@ -41,40 +40,55 @@ using namespace hopsan;
 //! @brief Helpfunction, reads a double xml attribute
 double readDoubleAttribute(rapidxml::xml_node<> *pNode, string attrName, double defaultValue)
 {
-    rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
-    if (pAttr)
+    if (pNode!=0)
     {
-        //Convert char* to double, assume null terminated strings
-        return atof(pAttr->value());
+        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
+        if (pAttr)
+        {
+            //Convert char* to double, assume null terminated strings
+            return atof(pAttr->value());
+        }
     }
-    else
-    {
-        return defaultValue;
-    }
+
+    return defaultValue;
 }
 
 //! @brief Helpfunction, reads a string xml attribute
 string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string defaultValue)
 {
-    rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
-    if (pAttr)
+    if (pNode)
     {
-        //Convert char* to string, assume null terminated strings
-        return string(pAttr->value());
+        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
+        if (pAttr)
+        {
+            //Convert char* to string, assume null terminated strings
+            return string(pAttr->value());
+        }
     }
-    else
+
+    return defaultValue;
+}
+
+//! @brief Check if node has attribute
+bool hasAttribute(rapidxml::xml_node<> *pNode, string attrName)
+{
+    if (pNode)
     {
-        return defaultValue;
+        if(pNode->first_attribute(attrName.c_str()))
+        {
+            return true;
+        }
     }
+    return false;
 }
 
 //! @brief This help function loads a component
-void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem)
+void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem, HopsanEssentials *pHopsanEssentials)
 {
     string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
     string displayName =  readStringAttribute(pComponentNode, "name", typeName);
 
-    Component *pComp = HopsanEssentials::getInstance()->createComponent(typeName);
+    Component *pComp = pHopsanEssentials->createComponent(typeName);
     if (pComp != 0)
     {
         pComp->setName(displayName);
@@ -119,14 +133,13 @@ void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem
 //! @todo Update this code
 //! @todo Make this function able to load external systems
 //! @todo load inherit timestep
-void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
+void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem, HopsanEssentials* pHopsanEssentials)
 {
     string typeName = readStringAttribute(pSysNode, "typename", "ERROR_NO_TYPE_GIVEN");
     string displayName = readStringAttribute(pSysNode, "name", typeName );
     pSystem->setName(displayName);
 
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
-    assert(pSimtimeNode != 0); //!< @todo smarter error handling
     double Ts = readDoubleAttribute(pSimtimeNode, "timestep", 0.001);
     pSystem->setDesiredTimestep(Ts);
 
@@ -139,21 +152,22 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
         {
             if (strcmp(pObject->name(), "component")==0)
             {
-                loadComponent(pObject, pSystem);
+                loadComponent(pObject, pSystem, pHopsanEssentials);
             }
             else if (strcmp(pObject->name(), "system")==0)
             {
-                string externalPath = readStringAttribute(pObject,"externalpath","");
+                bool isExternal = hasAttribute(pObject, "external_path");
                 ComponentSystem* pSys;
 
-                if (externalPath != "")
+                if (isExternal)
                 {
+                    string externalPath = readStringAttribute(pObject,"external_path","");
                     double dummy1,dummy2;
-                    pSys = loadHopsanModelFile(externalPath,dummy1,dummy2);
+                    pSys = loadHopsanModelFile(externalPath,pHopsanEssentials,dummy1,dummy2);
                     if (pSys != 0)
                     {
                         // load overwriten parameter values, and other things maybe
-                        loadSystemContents(pObject, pSys);
+                        loadSystemContents(pObject, pSys, pHopsanEssentials);
                         // Overwrite name
                         string displayNameExt = readStringAttribute(pObject, "name", typeName );
                         pSys->setName(displayNameExt);
@@ -163,9 +177,9 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                 }
                 else
                 {
-                    pSys = HopsanEssentials::getInstance()->createComponentSystem();
+                    pSys = pHopsanEssentials->createComponentSystem();
                     // Load system contents
-                    loadSystemContents(pObject, pSys);
+                    loadSystemContents(pObject, pSys, pHopsanEssentials);
                     // Add new system to parent
                     pSystem->addComponent(pSys);
                 }
@@ -199,6 +213,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
             string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
             string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
             string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
+            //! @todo maybe type should be data type or value type or something
 
             pSystem->setSystemParameter(paramName, val, type);
 
@@ -209,8 +224,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     //! @todo load ALIASES
 }
 
-
-//vvvvvvvvvv This is the function exported vvvvvvvvvv
+// vvvvvvvvvv The public function vvvvvvvvvv
 
 //! @brief This function is used to load a HMF file.
 //! @param [in] filePath The name (path) of the HMF file
@@ -218,36 +232,51 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
 //! @todo Update this code
-ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, double &rStartTime, double &rStopTime)
+ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
-    cout << "Loading from file: " << filePath << endl;
-    //! @todo do not crash if file is missing, send error message
-    rapidxml::file<> hmfFile(filePath.c_str());
-
-    rapidxml::xml_document<> doc;
-    doc.parse<0>(hmfFile.data());
-
-    rapidxml::xml_node<> *pRootNode = doc.first_node();
-
-    //Check for correct root node name
-    if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
+    try
     {
-        rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
-        //! @todo error check
-        //We only want to read toplevel simulation time settings here
-        rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
-        rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
-        rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
+        rapidxml::file<> hmfFile(filePath.c_str());
 
-        ComponentSystem * pSys = HopsanEssentials::getInstance()->createComponentSystem(); //Create root system
-        loadSystemContents(pSysNode, pSys);
+        rapidxml::xml_document<> doc;
+        doc.parse<0>(hmfFile.data());
 
-        return pSys;
+        rapidxml::xml_node<> *pRootNode = doc.first_node();
+
+        //Check for correct root node name
+        if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
+        {
+            rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
+            if (pSysNode != 0)
+            {
+                //! @todo more error check
+                //We only want to read toplevel simulation time settings here
+                rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
+                rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
+                rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
+
+                ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
+                loadSystemContents(pSysNode, pSys, pHopsanEssentials);
+
+                return pSys;
+            }
+            else
+            {
+                getCoreMessageHandlerPtr()->addErrorMessage(filePath+" Has no system to load");
+            }
+        }
+        else
+        {
+            getCoreMessageHandlerPtr()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
+            cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
+        }
     }
-    else
+    catch(std::exception &e)
     {
-        cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
-        assert(false);
-        return 0;
+        getCoreMessageHandlerPtr()->addErrorMessage("Could not open file: "+filePath);
+        cout << "Could not open file, throws: " << e.what() << endl;
     }
+
+    // We failed, return 0 ptr
+    return 0;
 }

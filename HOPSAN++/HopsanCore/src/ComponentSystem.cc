@@ -18,7 +18,7 @@
 //! @author FluMeS
 //! @date   2009-12-20
 //!
-//! @brief Contains Component base classes as well as Component Parameter class
+//! @brief Contains the subsystem component class and connection assistant help class
 //!
 //$Id$
 
@@ -42,8 +42,6 @@
 using namespace std;
 using namespace hopsan;
 
-
-
 //Constructor
 ComponentSystem::ComponentSystem() : Component()
 {
@@ -52,9 +50,9 @@ ComponentSystem::ComponentSystem() : Component()
     mIsComponentSystem = true;
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
-    #ifdef USETBB
+#ifdef USETBB
     mpStopMutex = new tbb::mutex();
-    #endif
+#endif
 }
 
 double ComponentSystem::getDesiredTimeStep()

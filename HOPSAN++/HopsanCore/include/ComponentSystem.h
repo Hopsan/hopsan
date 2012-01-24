@@ -18,7 +18,7 @@
 //! @author FluMeS
 //! @date   2009-12-20
 //!
-//! @brief Contains Component base classes as well as Component Parameter class
+//! @brief Contains the subsystem component class and connection assistant help class
 //!
 //$Id$
 
@@ -68,8 +68,9 @@ namespace hopsan {
 
     public:
         //==========Public functions==========
-        //Constructor - Destructor
+        //Constructor - Destructor- Creator
         ComponentSystem();
+        static Component* Creator(){ return new ComponentSystem(); }
 
         //Set the subsystem CQS type
         void setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet=false);

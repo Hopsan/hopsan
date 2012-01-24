@@ -17,7 +17,7 @@
 //! @file   Parameters.h
 //! @author FluMeS
 //! @date   2012-01-05
-//! @brief Contains all built in node types
+//! @brief Contains the parameter and parameters classes
 //!
 //$Id$
 

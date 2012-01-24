@@ -27,15 +27,17 @@
 
 
 #include <string>
-#include "win32dll.h"
-
+//#include "win32dll.h"
+//#include "ComponentSystem.h"
 
 namespace hopsan {
 
 //Forward declaration
 class ComponentSystem;
+class HopsanEssentials;
 
-ComponentSystem* loadHopsanModelFile(const std::string filePath, double &rStartTime, double &rStopTime);
+
+ComponentSystem* loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 
 }
 

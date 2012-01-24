@@ -27,8 +27,25 @@
 
 #define HOPSANCLIVERSION "0.5.x_r" HOPSANCLISVNREVISION
 
+#ifdef WIN32
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/libdefaulComponentLibrary.dll"
+#else
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/libdefaulComponentLibrary.so"
+#endif
+
 using namespace std;
 using namespace hopsan;
+
+void printWaitingMessages()
+{
+    std::string msg,type,tag;
+    cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
+    while (HopsanEssentials::getInstance()->checkMessage() > 0)
+    {
+        HopsanEssentials::getInstance()->getMessage(msg,type,tag);
+        cout << msg << endl;
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -44,37 +61,32 @@ int main(int argc, char *argv[])
         // Get the value parsed by each arg.
         string hmfFilePath = hmfPathOption.getValue();
 
+        // Load default hopasn component lib
+        HopsanEssentials::getInstance()->loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+        printWaitingMessages();
+
         double startTime=0, stopTime=2;
         ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startTime, stopTime);
+        printWaitingMessages();
 
-        std::string msg,type,tag;
-        cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
-        while (HopsanEssentials::getInstance()->checkMessage() > 0)
+        if (pRootSystem!=0)
         {
-            HopsanEssentials::getInstance()->getMessage(msg,type,tag);
-            cout << msg << endl;
-        }
-
-        TicToc initTimer("InitializeTime");
-        bool initSuccess = pRootSystem->initialize(startTime, stopTime);
-        initTimer.TocPrint();
-        if (initSuccess)
-        {
-            TicToc simuTimer("SimulationTime");
-            pRootSystem->simulate(startTime, stopTime);
-            simuTimer.TocPrint();
-        }
-        else
-        {
-            cout << "Initialize failed, Simulation aborted!" << endl;
+            TicToc initTimer("InitializeTime");
+            bool initSuccess = pRootSystem->initialize(startTime, stopTime);
+            initTimer.TocPrint();
+            if (initSuccess)
+            {
+                TicToc simuTimer("SimulationTime");
+                pRootSystem->simulate(startTime, stopTime);
+                simuTimer.TocPrint();
+            }
+            else
+            {
+                cout << "Initialize failed, Simulation aborted!" << endl;
+            }
         }
 
-        cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
-        while (HopsanEssentials::getInstance()->checkMessage() > 0)
-        {
-            HopsanEssentials::getInstance()->getMessage(msg,type,tag);
-            cout << msg << endl;
-        }
+        printWaitingMessages();
 
         cout << endl << "HopsanCLI Done!" << endl;
 

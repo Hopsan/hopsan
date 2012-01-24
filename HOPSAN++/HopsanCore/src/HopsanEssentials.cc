@@ -44,11 +44,10 @@ HopsanEssentials* HopsanEssentials::mpInstance = 0;
 //! @brief This function initializes the HopsanEssential singleton object
 void HopsanEssentials::initialize()
 {
-    reserveComponentTypeName("Subsystem");
-
     //Make sure that internal Nodes and Components register
     register_nodes(mpNodeFactory);
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
+    mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
 #ifdef INTERNALDEFAULTCOMPONENTS
     register_components(mpComponentFactory);
 #endif
@@ -154,7 +153,8 @@ bool HopsanEssentials::reserveComponentTypeName(const std::string typeName)
 //! @returns A pointer to the ComponentSystem created
 ComponentSystem* HopsanEssentials::createComponentSystem()
 {
-    return new ComponentSystem();
+    return static_cast<ComponentSystem*>(createComponent("Subsystem"));
+    //return new ComponentSystem();
 }
 
 //! @brief Creates a Node of given node type
@@ -182,7 +182,7 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
 //! @returns A pointer to the rootsystem of the loaded model
 ComponentSystem* HopsanEssentials::loadHMFModel(const string filePath, double &rStartTime, double &rStopTime)
 {
-    return loadHopsanModelFile(filePath, rStartTime, rStopTime);
+    return loadHopsanModelFile(filePath, this, rStartTime, rStopTime);
 }
 
 

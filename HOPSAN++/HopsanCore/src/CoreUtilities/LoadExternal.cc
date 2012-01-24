@@ -134,7 +134,7 @@ bool LoadExternal::load(const string libpath)
     else
     {
         stringstream ss;
-        ss << "Succes (probably) opening external lib: " << libpath;
+        ss << "Success (probably) opening external lib: " << libpath;
         gCoreMessageHandler.addDebugMessage(ss.str());
     }
 
@@ -282,7 +282,7 @@ bool LoadExternal::unLoad(const std::string libpath)
         // Remove from lib map
         mLoadedExtLibsMap.erase(lelit);
 
-        ss << "Sucessfully unloaded: " << libpath;
+        ss << "Successfully unloaded: " << libpath;
         gCoreMessageHandler.addInfoMessage(ss.str());
     }
     else

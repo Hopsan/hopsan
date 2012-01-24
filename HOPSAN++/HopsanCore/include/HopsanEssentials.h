@@ -30,6 +30,7 @@
 #include "ComponentSystem.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/HmfLoader.h"
 #include <iostream>
 #include <fstream>
 
