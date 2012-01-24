@@ -99,21 +99,12 @@ namespace hopsan {
                 *mvpN_q[i] = getStartValue(mpP1, NodeHydraulic::FLOW)/mNumPorts;
                 *mvpN_c[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
                 *mvpN_Zc[i] = mZc;
-//                std::stringstream ss;
-//                ss << i << "::StartValues: Flow: " << *mvpN_q[i] << "  Pressure: " << *mvpN_p[i];
-//                addInfoMessage(ss.str());
             }
         }
 
 
         void simulateOneTimestep()
         {
-//            if(mTime<.002)
-//            {
-//                std::stringstream ss;
-//                ss << "mTime: " << mTime << "  q:" << *mvpN_q[0];
-//                addInfoMessage(ss.str());
-//            }
             double cTot = 0.0;
             double pAvg;
 

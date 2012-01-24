@@ -44,16 +44,17 @@ class HydraulicCylinderC : public ComponentC
 {
 
     private:
-        double A1,A2,sl,cLeak,bp,betae,V01,V02, CxLim, ZxLim, wfak;
+        double A1,A2,sl,cLeak,bp,betae,V01,V02, CxLim, ZxLim, wfak, alpha;
 
         double ci1, cl1, ci2, cl2;  //Members because old value need to be remembered (c1 and c2 are remembered through nodes)
         double mNum[2];
         double mDen[2];
 
         //Node data pointers
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1,
-               *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
-               *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3, *mpND_me;
+        std::vector<double*> mvpND_p1, mvpND_q1, mvpND_c1, mvpND_Zc1;
+        std::vector<double*> mvpND_p2, mvpND_q2, mvpND_c2, mvpND_Zc2;
+        double *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3, *mpND_me;
+        int mNumPorts1, mNumPorts2;
 
         //Ports
         Port *mpP1, *mpP2, *mpP3;
@@ -76,10 +77,11 @@ class HydraulicCylinderC : public ComponentC
             sl = 1.0;
             cLeak = 0.00000000001;
             bp = 1000.0;
+            alpha = 0.5;
 
             //Add ports to the component
-            mpP1 = addPowerPort("P1", "NodeHydraulic");
-            mpP2 = addPowerPort("P2", "NodeHydraulic");
+            mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
+            mpP2 = addPowerMultiPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
@@ -91,23 +93,39 @@ class HydraulicCylinderC : public ComponentC
             registerParameter("B_p", "Viscous Friction", "[Ns/m]", bp);
             registerParameter("Beta_e", "Bulk Modulus", "[Pa]", betae);
             registerParameter("c_leak", "Leakage Coefficient", "[]", cLeak);
-
-            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
-            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
         }
 
 
         void initialize()
         {
+            mNumPorts1 = mpP1->getNumPorts();
+            mNumPorts2 = mpP2->getNumPorts();
+
+            mvpND_p1.resize(mNumPorts1);
+            mvpND_q1.resize(mNumPorts1);
+            mvpND_c1.resize(mNumPorts1);
+            mvpND_Zc1.resize(mNumPorts1);
+
+            mvpND_p2.resize(mNumPorts2);
+            mvpND_q2.resize(mNumPorts2);
+            mvpND_c2.resize(mNumPorts2);
+            mvpND_Zc2.resize(mNumPorts2);
+
             //Assign node data pointers
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            for (size_t i=0; i<mNumPorts1; ++i)
+            {
+                mvpND_p1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0, i);
+                mvpND_q1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW, 0.0, i);
+                mvpND_c1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE, 0.0, i);
+                mvpND_Zc1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP, 0.0, i);
+            }
+            for (size_t i=0; i<mNumPorts2; ++i)
+            {
+                mvpND_p2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE, 0.0, i);
+                mvpND_q2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW, 0.0, i);
+                mvpND_c2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE, 0.0, i);
+                mvpND_Zc2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP, 0.0, i);
+            }
             mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
             mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::POSITION);
             mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::VELOCITY);
@@ -116,81 +134,75 @@ class HydraulicCylinderC : public ComponentC
             mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EQMASS);
 
             //Declare local variables;
-            double p1, q1, p2, q2, x3, v3;
-            double c1, c2, Zc1, Zc2, c3, Zx3;
-            double qi1, qi2, V1, V2, qLeak, V1min, V2min;
+            double p1, p2, x3, v3;
+            double Zc1, Zc2, c3, Zx3;
+            double qi1, qi2, V1, V2, qLeak, V1min, V2min, p1mean, p2mean;
 
             //Read variables from nodes
-            p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
+            p1 = (*mvpND_p1[0]);
+            p2 = (*mvpND_p2[0]);
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
-
-//            //Limit end of stroke limitations
-//            CxLim = 0;
-//            ZxLim = 0;
 
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V01+A2*(sl+x3);
-
             V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*1.0); //me is not written to node yet.
             V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*1.0);
-
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
-            //Impedences
-            Zc1 = betae*mTimestep/V1;
-            Zc2 = betae*mTimestep/V2;
+            Zc1 = (mNumPorts1+2) / 2 * betae/V1*mTimestep/(1-alpha);    //Number of ports in volume is 2 internal plus the external ones
+            Zc2 = (mNumPorts1+2) / 2 * betae/V2*mTimestep/(1-alpha);
             Zx3 = A1*A1*Zc1 +A2*A2*Zc2 + bp;
 
             //Internal flows
             qi1 = v3*A1;
             qi2 = -v3*A2;
 
-            //Leakage flow
-            qLeak = cLeak*(p1-p2);
-
-            //Wave variables
-            c1 = p1 + Zc1*q1;
             ci1 = p1 + Zc1*qi1;
-            cl1 = p1 + Zc1*(-qLeak);
-
-            c2 = p2 + Zc2*q2;
             ci2 = p2 + Zc2*qi2;
+
+            cl1 = p1 + Zc1*(-qLeak);
             cl2 = p2 + Zc2*qLeak;
+
+            //Leakage flow
+            cLeak*(p1-p2);
 
             c3 = A1*ci1 - A2*ci2;
 
             //Write to nodes
-            (*mpND_c1) = c1;
-            (*mpND_Zc1) = Zc1;
-            (*mpND_c2) = c2;
-            (*mpND_Zc2) = Zc2;
+            for(int i=0; i<mNumPorts1; ++i)
+            {
+                *(mvpND_c1[i]) = p1 + Zc1*(*mvpND_q1[i]);
+                *(mvpND_Zc1[i]) = Zc1;
+            }
+            for(int i=0; i<mNumPorts2; ++i)
+            {
+                *(mvpND_c2[i]) = p2 + Zc2*(*mvpND_q2[i]);
+                *(mvpND_Zc2[i]) = Zc2;
+            }
             (*mpND_c3) = c3;
             (*mpND_Zx3) = Zx3;
         }
 
         void simulateOneTimestep()
         {
+            std::stringstream ss;
+            ss << "\nc1 = " << (*mvpND_c1[0]) << "\n c2 = " << (*mvpND_c2[0]) << "\n";
+            ss << "\nZc1 = " << (*mvpND_Zc1[0]) << "\n Zc2 = " << (*mvpND_Zc2[0]);
+            addDebugMessage(ss.str());
+
             //Declare local variables;
-            double c1, Zc1, q1;
-            double c2, Zc2, q2;
+            double Zc1;
+            double Zc2;
             double x3, v3, c3, Zx3;
             double me;
             double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
-            double alpha=0.5;
 
             //Read variables from nodes
-            q1 = (*mpND_q1);
-            q2 = (*mpND_q2);
-            c1 = (*mpND_c1);
-            c2 = (*mpND_c2);
-            Zc1 = (*mpND_Zc1);
-            Zc2 = (*mpND_Zc2);
+            Zc1 = (*mvpND_Zc1[0]);          //All Zc should be the same and Q components shall
+            Zc2 = (*mvpND_Zc2[0]);          //never touch them, so let's just use first value
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
             me = (*mpND_me);
@@ -225,16 +237,24 @@ class HydraulicCylinderC : public ComponentC
             //   cl1 = Wave variable for leakage port
 
             //Volume 1
-            Zc1 = 3 / 2 * betae/V1*mTimestep/(1-alpha);
-            p1mean = ((c1 + Zc1*2*q1) + (ci1 + Zc1*2*qi1) + (cl1 + Zc1*2*(-qLeak))) / 3;
-            c1 = std::max(0.0, alpha * c1 + (1.0 - alpha)*(p1mean*2 - c1 - 2*Zc1*q1));
+            Zc1 = (mNumPorts1+2) / 2 * betae/V1*mTimestep/(1-alpha);    //Number of ports in volume is 2 internal plus the external ones
+            p1mean = (ci1 + Zc1*2*qi1) + (cl1 + Zc1*2*(-qLeak));
+            for(int i=0; i<mNumPorts1; ++i)
+            {
+                p1mean += (*mvpND_c1[i]) + 2.0*Zc1*(*mvpND_q1[i]);
+            }
+            p1mean = p1mean/(mNumPorts1+2);
             ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2 - ci1 - 2*Zc1*qi1));
             cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2 - cl1 - 2*Zc1*(-qLeak)));
 
             //Volume 2
-            Zc2 = 3 / 2 * betae/V2*mTimestep/(1-alpha);
-            p2mean = ((c2 + Zc2*2*q2) + (ci2 + Zc2*2*qi2) + (cl2 + Zc2*2*qLeak)) / 3;
-            c2 = std::max(0.0, alpha * c2 + (1.0 - alpha)*(p2mean*2 - c2 - 2*Zc2*q2));
+            Zc2 = (mNumPorts2+2) / 2 * betae/V2*mTimestep/(1-alpha);
+            p2mean = (ci2 + Zc2*2*qi2) + (cl2 + Zc2*2*qLeak);
+            for(int i=0; i<mNumPorts2; ++i)
+            {
+                p2mean += (*mvpND_c2[i]) + 2.0*Zc2*(*mvpND_q2[i]);
+            }
+            p2mean = p2mean/(mNumPorts2+2);
             ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2 - ci2 - 2*Zc2*qi2));
             cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2 - cl2 - 2*Zc2*qLeak));
 
@@ -248,20 +268,26 @@ class HydraulicCylinderC : public ComponentC
             //! @todo Either implement a working limitation, or remove it completely. It works just as well to have it in the mass component.
 
 
-            if(mTime > 5 && mTime < 5.002)
-            {
-                std::stringstream ss;
-                ss << "\nc1 = " << c1 << "\n c2 = " << c2;
-                ss << "\nci1 = " << ci1 << "\n ci2 = " << ci2;
-                ss << "\np1mean = " << p1mean << "\n p2mean = " << p2mean;
-                addDebugMessage(ss.str());
-            }
+//            if(mTime > 5 && mTime < 5.002)
+//            {
+//                std::stringstream ss;
+//                ss << "\nc1 = " << c1 << "\n c2 = " << c2;
+//                ss << "\nci1 = " << ci1 << "\n ci2 = " << ci2;
+//                ss << "\np1mean = " << p1mean << "\n p2mean = " << p2mean;
+//                addDebugMessage(ss.str());
+//            }
 
             //Write to nodes
-            (*mpND_c1) = c1;
-            (*mpND_Zc1) = Zc1;
-            (*mpND_c2) = c2;
-            (*mpND_Zc2) = Zc2;
+            for(int i=0; i<mNumPorts1; ++i)
+            {
+                *(mvpND_c1[i]) = std::max(0.0, alpha * (*mvpND_c1[i]) + (1.0 - alpha)*(p1mean*2 - (*mvpND_c1[i]) - 2*Zc1*(*mvpND_q1[i])));
+                *(mvpND_Zc1[i]) = Zc1;
+            }
+            for(int i=0; i<mNumPorts2; ++i)
+            {
+                *(mvpND_c2[i]) = std::max(0.0, alpha * (*mvpND_c2[i]) + (1.0 - alpha)*(p2mean*2 - (*mvpND_c2[i]) - 2*Zc2*(*mvpND_q2[i])));
+                *(mvpND_Zc2[i]) = Zc2;
+            }
             (*mpND_c3) = c3;
             (*mpND_Zx3) = Zx3;
         }
