@@ -201,7 +201,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
 
     if (mLoadType != "EXTERNAL" )
     {
-        appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble());
+        appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble(), this->getCoreSystemAccessPtr()->doesInheritTimeStep());
 
         QMap<QString, QStringList>::iterator ita;
         QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
@@ -567,7 +567,8 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 
         //Load simulation time
         QString startT,stepT,stopT;
-        parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT);
+        bool inheritTs;
+        parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT, inheritTs);
         this->setTimeStep(stepT.toDouble());
 
         //Only set start stop time for the top level system

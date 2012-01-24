@@ -27,6 +27,19 @@
 #include <QMessageBox>
 #include <QLocale>
 
+//! @brief Help function to get "correct" string representation of bool
+QString bool2str(const bool in)
+{
+    if (in)
+    {
+        return HMF_TRUETAG;
+    }
+    else
+    {
+        return HMF_FALSETAG;
+    }
+}
+
 //! @brief Function for loading an XML DOM Documunt from file
 //! @param[in] rFile The file to load from
 //! @param[in] rDomDocument The DOM Document to load into
@@ -276,7 +289,7 @@ void appendPoseTag(QDomElement &rDomElement, const qreal x, const qreal y, const
     setQrealAttribute(pose, "x", x, precision, 'g');
     setQrealAttribute(pose, "y", y, precision, 'g');
     setQrealAttribute(pose, "a", th, precision, 'g');
-    pose.setAttribute("flipped", flipped);
+    pose.setAttribute("flipped", bool2str(flipped));
 }
 
 //! @brief Special purpose function for adding a Hopsan specific XML tag containing a coordinate
@@ -312,12 +325,14 @@ void appendViewPortTag(QDomElement &rDomElement, const qreal x, const qreal y, c
 //! @param[in] start The starttime
 //! @param[in] step The timestep size
 //! @param[in] stop The stoptime
-void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop)
+void appendSimulationTimeTag(QDomElement &rDomElement, const qreal start, const qreal step, const qreal stop, const bool inheritTs)
 {
     QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
     setQrealAttribute(simu, "start", start, 10, 'g');
     setQrealAttribute(simu, "timestep", step, 10, 'g');
     setQrealAttribute(simu, "stop", stop, 10, 'g');
+    simu.setAttribute("inherit_timestep", bool2str(inheritTs));
+
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing Object Pose information
@@ -331,7 +346,8 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, b
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
     rTheta = domElement.attribute("a").toDouble();
-    rFlipped = (domElement.attribute("flipped") == "1");
+    //rFlipped = (domElement.attribute("flipped") == "1");
+    rFlipped = parseAttributeBool(domElement, "flipped", false);
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing a coordinate
@@ -361,11 +377,12 @@ void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom
 //! @param[out] rStart The starttime
 //! @param[out] rStep The timestep size
 //! @param[out] rStop The stoptime
-void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rStep, QString &rStop)
+void parseSimulationTimeTag(QDomElement domElement, QString &rStart, QString &rStep, QString &rStop, bool &rInheritTs)
 {
     rStart = domElement.attribute("start");
     rStep = domElement.attribute("timestep");
     rStop = domElement.attribute("stop");
+    rInheritTs = parseAttributeBool(domElement, "inherit_timestep", true);
 }
 
 qreal parseAttributeQreal(const QDomElement domElement, const QString attributeName, const qreal defaultValue)
@@ -378,6 +395,17 @@ qreal parseAttributeQreal(const QDomElement domElement, const QString attributeN
     {
         return defaultValue;
     }
+}
+
+bool parseAttributeBool(const QDomElement domElement, const QString attributeName, const bool defaultValue)
+{
+    QString attr = domElement.attribute(attributeName, bool2str(defaultValue));
+    if ( (attr==HMF_TRUETAG) || (attr=="True") || (attr=="1"))
+    {
+        return true;
+    }
+
+    return false;
 }
 
 

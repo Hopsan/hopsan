@@ -152,8 +152,6 @@ void loadSystemPort(rapidxml::xml_node<> *pSysPortNode, ComponentSystem* pSystem
 
 
 //! @brief This function loads a subsystem
-//! @todo Update this code
-//! @todo Make this function able to load external systems
 //! @todo load inherit timestep
 void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem, HopsanEssentials* pHopsanEssentials, const std::string rootFilePath="")
 {
@@ -262,7 +260,6 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
-//! @todo Update this code
 ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
     try
