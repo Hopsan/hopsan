@@ -67,6 +67,8 @@ public:
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);
 
+    QString getHopsanCoreVersion();
+
     void setDesiredTimeStep(double timestep);
     void setInheritTimeStep(bool inherit);
     bool doesInheritTimeStep();

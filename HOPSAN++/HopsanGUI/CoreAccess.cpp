@@ -141,6 +141,11 @@ bool CoreSystemAccess::disconnect(QString compname1, QString portname1, QString 
     //**************************
 }
 
+QString CoreSystemAccess::getHopsanCoreVersion()
+{
+    return QString::fromStdString(hopsan::HopsanEssentials::getInstance()->getCoreVersion());
+}
+
 void CoreSystemAccess::setDesiredTimeStep(double timestep)
 {
     mpCoreComponentSystem->setDesiredTimestep(timestep);

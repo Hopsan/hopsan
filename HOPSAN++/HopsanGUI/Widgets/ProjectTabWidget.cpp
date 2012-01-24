@@ -561,7 +561,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
         //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0"); //!< @todo need to get coreversion in here somehow, maybe have a global that is set when the hopsan core is instansiated
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
 
         // Save the required external lib names
     QVector<QString> extLibNames;
@@ -584,11 +584,15 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
         return;
     }
     QTextStream out(&xmlhmf);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
+
+    //Close the file
+    xmlhmf.close();
 
         //Set the tab name to the model name, efectively removing *, also mark the tab as saved
     QString tabName = mpSystem->getModelFileInfo().baseName();
@@ -596,6 +600,8 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
     gpMainWindow->updateRecentList();
     this->setSaved(true);
+
+    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Saved model: " + tabName);
 }
 
 
