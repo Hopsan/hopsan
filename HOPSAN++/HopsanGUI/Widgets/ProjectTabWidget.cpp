@@ -563,6 +563,18 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0"); //!< @todo need to get coreversion in here somehow, maybe have a global that is set when the hopsan core is instansiated
 
+        // Save the required external lib names
+    QVector<QString> extLibNames;
+    CoreLibraryAccess coreLibAccess;
+    coreLibAccess.getLoadedLibNames(extLibNames);
+
+    //! @todo need HMF defines for hardcoded strings
+    QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
+    for (int i=0; i<extLibNames.size(); ++i)
+    {
+        appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+    }
+
         //Save the model component hierarcy
     //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
     mpSystem->saveToDomElement(hmfRoot);

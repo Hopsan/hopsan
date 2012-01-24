@@ -162,6 +162,7 @@ This file contains code that is used to register you library components in the H
 - First of all, all component code files must be included. (They will be copied into this file during compilation)
 - Second, each component needs to be registered in the simulation core by the pComponentFactory->registerCreatorFunction("KeyValue", CreatorFunction) lines.\n
 The \e "KeyValue" argument must be a unique typename that identifies you component. The \e CreatorFunction argument is the Creator function in each component.
+- Theird, Make sure that you write a unique libName (as a string) in the get_hopsan_info function. Leave the two last lines as they are.
 
 \code
 #include "component_code/MyExampleOrifice.hpp"
@@ -178,6 +179,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
 extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
 {
+    pHopsanExternalLibInfo->libName = (char*)"HopsanExampleComponentLibrary";
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
     pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
 }

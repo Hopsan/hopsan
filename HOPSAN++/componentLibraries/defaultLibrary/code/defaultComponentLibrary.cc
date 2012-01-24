@@ -44,6 +44,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 // This information is used to make sure that your component and the hopsan core have the same version
 extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
 {
+    pHopsanExternalLibInfo->libName = (char*)"HopsanDefaultComponentLibrary";
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
     pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
 }

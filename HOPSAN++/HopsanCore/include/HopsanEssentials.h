@@ -33,6 +33,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 namespace hopsan {
 extern "C" {
@@ -75,6 +76,7 @@ extern "C" {
 
         bool loadExternalComponentLib(const std::string path);
         bool unLoadExternalComponentLib(const std::string path);
+        void getExternalComponentLibNames(std::vector<std::string> &rLibNames);
 
         ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
     };

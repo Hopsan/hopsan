@@ -50,6 +50,12 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
 extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)
 {
+    //Change the name of the lib to something unique
+    //You can include numbers in your name to indicate library version (if you want)
+    pHopsanExternalLibInfo->libName = (char*)"HopsanExampleComponentLibrary";
+
+    // Leave these two lines as they are
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
     pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;
+
 }

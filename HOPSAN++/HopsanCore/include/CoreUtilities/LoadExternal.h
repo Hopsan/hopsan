@@ -35,6 +35,7 @@ class LoadedLibInfo
 {
 public:
     void* mpLib;
+    std::string mLibName;
     std::vector<std::string> mRegistredComponents;
     std::vector<std::string> mRegistredNodes;
 };
@@ -53,6 +54,7 @@ public:
     bool load(const std::string libpath);
     bool unLoad(const std::string libpath);
     void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
+    void getLoadedLibNames(std::vector<std::string> &rLibNames);
 };
 }
 

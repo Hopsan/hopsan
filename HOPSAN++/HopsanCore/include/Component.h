@@ -39,6 +39,7 @@ typedef struct HopsanExternalLibInfo
 {
     char* hopsanCoreVersion;
     char* libCompiledDebugRelease;
+    char* libName;
 }HopsanExternalLibInfoT;
 #pragma pack(pop)
 

@@ -44,6 +44,7 @@ public:
     bool loadComponentLib(QString fileName);
     bool unLoadComponentLib(QString fileName);
     bool reserveComponentTypeName(const QString typeName);
+    void getLoadedLibNames(QVector<QString> &rLibNames);
 };
 
 class CoreMessagesAccess
@@ -60,8 +61,7 @@ public:
 
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
     ~CoreSystemAccess();
-    hopsan::ComponentSystem *getCoreSystemPtr();
-    hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
+
     void deleteRootSystemPtr(); //!< @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
 
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
@@ -134,6 +134,8 @@ public:
     bool isPortConnected(QString componentName, QString portName);
 
 private:
+    hopsan::ComponentSystem *getCoreSystemPtr();
+    hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
     hopsan::Port* getCorePortPtr(QString componentName, QString portName);
 
     //*****Core Interaction*****

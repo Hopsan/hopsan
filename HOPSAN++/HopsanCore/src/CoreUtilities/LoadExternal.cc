@@ -81,8 +81,8 @@ bool LoadExternal::load(const string libpath)
     if (!lib_ptr)
     {
         stringstream ss;
-        ss << "Error opening external library: " << libpath << " Error: " << GetLastError();
-        gCoreMessageHandler.addDebugMessage(ss.str());
+        ss << "Opening external library: " << libpath << " Error: " << GetLastError();
+        gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
     }
     else
@@ -127,7 +127,7 @@ bool LoadExternal::load(const string libpath)
     if (!lib_ptr)
     {
         stringstream ss;
-        ss << "Error opening external lib: " << libpath << " Error: " << dlerror();
+        ss << "Opening external lib: " << libpath << " Error: " << dlerror();
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
     }
@@ -174,7 +174,14 @@ bool LoadExternal::load(const string libpath)
     bool isCorrectVersion = true;
 
     HopsanExternalLibInfoT externalLibInfo;
+    externalLibInfo.libName = (char*)""; //Init libname to avoid problem if it is missing
     get_hopsan_info(&externalLibInfo);
+
+    if (string(externalLibInfo.libName).empty())
+    {
+        gCoreMessageHandler.addErrorMessage("Lib is missing (non-empty) libName when loading lib: " + libpath);
+        isCorrectVersion = false;
+    }
 
     stringstream ss;
     ss << "ExternalLib: " << libpath <<  " compiled as: " << externalLibInfo.libCompiledDebugRelease << " against HopsanCore: " << externalLibInfo.hopsanCoreVersion;
@@ -219,6 +226,9 @@ bool LoadExternal::load(const string libpath)
     LoadedLibInfo lelInfo;
     // Remember a ptr to the lib
     lelInfo.mpLib = static_cast<void*>(lib_ptr);
+
+    // Remember the lib name
+    lelInfo.mLibName = externalLibInfo.libName;
 
     // Remeber which components belong to the lib
     ComponentFactory::RegStatusVectorT regCompVec = mpComponentFactory->getRegisterStatusMap();
@@ -299,4 +309,15 @@ void LoadExternal::setFactory(ComponentFactory* pComponentFactory, NodeFactory* 
 {
     mpComponentFactory = pComponentFactory;
     mpNodeFactory = pNodeFactory;
+}
+
+void LoadExternal::getLoadedLibNames(std::vector<std::string> &rLibNames)
+{
+    rLibNames.clear();
+    rLibNames.reserve(mLoadedExtLibsMap.size());
+    LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.begin();
+    for (; lelit!=mLoadedExtLibsMap.end(); ++lelit)
+    {
+        rLibNames.push_back(lelit->second.mLibName);
+    }
 }

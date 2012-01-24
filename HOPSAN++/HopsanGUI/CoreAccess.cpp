@@ -59,6 +59,19 @@ bool CoreLibraryAccess::reserveComponentTypeName(const QString typeName)
     return hopsan::HopsanEssentials::getInstance()->reserveComponentTypeName(typeName.toStdString());
 }
 
+void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
+{
+    std::vector<std::string> names;
+    hopsan::HopsanEssentials::getInstance()->getExternalComponentLibNames(names);
+
+    rLibNames.clear();
+    rLibNames.reserve(names.size());
+    for (unsigned int i=0; i<names.size(); ++i)
+    {
+        rLibNames.push_back(QString::fromStdString(names[i]));
+    }
+}
+
 
 size_t CoreMessagesAccess::getNumberOfMessages()
 {

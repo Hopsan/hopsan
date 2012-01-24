@@ -236,6 +236,13 @@ bool HopsanEssentials::unLoadExternalComponentLib(const std::string path)
     return mExternalLoader.unLoad(path);
 }
 
+//! @brief Get the libNames of the currently loaded libs (the names compiled into libs)
+//! @param [out] rLibNames A reference to the vector that will contain the lib names
+void HopsanEssentials::getExternalComponentLibNames(std::vector<std::string> &rLibNames)
+{
+    mExternalLoader.getLoadedLibNames(rLibNames);
+}
+
 //! @brief Adds a message to the HopsanCore runtime log
 void hopsan::addLogMess(const std::string log)
 {
