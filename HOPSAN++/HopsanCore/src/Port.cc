@@ -455,7 +455,7 @@ void Port::disableStartValue(const size_t idx)
     std::stringstream name;
     name << getPortName() << "::" << mpStartNode->mDataNames.at(idx);
     stringstream ss;
-    ss << "Disabling: " << name.str();
+    ss << "Disabling_StartValue: " << name.str();
     mpComponent->addDebugMessage(ss.str());
     mpComponent->unRegisterParameter(name.str());
 

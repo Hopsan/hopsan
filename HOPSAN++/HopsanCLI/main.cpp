@@ -16,6 +16,7 @@
 #include "HopsanEssentials.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <tclap/CmdLine.h>
 #include "TicToc.hpp"
@@ -47,6 +48,27 @@ void printWaitingMessages()
     }
 }
 
+void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix="")
+{
+    if (pSystem)
+    {
+        cout << prefix << pSystem->getName() << endl;
+        prefix.append("  ");
+        vector<string> names = pSystem->getSubComponentNames();
+        for (size_t i=0; i<names.size(); ++i)
+        {
+            if ( pSystem->getSubComponent(names[i])->isComponentSystem() )
+            {
+                printComponentHierarchy(pSystem->getSubComponentSystem(names[i]), prefix);
+            }
+            else
+            {
+                cout << prefix << names[i] << endl;
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     try {
@@ -69,6 +91,10 @@ int main(int argc, char *argv[])
         ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startTime, stopTime);
         printWaitingMessages();
 
+        cout << endl << "Component Hieararcy:" << endl << endl;
+        printComponentHierarchy(pRootSystem);
+        cout << endl;
+
         if (pRootSystem!=0)
         {
             TicToc initTimer("InitializeTime");
@@ -87,7 +113,6 @@ int main(int argc, char *argv[])
         }
 
         printWaitingMessages();
-
         cout << endl << "HopsanCLI Done!" << endl;
 
     } catch (TCLAP::ArgException &e)  // catch any exceptions

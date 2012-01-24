@@ -82,6 +82,21 @@ bool hasAttribute(rapidxml::xml_node<> *pNode, string attrName)
     return false;
 }
 
+//! @brief Helpfunction to strip filename from path
+//! @note Assumes that dir separator is forward slash /
+std::string stripFilenameFromPath(std::string filePath)
+{
+    cout << "Stripping from: " << filePath << endl;
+    size_t pos = filePath.rfind('/');
+    if (pos != std::string::npos)
+    {
+        filePath.erase(pos+1);
+    }
+    cout << "Stripped: " << filePath << endl;
+    return filePath;
+}
+
+
 //! @brief This help function loads a component
 void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem, HopsanEssentials *pHopsanEssentials)
 {
@@ -128,12 +143,19 @@ void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem
     pSystem->connect(startcomponent, startport, endcomponent, endport);
 }
 
+//! @brief This help function loads a SystemPort
+void loadSystemPort(rapidxml::xml_node<> *pSysPortNode, ComponentSystem* pSystem)
+{
+    string name = readStringAttribute(pSysPortNode, "name", "ERROR_NO_NAME_GIVEN");
+    pSystem->addSystemPort(name);
+}
+
 
 //! @brief This function loads a subsystem
 //! @todo Update this code
 //! @todo Make this function able to load external systems
 //! @todo load inherit timestep
-void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem, HopsanEssentials* pHopsanEssentials)
+void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem, HopsanEssentials* pHopsanEssentials, const std::string rootFilePath="")
 {
     string typeName = readStringAttribute(pSysNode, "typename", "ERROR_NO_TYPE_GIVEN");
     string displayName = readStringAttribute(pSysNode, "name", typeName );
@@ -161,13 +183,17 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 
                 if (isExternal)
                 {
-                    string externalPath = readStringAttribute(pObject,"external_path","");
                     double dummy1,dummy2;
+                    string externalPath = stripFilenameFromPath(rootFilePath) + readStringAttribute(pObject,"external_path","");
+                    cout << "externalPath: " << externalPath << endl;
                     pSys = loadHopsanModelFile(externalPath,pHopsanEssentials,dummy1,dummy2);
                     if (pSys != 0)
                     {
+                        // Remove external_path attribute from node so that it wont be loaded again when we load additional info
+                        pObject->remove_attribute(pObject->first_attribute("external_path"));
+                        cout << "Have external attribute: " << hasAttribute(pObject, "external_path") << endl;
                         // load overwriten parameter values, and other things maybe
-                        loadSystemContents(pObject, pSys, pHopsanEssentials);
+                        loadSystemContents(pObject, pSys, pHopsanEssentials, externalPath);
                         // Overwrite name
                         string displayNameExt = readStringAttribute(pObject, "name", typeName );
                         pSys->setName(displayNameExt);
@@ -179,11 +205,16 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                 {
                     pSys = pHopsanEssentials->createComponentSystem();
                     // Load system contents
-                    loadSystemContents(pObject, pSys, pHopsanEssentials);
+                    loadSystemContents(pObject, pSys, pHopsanEssentials, rootFilePath);
                     // Add new system to parent
                     pSystem->addComponent(pSys);
                 }
             }
+            else if (strcmp(pObject->name(), "systemport")==0)
+            {
+                loadSystemPort(pObject,pSystem);
+            }
+
             pObject = pObject->next_sibling();
         }
     }
@@ -256,7 +287,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
                 rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
 
                 ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
-                loadSystemContents(pSysNode, pSys, pHopsanEssentials);
+                loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
 
                 return pSys;
             }
