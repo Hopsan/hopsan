@@ -44,7 +44,7 @@ namespace hopsan {
         double den[3];
         SecondOrderTransferFunction mFilter;
         Integrator mInt;
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1,
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_me1, *mpND_c1, *mpND_Zx1,
                *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
         Port *mpP1, *mpP2;
 
@@ -78,11 +78,12 @@ namespace hopsan {
         {
            // double f1, x1, v1;
 
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGLE);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
+            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
+            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
+            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
             mpND_t2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::TORQUE);
             mpND_a2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::ANGLE);
@@ -102,6 +103,8 @@ namespace hopsan {
             den[2] = J;
             mFilter.initialize(mTimestep, num, den, 0, 0);      //Must initialize with zero, otherwise filter may give static offset with zero input
             mInt.initialize(mTimestep, 0, 0);                   //Must initialize with zero, otherwise filter may give static offset with zero input
+
+            (*mpND_me1) = J*gearRatio;      //! @todo Verifiy that this is correct
         }
 
 
@@ -131,6 +134,7 @@ namespace hopsan {
             (*mpND_f1) = f1;
             (*mpND_x1) = x1;
             (*mpND_v1) = v1;
+            (*mpND_me1) = J*gearRatio;      //! @todo Verifiy that this is correct
             (*mpND_t2) = t2;
             (*mpND_a2) = a2;
             (*mpND_w2) = w2;

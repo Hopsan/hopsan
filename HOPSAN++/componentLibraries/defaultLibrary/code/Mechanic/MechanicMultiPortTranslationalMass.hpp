@@ -41,7 +41,7 @@ namespace hopsan {
         double mNum[3];
         double mDen[3];
         DoubleIntegratorWithDamping mIntegrator;
-        std::vector<double*> mvpN_f1, mvpN_x1, mvpN_v1, mvpN_c1, mvpN_Zx1, mvpN_f2, mvpN_x2, mvpN_v2, mvpN_c2, mvpN_Zx2;
+        std::vector<double*> mvpN_f1, mvpN_x1, mvpN_v1, mvpN_me1, mvpN_c1, mvpN_Zx1, mvpN_f2, mvpN_x2, mvpN_v2, mvpN_me2, mvpN_c2, mvpN_Zx2;
         std::vector<double> x1, x2, mvpStartX1, mvpStartX2;
         size_t mNumPorts1, mNumPorts2;
         Port *mpP1, *mpP2;
@@ -82,12 +82,14 @@ namespace hopsan {
             mvpN_f1.resize(mNumPorts1);
             mvpN_x1.resize(mNumPorts1);
             mvpN_v1.resize(mNumPorts1);
+            mvpN_me1.resize(mNumPorts1);
             mvpN_c1.resize(mNumPorts1);
             mvpN_Zx1.resize(mNumPorts1);
 
             mvpN_f2.resize(mNumPorts2);
             mvpN_x2.resize(mNumPorts2);
             mvpN_v2.resize(mNumPorts2);
+            mvpN_me2.resize(mNumPorts2);
             mvpN_c2.resize(mNumPorts2);
             mvpN_Zx2.resize(mNumPorts2);
 
@@ -101,6 +103,7 @@ namespace hopsan {
                 mvpN_f1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE, 0.0, i);
                 mvpN_x1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION, 0.0, i);
                 mvpN_v1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY, 0.0, i);
+                mvpN_me1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS, 0.0, i);
                 mvpN_c1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE, 0.0, i);
                 mvpN_Zx1[i] = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP, 0.0, i);
             }
@@ -110,6 +113,7 @@ namespace hopsan {
                 mvpN_f2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE, 0.0, i);
                 mvpN_x2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION, 0.0, i);
                 mvpN_v2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY, 0.0, i);
+                mvpN_me2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS, 0.0, i);
                 mvpN_c2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE, 0.0, i);
                 mvpN_Zx2[i] = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP, 0.0, i);
             }
@@ -173,6 +177,15 @@ namespace hopsan {
                 ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<
                         "} and {" << getName() << "::" << mpP2->getPortName() << "}.";
                 this->addWarningMessage(ss.str());
+            }
+
+            for (size_t i=0; i<mNumPorts1; ++i)
+            {
+                (*mvpN_me1[i]) = m;
+            }
+            for (size_t i=0; i<mNumPorts2; ++i)
+            {
+                (*mvpN_me2[i]) = m;
             }
         }
 
@@ -248,6 +261,14 @@ namespace hopsan {
             for (size_t i=0; i<mNumPorts2; ++i)
             {
                 (*mvpN_v2[i]) = v2;
+            }
+            for (size_t i=0; i<mNumPorts1; ++i)
+            {
+                (*mvpN_me1[i]) = m;
+            }
+            for (size_t i=0; i<mNumPorts2; ++i)
+            {
+                (*mvpN_me2[i]) = m;
             }
         }
     };

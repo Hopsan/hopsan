@@ -30,6 +30,8 @@
 #include <QCheckBox>
 #include <QListWidget>
 #include <QWebView>
+#include <QProgressBar>
+#include <QVBoxLayout>
 
 class MainWindow;
 
@@ -52,6 +54,7 @@ private slots:
     void loadLastSession();
     void openRecentModel();
     void showNews(bool loadedSuccesfully);
+    void updateLoadingWebProgressBar();
     void urlClicked(const QUrl &link);
     void openDownloadPage();
 
@@ -81,6 +84,11 @@ private:
 
     QPushButton *mpNewVersionButton;
     QLabel *mpNewsLabel;
+    QProgressBar *mpLoadingWebProgressBar;
+    QLabel *mpLoadingWebLabel;
+    QTimer *mpLoadingWebProgressBarTimer;
+    QVBoxLayout *mpLoadingWebLayout;
+    QWidget *mpLoadingWebWidget;
     QWebView *mpWeb;
 };
 

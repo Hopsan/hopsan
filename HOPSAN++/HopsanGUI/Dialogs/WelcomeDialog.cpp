@@ -153,8 +153,26 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpNewsLabel->setFont(tempFont);
     mpNewsLabel->setAlignment(Qt::AlignCenter);
 
+    mpLoadingWebProgressBar = new QProgressBar(this);
+    mpLoadingWebProgressBar->setRange(0, 0);
+    mpLoadingWebLabel = new QLabel("Loading News", this);
+    mpLoadingWebProgressBarTimer = new QTimer(this);
+    connect(mpLoadingWebProgressBarTimer, SIGNAL(timeout()), this, SLOT(updateLoadingWebProgressBar()));
+    mpLoadingWebProgressBarTimer->setInterval(1);
+    mpLoadingWebProgressBarTimer->start();
+
+    mpLoadingWebLayout = new QVBoxLayout(this);
+    mpLoadingWebLayout->addWidget(mpLoadingWebProgressBar);
+    mpLoadingWebLayout->addWidget(mpLoadingWebLabel);
+
+    mpLoadingWebWidget = new QWidget(this);
+    mpLoadingWebWidget->setFixedHeight(168);
+    mpLoadingWebWidget->setFixedWidth(400);
+    mpLoadingWebWidget->setLayout(mpLoadingWebLayout);
+
+
     mpWeb = new QWebView(this);
-    mpNewsLabel->hide();
+    //mpNewsLabel->hide();
     mpWeb->hide();
     connect(mpWeb, SIGNAL(loadFinished(bool)), this, SLOT(showNews(bool)));
     mpWeb->load(QUrl(QString(NEWSLINK)));
@@ -178,6 +196,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     pLayout->addWidget(mpActionText,            3, 0);
     pLayout->addWidget(mpRecentList,            4, 0);
     pLayout->addWidget(mpNewsLabel,             5, 0);
+    pLayout->addWidget(mpLoadingWebWidget,      6, 0);
     pLayout->addWidget(mpWeb,                   6, 0);
     pLayout->addWidget(mpDontShowMe,            7, 0);
     pLayout->addWidget(mpPopupHelpCheckBox,     8, 0);
@@ -193,7 +212,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 }
 
 
-//! @brief Handles mouse move events in welcome dialog
+//! @brief Handles mouse move events in welcome dialogmpLoadingWebWidget
 //! Used to colorize the large buttons (new/open/last session)
 void WelcomeDialog::mouseMoveEvent(QMouseEvent *event)
 {
@@ -336,7 +355,8 @@ void WelcomeDialog::showNews(bool loadedSuccessfully)
     //Verify that the loaded page is the correct one, otherwise do not show it
     if(mpWeb->page()->currentFrame()->metaData().contains("type", "hopsanngnews"))
     {
-        mpNewsLabel->setVisible(loadedSuccessfully);
+        mpLoadingWebWidget->setVisible(!loadedSuccessfully);
+        //mpNewsLabel->setVisible(loadedSuccessfully);
         mpWeb->setVisible(loadedSuccessfully);
 
         QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
@@ -349,5 +369,18 @@ void WelcomeDialog::showNews(bool loadedSuccessfully)
         mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
         mpNewVersionButton->setVisible(webVersion>thisVersion);
         mpUpdateLink = mpWeb->page()->currentFrame()->metaData().find("hopsanupdatelink").value();
+
+        if(loadedSuccessfully)
+        {
+            mpLoadingWebProgressBarTimer->stop();
+        }
     }
+}
+
+
+
+void WelcomeDialog::updateLoadingWebProgressBar()
+{
+    qDebug() << "Updating progress bar!";
+    mpLoadingWebProgressBar->setValue(mpLoadingWebProgressBar->value()+1);
 }
