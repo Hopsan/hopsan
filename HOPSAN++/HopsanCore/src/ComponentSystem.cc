@@ -55,7 +55,7 @@ ComponentSystem::ComponentSystem() : Component()
 #endif
 }
 
-double ComponentSystem::getDesiredTimeStep()
+double ComponentSystem::getDesiredTimeStep() const
 {
     return mDesiredTimestep;
 }
@@ -74,18 +74,20 @@ Parameters &ComponentSystem::getSystemParameters()
     return *mpParameters;
 }
 
-//! @todo should check returned bools if OK
-void ComponentSystem::setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description, const std::string unit)
+//!
+bool ComponentSystem::setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description, const std::string unit, const bool force)
 {
+    bool success;
     if(mpParameters->exist(name))
     {
-        mpParameters->setParameter(name, value, description, unit, type);
+        success = mpParameters->setParameter(name, value, description, unit, type, force);
     }
     else
     {
-        mpParameters->addParameter(name, value, description, unit, type);
+        success = mpParameters->addParameter(name, value, description, unit, type, 0, force);
     }
 
+    return success;
 }
 
 
@@ -1649,7 +1651,7 @@ void ComponentSystem::setInheritTimestep(const bool inherit)
 }
 
 
-bool ComponentSystem::doesInheritTimestep()
+bool ComponentSystem::doesInheritTimestep() const
 {
     return mInheritTimestep;
 }

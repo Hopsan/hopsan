@@ -38,7 +38,7 @@ using namespace hopsan;
 // vvvvvvvvvv Help Functions vvvvvvvvvv
 
 //! @brief Helpfunction, reads a double xml attribute
-double readDoubleAttribute(rapidxml::xml_node<> *pNode, string attrName, double defaultValue)
+double readDoubleAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const double defaultValue)
 {
     if (pNode!=0)
     {
@@ -54,7 +54,7 @@ double readDoubleAttribute(rapidxml::xml_node<> *pNode, string attrName, double 
 }
 
 //! @brief Helpfunction, reads a string xml attribute
-string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string defaultValue)
+string readStringAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const string defaultValue)
 {
     if (pNode)
     {
@@ -63,6 +63,29 @@ string readStringAttribute(rapidxml::xml_node<> *pNode, string attrName, string 
         {
             //Convert char* to string, assume null terminated strings
             return string(pAttr->value());
+        }
+    }
+
+    return defaultValue;
+}
+
+bool readBoolAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const bool defaultValue)
+{
+    if (pNode)
+    {
+        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
+        if (pAttr)
+        {
+            //Convert char* to string, assume null terminated strings
+            string boolStr = string(pAttr->value());
+            if ((boolStr == "true") || (boolStr == "True") || (boolStr == "1") )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -150,9 +173,36 @@ void loadSystemPort(rapidxml::xml_node<> *pSysPortNode, ComponentSystem* pSystem
     pSystem->addSystemPort(name);
 }
 
+//! @brief Help function to load system parameters
+void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem)
+{
+    //Load system parameters
+    rapidxml::xml_node<> *pParameters = pSysNode->first_node("parameters");
+    if (pParameters)
+    {
+        rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
+        while (pParameter != 0)
+        {
+            string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
+            string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+            string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
+            //! @todo maybe type should be data type or value type or something
+
+            // Here we use force=true to make sure system parameters laoded even if they do not evaluate
+            //! @todo if system parameters are loaded in the correct order (top to bottom) they should evaluete, why dont they?
+            bool success = pSystem->setSystemParameter(paramName, val, type, "", "", true);
+            if(!success)
+            {
+                getCoreMessageHandlerPtr()->addErrorMessage("Could not set parameter: " + paramName);
+            }
+
+            pParameter = pParameter->next_sibling("parameter");
+        }
+    }
+}
+
 
 //! @brief This function loads a subsystem
-//! @todo load inherit timestep
 void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem, HopsanEssentials* pHopsanEssentials, const std::string rootFilePath="")
 {
     string typeName = readStringAttribute(pSysNode, "typename", "ERROR_NO_TYPE_GIVEN");
@@ -162,6 +212,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
     double Ts = readDoubleAttribute(pSimtimeNode, "timestep", 0.001);
     pSystem->setDesiredTimestep(Ts);
+    pSystem->setInheritTimestep(readBoolAttribute(pSimtimeNode,"inherit_timestep",true));
 
     //Load contents
     rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");
@@ -190,8 +241,8 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                         // Remove external_path attribute from node so that it wont be loaded again when we load additional info
                         pObject->remove_attribute(pObject->first_attribute("external_path"));
                         cout << "Have external attribute: " << hasAttribute(pObject, "external_path") << endl;
-                        // load overwriten parameter values, and other things maybe
-                        loadSystemContents(pObject, pSys, pHopsanEssentials, externalPath);
+                        // load overwriten parameter values
+                        loadSystemParameters(pObject, pSys);
                         // Overwrite name
                         string displayNameExt = readStringAttribute(pObject, "name", typeName );
                         pSys->setName(displayNameExt);
@@ -233,22 +284,23 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     }
 
     //Load system parameters
-    rapidxml::xml_node<> *pParameters = pSysNode->first_node("parameters");
-    if (pParameters)
-    {
-        rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
-        while (pParameter != 0)
-        {
-            string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
-            string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
-            string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
-            //! @todo maybe type should be data type or value type or something
+    loadSystemParameters(pSysNode, pSystem);
+//    rapidxml::xml_node<> *pParameters = pSysNode->first_node("parameters");
+//    if (pParameters)
+//    {
+//      ss  rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
+//        while (pParameter != 0)
+//        {
+//            string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
+//            string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+//            string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
+//            //! @todo maybe type should be data type or value type or something
 
-            pSystem->setSystemParameter(paramName, val, type);
+//            pSystem->setSystemParameter(paramName, val, type);
 
-            pParameter = pParameter->next_sibling("parameter");
-        }
-    }
+//            pParameter = pParameter->next_sibling("parameter");
+//        }
+//    }
 
     //! @todo load ALIASES
 }

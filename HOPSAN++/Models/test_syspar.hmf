@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3884" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3914" hopsancoreversion="0">
     <system typename="Subsystem" name="test_syspar">
-        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <simulationtime stop="10" timestep="0.0001" start="0" inherit_timestep="true"/>
         <aliases>
             <alias port="Container Port_1" component="ComponentSystem" alias="aliasKalle" data="Value"/>
         </aliases>
@@ -9,9 +9,9 @@
             <parameter value="50" type="double" name="balle"/>
         </parameters>
         <hopsangui>
-            <pose x="0" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2367" y="2476.5" zoom="1"/>
+            <viewport x="2366.5" y="2452.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -46,15 +46,15 @@
         </hopsangui>
         <objects>
             <system typename="Subsystem" name="ComponentSystem">
-                <simulationtime stop="10" timestep="0.001" start="0"/>
+                <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
                 <aliases/>
                 <parameters>
                     <parameter value="balle" type="double" name="apa"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2275" y="2472" flipped="0" a="0"/>
+                    <pose x="2275" y="2472" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2367" y="2476.5" zoom="1"/>
+                    <viewport x="2366.5" y="2452.5" zoom="1"/>
                     <ports hidden="0"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -92,15 +92,15 @@
                 </hopsangui>
                 <objects>
                     <system typename="Subsystem" name="ComponentSystem">
-                        <simulationtime stop="10" timestep="0.001" start="0"/>
+                        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
                         <aliases/>
                         <parameters>
                             <parameter value="apa" type="double" name="ko"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="2319" y="2477" flipped="0" a="0"/>
+                            <pose x="2319" y="2477" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2367" y="2476.5" zoom="1"/>
+                            <viewport x="2366.5" y="2452.5" zoom="1"/>
                             <ports hidden="0"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -139,13 +139,13 @@
                         <objects>
                             <systemport name="Container Port_1">
                                 <hopsangui>
-                                    <pose x="2410" y="2488" flipped="0" a="0"/>
+                                    <pose x="2410" y="2488" flipped="false" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
                             <systemport name="Container Port">
                                 <hopsangui>
-                                    <pose x="2181" y="2488" flipped="0" a="0"/>
+                                    <pose x="2181" y="2488" flipped="false" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -155,7 +155,7 @@
                                     <parameter value="ko" type="double" name="k"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2290" y="2488" flipped="0" a="0"/>
+                                    <pose x="2290" y="2488" flipped="false" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -197,13 +197,13 @@
                     </system>
                     <systemport name="Container Port_1">
                         <hopsangui>
-                            <pose x="2485" y="2477" flipped="0" a="0"/>
+                            <pose x="2485" y="2477" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="Container Port">
                         <hopsangui>
-                            <pose x="2115" y="2477" flipped="0" a="0"/>
+                            <pose x="2115" y="2477" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
@@ -246,18 +246,18 @@
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2402" y="2472" flipped="0" a="0"/>
+                    <pose x="2402" y="2472" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <system typename="Subsystem" name="ComponentSystem_1">
-                <simulationtime stop="10" timestep="0.001" start="0"/>
+                <simulationtime stop="10" timestep="1e-05" start="0" inherit_timestep="true"/>
                 <aliases/>
                 <parameters/>
                 <hopsangui>
-                    <pose x="2269" y="2590" flipped="0" a="0"/>
+                    <pose x="2269" y="2590" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2367" y="2476.5" zoom="1"/>
+                    <viewport x="2366.5" y="2452.5" zoom="1"/>
                     <ports hidden="0"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -291,19 +291,16 @@
                         <parameters/>
                         <objectives/>
                     </optimization>
-                    <hopsanundo>
-                        <post number="-1"/>
-                    </hopsanundo>
                 </hopsangui>
                 <objects>
                     <system typename="Subsystem" name="ComponentSystem">
-                        <simulationtime stop="10" timestep="0.001" start="0"/>
+                        <simulationtime stop="10" timestep="1e-08" start="0" inherit_timestep="false"/>
                         <aliases/>
                         <parameters/>
                         <hopsangui>
-                            <pose x="2296" y="2549" flipped="0" a="0"/>
+                            <pose x="2296" y="2549" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2367" y="2476.5" zoom="1"/>
+                            <viewport x="2366.5" y="2452.5" zoom="1"/>
                             <ports hidden="0"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -342,13 +339,13 @@
                         <objects>
                             <systemport name="Container Port_1">
                                 <hopsangui>
-                                    <pose x="2334" y="2532" flipped="0" a="0"/>
+                                    <pose x="2334" y="2532" flipped="false" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
                             <systemport name="Container Port">
                                 <hopsangui>
-                                    <pose x="2140" y="2532" flipped="0" a="0"/>
+                                    <pose x="2140" y="2532" flipped="false" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -358,7 +355,7 @@
                                     <parameter value="1" type="double" name="k"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2236" y="2532" flipped="0" a="0"/>
+                                    <pose x="2236" y="2532" flipped="false" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -400,25 +397,25 @@
                     </system>
                     <systemport name="Container Port_1">
                         <hopsangui>
-                            <pose x="2121" y="2549" flipped="0" a="0"/>
+                            <pose x="2121" y="2549" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="Container Port_2">
                         <hopsangui>
-                            <pose x="2397" y="2440" flipped="0" a="0"/>
+                            <pose x="2397" y="2440" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="Container Port_3">
                         <hopsangui>
-                            <pose x="2469" y="2549" flipped="0" a="0"/>
+                            <pose x="2469" y="2549" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="Container Port">
                         <hopsangui>
-                            <pose x="2123" y="2440" flipped="0" a="0"/>
+                            <pose x="2123" y="2440" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
@@ -428,7 +425,7 @@
                             <parameter value="1" type="double" name="k"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="2284" y="2440" flipped="0" a="0"/>
+                            <pose x="2284" y="2440" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
@@ -505,7 +502,7 @@
                     <parameter value="1" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2152" y="2472" flipped="0" a="0"/>
+                    <pose x="2152" y="2472" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -514,7 +511,7 @@
                     <parameter value="1" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2156" y="2357" flipped="0" a="0"/>
+                    <pose x="2156" y="2357" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -523,7 +520,7 @@
                     <parameter value="88" type="double" name="HUND"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2275" y="2357" flipped="0" a="0"/>
+                    <pose x="2275" y="2357" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                     <optimization>
                         <settings>

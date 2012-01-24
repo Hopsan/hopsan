@@ -89,6 +89,7 @@ public:
     ~SystemContainer();
 
     double getTimeStep();
+    bool doesInheritTimeStep();
 
     size_t getNumberOfLogSamples();
     void setNumberOfLogSamples(size_t nSamples);

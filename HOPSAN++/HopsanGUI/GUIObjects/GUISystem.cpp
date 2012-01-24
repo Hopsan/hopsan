@@ -201,7 +201,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
 
     if (mLoadType != "EXTERNAL" )
     {
-        appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble(), this->getCoreSystemAccessPtr()->doesInheritTimeStep());
+        appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble(), this->doesInheritTimeStep());
 
         QMap<QString, QStringList>::iterator ita;
         QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
@@ -570,6 +570,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         bool inheritTs;
         parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT, inheritTs);
         this->setTimeStep(stepT.toDouble());
+        mpCoreSystemAccess->setInheritTimeStep(inheritTs);
 
         //Only set start stop time for the top level system
         if (mpParentContainerObject == 0)
@@ -2362,6 +2363,12 @@ void SystemContainer::setTimeStep(const double timeStep)
 double SystemContainer::getTimeStep()
 {
     return mpCoreSystemAccess->getDesiredTimeStep();
+}
+
+//! @brief Check if the system inherits timestep from its parent
+bool SystemContainer::doesInheritTimeStep()
+{
+    return mpCoreSystemAccess->doesInheritTimeStep();
 }
 
 

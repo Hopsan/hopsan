@@ -29,9 +29,9 @@
 #define HOPSANCLIVERSION "0.5.x_r" HOPSANCLISVNREVISION
 
 #ifdef WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/libdefaulComponentLibrary.dll"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/defaultComponentLibrary.dll"
 #else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/libdefaulComponentLibrary.so"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so"
 #endif
 
 using namespace std;
@@ -48,18 +48,50 @@ void printWaitingMessages()
     }
 }
 
-void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix="")
+void printTsInfo(const ComponentSystem* pSystem)
+{
+    cout << "Ts: " << pSystem->getDesiredTimeStep() << " InheritTs: " << pSystem->doesInheritTimestep();
+}
+
+void printSystemParams(ComponentSystem* pSystem)
+{
+    vector<string> names, values, units, descriptions, types;
+    pSystem->getParameters(names,values,descriptions,units,types);
+
+    for (int i=0; i<names.size(); ++i)
+    {
+        cout << " SysParam: " << names[i] << "=" << values[i];
+    }
+}
+
+void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix="",
+                             const bool doPrintTsInfo=false,
+                             const bool doPrintSystemParams=false)
 {
     if (pSystem)
     {
-        cout << prefix << pSystem->getName() << endl;
+        cout << prefix << pSystem->getName() << " ";
+        if (doPrintTsInfo)
+        {
+            printTsInfo(pSystem);
+        }
+
+        if (doPrintSystemParams)
+        {
+            cout << " ";
+            printSystemParams(pSystem);
+        }
+
+        cout << endl;
+
+
         prefix.append("  ");
         vector<string> names = pSystem->getSubComponentNames();
         for (size_t i=0; i<names.size(); ++i)
         {
             if ( pSystem->getSubComponent(names[i])->isComponentSystem() )
             {
-                printComponentHierarchy(pSystem->getSubComponentSystem(names[i]), prefix);
+                printComponentHierarchy(pSystem->getSubComponentSystem(names[i]), prefix, doPrintTsInfo, doPrintSystemParams);
             }
             else
             {
@@ -92,7 +124,7 @@ int main(int argc, char *argv[])
         printWaitingMessages();
 
         cout << endl << "Component Hieararcy:" << endl << endl;
-        printComponentHierarchy(pRootSystem);
+        printComponentHierarchy(pRootSystem, "", true, true);
         cout << endl;
 
         if (pRootSystem!=0)
@@ -111,6 +143,9 @@ int main(int argc, char *argv[])
                 cout << "Initialize failed, Simulation aborted!" << endl;
             }
         }
+
+        //cout << endl << "Component Hieararcy:" << endl << endl;
+        //printComponentHierarchy(pRootSystem, "", true);
 
         printWaitingMessages();
         cout << endl << "HopsanCLI Done!" << endl;

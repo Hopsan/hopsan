@@ -338,7 +338,7 @@ void Component::setInheritTimestep(const bool /*inherit*/)
 }
 
 
-bool Component::doesInheritTimestep()
+bool Component::doesInheritTimestep() const
 {
     cout << "Warning this function doesInheritTimestep is only available on subsystem components" << endl;
     assert(false);

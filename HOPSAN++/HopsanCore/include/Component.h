@@ -67,7 +67,7 @@ public:
     virtual void finalize(const double startT, const double Ts);
     virtual void setDesiredTimestep(const double timestep);
     virtual void setInheritTimestep(const bool inherit=true);
-    virtual bool doesInheritTimestep();
+    virtual bool doesInheritTimestep() const;
     virtual bool isSimulationOk();
 
     //Name and type

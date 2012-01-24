@@ -136,8 +136,8 @@ namespace hopsan {
         //Set and get desired timestep
         void setDesiredTimestep(const double timestep);
         void setInheritTimestep(const bool inherit=true);
-        bool doesInheritTimestep();
-        double getDesiredTimeStep();
+        bool doesInheritTimestep() const;
+        double getDesiredTimeStep() const;
 
         //Stop a running init or simulation
         void stopSimulation();
@@ -147,7 +147,7 @@ namespace hopsan {
 #endif
 
         //System parameters
-        void setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="");
+        bool setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="", const bool force=false);
         Parameters &getSystemParameters();
 
     private:
