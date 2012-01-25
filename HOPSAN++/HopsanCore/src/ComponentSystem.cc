@@ -560,7 +560,8 @@ string ComponentSystem::renameSystemPort(const string oldname, const string newn
 }
 
 
-//! delete System prot
+//! @brief Delete a System port from the component
+//! @param [in] name The name of the port to delete
 void ComponentSystem::deleteSystemPort(const string name)
 {
     deletePort(name);

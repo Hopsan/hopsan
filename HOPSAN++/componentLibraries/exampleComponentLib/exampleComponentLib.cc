@@ -18,6 +18,7 @@
 
 #include "component_code/MyExampleOrifice.hpp"
 #include "component_code/MyExampleVolume.hpp"
+#include "component_code/SignalSum.hpp"
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
 // Also use the hopsan namespace
@@ -28,17 +29,19 @@ using namespace hopsan;
 // When you load your model into Hopsan, the register_contents() function bellow will be called
 // It will register YOUR components into the Hopsan ComponentFactory
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
+extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory, NodeFactory* /*pNodeFactory*/)
 {
     // ========== Register Components ==========
     // Use the registerCreatorFunction(KeyValue, Function) in the component factory to register components
-    // TheKeyValue is a text string with the TypeName of the component.
+    // The KeyValue is a text string with the TypeName of the component.
     // This value must be unique for every component in Hopsan.
     // If a typename is already in use, your component will not be added.
     // Suggestion, let the KeyValue (TypeName) be the same as your Class name
+    // If that name is already in use, use something similar
 
     pComponentFactory->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
+    pComponentFactory->registerCreatorFunction("MyExampleSignalSum", SignalSum::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported

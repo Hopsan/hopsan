@@ -290,11 +290,20 @@ std::string Parameter::getValue() const
 
 
 //! @brief Constructor
-//!
-//! @param pParentComponent A pointer to the Component that contains the Parameters
+//! @param [in] pParentComponent A pointer to the Component that contains the Parameters
 Parameters::Parameters(Component* pParentComponent)
 {
     mParentComponent = pParentComponent;
+}
+
+//! @brief Destructor
+Parameters::~Parameters()
+{
+    //Deleates all parameters stored in vector
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        delete mParameters[i];
+    }
 }
 
 
@@ -387,22 +396,18 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
 
 //! @brief Deletes a parameter
 //! @param parameterName The name of the paramter to delete
-void Parameters::deleteParameter(std::string parameterName)
+void Parameters::deleteParameter(const std::string parameterName)
 {
-    std::string name, value, description, unit, type;
-
-    //! @todo We should use find instead to find iterator to object to delete, while find result is != .end() we delete and erase
     std::vector<Parameter*>::iterator parIt;
-    for(parIt = mParameters.begin(); (parIt != mParameters.end()) && (!mParameters.empty()); ++parIt)
+    for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
     {
-        (*parIt)->getParameter(name, value, description, unit, type);
-        if(parameterName == name)
+        if( parameterName == (*parIt)->getName() )
         {
+            delete *parIt;
             mParameters.erase(parIt);
-            //! @todo Probably memmory leek here as no delete is performed
-            //delete (*parIt); //Kolla på detta! FIXA!
-            //++parIt;
-            return;     //We can return now, since there should never be multiple parameters with same name
+
+            //We can return now, since there should never be multiple parameters with same name
+            return;
         }
     }
 }
@@ -539,15 +544,17 @@ bool Parameters::evaluateParameters()
     return success;
 }
 
-
-bool Parameters::exist(std::string parameterName)
+//! @brief Check if a parameter with given name exist among the parameters
+//! @param [in] parameterName The name of the parameter to check for
+//! @returns true if found else false
+bool Parameters::exist(const std::string parameterName)
 {
-    std::string parameterName2, parameterValue, description, unit, type;
     for(size_t i=0; i<mParameters.size(); ++i)
     {
-        mParameters[i]->getParameter(parameterName2, parameterValue, description, unit, type);
-        if(parameterName2 == parameterName)
+        if(mParameters[i]->getName() == parameterName)
+        {
             return true;
+        }
     }
     return false;
 }

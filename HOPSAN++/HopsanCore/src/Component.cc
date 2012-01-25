@@ -45,13 +45,15 @@ using namespace hopsan;
 //! @ingroup ConvenientFunctions
 //! @defgroup ConvenientParameterFunctions ConvenientParameterFunctions
 //! @ingroup ConvenientFunctions
+//! @defgroup ConvenientMessageFunctions ConvenientMessageFunctions
+//! @ingroup ConvenientFunctions
 
-//Constructor
+//! @brief Component base class Constructor
 Component::Component()
 {
     // Set initial values, they will be overwritten soon, but good for debugging
-    mTypeName = "NoTypeNameSet";
-    mName = "NoNameSet";
+    mTypeName = "NoTypeNameSetYet";
+    mName = "NoNameSetYet";
 
     mTimestep = 0.001;
 
@@ -133,22 +135,19 @@ void Component::simulate(const double startT, const double stopT)
 
 void Component::initialize()
 {
-    cout << "Warning! You should implement your own method" << endl;
-    assert(false);
+    assert("You MUST! implement your own initialize method"==0);
 }
 
 
 void Component::simulateOneTimestep()
 {
-    cout << "Warning! You should implement your own method: " << mName << endl;
-    assert(false);
+    assert("You MUST! implement your own simulateOneTimestep() method"==0);
 }
 
 
 void Component::finalize()
 {
-    //cout << "Warning! You should implement your own finalize() method" << endl;
-    //assert(false);
+    //Default does nothing
 }
 
 
@@ -508,17 +507,17 @@ string Component::renamePort(const string oldname, const string newname)
     }
 }
 
-//! @brief removes and deleates a port from a component
-//! @todo Do we ever actually DELETE the ports?, dosnt seem so
+//! @brief Removes and deletes a port from a component
+//! @param [in] name The name of the port to delete
+//! @note Only use this function to remove systemports, removing ordinary ports from components is a bad idea
 void Component::deletePort(const string name)
 {
     PortPtrMapT::iterator it;
     it = mPortPtrMap.find(name);
     if (it != mPortPtrMap.end())
     {
+        delete it->second;
         mPortPtrMap.erase(it);
-        //! @todo maybe we should also delete the actual port here to avoid memmory leeks
-        cout << "===================Erasing Port: " << name << endl;
     }
     else
     {
@@ -573,7 +572,8 @@ std::string Component::determineUniquePortName(std::string portname)
     return findUniqueName<PortPtrMapT>(mPortPtrMap, portname);
 }
 
-
+//! @brief Set the component parent system (tell component who parent is)
+//! @param [in] pComponentSystem Pointer to parent system component
 void Component::setSystemParent(ComponentSystem *pComponentSystem)
 {
     mpSystemParent = pComponentSystem;
@@ -599,6 +599,9 @@ vector<Port*> Component::getPortPtrVector()
     return vec;
 }
 
+//! @brief Returns a pointer to the port with the given name.
+//! @param[in] portname The name of the port
+//! @returns A pointer to the port, or 0 if port not found
 Port *Component::getPort(const string portname)
 {
     PortPtrMapT::iterator it;
@@ -615,7 +618,8 @@ Port *Component::getPort(const string portname)
     }
 }
 
-
+//! @brief Get a port as reference to pointer
+//! @todo do we really need this function
 bool Component::getPort(const string portname, Port* &rpPort)
 {
     rpPort = getPort(portname);
@@ -651,29 +655,37 @@ double Component::getMeasuredTime()
 }
 
 
-//! Write an Debug message, i.e. for debugging purposes.
-void Component::addDebugMessage(string message)
+//! @brief Write an Debug message, i.e. for debugging purposes.
+//! @ingroup ConvenientMessageFunctions
+//! @param [in] message The message string
+void Component::addDebugMessage(const string message)
 {
     gCoreMessageHandler.addDebugMessage(getName()+ "::" + message);
 }
 
 
-//! Write an Warning message.
-void Component::addWarningMessage(string message)
+//! @brief Write an Warning message.
+//! @ingroup ConvenientMessageFunctions
+//! @param [in] message The message string
+void Component::addWarningMessage(const string message)
 {
     gCoreMessageHandler.addWarningMessage(getName()+ "::" + message);
 }
 
 
-//! Write an Error message.
-void Component::addErrorMessage(string message)
+//! @brief Write an Error message.
+//! @ingroup ConvenientMessageFunctions
+//! @param [in] message The message string
+void Component::addErrorMessage(const string message)
 {
     gCoreMessageHandler.addErrorMessage(getName()+ "::" + message);
 }
 
 
-//! Write an Info message.
-void Component::addInfoMessage(string message)
+//! @brief Write an Info message.
+//! @ingroup ConvenientMessageFunctions
+//! @param [in] message The message string
+void Component::addInfoMessage(const string message)
 {
     gCoreMessageHandler.addInfoMessage(getName()+ "::" + message);
 }

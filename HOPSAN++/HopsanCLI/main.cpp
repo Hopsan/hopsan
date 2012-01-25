@@ -58,7 +58,7 @@ void printSystemParams(ComponentSystem* pSystem)
     vector<string> names, values, units, descriptions, types;
     pSystem->getParameters(names,values,descriptions,units,types);
 
-    for (int i=0; i<names.size(); ++i)
+    for (size_t i=0; i<names.size(); ++i)
     {
         cout << " SysParam: " << names[i] << "=" << values[i];
     }

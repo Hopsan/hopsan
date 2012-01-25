@@ -63,15 +63,16 @@ class DLLIMPORTEXPORT Parameters
 {
 public:
     Parameters(Component* parentComponent);
+    ~Parameters();
     bool addParameter(std::string parameterName, std::string parameterValue, std::string description="", std::string unit="", std::string type="", void* dataPtr=0, bool force=false);
-    void deleteParameter(std::string parameterName);
+    void deleteParameter(const std::string parameterName);
     void getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions, std::vector<std::string> &rUnits, std::vector<std::string> &rTypes);
     void getParameterValue(const std::string name, std::string &rValue);
     bool setParameter(std::string name, std::string value, std::string description="", std::string unit="", std::string type="", bool force=0);
     bool setParameterValue(const std::string name, const std::string value, bool force=0);
     bool evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe=0);
     bool evaluateParameters();
-    bool exist(std::string parameterName);
+    bool exist(const std::string parameterName);
     bool checkParameters(std::string &errParName);
 
 protected:

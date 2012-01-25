@@ -117,10 +117,10 @@ public:
     void setMeasuredTime(double time);
     double getMeasuredTime();
 
-    void addDebugMessage(std::string message);
-    void addWarningMessage(std::string message);
-    void addErrorMessage(std::string message);
-    void addInfoMessage(std::string message);
+    void addDebugMessage(const std::string message);
+    void addWarningMessage(const std::string message);
+    void addErrorMessage(const std::string message);
+    void addInfoMessage(const std::string message);
 
 protected:
     //==========Protected member functions==========
