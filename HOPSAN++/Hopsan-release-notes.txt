@@ -14,12 +14,12 @@ Hopsan Release Notes
 
 0.5.0
 - Fixed: Small memory leaks (related to removal of system parameters and system ports) in HopsanCore
-- Fixed: It is not possible to click the simulate button directly after editing simulation time. You do not need to press enter first.
+- Fixed: It is now possible to click the simulate button directly after editing simulation time. You do not need to press enter first.
 - Fixed: Simulation will now not start if initialize fails
-- Fixed: It is not possible to unload a library and all of its components without restarting Hopsan
-- Fixed: SystemVariable values for external models are now save in the system that imports the external file. (You will not loose changes to theses variables)
-- Fixed: Build in HopsanCore HMF loader can now handle Subsystems (internal and external) and system parameters correctly.
-- Fixed: Third party dependency include files should no longer be needed in custom components
+- Fixed: It is now possible to unload a library and all of its components without restarting Hopsan
+- Fixed: SystemVariable values for external models are now saved in the system that imports the external file. (You will not loose changes to theses variables)
+- Fixed: Build-in HopsanCore HMF loader can now handle Subsystems (internal and external) and system parameters correctly.
+- Fixed: Third-party dependency include files should no longer be needed in custom components
 
 - Feature: It is now possible to let a SystemVariable take its value from a parent system SystemVariable. This means that you can propagate SystemVariables downwards in the model hierarchy.
 - Feature: KeyWords can be reserved in the HopsanCore component factory.
@@ -32,13 +32,13 @@ Hopsan Release Notes
 - Feature: Components that fail to load are replaced with a dummy component to indicate where missing components should have been.
 - Feature: The undo-stack can optionally be saved together with the model in the HMF file.
 - Feature: External component libs must now report some basic info about what version of Hopsan they were compiled against, and a name. (See example lib for details).
-- Feature: Many auxiliary simulation function have been made inline header only. this might improve simulation speed slightly in some cases. (Reduced overhead)
+- Feature: Many auxiliary simulation function have been made inline header only. This might improve simulation speed slightly in some cases. (Reduced overhead)
 - Feature: Right click drag copy, instead of holding shift.
 - Feature: Changed hydraulic ports in C-type piston component to multiports
 
-- Documentation: New and improved built in documentation style.
+- Documentation: New and improved built-in documentation style.
 - Documentation: More documentation, especially concerning the creation of custom components. (More will come later)
-- Documentation: User documentation now contains Doxygen generated documentation from the HopsanCore. (Useful for creation of custom components) 
+- Documentation: User documentation now contains Doxygen generated documentation from the HopsanCore. (Useful for custom component creators) 
 
 - Other: Component constructors with name arguments have been removed. They take no arguments now. (For custom component creators)
 - Other: Lots of "under the hood" code improvements.
