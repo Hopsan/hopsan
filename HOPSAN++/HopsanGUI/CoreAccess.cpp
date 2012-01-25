@@ -636,12 +636,14 @@ bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString d
 //    }
 //    else
     {
-        //! @todo should use the setSystemPArameter function in core instead
-        //! @todo We should not access parameters map directly, should use ONE add/set method in component system (that could be the same as register in component)
-        if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), force)))
-        {
-            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), 0, force);
-        }
+        success = mpCoreComponentSystem->setSystemParameter(name.toStdString(), value.toStdString(), type.toStdString(), description.toStdString(), unit.toStdString(), force);
+
+//        //! @todo should use the setSystemPArameter function in core instead
+//        //! @todo We should not access parameters map directly, should use ONE add/set method in component system (that could be the same as register in component)
+//        if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), force)))
+//        {
+//            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), 0, force);
+//        }
     }
     return success;
 }

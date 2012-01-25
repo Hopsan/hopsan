@@ -894,6 +894,16 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
         pCurrentTab->getTopLevelSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
         pCurrentTab->getTopLevelSystem()->setAppearanceDataBasePath(pCurrentTab->getTopLevelSystem()->getModelFileInfo().absolutePath());
         pCurrentTab->getTopLevelSystem()->loadFromDomElement(systemElement);
+
+        //! @todo not hardcoded strings
+        //! @todo in the future not only debug message but an actual check that libs are present
+        QDomElement reqDom = hmfRoot.firstChildElement("requirements");
+        QDomElement compLib = reqDom.firstChildElement("componentlibrary");
+        while (!compLib.isNull())
+        {
+            gpMainWindow->mpMessageWidget->printGUIDebugMessage("This model MIGHT require Lib: " + compLib.text());
+            compLib = compLib.nextSiblingElement("componentlibrary");
+        }
     }
     else
     {
