@@ -89,6 +89,8 @@ GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObje
 
     //! @todo this is not good all mpParentProjectTab should be set in one common place not in guigroup and guisystem
     this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
+
+    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
 }
 
 

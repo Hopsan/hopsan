@@ -1720,7 +1720,6 @@ QPointF ContainerObject::getCenterPointFromSelection()
 //! @brief Groups the selected objects together.
 void ContainerObject::groupSelected(QPointF pt)
 {
-    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
     qDebug() << "pos where we want to create group: " << pt;
     qDebug() << "In group selected";
 
