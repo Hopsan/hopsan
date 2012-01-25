@@ -1,0 +1,21 @@
+/*!
+\page userModelingInHopsan Component Modeling in Hopsan
+
+\section userModelingInHopsan_CompPortsAndNodes Components, Ports and Nodes
+Write this
+\todo Write this
+
+\section userModelingInHopsan_cqsTypes C, Q and S component types
+Write this
+\todo Write this
+
+\section userModelingInHopsan_initCQ How to initialize C and Q components 
+Write this
+\todo Write this
+
+\section userModelingInHopsan_usingMultiports Using multiports in your components
+Write this
+\todo Write this
+
+
+*/
