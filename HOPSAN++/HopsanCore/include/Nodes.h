@@ -37,7 +37,9 @@ DLLIMPORTEXPORT void register_nodes(NodeFactory* nfampND_ct);
 class NodeSignal :public Node
 {
 public:
-    enum {VALUE, DATALENGTH};
+    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @ingroup NodeSignal
+    enum DataIndexEnumT {VALUE, DATALENGTH};
     static Node* CreatorFunction() {return new NodeSignal;}
 
 private:
@@ -53,7 +55,9 @@ private:
 class NodeHydraulic :public Node
 {
 public:
-    enum {FLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
+    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @ingroup NodeHydraulic
+    enum DataIndexEnumT {FLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
     static Node* CreatorFunction() {return new NodeHydraulic;}
 
 private:
@@ -90,7 +94,9 @@ private:
 class NodePneumatic :public Node
 {
 public:
-    enum {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
+    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @ingroup NodePneumatic
+    enum DataIndexEnumT {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
     static Node* CreatorFunction() {return new NodePneumatic;}
 
 private:
@@ -126,7 +132,9 @@ private:
 class NodeMechanic :public Node
 {
 public:
-    enum {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, EQMASS, DATALENGTH};
+    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @ingroup NodeMechanical
+    enum DataIndexEnumT {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, EQMASS, DATALENGTH};
     static Node* CreatorFunction() {return new NodeMechanic;}
 
 private:
@@ -158,7 +166,9 @@ private:
 class NodeMechanicRotational :public Node
 {
 public:
-    enum {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, EQINERTIA, DATALENGTH};
+    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @ingroup RotationalNodeMechanical
+    enum DataIndexEnumT {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, EQINERTIA, DATALENGTH};
     static Node* CreatorFunction() {return new NodeMechanicRotational;}
 
 private:
@@ -192,7 +202,9 @@ private:
 class NodeElectric :public Node
 {
 public:
-    enum {VOLTAGE, CURRENT, WAVEVARIABLE, CHARIMP, DATALENGTH};
+    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @ingroup NodeElectric
+    enum DataIndexEnumT {VOLTAGE, CURRENT, WAVEVARIABLE, CHARIMP, DATALENGTH};
     static Node* CreatorFunction() {return new NodeElectric;}
 
 private:
