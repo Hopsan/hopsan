@@ -86,7 +86,7 @@ public:
     void getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues,
                        std::vector<std::string> &descriptions, std::vector<std::string> &units, std::vector<std::string> &types);
     void getParameterValue(const std::string name, std::string &rValue);
-    bool setParameterValue(const std::string name, const std::string value, bool force=0);
+    bool setParameterValue(const std::string name, const std::string value, bool force=false);
     void updateParameters();
     bool checkParameters(std::string &errParName);
 

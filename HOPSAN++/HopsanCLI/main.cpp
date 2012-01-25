@@ -53,6 +53,26 @@ void printTsInfo(const ComponentSystem* pSystem)
     cout << "Ts: " << pSystem->getDesiredTimeStep() << " InheritTs: " << pSystem->doesInheritTimestep();
 }
 
+void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const string portName, const string fileName)
+{
+    if (pSys)
+    {
+        Component* pComp = pSys->getComponent(compName);
+        if (pComp)
+        {
+            Port* pPort = pComp->getPort(portName);
+            if (pPort)
+            {
+                pPort->saveLogData(fileName);
+                return; //Abort function
+            }
+            cout << "Error: Could not find portName: " << portName << endl;
+            return; //Abort function
+        }
+        cout << "Error: Could not find compName: " << compName << endl;
+    }
+}
+
 void printSystemParams(ComponentSystem* pSystem)
 {
     vector<string> names, values, units, descriptions, types;
@@ -146,6 +166,10 @@ int main(int argc, char *argv[])
 
         //cout << endl << "Component Hieararcy:" << endl << endl;
         //printComponentHierarchy(pRootSystem, "", true);
+
+        cout << "Saving NodeData to file" << endl;
+        saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
+        saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
 
         printWaitingMessages();
         cout << endl << "HopsanCLI Done!" << endl;

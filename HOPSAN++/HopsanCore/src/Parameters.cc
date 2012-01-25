@@ -77,7 +77,7 @@ Parameter::Parameter(std::string parameterName, std::string parameterValue, std:
 //! @param [out] rType The type of the parameter e.g. double
 //!
 //! This function is used by Parameters
-void Parameter::getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription, std::string &rUnit, std::string &rType)
+void Parameter::getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription, std::string &rUnit, std::string &rType) const
 {
     rParameterName = mParameterName;
     rParameterValue = mParameterValue;
@@ -185,8 +185,11 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
 {
     bool success = true;
     std::string evaluatedParameterValue;
-    if(!(mpParentParameters->evaluateParameter(mParameterValue, evaluatedParameterValue, mType, ignoreMe)))
+
+    // First check if this parameter value is in fact the name of one of the other parameters or system parameter
+    if( !(mpParentParameters->evaluateParameter(mParameterValue, evaluatedParameterValue, mType, ignoreMe)) )
     {
+        // If not then the value is actually the value
         evaluatedParameterValue = mParameterValue;
     }
 
@@ -196,10 +199,10 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         istringstream is(evaluatedParameterValue);
         if(is >> tmpParameterValue)
         {
+            // If a data pointer has been set, then write evaluated value to data variable
             if(mpData)
             {
-                double* apa = static_cast<double*> (mpData);
-                *apa = tmpParameterValue;
+                *static_cast<double*>(mpData) = tmpParameterValue;
             }
         }
         else
@@ -213,10 +216,10 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         istringstream is(evaluatedParameterValue);
         if(is >> tmpParameterValue)
         {
+            // If a data pointer has been set, then write evaluated value to data variable
             if(mpData)
             {
-                int* apa = static_cast<int*> (mpData);
-                *apa = tmpParameterValue;
+                *static_cast<int*>(mpData) = tmpParameterValue;
             }
         }
         else
@@ -230,26 +233,26 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         istringstream is(evaluatedParameterValue);
         if(is >> tmpParameterValue)
         {
+            // If a data pointer has been set, then write evaluated value to data variable
             if(mpData)
             {
-                bool* apa = static_cast<bool*> (mpData);
-                *apa = tmpParameterValue;
+                *static_cast<bool*>(mpData) = tmpParameterValue;
             }
         }
         else if((evaluatedParameterValue == "false") || (evaluatedParameterValue == "0"))
         {
+            // If a data pointer has been set, then write evaluated value to data variable
             if(mpData)
             {
-                bool* apa = static_cast<bool*> (mpData);
-                *apa = false;
+                *static_cast<bool*>(mpData) = false;
             }
         }
         else if((evaluatedParameterValue == "true") || (evaluatedParameterValue == "1"))
         {
+            // If a data pointer has been set, then write evaluated value to data variable
             if(mpData)
             {
-                bool* apa = static_cast<bool*> (mpData);
-                *apa = true;
+                *static_cast<bool*>(mpData) = true;
             }
         }
         else
@@ -259,10 +262,10 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     }
     else if(mType=="string")
     {
+        // If a data pointer has been set, then write evaluated value to data variable
         if(mpData)
         {
-            string* apa = static_cast<string*> (mpData);
-            *apa = evaluatedParameterValue;
+            *static_cast<string*>(mpData) = evaluatedParameterValue;
         }
     }
     else
@@ -282,6 +285,16 @@ std::string Parameter::getName() const
 std::string Parameter::getValue() const
 {
     return mParameterValue;
+}
+
+std::string Parameter::getUnit() const
+{
+    return mUnit;
+}
+
+std::string Parameter::getDescription() const
+{
+    return mDescription;
 }
 
 //! @class hopsan::Parameters
@@ -419,7 +432,7 @@ void Parameters::deleteParameter(const std::string parameterName)
 //! @param [out] rDescriptions The description of the parameters
 //! @param [out] rUnits The physical unit of the parameters
 //! @param [out] rTypes The type of the parameters
-void Parameters::getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions, std::vector<std::string> &rUnits, vector<std::string> &rTypes)
+void Parameters::getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions, std::vector<std::string> &rUnits, vector<std::string> &rTypes) const
 {
     rParameterNames.resize(mParameters.size());
     rParameterValues.resize(mParameters.size());
@@ -449,14 +462,16 @@ void Parameters::getParameterValue(const std::string name, std::string &rValue)
 }
 
 
-bool Parameters::setParameter(std::string name, std::string value, std::string description, std::string unit, std::string type, bool force)
+bool Parameters::setParameter(const std::string name, const std::string value, const std::string description,
+                              const std::string unit, const std::string type,  const bool force)
 {
     bool success = false;
-    std::string parameterName, parameterValue, parameterDescription, parameterUnit, parameterType;
-    for(size_t i=0; i<mParameters.size(); ++i) //Find the parameter among the excisting parameters
+
+    // Try to find the parameter among the excisting parameters
+    for(size_t i=0; i<mParameters.size(); ++i)
     {
-        mParameters[i]->getParameter(parameterName, parameterValue, parameterDescription, parameterUnit, parameterType);
-        if((name == parameterName) && (value != parameterName)) //Found! (It cannot find itself)
+        // If Found (It cannot find itself)
+        if( (name == mParameters[i]->getName()) && (value != mParameters[i]->getName()) )
         {
             Parameter *needEvaluation=0;
             success = mParameters[i]->setParameter(value, description, unit, type, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
@@ -478,12 +493,10 @@ bool Parameters::setParameter(std::string name, std::string value, std::string d
                     }
                     else
                     {
-                        (*parIt)->getParameter(parameterName, parameterValue, parameterDescription, parameterUnit, parameterType);//debug
-                        cout << parameterName << endl;//debug
+                        cout << (*parIt)->getName() << endl;//debug
                         ++parIt;
                     }
                 }
-
             }
         }
     }
@@ -508,23 +521,24 @@ bool Parameters::setParameterValue(const std::string name, const std::string val
 bool Parameters::evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe)
 {
     bool success = false;
-    std::string parameterName2, parameterValue2, description2, unit2, type2;
+    //Try our own parameters
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
-        mParameters[i]->getParameter(parameterName2, parameterValue2, description2, unit2, type2);
-        if((parameterName == parameterName2) && (mParameters[i]->getType() == type) && (mParameters[i] != ignoreMe))
+        if ( (mParameters[i]->getName() == parameterName) &&
+             (mParameters[i]->getType() == type) &&
+             (mParameters[i] != ignoreMe) )
         {
             success = mParameters[i]->evaluate(rEvaluatedParameterValue, ignoreMe);
         }
     }
     if(!success)
     {
+        //Try one of our components systemparents parameters
         if(mParentComponent)
         {
             if(mParentComponent->getSystemParent())
             {
-                success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(parameterName, parameterValue2, type);
-                rEvaluatedParameterValue = parameterValue2;
+                success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(parameterName, rEvaluatedParameterValue , type);
             }
         }
     }

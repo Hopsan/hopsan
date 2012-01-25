@@ -107,9 +107,9 @@ double *Node::getDataPtr(const size_t data_type)
 
 //! Set data name and unit for a specified data variable
 //! @param [in] id This is the ENUM data id
-//! @param [in,out] name The variable name
-//! @param [in,out] unit The variable unit
-void Node::setDataCharacteristics(size_t id, string name, string unit, Node::PLOTORNOT plotBehaviour)
+//! @param [in] name The variable name
+//! @param [in] unit The variable unit
+void Node::setDataCharacteristics(const size_t id, const string name, const string unit, const Node::PLOTORNOT plotBehaviour)
 {
     mDataNames[id] = name;
     mDataUnits[id] = unit;
@@ -378,8 +378,10 @@ Component *Node::getWritePortComponentPtr()
 }
 
 
-//! debug function to dump loged node data to a file
-void Node::saveLogData(string filename)
+//! @brief Debug function to dump logged node data to a file
+//! @param [in] filename The name of the file to write to
+//! @param [in] header A string containing Component and Port names
+void Node::saveLogDataToFile(const string filename, const string header)
 {
     ofstream out_file;
     out_file.open(filename.c_str());
@@ -387,8 +389,15 @@ void Node::saveLogData(string filename)
     if (out_file.good())
     {
         assert(mTimeStorage.size() == mDataStorage.size());
-        //First write HEADER containing node type
-        out_file << mNodeType << endl;
+        //First write HEADER info containing node info
+        out_file << header << " " << mNodeType << endl;
+        out_file << "time";
+        for (size_t i=0; i<mDataNames.size(); ++i)
+        {
+            out_file << " " << mDataNames[i];
+        }
+        out_file << endl;
+
         //Write log data to file
         for (size_t row=0; row<mTimeStorage.size(); ++row)
         {
@@ -400,11 +409,11 @@ void Node::saveLogData(string filename)
             out_file << endl;
         }
         out_file.close();
-        cout << "Done! Saving node data to file" << endl;
+        cout << "Done! Saving node data to file: " << filename << endl;
     }
     else
     {
-        cout << "Warning! Could not open out file for writing" << endl;
+        cout << "Warning! Could not open out file for writing: " << filename << endl;
     }
 }
 

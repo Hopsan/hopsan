@@ -146,7 +146,9 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
                     string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
                     string val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
 
-                    pComp->setParameterValue(paramName, val);
+                    // We need force=true here to make sure that parameters with system variable names are set even if they can not yet be evaluated
+                    //! @todo why cant they be evaluated, if everything loaded in correct order that should work
+                    pComp->setParameterValue(paramName, val, true);
                 }
                 pParam = pParam->next_sibling();
             }

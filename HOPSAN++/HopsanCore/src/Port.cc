@@ -270,7 +270,8 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
 {
     if (mpNode != 0)
     {
-        mpNode->saveLogData(filename);
+        string header = getComponentName() + "::" + getPortName();
+        mpNode->saveLogDataToFile(filename, header);
     }
     else
     {

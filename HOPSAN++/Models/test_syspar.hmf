@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3914" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3920" hopsancoreversion="0.5.x_r3919">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="test_syspar">
-        <simulationtime stop="10" timestep="0.0001" start="0" inherit_timestep="true"/>
+        <simulationtime stop="0.3" timestep="0.0001" start="0" inherit_timestep="true"/>
         <aliases>
             <alias port="Container Port_1" component="ComponentSystem" alias="aliasKalle" data="Value"/>
         </aliases>
@@ -11,7 +15,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2366.5" y="2452.5" zoom="1"/>
+            <viewport x="2369" y="2478.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -46,7 +50,7 @@
         </hopsangui>
         <objects>
             <system typename="Subsystem" name="ComponentSystem">
-                <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+                <simulationtime stop="0.3" timestep="0.001" start="0" inherit_timestep="true"/>
                 <aliases/>
                 <parameters>
                     <parameter value="balle" type="double" name="apa"/>
@@ -54,7 +58,7 @@
                 <hopsangui>
                     <pose x="2275" y="2472" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2366.5" y="2452.5" zoom="1"/>
+                    <viewport x="2369" y="2478.5" zoom="1"/>
                     <ports hidden="0"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -92,7 +96,7 @@
                 </hopsangui>
                 <objects>
                     <system typename="Subsystem" name="ComponentSystem">
-                        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+                        <simulationtime stop="0.3" timestep="0.001" start="0" inherit_timestep="true"/>
                         <aliases/>
                         <parameters>
                             <parameter value="apa" type="double" name="ko"/>
@@ -100,7 +104,7 @@
                         <hopsangui>
                             <pose x="2319" y="2477" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2366.5" y="2452.5" zoom="1"/>
+                            <viewport x="2369" y="2478.5" zoom="1"/>
                             <ports hidden="0"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -246,18 +250,18 @@
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2402" y="2472" flipped="false" a="0"/>
+                    <pose x="2465" y="2472" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <system typename="Subsystem" name="ComponentSystem_1">
-                <simulationtime stop="10" timestep="1e-05" start="0" inherit_timestep="true"/>
+                <simulationtime stop="0.3" timestep="1e-05" start="0" inherit_timestep="true"/>
                 <aliases/>
                 <parameters/>
                 <hopsangui>
                     <pose x="2269" y="2590" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2366.5" y="2452.5" zoom="1"/>
+                    <viewport x="2369" y="2478.5" zoom="1"/>
                     <ports hidden="0"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -294,13 +298,13 @@
                 </hopsangui>
                 <objects>
                     <system typename="Subsystem" name="ComponentSystem">
-                        <simulationtime stop="10" timestep="1e-08" start="0" inherit_timestep="false"/>
+                        <simulationtime stop="0.3" timestep="1e-08" start="0" inherit_timestep="false"/>
                         <aliases/>
                         <parameters/>
                         <hopsangui>
                             <pose x="2296" y="2549" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2366.5" y="2452.5" zoom="1"/>
+                            <viewport x="2369" y="2478.5" zoom="1"/>
                             <ports hidden="0"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -506,6 +510,26 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <component typename="SignalGain" name="GainE">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="1" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2387" y="2357" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="GainI">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="1" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2389" y="2472" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
             <component typename="SignalSource" name="Constant_1">
                 <parameters>
                     <parameter value="1" type="double" name="y"/>
@@ -561,20 +585,6 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Sink" startport="Container Port_1" startcomponent="ComponentSystem">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2320.00000000000000000000" y="2472.00000000000000000000"/>
-                        <coordinate x="2382.00000000000000000000" y="2472.00000000000000000000"/>
-                        <coordinate x="2382.00000000000000000000" y="2472.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="Container Port" endcomponent="test_syspar_external" startport="out" startcomponent="Constant_1">
                 <hopsangui>
                     <coordinates>
@@ -591,13 +601,59 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Sink" startport="Container Port_1" startcomponent="test_syspar_external">
+            <connect endport="in" endcomponent="GainE" startport="Container Port_1" startcomponent="test_syspar_external">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2320.00000000000000000000" y="2357.00000000000000000000"/>
-                        <coordinate x="2350.00000000000000000000" y="2357.00000000000000000000"/>
-                        <coordinate x="2350.00000000000000000000" y="2472.00000000000000000000"/>
-                        <coordinate x="2382.00000000000000000000" y="2472.00000000000000000000"/>
+                        <coordinate x="2354.50000000000000000000" y="2357.00000000000000000000"/>
+                        <coordinate x="2354.50000000000000000000" y="2357.00000000000000000000"/>
+                        <coordinate x="2374.50000000000000000000" y="2357.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="GainI" startport="Container Port_1" startcomponent="ComponentSystem">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2320.00000000000000000000" y="2472.00000000000000000000"/>
+                        <coordinate x="2356.50000000000000000000" y="2472.00000000000000000000"/>
+                        <coordinate x="2356.50000000000000000000" y="2472.00000000000000000000"/>
+                        <coordinate x="2376.50000000000000000000" y="2472.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="GainI">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2401.50000000000000000000" y="2472.00000000000000000000"/>
+                        <coordinate x="2445.00000000000000000000" y="2472.00000000000000000000"/>
+                        <coordinate x="2445.00000000000000000000" y="2472.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="GainE">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2399.50000000000000000000" y="2357.00000000000000000000"/>
+                        <coordinate x="2422.00000000000000000000" y="2357.00000000000000000000"/>
+                        <coordinate x="2422.00000000000000000000" y="2472.00000000000000000000"/>
+                        <coordinate x="2445.00000000000000000000" y="2472.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>

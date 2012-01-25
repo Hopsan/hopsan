@@ -69,13 +69,13 @@ namespace hopsan {
         void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
         void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
         bool preAllocateLogSpace();
-        void saveLogData(std::string filename);
+        void saveLogDataToFile(const std::string filename, const std::string header);
 
         //void setData is now public!
         double getData(const size_t data_type) const;
         double *getDataPtr(const size_t data_type);
 
-        void setDataCharacteristics(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
+        void setDataCharacteristics(const size_t id, const std::string name, const std::string unit, const Node::PLOTORNOT plotBehaviour = Node::PLOT);
         void getDataNameAndUnit(const size_t id, std::string &rName, std::string &rUnit);
         int getDataIdFromName(const std::string name);
         void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const bool getAll=false);

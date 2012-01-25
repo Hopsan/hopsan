@@ -37,16 +37,23 @@ class Parameters;
 class Parameter
 {
 public:
-    Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* pDataPtr=0, Parameters* parentParameters=0);
+    Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit,
+              std::string type, void* pDataPtr=0, Parameters* parentParameters=0);
+
     bool setParameterValue(const std::string value, Parameter **pNeedEvaluation=0);
-    bool setParameter(std::string parameterValue, std::string description, std::string unit, std::string type, Parameter **pNeedEvaluation=0, bool force=0);
-    void getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription, std::string &rUnit, std::string &rType);
+    bool setParameter(std::string parameterValue, std::string description, std::string unit,
+                      std::string type, Parameter **pNeedEvaluation=0, bool force=false);
+
     bool evaluate(std::string &rResult, Parameter *ignoreMe=0);
     bool evaluate();
 
+    void getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription,
+                      std::string &rUnit, std::string &rType) const;
     std::string getType() const;
     std::string getName() const;
     std::string getValue() const;
+    std::string getUnit() const;
+    std::string getDescription() const;
 
 protected:
     std::string mParameterName;
@@ -64,14 +71,22 @@ class DLLIMPORTEXPORT Parameters
 public:
     Parameters(Component* parentComponent);
     ~Parameters();
-    bool addParameter(std::string parameterName, std::string parameterValue, std::string description="", std::string unit="", std::string type="", void* dataPtr=0, bool force=false);
+
+    bool addParameter(std::string parameterName, std::string parameterValue, std::string description="",
+                      std::string unit="", std::string type="", void* dataPtr=0, bool force=false);
     void deleteParameter(const std::string parameterName);
-    void getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions, std::vector<std::string> &rUnits, std::vector<std::string> &rTypes);
+
+    void getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions,
+                       std::vector<std::string> &rUnits, std::vector<std::string> &rTypes) const;
+    bool setParameter(const std::string name, const std::string value, const std::string description="",
+                      const std::string unit="", const std::string type="", const bool force=false);
+
     void getParameterValue(const std::string name, std::string &rValue);
-    bool setParameter(std::string name, std::string value, std::string description="", std::string unit="", std::string type="", bool force=0);
-    bool setParameterValue(const std::string name, const std::string value, bool force=0);
+    bool setParameterValue(const std::string name, const std::string value, bool force=false);
+
     bool evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe=0);
     bool evaluateParameters();
+
     bool exist(const std::string parameterName);
     bool checkParameters(std::string &errParName);
 
