@@ -88,9 +88,9 @@ The first line contains basic information about the XML code, and should always 
   - \b picture The path to the .svg help picture. (Optional)
 - \b ports Defines the positions and orientations for each port (Required for each port)
   - \b name Name of the port as defined in the code
-  - \b x X-position in percent of component icon (0 = left, 1 = right)
-  - \b y Y-position in percent of component icon (0 = top, 1 = bottom)
-  - \b a Angle of port, 0 = right, 90 = down etc., port shall normally point outwards from the component
+  - \b x X-position fraction of component icon width (0 = left, 1 = right)
+  - \b y Y-position fraction of component icon height (0 = top, 1 = bottom)
+  - \b a Angle of port, 0 = right, 90 = down, 180 = left, 270 = up, ports shall normally point outwards from the component
   - \b visible Is the port is visible by default, \e true or \e false. A hidden port is never shown. (If omitted defaults to true)
   - \b description A description text (help text) for the port. (Optional)
 

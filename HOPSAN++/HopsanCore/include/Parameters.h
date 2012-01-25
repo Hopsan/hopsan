@@ -49,6 +49,7 @@ public:
 
     void getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription,
                       std::string &rUnit, std::string &rType) const;
+
     std::string getType() const;
     std::string getName() const;
     std::string getValue() const;

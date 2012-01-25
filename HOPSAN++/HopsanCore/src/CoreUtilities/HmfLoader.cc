@@ -109,13 +109,13 @@ bool hasAttribute(rapidxml::xml_node<> *pNode, string attrName)
 //! @note Assumes that dir separator is forward slash /
 std::string stripFilenameFromPath(std::string filePath)
 {
-    cout << "Stripping from: " << filePath << endl;
+    //cout << "Stripping from: " << filePath << endl;
     size_t pos = filePath.rfind('/');
     if (pos != std::string::npos)
     {
         filePath.erase(pos+1);
     }
-    cout << "Stripped: " << filePath << endl;
+    //cout << "Stripped: " << filePath << endl;
     return filePath;
 }
 
@@ -135,6 +135,7 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
         //cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
 
         //Load parameters
+        //! @todo should be able to load parameters and system parmaeters with same help function
         rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
         if (pParams)
         {
@@ -240,9 +241,6 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                     pSys = loadHopsanModelFile(externalPath,pHopsanEssentials,dummy1,dummy2);
                     if (pSys != 0)
                     {
-                        // Remove external_path attribute from node so that it wont be loaded again when we load additional info
-                        pObject->remove_attribute(pObject->first_attribute("external_path"));
-                        cout << "Have external attribute: " << hasAttribute(pObject, "external_path") << endl;
                         // load overwriten parameter values
                         loadSystemParameters(pObject, pSys);
                         // Overwrite name
@@ -287,22 +285,6 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 
     //Load system parameters
     loadSystemParameters(pSysNode, pSystem);
-//    rapidxml::xml_node<> *pParameters = pSysNode->first_node("parameters");
-//    if (pParameters)
-//    {
-//      ss  rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
-//        while (pParameter != 0)
-//        {
-//            string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
-//            string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
-//            string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
-//            //! @todo maybe type should be data type or value type or something
-
-//            pSystem->setSystemParameter(paramName, val, type);
-
-//            pParameter = pParameter->next_sibling("parameter");
-//        }
-//    }
 
     //! @todo load ALIASES
 }
