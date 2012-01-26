@@ -55,6 +55,13 @@ ComponentSystem::ComponentSystem() : Component()
 #endif
 }
 
+ComponentSystem::~ComponentSystem()
+{
+#ifdef USETBB
+    delete mpStopMutex;
+#endif
+}
+
 double ComponentSystem::getDesiredTimeStep() const
 {
     return mDesiredTimestep;

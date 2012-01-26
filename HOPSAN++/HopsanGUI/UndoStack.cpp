@@ -67,7 +67,7 @@ void UndoStack::fromXml(QDomElement &undoElement)
     mCurrentStackPosition = mUndoRoot.lastChildElement().attribute("number").toInt();
     gpMainWindow->mpUndoWidget->refreshList();
 
-    gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
+    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
 }
 
 

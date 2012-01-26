@@ -70,6 +70,7 @@ namespace hopsan {
         //==========Public functions==========
         //Constructor - Destructor- Creator
         ComponentSystem();
+        ~ComponentSystem();
         static Component* Creator(){ return new ComponentSystem(); }
 
         //Set the subsystem CQS type

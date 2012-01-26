@@ -29,6 +29,13 @@
 #include <string>
 #include "win32dll.h"
 
+#ifdef USETBB
+// Forward declareation
+namespace tbb{
+    class mutex;
+}
+#endif
+
 namespace hopsan {
 
     class HopsanCoreMessage
@@ -55,9 +62,14 @@ namespace hopsan {
         std::queue<HopsanCoreMessage> mMessageQueue;
         void addMessage(const int type, const std::string preFix, const std::string message, const std::string tag, const int debuglevel=0);
         size_t mMaxQueueSize;
+#ifdef USETBB
+        tbb::mutex *mpMutex;
+#endif
 
     public:
         HopsanCoreMessageHandler();
+        ~HopsanCoreMessageHandler();
+
         void addInfoMessage(const std::string message, const std::string tag="", const int dbglevel=0);
         void addWarningMessage(const std::string message, const std::string tag="", const int dbglevel=0);
         void addErrorMessage(const std::string message, const std::string tag="", const int dbglevel=0);
