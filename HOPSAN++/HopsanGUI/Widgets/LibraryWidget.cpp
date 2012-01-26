@@ -1825,25 +1825,31 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree *pTree)
 
 void LibraryWidget::unloadExternalLibrary(const QString libName)
 {
-    if(gConfig.hasUserLib(libName))
+    //Check both by name and absolute path to be sure
+    LibraryContentsTree* pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByName(libName);
+    if (!pLibContTree)
     {
-        qDebug() << "Removing: " << libName;
-        gConfig.removeUserLib(libName);
-        QString path = gExecPath+libName;
-        qDebug() << "Looking for remove directory: " << QDir::cleanPath(path);
-        //! @todo This double check is crazy!
-        while(mpContentsTree->findChildByName("External Libraries")->findChildByPath(libName))     //Check both relative and absolute path to be sure
-        {
-            qDebug() << "Unloading: " << libName;
-            unLoadLibrarySubTree(mpContentsTree->findChildByName("External Libraries")->findChildByPath(libName));
-        }
-        while(mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(path)))
-        {
-            qDebug() << "Unloading: " << libName;
-            unLoadLibrarySubTree(mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(path)));
-        }
-        update();
+        pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(gExecPath+libName));
     }
+
+    if (pLibContTree)
+    {
+        QMessageBox::StandardButton button = QMessageBox::Ok;
+        if (gpMainWindow->mpProjectTabs->count() > 0)
+        {
+            button = QMessageBox::question(this, "Unload Warning!",
+                                           "You have open models.\nIf any one of them are using components from the library you are going to unload, Hopsan will crash.\nYou should close your models first if you are not sure.\nDo you want to continue?",
+                                           QMessageBox::Ok | QMessageBox::Cancel );
+        }
+
+        if (button == QMessageBox::Ok)
+        {
+            gConfig.removeUserLib(pLibContTree->mLibDir);
+            unLoadLibrarySubTree(pLibContTree);
+            update();
+        }
+    }
+
 }
 
 
@@ -1870,7 +1876,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
     }
     //Then remove the tree itself
     mpContentsTree->findChildByName("External Libraries")->removeChild(pTree->mName);
-    //gpMainWindow->mpMessageWidget->checkMessages();
+    gpMainWindow->mpMessageWidget->checkMessages();
 }
 
 //! @brief Slot that sets view mode to single tree and redraws the library
@@ -1928,9 +1934,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
     if(pSelectedAction == pUnloadLibraryFolder)
     {
-        gConfig.removeUserLib(pTree->mLibDir);
-        unLoadLibrarySubTree(mpContentsTree->findChildByName("External Libraries")->findChildByName(pTree->mName));
-        update();
+        unloadExternalLibrary(pTree->mName);
     }
 
     QWidget::contextMenuEvent(event);
