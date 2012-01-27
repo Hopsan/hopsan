@@ -54,7 +54,7 @@ class HydraulicCylinderC : public ComponentC
         std::vector<double*> mvpND_p1, mvpND_q1, mvpND_c1, mvpND_Zc1;
         std::vector<double*> mvpND_p2, mvpND_q2, mvpND_c2, mvpND_Zc2;
         double *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3, *mpND_me;
-        int mNumPorts1, mNumPorts2;
+        size_t mNumPorts1, mNumPorts2;
 
         //Ports
         Port *mpP1, *mpP2, *mpP3;
@@ -136,7 +136,7 @@ class HydraulicCylinderC : public ComponentC
             //Declare local variables;
             double p1, p2, x3, v3;
             double Zc1, Zc2, c3, Zx3;
-            double qi1, qi2, V1, V2, qLeak, V1min, V2min, p1mean, p2mean;
+            double qi1, qi2, V1, V2, qLeak, V1min, V2min;
 
             //Read variables from nodes
             p1 = (*mvpND_p1[0]);
@@ -163,11 +163,11 @@ class HydraulicCylinderC : public ComponentC
             ci1 = p1 + Zc1*qi1;
             ci2 = p2 + Zc2*qi2;
 
+            //Leakage flow
+            qLeak = cLeak*(p1-p2);
+
             cl1 = p1 + Zc1*(-qLeak);
             cl2 = p2 + Zc2*qLeak;
-
-            //Leakage flow
-            cLeak*(p1-p2);
 
             c3 = A1*ci1 - A2*ci2;
 
@@ -188,11 +188,6 @@ class HydraulicCylinderC : public ComponentC
 
         void simulateOneTimestep()
         {
-            std::stringstream ss;
-            ss << "\nc1 = " << (*mvpND_c1[0]) << "\n c2 = " << (*mvpND_c2[0]) << "\n";
-            ss << "\nZc1 = " << (*mvpND_Zc1[0]) << "\n Zc2 = " << (*mvpND_Zc2[0]);
-            addDebugMessage(ss.str());
-
             //Declare local variables;
             double Zc1;
             double Zc2;
