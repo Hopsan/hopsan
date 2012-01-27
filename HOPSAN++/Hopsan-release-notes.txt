@@ -7,6 +7,7 @@ Hopsan Release Notes
 - Some compatibility issues exist between version 0.3.0 and older versions, because some components were discarded. 
   These will not appear when loading the models. Some parameter names was also changed, these parameters will be reset.
 - All components are not completely validated
+- See issue-tracker (link on web page) for all known issues
 
 
 
