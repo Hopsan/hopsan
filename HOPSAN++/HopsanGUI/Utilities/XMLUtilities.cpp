@@ -63,7 +63,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
         if (xmlRoot.tagName() != rootTagName)
         {
             QMessageBox::information(0, "Hopsan GUI",
-                                     QString("The file is has the wrong Root Tag Name: ")
+                                     QString("The file has the wrong Root Tag Name: ")
                                      + xmlRoot.tagName() + "!=" + rootTagName);
         }
         else
@@ -346,7 +346,6 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, b
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
     rTheta = domElement.attribute("a").toDouble();
-    //rFlipped = (domElement.attribute("flipped") == "1");
     rFlipped = parseAttributeBool(domElement, "flipped", false);
 }
 
