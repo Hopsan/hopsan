@@ -41,7 +41,7 @@ namespace hopsan {
 class HopsanCoreMessage
 {
 public:
-    enum MessageTypes {INFO, WARNING, ERROR, DEBUG};
+    enum MessageEnumT {Info, Warning, Error, Debug};
     HopsanCoreMessage()
     {
         type = 0;

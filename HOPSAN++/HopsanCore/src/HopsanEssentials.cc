@@ -198,16 +198,16 @@ void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std
 
     switch (msg.type)
     {
-    case HopsanCoreMessage::ERROR:
+    case HopsanCoreMessage::Error:
         rType = "error";
         break;
-    case HopsanCoreMessage::WARNING:
+    case HopsanCoreMessage::Warning:
         rType = "warning";
         break;
-    case HopsanCoreMessage::INFO:
+    case HopsanCoreMessage::Info:
         rType = "info";
         break;
-    case HopsanCoreMessage::DEBUG:
+    case HopsanCoreMessage::Debug:
         rType = "debug";
         break;
     }

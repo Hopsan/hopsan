@@ -56,6 +56,7 @@ QVector< std::complex<double> > realToComplex(QVector<double> realVector);
 void FFT(QVector< std::complex<double> > &data);
 void reduceVectorSize(QVector<double> &vector, int newSize);
 void removeDir(QString path);
+void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
 

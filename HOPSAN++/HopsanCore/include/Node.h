@@ -60,7 +60,7 @@ namespace hopsan {
         Node(const size_t datalength);
         const NodeTypeT getNodeType() const;
 
-        enum PLOTORNOT {PLOT, NOPLOT};
+        enum PLOTORNOT {PLOT, NOPLOT}; //!< @todo rename and dont use ALL CAPTIAL letters for enums
 
         void copyNodeVariables(Node *pNode);
         virtual void setSpecialStartValues(Node *pNode);

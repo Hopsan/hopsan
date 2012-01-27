@@ -58,7 +58,7 @@ void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, c
     mMessageQueue.push(msg);
     if (mMessageQueue.size() > mMaxQueueSize)
     {
-        //If the que is to long delete old unhandled messages
+        //If the queue is to long delete old unhandled messages
         mMessageQueue.pop();
     }
 #ifdef USETBB
@@ -69,22 +69,22 @@ void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, c
 
 void HopsanCoreMessageHandler::addInfoMessage(const string message, const string tag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::INFO, "Info: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Info, "Info: ", message, tag, dbglevel);
 }
 
 void HopsanCoreMessageHandler::addWarningMessage(const string message, const string tag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::WARNING, "Warning: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Warning, "Warning: ", message, tag, dbglevel);
 }
 
 void HopsanCoreMessageHandler::addErrorMessage(const string message, const string tag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::ERROR, "Error: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Error, "Error: ", message, tag, dbglevel);
 }
 
 void HopsanCoreMessageHandler::addDebugMessage(const string message, const string tag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::DEBUG, "Debug: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Debug, "Debug: ", message, tag, dbglevel);
 }
 
 
@@ -101,7 +101,7 @@ HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
     }
     else
     {
-        msg.type = HopsanCoreMessage::ERROR;
+        msg.type = HopsanCoreMessage::Error;
         msg.debuglevel = 0;
         msg.message = "Error: You requested a message even though the message queue is empty";
     }

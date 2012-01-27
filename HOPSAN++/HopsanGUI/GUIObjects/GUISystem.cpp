@@ -1897,6 +1897,7 @@ void SystemContainer::createSimulinkSourceFiles()
             mechanicRotationalCComponents.append(it.value()->getName());
             mechanicRotationalCPorts.append("P1");
         }
+        //! @todo what about pneumatic and electric nodes
     }
 
     int nInputs = inputComponents.size();
@@ -2001,40 +2002,9 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "#define S_FUNCTION_LEVEL 2\n\n";
     wrapperStream << "#include \"simstruc.h\"\n";
     wrapperStream << "#include <sstream>\n";
-    //! @todo Do we really need to hardcode include all of these .h files, cant we just include ComponentUtilities.h and hopsancore.h and maybe some other needed file (that contains all other files)
     wrapperStream << "#include \"include/HopsanCore.h\"\n";
-    wrapperStream << "#include \"include/Component.h\"\n";
-    wrapperStream << "#include \"include/ComponentSystem.h\"\n";
-    wrapperStream << "#include \"include/ComponentEssentials.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities.h\"\n";
-    wrapperStream << "#include \"include/HopsanEssentials.h\"\n";
-    wrapperStream << "#include \"include/Node.h\"\n";
-    wrapperStream << "#include \"include/Port.h\"\n";
-    wrapperStream << "#include \"include/Nodes.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/AuxiliarySimulationFunctions.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/CSVParser.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/Delay.hpp\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/DoubleIntegratorWithDamping.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/FirstOrderTransferFunction.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/Integrator.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/IntegratorLimited.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/ludcmp.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/matrix.h\"\n";
-    //wrapperStream << "#include \"include/ComponentUtilities/ReadDataCurve.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/SecondOrderTransferFunction.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/TurbulentFlowFunction.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/ValveHysteresis.h\"\n";
-    wrapperStream << "#include \"include/ComponentUtilities/WhiteGaussianNoise.h\"\n";
-    wrapperStream << "#include \"include/CoreUtilities/HmfLoader.h\"\n";
-    wrapperStream << "#include \"include/CoreUtilities/ClassFactory.hpp\"\n";
-    wrapperStream << "#include \"include/CoreUtilities/ClassFactoryStatusCheck.hpp\"\n";
-    wrapperStream << "#include \"include/CoreUtilities/FindUniqueName.h\"\n";
-    wrapperStream << "#include \"include/CoreUtilities/HopsanCoreMessageHandler.h\"\n";
-    wrapperStream << "#include \"include/CoreUtilities/LoadExternal.h\"\n";
-    //wrapperStream << "#include \"include/Components/Components.h\"\n\n";
     wrapperStream << "using namespace hopsan;\n\n";
-    wrapperStream << "ComponentSystem* pComponentSystem;\n\n";
+    //wrapperStream << "ComponentSystem* pComponentSystem;\n\n";
     wrapperStream << "static void mdlInitializeSizes(SimStruct *S)\n";
     wrapperStream << "{\n";
     wrapperStream << "    ssSetNumSFcnParams(S, 0);\n";
@@ -2150,10 +2120,10 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "    ssSetNumSampleTimes(S, 1);\n\n";
     wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n\n";
     wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
-    wrapperStream << "    hopsan::HmfLoader coreHmfLoader;\n";
+    wrapperStream << "    double startT, stopT;" << endl;
+    wrapperStream << "    pComponentSystem = HopsanEssentials::loadHMFModel(hmfFilePath, startT, stopT);\n";
     wrapperStream << "    double startT = ssGetTStart(S);\n";
     wrapperStream << "    double stopT = ssGetTFinal(S);\n";
-    wrapperStream << "    pComponentSystem = coreHmfLoader.loadModel(hmfFilePath, startT, stopT);\n";
     wrapperStream << "    pComponentSystem->setDesiredTimestep(0.001);\n";
     wrapperStream << "    pComponentSystem->initialize(0,10,0);\n\n";
     wrapperStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                               //Run the port label script\n";
@@ -2332,7 +2302,7 @@ void SystemContainer::createSimulinkSourceFiles()
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
         //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getCoreSystemAccessPtr()->getHopsanCoreVersion());
     saveToDomElement(hmfRoot);
     const int IndentSize = 4;
     QFile xmlhmf(savePath + "/" + fileName);

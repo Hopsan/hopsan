@@ -2,13 +2,13 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011 
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
@@ -219,42 +219,42 @@ QString parseVariableDescription(QString input)
 {
     QString retval;
 
-    replaceWord(input,  "Gamma",        QObject::trUtf8("Γ"));
-    replaceWord(input,  "Delta",        QObject::trUtf8("Δ"));
-    replaceWord(input,  "Theta",        QObject::trUtf8("Θ"));
-    replaceWord(input,  "Lambda",       QObject::trUtf8("Λ"));
-    replaceWord(input,  "Xi",           QObject::trUtf8("Ξ"));
-    replaceWord(input,  "Pi",           QObject::trUtf8("� "));
-    replaceWord(input,  "Sigma",        QObject::trUtf8("Σ"));
-    replaceWord(input,  "Phi",          QObject::trUtf8("Φ"));
-    replaceWord(input,  "Psi",          QObject::trUtf8("Ψ"));
-    replaceWord(input,  "Omega",        QObject::trUtf8("Ω"));
+    replaceWord(input,  "Gamma",        QObject::trUtf8("Î"));
+    replaceWord(input,  "Delta",        QObject::trUtf8("Î"));
+    replaceWord(input,  "Theta",        QObject::trUtf8("Î"));
+    replaceWord(input,  "Lambda",       QObject::trUtf8("Î"));
+    replaceWord(input,  "Xi",           QObject::trUtf8("Î"));
+    replaceWord(input,  "Pi",           QObject::trUtf8("Î "));
+    replaceWord(input,  "Sigma",        QObject::trUtf8("Î£"));
+    replaceWord(input,  "Phi",          QObject::trUtf8("Î¦"));
+    replaceWord(input,  "Psi",          QObject::trUtf8("Î¨"));
+    replaceWord(input,  "Omega",        QObject::trUtf8("Î©"));
 
-    replaceWord(input,  "alpha",        QObject::trUtf8("α"));
-    replaceWord(input,  "beta",         QObject::trUtf8("β"));
-    replaceWord(input,  "gamma",        QObject::trUtf8("γ"));
-    replaceWord(input,  "delta",        QObject::trUtf8("δ"));
-    replaceWord(input,  "epsilon",      QObject::trUtf8("ε"));
-    replaceWord(input,  "zeta",         QObject::trUtf8("ζ"));
-    replaceWord(input,  "eta",          QObject::trUtf8("η"));
-    replaceWord(input,  "theta",        QObject::trUtf8("θ"));
-    replaceWord(input,  "lota",         QObject::trUtf8("ι"));
-    replaceWord(input,  "kappa",        QObject::trUtf8("κ"));
-    replaceWord(input,  "lambda",       QObject::trUtf8("λ"));
-    replaceWord(input,  "mu",           QObject::trUtf8("μ"));
-    replaceWord(input,  "nu",           QObject::trUtf8("ν"));
-    replaceWord(input,  "xi",           QObject::trUtf8("ξ"));
-    replaceWord(input,  "omicron",      QObject::trUtf8("ο"));
-    replaceWord(input,  "pi",           QObject::trUtf8("π"));
-    replaceWord(input,  "rho",          QObject::trUtf8("ρ"));
-    replaceWord(input,  "finalsigma",   QObject::trUtf8("ς"));
-    replaceWord(input,  "sigma",        QObject::trUtf8("σ"));
-    replaceWord(input,  "tao",          QObject::trUtf8("τ"));
-    replaceWord(input,  "upsilon",      QObject::trUtf8("υ"));
-    replaceWord(input,  "phi",          QObject::trUtf8("φ"));
-    replaceWord(input,  "chi",          QObject::trUtf8("χ"));
-    replaceWord(input,  "psi",          QObject::trUtf8("ψ"));
-    replaceWord(input,  "omega",        QObject::trUtf8("ω"));
+    replaceWord(input,  "alpha",        QObject::trUtf8("Î±"));
+    replaceWord(input,  "beta",         QObject::trUtf8("Î²"));
+    replaceWord(input,  "gamma",        QObject::trUtf8("Î³"));
+    replaceWord(input,  "delta",        QObject::trUtf8("Î´"));
+    replaceWord(input,  "epsilon",      QObject::trUtf8("Îµ"));
+    replaceWord(input,  "zeta",         QObject::trUtf8("Î¶"));
+    replaceWord(input,  "eta",          QObject::trUtf8("Î·"));
+    replaceWord(input,  "theta",        QObject::trUtf8("Î¸"));
+    replaceWord(input,  "lota",         QObject::trUtf8("Î¹"));
+    replaceWord(input,  "kappa",        QObject::trUtf8("Îº"));
+    replaceWord(input,  "lambda",       QObject::trUtf8("Î»"));
+    replaceWord(input,  "mu",           QObject::trUtf8("Î¼"));
+    replaceWord(input,  "nu",           QObject::trUtf8("Î½"));
+    replaceWord(input,  "xi",           QObject::trUtf8("Î¾"));
+    replaceWord(input,  "omicron",      QObject::trUtf8("Î¿"));
+    replaceWord(input,  "pi",           QObject::trUtf8("Ï"));
+    replaceWord(input,  "rho",          QObject::trUtf8("ÏÂ"));
+    replaceWord(input,  "finalsigma",   QObject::trUtf8("Ï"));
+    replaceWord(input,  "sigma",        QObject::trUtf8("Ï"));
+    replaceWord(input,  "tao",          QObject::trUtf8("Ï"));
+    replaceWord(input,  "upsilon",      QObject::trUtf8("Ï"));
+    replaceWord(input,  "phi",          QObject::trUtf8("Ï"));
+    replaceWord(input,  "chi",          QObject::trUtf8("Ï"));
+    replaceWord(input,  "psi",          QObject::trUtf8("Ï"));
+    replaceWord(input,  "omega",        QObject::trUtf8("Ï"));
 
 
     if(input.count("_") == 1 && !input.contains("^"))
@@ -442,110 +442,42 @@ void removeDir(QString path)
     dir.rmdir(path);
 }
 
-
-void copyIncludeFilesToDir(QString path)
+//! @brief Copy adiractory with contents
+//! @param [in] fromPath The absolute path to the directory to copy
+//! @param [in] toPath The absolute path to the destination (including resulting dir name)
+//! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
+void copyDir(const QString fromPath, QString toPath)
 {
+    QDir toDir(toPath);
+    toDir.mkpath(toPath);
+    if (toPath.endsWith('/'))
+    {
+        toPath.chop(1);
+    }
+
+    QDir fromDir(fromPath);
+    foreach(QFileInfo info, fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+    {
+        if (info.isDir())
+        {
+            copyDir(info.absoluteFilePath(), toPath+"/"+info.fileName());
+        }
+        else
+        {
+            QFile::copy(info.absoluteFilePath(), toPath+"/"+info.fileName());
+        }
+    }
+}
+
+//! @todo maybe this function should not be among general utils
+void copyIncludeFilesToDir(QString path)
+{    
     QDir saveDir;
     saveDir.setPath(path);
-    saveDir.mkdir("include");
-    QFile componentH(gExecPath + QString(INCLUDEPATH) + "Component.h");
-    componentH.copy(saveDir.path() + "/include/Component.h");
-    QFile componentSystemH(gExecPath + QString(INCLUDEPATH) + "ComponentSystem.h");
-    componentSystemH.copy(saveDir.path() + "/include/ComponentSystem.h");
-    QFile componentEssentialsH(gExecPath + QString(INCLUDEPATH) + "ComponentEssentials.h");
-    componentEssentialsH.copy(saveDir.path() + "/include/ComponentEssentials.h");
-    QFile componentUtilitiesH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities.h");
-    componentUtilitiesH.copy(saveDir.path() + "/include/ComponentUtilities.h");
-    QFile hopsanCoreH(gExecPath + QString(INCLUDEPATH) + "HopsanCore.h");
-    hopsanCoreH.copy(saveDir.path() + "/include/HopsanCore.h");
-    QFile hopsanEssentialsH(gExecPath + QString(INCLUDEPATH) + "HopsanEssentials.h");
-    hopsanEssentialsH.copy(saveDir.path() + "/include/HopsanEssentials.h");
-    QFile nodeH(gExecPath + QString(INCLUDEPATH) + "Node.h");
-    nodeH.copy(saveDir.path() + "/include/Node.h");
-    QFile portH(gExecPath + QString(INCLUDEPATH) + "Port.h");
-    portH.copy(saveDir.path() + "/include/Port.h");
-    QFile versionH(gExecPath + QString(INCLUDEPATH) + "version.h");
-    versionH.copy(saveDir.path() + "/include/version.h");
-    QFile win32dllH(gExecPath + QString(INCLUDEPATH) + "win32dll.h");
-    win32dllH.copy(saveDir.path() + "/include/win32dll.h");
+    saveDir.mkpath("include");
+    saveDir.cd("include");
 
-    QDir componentsDir;
-    componentsDir.mkdir(saveDir.path() + "/include/Components");
-    QFile componentsH(gExecPath + QString(INCLUDEPATH) + "Components/Components.h");
-    componentsH.copy(saveDir.path() + "/include/Components/Components.h");
-
-    QDir componentUtilitiesDir;
-    componentUtilitiesDir.mkdir(saveDir.path() + "/include/ComponentUtilities");
-    QFile auxiliarySimulationFunctionsH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/AuxiliarySimulationFunctions.h");
-    auxiliarySimulationFunctionsH.copy(saveDir.path() + "/include/ComponentUtilities/AuxiliarySimulationFunctions.h");
-    QFile csvParserH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/CSVParser.h");
-    csvParserH.copy(saveDir.path() + "/include/ComponentUtilities/CSVParser.h");
-    QFile delayH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Delay.hpp");
-    delayH.copy(saveDir.path() + "/include/ComponentUtilities/Delay.hpp");
-    QFile doubleIntegratorWithDampingH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDamping.h");
-    doubleIntegratorWithDampingH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDamping.h");
-    QFile doubleIntegratorWithDampingAndCoulumbFrictionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
-    doubleIntegratorWithDampingAndCoulumbFrictionH.copy(saveDir.path() + "/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h");
-    QFile firstOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/FirstOrderTransferFunction.h");
-    firstOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/FirstOrderTransferFunction.h");
-    QFile integratorH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/Integrator.h");
-    integratorH.copy(saveDir.path() + "/include/ComponentUtilities/Integrator.h");
-    QFile integratorLimitedH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/IntegratorLimited.h");
-    integratorLimitedH.copy(saveDir.path() + "/include/ComponentUtilities/IntegratorLimited.h");
-    QFile ludcmpH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ludcmp.h");
-    ludcmpH.copy(saveDir.path() + "/include/ComponentUtilities/ludcmp.h");
-    QFile matrixH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/matrix.h");
-    matrixH.copy(saveDir.path() + "/include/ComponentUtilities/matrix.h");
-    QFile readDataCurveH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ReadDataCurve.h");
-    readDataCurveH.copy(saveDir.path() + "/include/ComponentUtilities/ReadDataCurve.h");
-    QFile secondOrderTransferFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/SecondOrderTransferFunction.h");
-    secondOrderTransferFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/SecondOrderTransferFunction.h");
-    QFile turbulentFlowFunctionH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/TurbulentFlowFunction.h");
-    turbulentFlowFunctionH.copy(saveDir.path() + "/include/ComponentUtilities/TurbulentFlowFunction.h");
-    QFile valveHysteresisH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/ValveHysteresis.h");
-    valveHysteresisH.copy(saveDir.path() + "/include/ComponentUtilities/ValveHysteresis.h");
-    QFile whiteGaussianNoiseH(gExecPath + QString(INCLUDEPATH) + "ComponentUtilities/WhiteGaussianNoise.h");
-    whiteGaussianNoiseH.copy(saveDir.path() + "/include/ComponentUtilities/WhiteGaussianNoise.h");
-
-    QDir coreUtilitiesDir;
-    coreUtilitiesDir.mkdir(saveDir.path() + "/include/CoreUtilities");
-    QFile hmfLoaderH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HmfLoader.h");
-    hmfLoaderH.copy(saveDir.path() + "/include/CoreUtilities/HmfLoader.h");
-    QFile classFactoryHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactory.hpp");
-    classFactoryHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactory.hpp");
-    QFile classFactoryStatusCheckHpp(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/ClassFactoryStatusCheck.hpp");
-    classFactoryStatusCheckHpp.copy(saveDir.path() + "/include/CoreUtilities/ClassFactoryStatusCheck.hpp");
-    QFile findUniqueNameH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/FindUniqueName.h");
-    findUniqueNameH.copy(saveDir.path() + "/include/CoreUtilities/FindUniqueName.h");
-    QFile hopsanCoreMessageHandlerH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/HopsanCoreMessageHandler.h");
-    hopsanCoreMessageHandlerH.copy(saveDir.path() + "/include/CoreUtilities/HopsanCoreMessageHandler.h");
-    QFile loadExternalH(gExecPath + QString(INCLUDEPATH) + "/CoreUtilities/LoadExternal.h");
-    loadExternalH.copy(saveDir.path() + "/include/CoreUtilities/LoadExternal.h");
-
-    QDir nodesDir;
-    nodesDir.mkdir(saveDir.path() + "/include/Nodes");
-    QFile nodesH(gExecPath + QString(INCLUDEPATH) + "/Nodes.h");
-    nodesH.copy(saveDir.path() + "/include/Nodes.h");
-
-    QDir dependenciesDir;
-    dependenciesDir.mkdir(saveDir.path() + "/include/Dependencies");
-
-    QDir csvParserDir;
-    csvParserDir.mkpath(saveDir.path() + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser");
-    QFile csv_ParserH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
-    csv_ParserH.copy(saveDir.path() + "/include/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp");
-
-    QDir rapidXmlDir;
-    rapidXmlDir.mkdir(saveDir.path() + "/include/Dependencies/rapidxml-1.13");
-    QFile rapidXmlH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml.hpp");
-    rapidXmlH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml.hpp");
-    QFile rapidXmlUtilsH(gExecPath + QString(INCLUDEPATH) + "/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
-    rapidXmlUtilsH.copy(saveDir.path() + "/include/Dependencies/rapidxml-1.13/rapidxml_utils.hpp");
-
-    QDir includeDir;
-    includeDir.mkdir(saveDir.path() + "/include/include");
-    QFile svnRevNumH(gExecPath + QString(INCLUDEPATH) + "/include/svnrevnum.h");
-    svnRevNumH.copy(saveDir.path() + "/include/include/svnrevnum.h");
+    copyDir( QString(INCLUDEPATH), saveDir.path() );
 }
 
 
@@ -602,7 +534,7 @@ double firstTimeAt(QVector<double> vData, QVector<double> vTime, double value)
 
 
 //! @brief Generates a normal distributed random value
-//! Using the Box–Muller transform
+//! Using the BoxâMuller transform
 //! @param average Average value of normal distribution
 //! @param sigma Standard deviation of normal distribution
 double normalDistribution(double average, double sigma)

@@ -223,7 +223,7 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
     case Component::S :
         mComponentSignalptrs.push_back(pComponent);
         break;
-    case Component::UNDEFINEDCQSTYPE :
+    case Component::UndefinedCQSType :
         mComponentUndefinedptrs.push_back(pComponent);
         break;
     default :
@@ -272,7 +272,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
                 }
             }
             break;
-        case Component::UNDEFINEDCQSTYPE :
+        case Component::UndefinedCQSType :
             for (cit = mComponentUndefinedptrs.begin(); cit != mComponentUndefinedptrs.end(); ++cit)
             {
                 if ( *cit == pComponent )
@@ -606,8 +606,8 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
                 mTypeCQS = Component::S;
                 break;
 
-            case Component::UNDEFINEDCQSTYPE :
-                mTypeCQS = Component::UNDEFINEDCQSTYPE;
+            case Component::UndefinedCQSType :
+                mTypeCQS = Component::UndefinedCQSType;
                 break;
 
             default :
@@ -711,7 +711,7 @@ void ComponentSystem::determineCQSType()
 //        {
 //            gCoreMessageHandler.addWarningMessage(string("Your action has caused the CQS type to become invalid in system: ")+this->getName(), "invalidcqstype");
 //        }
-        this->setTypeCQS(UNDEFINEDCQSTYPE);
+        this->setTypeCQS(UndefinedCQSType);
     }
 }
 

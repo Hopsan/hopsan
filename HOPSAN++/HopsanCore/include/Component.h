@@ -56,7 +56,7 @@ public:
     virtual ~Component();
 
     //! @brief Enum typ for all CQS types
-    enum CQSEnumT {C, Q, S, UNDEFINEDCQSTYPE};
+    enum CQSEnumT {C, Q, S, UndefinedCQSType};
 
     //==========Public functions==========
     //Virtual functions

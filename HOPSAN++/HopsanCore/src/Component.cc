@@ -58,7 +58,7 @@ Component::Component()
     mTimestep = 0.001;
 
     mIsComponentSystem = false;
-    mTypeCQS = Component::UNDEFINEDCQSTYPE;
+    mTypeCQS = Component::UndefinedCQSType;
 
     mpSystemParent = 0;
     mModelHierarchyDepth = 0;
@@ -225,7 +225,7 @@ string Component::getTypeCQSString() const
     case S :
         return "S";
         break;
-    case UNDEFINEDCQSTYPE :
+    case UndefinedCQSType :
         return "UNDEFINEDCQSTYPE";
         break;
     default :
