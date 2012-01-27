@@ -130,6 +130,7 @@ public:
     QAction *mpRotateRightAction;
     QAction *mpFlipHorizontalAction;
     QAction *mpFlipVerticalAction;
+    QAction *mpIssueTrackerAction;
     QAction *mpAboutAction;
     QAction *mpHelpAction;
     QAction *mpWebsiteAction;
@@ -165,6 +166,7 @@ private slots:
     void openRecentModel();
     void openHopsanURL();
     void openArchiveURL();
+    void openIssueTrackerDialog();
     void updatePlotActionButton(bool);
     void updateSystemParametersActionButton(bool);
     void showToolBarHelpPopup();
@@ -176,6 +178,8 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
+
+
 
     //Dialogs
     OptionsDialog *mpOptionsDialog;

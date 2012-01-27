@@ -2001,6 +2001,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "#define S_FUNCTION_LEVEL 2\n\n";
     wrapperStream << "#include \"simstruc.h\"\n";
     wrapperStream << "#include <sstream>\n";
+    //! @todo Do we really need to hardcode include all of these .h files, cant we just include ComponentUtilities.h and hopsancore.h and maybe some other needed file (that contains all other files)
     wrapperStream << "#include \"include/HopsanCore.h\"\n";
     wrapperStream << "#include \"include/Component.h\"\n";
     wrapperStream << "#include \"include/ComponentSystem.h\"\n";

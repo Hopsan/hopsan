@@ -36,7 +36,7 @@ namespace hopsan {
     //! @brief
     //! @ingroup MechanicalComponents
     //!
-    class MechanicRotationalInertiaWithCoulumbFriction : public ComponentQ
+    class MechanicRotationalInertiaWithCoulombFriction : public ComponentQ
     {
 
     private:
@@ -46,7 +46,7 @@ namespace hopsan {
         //DoubleIntegratorWithDamping mIntegrator;                                                            //External functions
         double mNum[3];
         double mDen[3];
-        DoubleIntegratorWithDampingAndCoulumbFriction mIntegrator;
+        DoubleIntegratorWithDampingAndCoulombFriction mIntegrator;
 //        SecondOrderFilter mFilter;
 //        Integrator mInt;
         Port *mpP1, *mpP2;                                                                                  //Ports
@@ -54,10 +54,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicRotationalInertiaWithCoulumbFriction();
+            return new MechanicRotationalInertiaWithCoulombFriction();
         }
 
-        MechanicRotationalInertiaWithCoulumbFriction() : ComponentQ()
+        MechanicRotationalInertiaWithCoulombFriction() : ComponentQ()
         {
             //Set member attributes
             J = 1.0;

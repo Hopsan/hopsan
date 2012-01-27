@@ -642,6 +642,10 @@ void MainWindow::createActions()
     connect(mpAboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
     connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
 
+    mpIssueTrackerAction = new QAction(this);
+    mpIssueTrackerAction->setText("Issue Tracker");
+    connect(mpIssueTrackerAction, SIGNAL(triggered()), this, SLOT(openIssueTrackerDialog()));
+
     mpHelpAction = new QAction(this);
     mpHelpAction->setText("User Guide");
     connect(mpHelpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
@@ -810,6 +814,7 @@ void MainWindow::createMenus()
 
     mpHelpMenu->addAction(mpHelpAction);
     mpHelpMenu->addMenu(mpExamplesMenu);
+    mpHelpMenu->addAction(mpIssueTrackerAction);
     mpHelpMenu->addAction(mpWebsiteAction);
     mpHelpMenu->addAction(mpNewVersionsAction);
     mpHelpMenu->addAction(mpAboutAction);
@@ -984,6 +989,26 @@ void MainWindow::openHopsanURL()
 void MainWindow::openArchiveURL()
 {
     QDesktopServices::openUrl(QUrl(QString(DOWNLOADLINK)));
+}
+
+void MainWindow::openIssueTrackerDialog()
+{
+    QMessageBox msgBox(this);
+//    QSizePolicy pol;
+//    pol.setHorizontalPolicy(QSizePolicy::Expanding);
+//    msgBox.setSizePolicy(pol);
+    QString msg = QString("To browse or read about currently known issues you should see the Hopsan project issue tracker. You can also support development by reporting new issues or add feature requests.\n\n")+
+                  QString("See the Hopsan web page for more information about bug reporting and issue tracking.");
+
+    msgBox.setWindowTitle("Hopsan Issue Tracking");
+    msgBox.setText(msg);
+    QPushButton *pToWeb = msgBox.addButton("To Hopsan webpage", QMessageBox::YesRole);
+    msgBox.addButton(QMessageBox::Close);
+    msgBox.exec();
+    if (msgBox.clickedButton() == pToWeb)
+    {
+        this->openHopsanURL();
+    }
 }
 
 

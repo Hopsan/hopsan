@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="MechanicTranslationalMassWithCoulumbFriction" displayname="Translational Mass With Coulumb Friction">
+    <modelobject typename="MechanicTranslationalMassWithCoulumbFriction" displayname="Translational Mass With Coulomb Friction">
         <icons>
             <icon scale="1" path="massc_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="massc_iso.svg" iconrotation="ON" type="iso"/>

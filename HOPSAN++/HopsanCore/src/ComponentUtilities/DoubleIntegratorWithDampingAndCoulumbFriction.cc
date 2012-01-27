@@ -31,7 +31,7 @@ using namespace hopsan;
 
 
 
-void DoubleIntegratorWithDampingAndCoulumbFriction::initialize(double timestep, double w0, double mass, double Fs, double Fk, double u0, double y0, double sy0)
+void DoubleIntegratorWithDampingAndCoulombFriction::initialize(double timestep, double w0, double mass, double Fs, double Fk, double u0, double y0, double sy0)
 {
     mW0 = w0;
     mUs = Fs/mass;
@@ -43,7 +43,7 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::initialize(double timestep, 
 }
 
 
-void DoubleIntegratorWithDampingAndCoulumbFriction::initializeValues(double u0, double y0, double sy0)
+void DoubleIntegratorWithDampingAndCoulombFriction::initializeValues(double u0, double y0, double sy0)
 {
     mDelayU = u0;
     mDelayY = y0;
@@ -51,13 +51,13 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::initializeValues(double u0, 
 }
 
 
-void DoubleIntegratorWithDampingAndCoulumbFriction::setDamping(double w0)
+void DoubleIntegratorWithDampingAndCoulombFriction::setDamping(double w0)
 {
     mW0 = w0;
 }
 
 
-void DoubleIntegratorWithDampingAndCoulumbFriction::integrate(double u)
+void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
 {
     double tempDelaySY = mDelaySY;
     double ue;    //Effective acceleration
@@ -87,7 +87,7 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::integrate(double u)
 
 
 //! @brief Integrates one step, but saves previous step in case step has to be re-integrated
-void DoubleIntegratorWithDampingAndCoulumbFriction::integrateWithUndo(double u)
+void DoubleIntegratorWithDampingAndCoulombFriction::integrateWithUndo(double u)
 {
     mDelaySYbackup = mDelaySY;
     mDelayYbackup = mDelayY;
@@ -99,7 +99,7 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::integrateWithUndo(double u)
 
 //! @brief Re-integrates last step
 //! Last step must have been called with integrateWithUndo() for this to work.
-void DoubleIntegratorWithDampingAndCoulumbFriction::redoIntegrate(double u)
+void DoubleIntegratorWithDampingAndCoulombFriction::redoIntegrate(double u)
 {
     mDelaySY = (2-mW0)/(2+mW0)*mDelaySYbackup + mTimeStep/(2.0+mW0)*(u + mDelayUbackup);
     mDelayY = mDelayYbackup + mTimeStep/2.0*(mDelaySY+mDelaySYbackup);
@@ -108,14 +108,14 @@ void DoubleIntegratorWithDampingAndCoulumbFriction::redoIntegrate(double u)
 
 
 //! Returns first primitive from double integration
-double DoubleIntegratorWithDampingAndCoulumbFriction::valueFirst()
+double DoubleIntegratorWithDampingAndCoulombFriction::valueFirst()
 {
     return mDelaySY;
 }
 
 
 //! Returns second primitive from double integration
-double DoubleIntegratorWithDampingAndCoulumbFriction::valueSecond()
+double DoubleIntegratorWithDampingAndCoulombFriction::valueSecond()
 {
     return mDelayY;
 }
