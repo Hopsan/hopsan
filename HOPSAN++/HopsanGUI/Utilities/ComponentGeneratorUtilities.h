@@ -121,5 +121,6 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
 QStringList getQVariables(QString nodeType);
 QStringList getCVariables(QString nodeType);
 QStringList getVariableLabels(QString nodeType);
+void getAllTerms(QString equation, QStringList &terms);
 
 #endif // COMPONENTGENERATORUTILITIES_H

@@ -381,6 +381,5 @@ void WelcomeDialog::showNews(bool loadedSuccessfully)
 
 void WelcomeDialog::updateLoadingWebProgressBar()
 {
-    qDebug() << "Updating progress bar!";
     mpLoadingWebProgressBar->setValue(mpLoadingWebProgressBar->value()+1);
 }

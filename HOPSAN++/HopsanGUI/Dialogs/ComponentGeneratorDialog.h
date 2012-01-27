@@ -70,6 +70,7 @@ public slots:
     virtual void open();
 
 private slots:
+    void autoResize();
     void update();
     void addPort();
     void addParameter();
@@ -92,6 +93,10 @@ private slots:
     void saveDialogToXml();
     void generateAppearance();
     void openAppearanceDialog();
+    void togglePortsBox();
+    void toggleParametersBox();
+    void toggleUtilitiesBox();
+    void toggleStaticVariablesBox();
 
 private:
     void showOutputDialog(QStringList jacobian, QStringList equations, QStringList variables);
@@ -172,6 +177,10 @@ private:
     QVector<QLineEdit*> mvParameterUnitEdits;
     QVector<QLineEdit*> mvParameterInitEdits;
     QVector<QToolButton*> mvRemoveParameterButtons;
+    QToolButton *mpPortsMinMaxButton;
+    QToolButton *mpParametersMinMaxButton;
+    QToolButton *mpUtilitiesMinMaxButton;
+    QToolButton *mpStaticVariablesMinMaxButton;
 
     //Utilities Group Box
     QGroupBox *mpUtilitiesGroupBox;
@@ -199,6 +208,9 @@ private:
 
     //Main layout
     QGridLayout *mpLayout;
+    QWidget *mpCentralWidget;
+    QScrollArea *mpScrollArea;
+    QGridLayout *mpCentralLayout;
 
     //Member variables
     QList<PortSpecification> mPortList;
@@ -209,6 +221,11 @@ private:
     QStringList mRecentComponentFileNames;
 
     ModelObjectAppearance *mpAppearance;
+
+    bool mPortsBoxVisible;
+    bool mParametersBoxVisible;
+    bool mUtilitiesBoxVisible;
+    bool mStaticVariablesBoxVisible;
 };
 
 #endif // COMPONENTGENERATORDIALOG_H_INCLUDED

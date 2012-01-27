@@ -46,7 +46,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b";
+    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b" << "\\bVariableLimit\\b";
 
     foreach (const QString &pattern, keywordPatterns)
     {
@@ -80,15 +80,17 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 {
     mpAppearance = 0;
 
-
     //Set the name and size of the main window
     this->resize(640,480);
     this->setWindowTitle("Component Generator");
     this->setPalette(gConfig.getPalette());
+    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     //Equation Text Field
     mpGivenLabel = new QLabel("Given: ");
+    mpGivenLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpSoughtLabel = new QLabel("Sought: ");
+    mpSoughtLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     QFont monoFont = QFont("Monospace", 10, 50);
     monoFont.setStyleHint(QFont::Monospace);
@@ -99,6 +101,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpInitLayout->addWidget(mpInitTextField, 0, 0);
     mpInitWidget = new QWidget(this);
     mpInitWidget->setLayout(mpInitLayout);
+    mpInitWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpSimulateTextField = new QTextEdit(this);                                  //SimulateOneTimeStep code text field
     mpSimulateTextField->setFont(monoFont);
@@ -106,6 +109,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpSimulateLayout->addWidget(mpSimulateTextField, 0, 0);
     mpSimulateWidget = new QWidget(this);
     mpSimulateWidget->setLayout(mpSimulateLayout);
+    mpSimulateWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpFinalizeTextField = new QTextEdit(this);                                  //Finalize code text field
     mpFinalizeTextField->setFont(monoFont);
@@ -113,24 +117,26 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpFinalizeLayout->addWidget(mpFinalizeTextField, 0, 0);
     mpFinalizeWidget = new QWidget(this);
     mpFinalizeWidget->setLayout(mpFinalizeLayout);
+    mpFinalizeWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpEquationsTextField = new QTextEdit(this);                                 //Equation text field
     mpEquationsTextField->setFont(monoFont);
+    mpEquationsTextField->setMaximumHeight(300);
     mpEquationHighLighter = new ModelicaHighlighter(mpEquationsTextField->document());
     mpBoundaryEquationsLabel = new QLabel("Boundary Equations:", this);
     mpBoundaryEquationsTextField = new QTextEdit(this);
     mpBoundaryEquationsTextField->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     mpBoundaryEquationsTextField->setFont(monoFont);
+    mpBoundaryEquationsTextField->setMaximumHeight(200);
     mpBoundaryEquationHighLighter = new ModelicaHighlighter(mpBoundaryEquationsTextField->document());
     mpEquationsLayout = new QGridLayout(this);
     mpEquationsLayout->addWidget(mpEquationsTextField, 0, 0);
     mpEquationsLayout->addWidget(mpBoundaryEquationsLabel, 1, 0);
     mpEquationsLayout->addWidget(mpBoundaryEquationsTextField, 2, 0);
-    mpEquationsLayout->setRowStretch(0, 1);
-    mpEquationsLayout->setRowStretch(1, 0);
-    mpEquationsLayout->setRowStretch(2, 0);
+    mpEquationsLayout->setSizeConstraint(QLayout::SetMinimumSize);
     mpEquationsWidget = new QWidget(this);
     mpEquationsWidget->setLayout(mpEquationsLayout);
+    mpEquationsWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
 
 
@@ -138,6 +144,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpCodeTabs->addTab(mpInitWidget, "Initialize");
     mpCodeTabs->addTab(mpSimulateWidget, "Simulate");
     mpCodeTabs->addTab(mpFinalizeWidget, "Finalize");
+    mpCodeTabs->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpCodeLayout = new QGridLayout(this);
     mpCodeLayout->addWidget(mpGivenLabel, 0, 0);
     mpCodeLayout->addWidget(mpSoughtLabel, 1, 0);
@@ -145,6 +152,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpCodeLayout->addWidget(mpEquationsWidget, 3, 0);
     mpCodeGroupBox = new QGroupBox("Equations", this);
     mpCodeGroupBox->setLayout(mpCodeLayout);
+    mpCodeGroupBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     //Buttons
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
@@ -178,30 +186,40 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpLoadButton->setMenu(mpLoadMenu);
     mpLoadButton->setPopupMode(QToolButton::InstantPopup);
     mpLoadButton->setToolTip("Add Item");
+    mpLoadButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpSaveButton = new QToolButton(this);
     mpSaveButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Save.png"));
+    mpSaveButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpGenerateFromLabel = new QLabel("Generate From: ");
     mpGenerateFromComboBox = new QComboBox(this);
     mpGenerateFromComboBox->addItems(QStringList() << "Equations" << "C++ Code");
     mpGenerateFromComboBox->setCurrentIndex(0);
+    mpGenerateFromComboBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     connect(mpGenerateFromComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(update()));
 
     mpComponentNameLabel = new QLabel("Type Name: ");
     mpComponentNameEdit = new QLineEdit(this);
+    mpComponentNameLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    mpComponentNameEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpComponentDisplayLabel = new QLabel("Display Name: ");
+    mpComponentDisplayLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpComponentDisplayEdit = new QLineEdit(this);
+    mpComponentDisplayEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpComponentTypeLabel = new QLabel("CQS Type: ");
+    mpComponentTypeLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpComponentTypeComboBox = new QComboBox(this);
     mpComponentTypeComboBox->addItems(QStringList() << "C" << "Q" << "S");
+    mpComponentTypeComboBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     connect(mpComponentTypeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(update()));
     connect(mpComponentTypeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateValues()));
 
     mpAddItemButton = new QToolButton(this);
     mpAddItemButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+    mpAddItemButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpAddItemMenu = new QMenu(this);
     QAction *mpAddPortAction = new QAction(tr("&Add Port"), this);
     QAction *mpAddParameterAction = new QAction(tr("&Add Parameter"), this);
@@ -220,9 +238,10 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpAddItemButton->setToolTip("Add Item");
 
     //Group boxes and layouts
-    mpParametersGroupBox = new QGroupBox("Parameters", this);                   //Parameters layout
-    mpParametersLayout = new QGridLayout();
-    mpParametersGroupBox->setLayout(mpParametersLayout);
+    mpPortsGroupBox = new QGroupBox("Ports", this);                             //Ports layout
+    mpPortsGroupBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    mpPortsLayout = new QGridLayout();
+    mpPortsGroupBox->setLayout(mpPortsLayout);
     mpPortNamesLabel = new QLabel("Name:", this);
     mpPortTypeLabel = new QLabel("Port Type:", this);
     mpNodeTypelabel = new QLabel("Node Type:", this);
@@ -232,10 +251,16 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpAddPortButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Add.png"));
     mpAddPortButton->setToolTip("Add Port");
     connect(mpAddPortButton, SIGNAL(pressed()), this, SLOT(addPort()));
+    mpPortsMinMaxButton = new QToolButton(this);
+    mpPortsMinMaxButton->setFixedSize(15, 15);
+    mpPortsMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    connect(mpPortsMinMaxButton, SIGNAL(pressed()), this, SLOT(togglePortsBox()));
+    mPortsBoxVisible = true;
 
-    mpPortsGroupBox = new QGroupBox("Ports", this);                             //Ports layout
-    mpPortsLayout = new QGridLayout();
-    mpPortsGroupBox->setLayout(mpPortsLayout);
+    mpParametersGroupBox = new QGroupBox("Parameters", this);                   //Parameters layout
+    mpParametersGroupBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    mpParametersLayout = new QGridLayout();
+    mpParametersGroupBox->setLayout(mpParametersLayout);
     mpParametersNameLabel = new QLabel("Name:", this);
     mpParametersDisplayLabel = new QLabel("Display Name:", this);
     mpParametersDescriptionLabel = new QLabel("Description:", this);
@@ -245,8 +270,14 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpAddParameterButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Add.png"));
     mpAddParameterButton->setToolTip("Add Parameter");
     connect(mpAddParameterButton, SIGNAL(pressed()), this, SLOT(addParameter()));
+    mpParametersMinMaxButton = new QToolButton(this);
+    mpParametersMinMaxButton->setFixedSize(15, 15);
+    mpParametersMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    connect(mpParametersMinMaxButton, SIGNAL(pressed()), this, SLOT(toggleParametersBox()));
+    mParametersBoxVisible = true;
 
     mpUtilitiesGroupBox = new QGroupBox("Utilities", this);                     //Utilities layout
+    mpUtilitiesGroupBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpUtilitiesLayout = new QGridLayout();
     mpUtilitiesGroupBox->setLayout(mpUtilitiesLayout);
     mpUtilitiesLabel = new QLabel("Utility:", this);
@@ -255,8 +286,14 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpAddUtilityButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Add.png"));
     mpAddUtilityButton->setToolTip("Add Utility");
     connect(mpAddUtilityButton, SIGNAL(pressed()), this, SLOT(addUtility()));
+    mpUtilitiesMinMaxButton = new QToolButton(this);
+    mpUtilitiesMinMaxButton->setFixedSize(15, 15);
+    mpUtilitiesMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    connect(mpUtilitiesMinMaxButton, SIGNAL(pressed()), this, SLOT(toggleUtilitiesBox()));
+    mUtilitiesBoxVisible = true;
 
     mpStaticVariablesGroupBox = new QGroupBox("Static Variables", this);        //Static variables layout
+    mpStaticVariablesGroupBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpStaticVariablesLayout = new QGridLayout();
     mpStaticVariablesGroupBox->setLayout(mpStaticVariablesLayout);
     mpStaticVariableNamesLabel = new QLabel("Name:", this);
@@ -264,20 +301,60 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpAddStaticVariableButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Add.png"));
     mpAddStaticVariableButton->setToolTip("Add Static Variable");
     connect(mpAddStaticVariableButton, SIGNAL(pressed()), this, SLOT(addStaticVariable()));
+    mpStaticVariablesMinMaxButton = new QToolButton(this);
+    mpStaticVariablesMinMaxButton->setFixedSize(15, 15);
+    mpStaticVariablesMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    connect(mpStaticVariablesMinMaxButton, SIGNAL(pressed()), this, SLOT(toggleStaticVariablesBox()));
+    mStaticVariablesBoxVisible = true;
 
 
-
-    //Main layout
+    //Main layout (create widgets, but don't do anything before contents are updated)
     mpLayout = new QGridLayout(this);
-    setLayout(mpLayout);
+    mpCentralWidget = new QWidget(this);
+    mpScrollArea = new QScrollArea(this);
+    mpCentralLayout = new QGridLayout(this);
 
     update();
     updateValues();
+
+    mpCentralWidget->setPalette(gConfig.getPalette());
+    mpCentralWidget->setLayout(mpLayout);
+    mpScrollArea->setPalette(gConfig.getPalette());
+    mpScrollArea->setWidget(mpCentralWidget);
+    mpScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mpScrollArea->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    mpCentralLayout->addWidget(mpScrollArea);
+    setLayout(mpCentralLayout);
+
+    autoResize();
 
     //Connections
     connect(mpCancelButton,     SIGNAL(clicked()), this, SLOT(reject()));
     connect(mpCompileButton,    SIGNAL(clicked()), this, SLOT(compile()));
     connect(mpAppearanceButton, SIGNAL(clicked()), this, SLOT(openAppearanceDialog()));
+}
+
+
+//! @brief Auto resizes the dialog to fit contents and/or screen geometry
+void ComponentGeneratorDialog::autoResize()
+{
+    mpCentralWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    mpLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    //mpCentralLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+    mpScrollArea->setFixedHeight(std::min(mpCentralWidget->height()+30, maxHeight));
+    if(mpScrollArea->verticalScrollBar()->isVisible())
+    {
+        mpScrollArea->setMinimumWidth(mpCentralWidget->width()+25);
+    }
+    else
+    {
+        mpScrollArea->setMinimumWidth(mpCentralWidget->width());
+    }
+    mpScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    mpScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    this->resize(mpScrollArea->size());
 }
 
 
@@ -515,7 +592,7 @@ void ComponentGeneratorDialog::update()
     mvPortDefaultEdits.clear();
     mvRemovePortButtons.clear();
 
-    if(!mPortList.isEmpty())
+    if(!mPortList.isEmpty() && mPortsBoxVisible)
     {
         for(int i=0; i<mPortList.size(); ++i)
         {
@@ -559,13 +636,14 @@ void ComponentGeneratorDialog::update()
             ++row;
         }
     }
-    mpPortNamesLabel->setVisible(!mPortList.isEmpty());
-    mpPortTypeLabel->setVisible(!mPortList.isEmpty());
-    mpNodeTypelabel->setVisible(!mPortList.isEmpty());
-    mpPortRequiredLabel->setVisible(!mPortList.isEmpty());
-    mpPortDefaultLabel->setVisible(!mPortList.isEmpty());
-    mpAddPortButton->setVisible(!mPortList.isEmpty());
+    mpPortNamesLabel->setVisible(!mPortList.isEmpty() && mPortsBoxVisible);
+    mpPortTypeLabel->setVisible(!mPortList.isEmpty() && mPortsBoxVisible);
+    mpNodeTypelabel->setVisible(!mPortList.isEmpty() && mPortsBoxVisible);
+    mpPortRequiredLabel->setVisible(!mPortList.isEmpty() && mPortsBoxVisible);
+    mpPortDefaultLabel->setVisible(!mPortList.isEmpty() && mPortsBoxVisible);
+    mpAddPortButton->setVisible(!mPortList.isEmpty() && mPortsBoxVisible);
     mpPortsGroupBox->setVisible(!mPortList.isEmpty());
+    mpPortsMinMaxButton->setVisible(!mPortList.isEmpty());
 
 
     while(!mpParametersLayout->isEmpty())
@@ -604,7 +682,7 @@ void ComponentGeneratorDialog::update()
     mvParameterInitEdits.clear();
     mvRemoveParameterButtons.clear();
 
-    if(!mParametersList.isEmpty())
+    if(!mParametersList.isEmpty() &&  mParametersBoxVisible)
     {
         for(int i=0; i<mParametersList.size(); ++i)
         {
@@ -641,13 +719,14 @@ void ComponentGeneratorDialog::update()
         }
     }
 
-    mpParametersNameLabel->setVisible(!mParametersList.isEmpty());
-    mpParametersDisplayLabel->setVisible(!mParametersList.isEmpty());
-    mpParametersDescriptionLabel->setVisible(!mParametersList.isEmpty());
-    mpParametersUnitLabel->setVisible(!mParametersList.isEmpty());;
-    mpParametersInitLabel->setVisible(!mParametersList.isEmpty());
-    mpAddParameterButton->setVisible(!mParametersList.isEmpty());
+    mpParametersNameLabel->setVisible(!mParametersList.isEmpty() && mParametersBoxVisible);
+    mpParametersDisplayLabel->setVisible(!mParametersList.isEmpty() && mParametersBoxVisible);
+    mpParametersDescriptionLabel->setVisible(!mParametersList.isEmpty() && mParametersBoxVisible);
+    mpParametersUnitLabel->setVisible(!mParametersList.isEmpty() && mParametersBoxVisible);;
+    mpParametersInitLabel->setVisible(!mParametersList.isEmpty() && mParametersBoxVisible);
+    mpAddParameterButton->setVisible(!mParametersList.isEmpty() && mParametersBoxVisible);
     mpParametersGroupBox->setVisible(!mParametersList.isEmpty());
+    mpParametersMinMaxButton->setVisible(!mParametersList.isEmpty());
 
     while(!mpUtilitiesLayout->isEmpty())
     {
@@ -673,7 +752,7 @@ void ComponentGeneratorDialog::update()
     mvUtilityNameEdits.clear();
     mvRemoveUtilityButtons.clear();
 
-    if(!mUtilitiesList.isEmpty())
+    if(!mUtilitiesList.isEmpty() && mUtilitiesBoxVisible)
     {
         for(int i=0; i<mUtilitiesList.size(); ++i)
         {
@@ -701,10 +780,11 @@ void ComponentGeneratorDialog::update()
         }
     }
 
-    mpUtilitiesLabel->setVisible(!mUtilitiesList.isEmpty());
-    mpUtilityNamesLabel->setVisible(!mUtilitiesList.isEmpty());
-    mpAddUtilityButton->setVisible(!mUtilitiesList.isEmpty());
+    mpUtilitiesLabel->setVisible(!mUtilitiesList.isEmpty() && mUtilitiesBoxVisible);
+    mpUtilityNamesLabel->setVisible(!mUtilitiesList.isEmpty() && mUtilitiesBoxVisible);
+    mpAddUtilityButton->setVisible(!mUtilitiesList.isEmpty() && mUtilitiesBoxVisible);
     mpUtilitiesGroupBox->setVisible(!mUtilitiesList.isEmpty());
+    mpUtilitiesMinMaxButton->setVisible(!mUtilitiesList.isEmpty());
 
 
     while(!mpStaticVariablesLayout->isEmpty())
@@ -727,7 +807,7 @@ void ComponentGeneratorDialog::update()
     mvStaticVariableNameEdits.clear();
     mvRemoveStaticVariableButtons.clear();
 
-    if(!mStaticVariablesList.isEmpty())
+    if(!mStaticVariablesList.isEmpty() && mStaticVariablesBoxVisible)
     {
         for(int i=0; i<mStaticVariablesList.size(); ++i)
         {
@@ -747,9 +827,10 @@ void ComponentGeneratorDialog::update()
             ++row;
         }
     }
-    mpStaticVariableNamesLabel->setVisible(!mStaticVariablesList.isEmpty());
-    mpAddStaticVariableButton->setVisible(!mStaticVariablesList.isEmpty());
+    mpStaticVariableNamesLabel->setVisible(!mStaticVariablesList.isEmpty() && mStaticVariablesBoxVisible);
+    mpAddStaticVariableButton->setVisible(!mStaticVariablesList.isEmpty() && mStaticVariablesBoxVisible);
     mpStaticVariablesGroupBox->setVisible(!mStaticVariablesList.isEmpty());
+    mpStaticVariablesMinMaxButton->setVisible(!mStaticVariablesList.isEmpty());
 
     while(!mpLayout->isEmpty())
     {
@@ -763,34 +844,45 @@ void ComponentGeneratorDialog::update()
     pRecentLayout->addWidget(mpLoadRecentButton);
     pRecentLayout->addWidget(mpRemoveRecentButton);
     pRecentLayout->setStretch(1, 1);
+    pRecentLayout->setSizeConstraint(QLayout::SetMinimumSize);
     QWidget *pRecentWidget = new QWidget(this);
+    pRecentWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     pRecentWidget->setLayout(pRecentLayout);
 
-    mpLayout->addWidget(pRecentWidget,              0, 0, 1, 11);
-    mpLayout->addWidget(mpLoadButton,               1, 0);
-    mpLayout->addWidget(mpSaveButton,               1, 1);
-    mpLayout->addWidget(mpGenerateFromLabel,        1, 2);
-    mpLayout->addWidget(mpGenerateFromComboBox,     1, 3);
-    mpLayout->addWidget(mpComponentNameLabel,       1, 4);
-    mpLayout->addWidget(mpComponentNameEdit,        1, 5);
-    mpLayout->addWidget(mpComponentDisplayLabel,    1, 6);
-    mpLayout->addWidget(mpComponentDisplayEdit,     1, 7);
-    mpLayout->addWidget(mpComponentTypeLabel,       1, 8);
-    mpLayout->addWidget(mpComponentTypeComboBox,    1, 9);
-    mpLayout->addWidget(mpAddItemButton,            1, 10);
-    mpLayout->addWidget(mpPortsGroupBox,            2, 0, 1, 11);
-    mpLayout->addWidget(mpParametersGroupBox,       3, 0, 1, 11);
-    mpLayout->addWidget(mpUtilitiesGroupBox,        4, 0, 1, 11);
-    mpLayout->addWidget(mpStaticVariablesGroupBox,  5, 0, 1, 11);
-    mpLayout->addWidget(mpCodeGroupBox,             6, 0, 1, 11);
-    mpLayout->addWidget(mpButtonBox,                7, 0, 1, 11);
-    mpLayout->setRowStretch(6, 1);
-
-
+    mpLayout->addWidget(pRecentWidget,                      0, 0, 1, 11);
+    mpLayout->addWidget(mpLoadButton,                       1, 0);
+    mpLayout->addWidget(mpSaveButton,                       1, 1);
+    mpLayout->addWidget(mpGenerateFromLabel,                1, 2);
+    mpLayout->addWidget(mpGenerateFromComboBox,             1, 3);
+    mpLayout->addWidget(mpComponentNameLabel,               1, 4);
+    mpLayout->addWidget(mpComponentNameEdit,                1, 5);
+    mpLayout->addWidget(mpComponentDisplayLabel,            1, 6);
+    mpLayout->addWidget(mpComponentDisplayEdit,             1, 7);
+    mpLayout->addWidget(mpComponentTypeLabel,               1, 8);
+    mpLayout->addWidget(mpComponentTypeComboBox,            1, 9);
+    mpLayout->addWidget(mpAddItemButton,                    1, 10);
+    mpLayout->addWidget(mpPortsGroupBox,                    2, 0, 1, 11);
+    mpLayout->addWidget(mpPortsMinMaxButton,                2, 0, 1, 1);
+    mpLayout->setAlignment(mpPortsMinMaxButton, Qt::AlignTop);
+    mpLayout->addWidget(mpParametersGroupBox,               3, 0, 1, 11);
+    mpLayout->addWidget(mpParametersMinMaxButton,           3, 0, 1, 1);
+    mpLayout->setAlignment(mpParametersMinMaxButton, Qt::AlignTop);
+    mpLayout->addWidget(mpUtilitiesGroupBox,                4, 0, 1, 11);
+    mpLayout->addWidget(mpUtilitiesMinMaxButton,            4, 0, 1, 1);
+    mpLayout->setAlignment(mpUtilitiesMinMaxButton, Qt::AlignTop);
+    mpLayout->addWidget(mpStaticVariablesGroupBox,          5, 0, 1, 11);
+    mpLayout->addWidget(mpStaticVariablesMinMaxButton,      5, 0, 1, 1);
+    mpLayout->setAlignment(mpStaticVariablesMinMaxButton, Qt::AlignTop);
+    mpLayout->addWidget(mpCodeGroupBox,                     6, 0, 1, 11);
+    mpLayout->addWidget(mpButtonBox,                        7, 0, 1, 11);
+    mpLayout->setSizeConstraint(QLayout::SetMinimumSize);
+    //mpLayout->setRowStretch(6, 1);
 
     updateGivenSoughtText();
     updateBoundaryEquations();
     updateRecentList();
+
+    autoResize();
 }
 
 
@@ -982,6 +1074,38 @@ void ComponentGeneratorDialog::compile()
         equations.append(boundaryEquations);
         equations.removeAll("");
 
+        //Identify variable limitations, and remove them from the equations list
+        QStringList limitedVariables;
+        QStringList limitedDerivatives;
+        QStringList limitMinValues;
+        QStringList limitMaxValues;
+        QList<int> limitedVariableEquations;
+        QList<int> limitedDerivativeEquations;
+        for(int i=0; i<equations.size(); ++i)
+        {
+            if(equations.at(i).startsWith("VariableLimit("))
+            {
+                if(i<2)
+                {
+                    gpMainWindow->mpMessageWidget->printGUIErrorMessage("Variable limitation not preeded by equations defining variable and derivative.");
+                    return;
+                }
+
+                QString args = equations.at(i).section("(",1,1).section(")",0,0);
+                limitedVariables << args.section(",", 0,0);
+                limitedDerivatives << args.section(",", 1,1);
+                limitMinValues << args.section(",", 2,2);
+                limitMaxValues << args.section(",", 3,3);
+                limitedVariableEquations << i-2;
+                limitedDerivativeEquations << i-1;
+
+                qDebug() << "Found limitation of variable " << limitedVariables.last() << " with derivative " << limitedDerivatives.last();
+
+                equations.removeAt(i);
+                --i;
+            }
+        }
+
         //Identify derivatives, and replace them with "s"
         identifyDerivatives(equations);
 
@@ -1086,36 +1210,58 @@ void ComponentGeneratorDialog::compile()
         allSymbols.append("mTime");         //Simulation time
         allSymbols.append("mTimestep");     //Simulation time step
         allSymbols.append("qi00");          //Delay operator
+        allSymbols.append("qi00_OLD");      //Temporary replace variable for delay operator
+
+        //Create pointer to Python console
+        PyDockWidget *py = gpMainWindow->mpPyDockWidget;
 
         //Load sympy libraries
-        gpMainWindow->mpPyDockWidget->runCommand("from sympy import *");
+        py->runCommand("from sympy import *");
 
         //Create symbol objects for all variables
         for(int i=0; i<allSymbols.size(); ++i)
         {
-            gpMainWindow->mpPyDockWidget->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
+            py->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
         }
 
-//        //Create a vector with
-//        QString command = "X=Matrix([[";
-//        for(int i=0; i<allSymbols.size(); ++i)
-//        {
-//            command.append(allSymbols.at(i)+"],[");
-//        }
-//        command.chop(2);
-//        command.append("])");
-//        gpMainWindow->mpPyDockWidget->runCommand(command);
+        //Create custom functions
+        QStringList allFunctions;
+        allFunctions << "hopsanLimit" << "hopsanDxLimit";
+        for(int i=0; i<allFunctions.size(); ++i)
+        {
+            py->runCommand(allFunctions[i]+"=Function(\""+allFunctions[i]+"\")");
+        }
 
         //Define system equations
         for(int i=0; i<equations.size(); ++i)
         {
             QString iStr = QString().setNum(i);
-            gpMainWindow->mpPyDockWidget->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
-            gpMainWindow->mpPyDockWidget->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
-            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
-            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".subs(s, 2/mTimestep*(1-qi00)/(1+qi00))");
-            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
-            gpMainWindow->mpPyDockWidget->runCommand("f"+iStr+" = simplify(f"+iStr+")");
+            py->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
+            py->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
+            py->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
+            py->runCommand("f"+iStr+" = f"+iStr+".subs(s, 2/mTimestep*(1-qi00)/(1+qi00))");
+            py->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
+            py->runCommand("f"+iStr+" = simplify(f"+iStr+")");
+        }
+
+        //Apply limitations
+        for(int i=0; i<limitedVariableEquations.size(); ++i)
+        {
+            QString fStr = "f"+QString().setNum(limitedVariableEquations[i]);
+            QString dfStr = "f"+QString().setNum(limitedDerivativeEquations[i]);
+            QString var = limitedVariables[i];
+            QString der = limitedDerivatives[i];
+            QString min = limitMinValues[i];
+            QString max = limitMaxValues[i];
+            py->runCommand(fStr+" = factor("+fStr+")");
+            py->runCommand(fStr+" = "+fStr+".subs("+var+"*qi00, qi00_OLD)");
+            py->runCommand(fStr+" = "+var+"+hopsanLimit("+fStr+".subs("+var+",0)/"+fStr+".coeff("+var+"),"+min+","+max+").expand()");
+            py->runCommand(fStr+" = "+fStr+".subs(qi00_OLD, "+var+"*qi00)");
+
+            py->runCommand(dfStr+" = factor("+dfStr+")");
+            py->runCommand(dfStr+" = "+dfStr+".subs("+der+"*qi00, qi00_OLD)");
+            py->runCommand(dfStr+" = "+der+"+hopsanDxLimit("+var+","+min+","+max+")*"+dfStr+".subs("+der+",0)/"+dfStr+".coeff("+der+").expand()");
+            py->runCommand(dfStr+" = "+dfStr+".subs(qi00_OLD, "+der+"*qi00)");
         }
 
         //Generate the Jacobian matrix
@@ -1126,8 +1272,8 @@ void ComponentGeneratorDialog::compile()
             {
                 QString iStr = QString().setNum(i);
                 QString jStr = QString().setNum(j);
-                gpMainWindow->mpPyDockWidget->runCommand("j"+iStr+jStr+" = diff(f"+iStr+".subs(qi00, 0), "+stateVars.at(j)+")");
-                gpMainWindow->mpPyDockWidget->runCommand("print(j"+iStr+jStr+")");
+                py->runCommand("j"+iStr+jStr+" = diff(f"+iStr+".subs(qi00, 0), "+stateVars.at(j)+")");
+                py->runCommand("print(j"+iStr+jStr+")");
                 jString.append(gpMainWindow->mpPyDockWidget->getLastOutput());      //Create C++ stringlist of Jacobian
             }
         }
@@ -1136,7 +1282,7 @@ void ComponentGeneratorDialog::compile()
         QStringList sysEquations;
         for(int i=0; i<equations.size(); ++i)
         {
-            gpMainWindow->mpPyDockWidget->runCommand("print(f"+QString().setNum(i)+")");
+            py->runCommand("print(f"+QString().setNum(i)+")");
             sysEquations.append(gpMainWindow->mpPyDockWidget->getLastOutput());
         }
 
@@ -1144,13 +1290,14 @@ void ComponentGeneratorDialog::compile()
         qDebug() << "System Equations = " << sysEquations;
         qDebug() << "State Variables = " << stateVars;
 
-        //Replace delay operators in equations with delay utilities
+        //Translate functions from Python to Hopsan/C++
+        translateFunctionsFromPython(sysEquations);
+        translateFunctionsFromPython(jString);
+
+//        //Replace delay operators in equations with delay utilities
         QStringList delayTerms;
         QStringList delaySteps;
         translateDelaysFromPython(sysEquations, delayTerms, delaySteps);
-
-        translateFunctionsFromPython(sysEquations);
-        translateFunctionsFromPython(jString);
 
         //Translate all "x**y" to "pow(x,y)"
         translatePowersFromPython(sysEquations);
@@ -1769,4 +1916,65 @@ void ComponentGeneratorDialog::openAppearanceDialog()
 
     MovePortsDialog *mpMP = new MovePortsDialog(mpAppearance,USERGRAPHICS,this);
     mpMP->open();
+}
+
+
+void ComponentGeneratorDialog::togglePortsBox()
+{
+    mPortsBoxVisible = !mPortsBoxVisible;
+    if(mPortsBoxVisible)
+    {
+        mpPortsMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    }
+    else
+    {
+        mpPortsMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+    }
+    update();
+    updateValues();
+}
+
+void ComponentGeneratorDialog::toggleParametersBox()
+{
+    mParametersBoxVisible = !mParametersBoxVisible;
+    if(mParametersBoxVisible)
+    {
+        mpParametersMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    }
+    else
+    {
+        mpParametersMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+    }
+    update();
+    updateValues();
+}
+
+void ComponentGeneratorDialog::toggleUtilitiesBox()
+{
+    mUtilitiesBoxVisible = !mUtilitiesBoxVisible;
+    if(mUtilitiesBoxVisible)
+    {
+        mpUtilitiesMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    }
+    else
+    {
+        mpUtilitiesMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+    }
+    update();
+    updateValues();
+}
+
+void ComponentGeneratorDialog::toggleStaticVariablesBox()
+{
+    mStaticVariablesBoxVisible = !mStaticVariablesBoxVisible;
+    if(mStaticVariablesBoxVisible)
+    {
+        mpStaticVariablesMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Sub.png"));
+    }
+    else
+    {
+        mpStaticVariablesMinMaxButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+    }
+    update();
+    updateValues();
 }
