@@ -2039,7 +2039,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "";
 
 
-    //wrapperStream << "ComponentSystem* pComponentSystem;\n\n";
+    wrapperStream << "ComponentSystem* pComponentSystem;\n\n";
     wrapperStream << "static void mdlInitializeSizes(SimStruct *S)\n";
     wrapperStream << "{\n";
     wrapperStream << "    ssSetNumSFcnParams(S, 0);\n";
@@ -2156,7 +2156,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n";
     wrapperStream << endl;
 
-    wrpLineStream << "    vector<string> extLibs;";
+    wrpLineStream << "    std::vector<std::string> extLibs;";
     wrpLineStream << "    readExternalLibsFromTxtFile(\"externalLibs.txt\",extLibs);";
     wrpLineStream << "    for (size_t i=0; i<extLibs.size(); ++i)";
     wrpLineStream << "    {";
@@ -2166,9 +2166,9 @@ void SystemContainer::createSimulinkSourceFiles()
 
     wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
     wrapperStream << "    double startT, stopT;\n";
-    wrapperStream << "    pComponentSystem = HopsanEssentials::loadHMFModel(hmfFilePath, startT, stopT);\n";
-    wrapperStream << "    double startT = ssGetTStart(S);\n";
-    wrapperStream << "    double stopT = ssGetTFinal(S);\n";
+    wrapperStream << "    pComponentSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startT, stopT);\n";
+    wrapperStream << "    startT = ssGetTStart(S);\n";
+    wrapperStream << "    stopT = ssGetTFinal(S);\n";
     wrapperStream << "    pComponentSystem->setDesiredTimestep(0.001);\n";
     wrapperStream << "    pComponentSystem->initialize(0,10,0);\n\n";
     wrapperStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                               //Run the port label script\n";
@@ -2316,10 +2316,9 @@ void SystemContainer::createSimulinkSourceFiles()
 
 
     QTextStream compileStream(&compileFile);
+#ifdef WIN32
     //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /include/Component.cc /include/ComponentSystem.cc /include/HopsanEssentials.cc /include/Node.cc /include/Port.cc /include/Components/Components.cc /include/CoreUtilities/HmfLoader.cc /include/CoreUtilities/HopsanCoreMessageHandler.cc /include/CoreUtilities/LoadExternal.cc /include/Nodes/Nodes.cc /include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /include/ComponentUtilities/Delay.cc /include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /include/ComponentUtilities/FirstOrderFilter.cc /include/ComponentUtilities/Integrator.cc /include/ComponentUtilities/IntegratorLimited.cc /include/ComponentUtilities/ludcmp.cc /include/ComponentUtilities/matrix.cc /include/ComponentUtilities/SecondOrderFilter.cc /include/ComponentUtilities/SecondOrderTransferFunction.cc /include/ComponentUtilities/TurbulentFlowFunction.cc /include/ComponentUtilities/ValveHysteresis.cc\n";
     compileStream << "mex -DWIN32 -DSTATICCORE -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp\n";
-    compileFile.close();
-
 
     progressBar.setValue(8);
     progressBar.setLabelText("Copying Visual Studio binaries");
@@ -2331,7 +2330,14 @@ void SystemContainer::createSimulinkSourceFiles()
     libFile.copy(savePath + "/HopsanCore.lib");
     QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
     expFile.copy(savePath + "/HopsanCore.exp");
+#else
+    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
+    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
 
+    //! @todo copy all of the symolic links and the .so
+
+#endif
+    compileFile.close();
 
     progressBar.setValue(9);
     progressBar.setLabelText("Copying include files");
