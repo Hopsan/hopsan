@@ -2342,8 +2342,20 @@ void SystemContainer::createSimulinkSourceFiles()
     progressBar.setValue(9);
     progressBar.setLabelText("Copying include files");
 
-
     copyIncludeFilesToDir(savePath);
+
+    //! @todo should not overwrite this wile if it already exists
+    QFile externalLibsFile;
+    externalLibsFile.setFileName(savePath + "/externalLibs.txt");
+    if(!externalLibsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open externalLibs.txt for writing.");
+        return;
+    }
+    QTextStream externalLibsFileStream(&externalLibsFile);
+    externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
+    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory." << endl;
+    externalLibsFile.close();
 
 
     progressBar.setValue(10);
@@ -2364,6 +2376,7 @@ void SystemContainer::createSimulinkSourceFiles()
     QTextStream out(&xmlhmf);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
+    xmlhmf.close();
 }
 
 

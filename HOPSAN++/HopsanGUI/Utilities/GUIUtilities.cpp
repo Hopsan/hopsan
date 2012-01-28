@@ -470,6 +470,7 @@ void copyDir(const QString fromPath, QString toPath)
 }
 
 //! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
 void copyIncludeFilesToDir(QString path)
 {    
     QDir saveDir;
