@@ -17,6 +17,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
+
 
 #include <tclap/CmdLine.h>
 #include "TicToc.hpp"
@@ -37,14 +39,17 @@
 using namespace std;
 using namespace hopsan;
 
-void printWaitingMessages()
+void printWaitingMessages(const bool printDebug=true)
 {
     std::string msg,type,tag;
     cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
     while (HopsanEssentials::getInstance()->checkMessage() > 0)
     {
         HopsanEssentials::getInstance()->getMessage(msg,type,tag);
-        cout << msg << endl;
+        if ((type != "debug") || printDebug)
+        {
+            cout << msg << endl;
+        }
     }
 }
 
@@ -121,6 +126,32 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix="",
     }
 }
 
+void readExternalLibsFromTxtFile(const string filePath, vector<string> &rExtLibFileNames)
+{
+    rExtLibFileNames.clear();
+    string line;
+    ifstream file;
+    file.open(filePath.c_str());
+    if ( file.is_open() )
+    {
+        while ( file.good() )
+        {
+            getline(file, line);
+            cout << "line: " << line << endl;
+            if (*line.begin() != '#')
+            {
+                rExtLibFileNames.push_back(line);
+            }
+        }
+        file.close();
+    }
+    else
+    {
+        cout << "error, could not open file: " << filePath << endl;
+    }
+
+}
+
 int main(int argc, char *argv[])
 {
     try {
@@ -128,15 +159,30 @@ int main(int argc, char *argv[])
 
         // Define a value argument and add it to the command line.
         TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","String containing file path", cmd);
+        TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","String containing file path", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
 
         // Get the value parsed by each arg.
         string hmfFilePath = hmfPathOption.getValue();
+        string extFilePaths = extLibPathsOption.getValue();
 
         // Load default hopasn component lib
         HopsanEssentials::getInstance()->loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+        printWaitingMessages(false);
+
+        // Load external libs
+        vector<string> extLibs;
+        if (!extFilePaths.empty())
+        {
+            readExternalLibsFromTxtFile(extFilePaths,extLibs);
+            for (size_t i=0; i<extLibs.size(); ++i)
+            {
+                HopsanEssentials::getInstance()->loadExternalComponentLib(extLibs[i]);
+            }
+        }
+
         printWaitingMessages();
 
         double startTime=0, stopTime=2;
@@ -168,8 +214,9 @@ int main(int argc, char *argv[])
         //printComponentHierarchy(pRootSystem, "", true);
 
         cout << "Saving NodeData to file" << endl;
-        saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
-        saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
+        //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
+        //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
+        saveNodeDataToFile(pRootSystem,"MyExampleSum","out","ExSumOut.txt");
 
         printWaitingMessages();
         cout << endl << "HopsanCLI Done!" << endl;

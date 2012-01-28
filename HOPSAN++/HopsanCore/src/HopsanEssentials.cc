@@ -187,16 +187,16 @@ ComponentSystem* HopsanEssentials::loadHMFModel(const string filePath, double &r
 
 
 //! @brief Get the message waiting on the message queue
-//! @param [in,out] rMessage A reference to the message string
-//! @param [in,out] rType A reference to the message type string
-//! @param [in,out] rTag A reference to the message type Tag
+//! @param [out] rMessage A reference to the message string
+//! @param [out] rType A reference to the message type string
+//! @param [out] rTag A reference to the message type Tag
 void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std::string &rTag)
 {
     HopsanCoreMessage msg = mpMessageHandler->getMessage();
-    rMessage = msg.message;
-    rTag = msg.tag;
+    rMessage = msg.mMessage;
+    rTag = msg.mTag;
 
-    switch (msg.type)
+    switch (msg.mType)
     {
     case HopsanCoreMessage::Error:
         rType = "error";

@@ -50,15 +50,16 @@ void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, c
 #ifdef USETBB
     mpMutex->lock();
 #endif
-    HopsanCoreMessage msg;
-    msg.type = type;
-    msg.debuglevel = debuglevel;
-    msg.message = preFix + message;
-    msg.tag = tag;
-    mMessageQueue.push(msg);
+    HopsanCoreMessage* pMsg = new HopsanCoreMessage;
+    pMsg->mType = type;
+    pMsg->mDebugLevel = debuglevel;
+    pMsg->mMessage = preFix + message;
+    pMsg->mTag = tag;
+    mMessageQueue.push(pMsg);
     if (mMessageQueue.size() > mMaxQueueSize)
     {
         //If the queue is to long delete old unhandled messages
+        delete mMessageQueue.front();
         mMessageQueue.pop();
     }
 #ifdef USETBB
@@ -96,14 +97,15 @@ HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
     HopsanCoreMessage msg;
     if (mMessageQueue.size() > 0)
     {
-        msg = mMessageQueue.front();
+        msg = *mMessageQueue.front();
+        delete mMessageQueue.front();
         mMessageQueue.pop();
     }
     else
     {
-        msg.type = HopsanCoreMessage::Error;
-        msg.debuglevel = 0;
-        msg.message = "Error: You requested a message even though the message queue is empty";
+        msg.mType = HopsanCoreMessage::Error;
+        msg.mDebugLevel = 0;
+        msg.mMessage = "Error: You requested a message even though the message queue is empty";
     }
 #ifdef USETBB
     mpMutex->unlock();
@@ -111,7 +113,7 @@ HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
     return msg;
 }
 
-size_t HopsanCoreMessageHandler::getNumWaitingMessages()
+size_t HopsanCoreMessageHandler::getNumWaitingMessages() const
 {
 #ifdef USETBB
     mpMutex->lock();

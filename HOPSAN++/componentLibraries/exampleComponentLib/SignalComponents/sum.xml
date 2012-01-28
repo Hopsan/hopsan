@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalSum" displayname="Sum">
+    <modelobject typename="MyExampleSignalSum" displayname="MyExampleSum">
         <icons>
             <icon scale="1" path="sum.svg" iconrotation="ON" type="user"/>
         </icons>

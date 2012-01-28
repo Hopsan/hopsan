@@ -44,22 +44,22 @@ public:
     enum MessageEnumT {Info, Warning, Error, Debug};
     HopsanCoreMessage()
     {
-        type = 0;
-        debuglevel = 0;
-        message.clear();
-        tag.clear();
+        mType = 0;
+        mDebugLevel = 0;
+        mMessage.clear();
+        mTag.clear();
     }
 
-    int type;
-    int debuglevel;
-    std::string message;
-    std::string tag;
+    int mType;
+    int mDebugLevel;
+    std::string mMessage;
+    std::string mTag;
 };
 
 class HopsanCoreMessageHandler
 {
 private:
-    std::queue<HopsanCoreMessage> mMessageQueue;
+    std::queue<HopsanCoreMessage*> mMessageQueue;
     void addMessage(const int type, const std::string preFix, const std::string message, const std::string tag, const int debuglevel=0);
     size_t mMaxQueueSize;
 #ifdef USETBB
@@ -76,7 +76,7 @@ public:
     void addDebugMessage(const std::string message, const std::string tag="", const int dbglevel=0);
 
     HopsanCoreMessage getMessage();
-    size_t getNumWaitingMessages();
+    size_t getNumWaitingMessages() const;
 };
 
 extern HopsanCoreMessageHandler gCoreMessageHandler;
