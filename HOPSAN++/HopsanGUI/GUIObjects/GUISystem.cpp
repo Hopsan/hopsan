@@ -1985,6 +1985,8 @@ void SystemContainer::createSimulinkSourceFiles()
     //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
 
     QTextStream wrapperStream(&wrapperFile);
+    QTextLineStream wrpLineStream(wrapperStream);
+
     wrapperStream << "/*-----------------------------------------------------------------------------\n";
     wrapperStream << "This source file is part of Hopsan NG\n\n";
     wrapperStream << "Copyright (c) 2011\n";
@@ -2000,10 +2002,43 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "-----------------------------------------------------------------------------*/\n\n";
     wrapperStream << "#define S_FUNCTION_NAME HopsanSimulink\n";
     wrapperStream << "#define S_FUNCTION_LEVEL 2\n\n";
-    wrapperStream << "#include \"simstruc.h\"\n";
+
     wrapperStream << "#include <sstream>\n";
+    wrapperStream << "#include <string>\n";
+    wrapperStream << "#include <vector>\n";
+    wrapperStream << "#include <fstream>\n";
+    wrapperStream << "#include \"simstruc.h\"\n";
     wrapperStream << "#include \"include/HopsanCore.h\"\n";
-    wrapperStream << "using namespace hopsan;\n\n";
+    wrapperStream << "using namespace hopsan;\n";
+    wrapperStream << endl;
+
+    //! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you dont want error message
+    wrpLineStream << "void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)";
+    wrpLineStream << "{";
+    wrpLineStream << "    rExtLibFileNames.clear();";
+    wrpLineStream << "    std::string line;";
+    wrpLineStream << "    std::ifstream file;";
+    wrpLineStream << "    file.open(filePath.c_str());";
+    wrpLineStream << "    if ( file.is_open() )";
+    wrpLineStream << "    {";
+    wrpLineStream << "        while ( file.good() )";
+    wrpLineStream << "        {";
+    wrpLineStream << "            getline(file, line);";
+    wrpLineStream << "            if (*line.begin() != '#')";
+    wrpLineStream << "            {";
+    wrpLineStream << "                rExtLibFileNames.push_back(line);";
+    wrpLineStream << "            }";
+    wrpLineStream << "       }";
+    wrpLineStream << "        file.close();";
+    wrpLineStream << "    }";
+    wrpLineStream << "    else";
+    wrpLineStream << "    {";
+    wrpLineStream << "        //cout << \"error, could not open file: \" << filePath << endl;";
+    wrpLineStream << "    }";
+    wrpLineStream << "}";
+    wrpLineStream << "";
+
+
     //wrapperStream << "ComponentSystem* pComponentSystem;\n\n";
     wrapperStream << "static void mdlInitializeSizes(SimStruct *S)\n";
     wrapperStream << "{\n";
@@ -2118,9 +2153,19 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Debug output signal\n";
     portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG'')'); \n";
     wrapperStream << "    ssSetNumSampleTimes(S, 1);\n\n";
-    wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n\n";
+    wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n";
+    wrapperStream << endl;
+
+    wrpLineStream << "    vector<string> extLibs;";
+    wrpLineStream << "    readExternalLibsFromTxtFile(\"externalLibs.txt\",extLibs);";
+    wrpLineStream << "    for (size_t i=0; i<extLibs.size(); ++i)";
+    wrpLineStream << "    {";
+    wrpLineStream << "        HopsanEssentials::getInstance()->loadExternalComponentLib(extLibs[i]);";
+    wrpLineStream << "    }";
+    wrpLineStream << "";
+
     wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
-    wrapperStream << "    double startT, stopT;" << endl;
+    wrapperStream << "    double startT, stopT;\n";
     wrapperStream << "    pComponentSystem = HopsanEssentials::loadHMFModel(hmfFilePath, startT, stopT);\n";
     wrapperStream << "    double startT = ssGetTStart(S);\n";
     wrapperStream << "    double stopT = ssGetTFinal(S);\n";

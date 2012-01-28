@@ -60,9 +60,22 @@ void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
 
-
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);
 double sum(QVector< QVector<double> > vector, int i);
+
+//! @brief This utility class wraps a QTextStream and have strem operators to write lines, (it works like qDebug). You do not need to add teh newlain char yourself.
+class QTextLineStream
+{
+public:
+    QTextLineStream(QTextStream &rTextStream)
+    {
+        mpQTextSream = &rTextStream;
+    }
+    friend QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input);
+
+private:
+    QTextStream* mpQTextSream;
+};
 
 #endif // GUIUTILITIES_H

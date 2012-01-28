@@ -126,11 +126,11 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix="",
     }
 }
 
-void readExternalLibsFromTxtFile(const string filePath, vector<string> &rExtLibFileNames)
+void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)
 {
     rExtLibFileNames.clear();
-    string line;
-    ifstream file;
+    std::string line;
+    std::ifstream file;
     file.open(filePath.c_str());
     if ( file.is_open() )
     {
@@ -149,7 +149,6 @@ void readExternalLibsFromTxtFile(const string filePath, vector<string> &rExtLibF
     {
         cout << "error, could not open file: " << filePath << endl;
     }
-
 }
 
 int main(int argc, char *argv[])

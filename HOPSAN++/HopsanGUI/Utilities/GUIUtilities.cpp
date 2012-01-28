@@ -543,3 +543,10 @@ double normalDistribution(double average, double sigma)
     double U2 = (double)rand() / (double)RAND_MAX;
     return average + sigma*sqrt(-2*log(U1))*cos(2*3.1415926*U2);
 }
+
+// Operators
+QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
+{
+    (*rLineStream.mpQTextSream) << input << endl;
+    return rLineStream;
+}
