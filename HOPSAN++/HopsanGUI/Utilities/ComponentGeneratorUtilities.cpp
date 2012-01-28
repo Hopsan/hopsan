@@ -92,7 +92,7 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 //! @brief Transforms a DOM element component description to a ComponentSpecification object and calls actual generator utility
 //! @param outputFile Filename for output
 //! @param rDomElement Reference to dom element with information about component
-void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance)
+void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
     QString typeName = rDomElement.attribute("typename");
     QString displayName = rDomElement.attribute("displayname");
@@ -177,8 +177,14 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
                                  QStringList delayTerms, QStringList delaySteps, QStringList localVars,
-                                 ModelObjectAppearance *pAppearance)
+                                 ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Creating component object");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
     ComponentSpecification comp(typeName, displayName, cqsType);
 
     for(int i=0; i<delayTerms.size(); ++i)
@@ -225,6 +231,11 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     comp.simEquations << "Vec stateVark("+QString().setNum(stateVars.size())+");";
     comp.simEquations << "Vec deltaStateVar("+QString().setNum(stateVars.size())+");";
 
+    if(pProgressBar)
+    {
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
     for(int i=0; i<stateVars.size(); ++i)
     {
         comp.simEquations << "stateVark["+QString().setNum(i)+"] = "+stateVars[i]+";";
@@ -237,17 +248,6 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.simEquations << "    systemEquations["+QString().setNum(i)+"] = "+sysEquations[i]+";";
     }
     comp.simEquations << "";
-
-    //DEBUG
-
-//    comp.simEquations << "    if(mTime < 0.01)";
-//    comp.simEquations << "    {";
-//    comp.simEquations << "        std::stringstream ss;";
-//    comp.simEquations << "        ss << \"mDelay1.getIdx(0) = \" << mDelay1.getIdx(0) << \", 2*m*v = \" << 2*m*v << \", systemEquations[0] = \" << systemEquations[0];";
-//    comp.simEquations << "        addDebugMessage(ss.str());";
-//    comp.simEquations << "    }";
-
-    //END DEBUG
 
     comp.simEquations << "";
     comp.simEquations << "    //Jacobian Matrix";
@@ -263,20 +263,6 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     comp.simEquations << "    ludcmp(jacobianMatrix, order);";
     comp.simEquations << "    solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);";
     comp.simEquations << "";
-
-
-    //DEBUG
-
-//    comp.simEquations << "    if(mTime < 0.01)";
-//    comp.simEquations << "    {";
-//    comp.simEquations << "        std::stringstream ss;";
-//    comp.simEquations << "        ss << \"deltaStateVar[0] = \" << deltaStateVar[0];";
-//    comp.simEquations << "        addDebugMessage(ss.str());";
-//    comp.simEquations << "    }";
-
-    //END DEBUG
-
-
     comp.simEquations << "    for(int i=0; i<"+QString().setNum(stateVars.size())+"; i++)";
     comp.simEquations << "    {";
     comp.simEquations << "        stateVar[i] = stateVark[i] - jsyseqnweight[iter - 1] * deltaStateVar[i];";
@@ -303,18 +289,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.varTypes << "double";
     }
 
-    //DEBUG
-
-//    comp.simEquations << "    if(mTime < 0.01)";
-//    comp.simEquations << "    {";
-//    comp.simEquations << "        std::stringstream ss;";
-//    comp.simEquations << "        ss << \"v = \" << v;";
-//    comp.simEquations << "        addDebugMessage(ss.str());";
-//    comp.simEquations << "    }";
-
-    //END DEBUG
-
-    generateComponentSourceCode("equation.hpp", comp, pAppearance);
+    generateComponentSourceCode("equation.hpp", comp, pAppearance, false, pProgressBar);
 }
 
 
@@ -322,8 +297,14 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues)
+void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues, QProgressDialog *pProgressBar)
 {
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Creating .hpp file");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
     //Initialize the file stream
     QFileInfo fileInfo;
     QFile file;
@@ -425,6 +406,12 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
             fileStream << ", *mpND_" << allVarNames[i];
         }
     }
+
+    if(pProgressBar)
+    {
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
     fileStream << ";\n";
     fileStream << "        Port ";                              //Declare ports
     for(int i=0; i<comp.portNames.size(); ++i)
@@ -503,6 +490,12 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         }
         ++portId;
     }
+
+    if(pProgressBar)
+    {
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
     fileStream << "\n";
     if(!comp.initEquations.isEmpty())
     {
@@ -568,7 +561,6 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         }
     }
     fileStream << "        }\n\n";
-
 
     //Simulate one time step
     fileStream << "        void simulateOneTimestep()\n";
@@ -642,6 +634,14 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     fileStream << "#endif // " << comp.typeName.toUpper() << "_HPP_INCLUDED\n";
     file.close();
 
+
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Creating tempLib.cc");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
+
     QFile ccLibFile;
     ccLibFile.setFileName("tempLib.cc");
     if(!ccLibFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -665,6 +665,13 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     ccLibStream << "}\n";
     ccLibFile.close();
 
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Creating compile script");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
+
     QFile clBatchFile;
     clBatchFile.setFileName("compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -676,6 +683,12 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I" << INCLUDEPATH << " -L./ -lHopsanCore\n";
     clBatchFile.close();
 
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Creating appearance file");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
     QFile xmlFile;
     xmlFile.setFileName(comp.typeName+".xml");
     if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -685,23 +698,30 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     }
     QTextStream xmlStream(&xmlFile);
     xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    xmlStream << "<hopsanobjectappearance version=\"0.2\">\n";
+    xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
     xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\">\n";
     xmlStream << "    <icons>\n";
     //! @todo Make it possible to choose icon files
     //! @todo In the meantime, use a default "generated component" icon
-    xmlStream << "      <icon type=\"user\" path=\""+pAppearance->getIconPath(USERGRAPHICS, ABSOLUTE)+"\" iconrotation=\""+pAppearance->getIconRotationBehaviour()+"\"/>\n";
+    xmlStream << "      <icon type=\"user\" path=\""+pAppearance->getIconPath(USERGRAPHICS, ABSOLUTE)+"\" iconrotation=\""+pAppearance->getIconRotationBehaviour()+"\" scale=\"1\"/>\n";
     xmlStream << "    </icons>\n";
-    xmlStream << "    <portpositions>\n";
+    xmlStream << "    <ports>\n";
     for(int i=0; i<comp.portNames.size(); ++i)
     {
         PortAppearance portApp = pAppearance->getPortAppearanceMap().find(comp.portNames[i]).value();
-        xmlStream << "      <portpose name=\"" << comp.portNames[i] << "\" x=\"" << portApp.x << "\" y=\"" << portApp.y << "\" a=\"" << portApp.rot << "\"/>\n";
+        xmlStream << "      <port name=\"" << comp.portNames[i] << "\" x=\"" << portApp.x << "\" y=\"" << portApp.y << "\" a=\"" << portApp.rot << "\"/>\n";
     }
-    xmlStream << "    </portpositions>\n";
+    xmlStream << "    </ports>\n";
     xmlStream << "  </modelobject>\n";
     xmlStream << "</hopsanobjectappearance>\n";
     xmlFile.close();
+
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Compiling component library");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
 
     //Execute HopsanFMU compile script
 #ifdef WIN32
@@ -728,6 +748,13 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         }
     }
 #endif
+
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Moving files");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
+
 
     QDir componentsDir(QString(DOCSPATH));
     QDir generatedDir(QString(DOCSPATH) + "Generated Componentes/");
@@ -760,11 +787,20 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
 
     //Load the library
 
-    QString libPath = QDir().cleanPath(gExecPath + generatedDir.path());
+    if(pProgressBar)
+    {
+        pProgressBar->setLabelText("Loading new library");
+        pProgressBar->setValue(pProgressBar->value()+1);
+    }
 
+
+    QString libPath = QDir().cleanPath(generatedDir.path());
+
+    qDebug() << "libPath = " << libPath;
+    qDebug() << "user libs: " << gConfig.getUserLibs();
     if(gConfig.hasUserLib(libPath))
     {
-        qDebug() << "Loaded user libs: " << gConfig.getUserLibs();
+        qDebug() << "Updated user libs: " << gConfig.getUserLibs();
         gpMainWindow->mpLibrary->updateExternalLibraries();
     }
     else
@@ -995,7 +1031,7 @@ void replaceReservedWords(QString &equation)
         }
         else if(!word.isEmpty() && currentChar != '(')
         {
-            qDebug() << "Word = " << word;
+            //qDebug() << "Word = " << word;
             if(reservedWords.contains(word))
             {
                 qDebug() << "Replacing: " << equation;
@@ -1014,13 +1050,13 @@ void replaceReservedWords(QString &equation)
 
     if(!word.isEmpty())
     {
-        qDebug() << "Word = " << word;
+       // qDebug() << "Word = " << word;
         if(reservedWords.contains(word))
         {
-            qDebug() << "Replacing: " << equation;
+            //qDebug() << "Replacing: " << equation;
             equation.remove(equation.size()-word.size(), word.size());
             equation.insert(equation.size(), replacementWords[reservedWords.indexOf(word)]);
-            qDebug() << "Replaced: " << equation;
+            //qDebug() << "Replaced: " << equation;
         }
     }
 }
@@ -1055,7 +1091,7 @@ void identifyDerivatives(QStringList &equations)
         {
             int j = equations[i].indexOf("der(");
             int k = equations[i].indexOf(")",j);
-            qDebug() << "j = " << j << ", k = " << k;
+            //qDebug() << "j = " << j << ", k = " << k;
             equations[i].remove(k, 1);
             equations[i].remove(j, 4);
             equations[i].insert(j, "s*");
@@ -1071,7 +1107,7 @@ void identifyDerivatives(QStringList &equations)
 //! @param delaySteps List with strings of integers telling how many steps each term is delayed
 void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps)
 {
-    qDebug() << "Before delay translation: " << equations;
+    //qDebug() << "Before delay translation: " << equations;
 
     int delayNum = 0;
     for(int i=0; i<equations.size(); ++i)
@@ -1080,7 +1116,7 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
         QStringList terms;
         getAllTerms(equations[i], terms);
 
-        qDebug() << "Terms = " << terms;
+        //qDebug() << "Terms = " << terms;
 
         //Find all terms containing a delay operator
         for(int j=0; j<terms.size(); ++j)
@@ -1105,7 +1141,7 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
                     delayTerms.append(terms.at(j));
             }
         }
-        qDebug() << "Terms with delay: " << delayTerms;
+        //qDebug() << "Terms with delay: " << delayTerms;
 
         //Remove delay operators and make a delay of the term
         for(int j=0; j<delayTerms.size(); ++j)
@@ -1136,8 +1172,8 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
             delaySteps << QString().setNum(steps);
         }
     }
-    qDebug() << "After delay translation: " << equations;
-    qDebug() << "Delay terms: " << delayTerms;
+    //qDebug() << "After delay translation: " << equations;
+    //qDebug() << "Delay terms: " << delayTerms;
 }
 
 
@@ -1224,7 +1260,7 @@ void translateFunctionsFromPython(QStringList &equations)
             idx = equations[e].indexOf("abs", idx+3);
         }
 
-        qDebug() << "Equation before limit derivative fix: " << equations[e];
+        //qDebug() << "Equation before limit derivative fix: " << equations[e];
 
         //Replace "D(hopsanLimit(x, min, max))" with "hopsanDxLimit(x, min, max)"
         idx = equations[e].indexOf("D(hopsanLimit(", 0);
@@ -1316,7 +1352,7 @@ void translateFunctionsFromPython(QStringList &equations)
             }
         }
 
-        qDebug() << "Equation after limit derivative fix: " << equations[e];
+        //qDebug() << "Equation after limit derivative fix: " << equations[e];
 
         //Replace "D(sign(x), x)" with 0 (derivative of sign(x) = 0 for all x except 0, but it should be ok)
         idx = equations[e].indexOf("D(sign(", 0);
@@ -1539,7 +1575,7 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
         {
             if(lines.at(l).trimmed().startsWith("end "))        //"end" line, we are finished
                 return;
-            qDebug() << "Equation: " << lines.at(l).trimmed();
+            //qDebug() << "Equation: " << lines.at(l).trimmed();
             equations << lines.at(l).trimmed();
             //Replace variables with Hopsan syntax, i.e. P2.q => q2
             for(int i=0; i<portNames.size(); ++i)
@@ -1690,4 +1726,27 @@ void getAllTerms(QString equation, QStringList &terms)
     {
         terms << term;
     }
+}
+
+
+bool isSingular(QStringList matrix)
+{
+    int cols = sqrt(matrix.size());
+    int rows = sqrt(matrix.size());
+    for(int c=0; c<cols; ++c)
+    {
+        bool noElementBelowOrOnDiagonal = true;
+        for(int r=c; r<rows; ++r)
+        {
+            if(matrix[r*rows+c] != "0")
+            {
+                noElementBelowOrOnDiagonal = false;
+            }
+        }
+        if(noElementBelowOrOnDiagonal)
+        {
+            return true;
+        }
+    }
+    return false;
 }

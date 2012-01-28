@@ -98,7 +98,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpLoadFmuButton = new QToolButton();
     mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
     mpLoadFmuButton->setIconSize(iconSize);
-    mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU)"));
+    mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU) (very experimental)"));
 
     connect(mpTreeViewButton, SIGNAL(clicked()), this, SLOT(setListView()));
     connect(mpDualViewButton, SIGNAL(clicked()), this, SLOT(setDualView()));
@@ -1825,12 +1825,17 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree *pTree)
 
 void LibraryWidget::unloadExternalLibrary(const QString libName)
 {
-    //Check both by name and absolute path to be sure
+    //Check both by name, absolute and relative path to be sure
     LibraryContentsTree* pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByName(libName);
     if (!pLibContTree)
     {
         pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(gExecPath+libName));
     }
+    if (!pLibContTree)
+    {
+        pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(libName));
+    }
+
 
     if (pLibContTree)
     {
