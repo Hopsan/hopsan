@@ -232,7 +232,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(mpCopyAction, SIGNAL(triggered()), mpMessageWidget, SLOT(copy()));
 
-    mpMessageWidget->loadConfig();    
+    mpMessageWidget->loadConfig();
+
+    initializeWorkspace();
 }
 
 
@@ -374,6 +376,7 @@ void MainWindow::initializeWorkspace()
     if(gConfig.getShowWelcomeDialog())
     {
         mpWelcomeDialog = new WelcomeDialog(this);
+        mpWelcomeDialog->setModal(true);
         mpWelcomeDialog->show();
     }
     else
@@ -1026,6 +1029,7 @@ void MainWindow::updateSystemParametersActionButton(bool)
 }
 
 
+//! @brief Shows help popup for the toolbar icon that is currently hovered by the mouse pointer
 void MainWindow::showToolBarHelpPopup()
 {
     QCursor cursor;
@@ -1057,6 +1061,7 @@ void MainWindow::showToolBarHelpPopup()
 }
 
 
+//! @brief Slot that loads an example model, based on the name of the calling action
 void MainWindow::openExampleModel()
 {
     QAction *action = qobject_cast<QAction *>(sender());
@@ -1085,7 +1090,7 @@ void MainWindow::launchAutoUpdate()
     qDebug() << "Downloading: " << mpWelcomeDialog->mpUpdateLink;
 
     mpDownloadDialog = new QProgressDialog("Downloading new version...", "Cancel",0, 100, this);
-    mpDownloadDialog->setWindowTitle("Hopsan Auto Update");
+    mpDownloadDialog->setWindowTitle("Hopsan Auto Updater");
     mpDownloadDialog->setWindowModality(Qt::WindowModal);
     mpDownloadDialog->setMinimumWidth(300);
     mpDownloadDialog->setValue(0);

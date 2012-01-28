@@ -133,6 +133,14 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     mpRecentList->setFixedHeight(std::min(4+(16*mpRecentList->count()),4+16*5));
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
 
+    mpAutoUpdateAction = new QAction("Launch Auto Updater", this);
+    mpGoToDownloadPageAction = new QAction("Open Download Page In Browser", this);
+    mpNewVersionMenu = new QMenu(this);
+    mpNewVersionMenu->addAction(mpAutoUpdateAction);
+    mpNewVersionMenu->addAction(mpGoToDownloadPageAction);
+    connect(mpAutoUpdateAction, SIGNAL(triggered()), gpMainWindow, SLOT(launchAutoUpdate()));
+    connect(mpGoToDownloadPageAction, SIGNAL(triggered()), this, SLOT(openDownloadPage()));
+
     mpNewVersionButton = new QPushButton("New Version Available!");
     QPalette tempPalette = mpNewVersionButton->palette();
     tempPalette.setColor(QPalette::ButtonText, QColor("darkred"));
@@ -142,8 +150,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     tempFont.setBold(true);
     mpNewVersionButton->setFont(tempFont);
     mpNewVersionButton->hide();
-    //connect(mpNewVersionButton, SIGNAL(clicked()), this, SLOT(openDownloadPage()));
-    connect(mpNewVersionButton, SIGNAL(clicked()), gpMainWindow, SLOT(launchAutoUpdate()));
+    mpNewVersionButton->setMenu(mpNewVersionMenu);
 
     mpNewsLabel = new QLabel();
     mpNewsLabel->setText(" Latest News ");
@@ -155,16 +162,17 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
 
     mpLoadingWebProgressBar = new QProgressBar(this);
     mpLoadingWebProgressBar->setRange(0, 0);
-    mpLoadingWebLabel = new QLabel("Loading News", this);
+    mpLoadingWebLabel = new QLabel("Loading news...", this);
     mpLoadingWebProgressBarTimer = new QTimer(this);
     connect(mpLoadingWebProgressBarTimer, SIGNAL(timeout()), this, SLOT(updateLoadingWebProgressBar()));
     mpLoadingWebProgressBarTimer->setInterval(1);
     mpLoadingWebProgressBarTimer->start();
 
     mpLoadingWebLayout = new QVBoxLayout(this);
-    mpLoadingWebLayout->addWidget(mpLoadingWebProgressBar);
     mpLoadingWebLayout->addWidget(mpLoadingWebLabel);
-
+    mpLoadingWebLayout->addWidget(mpLoadingWebProgressBar);
+    mpLoadingWebLayout->setAlignment(mpLoadingWebLabel, Qt::AlignCenter);
+    mpLoadingWebLayout->setAlignment(mpLoadingWebProgressBar, Qt::AlignCenter);
     mpLoadingWebWidget = new QWidget(this);
     mpLoadingWebWidget->setFixedHeight(168);
     mpLoadingWebWidget->setFixedWidth(400);
@@ -340,8 +348,6 @@ void WelcomeDialog::urlClicked(const QUrl &link)
 
 
 //! @brief Opens the download page in external browser.
-//! @todo Make a permanent link to this page in case it changes.
-//! @todo Make a define that contains this link, in case it is used elsewhere.
 void WelcomeDialog::openDownloadPage()
 {
     QDesktopServices::openUrl(QUrl(QString(DOWNLOADLINK)));
@@ -366,8 +372,10 @@ void WelcomeDialog::showNews(bool loadedSuccessfully)
         thisVersionString.remove('.');
         double thisVersion = thisVersionString.toDouble();
         webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
+#ifndef DEVELOPMENET
         mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
         mpNewVersionButton->setVisible(webVersion>thisVersion);
+#endif
         mpUpdateLink = mpWeb->page()->currentFrame()->metaData().find("hopsanupdatelink").value();
 
         if(loadedSuccessfully)

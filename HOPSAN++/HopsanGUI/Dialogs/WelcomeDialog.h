@@ -83,6 +83,9 @@ private:
     QCheckBox *mpPopupHelpCheckBox;
 
     QPushButton *mpNewVersionButton;
+    QMenu *mpNewVersionMenu;
+    QAction *mpAutoUpdateAction;
+    QAction *mpGoToDownloadPageAction;
     QLabel *mpNewsLabel;
     QProgressBar *mpLoadingWebProgressBar;
     QLabel *mpLoadingWebLabel;
