@@ -90,7 +90,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpGenerateComponentButton = new QToolButton();
     mpGenerateComponentButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-New.png"));
     mpGenerateComponentButton->setIconSize(iconSize);
-    mpGenerateComponentButton->setToolTip(tr("Generate New Component"));
+    mpGenerateComponentButton->setToolTip(tr("Generate New Component (experimental)"));
     mpLoadExternalButton = new QToolButton();
     mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadLibrary.png"));
     mpLoadExternalButton->setIconSize(iconSize);

@@ -82,7 +82,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
     //Set the name and size of the main window
     this->resize(640,480);
-    this->setWindowTitle("Component Generator");
+    this->setWindowTitle("Component Generator (experimental)");
     this->setPalette(gConfig.getPalette());
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
@@ -1023,15 +1023,26 @@ void ComponentGeneratorDialog::removeRecentComponent()
 void ComponentGeneratorDialog::loadRecentComponent()
 {
     QString fileName = mRecentComponentFileNames.at(mpRecentComboBox->currentIndex());
-    qDebug() << "Trying to open: " << fileName;
 
-    loadFromXml(fileName);
+    if(!fileName.isEmpty())
+    {
+        qDebug() << "Trying to open: " << fileName;
+        loadFromXml(fileName);
+    }
 }
 
 
 //! @brief Generates XML and compiles the new component
 void ComponentGeneratorDialog::compile()
 {
+    QProgressDialog progressBar(tr("Verifying"), QString(), 0, 0, gpMainWindow);
+    progressBar.show();
+    progressBar.setWindowModality(Qt::WindowModal);
+    progressBar.setWindowTitle(tr("Generating Hopsan Component"));
+    progressBar.setMaximum(22);
+    progressBar.setValue(0);
+
+
     //Verify that everything is ok
 
     if(!verifyParameteres(mParametersList))
@@ -1062,9 +1073,13 @@ void ComponentGeneratorDialog::compile()
     {
         qDebug() << "Compiling equations";
 
+        progressBar.setLabelText("Saving to XML");
+        progressBar.setValue(1);
 
         saveDialogToXml();
 
+        progressBar.setLabelText("Collecting equations");
+        progressBar.setValue(2);
 
         //Create list of equqtions
         QString plainEquations = mpEquationsTextField->toPlainText();
@@ -1106,21 +1121,32 @@ void ComponentGeneratorDialog::compile()
             }
         }
 
+        progressBar.setLabelText("Identifying derivatives");
+        progressBar.setValue(3);
+
         //Identify derivatives, and replace them with "s"
         identifyDerivatives(equations);
+
+        progressBar.setLabelText("Verifying equations");
+        progressBar.setValue(4);
 
         //Verify the equations
         if(!verifyEquations(equations))
         {
             qDebug() << "Verification failed.";
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equations failed.");
             return;
         }
+
+        progressBar.setLabelText("Replacing reserved words");
+        progressBar.setValue(5);
 
         //Replace reserved words to avoid collision
         replaceReservedWords(equations);
         replaceReservedWords(mPortList);
 
-        qDebug() << "Equations = " << equations;
+        progressBar.setLabelText("Identifying symbols");
+        progressBar.setValue(6);
 
         //Identify used variables in each equation
         QList<QStringList> leftSymbols, rightSymbols;
@@ -1140,6 +1166,8 @@ void ComponentGeneratorDialog::compile()
         }
         allSymbols.removeDuplicates();
 
+        progressBar.setLabelText("Identifying state varaibles");
+        progressBar.setValue(7);
 
         //Generate a list of state variables (= "output" variables & local variables)
         QStringList stateVars = allSymbols;
@@ -1174,6 +1202,9 @@ void ComponentGeneratorDialog::compile()
             stateVars.removeAll(mParametersList[i].name);
         }
         stateVars.removeAll("s");       //Laplace 's' is not a state variable
+
+        progressBar.setLabelText("Identifying local variables");
+        progressBar.setValue(8);
 
         //Generate list of local variables (variables that are neither input nor output)
         QStringList localVars = allSymbols;
@@ -1215,14 +1246,23 @@ void ComponentGeneratorDialog::compile()
         //Create pointer to Python console
         PyDockWidget *py = gpMainWindow->mpPyDockWidget;
 
+        progressBar.setLabelText("Loading SymPy");
+        progressBar.setValue(9);
+
         //Load sympy libraries
         py->runCommand("from sympy import *");
+
+        progressBar.setLabelText("Creating symbols");
+        progressBar.setValue(10);
 
         //Create symbol objects for all variables
         for(int i=0; i<allSymbols.size(); ++i)
         {
             py->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
         }
+
+        progressBar.setLabelText("Creating custom functions");
+        progressBar.setValue(11);
 
         //Create custom functions
         QStringList allFunctions;
@@ -1231,6 +1271,8 @@ void ComponentGeneratorDialog::compile()
         {
             py->runCommand(allFunctions[i]+"=Function(\""+allFunctions[i]+"\")");
         }
+        progressBar.setLabelText("Defining equations");
+        progressBar.setValue(12);
 
         //Define system equations
         for(int i=0; i<equations.size(); ++i)
@@ -1243,6 +1285,9 @@ void ComponentGeneratorDialog::compile()
             py->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
             py->runCommand("f"+iStr+" = simplify(f"+iStr+")");
         }
+
+        progressBar.setLabelText("Applying variable limitations");
+        progressBar.setValue(13);
 
         //Apply limitations
         for(int i=0; i<limitedVariableEquations.size(); ++i)
@@ -1264,6 +1309,9 @@ void ComponentGeneratorDialog::compile()
             py->runCommand(dfStr+" = "+dfStr+".subs(qi00_OLD, "+der+"*qi00)");
         }
 
+        progressBar.setLabelText("Generating Jacobian matrix");
+        progressBar.setValue(14);
+
         //Generate the Jacobian matrix
         QStringList jString;
         for(int i=0; i<equations.size(); ++i)
@@ -1278,6 +1326,9 @@ void ComponentGeneratorDialog::compile()
             }
         }
 
+        progressBar.setLabelText("Collecting system equations");
+        progressBar.setValue(15);
+
         //Print each system quation and read output to create C++ strings from them
         QStringList sysEquations;
         for(int i=0; i<equations.size(); ++i)
@@ -1286,39 +1337,59 @@ void ComponentGeneratorDialog::compile()
             sysEquations.append(gpMainWindow->mpPyDockWidget->getLastOutput());
         }
 
-        qDebug() << "Jacobian = " << jString;
-        qDebug() << "System Equations = " << sysEquations;
-        qDebug() << "State Variables = " << stateVars;
+        //qDebug() << "Jacobian = " << jString;
+        //qDebug() << "System Equations = " << sysEquations;
+        //qDebug() << "State Variables = " << stateVars;
 
-        //Translate functions from Python to Hopsan/C++
-        translateFunctionsFromPython(sysEquations);
-        translateFunctionsFromPython(jString);
+        progressBar.setLabelText("Translating delay operators");
+        progressBar.setValue(16);
 
-//        //Replace delay operators in equations with delay utilities
+        //Replace delay operators in equations with delay utilities
         QStringList delayTerms;
         QStringList delaySteps;
         translateDelaysFromPython(sysEquations, delayTerms, delaySteps);
+
+        progressBar.setLabelText("Translating from SymPy to C++");
+        progressBar.setValue(17);
+
+        translateFunctionsFromPython(sysEquations);
+        translateFunctionsFromPython(jString);
 
         //Translate all "x**y" to "pow(x,y)"
         translatePowersFromPython(sysEquations);
         translatePowersFromPython(jString);
 
+        progressBar.setLabelText("Enforcing floating point precision");
+        progressBar.setValue(19);
+
         //Make sure all variables have double precision (to make sure "1.0/2.0 = 0.5" instead of "1/2 = 0")
         translateIntsToDouble(sysEquations);
         translateIntsToDouble(jString);
+
+        progressBar.setLabelText("Collecting general component data");
+        progressBar.setValue(10);
 
         //General component data
         QString typeName = mpComponentNameEdit->text();
         QString displayName = mpComponentDisplayEdit->text();
         QString cqsType = mpComponentTypeComboBox->currentText();
 
+        progressBar.setLabelText("Generating component appearance");
+        progressBar.setValue(20);
+
         //Make sure appearance is updated
         generateAppearance();
 
         showOutputDialog(jString, sysEquations, stateVars);
 
+        progressBar.setLabelText("Compiling component");
+        progressBar.setValue(21);
+
         //Call utility to generate and compile the source code
         generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, mpAppearance);
+
+        progressBar.setLabelText("Done!");
+        progressBar.setValue(22);
     }
     else if(mpGenerateFromComboBox->currentIndex() == 1)        //Compile from C++ code
     {
