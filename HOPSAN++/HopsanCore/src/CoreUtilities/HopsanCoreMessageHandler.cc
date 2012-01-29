@@ -121,7 +121,7 @@ size_t HopsanCoreMessageHandler::getNumWaitingMessages() const
     mpMutex->unlock();
     return num;
 #else
-    return = mMessageQueue.size();
+    return mMessageQueue.size();
 #endif
 }
 
