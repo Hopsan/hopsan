@@ -47,6 +47,7 @@ public:
     QString mAbsolutePath;
     QString mRotationBehaviour;
     qreal mScale;
+    bool mIsValid;
 };
 
 class ModelObjectAppearance
@@ -99,6 +100,8 @@ private:
     //Private help functions
     void setRelativePathFromAbsolute();
     void setAbsoultePathFromRelative();
+    void refreshIconValid();
+    graphicsType selectAvailableGraphicsType(const graphicsType type);
 };
 
 #endif // APPEARANCEDATA_H

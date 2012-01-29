@@ -78,10 +78,11 @@
 #define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
 
 //! @todo all of these dont have to be common
+//! @todo enums should NOT have all captitals, risc of colission with defines
 //Enums
 enum selectionStatus {DESELECTED, SELECTED};
 enum nameVisibility {NAMEVISIBLE, NAMENOTVISIBLE, USEDEFAULT};
-enum graphicsType {USERGRAPHICS, ISOGRAPHICS};
+enum graphicsType {USERGRAPHICS, ISOGRAPHICS, NOGRAPHICS};
 enum connectorGeometry {VERTICAL, HORIZONTAL, DIAGONAL};
 enum renameRestrictions {UNRESTRICTED, CORERENAMEONLY};
 enum undoStatus {NOUNDO, UNDO};

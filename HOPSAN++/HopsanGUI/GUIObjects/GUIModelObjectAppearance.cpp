@@ -121,6 +121,7 @@ ModelObjectIconAppearance::ModelObjectIconAppearance()
 {
     mScale = 1.0;
     mRotationBehaviour = "ON";
+    mIsValid = false;
 }
 
 ModelObjectAppearance::ModelObjectAppearance()
@@ -176,35 +177,18 @@ QString ModelObjectAppearance::getHelpText()
 //! If that is also missing return a path to the missing graphics icon
 QString ModelObjectAppearance::getFullAvailableIconPath(graphicsType gfxType)
 {
-    QFileInfo iconUserFileInfo(mUserIconAppearance.mAbsolutePath);
-    QFileInfo iconISOFileInfo(mIsoIconAppearance.mAbsolutePath);
+    // Determine which type to use based on aviliablity of icons
+    gfxType = selectAvailableGraphicsType(gfxType);
 
-    //qDebug() << "Type: " << mTypeName << " iconUser: " << iconUserFileInfo.absoluteFilePath();
-    //qDebug() << "Type: " << mTypeName << " iconISO: " << iconISOFileInfo.absoluteFilePath();
-
-    // We want USERICON and have USERICON
-    if ( (gfxType == USERGRAPHICS) && iconUserFileInfo.isFile() )
+    // Return user graphics path
+    if ( gfxType == USERGRAPHICS )
     {
-        //Use user icon
-        return iconUserFileInfo.absoluteFilePath();
+        return mUserIconAppearance.mAbsolutePath;
     }
-    // We want ISOICON and have ISOICON
-    else if ( (gfxType == ISOGRAPHICS) &&  iconISOFileInfo.isFile() )
+    // Return ISO graphics path
+    else if (gfxType == ISOGRAPHICS)
     {
-        //Use ISO icon
-        return  iconISOFileInfo.absoluteFilePath();
-    }
-    // If what we requested does not exist but USER graphics do exist
-    else if (iconUserFileInfo.isFile() && ! iconISOFileInfo.isFile() )
-    {
-        //Use user icon
-        return iconUserFileInfo.absoluteFilePath();
-    }
-    // If what we requested does not exist but ISO graphics do exist
-    else if ( !iconUserFileInfo.isFile() && iconISOFileInfo.isFile() )
-    {
-        //Use ISO icon
-        return iconISOFileInfo.absoluteFilePath();
+        return  mIsoIconAppearance.mAbsolutePath;
     }
     else
     {
@@ -244,13 +228,17 @@ QString ModelObjectAppearance::getIconPath(const graphicsType gfxType, const Abs
     }
 }
 
+//! @todo This is a bit wrong, it will return the scale for the availiable type not necessarily the requested
 qreal ModelObjectAppearance::getIconScale(const graphicsType gfxType)
 {
-    if (gfxType == USERGRAPHICS)
+    // Determine which type to use based on aviliablity of icons
+    graphicsType gfxTypeI = selectAvailableGraphicsType(gfxType);
+
+    if (gfxTypeI == USERGRAPHICS)
     {
         return mUserIconAppearance.mScale;
     }
-    else if (gfxType == ISOGRAPHICS)
+    else if (gfxTypeI == ISOGRAPHICS)
     {
         return mIsoIconAppearance.mScale;
     }
@@ -297,14 +285,17 @@ void ModelObjectAppearance::setAbsoultePathFromRelative()
 
 }
 
-
+//! @todo This is a bit wrong, it will return the scale for the availiable type not necessarily the requested
 QString ModelObjectAppearance::getIconRotationBehaviour(const graphicsType gfxType)
 {
-    if (gfxType == USERGRAPHICS)
+    // Determine which type to use based on aviliablity of icons
+    graphicsType gfxTypeI = selectAvailableGraphicsType(gfxType);
+
+    if (gfxTypeI == USERGRAPHICS)
     {
         return mUserIconAppearance.mRotationBehaviour;
     }
-    else if (gfxType == ISOGRAPHICS)
+    else if (gfxTypeI == ISOGRAPHICS)
     {
         return mIsoIconAppearance.mRotationBehaviour;
     }
@@ -396,13 +387,13 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         {
             mIsoIconAppearance.mRelativePath = xmlIcon.attribute(CAF_PATH);
             mIsoIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
-            mIsoIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
+            mIsoIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION,mIsoIconAppearance.mRotationBehaviour);
         }
         else if (type == "user")
         {
             mUserIconAppearance.mRelativePath = xmlIcon.attribute(CAF_PATH);
             mUserIconAppearance.mScale = parseAttributeQreal(xmlIcon, CAF_SCALE, 1.0);
-            mUserIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION);
+            mUserIconAppearance.mRotationBehaviour = xmlIcon.attribute(CAF_ICONROTATION,mUserIconAppearance.mRotationBehaviour);
         }
         else if (type == "defaultmissing")
         {
@@ -490,6 +481,8 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 
     //Now set absolute paths from relative and basepath
     setAbsoultePathFromRelative();
+    // Check if icons exist and refresh isValid bool
+    refreshIconValid();
 }
 
 //! @brief Writes the ModelObjectAppearance contents to an XML DOM Element
@@ -605,7 +598,6 @@ void ModelObjectAppearance::setBasePath(QString path)
 //! @brief Access method to manually set the BasePath relative UserIconPath
 void ModelObjectAppearance::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel)
 {
-
     if (absrel == ABSOLUTE)
     {
         if (gfxType == USERGRAPHICS)
@@ -630,7 +622,9 @@ void ModelObjectAppearance::setIconPath(const QString path, const graphicsType g
         }
         setAbsoultePathFromRelative();
     }
-    //else dont do anything
+
+    //Now check if icons are valid
+    refreshIconValid();
 }
 
 void ModelObjectAppearance::setIconScale(const qreal scale, const graphicsType gfxType)
@@ -663,5 +657,58 @@ bool ModelObjectAppearance::hasIcon(const graphicsType gfxType)
     else
     {
         return false;
+    }
+}
+
+void ModelObjectAppearance::refreshIconValid()
+{
+    if (hasIcon(USERGRAPHICS))
+    {
+        mUserIconAppearance.mIsValid = true;
+    }
+    else
+    {
+        mUserIconAppearance.mIsValid = false;
+    }
+    if (hasIcon(ISOGRAPHICS))
+    {
+        mIsoIconAppearance.mIsValid = true;
+    }
+    else
+    {
+        mIsoIconAppearance.mIsValid = false;
+    }
+}
+
+graphicsType ModelObjectAppearance::selectAvailableGraphicsType(const graphicsType type)
+{
+    // We want USERICON and have USERICON
+    if ( (type == USERGRAPHICS) && mUserIconAppearance.mIsValid )
+    {
+        //Use user icon
+        return USERGRAPHICS;
+    }
+    // We want ISOICON and have ISOICON
+    else if ( (type == ISOGRAPHICS) &&  mIsoIconAppearance.mIsValid )
+    {
+        //Use ISO icon
+        return  ISOGRAPHICS;
+    }
+    // If what we requested does not exist but USER graphics do exist
+    else if ( mUserIconAppearance.mIsValid && !mIsoIconAppearance.mIsValid )
+    {
+        //Use user icon
+        return USERGRAPHICS;
+    }
+    // If what we requested does not exist but ISO graphics do exist
+    else if ( !mUserIconAppearance.mIsValid && mIsoIconAppearance.mIsValid )
+    {
+        //Use ISO icon
+        return ISOGRAPHICS;
+    }
+    else
+    {
+        //No icon available return nothing type
+        return NOGRAPHICS;
     }
 }
