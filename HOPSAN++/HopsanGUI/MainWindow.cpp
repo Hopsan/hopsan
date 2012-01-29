@@ -256,7 +256,7 @@ void MainWindow::initializeWorkspace()
     mpLibrary->loadHiddenSecretDir(QString(BUILTINCAFPATH) + "hidden/");
 
     // Load default and user specified libraries
-    QString componentPath = gExecPath + QString(COMPONENTPATH);
+    QString componentPath = QString(COMPONENTPATH);
 
     // Load built in default Library
     mpLibrary->loadLibrary(componentPath, INTERNAL);
