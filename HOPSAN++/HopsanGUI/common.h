@@ -57,12 +57,14 @@
 #define DOCSPATH MAINPATH
 #endif
 #ifdef DEVELOPMENT
+#define MSVC2008PATH "MSVC2008/"
 #define MODELPATH "../Models/"
 #define SCRIPTPATH "../Scripts/"
 #define BACKUPPATH "../Backup/"
 #define COMPONENTPATH "../componentLibraries/defaultLibrary/components/"
 #define INCLUDEPATH "../HopsanCore/include/"
 #else
+#define MSVC2008PATH "MSVC2008/"
 #define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
 #define SCRIPTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
 #define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"

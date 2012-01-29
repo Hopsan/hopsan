@@ -253,54 +253,118 @@ void SensitivityAnalysisDialog::run()
 {
     ProjectTabWidget *pTabs = gpMainWindow->mpProjectTabs;
     int nThreads = gConfig.getNumberOfThreads();
+    if(nThreads == 0)
+    {
+#ifdef WIN32
+        std::string temp = getenv("NUMBER_OF_PROCESSORS");
+        nThreads = atoi(temp.c_str());
+#else
+        nThreads = max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+#endif
+    }
+    if(nThreads == 0)   //Extra check, just to be sure
+    {
+        nThreads = 1;
+    }
+
     int nSteps = mpStepsSpinBox->value();
     int nParameteres = mSelectedParameters.size();
 
     if(gConfig.getUseMulticore())
     {
+        //Close all other containers
+        for(int i=0; i<pTabs->count(); ++i)
+        {
+            if(pTabs->getContainer(i) != pTabs->getCurrentContainer())
+            {
+                pTabs->closeProjectTab(i);
+                --i;
+            }
+        }
+
+        //Load more tabs with same model
         for(int i=1; i<nThreads; ++i)
         {
             pTabs->loadModel(pTabs->getCurrentContainer()->getModelFileInfo().absoluteFilePath(), true);
         }
     }
+    else
+    {
+        nThreads = 1;
+    }
 
     int nTabs = pTabs->count();
 
-    bool noChange=false;
-    for(int i=1; i<nSteps/nThreads; ++i)
+    if(gConfig.getUseMulticore())
     {
-        for(int t=0; t<nTabs; ++t)
+        bool noChange=false;
+        for(int i=0; i<nSteps/nThreads; ++i)
+        {
+            for(int t=0; t<nTabs; ++t)
+            {
+                for(int p=0; p<nParameteres; ++p)
+                {
+                    double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
+                    pTabs->getContainer(t)->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                }
+            }
+            pTabs->simulateAllOpenModels(noChange);
+            noChange=true;
+        }
+    }
+    else
+    {
+        for(int i=0; i<nSteps; ++i)
         {
             for(int p=0; p<nParameteres; ++p)
             {
                 double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
-                pTabs->getContainer(t)->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
+                pTabs->getCurrentContainer()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
             }
+            pTabs->getCurrentTab()->simulate();
         }
-        pTabs->simulateAllOpenModels(noChange);
-        noChange=true;
     }
 
-    for(int v=0; v<mOutputVariables.size(); ++v)
+    if(gConfig.getUseMulticore())
     {
-        pTabs->setCurrentIndex(0);
-
-        QString component = mOutputVariables.at(v).at(0);
-        QString port = mOutputVariables.at(v).at(1);
-        QString variable = mOutputVariables.at(v).at(2);
-        pTabs->getContainer(0)->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
-        gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->hideCurveInfo();
-        gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->setLegendsVisible(false);
-
-        for(int g=1; g<pTabs->getContainer(0)->getNumberOfPlotGenerations(); ++g)
+        for(int v=0; v<mOutputVariables.size(); ++v)
         {
-            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
+            pTabs->setCurrentIndex(0);
+
+            QString component = mOutputVariables.at(v).at(0);
+            QString port = mOutputVariables.at(v).at(1);
+            QString variable = mOutputVariables.at(v).at(2);
+            pTabs->getContainer(0)->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->hideCurveInfo();
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->setLegendsVisible(false);
+
+            for(int g=pTabs->getContainer(0)->getNumberOfPlotGenerations()-nSteps/nThreads; g<pTabs->getContainer(0)->getNumberOfPlotGenerations()-1; ++g)
+            {
+                gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
+            }
+
+            for(int t=1; t<nTabs; ++t)
+            {
+                pTabs->setCurrentIndex(t);
+                for(int g=pTabs->getContainer(0)->getNumberOfPlotGenerations()-nSteps/nThreads; g<pTabs->getContainer(t)->getNumberOfPlotGenerations(); ++g)
+                {
+                    gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
+                }
+            }
         }
-
-        for(int t=1; t<nTabs; ++t)
+    }
+    else
+    {
+        for(int v=0; v<mOutputVariables.size(); ++v)
         {
-            pTabs->setCurrentIndex(t);
-            for(int g=0; g<pTabs->getContainer(t)->getNumberOfPlotGenerations(); ++g)
+            QString component = mOutputVariables.at(v).at(0);
+            QString port = mOutputVariables.at(v).at(1);
+            QString variable = mOutputVariables.at(v).at(2);
+            pTabs->getCurrentContainer()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->hideCurveInfo();
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->setLegendsVisible(false);
+
+            for(int g=pTabs->getCurrentContainer()->getNumberOfPlotGenerations() - nSteps; g<pTabs->getCurrentContainer()->getNumberOfPlotGenerations(); ++g)
             {
                 gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
             }

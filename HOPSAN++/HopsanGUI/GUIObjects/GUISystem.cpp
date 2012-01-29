@@ -1668,11 +1668,11 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     }
     else
     {
-        dllFile.setFileName(gExecPath + "/../binVC/HopsanCore.dll");
+        dllFile.setFileName(gExecPath + QString(MSVC2008PATH) + "HopsanCore.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
-        libFile.setFileName(gExecPath + "/../binVC/HopsanCore.lib");
+        libFile.setFileName(gExecPath + QString(MSVC2008PATH) + "HopsanCore.lib");
         libFile.copy(savePath + "/HopsanCore.lib");
-        expFile.setFileName(gExecPath + "/../binVC/HopsanCore.exp");
+        expFile.setFileName(gExecPath + QString(MSVC2008PATH) + "HopsanCore.exp");
         expFile.copy(savePath + "/HopsanCore.exp");
     }
 
@@ -2324,11 +2324,11 @@ void SystemContainer::createSimulinkSourceFiles()
     progressBar.setLabelText("Copying Visual Studio binaries");
 
 
-    QFile dllFile(gExecPath + "/../binVC/HopsanCore.dll");
+    QFile dllFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.dll");
     dllFile.copy(savePath + "/HopsanCore.dll");
-    QFile libFile(gExecPath + "/../binVC/HopsanCore.lib");
+    QFile libFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.lib");
     libFile.copy(savePath + "/HopsanCore.lib");
-    QFile expFile(gExecPath + "/../binVC/HopsanCore.exp");
+    QFile expFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.exp");
     expFile.copy(savePath + "/HopsanCore.exp");
 #else
     compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
