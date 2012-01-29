@@ -23,6 +23,11 @@ Hopsan Release Notes
 - Fixed: Third-party dependency include files should no longer be needed in custom components
 - Fixed: Add message in HopsanCore should now be thread safe (when using multi core simulation)
 
+- Feature: Added an auto-update function
+- Feature: Added a component generator utility (experimental)
+- Feature: Import from FMI (experimental)
+- Feature: Export to FMI (experimental)
+- Feature: Numerical optimizaion dialog with constrained simplex and particle swarm algorithms
 - Feature: It is now possible to let a SystemVariable take its value from a parent system SystemVariable. This means that you can propagate SystemVariables downwards in the model hierarchy.
 - Feature: KeyWords can be reserved in the HopsanCore component factory.
 - Feature: Auto update function for Component Appearance XML files.
