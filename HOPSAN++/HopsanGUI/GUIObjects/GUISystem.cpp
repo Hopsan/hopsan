@@ -2024,7 +2024,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "        while ( file.good() )";
     wrpLineStream << "        {";
     wrpLineStream << "            getline(file, line);";
-    wrpLineStream << "            if (*line.begin() != '#')";
+    wrpLineStream << "            if ((*line.begin() != '#') && !line.empty())";
     wrpLineStream << "            {";
     wrpLineStream << "                rExtLibFileNames.push_back(line);";
     wrpLineStream << "            }";
@@ -2038,16 +2038,19 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "}";
     wrpLineStream << "";
 
+    wrpLineStream << "ComponentSystem* pComponentSystem;";
+    wrpLineStream << "bool isOkToSimulate = false";
+    wrpLineStream << "";
 
-    wrapperStream << "ComponentSystem* pComponentSystem;\n\n";
-    wrapperStream << "static void mdlInitializeSizes(SimStruct *S)\n";
-    wrapperStream << "{\n";
-    wrapperStream << "    ssSetNumSFcnParams(S, 0);\n";
-    wrapperStream << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))\n";
-    wrapperStream << "    {\n";
-    wrapperStream << "        return;\n";
-    wrapperStream << "    }\n\n";
-    wrapperStream << "    //Define S-function input signals\n";
+    wrpLineStream << "static void mdlInitializeSizes(SimStruct *S)";
+    wrpLineStream << "{";
+    wrpLineStream << "    ssSetNumSFcnParams(S, 0);";
+    wrpLineStream << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))";
+    wrpLineStream << "    {";
+    wrpLineStream << "        return;";
+    wrpLineStream << "    }";
+    wrpLineStream << "";
+    wrpLineStream << "    //Define S-function input signals";
     wrapperStream << "    if (!ssSetNumInputPorts(S," << nTotalInputsString << ")) return;				//Number of input signals\n";
     int i,j;
     size_t tot=0;
@@ -2165,25 +2168,42 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "";
 
     wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
-    wrapperStream << "    double startT, stopT;\n";
-    wrapperStream << "    pComponentSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startT, stopT);\n";
-    wrapperStream << "    startT = ssGetTStart(S);\n";
-    wrapperStream << "    stopT = ssGetTFinal(S);\n";
-    wrapperStream << "    pComponentSystem->setDesiredTimestep(0.001);\n";
-    wrapperStream << "    pComponentSystem->initialize(0,10,0);\n\n";
-    wrapperStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                               //Run the port label script\n";
-    wrapperStream << "}\n";
-    wrapperStream << "\n";
-    wrapperStream << "static void mdlInitializeSampleTimes(SimStruct *S)\n";
-    wrapperStream << "{\n";
-    wrapperStream << "    ssSetSampleTime(S, 0, 0.001);\n";
-    wrapperStream << "    ssSetOffsetTime(S, 0, 0.0);\n";
-    wrapperStream << "}\n\n";
-    wrapperStream << "static void mdlOutputs(SimStruct *S, int_T tid)\n";
-    wrapperStream << "{\n";
-    wrapperStream << "    //S-function input signals\n";
-    wrapperStream << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n\n";
-    wrapperStream << "    //S-function output signals\n";
+    wrpLineStream << "    double startT, stopT;";
+    wrpLineStream << "    pComponentSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startT, stopT);";
+    wrpLineStream << "    if (pComponentSystem==0)";
+    wrpLineStream << "    {";
+    wrapperStream << "        ssSetErrorStatus(S,\"Error could not open model: " << fileName << "\")" << endl;
+    wrpLineStream << "        return;";
+    wrpLineStream << "    }";
+    wrpLineStream << "    startT = ssGetTStart(S);";
+    wrpLineStream << "    stopT = ssGetTFinal(S);";
+    wrpLineStream << "    pComponentSystem->setDesiredTimestep(0.001);";
+
+    wrpLineStream << "    isOkToSimulate = pComponentSystem->isSimulationOk();";
+    wrpLineStream << "    if (isOkToSimulate)";
+    wrpLineStream << "    {";
+    wrpLineStream << "        pComponentSystem->initialize(0,10,0);";
+    wrpLineStream << "        mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+    wrpLineStream << "    }";
+    wrpLineStream << "    else";
+    wrpLineStream << "    {";
+    wrpLineStream << "        ssSetErrorStatus(S,\"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.\");";
+    wrpLineStream << "        return;";
+    wrpLineStream << "    }";
+    wrpLineStream << "}";
+    wrpLineStream << "";
+
+    wrpLineStream << "static void mdlInitializeSampleTimes(SimStruct *S)";
+    wrpLineStream << "{";
+    wrpLineStream << "    ssSetSampleTime(S, 0, 0.001);";
+    wrpLineStream << "    ssSetOffsetTime(S, 0, 0.0);";
+    wrpLineStream << "}\n";
+
+    wrpLineStream << "static void mdlOutputs(SimStruct *S, int_T tid)";
+    wrpLineStream << "{";
+    wrpLineStream << "    //S-function input signals";
+    wrpLineStream << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
+    wrpLineStream << "    //S-function output signals";
     for(int i=0; i<nTotalOutputs; ++i)
     {
         wrapperStream << "    real_T *y" << i << " = ssGetOutputPortRealSignal(S," << i << ");\n";
@@ -2207,6 +2227,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "    {\n";
     wrapperStream << "      output" << nTotalOutputs-1 << " = -1;		//Error code -1: Component system failed to load\n";
     wrapperStream << "    }\n";
+    //! @todo should remove this check from here
     wrapperStream << "    else if(!pComponentSystem->isSimulationOk())\n";
     wrapperStream << "    {\n";
     wrapperStream << "      output" << nTotalOutputs-1 << " = -2;		//Error code -2: Simulation not possible due to errors in model\n";
@@ -2354,7 +2375,7 @@ void SystemContainer::createSimulinkSourceFiles()
     }
     QTextStream externalLibsFileStream(&externalLibsFile);
     externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
-    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory." << endl;
+    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
     externalLibsFile.close();
 
 
