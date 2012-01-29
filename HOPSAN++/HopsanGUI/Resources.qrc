@@ -119,5 +119,6 @@
         <file>graphics/builtinCAF/visible/Subsystem/systemport.xml</file>
         <file>graphics/objecticons/containerport.svg</file>
         <file>graphics/uiicons/Hopsan-Sub.png</file>
+        <file>graphics/uiicons/Hopsan-NewComponent.png</file>
     </qresource>
 </RCC>

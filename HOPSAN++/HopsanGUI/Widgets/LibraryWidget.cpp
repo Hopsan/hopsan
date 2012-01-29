@@ -88,7 +88,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpDualViewButton->setIconSize(iconSize);
     mpDualViewButton->setToolTip(tr("Dual List View"));
     mpGenerateComponentButton = new QToolButton();
-    mpGenerateComponentButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-New.png"));
+    mpGenerateComponentButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewComponent.png"));
     mpGenerateComponentButton->setIconSize(iconSize);
     mpGenerateComponentButton->setToolTip(tr("Generate New Component (experimental)"));
     mpLoadExternalButton = new QToolButton();
@@ -96,7 +96,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpLoadExternalButton->setIconSize(iconSize);
     mpLoadExternalButton->setToolTip(tr("Load External Library"));
     mpLoadFmuButton = new QToolButton();
-    mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Open.png"));
+    mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Import.png"));
     mpLoadFmuButton->setIconSize(iconSize);
     mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU) (very experimental)"));
 
