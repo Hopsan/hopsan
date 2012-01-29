@@ -1,270 +1,287 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_rUNKNOWN" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3949" hopsancoreversion="0.5.x_r3943">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="Hydrostatic Transmission">
+        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499.5" y="2499" zoom="1"/>
+            <viewport x="2521.79" y="2459.75" zoom="0.70922"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Hydrostatic Transmission">
                     <icons>
-                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="" type="user"/>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
-            <hopsanundo>
-                <post number="-1"/>
-                <post number="0"/>
-            </hopsanundo>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
         </hopsangui>
-        <simulationtime stop="10" timestep="0.001" start="0"/>
-        <parameters/>
         <objects>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_1">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="2e+007" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="2e+007" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2556.00000000000000000000" y="2532" flipped="0" a="0"/>
+                    <pose x="2556" y="2532" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_1">
                 <parameters>
-                    <parameter value="1e-012" name="K_c"/>
+                    <parameter value="1e-012" type="double" name="K_c"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2556.00000000000000000000" y="2485" flipped="0" a="90"/>
+                    <pose x="2556" y="2485" flipped="false" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="MechanicTorqueTransformer" name="Torque Transformer">
                 <parameters>
-                    <parameter value="0" name="P1::Angular Velocity"/>
-                    <parameter value="0" name="P1::Angle"/>
-                    <parameter value="0" name="T"/>
+                    <parameter value="0" type="double" name="P1::Angular Velocity"/>
+                    <parameter value="0" type="double" name="P1::Angle"/>
+                    <parameter value="0" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2919.00000000000000000000" y="2534" flipped="0" a="180"/>
+                    <pose x="2919" y="2534" flipped="false" a="180"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_2">
                 <parameters>
-                    <parameter value="1e-012" name="K_c"/>
+                    <parameter value="1e-012" type="double" name="K_c"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2560.00000000000000000000" y="2717" flipped="0" a="90"/>
+                    <pose x="2560" y="2717" flipped="false" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank C_1">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="100000" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2634.00000000000000000000" y="2801" flipped="0" a="0"/>
+                    <pose x="2634" y="2801" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalGain" name="Gain_1">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
-                    <parameter value="5" name="k"/>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="5" type="double" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2375.00000000000000000000" y="2321" flipped="0" a="0"/>
+                    <pose x="2375" y="2321" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank C_2">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="100000" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2619.00000000000000000000" y="2581" flipped="0" a="0"/>
+                    <pose x="2619" y="2581" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVariableDisplacementPump" name="Variable Displacement Pump">
                 <parameters>
-                    <parameter value="1000" name="omega_p"/>
-                    <parameter value="5e-005" name="D_p"/>
-                    <parameter value="5e-009" name="K_c,p"/>
-                    <parameter value="0.397108" name="epsilon_p"/>
+                    <parameter value="1000" type="double" name="omega_p"/>
+                    <parameter value="5e-005" type="double" name="D_p"/>
+                    <parameter value="5e-009" type="double" name="K_c,p"/>
+                    <parameter value="0.397108" type="double" name="epsilon_p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2421.00000000000000000000" y="2537" flipped="0" a="0"/>
+                    <pose x="2421" y="2537" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalLP1Filter" name="First order low pass filter">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
-                    <parameter value="100" name="omega"/>
-                    <parameter value="-1.5e+300" name="y_min"/>
-                    <parameter value="1.5e+300" name="y_max"/>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="100" type="double" name="omega"/>
+                    <parameter value="-1.5e+300" type="double" name="y_min"/>
+                    <parameter value="1.5e+300" type="double" name="y_max"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2467.00000000000000000000" y="2365" flipped="0" a="0"/>
+                    <pose x="2467" y="2365" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVariableDisplacementMotorQ" name="Motor">
                 <parameters>
-                    <parameter value="5e-005" name="D_m"/>
-                    <parameter value="5" name="B_m"/>
-                    <parameter value="0" name="C_i,m"/>
-                    <parameter value="1" name="J_m"/>
-                    <parameter value="1" name="epsilon_m"/>
+                    <parameter value="5e-005" type="double" name="D_m"/>
+                    <parameter value="5" type="double" name="B_m"/>
+                    <parameter value="0" type="double" name="C_i,m"/>
+                    <parameter value="1" type="double" name="J_m"/>
+                    <parameter value="1" type="double" name="epsilon_m"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2822.00000000000000000000" y="2536" flipped="1" a="0"/>
+                    <pose x="2822" y="2536" flipped="true" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalGain" name="Gain">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
-                    <parameter value="0.4" name="k"/>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="0.4" type="double" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2326.00000000000000000000" y="2365" flipped="0" a="0"/>
+                    <pose x="2326" y="2365" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalSubtract" name="Subtract">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2268.00000000000000000000" y="2365" flipped="0" a="0"/>
+                    <pose x="2268" y="2365" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalIntegrator2" name="Integrator">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2328.00000000000000000000" y="2320" flipped="0" a="0"/>
+                    <pose x="2328" y="2320" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="2e+007" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="2e+007" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2560.00000000000000000000" y="2778" flipped="0" a="0"/>
+                    <pose x="2560" y="2778" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="0" name="P1::Pressure"/>
-                    <parameter value="0.001" name="V"/>
-                    <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2620.00000000000000000000" y="2406" flipped="0" a="0"/>
+                    <pose x="2620" y="2406" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port_1">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="0" name="P1::Pressure"/>
-                    <parameter value="0.001" name="V"/>
-                    <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2635.00000000000000000000" y="2647" flipped="0" a="0"/>
+                    <pose x="2635" y="2647" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalStep" name="Step">
                 <parameters>
-                    <parameter value="0" name="y_0"/>
-                    <parameter value="1" name="y_A"/>
-                    <parameter value="5" name="t_step"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                    <parameter value="5" type="double" name="t_step"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2173.00000000000000000000" y="2365" flipped="0" a="0"/>
+                    <pose x="2173" y="2365" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalAdd" name="Add">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2406.00000000000000000000" y="2365" flipped="0" a="0"/>
+                    <pose x="2406" y="2365" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="MechanicAngularVelocitySensor" name="Angular Velocity Sensor">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2906.00000000000000000000" y="2462" flipped="0" a="0"/>
+                    <pose x="2906" y="2462" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve_1">
                 <parameters>
-                    <parameter value="2e+07" name="p_max"/>
-                    <parameter value="0.01" name="tao"/>
-                    <parameter value="1e-008" name="k_c,s"/>
-                    <parameter value="1e-008" name="k_c,f"/>
-                    <parameter value="0.01" name="q_nom"/>
-                    <parameter value="0" name="p_h"/>
+                    <parameter value="2e+07" type="double" name="p_max"/>
+                    <parameter value="0.01" type="double" name="tao"/>
+                    <parameter value="1e-008" type="double" name="k_c,s"/>
+                    <parameter value="1e-008" type="double" name="k_c,f"/>
+                    <parameter value="0.01" type="double" name="q_nom"/>
+                    <parameter value="0" type="double" name="p_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2636.00000000000000000000" y="2731" flipped="0" a="0"/>
+                    <pose x="2636" y="2731" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
-                    <parameter value="2e+07" name="p_max"/>
-                    <parameter value="0.01" name="tao"/>
-                    <parameter value="1e-008" name="k_c,s"/>
-                    <parameter value="1e-008" name="k_c,f"/>
-                    <parameter value="0.01" name="q_nom"/>
-                    <parameter value="0" name="p_h"/>
+                    <parameter value="2e+07" type="double" name="p_max"/>
+                    <parameter value="0.01" type="double" name="tao"/>
+                    <parameter value="1e-008" type="double" name="k_c,s"/>
+                    <parameter value="1e-008" type="double" name="k_c,f"/>
+                    <parameter value="0.01" type="double" name="q_nom"/>
+                    <parameter value="0" type="double" name="p_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2621.00000000000000000000" y="2498" flipped="0" a="0"/>
+                    <pose x="2621" y="2498" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2039" y="2486"/>
+                    <pose x="2039.000000" y="2486.000000"/>
                     <textobject fontcolor="#005500" text="This model shows an example of how to &#xa;model a hydrostatic transmission with an&#xa;angular velocity feedback. The system is &#xa;protected by one pressure relief valve on &#xa;each side. Additional oil is supplied to the &#xa;system from the pressure sources through &#xa;very small orifices." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="285" height="141"/>
-                    <line width="2" visible="1" style="solidline"/>
+                    <size width="285.000000" height="141.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2306" y="2196"/>
+                    <pose x="2306.000000" y="2196.000000"/>
                     <textobject fontcolor="#005500" text="Example: Hydrostatic Transmission" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
-                    <size width="389" height="41"/>
-                    <line width="2" visible="0" style="solidline"/>
+                    <size width="389.000000" height="41.000000"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>

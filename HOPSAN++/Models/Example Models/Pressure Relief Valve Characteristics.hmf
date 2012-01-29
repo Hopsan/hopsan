@@ -1,137 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_rUNKNOWN" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3949" hopsancoreversion="0.5.x_r3943">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="Pressure Relief Valve Characteristics">
+        <simulationtime stop="1" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499.5" y="2498" zoom="1"/>
+            <viewport x="2499.5" y="2498.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Pressure Relief Valve Characteristics">
                     <icons>
-                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="" type="user"/>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
-            <hopsanundo>
-                <post number="-1"/>
-                <post number="0"/>
-                <post number="1"/>
-                <post number="2"/>
-                <post number="3"/>
-                <post number="4"/>
-                <post number="5"/>
-                <post number="6"/>
-                <post number="7"/>
-                <post number="8"/>
-                <post number="9"/>
-                <post number="10"/>
-                <post number="11"/>
-                <post number="12"/>
-                <post number="13"/>
-                <post number="14" type="changedparameters"/>
-                <post number="15" type="changedparameters"/>
-                <post number="16" type="changedparameters"/>
-            </hopsanundo>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
         </hopsangui>
-        <simulationtime stop="10" timestep="0.001" start="0"/>
-        <parameters/>
         <objects>
             <component typename="HydraulicTurbulentOrifice" name="Turbulent Orifice">
                 <parameters>
-                    <parameter value="0.67" name="C_q"/>
-                    <parameter value="3e-007" name="A"/>
-                    <parameter value="890" name="rho"/>
+                    <parameter value="0.67" type="double" name="C_q"/>
+                    <parameter value="3e-007" type="double" name="A"/>
+                    <parameter value="890" type="double" name="rho"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2587.00000000000000000000" y="2373" flipped="0" a="0"/>
+                    <pose x="2587" y="2373" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="1e5" name="P1::Pressure"/>
-                    <parameter value="0.001" name="V"/>
-                    <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e5" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2481.00000000000000000000" y="2373" flipped="0" a="0"/>
+                    <pose x="2481" y="2373" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank C_1">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="100000" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2660.00000000000000000000" y="2433" flipped="0" a="0"/>
+                    <pose x="2660" y="2433" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalStep" name="Step">
                 <parameters>
-                    <parameter value="1e-006" name="y_0"/>
-                    <parameter value="-7e-007" name="y_A"/>
-                    <parameter value="0.5" name="t_step"/>
+                    <parameter value="1e-006" type="double" name="y_0"/>
+                    <parameter value="-7e-007" type="double" name="y_A"/>
+                    <parameter value="0.5" type="double" name="t_step"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2526.00000000000000000000" y="2314" flipped="0" a="0"/>
+                    <pose x="2526" y="2314" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank C">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="100000" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2481.00000000000000000000" y="2552" flipped="0" a="0"/>
+                    <pose x="2481" y="2552" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSourceQ" name="Prescribed Source Q">
                 <parameters>
-                    <parameter value="0.00005" name="q"/>
+                    <parameter value="0.0005" type="double" name="q"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2388.00000000000000000000" y="2373" flipped="0" a="0"/>
+                    <pose x="2388" y="2373" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
-                    <parameter value="2e+07" name="p_max"/>
-                    <parameter value="0.01" name="tao"/>
-                    <parameter value="1e-008" name="k_c,s"/>
-                    <parameter value="1e-008" name="k_c,f"/>
-                    <parameter value="0.001" name="q_nom"/>
-                    <parameter value="0" name="p_h"/>
+                    <parameter value="2e+07" type="double" name="p_max"/>
+                    <parameter value="0.01" type="double" name="tao"/>
+                    <parameter value="1e-008" type="double" name="k_c,s"/>
+                    <parameter value="1e-008" type="double" name="k_c,f"/>
+                    <parameter value="0.001" type="double" name="q_nom"/>
+                    <parameter value="0" type="double" name="p_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2483.00000000000000000000" y="2461" flipped="0" a="0"/>
+                    <pose x="2482.9992" y="2461" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="1996" y="2387"/>
+                    <pose x="1996.000000" y="2387.000000"/>
                     <textobject fontcolor="#005500" text="This example model displays the characteristics&#xa;of a pressure relief valve. Pressure will increase&#xa;in the volume because of the prescribed flow,&#xa;and when pressure reaches the reference&#xa;value the relief valve will open. After .5 seconds,&#xa;the orifice size will be reduced to half, which will &#xa;act as a disturbance for the valve." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="327" height="141"/>
-                    <line width="2" visible="1" style="solidline"/>
+                    <size width="327.000000" height="141.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2342" y="2213"/>
+                    <pose x="2342.000000" y="2213.000000"/>
                     <textobject fontcolor="#005500" text="Example: Pressure Relief Valve" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
-                    <size width="343" height="41"/>
-                    <line width="2" visible="0" style="solidline"/>
+                    <size width="343.000000" height="41.000000"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>
@@ -192,7 +193,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2481.00000000000000000000" y="2373.00000000000000000000"/>
-                        <coordinate x="2481.00079999999979918357" y="2421.00000000000000000000"/>
+                        <coordinate x="2481.00000000000000000000" y="2421.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -203,7 +204,7 @@
             <connect endport="P1" endcomponent="Tank C" startport="P2" startcomponent="Pressure Relief Valve">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2481.00079999999979918357" y="2501.00000000000000000000"/>
+                        <coordinate x="2481.00000000000000000000" y="2501.00000000000000000000"/>
                         <coordinate x="2481.00000000000000000000" y="2537.50000000000000000000"/>
                     </coordinates>
                     <geometries>
