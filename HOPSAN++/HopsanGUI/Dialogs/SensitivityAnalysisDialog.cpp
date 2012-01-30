@@ -259,7 +259,7 @@ void SensitivityAnalysisDialog::run()
         std::string temp = getenv("NUMBER_OF_PROCESSORS");
         nThreads = atoi(temp.c_str());
 #else
-        nThreads = max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+        nThreads = std::max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
 #endif
     }
     if(nThreads == 0)   //Extra check, just to be sure
