@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
     <modelobject typename="ElectricIsource" displayname="Ideal Current Source">
-        <icons/>
+        <icons>
+            <icon scale="1" path="ElectricIsource.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ElectricIsource.svg" iconrotation="ON" type="iso"/>
+        </icons>
         <ports>
-            <port x="1" y="0.5" a="0" name="Pel1"/>
+            <port x="0.5" y="0" a="270" name="Pel1"/>
             <port x="0" y="0.5" a="180" name="Piin"/>
         </ports>
     </modelobject>
