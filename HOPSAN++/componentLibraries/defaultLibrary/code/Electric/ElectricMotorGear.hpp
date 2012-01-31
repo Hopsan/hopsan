@@ -6,11 +6,10 @@
 #include "ComponentUtilities.h"
 #include "math.h"
 
-
 //!
 //! @file ElectricMotorGear.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 12 Sep 2011 12:25:40
+//! @date Tue 31 Jan 2012 15:03:08
 //! @brief Electric motor with gear and inertia load
 //! @ingroup ElectricComponents
 //!
@@ -54,7 +53,7 @@ private:
      int i;
      int iter;
      int mNoiter;
-     int jsyseqnweight[4];
+     double jsyseqnweight[4];
      int order[6];
      int mNstep;
      //Port Pel1 variable
@@ -81,6 +80,9 @@ private:
      double tormg;
      double Pin;
      double Pout;
+
+     //Expressions variables
+
      //Port Pel1 pointer
      double *mpND_uel1;
      double *mpND_iel1;
@@ -118,19 +120,19 @@ public:
         return new ElectricMotorGear();
      }
 
-     ElectricMotorGear(const double Ke = 0.13
-                             ,const double Ra = 0.04
-                             ,const double Tm0 = 0.
-                             ,const double wc = 1.
-                             ,const double Bm = 0.0012
-                             ,const double Jm = 1
-                             ,const double myfric = 0.01
-                             ,const double BL = 0.
-                             ,const double JL = 1
-                             ,const double gearRatio = 1.
-                             )
-        : ComponentQ()
+     ElectricMotorGear() : ComponentQ()
      {
+        const double Ke = 0.13;
+        const double Ra = 0.04;
+        const double Tm0 = 0.;
+        const double wc = 1.;
+        const double Bm = 0.0012;
+        const double Jm = 1;
+        const double myfric = 0.01;
+        const double BL = 0.;
+        const double JL = 1;
+        const double gearRatio = 1.;
+
         mNstep=9;
         jacobianMatrix.create(6,6);
         systemEquations.create(6);
@@ -369,20 +371,20 @@ Power(gearRatio,2)*(2*mJm + mBm*mTimestep));
           {
           stateVark[i] = stateVar[i];
           }
-        }
-        wmr1=stateVark[0];
-        thetamr1=stateVark[1];
-        iel2=stateVark[2];
-        uel1=stateVark[3];
-        uel2=stateVark[4];
-        tormr1=stateVark[5];
-        //Expressions
-        double wm = gearRatio*wmr1;
-        double iel1 = -iel2;
-        double tormg = iel2*mKe - gearRatio*mBm*wmr1 - \
+          wmr1=stateVark[0];
+          thetamr1=stateVark[1];
+          iel2=stateVark[2];
+          uel1=stateVark[3];
+          uel2=stateVark[4];
+          tormr1=stateVark[5];
+          //Expressions
+          wm = gearRatio*wmr1;
+          iel1 = -iel2;
+          tormg = iel2*mKe - gearRatio*mBm*wmr1 - \
 mTm0*limit(wmr1/mwc,-1.,1.);
-        double Pin = iel2*(uel1 - uel2);
-        double Pout = tormr1*wmr1;
+          Pin = iel2*(uel1 - uel2);
+          Pout = tormr1*wmr1;
+        }
 
         //Calculate the delayed parts
         delayParts1[1] = (-(gearRatio*iel2*mKe*mTimestep) + mTimestep*tormr1 \
