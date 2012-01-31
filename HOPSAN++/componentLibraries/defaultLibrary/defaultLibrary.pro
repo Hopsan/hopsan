@@ -192,15 +192,18 @@ HEADERS += \
     code/Hydraulic/valves/Hydraulic22DirectionalValve.hpp \
     code/Electric/ElectricVarResistor.hpp \
     code/Electric/ElectricUsource.hpp \
+    code/Electric/ElectricUsensor.hpp \
     code/Electric/ElectricSwitch.hpp \
     code/Electric/ElectricResistor.hpp \
     code/Electric/ElectricMotorGear.hpp \
     code/Electric/ElectricMotor.hpp \
     code/Electric/ElectricIsource.hpp \
+    code/Electric/ElectricIsensor.hpp \
     code/Electric/ElectricInductance.hpp \
     code/Electric/ElectricIcontroller.hpp \
     code/Electric/ElectricGround.hpp \
     code/Electric/ElectricCapacitance2.hpp \
+    code/Electric/ElectricCapacitanceMultiPort.hpp \
     code/Electric/ElectricBattery.hpp \
     code/Compgen/HydraulicLaminarOrificeCG.hpp \
     code/defaultComponentLibraryInternal.h
