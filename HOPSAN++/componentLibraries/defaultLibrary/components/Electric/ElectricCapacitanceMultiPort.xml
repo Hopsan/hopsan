@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="ElectricCapacitanceMultiPort" displayname="Electric capacitance Multi Port">
+        <icons>
+            <icon scale="1" path="ElectricCapacitanceMultiPort.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="ElectricCapacitanceMultiPort.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="0." a="0" name="Pel1"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
