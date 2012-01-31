@@ -273,7 +273,7 @@ void ComponentPropertiesDialog::createEditStuff()
     pScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    setWindowTitle(tr("Parameters"));
+    setWindowTitle(tr("Component Properties"));
 }
 
 
