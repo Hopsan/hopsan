@@ -328,7 +328,7 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
 
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
-        delayedPart[2][2] = mDelayedPart22.getIdx(1);
+        delayedPart[2][2] = mDelayedPart22.getIdx(0);
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
 
