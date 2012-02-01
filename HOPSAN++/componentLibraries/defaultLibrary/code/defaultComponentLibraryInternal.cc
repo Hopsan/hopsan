@@ -232,17 +232,19 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     //Electric components
     pComponentFactory->registerCreatorFunction("ElectricBattery", ElectricBattery::Creator);
     pComponentFactory->registerCreatorFunction("ElectricCapacitance2", ElectricCapacitance2::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricCapacitanceMultiPort", ElectricCapacitanceMultiPort::Creator);
     pComponentFactory->registerCreatorFunction("ElectricGround", ElectricGround::Creator);
     pComponentFactory->registerCreatorFunction("ElectricIcontroller", ElectricIcontroller::Creator);
     pComponentFactory->registerCreatorFunction("ElectricInductance", ElectricInductance::Creator);
     pComponentFactory->registerCreatorFunction("ElectricIsource", ElectricIsource::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricIsensor", ElectricIsensor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricMotor", ElectricMotor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricMotorGear", ElectricMotorGear::Creator);
     pComponentFactory->registerCreatorFunction("ElectricResistor", ElectricResistor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricVarResistor", ElectricVarResistor::Creator);
     pComponentFactory->registerCreatorFunction("ElectricSwitch", ElectricSwitch::Creator);
     pComponentFactory->registerCreatorFunction("ElectricUsource", ElectricUsource::Creator);
-
+    pComponentFactory->registerCreatorFunction("ElectricUsensor", ElectricUsensor::Creator);
     // Special component
 
 
