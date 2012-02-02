@@ -1,21 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="ElectricBatteryTest">
+        <simulationtime stop="1500" timestep="0.01" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2501" y="2380.5" zoom="1"/>
+            <viewport x="2501.5" y="2381.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="ElectricBatteryTest">
                     <icons>
-                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0"/>
@@ -176,80 +199,163 @@
                         <newpos>2355.5 2391.9</newpos>
                     </stuff>
                 </post>
+                <post number="24">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2342 2435</oldpos>
+                        <newpos>2354 2459</newpos>
+                    </stuff>
+                </post>
+                <post number="25">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2348 2389.4</oldpos>
+                        <newpos>2347 2389.4</newpos>
+                    </stuff>
+                </post>
+                <post number="26">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2354 2459</oldpos>
+                        <newpos>2347 2472</newpos>
+                    </stuff>
+                </post>
+                <post number="27">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2564.000000" y="2326.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="28">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Discharge of battery.&#xa;There is an issue in that the battery voltage cannot go to zero because of to high derivative as the state od charge SOC aproaches zero. Its ok otherwise." font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="29">
+                    <stuff h_new="74.000000" what="resizedtextboxwidget" w_old="1001.000000" h_old="100.000000" index="0" w_new="1001.000000">
+                        <oldpos>2564 2326</oldpos>
+                        <newpos>2564 2352</newpos>
+                    </stuff>
+                </post>
+                <post number="30">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2564 2352</oldpos>
+                        <newpos>2201 2154</newpos>
+                    </stuff>
+                </post>
+                <post number="31">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Discharge of battery.&#xa;There is an issue in that the battery voltage cannot go to zero because of to high derivative as the state od charge SOC aproaches zero. Its ok otherwise." font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Discharge of battery.&#xa;There is an issue in that the battery voltage cannot go to zero because of &#xa;to high derivative as the state od charge SOC aproaches zero. Its ok otherwise." font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="32">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2201 2154</oldpos>
+                        <newpos>1992 2171</newpos>
+                    </stuff>
+                </post>
+                <post number="33">
+                    <stuff h_new="74.000000" what="resizedtextboxwidget" w_old="1001.000000" h_old="74.000000" index="0" w_new="535.000000">
+                        <oldpos>1992 2171</oldpos>
+                        <newpos>1992 2171</newpos>
+                    </stuff>
+                </post>
+                <post number="34">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>1992 2171</oldpos>
+                        <newpos>2118 2198</newpos>
+                    </stuff>
+                </post>
+                <post number="35">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2347 2389.4</oldpos>
+                        <newpos>2346 2389.4</newpos>
+                    </stuff>
+                </post>
+                <post number="36">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2346 2389.4</oldpos>
+                        <newpos>2347 2389.4</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="1500" timestep="0.01" start="0"/>
-        <parameters/>
         <objects>
             <component typename="ElectricResistor" name="ElectricResistor">
                 <parameters>
-                    <parameter value="10" name="Conduct"/>
+                    <parameter value="10" type="double" name="Conduct"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2441.00000000000000000000" y="2331" flipped="0" a="0"/>
+                    <pose x="2441" y="2331" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2362.00000000000000000000" y="2450" flipped="0" a="0"/>
+                    <pose x="2367" y="2487" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="ElectricCapacitance2" name="ElectricCapacitance2">
                 <parameters>
-                    <parameter value="0" name="Pel1::Voltage"/>
-                    <parameter value="0" name="Pel1::Current"/>
-                    <parameter value="0" name="Pel2::Voltage"/>
-                    <parameter value="0" name="Pel2::Current"/>
-                    <parameter value="0.0001" name="Cc"/>
-                    <parameter value="0.1" name="alpha"/>
-                    <parameter value="0.001" name="timestep"/>
+                    <parameter value="0" type="double" name="Pel1::Voltage"/>
+                    <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel2::Voltage"/>
+                    <parameter value="0" type="double" name="Pel2::Current"/>
+                    <parameter value="0.0001" type="double" name="Cc"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2323.00000000000000000000" y="2352" flipped="0" a="0"/>
+                    <pose x="2323" y="2352" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="ElectricBattery" name="ElectricBattery">
                 <parameters>
-                    <parameter value="1" name="Psoc::Value"/>
-                    <parameter value="0" name="Pubatt::Value"/>
-                    <parameter value="1000" name="cond"/>
-                    <parameter value="12" name="unom"/>
-                    <parameter value="41" name="capacity"/>
-                    <parameter value="0.1" name="kappa"/>
+                    <parameter value="1" type="double" name="Psoc::Value"/>
+                    <parameter value="0" type="double" name="Pubatt::Value"/>
+                    <parameter value="1000" type="double" name="cond"/>
+                    <parameter value="12" type="double" name="unom"/>
+                    <parameter value="41" type="double" name="capacity"/>
+                    <parameter value="0.1" type="double" name="kappa"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2231.00000000000000000000" y="2422" flipped="0" a="0"/>
+                    <pose x="2231" y="2422" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_1">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2368.00000000000000000000" y="2404.3999999999996362" flipped="0" a="0"/>
+                    <pose x="2367" y="2404.4" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="ElectricGround" name="ElectricGround">
                 <parameters>
-                    <parameter value="0" name="Pel1::Voltage"/>
-                    <parameter value="0" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::Voltage"/>
+                    <parameter value="0" type="double" name="Pel1::Current"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2467.00000000000000000000" y="2387" flipped="0" a="0"/>
+                    <pose x="2467" y="2387" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2118.000000" y="2198.000000"/>
+                    <textobject fontcolor="#556b2f" text="Discharge of battery.&#xa;There is an issue in that the battery voltage cannot go to zero because of &#xa;to high derivative as the state od charge SOC aproaches zero. Its ok otherwise." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="535.000000" height="74.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
         </objects>
         <connections>
             <connect endport="Pel1" endcomponent="ElectricBattery" startport="Pel1" startcomponent="ElectricCapacitance2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2302.50000000000000000000" y="2330.73710073710071810638"/>
-                        <coordinate x="2231.00000000000000000000" y="2330.73710073710071810638"/>
+                        <coordinate x="2302.50000000000000000000" y="2330.73710073711981749511"/>
+                        <coordinate x="2231.00000000000000000000" y="2330.73710073711981749511"/>
                         <coordinate x="2231.00000000000000000000" y="2400.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -262,8 +368,8 @@
             <connect endport="Pel1" endcomponent="ElectricResistor" startport="Pel2" startcomponent="ElectricCapacitance2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2343.50000000000000000000" y="2330.73710073710071810638"/>
-                        <coordinate x="2372.00000000000000000000" y="2330.73710073710071810638"/>
+                        <coordinate x="2343.50000000000000000000" y="2330.73710073711981749511"/>
+                        <coordinate x="2372.00000000000000000000" y="2330.73710073711981749511"/>
                         <coordinate x="2372.00000000000000000000" y="2331.00000000000000000000"/>
                         <coordinate x="2415.00000000000000000000" y="2331.00000000000000000000"/>
                     </coordinates>
@@ -294,8 +400,8 @@
                     <coordinates>
                         <coordinate x="2251.50000000000000000000" y="2413.19999999999981810106"/>
                         <coordinate x="2294.00000000000000000000" y="2413.19999999999981810106"/>
-                        <coordinate x="2294.00000000000000000000" y="2450.00000000000000000000"/>
-                        <coordinate x="2349.50000000000000000000" y="2450.00000000000000000000"/>
+                        <coordinate x="2294.00000000000000000000" y="2487.00000000000000000000"/>
+                        <coordinate x="2347.00000000000000000000" y="2487.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -309,8 +415,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2251.50000000000000000000" y="2404.40000000000009094947"/>
-                        <coordinate x="2355.50000000000000000000" y="2404.40000000000009094947"/>
-                        <coordinate x="2355.50000000000000000000" y="2404.39999999999963620212"/>
+                        <coordinate x="2347.00000000000000000000" y="2404.40000000000009094947"/>
+                        <coordinate x="2347.00000000000000000000" y="2404.39999999999963620212"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>

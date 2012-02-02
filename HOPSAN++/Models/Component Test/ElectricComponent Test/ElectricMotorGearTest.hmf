@@ -1,21 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="ElectricMotorGearTest">
+        <simulationtime stop="100" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2438.5" y="2555.5" zoom="1"/>
+            <viewport x="2439.5" y="2436.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="ElectricMotorGearTest">
                     <icons>
-                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0"/>
@@ -66,156 +89,574 @@
                         <newpos>2555.5 2508.39</newpos>
                     </stuff>
                 </post>
+                <post number="33">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="PPin" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.59999999999990905053" y="2566.50000000000000000000"/>
+                                    <coordinate x="2424.59999999999990905053" y="2679.00000000000000000000"/>
+                                    <coordinate x="2499.00000000000000000000" y="2679.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="34">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2499.1 2713</oldpos>
+                        <newpos>2499.1 2712</newpos>
+                    </stuff>
+                </post>
+                <post number="35">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="PPin" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.59999999999990905053" y="2566.50000000000000000000"/>
+                                    <coordinate x="2424.59999999999990905053" y="2727.00000000000000000000"/>
+                                    <coordinate x="2499.10000000000036379788" y="2727.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2519.1" y="2727" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="36">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2105 2284</oldpos>
+                        <newpos>2074 2270</newpos>
+                    </stuff>
+                </post>
+                <post number="37">
+                    <stuff what="addedobject">
+                        <component typename="MechanicTorqueSensor" name="Torque Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2514" y="2442" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="38">
+                    <stuff what="addedconnector">
+                        <connect endport="Pmr1" endcomponent="ElectricMotorGear" startport="P1" startcomponent="Torque Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2514.00000000000000000000" y="2460.00000000000000000000"/>
+                                    <coordinate x="2514.00000000000000000000" y="2515.00000000000000000000"/>
+                                    <coordinate x="2460.00000000000000000000" y="2515.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="39">
+                    <stuff what="movedobject" name="Torque Transducer">
+                        <oldpos>2496 2424</oldpos>
+                        <newpos>2473 2443</newpos>
+                    </stuff>
+                </post>
+                <post number="40">
+                    <stuff what="movedobject" name="Torque Transducer">
+                        <oldpos>2473 2443</oldpos>
+                        <newpos>2473 2425</newpos>
+                    </stuff>
+                </post>
+                <post number="41">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2761" y="2515" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="42">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="Pwm" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2460.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2741.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2741.00000000000000000000" y="2515.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="43">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2741 2500</oldpos>
+                        <newpos>2740 2500</newpos>
+                    </stuff>
+                </post>
+                <post number="44">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="Pwm" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2460.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2740.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2740.00000000000000000000" y="2515.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2760" y="2515" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="45">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2660" y="2427" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="46">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Torque Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2640.00000000000000000000" y="2425.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="47">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink_2" startport="out" startcomponent="Torque Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2491.00000000000000000000" y="2394.00000000000000000000"/>
+                                    <coordinate x="2643.00000000000000000000" y="2394.00000000000000000000"/>
+                                    <coordinate x="2643.00000000000000000000" y="2730.00000000000000000000"/>
+                                    <coordinate x="2742.00000000000000000000" y="2730.00000000000000000000"/>
+                                    <coordinate x="2742.00000000000000000000" y="2650.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="48">
+                    <stuff what="modifiedconnector" linenumber="2">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-15 1</newpos>
+                        <connect endport="in_bottom" endcomponent="Sink_2" startport="out" startcomponent="Torque Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2491.00000000000000000000" y="2394.00000000000000000000"/>
+                                    <coordinate x="2628.00000000000000000000" y="2394.00000000000000000000"/>
+                                    <coordinate x="2628.00000000000000000000" y="2730.00000000000000000000"/>
+                                    <coordinate x="2742.00000000000000000000" y="2730.00000000000000000000"/>
+                                    <coordinate x="2742.00000000000000000000" y="2650.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="49">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2640 2410</oldpos>
+                        <newpos>2687 2410</newpos>
+                    </stuff>
+                </post>
+                <post number="50">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Torque Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2687.00000000000000000000" y="2425.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="51">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink_1" startport="out" startcomponent="Torque Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2491.00000000000000000000" y="2396.00000000000000000000"/>
+                                    <coordinate x="2461.00000000000000000000" y="2396.00000000000000000000"/>
+                                    <coordinate x="2461.00000000000000000000" y="2724.00000000000000000000"/>
+                                    <coordinate x="2519.00000000000000000000" y="2724.00000000000000000000"/>
+                                    <coordinate x="2519.00000000000000000000" y="2694.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="52">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2687 2410</oldpos>
+                        <newpos>2690 2363</newpos>
+                    </stuff>
+                </post>
+                <post number="53">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink" startport="out" startcomponent="Torque Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                                    <coordinate x="2491.00000000000000000000" y="2419.00000000000000000000"/>
+                                    <coordinate x="2710.00000000000000000000" y="2419.00000000000000000000"/>
+                                    <coordinate x="2710.00000000000000000000" y="2393.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="54">
+                    <stuff what="addedconnector">
+                        <connect endport="in_right" endcomponent="Sink" startport="Pwm" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2460.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2673.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2673.00000000000000000000" y="2378.00000000000000000000"/>
+                                    <coordinate x="2730.00000000000000000000" y="2378.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="55">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>83 9</newpos>
+                        <connect endport="in_right" endcomponent="Sink" startport="Pwm" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2460.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2756.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2756.00000000000000000000" y="2378.00000000000000000000"/>
+                                    <coordinate x="2730.00000000000000000000" y="2378.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="56">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="Ptormg" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2460.00000000000000000000" y="2556.19999999999981810106"/>
+                                    <coordinate x="2656.00000000000000000000" y="2556.19999999999981810106"/>
+                                    <coordinate x="2656.00000000000000000000" y="2378.00000000000000000000"/>
+                                    <coordinate x="2690.00000000000000000000" y="2378.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="57">
+                    <stuff what="addedconnector">
+                        <connect endport="in_right" endcomponent="Sink_2" startport="Pwm" startcomponent="ElectricMotorGear">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2460.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2802.00000000000000000000" y="2535.59999999999990905053"/>
+                                    <coordinate x="2802.00000000000000000000" y="2635.00000000000000000000"/>
+                                    <coordinate x="2762.00000000000000000000" y="2635.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="58">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2722 2620</oldpos>
+                        <newpos>2722 2619</newpos>
+                    </stuff>
+                </post>
+                <post number="59" type="changedparameters">
+                    <stuff newvalue="50" what="changedparameter" oldvalue="100" parametername="t_end" objectname="Soft step"/>
+                </post>
+                <post number="60" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="50" parametername="t_end" objectname="Soft step"/>
+                    <stuff newvalue="500" what="changedparameter" oldvalue="1000" parametername="y_A" objectname="Soft step"/>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="100" timestep="0.001" start="0"/>
-        <parameters/>
         <objects>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2519.10000000000036379788" y="2728" flipped="0" a="0"/>
+                    <pose x="2710" y="2378" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="ElectricMotorGear" name="ElectricMotorGear">
                 <parameters>
-                    <parameter value="0" name="Pwm::Value"/>
-                    <parameter value="0" name="Ptormg::Value"/>
-                    <parameter value="0" name="PPin::Value"/>
-                    <parameter value="0" name="PPout::Value"/>
-                    <parameter value="0.13" name="Ke"/>
-                    <parameter value="0.004" name="Ra"/>
-                    <parameter value="1" name="Tm0"/>
-                    <parameter value="1" name="wc"/>
-                    <parameter value="0.0012" name="Bm"/>
-                    <parameter value=".0001" name="Jm"/>
-                    <parameter value="0" name="myfric"/>
-                    <parameter value="0" name="BL"/>
-                    <parameter value=".01" name="JL"/>
-                    <parameter value="1" name="gearRatio"/>
+                    <parameter value="0" type="double" name="Pwm::Value"/>
+                    <parameter value="0" type="double" name="Ptormg::Value"/>
+                    <parameter value="0" type="double" name="PPin::Value"/>
+                    <parameter value="0" type="double" name="PPout::Value"/>
+                    <parameter value="0.13" type="double" name="Ke"/>
+                    <parameter value="0.004" type="double" name="Ra"/>
+                    <parameter value="1" type="double" name="Tm0"/>
+                    <parameter value="1" type="double" name="wc"/>
+                    <parameter value="0.0012" type="double" name="Bm"/>
+                    <parameter value=".0001" type="double" name="Jm"/>
+                    <parameter value="0" type="double" name="myfric"/>
+                    <parameter value="0" type="double" name="BL"/>
+                    <parameter value=".01" type="double" name="JL"/>
+                    <parameter value="1" type="double" name="gearRatio"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2401.00000000000000000000" y="2515" flipped="0" a="0"/>
+                    <pose x="2401" y="2515" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSource" name="Constant">
                 <parameters>
-                    <parameter value="1" name="y"/>
+                    <parameter value="1" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2386.00000000000000000000" y="2367" flipped="0" a="0"/>
+                    <pose x="2386" y="2367" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSoftStep" name="Soft step">
                 <parameters>
-                    <parameter value="10" name="t_start"/>
-                    <parameter value="100" name="t_end"/>
-                    <parameter value="0" name="y_0"/>
-                    <parameter value="1000" name="y_A"/>
+                    <parameter value="10" type="double" name="t_start"/>
+                    <parameter value="100" type="double" name="t_end"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="500" type="double" name="y_A"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2465.00000000000000000000" y="2333" flipped="0" a="0"/>
+                    <pose x="2465" y="2333" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_1">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2519.00000000000000000000" y="2679" flipped="0" a="0"/>
+                    <pose x="2519" y="2679" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="ElectricUsource" name="ElectricUsource">
                 <parameters>
-                    <parameter value="0" name="Pel1::Voltage"/>
-                    <parameter value="0" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::Voltage"/>
+                    <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="12" type="double" name="uin"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2284.00000000000000000000" y="2468" flipped="0" a="0"/>
+                    <pose x="2284" y="2468" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalDivide" name="Divide">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2680.00000000000000000000" y="2635" flipped="0" a="0"/>
+                    <pose x="2680" y="2635" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_2">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2742.00000000000000000000" y="2635" flipped="0" a="0"/>
+                    <pose x="2742" y="2634" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="ElectricGround" name="ElectricGround">
                 <parameters>
-                    <parameter value="0" name="Pel1::Voltage"/>
-                    <parameter value="0" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::Voltage"/>
+                    <parameter value="0" type="double" name="Pel1::Current"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2371.50000000000000000000" y="2628" flipped="0" a="0"/>
+                    <pose x="2371.5" y="2628" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTorqueSensor" name="Torque Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2491" y="2443" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalAdd" name="Add">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2606.00000000000000000000" y="2600" flipped="0" a="0"/>
+                    <pose x="2606" y="2600" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSource" name="Constant_1">
                 <parameters>
-                    <parameter value="50" name="y"/>
+                    <parameter value="50" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2133.00000000000000000000" y="2468" flipped="0" a="0"/>
+                    <pose x="2133" y="2468" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="MechanicTorqueTransformer" name="Torque Transformer">
                 <parameters>
-                    <parameter value="0" name="P1::Angular Velocity"/>
-                    <parameter value="0" name="P1::Angle"/>
-                    <parameter value="0" name="T"/>
+                    <parameter value="0" type="double" name="P1::Angular Velocity"/>
+                    <parameter value="0" type="double" name="P1::Angle"/>
+                    <parameter value="0" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2532.00000000000000000000" y="2514.8850000000002183" flipped="1" a="0"/>
+                    <pose x="2532" y="2514.885" flipped="true" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSource" name="Constant_2">
                 <parameters>
-                    <parameter value=".001" name="y"/>
+                    <parameter value=".001" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2538.00000000000000000000" y="2576" flipped="0" a="0"/>
+                    <pose x="2538" y="2576" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2609" y="2661"/>
+                    <pose x="2609.000000" y="2661.000000"/>
                     <textobject fontcolor="#556b2f" text="Calculation of efficiency" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="165" height="29"/>
-                    <line width="2" visible="1" style="solidline"/>
+                    <size width="165.000000" height="29.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2105" y="2284"/>
+                    <pose x="2074.000000" y="2270.000000"/>
                     <textobject fontcolor="#556b2f" text="Test of static chracteristics of the&#xa;ElectricMotorGear component.&#xa;The load tourqe is varied with a&#xa;soft step" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="225" height="98"/>
-                    <line width="2" visible="1" style="solidline"/>
+                    <size width="225.000000" height="98.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>
@@ -255,7 +696,7 @@
             <connect endport="Pel1" endcomponent="ElectricMotorGear" startport="Pel1" startcomponent="ElectricUsource">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2284.00000000000000000000" y="2443.50000000000000000000"/>
+                        <coordinate x="2284.00000000000000000000" y="2446.00000000000000000000"/>
                         <coordinate x="2284.00000000000000000000" y="2424.00000000000000000000"/>
                         <coordinate x="2371.50000000000000000000" y="2424.00000000000000000000"/>
                         <coordinate x="2371.50000000000000000000" y="2463.50000000000000000000"/>
@@ -274,24 +715,10 @@
                         <coordinate x="2145.50000000000000000000" y="2468.00000000000000000000"/>
                         <coordinate x="2255.00000000000000000000" y="2468.00000000000000000000"/>
                         <coordinate x="2255.00000000000000000000" y="2468.00000000000000000000"/>
-                        <coordinate x="2275.00000000000000000000" y="2468.00000000000000000000"/>
+                        <coordinate x="2268.50000000000000000000" y="2468.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink" startport="PPin" startcomponent="ElectricMotorGear">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2424.59999999999990905053" y="2566.50000000000000000000"/>
-                        <coordinate x="2424.59999999999990905053" y="2728.00000000000000000000"/>
-                        <coordinate x="2506.60000000000036379788" y="2728.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
@@ -303,7 +730,7 @@
                     <coordinates>
                         <coordinate x="2448.19999999999981810106" y="2566.50000000000000000000"/>
                         <coordinate x="2448.19999999999981810106" y="2679.00000000000000000000"/>
-                        <coordinate x="2506.50000000000000000000" y="2679.00000000000000000000"/>
+                        <coordinate x="2499.00000000000000000000" y="2679.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -389,8 +816,8 @@
                     <coordinates>
                         <coordinate x="2692.50000000000000000000" y="2635.00000000000000000000"/>
                         <coordinate x="2713.00000000000000000000" y="2635.00000000000000000000"/>
-                        <coordinate x="2713.00000000000000000000" y="2635.00000000000000000000"/>
-                        <coordinate x="2729.50000000000000000000" y="2635.00000000000000000000"/>
+                        <coordinate x="2713.00000000000000000000" y="2634.00000000000000000000"/>
+                        <coordinate x="2722.00000000000000000000" y="2634.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -410,6 +837,138 @@
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="PPin" startcomponent="ElectricMotorGear">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2424.59999999999990905053" y="2566.50000000000000000000"/>
+                        <coordinate x="2424.59999999999990905053" y="2679.00000000000000000000"/>
+                        <coordinate x="2499.00000000000000000000" y="2679.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pmr1" endcomponent="ElectricMotorGear" startport="P1" startcomponent="Torque Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2491.00000000000000000000" y="2461.00000000000000000000"/>
+                        <coordinate x="2491.00000000000000000000" y="2515.00000000000000000000"/>
+                        <coordinate x="2460.00000000000000000000" y="2515.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink_2" startport="out" startcomponent="Torque Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                        <coordinate x="2491.00000000000000000000" y="2394.00000000000000000000"/>
+                        <coordinate x="2628.00000000000000000000" y="2394.00000000000000000000"/>
+                        <coordinate x="2628.00000000000000000000" y="2730.00000000000000000000"/>
+                        <coordinate x="2742.00000000000000000000" y="2730.00000000000000000000"/>
+                        <coordinate x="2742.00000000000000000000" y="2649.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink_1" startport="out" startcomponent="Torque Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                        <coordinate x="2491.00000000000000000000" y="2396.00000000000000000000"/>
+                        <coordinate x="2461.00000000000000000000" y="2396.00000000000000000000"/>
+                        <coordinate x="2461.00000000000000000000" y="2724.00000000000000000000"/>
+                        <coordinate x="2519.00000000000000000000" y="2724.00000000000000000000"/>
+                        <coordinate x="2519.00000000000000000000" y="2694.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink" startport="out" startcomponent="Torque Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2491.00000000000000000000" y="2425.00000000000000000000"/>
+                        <coordinate x="2491.00000000000000000000" y="2419.00000000000000000000"/>
+                        <coordinate x="2710.00000000000000000000" y="2419.00000000000000000000"/>
+                        <coordinate x="2710.00000000000000000000" y="2393.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink" startport="Pwm" startcomponent="ElectricMotorGear">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2460.00000000000000000000" y="2535.59999999999990905053"/>
+                        <coordinate x="2756.00000000000000000000" y="2535.59999999999990905053"/>
+                        <coordinate x="2756.00000000000000000000" y="2378.00000000000000000000"/>
+                        <coordinate x="2730.00000000000000000000" y="2378.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Ptormg" startcomponent="ElectricMotorGear">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2460.00000000000000000000" y="2556.19999999999981810106"/>
+                        <coordinate x="2656.00000000000000000000" y="2556.19999999999981810106"/>
+                        <coordinate x="2656.00000000000000000000" y="2378.00000000000000000000"/>
+                        <coordinate x="2690.00000000000000000000" y="2378.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink_2" startport="Pwm" startcomponent="ElectricMotorGear">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2460.00000000000000000000" y="2535.59999999999990905053"/>
+                        <coordinate x="2802.00000000000000000000" y="2535.59999999999990905053"/>
+                        <coordinate x="2802.00000000000000000000" y="2634.00000000000000000000"/>
+                        <coordinate x="2762.00000000000000000000" y="2634.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
