@@ -7,32 +7,16 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="36.000698"
    height="36.000698"
    id="svg4097"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="ElectricUsensor.svg">
   <defs
-     id="defs4099">
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 18.000349 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="36.000698 : 18.000349 : 1"
-       inkscape:persp3d-origin="18.000349 : 12.000233 : 1"
-       id="perspective18" />
-    <inkscape:perspective
-       id="perspective2832"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-  </defs>
+     id="defs4099" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -40,16 +24,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.2985278"
-     inkscape:cx="11.211455"
-     inkscape:cy="10.132523"
+     inkscape:zoom="1.074632"
+     inkscape:cx="143.50969"
+     inkscape:cy="-87.024301"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1253"
      inkscape:window-height="683"
-     inkscape:window-x="242"
-     inkscape:window-y="242"
+     inkscape:window-x="133"
+     inkscape:window-y="120"
      inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -82,13 +66,6 @@
        sodipodi:ry="35.903057"
        d="m 256.17317,486.64642 c 0,19.82871 -16.07435,35.90306 -35.90306,35.90306 -19.82871,0 -35.90306,-16.07435 -35.90306,-35.90306 0,-19.82871 16.07435,-35.90305 35.90306,-35.90305 19.82871,0 35.90306,16.07434 35.90306,35.90305 z"
        transform="matrix(0.48046048,0,0,0.48046048,266.73991,271.70647)" />
-    <image
-       y="403.1636"
-       x="167.14261"
-       id="image2834"
-       height="56"
-       width="182"
-       xlink:href="file:///C:/HOPSAN++/externalLibs/PettersMatematica/inkscape_pasted_image_20120131_161613.png" />
     <path
        style="color:#000000;fill:none;stroke:#000000;stroke-width:2.10000000000000010;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="m 10.236063,11.806368 7.909685,13.492992 7.32809,-13.609311"
