@@ -1,21 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="Hydraulic43ValveTest">
+        <simulationtime stop="1" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2555" y="2425" zoom="1"/>
+            <viewport x="2566.05" y="2433.05" zoom="0.842152"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Hydraulic43ValveTest">
                     <icons>
-                        <icon scale="1" path="../../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0">
@@ -157,129 +181,251 @@
                     </stuff>
                 </post>
                 <post number="12"/>
+                <post number="13" type="paste">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2155.500000" y="2161.500000"/>
+                                <textobject fontcolor="#556b2f" text="Issus: Start value cannot be set on xv since startvalue of internal filter is not changed" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="589.000000" height="53.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="14">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2841.5 2354.5</oldpos>
+                        <newpos>2840.5 2354.5</newpos>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink" startport="xv" startcomponent="4/3 Servo Valve">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2587.50000000000000000000" y="2536.00000000000000000000"/>
+                                    <coordinate x="2853.00000000000000000000" y="2536.00000000000000000000"/>
+                                    <coordinate x="2853.00000000000000000000" y="2379.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="16">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2155.5 2161.5</oldpos>
+                        <newpos>2239.5 2248.5</newpos>
+                    </stuff>
+                </post>
+                <post number="17">
+                    <stuff h_new="42.000000" what="resizedtextboxwidget" w_old="589.000000" h_old="53.000000" index="0" w_new="589.000000">
+                        <oldpos>2240 2249</oldpos>
+                        <newpos>2240 2249</newpos>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2240 2249</oldpos>
+                        <newpos>2234 2285</newpos>
+                    </stuff>
+                </post>
+                <post number="19">
+                    <stuff what="deletedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2234.000000" y="2285.000000"/>
+                                <textobject fontcolor="#556b2f" text="Issus: Start value cannot be set on xv since startvalue of internal filter is not changed" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="589.000000" height="42.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="20" type="paste">
+                    <stuff what="addedtextboxwidget" index="1">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2398.100000" y="2318.600000"/>
+                                <textobject fontcolor="#556b2f" text="Issus: Start value cannot be set other &#xa;than zero xv due to inputsignal set zero during initialisation." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="407.940000" height="53.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                    <stuff what="addedtextboxwidget" index="2">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2656.100000" y="2212.600000"/>
+                                <textobject fontcolor="#556b2f" text="Test example of a 4/3 directional valve." font="Calibri,16,-1,5,75,0,0,0,0,0"/>
+                                <size width="351.000000" height="53.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="21" type="movedmultiplewidgets">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2398.1 2318.6</oldpos>
+                        <newpos>2207.1 2334.6</newpos>
+                    </stuff>
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2656.1 2212.6</oldpos>
+                        <newpos>2465.1 2228.6</newpos>
+                    </stuff>
+                </post>
+                <post number="22" type="movedmultiplewidgets">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2207.1 2334.6</oldpos>
+                        <newpos>2151.29 2353.6</newpos>
+                    </stuff>
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2465.1 2228.6</oldpos>
+                        <newpos>2409.29 2247.6</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="1" timestep="0.001" start="0"/>
-        <parameters/>
         <objects>
             <component typename="HydraulicFlowSensor" name="Flow Sensor_3">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2820.00000000000000000000" y="2455" flipped="0" a="0"/>
+                    <pose x="2820" y="2455" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalRamp" name="Ramp">
                 <parameters>
-                    <parameter value="-0.001" name="y_0"/>
-                    <parameter value="0.002" name="y_A"/>
-                    <parameter value="0" name="t_start"/>
-                    <parameter value="1" name="t_end"/>
+                    <parameter value="-0.001" type="double" name="y_0"/>
+                    <parameter value="0.002" type="double" name="y_A"/>
+                    <parameter value="0" type="double" name="t_start"/>
+                    <parameter value="1" type="double" name="t_end"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2274.00000000000000000000" y="2521" flipped="0" a="0"/>
+                    <pose x="2274" y="2521" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2854.00000000000000000000" y="2367" flipped="0" a="0"/>
+                    <pose x="2853" y="2367" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_1">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="1e+007" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e+007" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2598.00000000000000000000" y="2459" flipped="0" a="0"/>
+                    <pose x="2598" y="2459" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_2">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="2e+007" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="2e+007" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2447.00000000000000000000" y="2640" flipped="0" a="0"/>
+                    <pose x="2447" y="2640" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_3">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="1e5" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e5" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2591.00000000000000000000" y="2639" flipped="0" a="0"/>
+                    <pose x="2591" y="2639" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2678.00000000000000000000" y="2453" flipped="0" a="0"/>
+                    <pose x="2678" y="2453" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="Hydraulic43Valve" name="4/3 Servo Valve">
                 <parameters>
-                    <parameter value="0" name="xv::Value"/>
-                    <parameter value="0.67" name="C_q"/>
-                    <parameter value="890" name="rho"/>
-                    <parameter value="0.01" name="d"/>
-                    <parameter value="1" name="f_pa"/>
-                    <parameter value="1" name="f_pb"/>
-                    <parameter value="1" name="f_at"/>
-                    <parameter value="1" name="f_bt"/>
-                    <parameter value="0.01" name="x_v,max"/>
-                    <parameter value="-1e-004" name="x_pa"/>
-                    <parameter value="-1e-004" name="x_pb"/>
-                    <parameter value="-1e-004" name="x_at"/>
-                    <parameter value="-1e-004" name="x_bt"/>
-                    <parameter value="1000" name="omega_h"/>
-                    <parameter value="1" name="delta_h"/>
+                    <parameter value="0" type="double" name="xv::Value"/>
+                    <parameter value="0.67" type="double" name="C_q"/>
+                    <parameter value="890" type="double" name="rho"/>
+                    <parameter value="0.01" type="double" name="d"/>
+                    <parameter value="1" type="double" name="f_pa"/>
+                    <parameter value="1" type="double" name="f_pb"/>
+                    <parameter value="1" type="double" name="f_at"/>
+                    <parameter value="1" type="double" name="f_bt"/>
+                    <parameter value="0.01" type="double" name="x_v,max"/>
+                    <parameter value="-1e-004" type="double" name="x_pa"/>
+                    <parameter value="-1e-004" type="double" name="x_pb"/>
+                    <parameter value="-1e-004" type="double" name="x_at"/>
+                    <parameter value="-1e-004" type="double" name="x_bt"/>
+                    <parameter value="1000" type="double" name="omega_h"/>
+                    <parameter value="1" type="double" name="delta_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2508.00000000000000000000" y="2536" flipped="0" a="0"/>
+                    <pose x="2508" y="2536" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor_1">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2729.00000000000000000000" y="2454" flipped="0" a="0"/>
+                    <pose x="2729" y="2454" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="1e+007" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e+007" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2453.00000000000000000000" y="2459" flipped="0" a="0"/>
+                    <pose x="2453" y="2459" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor_2">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2777.00000000000000000000" y="2455" flipped="0" a="0"/>
+                    <pose x="2777" y="2455" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2151.290592" y="2353.598947"/>
+                    <textobject fontcolor="#556b2f" text="Issus: Start value cannot be set other &#xa;than zero xv due to inputsignal set zero during initialisation." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="407.940000" height="53.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2409.290592" y="2247.598947"/>
+                    <textobject fontcolor="#556b2f" text="Test example of a 4/3 directional valve." font="Calibri,16,-1,5,75,0,0,0,0,0"/>
+                    <size width="351.000000" height="53.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
         </objects>
         <connections>
             <connect endport="in" endcomponent="4/3 Servo Valve" startport="out" startcomponent="Ramp">
@@ -431,7 +577,7 @@
                     <coordinates>
                         <coordinate x="2678.00000000000000000000" y="2435.00000000000000000000"/>
                         <coordinate x="2678.00000000000000000000" y="2367.00000000000000000000"/>
-                        <coordinate x="2841.50000000000000000000" y="2367.00000000000000000000"/>
+                        <coordinate x="2833.00000000000000000000" y="2367.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -445,7 +591,7 @@
                     <coordinates>
                         <coordinate x="2729.00000000000000000000" y="2436.00000000000000000000"/>
                         <coordinate x="2729.00000000000000000000" y="2367.00000000000000000000"/>
-                        <coordinate x="2841.50000000000000000000" y="2367.00000000000000000000"/>
+                        <coordinate x="2833.00000000000000000000" y="2367.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -459,7 +605,7 @@
                     <coordinates>
                         <coordinate x="2777.00000000000000000000" y="2437.00000000000000000000"/>
                         <coordinate x="2777.00000000000000000000" y="2367.00000000000000000000"/>
-                        <coordinate x="2841.50000000000000000000" y="2367.00000000000000000000"/>
+                        <coordinate x="2833.00000000000000000000" y="2367.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -473,11 +619,25 @@
                     <coordinates>
                         <coordinate x="2820.00000000000000000000" y="2437.00000000000000000000"/>
                         <coordinate x="2820.00000000000000000000" y="2365.00000000000000000000"/>
-                        <coordinate x="2841.50000000000000000000" y="2365.00000000000000000000"/>
-                        <coordinate x="2841.50000000000000000000" y="2367.00000000000000000000"/>
+                        <coordinate x="2833.00000000000000000000" y="2365.00000000000000000000"/>
+                        <coordinate x="2833.00000000000000000000" y="2367.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink" startport="xv" startcomponent="4/3 Servo Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2587.50000000000000000000" y="2536.00000000000000000000"/>
+                        <coordinate x="2853.00000000000000000000" y="2536.00000000000000000000"/>
+                        <coordinate x="2853.00000000000000000000" y="2382.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>

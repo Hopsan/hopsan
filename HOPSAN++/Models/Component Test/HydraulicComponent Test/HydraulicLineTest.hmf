@@ -1,0 +1,1437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system typename="Subsystem" name="HydraulicLineTest">
+        <simulationtime stop="1" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2518.5" y="2523" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="1"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="HydraulicLineTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicTLMlossless" name="Lossless Transmission Line">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="0" name="P1::Pressure"/>
+                                <parameter value="0" name="P2::Flow"/>
+                                <parameter value="0" name="P2::Pressure"/>
+                                <parameter value="0.1" name="deltat"/>
+                                <parameter value="0" name="alpha"/>
+                                <parameter value="1e+009" name="Z_c"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2303.00000000000000000000" y="2531" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="2">
+                    <stuff what="movedobject" name="Lossless Transmission Line">
+                        <oldpos>2246.5 2523</oldpos>
+                        <newpos>2337.5 2511</newpos>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicLaminarOrifice" name="Laminar Orifice">
+                            <parameters>
+                                <parameter value="1e-011" name="K_c"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2548.00000000000000000000" y="2524" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="addedconnector">
+                        <connect endport="P2" endcomponent="Laminar Orifice" startport="P2" startcomponent="Lossless Transmission Line">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2450.50000000000000000000" y="2524.00000000000000000000"/>
+                                    <coordinate x="2493.00000000000000000000" y="2524.00000000000000000000"/>
+                                    <coordinate x="2493.00000000000000000000" y="2524.00000000000000000000"/>
+                                    <coordinate x="2513.00000000000000000000" y="2524.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff what="movedobject" name="Laminar Orifice">
+                        <oldpos>2513 2512.5</oldpos>
+                        <newpos>2512 2512.5</newpos>
+                    </stuff>
+                </post>
+                <post number="6">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicTankC" name="C-type Tank">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="100000" name="p"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2611.00000000000000000000" y="2577" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="deletedobject">
+                        <component typename="HydraulicTankC" name="C-type Tank">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="100000" name="p"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2611.00000000000000000000" y="2577" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicPressureSourceQ" name="Q-type Pressure Source">
+                            <parameters>
+                                <parameter value="100000" name="p"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2632.00000000000000000000" y="2529" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="movedobject" name="Q-type Pressure Source">
+                        <oldpos>2620 2517</oldpos>
+                        <newpos>2555 2606</newpos>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="deletedobject">
+                        <component typename="HydraulicPressureSourceQ" name="Q-type Pressure Source">
+                            <parameters>
+                                <parameter value="100000" name="p"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2567.00000000000000000000" y="2618" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source">
+                            <parameters>
+                                <parameter value="0.001" name="q"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2256.00000000000000000000" y="2512" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="12">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Lossless Transmission Line" startport="P1" startcomponent="Q-type Flow Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2268.00000000000000000000" y="2512.00000000000000000000"/>
+                                    <coordinate x="2317.50000000000000000000" y="2512.00000000000000000000"/>
+                                    <coordinate x="2317.50000000000000000000" y="2524.00000000000000000000"/>
+                                    <coordinate x="2337.50000000000000000000" y="2524.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="13">
+                    <stuff what="movedobject" name="Q-type Flow Source">
+                        <oldpos>2244 2500</oldpos>
+                        <newpos>2258 2512</newpos>
+                    </stuff>
+                </post>
+                <post number="14">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="100000" name="p"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2631.00000000000000000000" y="2528" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="C-type Pressure Source" startport="P1" startcomponent="Laminar Orifice">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2582.00000000000000000000" y="2524.00000000000000000000"/>
+                                    <coordinate x="2631.00000000000000000000" y="2524.00000000000000000000"/>
+                                    <coordinate x="2631.00000000000000000000" y="2524.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="16" type="changedparameters">
+                    <stuff newvalue="1e6" what="changedparameter" oldvalue="100000" parametername="p" objectname="C-type Pressure Source"/>
+                </post>
+                <post number="17" type="movedmultiple">
+                    <stuff what="movedobject" name="Q-type Flow Source">
+                        <oldpos>2244 2500</oldpos>
+                        <newpos>2366 2517</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Lossless Transmission Line">
+                        <oldpos>2337.5 2516</oldpos>
+                        <newpos>2445.5 2521</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Laminar Orifice">
+                        <oldpos>2513 2512.5</oldpos>
+                        <newpos>2620 2517.5</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="C-type Pressure Source">
+                        <oldpos>2619 2524</oldpos>
+                        <newpos>2727 2529</newpos>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicHose" name="Long Line With Visco Elastic Walls">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="0" name="P1::Pressure"/>
+                                <parameter value="0" name="P2::Flow"/>
+                                <parameter value="0" name="P2::Pressure"/>
+                                <parameter value="1e+009" name="beta_e"/>
+                                <parameter value="870" name="rho"/>
+                                <parameter value="0.03" name="eta"/>
+                                <parameter value="0.03" name="eta_w"/>
+                                <parameter value="0.03" name="d"/>
+                                <parameter value="1" name="l"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2457.00000000000000000000" y="2603" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="19">
+                    <stuff what="movedobject" name="Long Line With Visco Elastic Walls">
+                        <oldpos>2437 2593</oldpos>
+                        <newpos>2487 2589</newpos>
+                    </stuff>
+                </post>
+                <post number="20">
+                    <stuff what="addedobject">
+                        <component typename="SignalStep" name="Step">
+                            <parameters>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="y_A"/>
+                                <parameter value="1" name="t_step"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2263.00000000000000000000" y="2535" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="21">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Q-type Flow Source" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2275.50000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2346.00000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2346.00000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2366.00000000000000000000" y="2529.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="22" type="changedparameters">
+                    <stuff newvalue="1e-5" what="changedparameter" oldvalue="0" parametername="y_0" objectname="Step"/>
+                </post>
+                <post number="23">
+                    <stuff what="deletedobject">
+                        <component typename="HydraulicHose" name="Long Line With Visco Elastic Walls">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="0" name="P1::Pressure"/>
+                                <parameter value="0" name="P2::Flow"/>
+                                <parameter value="0" name="P2::Pressure"/>
+                                <parameter value="1e+009" name="beta_e"/>
+                                <parameter value="870" name="rho"/>
+                                <parameter value="0.03" name="eta"/>
+                                <parameter value="0.03" name="eta_w"/>
+                                <parameter value="0.03" name="d"/>
+                                <parameter value="1" name="l"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2507.00000000000000000000" y="2599" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="24" type="changedparameters">
+                    <stuff newvalue="1e-010" what="changedparameter" oldvalue="1e-011" parametername="K_c" objectname="Laminar Orifice"/>
+                </post>
+                <post number="25">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicHose" name="Long Line With Visco Elastic Walls">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="0" name="P1::Pressure"/>
+                                <parameter value="0" name="P2::Flow"/>
+                                <parameter value="0" name="P2::Pressure"/>
+                                <parameter value="1e+009" name="beta_e"/>
+                                <parameter value="870" name="rho"/>
+                                <parameter value="0.03" name="eta"/>
+                                <parameter value="0.03" name="eta_w"/>
+                                <parameter value="0.03" name="d"/>
+                                <parameter value="1" name="l"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2502.00000000000000000000" y="2645" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="26" type="paste">
+                    <stuff what="addedobject">
+                        <component typename="SignalStep" name="Step_1">
+                            <parameters>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="y_A"/>
+                                <parameter value="1" name="t_step"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2263.00000000000000000000" y="2529" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="movedobject" name="Step_1">
+                        <oldpos>2250.5 2516.5</oldpos>
+                        <newpos>2285 2629.5</newpos>
+                    </stuff>
+                    <stuff what="addedobject">
+                        <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source_1">
+                            <parameters>
+                                <parameter value="0.001" name="q"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2378.00000000000000000000" y="2529" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="movedobject" name="Q-type Flow Source_1">
+                        <oldpos>2366 2517</oldpos>
+                        <newpos>2400.5 2630</newpos>
+                    </stuff>
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Q-type Flow Source_1" startport="out" startcomponent="Step_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2310.00000000000000000000" y="2642.00000000000000000000"/>
+                                    <coordinate x="2346.00000000000000000000" y="2642.00000000000000000000"/>
+                                    <coordinate x="2346.00000000000000000000" y="2642.00000000000000000000"/>
+                                    <coordinate x="2400.50000000000000000000" y="2642.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="27">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Long Line With Visco Elastic Walls" startport="P1" startcomponent="Q-type Flow Source_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.50000000000000000000" y="2642.00000000000000000000"/>
+                                    <coordinate x="2462.00000000000000000000" y="2642.00000000000000000000"/>
+                                    <coordinate x="2462.00000000000000000000" y="2642.00000000000000000000"/>
+                                    <coordinate x="2482.00000000000000000000" y="2642.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="28" type="paste">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_1">
+                            <parameters>
+                                <parameter value="0" name="P1::Flow"/>
+                                <parameter value="100000" name="p"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2739.00000000000000000000" y="2541" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="movedobject" name="C-type Pressure Source_1">
+                        <oldpos>2727 2529</oldpos>
+                        <newpos>2623 2651</newpos>
+                    </stuff>
+                    <stuff what="addedobject">
+                        <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_1">
+                            <parameters>
+                                <parameter value="1e-011" name="K_c"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2655.00000000000000000000" y="2529" flipped="0" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="movedobject" name="Laminar Orifice_1">
+                        <oldpos>2620 2517.5</oldpos>
+                        <newpos>2516 2639.5</newpos>
+                    </stuff>
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="C-type Pressure Source_1" startport="P1" startcomponent="Laminar Orifice_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2586.00000000000000000000" y="2651.00000000000000000000"/>
+                                    <coordinate x="2635.00000000000000000000" y="2651.00000000000000000000"/>
+                                    <coordinate x="2635.00000000000000000000" y="2651.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="29">
+                    <stuff what="addedconnector">
+                        <connect endport="P2" endcomponent="Long Line With Visco Elastic Walls" startport="P2" startcomponent="Laminar Orifice_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2516.00000000000000000000" y="2651.00000000000000000000"/>
+                                    <coordinate x="2525.50000000000000000000" y="2651.00000000000000000000"/>
+                                    <coordinate x="2525.50000000000000000000" y="2642.00000000000000000000"/>
+                                    <coordinate x="2522.00000000000000000000" y="2642.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="30">
+                    <stuff what="movedobject" name="Laminar Orifice_1">
+                        <oldpos>2516 2639.5</oldpos>
+                        <newpos>2554 2630.5</newpos>
+                    </stuff>
+                </post>
+                <post number="31">
+                    <stuff what="movedobject" name="C-type Pressure Source_1">
+                        <oldpos>2623 2651</oldpos>
+                        <newpos>2738 2642</newpos>
+                    </stuff>
+                </post>
+                <post number="32" type="changedparameters">
+                    <stuff newvalue="30" what="changedparameter" oldvalue="1" parametername="l" objectname="Long Line With Visco Elastic Walls"/>
+                </post>
+                <post number="33" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="30" parametername="l" objectname="Long Line With Visco Elastic Walls"/>
+                </post>
+                <post number="34" type="changedparameters">
+                    <stuff newvalue="1e-05" what="changedparameter" oldvalue="1e-010" parametername="K_c" objectname="Laminar Orifice_1"/>
+                </post>
+                <post number="35" type="changedparameters">
+                    <stuff newvalue="1e-04" what="changedparameter" oldvalue="1e-05" parametername="K_c" objectname="Laminar Orifice_1"/>
+                </post>
+                <post number="36" type="changedparameters">
+                    <stuff newvalue="1e-6" what="changedparameter" oldvalue="1e-5" parametername="y_0" objectname="Step_1"/>
+                </post>
+                <post number="37" type="changedparameters">
+                    <stuff newvalue="1e-7" what="changedparameter" oldvalue="1e-6" parametername="y_0" objectname="Step_1"/>
+                </post>
+                <post number="38" type="changedparameters">
+                    <stuff newvalue=".5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step_1"/>
+                </post>
+                <post number="39" type="changedparameters">
+                    <stuff newvalue="1e-8" what="changedparameter" oldvalue="1e-7" parametername="y_0" objectname="Step_1"/>
+                </post>
+                <post number="40" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="1e-8" parametername="y_0" objectname="Step_1"/>
+                    <stuff newvalue="1e-6" what="changedparameter" oldvalue=".5" parametername="t_step" objectname="Step_1"/>
+                </post>
+                <post number="41" type="changedparameters">
+                    <stuff newvalue="1e-6" what="changedparameter" oldvalue="1" parametername="y_A" objectname="Step_1"/>
+                    <stuff newvalue=".1" what="changedparameter" oldvalue="1e-6" parametername="t_step" objectname="Step_1"/>
+                </post>
+                <post number="42">
+                    <stuff what="movedobject" name="Step_1">
+                        <oldpos>2285 2629.5</oldpos>
+                        <newpos>2260 2629.5</newpos>
+                    </stuff>
+                </post>
+                <post number="43">
+                    <stuff what="movedobject" name="Q-type Flow Source_1">
+                        <oldpos>2400.5 2630</oldpos>
+                        <newpos>2368.5 2629</newpos>
+                    </stuff>
+                </post>
+                <post number="44">
+                    <stuff what="movedobject" name="Q-type Flow Source_1">
+                        <oldpos>2368.5 2629</oldpos>
+                        <newpos>2368.5 2630</newpos>
+                    </stuff>
+                </post>
+                <post number="45">
+                    <stuff what="movedobject" name="Lossless Transmission Line">
+                        <oldpos>2445.5 2521</oldpos>
+                        <newpos>2442.5 2521</newpos>
+                    </stuff>
+                </post>
+                <post number="46">
+                    <stuff what="movedobject" name="Laminar Orifice">
+                        <oldpos>2620 2517.5</oldpos>
+                        <newpos>2604 2517.5</newpos>
+                    </stuff>
+                </post>
+                <post number="47">
+                    <stuff what="movedobject" name="Laminar Orifice_1">
+                        <oldpos>2554 2630.5</oldpos>
+                        <newpos>2611 2630.5</newpos>
+                    </stuff>
+                </post>
+                <post number="48">
+                    <stuff what="movedobject" name="Step">
+                        <oldpos>2250.5 2516.5</oldpos>
+                        <newpos>2258.5 2516.5</newpos>
+                    </stuff>
+                </post>
+                <post number="49" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="1e-010" parametername="K_c" objectname="Laminar Orifice"/>
+                </post>
+                <post number="50" type="changedparameters">
+                    <stuff newvalue="1e-6" what="changedparameter" oldvalue="1" parametername="y_A" objectname="Step"/>
+                </post>
+                <post number="51" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="0.03" parametername="eta_w" objectname="Long Line With Visco Elastic Walls"/>
+                </post>
+                <post number="52" type="changedparameters">
+                    <stuff newvalue="0.01" what="changedparameter" oldvalue="0" parametername="eta_w" objectname="Long Line With Visco Elastic Walls"/>
+                </post>
+                <post number="53">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2515" y="2443" flipped="false" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="54">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicPressureSensor" name="Pressure Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2369" y="2444" flipped="false" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="55">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicFlowSensor" name="Flow Rate Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2645" y="2467" flipped="false" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="56">
+                    <stuff what="movedobject" name="Pressure Transducer">
+                        <oldpos>2351 2426</oldpos>
+                        <newpos>2389 2441</newpos>
+                    </stuff>
+                </post>
+                <post number="57">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Pressure Transducer" startport="P1" startcomponent="Q-type Flow Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2390.00000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2407.00000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2407.00000000000000000000" y="2477.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="58">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2407.00000000000000000000" y="2441.00000000000000000000"/>
+                                    <coordinate x="2407.00000000000000000000" y="2441.00000000000000000000"/>
+                                    <coordinate x="2495.00000000000000000000" y="2441.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="59">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2495 2426</oldpos>
+                        <newpos>2512 2408</newpos>
+                    </stuff>
+                </post>
+                <post number="60">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2512 2408</oldpos>
+                        <newpos>2481 2402</newpos>
+                    </stuff>
+                </post>
+                <post number="61">
+                    <stuff what="addedconnector">
+                        <connect endport="out" endcomponent="Flow Rate Transducer" startport="in_right" startcomponent="Sink">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2521.00000000000000000000" y="2417.00000000000000000000"/>
+                                    <coordinate x="2645.00000000000000000000" y="2417.00000000000000000000"/>
+                                    <coordinate x="2645.00000000000000000000" y="2449.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="62">
+                    <stuff what="movedobject" name="Flow Rate Transducer">
+                        <oldpos>2627 2449</oldpos>
+                        <newpos>2596 2457</newpos>
+                    </stuff>
+                </post>
+                <post number="63">
+                    <stuff what="addedconnector">
+                        <connect endport="P2" endcomponent="Laminar Orifice" startport="P1" startcomponent="Flow Rate Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2614.00000000000000000000" y="2493.00000000000000000000"/>
+                                    <coordinate x="2614.00000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2604.00000000000000000000" y="2529.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="64">
+                    <stuff what="movedobject" name="Flow Rate Transducer">
+                        <oldpos>2596 2457</oldpos>
+                        <newpos>2578 2457</newpos>
+                    </stuff>
+                </post>
+                <post number="65" type="movedmultiple">
+                    <stuff what="movedobject" name="Step_1">
+                        <oldpos>2272.5 2642</oldpos>
+                        <newpos>2257 2714.5</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Q-type Flow Source_1">
+                        <oldpos>2380.5 2642</oldpos>
+                        <newpos>2365.5 2715</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Long Line With Visco Elastic Walls">
+                        <oldpos>2482 2636.72</oldpos>
+                        <newpos>2479 2721.72</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Laminar Orifice_1">
+                        <oldpos>2611 2630.5</oldpos>
+                        <newpos>2608 2715.5</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="C-type Pressure Source_1">
+                        <oldpos>2750 2654</oldpos>
+                        <newpos>2735 2727</newpos>
+                    </stuff>
+                </post>
+                <post number="66">
+                    <stuff what="movedobject" name="Flow Rate Transducer">
+                        <oldpos>2578 2457</oldpos>
+                        <newpos>2578 2444</newpos>
+                    </stuff>
+                </post>
+                <post number="67" type="paste">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicPressureSensor" name="Pressure Transducer_1">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2407" y="2459" flipped="false" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="rotate" angle="0.000000" objectname="Pressure Transducer_1"/>
+                    <stuff what="movedobject" name="Pressure Transducer_1">
+                        <oldpos>2389 2441</oldpos>
+                        <newpos>2469.67 2708</newpos>
+                    </stuff>
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink_1">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2501" y="2417" flipped="false" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="rotate" angle="0.000000" objectname="Sink_1"/>
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2481 2402</oldpos>
+                        <newpos>2561.67 2669</newpos>
+                    </stuff>
+                    <stuff what="addedobject">
+                        <component typename="HydraulicFlowSensor" name="Flow Rate Transducer_1">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2596" y="2462" flipped="false" a="0"/>
+                                <nametext position="0" visible="0"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="rotate" angle="0.000000" objectname="Flow Rate Transducer_1"/>
+                    <stuff what="movedobject" name="Flow Rate Transducer_1">
+                        <oldpos>2578 2444</oldpos>
+                        <newpos>2658.67 2711</newpos>
+                    </stuff>
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2487.66666666666651508422" y="2708.00000000000000000000"/>
+                                    <coordinate x="2487.66666666666651508422" y="2684.00000000000000000000"/>
+                                    <coordinate x="2561.66666666666651508422" y="2684.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="addedconnector">
+                        <connect endport="out" endcomponent="Flow Rate Transducer_1" startport="in_right" startcomponent="Sink_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2601.66666666666651508422" y="2684.00000000000000000000"/>
+                                    <coordinate x="2676.66666666666651508422" y="2684.00000000000000000000"/>
+                                    <coordinate x="2676.66666666666651508422" y="2711.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="68" type="movedmultiple">
+                    <stuff what="movedobject" name="Pressure Transducer_1">
+                        <oldpos>2407 2459</oldpos>
+                        <newpos>2415.67 2646</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2561.67 2669</oldpos>
+                        <newpos>2507.67 2607</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Flow Rate Transducer_1">
+                        <oldpos>2596 2462</oldpos>
+                        <newpos>2604.67 2649</newpos>
+                    </stuff>
+                </post>
+                <post number="69">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Q-type Flow Source_1" startport="P1" startcomponent="Pressure Transducer_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2433.66666666666606033687" y="2682.00000000000000000000"/>
+                                    <coordinate x="2433.66666666666606033687" y="2727.00000000000000000000"/>
+                                    <coordinate x="2389.50000000000000000000" y="2727.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="70">
+                    <stuff what="addedconnector">
+                        <connect endport="P2" endcomponent="Laminar Orifice_1" startport="P1" startcomponent="Flow Rate Transducer_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2622.66666666666606033687" y="2685.00000000000000000000"/>
+                                    <coordinate x="2622.66666666666606033687" y="2727.00000000000000000000"/>
+                                    <coordinate x="2608.00000000000000000000" y="2727.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="71">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2507.67 2607</oldpos>
+                        <newpos>2506.67 2607</newpos>
+                    </stuff>
+                </post>
+                <post number="72">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2506.67 2607</oldpos>
+                        <newpos>2506.67 2606</newpos>
+                    </stuff>
+                </post>
+                <post number="73" type="movedmultiple">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2506.67 2606</oldpos>
+                        <newpos>2494.67 2632</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Pressure Transducer_1">
+                        <oldpos>2407 2459</oldpos>
+                        <newpos>2403.67 2672</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Flow Rate Transducer_1">
+                        <oldpos>2596 2462</oldpos>
+                        <newpos>2592.67 2675</newpos>
+                    </stuff>
+                </post>
+                <post number="74">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2367.000000" y="2584.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="75">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="This is a more useful component of a real line with physical parameters" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="76">
+                    <stuff h_new="33.000000" what="resizedtextboxwidget" w_old="473.000000" h_old="100.000000" index="0" w_new="473.000000">
+                        <oldpos>2367 2584</oldpos>
+                        <newpos>2367 2584</newpos>
+                    </stuff>
+                </post>
+                <post number="77">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2367 2584</oldpos>
+                        <newpos>2290 2581</newpos>
+                    </stuff>
+                </post>
+                <post number="78" type="paste">
+                    <stuff what="addedtextboxwidget" index="1">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2083.500000" y="2358.500000"/>
+                                <textobject fontcolor="#556b2f" text="This is a more useful component of a real line with physical parameters" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="473.000000" height="33.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="79" type="movedmultiple">
+                    <stuff what="movedobject" name="Flow Rate Transducer">
+                        <oldpos>2578 2457</oldpos>
+                        <newpos>2578 2467</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2481 2402</oldpos>
+                        <newpos>2481 2425</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Pressure Transducer">
+                        <oldpos>2351 2426</oldpos>
+                        <newpos>2389 2464</newpos>
+                    </stuff>
+                </post>
+                <post number="80">
+                    <stuff h_new="35.000000" what="resizedtextboxwidget" w_old="473.000000" h_old="33.000000" index="1" w_new="473.000000">
+                        <oldpos>2083.5 2358.5</oldpos>
+                        <newpos>2083.5 2358.5</newpos>
+                    </stuff>
+                </post>
+                <post number="81">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2083.5 2358.5</oldpos>
+                        <newpos>2262.5 2368.5</newpos>
+                    </stuff>
+                </post>
+                <post number="82">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="1" text_old="This is a more useful component of a real line with physical parameters" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="This is a lossless transmission line that is&#xa; made as an illustration to transmission line&#xa;dynamics" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="83">
+                    <stuff h_new="65.000000" what="resizedtextboxwidget" w_old="473.000000" h_old="65.000000" index="1" w_new="328.000000">
+                        <oldpos>2262.5 2368.5</oldpos>
+                        <newpos>2262.5 2368.5</newpos>
+                    </stuff>
+                </post>
+                <post number="84">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2262.5 2368.5</oldpos>
+                        <newpos>2325.5 2347.5</newpos>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicPressureSensor" name="Pressure Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2407" y="2482" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSensor" name="Pressure Transducer_1">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2421.666667" y="2690" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2501" y="2440" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice">
+                <parameters>
+                    <parameter value="1" type="double" name="K_c"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2639" y="2529" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSensor" name="Flow Rate Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2596" y="2485" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_1">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e6" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2747" y="2739" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2514.666667" y="2647" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source">
+                <parameters>
+                    <parameter value="0.001" type="double" name="q"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2378" y="2529" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTLMlossless" name="Lossless Transmission Line">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Flow"/>
+                    <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="0.1" type="double" name="deltat"/>
+                    <parameter value="0" type="double" name="alpha"/>
+                    <parameter value="1e+009" type="double" name="Z_c"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2499" y="2529" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="1e-5" type="double" name="y_0"/>
+                    <parameter value="1e-6" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2271" y="2529" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicHose" name="Long Line With Visco Elastic Walls">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Flow"/>
+                    <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="1e+009" type="double" name="beta_e"/>
+                    <parameter value="870" type="double" name="rho"/>
+                    <parameter value="0.03" type="double" name="eta"/>
+                    <parameter value="0.01" type="double" name="eta_w"/>
+                    <parameter value="0.03" type="double" name="d"/>
+                    <parameter value="10" type="double" name="l"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2499" y="2731.72" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source_1">
+                <parameters>
+                    <parameter value="0.001" type="double" name="q"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2377.5" y="2727" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSensor" name="Flow Rate Transducer_1">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2610.666667" y="2693" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step_1">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="1e-6" type="double" name="y_A"/>
+                    <parameter value=".1" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2269.5" y="2727" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_1">
+                <parameters>
+                    <parameter value="1e-04" type="double" name="K_c"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2643" y="2727" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e6" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2739" y="2541" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2290.000000" y="2581.000000"/>
+                    <textobject fontcolor="#556b2f" text="This is a more useful component of a real line with physical parameters" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="473.000000" height="33.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2325.500000" y="2347.500000"/>
+                    <textobject fontcolor="#556b2f" text="This is a lossless transmission line that is&#xa; made as an illustration to transmission line&#xa;dynamics" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="328.000000" height="65.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="P2" endcomponent="Laminar Orifice" startport="P2" startcomponent="Lossless Transmission Line">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2555.50000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2601.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2601.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2604.00000000000000000000" y="2529.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Lossless Transmission Line" startport="P1" startcomponent="Q-type Flow Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2390.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2425.50000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2425.50000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2442.50000000000000000000" y="2529.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Pressure Source" startport="P1" startcomponent="Laminar Orifice">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2674.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2739.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2739.00000000000000000000" y="2529.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-type Flow Source" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2283.50000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2346.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2346.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2366.00000000000000000000" y="2529.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Q-type Flow Source_1" startport="out" startcomponent="Step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2282.00000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2377.50000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2377.50000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2365.50000000000000000000" y="2727.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Long Line With Visco Elastic Walls" startport="P1" startcomponent="Q-type Flow Source_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2389.50000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2459.00000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2459.00000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2479.00000000000000000000" y="2727.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Pressure Source_1" startport="P1" startcomponent="Laminar Orifice_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2678.00000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2747.00000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2747.00000000000000000000" y="2727.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Long Line With Visco Elastic Walls" startport="P2" startcomponent="Laminar Orifice_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2608.00000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2522.50000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2522.50000000000000000000" y="2727.00000000000000000000"/>
+                        <coordinate x="2519.00000000000000000000" y="2727.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Transducer" startport="P1" startcomponent="Q-type Flow Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2390.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2407.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2407.00000000000000000000" y="2500.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Pressure Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2407.00000000000000000000" y="2464.00000000000000000000"/>
+                        <coordinate x="2407.00000000000000000000" y="2440.00000000000000000000"/>
+                        <coordinate x="2481.00000000000000000000" y="2440.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="out" endcomponent="Flow Rate Transducer" startport="in_right" startcomponent="Sink">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2521.00000000000000000000" y="2440.00000000000000000000"/>
+                        <coordinate x="2596.00000000000000000000" y="2440.00000000000000000000"/>
+                        <coordinate x="2596.00000000000000000000" y="2467.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice" startport="P1" startcomponent="Flow Rate Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2596.00000000000000000000" y="2503.00000000000000000000"/>
+                        <coordinate x="2596.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2604.00000000000000000000" y="2529.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2421.66666666666606033687" y="2672.00000000000000000000"/>
+                        <coordinate x="2421.66666666666606033687" y="2647.00000000000000000000"/>
+                        <coordinate x="2494.66666666666606033687" y="2647.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="out" endcomponent="Flow Rate Transducer_1" startport="in_right" startcomponent="Sink_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2534.66666666666606033687" y="2647.00000000000000000000"/>
+                        <coordinate x="2610.66666666666606033687" y="2647.00000000000000000000"/>
+                        <coordinate x="2610.66666666666606033687" y="2675.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-type Flow Source_1" startport="P1" startcomponent="Pressure Transducer_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2421.66666666666606033687" y="2708.00000000000000000000"/>
+                        <coordinate x="2421.66666666666606033687" y="2727.00000000000000000000"/>
+                        <coordinate x="2389.50000000000000000000" y="2727.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice_1" startport="P1" startcomponent="Flow Rate Transducer_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2610.66666666666606033687" y="2711.00000000000000000000"/>
+                        <coordinate x="2610.66666666666606033687" y="2727.00000000000000000000"/>
+                        <coordinate x="2608.00000000000000000000" y="2727.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

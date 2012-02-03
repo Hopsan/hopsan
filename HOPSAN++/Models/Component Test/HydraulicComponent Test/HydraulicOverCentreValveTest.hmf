@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system typename="Subsystem" name="HydraulicOverCentreValveTest">
+        <simulationtime stop="3" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2463.5" y="2387" zoom="1"/>
+            <ports hidden="0"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="HydraulicOverCentreValveTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicOverCenterValve" name="Over Center Valve">
+                <parameters>
+                    <parameter value="2e+006" type="double" name="p_ref"/>
+                    <parameter value="0.01" type="double" name="tao"/>
+                    <parameter value="1e-009" type="double" name="k_c,s"/>
+                    <parameter value="1e-009" type="double" name="k_c,f"/>
+                    <parameter value="0.001" type="double" name="q_nom"/>
+                    <parameter value="7e+006" type="double" name="p_nom"/>
+                    <parameter value="10" type="double" name="p_h"/>
+                    <parameter value="10000" type="double" name="a_ratio"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2429" y="2536" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2604" y="2545" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="C-type Tank">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2427.0008" y="2631" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSoftStep" name="Soft step">
+                <parameters>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="2" type="double" name="t_end"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="1e7" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2225" y="2618" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSensor" name="Flow Rate Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2522" y="2586" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_1">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2296" y="2575" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2605" y="2409" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_2">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2613" y="2485" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="2e7" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2364" y="2433" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSoftStep" name="Soft step_1">
+                <parameters>
+                    <parameter value="2" type="double" name="t_start"/>
+                    <parameter value="3" type="double" name="t_end"/>
+                    <parameter value="1e7" type="double" name="y_0"/>
+                    <parameter value="1e7" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2221" y="2445" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2308.000000" y="2296.000000"/>
+                    <textobject fontcolor="#556b2f" text="Component test of Over Centre Valve" font="Calibri,16,-1,5,75,0,0,0,0,0"/>
+                    <size width="336.000000" height="35.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="C-type Tank" startport="P2" startcomponent="Over Center Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2427.00079999999979918357" y="2576.00000000000000000000"/>
+                        <coordinate x="2427.00079999999979918357" y="2602.00000000000000000000"/>
+                        <coordinate x="2427.00079999999979918357" y="2602.00000000000000000000"/>
+                        <coordinate x="2427.00079999999979918357" y="2616.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Over Center Valve" startport="P1" startcomponent="C-type Pressure Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2364.00000000000000000000" y="2421.00000000000000000000"/>
+                        <coordinate x="2364.00000000000000000000" y="2400.00000000000000000000"/>
+                        <coordinate x="2427.00079999999979918357" y="2400.00000000000000000000"/>
+                        <coordinate x="2427.00079999999979918357" y="2496.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P_CONTROL" endcomponent="Over Center Valve" startport="P1" startcomponent="C-type Pressure Source_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2296.00000000000000000000" y="2563.00000000000000000000"/>
+                        <coordinate x="2296.00000000000000000000" y="2542.00000000000000000000"/>
+                        <coordinate x="2387.00000000000000000000" y="2542.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="In" endcomponent="C-type Pressure Source_1" startport="out" startcomponent="Soft step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2237.50000000000000000000" y="2618.00000000000000000000"/>
+                        <coordinate x="2296.00000000000000000000" y="2618.00000000000000000000"/>
+                        <coordinate x="2296.00000000000000000000" y="2587.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Flow Rate Transducer" startport="P1" startcomponent="C-type Tank">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2427.00079999999979918357" y="2616.50000000000000000000"/>
+                        <coordinate x="2427.00079999999979918357" y="2611.50000000000000000000"/>
+                        <coordinate x="2522.00000000000000000000" y="2611.50000000000000000000"/>
+                        <coordinate x="2522.00000000000000000000" y="2604.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Flow Rate Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2522.00000000000000000000" y="2568.00000000000000000000"/>
+                        <coordinate x="2522.00000000000000000000" y="2545.00000000000000000000"/>
+                        <coordinate x="2584.00000000000000000000" y="2545.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink" startport="out" startcomponent="Soft step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2237.50000000000000000000" y="2618.00000000000000000000"/>
+                        <coordinate x="2604.00000000000000000000" y="2618.00000000000000000000"/>
+                        <coordinate x="2604.00000000000000000000" y="2560.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="In" endcomponent="C-type Pressure Source" startport="out" startcomponent="Soft step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2233.50000000000000000000" y="2445.00000000000000000000"/>
+                        <coordinate x="2364.00000000000000000000" y="2445.00000000000000000000"/>
+                        <coordinate x="2364.00000000000000000000" y="2445.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Flow Rate Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2522.00000000000000000000" y="2568.00000000000000000000"/>
+                        <coordinate x="2522.00000000000000000000" y="2409.00000000000000000000"/>
+                        <coordinate x="2585.00000000000000000000" y="2409.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink_1" startport="out" startcomponent="Soft step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2233.50000000000000000000" y="2445.00000000000000000000"/>
+                        <coordinate x="2605.00000000000000000000" y="2445.00000000000000000000"/>
+                        <coordinate x="2605.00000000000000000000" y="2424.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Flow Rate Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2522.00000000000000000000" y="2568.00000000000000000000"/>
+                        <coordinate x="2522.00000000000000000000" y="2485.00000000000000000000"/>
+                        <coordinate x="2593.00000000000000000000" y="2485.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink_2" startport="out" startcomponent="Soft step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2233.50000000000000000000" y="2445.00000000000000000000"/>
+                        <coordinate x="2663.00000000000000000000" y="2445.00000000000000000000"/>
+                        <coordinate x="2663.00000000000000000000" y="2485.00000000000000000000"/>
+                        <coordinate x="2633.00000000000000000000" y="2485.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink_2" startport="out" startcomponent="Soft step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2237.50000000000000000000" y="2618.00000000000000000000"/>
+                        <coordinate x="2668.00000000000000000000" y="2618.00000000000000000000"/>
+                        <coordinate x="2668.00000000000000000000" y="2485.00000000000000000000"/>
+                        <coordinate x="2633.00000000000000000000" y="2485.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

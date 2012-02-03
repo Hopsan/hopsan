@@ -1,19 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="HydraulicPressureCompensatingValveTest">
+        <simulationtime stop="20" timestep="0.001" start="-2" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2541.5" y="2548.5" zoom="1"/>
+            <viewport x="2543" y="2430" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="HydraulicPressureCompensatingValveTest">
-                    <icons/>
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0"/>
@@ -934,150 +960,247 @@
                         <newpos>2475.5 2686.5</newpos>
                     </stuff>
                 </post>
+                <post number="93">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2813.5 2558.5</oldpos>
+                        <newpos>2753.5 2558.5</newpos>
+                    </stuff>
+                </post>
+                <post number="94">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2640.00000000000000000000" y="2571.00000000000000000000"/>
+                                    <coordinate x="2640.00000000000000000000" y="2571.00000000000000000000"/>
+                                    <coordinate x="2753.50000000000000000000" y="2571.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="SignalSink" name="Sink_1">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2766" y="2571" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="95">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2640.00000000000000000000" y="2571.00000000000000000000"/>
+                                    <coordinate x="2640.00000000000000000000" y="2557.50000000000000000000"/>
+                                    <coordinate x="2826.00000000000000000000" y="2557.50000000000000000000"/>
+                                    <coordinate x="2826.00000000000000000000" y="2537.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="96">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2238 2285</oldpos>
+                        <newpos>2420 2336</newpos>
+                    </stuff>
+                </post>
+                <post number="97">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2420 2336</oldpos>
+                        <newpos>2573 2426</newpos>
+                    </stuff>
+                </post>
+                <post number="98" type="paste">
+                    <stuff what="addedtextboxwidget" index="1">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2187.000000" y="2311.000000"/>
+                                <textobject fontcolor="#556b2f" text="Test of 6/3 open centre directional valve" font="Calibri,16,-1,5,75,0,0,0,0,0"/>
+                                <size width="360.000000" height="46.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="99">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2187 2311</oldpos>
+                        <newpos>2334 2310</newpos>
+                    </stuff>
+                </post>
+                <post number="100">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2334 2310</oldpos>
+                        <newpos>2335 2311</newpos>
+                    </stuff>
+                </post>
+                <post number="101">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Test of 6/3 open centre directional valve" font_old="Calibri,16,-1,5,75,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Test of a pressure compensating valve" font="Calibri,16,-1,5,75,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="102">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2335 2311</oldpos>
+                        <newpos>2349 2317</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="20" timestep="0.001" start="-2"/>
-        <parameters/>
         <objects>
             <component typename="HydraulicPressureSensor" name="Pressure Transducer">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2640.00000000000000000000" y="2589" flipped="0" a="0"/>
+                    <pose x="2640" y="2589" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2826.00000000000000000000" y="2525" flipped="0" a="0"/>
+                    <pose x="2826" y="2525" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicLaminarOrifice" name="Laminar Orifice">
                 <parameters>
-                    <parameter value="1e-010" name="K_c"/>
+                    <parameter value="1e-010" type="double" name="K_c"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2583.00000000000000000000" y="2642" flipped="0" a="0"/>
+                    <pose x="2583" y="2642" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSoftStep" name="Soft step">
                 <parameters>
-                    <parameter value="1" name="t_start"/>
-                    <parameter value="10" name="t_end"/>
-                    <parameter value="1e5" name="y_0"/>
-                    <parameter value="1.e7" name="y_A"/>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="10" type="double" name="t_end"/>
+                    <parameter value="1e5" type="double" name="y_0"/>
+                    <parameter value="1.e7" type="double" name="y_A"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2487.00000000000000000000" y="2750" flipped="0" a="0"/>
+                    <pose x="2487" y="2750" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="0" name="P1::Pressure"/>
-                    <parameter value="0.001" name="V"/>
-                    <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2510.00000000000000000000" y="2642" flipped="0" a="0"/>
+                    <pose x="2510" y="2642" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Rate Transducer">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2609.00000000000000000000" y="2563" flipped="0" a="0"/>
+                    <pose x="2618" y="2563" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureCompensatingValve" name="Pressure Compensating Valve">
                 <parameters>
-                    <parameter value="2e+006" name="p_ref"/>
-                    <parameter value="0.1" name="tao"/>
-                    <parameter value="1e-008" name="k_c,s"/>
-                    <parameter value="1e-008" name="k_c,f"/>
-                    <parameter value="0.001" name="q_nom"/>
-                    <parameter value="1e5" name="p_h"/>
+                    <parameter value="2e+006" type="double" name="p_ref"/>
+                    <parameter value="0.1" type="double" name="tao"/>
+                    <parameter value="1e-008" type="double" name="k_c,s"/>
+                    <parameter value="1e-008" type="double" name="k_c,f"/>
+                    <parameter value="0.001" type="double" name="q_nom"/>
+                    <parameter value="1e5" type="double" name="p_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2486.00000000000000000000" y="2519" flipped="0" a="0"/>
+                    <pose x="2486" y="2519" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSourceQ" name="Q-type Pressure Source">
                 <parameters>
-                    <parameter value="100000" name="p"/>
+                    <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2749.00000000000000000000" y="2704" flipped="0" a="0"/>
+                    <pose x="2749" y="2704" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSubtract" name="Subtract">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2594.00000000000000000000" y="2750" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalSink" name="Sink_1">
-                <parameters/>
-                <hopsangui>
-                    <pose x="2826.00000000000000000000" y="2571" flipped="0" a="0"/>
+                    <pose x="2594" y="2750" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port_1">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="0" name="P1::Pressure"/>
-                    <parameter value="0.001" name="V"/>
-                    <parameter value="1e+009" name="Beta_e"/>
-                    <parameter value="0.1" name="alpha"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2666.00000000000000000000" y="2642" flipped="0" a="0"/>
+                    <pose x="2666" y="2642" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
                 <parameters>
-                    <parameter value="0" name="P1::Flow"/>
-                    <parameter value="1e7" name="p"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e7" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2352.00000000000000000000" y="2458" flipped="0" a="0"/>
+                    <pose x="2352" y="2458" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSoftStep" name="Soft step_1">
                 <parameters>
-                    <parameter value="10" name="t_start"/>
-                    <parameter value="19" name="t_end"/>
-                    <parameter value="0" name="y_0"/>
-                    <parameter value="1e7" name="y_A"/>
+                    <parameter value="10" type="double" name="t_start"/>
+                    <parameter value="19" type="double" name="t_end"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="1e7" type="double" name="y_A"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2488.00000000000000000000" y="2699" flipped="0" a="0"/>
+                    <pose x="2488" y="2699" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2238" y="2285"/>
+                    <pose x="2573.000000" y="2426.000000"/>
                     <textobject fontcolor="#556b2f" text="Static characteristic is obtained by plotting the flow throught the &#xa;laminar oricife as a function of the downstream preassure" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="433" height="60"/>
-                    <line width="2" visible="1" style="solidline"/>
+                    <size width="433.000000" height="60.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2349.000000" y="2317.000000"/>
+                    <textobject fontcolor="#556b2f" text="Test of a pressure compensating valve" font="Calibri,16,-1,5,75,0,0,0,0,0"/>
+                    <size width="360.000000" height="46.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>
@@ -1234,8 +1357,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2618.00000000000000000000" y="2642.00000000000000000000"/>
-                        <coordinate x="2609.00000000000000000000" y="2642.00000000000000000000"/>
-                        <coordinate x="2609.00000000000000000000" y="2581.00000000000000000000"/>
+                        <coordinate x="2618.00000000000000000000" y="2642.00000000000000000000"/>
+                        <coordinate x="2618.00000000000000000000" y="2581.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -1247,9 +1370,9 @@
             <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Flow Rate Transducer">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2609.00000000000000000000" y="2545.00000000000000000000"/>
-                        <coordinate x="2609.00000000000000000000" y="2525.00000000000000000000"/>
-                        <coordinate x="2813.50000000000000000000" y="2525.00000000000000000000"/>
+                        <coordinate x="2618.00000000000000000000" y="2545.00000000000000000000"/>
+                        <coordinate x="2618.00000000000000000000" y="2525.00000000000000000000"/>
+                        <coordinate x="2806.00000000000000000000" y="2525.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -1272,16 +1395,18 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer">
+            <connect endport="in_bottom" endcomponent="Sink" startport="out" startcomponent="Pressure Transducer">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2640.00000000000000000000" y="2571.00000000000000000000"/>
-                        <coordinate x="2640.00000000000000000000" y="2571.00000000000000000000"/>
-                        <coordinate x="2813.50000000000000000000" y="2571.00000000000000000000"/>
+                        <coordinate x="2640.00000000000000000000" y="2557.50000000000000000000"/>
+                        <coordinate x="2826.00000000000000000000" y="2557.50000000000000000000"/>
+                        <coordinate x="2826.00000000000000000000" y="2540.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
