@@ -188,48 +188,49 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
     }
 
-
-        //System Parameters Group Box
-    mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
-    QGridLayout *parameterLayout = new QGridLayout();
-
+    //! @todo maybe only have sys params in systems (put in if above)
+    // System Parameters Group Box
     QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
     mpContainerObject->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
-    int nParam=0;
     for(int i=0; i<qParameterNames.size(); ++i)
     {
         mvParameterLayoutPtrs.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
-                                                        qParameterValues[i],
-                                                        qUnits[i],
-                                                        qTypes[i],
-                                                        mpContainerObject));
-        parameterLayout->addLayout(mvParameterLayoutPtrs.back(), nParam, 0);
-        ++nParam;
+                                                            qParameterValues[i],
+                                                            qUnits[i],
+                                                            qTypes[i],
+                                                            mpContainerObject));
     }
-    //Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
+    // Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
     int descriptionSize=30;
     int nameSize = 10;
-    //Paramters
     for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
     {
         descriptionSize = std::max(descriptionSize, mvParameterLayoutPtrs.at(i)->mDescriptionNameLabel.width());
         nameSize = std::max(nameSize, mvParameterLayoutPtrs.at(i)->mDataNameLabel.width());
     }
-    //Paramters
     for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
     {
         mvParameterLayoutPtrs.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
         mvParameterLayoutPtrs.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
     }
-    mpSystemParametersGroupBox->setLayout(parameterLayout);
 
         //This is the main Vertical layout of the dialog
     mpScrollLayout = new QVBoxLayout(this);
     mpScrollLayout->addWidget(pInfoGroupBox);
     mpScrollLayout->addWidget(mpAppearanceGroupBox);
     mpScrollLayout->addWidget(mpSettingsGroupBox);
-    if(mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer() && nParam>0)
+    // Check if we should add systemparameters
+    if( (mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer()) && (mvParameterLayoutPtrs.size()>0))
     {
+        QGridLayout *pParameterLayout = new QGridLayout();
+        mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
+
+        for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
+        {
+            pParameterLayout->addLayout(mvParameterLayoutPtrs.back(), i, 0);
+        }
+
+        mpSystemParametersGroupBox->setLayout(pParameterLayout);
         mpScrollLayout->addWidget(mpSystemParametersGroupBox);
     }
 
