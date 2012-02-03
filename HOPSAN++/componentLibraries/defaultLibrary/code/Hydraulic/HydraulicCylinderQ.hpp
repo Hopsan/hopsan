@@ -126,18 +126,18 @@ namespace hopsan {
             cx3 = (*mpND_cx3);
             Zx3 = (*mpND_Zx3);
 
-            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
+            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2;
 
             //Initialization of filters
             posnum[0] = 1.0;
             posnum[1] = 0.0;
             posnum[2] = 0.0;
             posden[0] = mKl;
-            posden[1] = mBl;
+            posden[1] = mBl+mBp;
             posden[2] = mMass;
             velnum[0] = 1.0;
             velnum[1] = 0.0;
-            velden[0] = mBl;
+            velden[0] = mBl+mBp;
             velden[1] = mMass;
 
             mPositionFilter.initialize(mTimestep, posnum, posden, 0, x3, 0.0, mStroke);
@@ -162,8 +162,8 @@ namespace hopsan {
             Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2;
 
             //Piston
-            posden[1] = mBl+Zx1+Zx3;
-            velden[0] = mBl+Zx1+Zx3;
+            posden[1] = mBl+mBp+Zx1+Zx3;
+            velden[0] = mBl+mBp+Zx1+Zx3;
             mPositionFilter.setDen(posden);
             mVelocityFilter.setDen(velden);
             x3 = mPositionFilter.update(cx1-cx3);
