@@ -260,7 +260,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     }
     comp.simEquations << "";
     comp.simEquations << "    //Solving equation using LU-faktorisation";
-    comp.simEquations << "    ludcmp(jacobianMatrix, order);";
+    comp.simEquations << "    ludcmp(jacobianMatrix, order, mpSystemParent);";
     comp.simEquations << "    solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);";
     comp.simEquations << "";
     comp.simEquations << "    for(int i=0; i<"+QString().setNum(stateVars.size())+"; i++)";
@@ -1249,8 +1249,84 @@ void translateFunctionsFromPython(QStringList &equations)
 {
     for(int e=0; e<equations.size(); ++e)
     {
+        qDebug() << "Equation: " << equations[e];
+
+        //Replace "Subs(f(x),x,y)" with "f(y)"
+        int idx = equations[e].indexOf("Subs(", 0);
+        while(idx > -1)
+        {
+            int parBal = 0;         //Find index of first comma
+            int idx2 = idx+4;
+            while(true)
+            {
+                ++idx2;
+
+                if(equations[e].at(idx2) == '(')
+                {
+                    ++parBal;
+                }
+                if(equations[e].at(idx2) == ')')
+                {
+                    --parBal;
+                }
+                if(equations[e].at(idx2) == ',' && parBal == 0)
+                    break;
+            }
+
+            parBal = 0;         //Find index of second comma
+            int idx3 = idx2+1;
+            while(true)
+            {
+                ++idx3;
+
+                if(equations[e].at(idx3) == '(')
+                {
+                    ++parBal;
+                }
+                if(equations[e].at(idx3) == ')')
+                {
+                    --parBal;
+                }
+                if(equations[e].at(idx3) == ',' && parBal == 0)
+                    break;
+            }
+
+            parBal = 1;         //Find index of end parenthesis
+            int idx4 = idx+5;
+            while(parBal > 0)
+            {
+                ++idx4;
+
+                if(equations[e].at(idx4) == '(')
+                {
+                    ++parBal;
+                }
+                if(equations[e].at(idx4) == ')')
+                {
+                    --parBal;
+                }
+            }
+
+            QString old = equations.at(e).mid(idx+5, idx2-idx-5);
+            //qDebug() << "old = " << old;
+            QString replaceWord = equations.at(e).mid(idx2+3, idx3-idx2-5);
+            //qDebug() << "replaceWord = " << replaceWord;
+            QString replacement = equations.at(e).mid(idx3+3, idx4-idx3-5);
+            //qDebug() << "replacement = " << replacement;
+
+            old = old.replace(replaceWord, replacement);      //Do the replacement
+
+            //qDebug() << "new = " << old;
+
+            equations[e].remove(idx, idx4-idx+1);
+            qDebug() << "After remove: " << equations[e];
+            equations[e].insert(idx, old);      //Replace whole function with new string
+
+            idx = equations[e].indexOf("Subs(", 0);
+        }
+
         //Replace "abs()" with "fabs()"
-        int idx = equations[e].indexOf("abs", 0);
+        idx = equations[e].indexOf("abs", 0);
         while(idx > -1)
         {
             if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+3) == '(')
@@ -1260,7 +1336,6 @@ void translateFunctionsFromPython(QStringList &equations)
             idx = equations[e].indexOf("abs", idx+3);
         }
 
-        //qDebug() << "Equation before limit derivative fix: " << equations[e];
 
         //Replace "D(hopsanLimit(x, min, max))" with "hopsanDxLimit(x, min, max)"
         idx = equations[e].indexOf("D(hopsanLimit(", 0);
@@ -1295,6 +1370,39 @@ void translateFunctionsFromPython(QStringList &equations)
         }
 
 
+        //Replace "Derivative(hopsanLimit(x, min, max))" with "hopsanDxLimit(x, min, max)"
+        idx = equations[e].indexOf("Derivative(hopsanLimit(", 0);
+        while(idx > -1)
+        {
+            int parBal = 2;         //Find index of end parenthesis
+            int idx2 = 0;
+            int idx3 = idx+22;
+            while(parBal != 0)
+            {
+                ++idx3;
+
+                if(equations[e].at(idx3) == '(')
+                {
+                    ++parBal;
+                }
+                if(equations[e].at(idx3) == ')')
+                {
+                    --parBal;
+                    if(parBal == 1 && idx2 == 0)        //Only do this first time (idx2 = 0 first time)
+                    {
+                        idx2 = idx3+1;      //idx2 is index after second last end parenthesis
+                    }
+                }
+            }
+
+            equations[e].remove(idx2, idx3-idx2+1);     //Remove everything between second last and last parenthesis
+            equations[e].insert(idx+17, "Dx");           //Insert "Dx" in "hopsanLimit"
+            equations[e].remove(idx, 11);                //Remove "Derivative("
+
+            idx = equations[e].indexOf("Derivative(hopsanLimit(", idx);
+        }
+
+
         //Replace "D(hopsanDxLimit(x, min, max))" with 0
         idx = equations[e].indexOf("D(hopsanDxLimit(", 0);
         while(idx > -1)
@@ -1320,21 +1428,51 @@ void translateFunctionsFromPython(QStringList &equations)
             idx = equations[e].indexOf("D(hopsanDxLimit(", idx);
         }
 
+
+        //Replace "D(hopsanDxLimit(x, min, max))" with 0
+        idx = equations[e].indexOf("Derivative(hopsanDxLimit(", 0);
+        while(idx > -1)
+        {
+            int parBal = 2;         //Find index of end parenthesis
+            int idx2 = idx+24;
+            while(parBal != 0)
+            {
+                ++idx2;
+
+                if(equations[e].at(idx2) == '(')
+                {
+                    ++parBal;
+                }
+                if(equations[e].at(idx2) == ')')
+                {
+                    --parBal;
+                }
+            }
+
+            equations[e].replace(idx, idx2-idx+1, "0");     //Replace entire expression with "0"
+
+            idx = equations[e].indexOf("Derivative(hopsanDxLimit(", idx);
+        }
+
+
         //Replace "hopsanLimit" with "limit"
         idx = equations[e].indexOf("hopsanLimit(", 0);
         while(idx > -1)
         {
+            qDebug() << "idx = " << idx;
+
             if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+11) == '(')
             {
                 equations[0].replace(idx, 11, "limit");      //Do the replacement
 
-                idx = equations[e].indexOf("hopsanLimit(", idx);
+                idx = equations[e].indexOf("hopsanLimit(", idx+1);
             }
             else
             {
                 idx = equations[e].indexOf("hopsanLimit(", idx+1);
             }
         }
+
 
         //Replace "hopsanDxLimit" with "dxLimit"
         idx = equations[e].indexOf("hopsanDxLimit(", 0);
@@ -1352,7 +1490,6 @@ void translateFunctionsFromPython(QStringList &equations)
             }
         }
 
-        //qDebug() << "Equation after limit derivative fix: " << equations[e];
 
         //Replace "D(sign(x), x)" with 0 (derivative of sign(x) = 0 for all x except 0, but it should be ok)
         idx = equations[e].indexOf("D(sign(", 0);
@@ -1374,6 +1511,7 @@ void translateFunctionsFromPython(QStringList &equations)
 
             idx = equations[e].indexOf("D(sign(", idx);
         }
+
 
         //Replace "re(x)" with "x" (we only work with real numbers anyway)
         idx = equations[e].indexOf("re(", 0);

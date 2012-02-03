@@ -784,10 +784,8 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
-#ifdef DEVELOPMENT
     mpSimulationMenu->addAction(mpOptimizeAction);
     mpSimulationMenu->addAction(mpSensitivityAnalysisAction);
-#endif
     mpSimulationMenu->addAction(mpPlotAction);
     mpSimulationMenu->addAction(mpShowLossesAction);
 
@@ -852,15 +850,11 @@ void MainWindow::createToolbars()
     mpImportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Import.png"));
     mpImportButton->setMenu(mpImportMenu);
     mpImportButton->setPopupMode(QToolButton::InstantPopup);
-#ifdef DEVELOPMENT
     mpFileToolBar->addWidget(mpImportButton);
-#endif
 
     mpExportMenu = new QMenu("Export Model");
     mpExportMenu->addAction(mpExportToSimulinkAction);
-#ifdef DEVELOPMENT
     mpExportMenu->addAction(mpExportToFMUAction);
-#endif
     mpExportButton = new QToolButton(mpFileToolBar);
     mpExportButton->setToolTip("Export");
     mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Export.png"));
@@ -878,10 +872,8 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
-#ifdef DEVELOPMENT
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
-#endif
     mpSimToolBar->addAction(mpPlotAction);
     mpSimToolBar->addAction(mpShowLossesAction);
     mpSimToolBar->addAction(mpPropertiesAction);

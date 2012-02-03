@@ -433,7 +433,7 @@ Kstb*dxSignedSquareL(-pb + pt,mplam);
           jacobianMatrix[7][7] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order);
+          ludcmp(jacobianMatrix, order, mpSystemParent);
           solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
 
         for(i=0;i<8;i++)

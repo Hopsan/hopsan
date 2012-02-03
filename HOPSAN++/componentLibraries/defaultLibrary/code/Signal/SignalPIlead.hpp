@@ -178,7 +178,7 @@ yref) - 2*yref))/(2.*kx) - delayedPart[1][1],mumin,mumax);
           jacobianMatrix[0][0] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order);
+          ludcmp(jacobianMatrix, order, mpSystemParent);
           solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
 
         for(i=0;i<1;i++)

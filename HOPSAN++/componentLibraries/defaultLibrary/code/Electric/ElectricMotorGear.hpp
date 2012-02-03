@@ -359,7 +359,7 @@ Power(gearRatio,2)*(2*mJm + mBm*mTimestep));
           jacobianMatrix[5][5] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order);
+          ludcmp(jacobianMatrix, order, mpSystemParent);
           solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
 
         for(i=0;i<6;i++)

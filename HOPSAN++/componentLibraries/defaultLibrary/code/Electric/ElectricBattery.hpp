@@ -220,7 +220,7 @@ Power(limit(soc,1.e-9,0.9999),2)));
           jacobianMatrix[3][3] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order);
+          ludcmp(jacobianMatrix, order, mpSystemParent);
           solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
 
         for(i=0;i<4;i++)

@@ -192,7 +192,7 @@ mTimestep*uel2)/(2.*mInduct);
           jacobianMatrix[2][2] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order);
+          ludcmp(jacobianMatrix, order, mpSystemParent);
           solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
 
         for(i=0;i<3;i++)

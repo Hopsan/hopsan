@@ -1387,12 +1387,18 @@ void ComponentGeneratorDialog::compile()
         pProgressBar->setLabelText("Translating from SymPy to C++");
         pProgressBar->setValue(pProgressBar->value()+1);
 
+        qDebug() << "Blä 0";
+
         translateFunctionsFromPython(sysEquations);
         translateFunctionsFromPython(jString);
+
+        qDebug() << "Blä 1";
 
         //Translate all "x**y" to "pow(x,y)"
         translatePowersFromPython(sysEquations);
         translatePowersFromPython(jString);
+
+        qDebug() << "Blä 2";
 
         pProgressBar->setLabelText("Enforcing floating point precision");
         pProgressBar->setValue(19);
@@ -1400,6 +1406,8 @@ void ComponentGeneratorDialog::compile()
         //Make sure all variables have double precision (to make sure "1.0/2.0 = 0.5" instead of "1/2 = 0")
         translateIntsToDouble(sysEquations);
         translateIntsToDouble(jString);
+
+        qDebug() << "Blä 3";
 
         pProgressBar->setLabelText("Collecting general component data");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1417,11 +1425,15 @@ void ComponentGeneratorDialog::compile()
 
         showOutputDialog(jString, sysEquations, stateVars);
 
+    qDebug() << "Blä 4";
+
         pProgressBar->setLabelText("Compiling component");
         pProgressBar->setValue(pProgressBar->value()+1);
 
         //Call utility to generate and compile the source code
         generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, mpAppearance, pProgressBar);
+
+        qDebug() << "Blä 5";
 
         delete(pProgressBar);
     }
