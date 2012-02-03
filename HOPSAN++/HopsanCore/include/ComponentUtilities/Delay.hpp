@@ -59,7 +59,9 @@ public:
         //mFracStep = timeDelay/Ts;
         //Calculate stepdelay, round double to int
         //! @todo mayby need to behave differently if we want to use fractions, (rount to ceeling before), however we cant do that allways as we get one extra step every time
-        this->initialize( size_t(floor(timeDelay/Ts+0.5)), initValue);
+        //We let truncation round downwards, +0.5 to be sure we dont fall bellow integer value in float
+        //! @todo should we have -1 step also so 1sec delay at 10Hz would be 9 delay slots, (right now 10 slots)
+        this->initialize( size_t(timeDelay/Ts+0.5), initValue);
     }
 
     //! @brief Initialize Delay size based on known number of delay steps
