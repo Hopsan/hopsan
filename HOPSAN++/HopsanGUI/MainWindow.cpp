@@ -917,8 +917,17 @@ void MainWindow::createToolbars()
     mpExamplesMenu = new QMenu("Example Models");
     QAction *pTempAction;
     QStringList exampleModels;
-    //! @todo not hardcoded, should load from the file tree directly
-    exampleModels << "Dynamic Pressure Feedback" << "Hydrostatic Transmission" << "Load Sensing System" << "Pressure Controlled Pump" << "Position Servo" << "Pressure Relief Valve Characteristics";
+
+    QDir exampleModelsDir(QString(MODELPATH)+"Example Models/");
+    QStringList filters;
+    filters << "*.hmf";
+    exampleModelsDir.setNameFilters(filters);
+    exampleModels = exampleModelsDir.entryList();
+    for (int i = 0; i < exampleModels.size(); ++i)
+    {
+        exampleModels[i].chop(4);
+    }
+
     for(int i=0; i<exampleModels.size(); ++i)
     {
         pTempAction = new QAction(exampleModels.at(i), this);

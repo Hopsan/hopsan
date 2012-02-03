@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3949" hopsancoreversion="0.5.x_r3943">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.0" hopsancoreversion="0.5.0">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
@@ -70,7 +70,6 @@
                     <parameter value="0" type="double" name="Pel2::Current"/>
                     <parameter value="0.001" type="double" name="Cc"/>
                     <parameter value="0.1" type="double" name="alpha"/>
-                    <parameter value="0.001" type="double" name="timestep"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2475.184097" y="2524.203272" flipped="false" a="0"/>
@@ -85,7 +84,6 @@
                     <parameter value="0" type="double" name="Pel2::Current"/>
                     <parameter value="0.001" type="double" name="Cc"/>
                     <parameter value="0.1" type="double" name="alpha"/>
-                    <parameter value="0.001" type="double" name="timestep"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2638.224491" y="2524.203272" flipped="false" a="0"/>
@@ -105,6 +103,7 @@
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="12" type="double" name="uin"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2314.561629" y="2538.95167" flipped="false" a="0"/>
@@ -132,7 +131,7 @@
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2346.795256" y="2395.812874"/>
+                    <pose x="2347.000000" y="2396.000000"/>
                     <textobject fontcolor="#005500" text="Example: Capacitances &amp; Resistors" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
                     <size width="388.000000" height="41.000000"/>
                     <line width="2.000000" visible="0" style="solidline"/>
@@ -140,27 +139,11 @@
             </textboxwidget>
         </objects>
         <connections>
-            <connect endport="Pel1" endcomponent="ElectricCapacitance2" startport="Pel2" startcomponent="ElectricResistor_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2417.28784134322495447122" y="2502.94037244444234602270"/>
-                        <coordinate x="2447.26266809171511340537" y="2502.94037244444234602270"/>
-                        <coordinate x="2447.26266809171511340537" y="2502.94037244444234602270"/>
-                        <coordinate x="2454.68409668866797801456" y="2502.94037244444234602270"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="Pel2" endcomponent="ElectricCapacitance2" startport="Pel1" startcomponent="ElectricResistor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2536.80963748012436553836" y="2502.94037244444234602270"/>
-                        <coordinate x="2495.68409668866797801456" y="2502.94037244444234602270"/>
+                        <coordinate x="2536.80963699999983873568" y="2502.94037200000002485467"/>
+                        <coordinate x="2495.68409699999983786256" y="2502.94037273712001478998"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -171,8 +154,8 @@
             <connect endport="Pel2" endcomponent="ElectricResistor" startport="Pel1" startcomponent="ElectricCapacitance2_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2617.72449068960895601776" y="2502.94037244444234602270"/>
-                        <coordinate x="2588.80963748012436553836" y="2502.94037244444234602270"/>
+                        <coordinate x="2617.72449099999994359678" y="2502.94037273712001478998"/>
+                        <coordinate x="2588.80963699999983873568" y="2502.94037200000002485467"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -183,8 +166,8 @@
             <connect endport="Pel1" endcomponent="ElectricResistor_2" startport="Pel2" startcomponent="ElectricCapacitance2_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2658.72449068960895601776" y="2502.94037244444234602270"/>
-                        <coordinate x="2697.10498390676730195992" y="2502.94037244444234602270"/>
+                        <coordinate x="2658.72449099999994359678" y="2502.94037273712001478998"/>
+                        <coordinate x="2697.10498400000005858601" y="2502.94037200000002485467"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -195,9 +178,9 @@
             <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="ElectricResistor_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2749.10498390676730195992" y="2502.94037244444234602270"/>
-                        <coordinate x="2770.69491890556992075290" y="2502.94037244444234602270"/>
-                        <coordinate x="2770.69491890556992075290" y="2532.34677819850821833825"/>
+                        <coordinate x="2749.10498400000005858601" y="2502.94037200000002485467"/>
+                        <coordinate x="2770.69491900000002715387" y="2502.94037200000002485467"/>
+                        <coordinate x="2770.69491900000002715387" y="2532.34677800000008573988"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -209,9 +192,9 @@
             <connect endport="Pel1" endcomponent="ElectricUsource" startport="Pel1" startcomponent="ElectricResistor_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2365.28784134322495447122" y="2502.94037244444234602270"/>
-                        <coordinate x="2314.56162890204814175377" y="2502.94037244444234602270"/>
-                        <coordinate x="2314.56162890204814175377" y="2514.45167038330555442371"/>
+                        <coordinate x="2365.28784099999984391616" y="2502.94037200000002485467"/>
+                        <coordinate x="2314.56162899999981164001" y="2502.94037200000002485467"/>
+                        <coordinate x="2314.56162899999981164001" y="2516.95166999999992185622"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -223,8 +206,20 @@
             <connect endport="Puin" endcomponent="ElectricUsource" startport="out" startcomponent="Ramp">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2270.40822574766980324057" y="2539.19727819850822925218"/>
-                        <coordinate x="2305.56162890204814175377" y="2538.95167038330555442371"/>
+                        <coordinate x="2270.40822600000001330045" y="2539.19727800000009665382"/>
+                        <coordinate x="2299.06162899999981164001" y="2538.95166999999992185622"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel2" endcomponent="ElectricResistor_1" startport="Pel1" startcomponent="ElectricCapacitance2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2454.68409699999983786256" y="2502.94037273712001478998"/>
+                        <coordinate x="2417.28784099999984391616" y="2502.94037200000002485467"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
