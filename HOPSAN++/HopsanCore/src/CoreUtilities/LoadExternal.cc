@@ -66,14 +66,17 @@ bool LoadExternal::load(const string libpath)
 
 //Use this for 32-bit compilation
 
-    //Calculate path without filename
-    string libdir = libpath;
-    while(libdir.at(libdir.size()-1) != '/')
+    // Add to libdir path to DLL Load Path
+    size_t slashidx = libpath.rfind('/');
+    if (slashidx!=string::npos)
     {
-        libdir.erase(libdir.size()-1, 1);
+        //Set search path for dependencies
+        const string libdir = libpath.substr(0,slashidx);
+        SetDllDirectoryA(libdir.c_str());
+        getCoreMessageHandlerPtr()->addDebugMessage("SetDllDirectoryA: " + libdir);
     }
-    getCoreMessageHandlerPtr()->addDebugMessage(libdir.c_str());
-    SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies
+
+    // Load library
     lib_ptr = LoadLibrary(libpath.c_str()); //Load the dll
 
 //End of 32-bit
