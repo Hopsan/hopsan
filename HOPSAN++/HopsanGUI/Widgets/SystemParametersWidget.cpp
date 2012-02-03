@@ -43,7 +43,8 @@
 TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget *parent)
     : QComboBox(parent)
 {
-    setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    //setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
     mRow = row;
     mColumn = column;
     mParent = parent;
@@ -58,6 +59,7 @@ TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget
 void TypeComboBox::typeHasChanged(QString /*newType*/)
 {
     qDebug() << "aksJLKJAFLKJDFLkjsdlfkj   ";
+    //! @todo what is this for, it will allways be true, as constructor arguments are size_t
     if(mRow > -1)
     {
         mParent->setCurrentCell(mRow, mColumn);
@@ -400,23 +402,24 @@ void SystemParameterTableWidget::update()
     {
         setRowCount(0);
         setColumnCount(3);
-        setColumnWidth(0, 120);
         verticalHeader()->show();
 
         for(int i=0; i<qParameterNames.size(); ++i)
         {
-//            QString valueString;
-//            valueString.setNum(it.value());
             insertRow(rowCount());
+            const int rowIdx = rowCount()-1;
+
             QTableWidgetItem *nameItem = new QTableWidgetItem(qParameterNames[i]);
             QTableWidgetItem *valueItem = new QTableWidgetItem(qParameterValues[i]);
             nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
             valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-            setItem(rowCount()-1, 0, nameItem);
-            setItem(rowCount()-1, 1, valueItem);
-            TypeComboBox *typeBox = new TypeComboBox(rowCount()-1, 2, this);
+            setItem(rowIdx, 0, nameItem);
+            setItem(rowIdx, 1, valueItem);
+
+            TypeComboBox *typeBox = new TypeComboBox(rowIdx, 2, this);
             disconnect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)));
 
+            // Select wich parameter type to diplay
             for(int j=0; j<typeBox->count(); ++j)
             {
                 if(qTypes[i] == typeBox->itemText(j))
@@ -426,9 +429,14 @@ void SystemParameterTableWidget::update()
                 }
             }
 
-            setCellWidget(rowCount()-1, 2, typeBox);
+            // Add widget to cell
+            setCellWidget(rowIdx, 2, typeBox);
             connect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
         }
         connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)), Qt::UniqueConnection);
+
+        setColumnWidth(0, 100);
+        setColumnWidth(1, 100);
+        setColumnWidth(2, 80);
     }
 }
