@@ -128,7 +128,7 @@ namespace hopsan {
         void distributeSignalcomponents(std::vector< std::vector<Component*> > &rSplitSignalVector, size_t nThreads);
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
 #endif
-        void simulate(const double startT, const double stopT);
+        virtual void simulate(const double startT, const double stopT);
         void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem *> systemVector);
         void finalize(const double startT, const double stopT);
 
