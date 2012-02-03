@@ -1,21 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.3" hopsanguiversion="0.3.2" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
     <system typename="Subsystem" name="MechanicVehicleTest">
+        <simulationtime stop="500" timestep="0.01" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.5" y="2500.5" zoom="1"/>
+            <viewport x="2549" y="2488" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="MechanicVehicleTest">
                     <icons>
-                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0"/>
@@ -120,93 +144,335 @@
                 <post number="36"/>
                 <post number="37"/>
                 <post number="38"/>
+                <post number="39">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2269.000000" y="2360.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="40">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Test of the 1D Road Vehicle. A torque is added at on of the wheels " font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="41">
+                    <stuff h_new="56.000000" what="resizedtextboxwidget" w_old="445.000000" h_old="100.000000" index="0" w_new="445.000000">
+                        <oldpos>2269 2360</oldpos>
+                        <newpos>2269 2360</newpos>
+                    </stuff>
+                </post>
+                <post number="42">
+                    <stuff h_new="35.000000" what="resizedtextboxwidget" w_old="445.000000" h_old="56.000000" index="0" w_new="445.000000">
+                        <oldpos>2269 2360</oldpos>
+                        <newpos>2269 2360</newpos>
+                    </stuff>
+                </post>
+                <post number="43">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2269 2360</oldpos>
+                        <newpos>2240 2344</newpos>
+                    </stuff>
+                </post>
+                <post number="44">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2740 2454</oldpos>
+                        <newpos>2740 2403</newpos>
+                    </stuff>
+                </post>
+                <post number="45">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink_2" startport="Pvc" startcomponent="1D Road Vehicle">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2602.50000000000000000000" y="2493.00000000000000000000"/>
+                                    <coordinate x="2667.00000000000000000000" y="2493.00000000000000000000"/>
+                                    <coordinate x="2667.00000000000000000000" y="2630.00000000000000000000"/>
+                                    <coordinate x="2759.00000000000000000000" y="2630.00000000000000000000"/>
+                                    <coordinate x="2759.00000000000000000000" y="2597.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="46">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Ramp">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2170.50000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2587.50000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2587.50000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2620.50000000000000000000" y="2582.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Gain">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2645.50000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2719.00000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2719.00000000000000000000" y="2582.00000000000000000000"/>
+                                    <coordinate x="2739.00000000000000000000" y="2582.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="SignalGain" name="Gain">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                                <parameter value="1" type="double" name="k"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2633" y="2582" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="47">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2739 2567</oldpos>
+                        <newpos>2739 2579</newpos>
+                    </stuff>
+                </post>
+                <post number="48">
+                    <stuff what="addedtextboxwidget" index="1">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2852.000000" y="2572.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="49">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2852 2572</oldpos>
+                        <newpos>2795 2551</newpos>
+                    </stuff>
+                </post>
+                <post number="50">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Plotting air resistance and rolling friction as a function of speed" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="51">
+                    <stuff h_new="100.000000" what="resizedtextboxwidget" w_old="100.000000" h_old="100.000000" index="1" w_new="422.000000">
+                        <oldpos>2852 2572</oldpos>
+                        <newpos>2795 2551</newpos>
+                    </stuff>
+                </post>
+                <post number="52">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Plotting air resistance and rolling friction as a function of speed" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Plotting air resistance and &#xa;rolling friction as a function of speed" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="53">
+                    <stuff h_new="100.000000" what="resizedtextboxwidget" w_old="422.000000" h_old="100.000000" index="1" w_new="248.000000">
+                        <oldpos>2795 2551</oldpos>
+                        <newpos>2795 2551</newpos>
+                    </stuff>
+                </post>
+                <post number="54">
+                    <stuff h_new="52.000000" what="resizedtextboxwidget" w_old="248.000000" h_old="100.000000" index="1" w_new="248.000000">
+                        <oldpos>2795 2551</oldpos>
+                        <newpos>2795 2551</newpos>
+                    </stuff>
+                </post>
+                <post number="55">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Plotting air resistance and &#xa;rolling friction as a function of speed" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Plotting air resistance and &#xa;rolling friction as a function &#xa;of speed" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="56">
+                    <stuff h_new="65.000000" what="resizedtextboxwidget" w_old="248.000000" h_old="65.000000" index="1" w_new="196.000000">
+                        <oldpos>2795 2551</oldpos>
+                        <newpos>2795 2551</newpos>
+                    </stuff>
+                </post>
+                <post number="57">
+                    <stuff what="addedtextboxwidget" index="2">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2799.000000" y="2406.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="58">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="2" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Speed" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="59">
+                    <stuff h_new="31.000000" what="resizedtextboxwidget" w_old="100.000000" h_old="100.000000" index="2" w_new="100.000000">
+                        <oldpos>2799 2406</oldpos>
+                        <newpos>2799 2406</newpos>
+                    </stuff>
+                </post>
+                <post number="60">
+                    <stuff h_new="31.000000" what="resizedtextboxwidget" w_old="100.000000" h_old="31.000000" index="2" w_new="50.000000">
+                        <oldpos>2799 2406</oldpos>
+                        <newpos>2799 2406</newpos>
+                    </stuff>
+                </post>
+                <post number="61">
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2799 2406</oldpos>
+                        <newpos>2795 2405</newpos>
+                    </stuff>
+                </post>
+                <post number="62" type="paste">
+                    <stuff what="addedtextboxwidget" index="3">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2813.000000" y="2475.500000"/>
+                                <textobject fontcolor="#556b2f" text="Speed" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="50.000000" height="31.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="63">
+                    <stuff what="movedwidget" index="3">
+                        <oldpos>2813 2475.5</oldpos>
+                        <newpos>2794 2487.5</newpos>
+                    </stuff>
+                </post>
+                <post number="64">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="3" text_old="Speed" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Postion" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="500" timestep="0.01" start="0"/>
-        <parameters/>
         <objects>
             <component typename="SignalRamp" name="Ramp">
                 <parameters>
-                    <parameter value="0" name="y_0"/>
-                    <parameter value="300" name="y_A"/>
-                    <parameter value="1" name="t_start"/>
-                    <parameter value="2" name="t_end"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="300" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="2" type="double" name="t_end"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2158.00000000000000000000" y="2582" flipped="0" a="0"/>
+                    <pose x="2158" y="2582" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2760.00000000000000000000" y="2469" flipped="0" a="0"/>
+                    <pose x="2760" y="2418" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="MechanicTorqueTransformer" name="Torque Source">
                 <parameters>
-                    <parameter value="0" name="P1::Angular Velocity"/>
-                    <parameter value="0" name="P1::Angle"/>
-                    <parameter value="300" name="T"/>
+                    <parameter value="0" type="double" name="P1::Angular Velocity"/>
+                    <parameter value="0" type="double" name="P1::Angle"/>
+                    <parameter value="300" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2311.00000000000000000000" y="2582" flipped="0" a="0"/>
+                    <pose x="2311" y="2582" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_1">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2760.00000000000000000000" y="2505" flipped="0" a="0"/>
+                    <pose x="2760" y="2505" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="MechanicTorqueTransformer" name="Torque Source_1">
                 <parameters>
-                    <parameter value="0" name="P1::Angular Velocity"/>
-                    <parameter value="0" name="P1::Angle"/>
-                    <parameter value="0" name="T"/>
+                    <parameter value="0" type="double" name="P1::Angular Velocity"/>
+                    <parameter value="0" type="double" name="P1::Angle"/>
+                    <parameter value="0" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2312.00000000000000000000" y="2632" flipped="0" a="0"/>
+                    <pose x="2312" y="2632" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_2">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2759.00000000000000000000" y="2582" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalGain" name="Gain">
-                <parameters>
-                    <parameter value="0" name="out::Value"/>
-                    <parameter value="1" name="k"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2633.00000000000000000000" y="2582" flipped="0" a="0"/>
+                    <pose x="2759" y="2594" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="MechanicVehicle1D" name="1D Road Vehicle">
                 <parameters>
-                    <parameter value="0" name="Pvc::Value"/>
-                    <parameter value="0" name="Pxc::Value"/>
-                    <parameter value="0" name="Pfd::Value"/>
-                    <parameter value="0" name="Pfr::Value"/>
-                    <parameter value="1000" name="M_c"/>
-                    <parameter value="0.01" name="c_fr"/>
-                    <parameter value="0.5" name="C_dA"/>
-                    <parameter value="1" name="r_wheel"/>
-                    <parameter value="1.25" name="rho"/>
+                    <parameter value="0" type="double" name="Pvc::Value"/>
+                    <parameter value="0" type="double" name="Pxc::Value"/>
+                    <parameter value="0" type="double" name="Pfd::Value"/>
+                    <parameter value="0" type="double" name="Pfr::Value"/>
+                    <parameter value="1000" type="double" name="M_c"/>
+                    <parameter value="0.01" type="double" name="c_fr"/>
+                    <parameter value="0.5" type="double" name="C_dA"/>
+                    <parameter value="1" type="double" name="r_wheel"/>
+                    <parameter value="1.25" type="double" name="rho"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2491.00000000000000000000" y="2493" flipped="0" a="0"/>
+                    <pose x="2491" y="2493" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2240.000000" y="2344.000000"/>
+                    <textobject fontcolor="#556b2f" text="Test of the 1D Road Vehicle. A torque is added at on of the wheels " font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="445.000000" height="35.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2795.000000" y="2551.000000"/>
+                    <textobject fontcolor="#556b2f" text="Plotting air resistance and &#xa;rolling friction as a function &#xa;of speed" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="196.000000" height="65.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2795.000000" y="2405.000000"/>
+                    <textobject fontcolor="#556b2f" text="Speed" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="50.000000" height="31.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2794.000000" y="2487.500000"/>
+                    <textobject fontcolor="#556b2f" text="Postion" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="56.000000" height="31.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
         </objects>
         <connections>
             <connect endport="in" endcomponent="Sink_1" startport="Pxc" startcomponent="1D Road Vehicle">
@@ -215,7 +481,7 @@
                         <coordinate x="2602.50000000000000000000" y="2505.40000000000009094947"/>
                         <coordinate x="2697.00000000000000000000" y="2505.40000000000009094947"/>
                         <coordinate x="2697.00000000000000000000" y="2505.00000000000000000000"/>
-                        <coordinate x="2747.50000000000000000000" y="2505.00000000000000000000"/>
+                        <coordinate x="2740.00000000000000000000" y="2505.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -228,10 +494,10 @@
             <connect endport="in" endcomponent="Sink_2" startport="Pfd" startcomponent="1D Road Vehicle">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2602.50000000000000000000" y="2530.19999999999981810106"/>
-                        <coordinate x="2704.00000000000000000000" y="2530.19999999999981810106"/>
-                        <coordinate x="2704.00000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2746.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2602.50000000000000000000" y="2517.80000000000018189894"/>
+                        <coordinate x="2704.00000000000000000000" y="2517.80000000000018189894"/>
+                        <coordinate x="2704.00000000000000000000" y="2594.00000000000000000000"/>
+                        <coordinate x="2739.00000000000000000000" y="2594.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -244,10 +510,10 @@
             <connect endport="in" endcomponent="Sink_2" startport="Pfr" startcomponent="1D Road Vehicle">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2602.50000000000000000000" y="2542.59999999999990905053"/>
-                        <coordinate x="2676.00000000000000000000" y="2542.59999999999990905053"/>
-                        <coordinate x="2676.00000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2746.50000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2602.50000000000000000000" y="2530.19999999999981810106"/>
+                        <coordinate x="2676.00000000000000000000" y="2530.19999999999981810106"/>
+                        <coordinate x="2676.00000000000000000000" y="2594.00000000000000000000"/>
+                        <coordinate x="2739.00000000000000000000" y="2594.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -264,38 +530,6 @@
                         <coordinate x="2267.50000000000000000000" y="2582.00000000000000000000"/>
                         <coordinate x="2267.50000000000000000000" y="2582.00000000000000000000"/>
                         <coordinate x="2287.50000000000000000000" y="2582.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Ramp">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2170.50000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2587.50000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2587.50000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2620.50000000000000000000" y="2582.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Gain">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2645.50000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2719.00000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2719.00000000000000000000" y="2582.00000000000000000000"/>
-                        <coordinate x="2746.50000000000000000000" y="2582.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -338,13 +572,31 @@
                     <coordinates>
                         <coordinate x="2602.50000000000000000000" y="2493.00000000000000000000"/>
                         <coordinate x="2693.00000000000000000000" y="2493.00000000000000000000"/>
-                        <coordinate x="2693.00000000000000000000" y="2469.00000000000000000000"/>
-                        <coordinate x="2747.50000000000000000000" y="2469.00000000000000000000"/>
+                        <coordinate x="2693.00000000000000000000" y="2418.00000000000000000000"/>
+                        <coordinate x="2740.00000000000000000000" y="2418.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink_2" startport="Pvc" startcomponent="1D Road Vehicle">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2602.50000000000000000000" y="2493.00000000000000000000"/>
+                        <coordinate x="2667.00000000000000000000" y="2493.00000000000000000000"/>
+                        <coordinate x="2667.00000000000000000000" y="2630.00000000000000000000"/>
+                        <coordinate x="2759.00000000000000000000" y="2630.00000000000000000000"/>
+                        <coordinate x="2759.00000000000000000000" y="2609.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
