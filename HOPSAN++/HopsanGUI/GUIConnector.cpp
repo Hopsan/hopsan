@@ -67,8 +67,6 @@ Connector::Connector(ContainerObject *pParentContainer)
 //! @brief Destructor for connector class
 Connector::~Connector()
 {
-    refreshConnectedSystemportsGraphics();
-
     // Delete all the line segments
     this->removeAllLines();
 
@@ -81,25 +79,6 @@ Connector::~Connector()
     }
 }
 
-//! @brief A special help function, useful to call graphics refresh on connected systemports (if any)
-//! @todo maybe containers objects should handle systemport refresh after connection or disconnection instead of the connector, problems when deleting port and that delete calls delete connector that then wants to refresh the deleated port
-void Connector::refreshConnectedSystemportsGraphics()
-{
-    if (mpStartPort)
-    {
-        if (getStartPort()->getPortType() == "SYSTEMPORT")
-        {
-            getStartPort()->refreshPortGraphics();
-        }
-    }
-    if (mpEndPort)
-    {
-        if (getEndPort()->getPortType() == "SYSTEMPORT")
-        {
-            getEndPort()->refreshPortGraphics();
-        }
-    }
-}
 
 void Connector::disconnectPortSigSlots(Port* pPort)
 {
@@ -364,9 +343,6 @@ void Connector::finishCreation()
         }
     }
 
-        //If containerport refresh graphics
-    //qDebug() << "Port Types: " << getStartPort()->getPortType() << " " << getEndPort()->getPortType();
-    refreshConnectedSystemportsGraphics();
 
         //Hide ports; connected ports shall not be visible
     mpStartPort->hide();

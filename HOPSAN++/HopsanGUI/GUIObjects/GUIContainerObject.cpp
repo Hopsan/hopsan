@@ -1249,6 +1249,16 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
             pConnector->getStartPort()->setVisible(!mSubComponentPortsHidden);
         }
 
+        //Correctly refresh the graphics of systemports based on if this is an external or internal connection
+        if (pConnector->getStartPort()->getPortType() == "SYSTEMPORT")
+        {
+            refreshSubContainerPortGraphics(pConnector->getStartPort());
+        }
+        if (pConnector->getEndPort()->getPortType() == "SYSTEMPORT")
+        {
+            refreshSubContainerPortGraphics(pConnector->getEndPort());
+        }
+
         // Forget and delete the connector
         mSubConnectorList.removeAll(pConnector);
         mSelectedSubConnectorsList.removeAll(pConnector);
@@ -1430,11 +1440,38 @@ bool ContainerObject::finilizeConnector(Port *endPort)
         endPort->getGuiModelObject()->rememberConnector(mpTempConnector);
         mpTempConnector->setEndPort(endPort);
         mpTempConnector->finishCreation();
+
+        //Correctly refresh the graphics of systemports based on if this is an external or internal connection
+        if (endPort->getPortType() == "SYSTEMPORT")
+        {
+            refreshSubContainerPortGraphics(endPort);
+        }
+        if (mpTempConnector->getStartPort()->getPortType() == "SYSTEMPORT")
+        {
+            refreshSubContainerPortGraphics(mpTempConnector->getStartPort());
+        }
+
         mSubConnectorList.append(mpTempConnector);
         mIsCreatingConnector = false;
     }
 
     return success;
+}
+
+//! @brief Correctly refresh the graphics of systemports based on if this is an external or internal connection
+//! @todo this function should not be here, should be handled by systemports automatically
+void ContainerObject::refreshSubContainerPortGraphics(Port* pPort)
+{
+    //! @todo the systemport should know itself wheter it is an external or internal one
+    // If internal systemport
+    if (pPort->getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+    {
+        pPort->refreshPortGraphics(CoreSystemAccess::EXTERNALPORTTYPE);
+    }
+    else
+    {
+        pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE);
+    }
 }
 
 

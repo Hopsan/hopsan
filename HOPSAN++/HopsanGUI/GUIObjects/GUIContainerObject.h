@@ -279,6 +279,7 @@ protected:
     void startConnector(Port *startPort);
     bool finilizeConnector(Port *endPort);
     void disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port *pRealPort);
+    void refreshSubContainerPortGraphics(Port* pPort);
 
     //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
