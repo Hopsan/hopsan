@@ -1628,11 +1628,11 @@ void OptimizationDialog::run()
     dateString.replace(":", "_");
     dateString.replace(".", "_");
     dateString.replace(" ", "_");
-<<<<<<< .mine    QString pyPath = QString(SCRIPTPATH)+generateFileName();
-=======    QString pyPath = QString(SCRIPTPATH)+generateFileName();
+    QString pyPath = QString(SCRIPTPATH)+generateFileName();
     pyPath.replace("\\", "/");
     pyPath.replace("//", "/");
->>>>>>> .theirs    QFile pyFile(pyPath);
+
+    QFile pyFile(pyPath);
     if (!pyFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + pyPath);
