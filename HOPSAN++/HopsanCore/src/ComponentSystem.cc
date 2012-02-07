@@ -653,39 +653,39 @@ bool ComponentSystem::changeTypeCQS(const string name, const CQSEnumT newType)
 //! @todo This function will go through all conected ports every time it is run, maybe a quicker version would only be run on the port beeing connected or disconnectd, in the connect and disconnect function
 void ComponentSystem::determineCQSType()
 {
-    PortPtrMapT::iterator ppmit;
-
     size_t c_ctr=0;
     size_t q_ctr=0;
     size_t s_ctr=0;
 
+    PortPtrMapT::iterator ppmit;
     for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
     {
-        //all ports should be system ports in a subsystem
-        assert((*ppmit).second->getPortType() == SYSTEMPORT);
-
-        //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
-        //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if wedont want ot in some other place
-        vector<Port*> connectedPorts = (*ppmit).second->getConnectedPorts(-1); //Make a copy of connected ports
-        vector<Port*>::iterator cpit;
-        for (cpit=connectedPorts.begin(); cpit!=connectedPorts.end(); ++cpit)
+        //all ports should be system ports in a subsystem, dont check for other port types
+        if( ppmit->second->getPortType() == SYSTEMPORT )
         {
-            if ( (*cpit)->getComponent()->getSystemParent() == this )
+            //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
+            //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if we dont want it in some other place
+            vector<Port*> connectedPorts = (*ppmit).second->getConnectedPorts(-1); //Make a copy of connected ports
+            vector<Port*>::iterator cpit;
+            for (cpit=connectedPorts.begin(); cpit!=connectedPorts.end(); ++cpit)
             {
-                switch ((*cpit)->getComponent()->getTypeCQS())
+                if ( (*cpit)->getComponent()->getSystemParent() == this )
                 {
-                case C :
-                    ++c_ctr;
-                    break;
-                case Q :
-                    ++q_ctr;
-                    break;
-                case S :
-                    ++s_ctr;
-                    break;
-                default :
-                    ;
-                    //Do nothing, (connecting a port from a system with no cqs type set yet)
+                    switch ((*cpit)->getComponent()->getTypeCQS())
+                    {
+                    case C :
+                        ++c_ctr;
+                        break;
+                    case Q :
+                        ++q_ctr;
+                        break;
+                    case S :
+                        ++s_ctr;
+                        break;
+                    default :
+                        ;
+                        //Do nothing, (connecting a port from a system with no cqs type set yet)
+                    }
                 }
             }
         }

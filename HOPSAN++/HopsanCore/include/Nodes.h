@@ -128,12 +128,12 @@ private:
 };
 
 //! @brief A mechanic node
-//! @ingroup NodeMechanical
+//! @ingroup NodeMechanic
 class NodeMechanic :public Node
 {
 public:
     //! @brief The data variable indexes, DATALENGTH is used internally
-    //! @ingroup NodeMechanical
+    //! @ingroup NodeMechanic
     enum DataIndexEnumT {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, EQMASS, DATALENGTH};
     static Node* CreatorFunction() {return new NodeMechanic;}
 
@@ -162,12 +162,12 @@ private:
 };
 
 //! @brief A rotational mechanic node
-//! @ingroup RotationalNodeMechanical
+//! @ingroup NodeMechanicRotational
 class NodeMechanicRotational :public Node
 {
 public:
     //! @brief The data variable indexes, DATALENGTH is used internally
-    //! @ingroup RotationalNodeMechanical
+    //! @ingroup NodeMechanicRotational
     enum DataIndexEnumT {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, EQINERTIA, DATALENGTH};
     static Node* CreatorFunction() {return new NodeMechanicRotational;}
 

@@ -23,14 +23,22 @@
 #include "Nodes.h"
 
 //! @defgroup Nodes Nodes
+
 //! @defgroup NodeHydraulic NodeHydraulic
 //! @ingroup Nodes
+
 //! @defgroup NodePneumatic NodePneumatic
 //! @ingroup Nodes
-//! @defgroup NodeMechanical NodeMechanical
+
+//! @defgroup NodeMechanic NodeMechanic
 //! @ingroup Nodes
+
+//! @defgroup NodeMechanicRotational NodeMechanicRotational
+//! @ingroup Nodes
+
 //! @defgroup NodeSignal NodeSignal
 //! @ingroup Nodes
+
 //! @defgroup NodeElectric NodeElectric
 //! @ingroup Nodes
 
