@@ -591,7 +591,7 @@ void OptimizationDialog::generateComplexScript()
     scriptStream << "\n";
     scriptStream << "startTime = time.time()\n";
     scriptStream << "\n";
-    scriptStream << "sys.path.append('" << gExecPath+QString(SCRIPTPATH) <<"')\n";
+    scriptStream << "sys.path.append('" << QString(SCRIPTPATH) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
     scriptStream << "from OptimizationObjectiveFunctions import *\n";
     scriptStream << "import random\n";
@@ -950,7 +950,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "\n";
     scriptStream << "startTime = time.time()\n";
     scriptStream << "\n";
-    scriptStream << "sys.path.append('" << gExecPath+QString(SCRIPTPATH) <<"')\n";
+    scriptStream << "sys.path.append('" << QString(SCRIPTPATH) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
     scriptStream << "from OptimizationObjectiveFunctions import *\n";
     scriptStream << "import random\n";
@@ -1626,7 +1626,7 @@ void OptimizationDialog::run()
     dateString.replace(":", "_");
     dateString.replace(".", "_");
     dateString.replace(" ", "_");
-    QString pyPath = gExecPath+QString(SCRIPTPATH)+generateFileName();
+    QString pyPath = QString(SCRIPTPATH)+generateFileName();
     QFile pyFile(pyPath);
     if (!pyFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -1676,7 +1676,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
     mObjectiveFunctionDataLists.clear();
 
     //Read from OptimizationObjectiveFunctions.xml
-    QFile file(gExecPath+QString(SCRIPTPATH) + "OptimizationObjectiveFunctions.xml");
+    QFile file(QString(SCRIPTPATH) + "OptimizationObjectiveFunctions.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
