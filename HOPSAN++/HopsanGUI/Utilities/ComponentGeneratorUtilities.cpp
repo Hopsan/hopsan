@@ -308,7 +308,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     //Initialize the file stream
     QFileInfo fileInfo;
     QFile file;
-    fileInfo.setFile(outputFile);
+    fileInfo.setFile(QString(DATAPATH)+outputFile);
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -643,7 +643,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
 
 
     QFile ccLibFile;
-    ccLibFile.setFileName("tempLib.cc");
+    ccLibFile.setFileName(QString(DATAPATH)+"tempLib.cc");
     if(!ccLibFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open tempLib.cc for writing.");
@@ -673,14 +673,14 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
 
 
     QFile clBatchFile;
-    clBatchFile.setFileName("compile.bat");
+    clBatchFile.setFileName(QString(DATAPATH)+"compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open compile.bat for writing.");
         return;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I" << INCLUDEPATH << " -L./ -lHopsanCore\n";
+    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << gExecPath+QString(INCLUDEPATH) << "\" -L\""+gExecPath+"\" -lHopsanCore\n";
     clBatchFile.close();
 
     if(pProgressBar)
@@ -689,8 +689,16 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         pProgressBar->setValue(pProgressBar->value()+1);
     }
 
+
+    QDir componentsDir(QString(DOCSPATH));
+    QDir generatedDir(QString(DOCSPATH) + "Generated Componentes/");
+    if(!generatedDir.exists())
+    {
+        componentsDir.mkdir("Generated Componentes");
+    }
+
     QFile xmlFile;
-    xmlFile.setFileName(comp.typeName+".xml");
+    xmlFile.setFileName(generatedDir.path()+"/"+comp.typeName+".xml");
     if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open " + comp.typeName + ".xml  for writing.");
@@ -726,7 +734,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     //Execute HopsanFMU compile script
 #ifdef WIN32
     QProcess p;
-    p.start("cmd.exe", QStringList() << "/c" << "cd " + gExecPath + " & compile.bat");
+    p.start("cmd.exe", QStringList() << "/c" << "cd " + QString(DATAPATH) + " & compile.bat");
     p.waitForFinished();
 #else
     QString command = "g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + INCLUDEPATH + " -L./ -lHopsanCore\n";
@@ -755,22 +763,14 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         pProgressBar->setValue(pProgressBar->value()+1);
     }
 
-
-    QDir componentsDir(QString(DOCSPATH));
-    QDir generatedDir(QString(DOCSPATH) + "Generated Componentes/");
-    if(!generatedDir.exists())
-    {
-        componentsDir.mkdir("Generated Componentes");
-    }
-
     QFile::remove(generatedDir.path() + "/" + xmlFile.fileName());
     xmlFile.copy(generatedDir.path() + "/" + xmlFile.fileName());
 
-    QFile dllFile(gExecPath+comp.typeName+".dll");
+    QFile dllFile(QString(DATAPATH)+comp.typeName+".dll");
     QFile::remove(generatedDir.path() + "/" + comp.typeName + ".dll");
     dllFile.copy(generatedDir.path() + "/" + comp.typeName + ".dll");
 
-    QFile soFile(gExecPath+comp.typeName+".so");
+    QFile soFile(QString(DATAPATH)+comp.typeName+".so");
     QFile::remove(generatedDir.path() + "/" + comp.typeName + ".so");
     soFile.copy(generatedDir.path() + "/" + comp.typeName + ".so");
 

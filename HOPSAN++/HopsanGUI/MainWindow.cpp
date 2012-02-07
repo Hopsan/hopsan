@@ -1127,7 +1127,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     }
     else
     {
-        QFile file("update.exe");
+        QFile file(QString(DATAPATH)+"/update.exe");
         if (!file.open(QIODevice::WriteOnly)) {
             mpMessageWidget->printGUIErrorMessage("Could not open update.exe for writing.");
             qDebug() << "Feil Prewblem";

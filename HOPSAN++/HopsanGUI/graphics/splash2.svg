@@ -32,16 +32,16 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1680"
-     inkscape:window-height="982"
+     inkscape:window-height="985"
      id="namedview2818"
      showgrid="false"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="342.15679"
+     inkscape:zoom="4.2978835"
+     inkscape:cx="647.93406"
      inkscape:cy="212.70807"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-x="1592"
+     inkscape:window-y="142"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2816"
+     inkscape:current-layer="layer2"
      inkscape:snap-page="true" />
   <metadata
      id="metadata2822">
@@ -1211,11 +1211,11 @@
        id="text3618"
        y="169.51172"
        x="554.19934"
-       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        xml:space="preserve"><tspan
          y="169.51172"
          x="554.19934"
          id="tspan3620"
-         sodipodi:role="line">0.5.0</tspan></text>
+         sodipodi:role="line">0.5.1</tspan></text>
   </g>
 </svg>

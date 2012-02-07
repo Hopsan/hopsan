@@ -194,7 +194,7 @@ public slots:
         o->mpMessageWidget->checkMessages();
     }
 
-    WorkspaceObject* component(MainWindow* o, const QString& compName)
+    ModelObject* component(MainWindow* o, const QString& compName)
     {
         return o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName);
     }

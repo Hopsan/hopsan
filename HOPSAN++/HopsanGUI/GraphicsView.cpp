@@ -608,7 +608,7 @@ void GraphicsView::exportToPDF()
 {
     QString fileName = QFileDialog::getSaveFileName(
         this, "Export File Name", gConfig.getModelGfxDir(),
-        "Adobe PDF Documents (*.svg)");
+        "Adobe PDF Documents (*.pdf)");
     if ( !fileName.isEmpty() )
     {
         QFileInfo file(fileName);

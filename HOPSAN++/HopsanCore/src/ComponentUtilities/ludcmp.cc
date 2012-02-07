@@ -146,7 +146,7 @@ int hopsan::pivot(Matrix &a, int order[], int jcol, ComponentSystem* pComponentS
         }
     }
 
-    if(fabs(big) > TINY)
+    if(fabs(big) < TINY)
     {
         gCoreMessageHandler.addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
         pComponentSystem->stopSimulation();

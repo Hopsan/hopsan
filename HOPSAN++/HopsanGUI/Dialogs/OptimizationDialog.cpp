@@ -721,7 +721,7 @@ void OptimizationDialog::generateComplexScript()
         scriptStream << "  for t in range(nThreads):\n";
         scriptStream << "    hopsan.gotoTab(t)\n";
         scriptStream << "    for j in range(len(parameterNames)):\n";
-        scriptStream << "      hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[i][j])\n";
+        scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], parameters[i][j])\n";
         scriptStream << "  hopsan.simulateAllOpenModels(False)\n";
         scriptStream << "  for t in range(nThreads):\n";
         scriptStream << "    obj[i] = getObjective()\n";
@@ -730,7 +730,7 @@ void OptimizationDialog::generateComplexScript()
     {
           scriptStream << "for i in range(len(parameters)):\n";
           scriptStream << "  for j in range(len(parameterNames)):\n";
-          scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[i][j])\n";
+          scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], parameters[i][j])\n";
           scriptStream << "  hopsan.simulate()\n";
           scriptStream << "  obj[i] = getObjective()\n\n";
 
@@ -773,7 +773,7 @@ void OptimizationDialog::generateComplexScript()
         scriptStream << "  for t in range(nThreads):\n";
         scriptStream << "    hopsan.gotoTab(t)\n";
         scriptStream << "    for j in range(len(parameterNames)):\n";
-        scriptStream << "      hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[worstIds[t]][j])\n";
+        scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], parameters[worstIds[t]][j])\n";
         scriptStream << "  hopsan.simulateAllOpenModels(True)\n";
         scriptStream << "  for t in range(nThreads):\n";
         scriptStream << "    hopsan.gotoTab(t)\n";
@@ -822,7 +822,7 @@ void OptimizationDialog::generateComplexScript()
     else
     {
         scriptStream << "  for j in range(len(parameterNames)):\n";
-        scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], parameters[worstId][j])\n";
+        scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], parameters[worstId][j])\n";
         scriptStream << "  hopsan.simulate()\n";
         scriptStream << "  obj[worstId] = getObjective()\n";
         scriptStream << "  objspread=max(obj)-min(obj)\n";
@@ -1130,7 +1130,7 @@ void OptimizationDialog::generateParticleSwarmScript()
         scriptStream << "for i in range(np):\n";
         scriptStream << "  hopsan.gotoTab(t)\n";
         scriptStream << "  for j in range(len(parameterNames)):\n";
-        scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
+        scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
         scriptStream << "  hopsan.simulateAllOpenModels(False)\n";
         scriptStream << "  for t in range(np):\n";
         scriptStream << "    hopsan.gotoTab(t)\n";
@@ -1140,7 +1140,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     {
           scriptStream << "for i in range(np):\n";
           scriptStream << "  for j in range(len(parameterNames)):\n";
-          scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
+          scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
           scriptStream << "  hopsan.simulate()\n";
           scriptStream << "  obj[i] = getObjective()\n";
     }
@@ -1193,51 +1193,51 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "  #  Simulate and evaluate objective functions\n";
     if(multicore)
     {
-        scriptStream << "for i in range(np):\n";
-        scriptStream << "  hopsan.gotoTab(t)\n";
-        scriptStream << "  for j in range(len(parameterNames)):\n";
-        scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
-        scriptStream << "  hopsan.simulateAllOpenModels(True)\n";
-        scriptStream << "  for t in range(np):\n";
+        scriptStream << "  for i in range(np):\n";
         scriptStream << "    hopsan.gotoTab(t)\n";
-        scriptStream << "    obj[i] = getObjective()\n";
+        scriptStream << "    for j in range(len(parameterNames)):\n";
+        scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
+        scriptStream << "    hopsan.simulateAllOpenModels(True)\n";
+        scriptStream << "    for t in range(np):\n";
+        scriptStream << "      hopsan.gotoTab(t)\n";
+        scriptStream << "      obj[i] = getObjective()\n";
     }
     else
     {
-         scriptStream << "for i in range(np):\n";
-         scriptStream << "  for j in range(len(parameterNames)):\n";
-         scriptStream << "    hopsan.component(componentNames[j]).setParameter(parameterNames[j], particles[i][j])\n";
-         scriptStream << "  hopsan.simulate()\n";
-         scriptStream << "  obj[i] = getObjective()\n";
+         scriptStream << "  for i in range(np):\n";
+         scriptStream << "    for j in range(len(parameterNames)):\n";
+         scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
+         scriptStream << "    hopsan.simulate()\n";
+         scriptStream << "    obj[i] = getObjective()\n";
     }
     scriptStream << "  \n";
-    scriptStream << "# Calculate best known positions\n";
-    scriptStream << "for i in range(np):\n";
-    scriptStream << "  if obj[i] < pi_obj[i]:\n";
-    scriptStream << "    pi[i] = particles[i][:]\n";
-    scriptStream << "    pi_obj[i] = obj[i]\n";
-    scriptStream << "    if pi_obj[i] < g_obj:\n";
-    scriptStream << "      g = pi[i][:]\n";
-    scriptStream << "      g_obj = pi_obj[i]\n";
+    scriptStream << "  # Calculate best known positions\n";
+    scriptStream << "  for i in range(np):\n";
+    scriptStream << "    if obj[i] < pi_obj[i]:\n";
+    scriptStream << "      pi[i] = particles[i][:]\n";
+    scriptStream << "      pi_obj[i] = obj[i]\n";
+    scriptStream << "      if pi_obj[i] < g_obj:\n";
+    scriptStream << "        g = pi[i][:]\n";
+    scriptStream << "        g_obj = pi_obj[i]\n";
     scriptStream << "  \n";
-    scriptStream << "  # Check for convergence\n";
-    scriptStream << "  if min(obj) == 0:\n";
-    scriptStream << "    if abs(max(obj)-min(obj)) <= tolFunc:\n";
+    scriptStream << "    # Check for convergence\n";
+    scriptStream << "    if min(obj) == 0:\n";
+    scriptStream << "      if abs(max(obj)-min(obj)) <= tolFunc:\n";
+    scriptStream << "        elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "        print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "        break\n";
+    scriptStream << "    elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
     scriptStream << "      elapsedTime = (time.time() - startTime)\n";
     scriptStream << "      print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
     scriptStream << "      break\n";
-    scriptStream << "  elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
-    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "    print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "    break\n";
-    scriptStream << "  xConverged=True\n";
-    scriptStream << "  for i in range(len(parameterNames)):\n";
-    scriptStream << "    if abs((maxPar(parameters, i)-minPar(parameters,i))/(maxValues[i]-minValues[i])) > tolX:\n";
-    scriptStream << "      xConverged=False;\n";
-    scriptStream << "  if xConverged:\n";
-    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "    print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "    break\n";
+    scriptStream << "    xConverged=True\n";
+    scriptStream << "    for i in range(len(parameterNames)):\n";
+    scriptStream << "      if abs((maxPar(pi, i)-minPar(pi,i))/(maxValues[i]-minValues[i])) > tolX:\n";
+    scriptStream << "        xConverged=False;\n";
+    scriptStream << "    if xConverged:\n";
+    scriptStream << "      elapsedTime = (time.time() - startTime)\n";
+    scriptStream << "      print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "      break\n";
     scriptStream << "\n";
     if(!mpPlottingCheckBox->isChecked())
     {
@@ -1612,6 +1612,8 @@ QString OptimizationDialog::generateFileName()
     dateString.replace(":", "_");
     dateString.replace(".", "_");
     dateString.replace(" ", "_");
+    dateString.replace("/", "_");
+    dateString.replace("\\", "_");
     return "OptimizationScript_"+dateString.toUtf8()+".py";
 }
 
@@ -1626,8 +1628,11 @@ void OptimizationDialog::run()
     dateString.replace(":", "_");
     dateString.replace(".", "_");
     dateString.replace(" ", "_");
-    QString pyPath = QString(SCRIPTPATH)+generateFileName();
-    QFile pyFile(pyPath);
+<<<<<<< .mine    QString pyPath = QString(SCRIPTPATH)+generateFileName();
+=======    QString pyPath = QString(SCRIPTPATH)+generateFileName();
+    pyPath.replace("\\", "/");
+    pyPath.replace("//", "/");
+>>>>>>> .theirs    QFile pyFile(pyPath);
     if (!pyFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + pyPath);
@@ -1640,6 +1645,13 @@ void OptimizationDialog::run()
 
     QTime simTimer;
     simTimer.start();
+
+    QString scriptPath = QString(SCRIPTPATH);
+    scriptPath.replace("\\", "/");
+    scriptPath.replace("//", "/");
+
+    gpMainWindow->mpPyDockWidget->runCommand("import sys");
+    gpMainWindow->mpPyDockWidget->runCommand("sys.path.append(\""+scriptPath+"\")");
     gpMainWindow->mpPyDockWidget->runPyScript(pyPath);
     QString timeString = QString().setNum(simTimer.elapsed());
     gpMainWindow->mpMessageWidget->printGUIInfoMessage("Optimization finished after " + timeString + " ms");
