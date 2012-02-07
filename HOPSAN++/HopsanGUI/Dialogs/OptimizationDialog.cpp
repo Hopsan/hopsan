@@ -536,6 +536,22 @@ void OptimizationDialog::okPressed()
 //! @brief Generates the Python script based upon selections made in the dialog
 void OptimizationDialog::generateScriptFile()
 {
+    if(mpParametersLogCheckBox->isChecked())
+    {
+        bool itsOk = true;
+        for(int i=0; i<mpParameterMinLineEdits.size(); ++i)
+        {
+            if(mpParameterMinLineEdits[i]->text().toDouble() <= 0 || mpParameterMinLineEdits[i]->text().toDouble() <= 0)
+            {
+                itsOk = false;
+            }
+        }
+        if(!itsOk)
+        {
+            QMessageBox::warning(this, "Warning", "Logarithmic scaling is selected, but parameters are allowed to be negative. This will probably not work.");
+        }
+    }
+
     if(mSelectedParameters.isEmpty())
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("No parameters specified for optimization.");
