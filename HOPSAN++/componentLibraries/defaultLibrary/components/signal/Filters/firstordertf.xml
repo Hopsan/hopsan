@@ -5,7 +5,7 @@
             <icon scale="1" path="firstordertf.svg" iconrotation="ON" type="user"/>
         </icons>
         <help>
-            <text>Second order transfer function using bilinear transform. Parameters are continous, and will be discretized automatically by the component. Start value on output port is used as initial value.</text>
+            <text>First order transfer function using bilinear transform. Parameters are continous, and will be discretized automatically by the component. Start value on output port is used as initial value.</text>
             <picture>firstordertfhelp.svg</picture>
         </help>
         <ports>
