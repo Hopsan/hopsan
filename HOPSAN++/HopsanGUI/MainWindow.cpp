@@ -1182,6 +1182,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpStopTimeLineEdit->setEnabled(!noTabs);
     mpSimulateAction->setEnabled(!noTabs);
     mpOptimizeAction->setEnabled(!noTabs);
+    mpSensitivityAnalysisAction->setEnabled(!noTabs);
     mpPlotAction->setEnabled(!noTabs);
     mpPropertiesAction->setEnabled(!noTabs);
     mpOpenSystemParametersAction->setEnabled(!noTabs);
