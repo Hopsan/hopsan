@@ -13,6 +13,18 @@ Hopsan Release Notes
 
 -- Version History --
 
+0.5.1
+- Fixed: Issue with Read ports and Writeport types becomming inverted when connecting to a signal systemport. (Only graphics was affected)
+- Fixed: Added missing script files for optimization
+- Fixed: Fixed component compilation problem due to Windows not allowing programs to save files in their own directory
+- Fixed: Wrong default path in some file dialogs
+- Fixed: Pdf export of workspace created a pdf file that was called .svg
+- Fixed: Include files attemtped to include a header file that is not part of the release
+- Fixed: Check if Jacobian matrix is singular returned opposite value
+- Fixed: Wrong include and link directories for compilation script when generating components
+- Fixed: Replaced illegal characters in optimization script filename
+- Fixed: Wrong class names in some Python script commands
+
 0.5.0
 - Fixed: Small memory leaks (related to removal of system parameters and system ports) in HopsanCore
 - Fixed: It is now possible to click the simulate button directly after editing simulation time. You do not need to press enter first.
@@ -49,8 +61,7 @@ Hopsan Release Notes
 
 - Other: Component constructors with name arguments have been removed. They take no arguments now. (For custom component creators)
 - Other: Lots of "under the hood" code improvements.
-
-
+- Other: New Electric components
 
 0.4.5
 - Fixed: Added missing include files for external dependencies

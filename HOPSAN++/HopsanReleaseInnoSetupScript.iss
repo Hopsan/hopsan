@@ -22,18 +22,22 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputBaseFilename=Hopsan-{#MyAppVersion}-win32-installer
-SetupIconFile=C:\Users\robbr48\Documents\Subversion\HOPSAN++_release_0.4.x\HopsanGUI\hopsan.ico
+SetupIconFile=HopsanGUI\hopsan.ico
 Compression=lzma
 SolidCompression=yes
-WizardImageFile="C:\Users\robbr48\Documents\Subversion\robbr48\Projekt\Hopsan NG\Grafik\Installation large.bmp"
-WizardSmallImageFile="C:\Users\robbr48\Documents\Subversion\robbr48\Projekt\Hopsan NG\Grafik\Installation small.bmp"
+WizardImageFile="installation_large.bmp"
+WizardSmallImageFile="installation_small.bmp"
 WizardImageStretch=yes
 ChangesAssociations=yes
 UninstallDisplayName={#MyAppName}
-UninstallDisplayIcon=C:\Users\robbr48\Documents\Subversion\HOPSAN++_release_0.4.x\HopsanGUI\hopsan.ico
+UninstallDisplayIcon=HopsanGUI\hopsan.ico
+DirExistsWarning=auto
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[messages]
+DirExists=The folder:%n%n%1%n%nalready exists. All previous contents will be removed! Would you like to install to that folder anyway?
 
 [CustomMessages]
 ProjectHomepage=Project &Homepage
@@ -42,35 +46,33 @@ ProjectHomepage=Project &Homepage
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 Name: "associatehmf"; Description: "Associate .hmf files with Hopsan"; Flags: dontinheritcheck
+                                   
+[InstallDelete]
+Type: filesandordirs; Name: "{app}"
 
 [Dirs]
 ;Create installation directories
 Name: "{app}\bin"
-Name: "{app}\bin\iconengines"
-Name: "{app}\bin\imageformats"
-Name: "{app}\componentData"
-Name: "{app}\help"
+Name: "{app}\components"
+Name: "{app}\doc"
 Name: "{app}\include"
 Name: "{userdocs}\Hopsan"
 Name: "{userdocs}\Hopsan\Models"
-Name: "{app}\binVC"
+Name: "{userdocs}\Hopsan\Scripts"
 
 [Files]
 ;Hopsan files
 Source: "C:\temp_release\bin\*";                  DestDir: "{app}\bin";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\binVC\*";                DestDir: "{app}\binVC";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\componentData\*";        DestDir: "{app}\componentData";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\help\*";                 DestDir: "{app}\help";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\include\*.h";            DestDir: "{app}\include";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\include\*.hpp";          DestDir: "{app}\include";     Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\components\*";           DestDir: "{app}\components";     Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\doc\*";                  DestDir: "{app}\doc";     Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\include\*";              DestDir: "{app}\include";     Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\exampleComponentLib\*";  DestDir: "{app}\exampleComponentLib";   Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\hopsandefaults";         DestDir: "{app}";     Flags: ignoreversion
-Source: "C:\temp_release\Models\*";               DestDir: "{userdocs}\Hopsan\Models";     Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\models\*";               DestDir: "{userdocs}\Hopsan\Models";     Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\scripts\*";              DestDir: "{userdocs}\Hopsan\Scripts";     Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 
-;VC++ binaries
-Source: "C:\Users\robbr48\Documents\Subversion\HOPSAN++_release_0.4.x\binVC\*";                 DestDir: "{app}\binVC";           Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

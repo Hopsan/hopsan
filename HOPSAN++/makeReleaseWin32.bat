@@ -38,47 +38,67 @@
 :: AUTOMATED PART (performed by this script):
 
 :: Define search path variables
-set version=0.4.5
+set version=0.5.1
 set tempDir=c:\temp_release
 set innoDir="C:\Program Files\Inno Setup 5"
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
 
 :: Create a temporary release directory
 mkdir %tempDir%
-mkdir %tempDir%\Models
+mkdir %tempDir%\models
+mkdir %tempDir%\bin
+mkdir %tempDir%\bin\MSVC
+mkdir %tempDir%\doc
+mkdir %tempDir%\doc\user
+mkdir %tempDir%\doc\user\html
 mkDir output
 
 :: Copy "bin" folder to temporary directory
-xcopy bin %tempDir%\bin\ /s
-del %tempDir%\bin\hopsan_logfile.txt
+xcopy bin\*.exe %tempDir%\bin /s
+xcopy bin\*.dll %tempDir%\bin /s
+xcopy bin\*.a %tempDir%\bin /s
+xcopy bin\*.lib %tempDir%\bin /s
+del %tempDir%\bin\HopsanCLI.*
+del %tempDir%\bin\HopsanGUI_d.exe
+del %tempDir%\bin\HopsanCore_d.dll
+del %tempDir%\bin\libHopsanCore_d.a
+xcopy bin\MSVC2008 %tempDir%\bin\MSVC2008 /s
 
-:: Copy "binVC" folder to temporary directory
-svn export binVC %tempDir%\binVC\
+:: Build user documentation
+::call buildUserDocumentation
 
 :: Export "HopsanCore" SVN directory to "include" in temporary directory
-svn export HopsanCore %tempDir%\include
-rd /s/q %tempDir%\include\Components\Compgen
-rd /s/q %tempDir%\include\Components\Electric
-rd /s/q %tempDir%\include\Components\Hydraulic
-rd /s/q %tempDir%\include\Components\Mechanic
-rd /s/q %tempDir%\include\Components\Signal
-::rd /s/q %tempDir%\include\Dependencies
+svn export HopsanCore\include %tempDir%\include
 
 :: Export "Example Models" SVN directory to temporary directory
-svn export "Models\Example Models" "%tempDir%\Models\Example Models"
+svn export "Models\Example Models" "%tempDir%\models\Example Models"
 del "%tempDir%\Models\Example Models\AircraftActuationSystem.hmf"
+del "%tempDir%\Models\Example Models\ElectricVehicle2.hmf"
+del "%tempDir%\Models\Example Models\ElectricVehicleSystem.hmf"
 
 :: Export "Benchmark Models" SVN directory to temporary directory
-svn export "Models\Benchmark Models" "%tempDir%\Models\Benchmark Models"
+svn export "Models\Benchmark Models" "%tempDir%\models\Benchmark Models"
 
 :: Export "componentData" SVN directory to temporary directory
-svn export HopsanGUI\componentData %tempDir%\componentData
-
-:: Export "help" SVN directory to temporary directory
-svn export docs/help %tempDir%\help
+svn export componentLibraries\defaultLibrary\components %tempDir%\components
 
 ::Export "exampleComponentLib" SVN directory to temporary directory
-svn export externalLibs/exampleComponentLib %tempDir%\exampleComponentLib
+svn export componentLibraries\exampleComponentLib %tempDir%\exampleComponentLib
+
+:: Export "help" SVN directory to temporary directory
+xcopy doc\user\html\* %tempDir%\doc\user\html\ /s
+xcopy doc\graphics\* %tempDir%\doc\graphics\ /s
+
+:: Export "Scripts" folder to temporary directory
+xcopy Scripts\* %tempDir%\Scripts\ /s
+del "%tempDir%\Scripts\benchmark.py"
+del "%tempDir%\Scripts\opttest.py"
+del "%tempDir%\Scripts\plot.py"
+del "%tempDir%\Scripts\speedtest.py"
+del "%tempDir%\Scripts\speedtest1.py"
+del "%tempDir%\Scripts\speedtest2.py"
+del "%tempDir%\Scripts\speedtest4.py"
+del "%tempDir%\Scripts\speedtest8.py"
 
 :: Copy "hopsandefaults" file to temporary directory
 copy hopsandefaults %tempDir%\hopsandefaults
