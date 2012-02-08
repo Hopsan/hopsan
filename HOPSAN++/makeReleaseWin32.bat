@@ -1,3 +1,4 @@
+::$Id
 @echo off
 
 :: HOPSAN RELEASE COMPILATION SCRIPT
@@ -41,13 +42,24 @@
 set version=0.5.1
 set tempDir=c:\temp_release
 set innoDir="C:\Program Files\Inno Setup 5"
+set innoDir2="C:\Program Files (x86)\Inno Setup 5"
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
+
+:: Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
+IF NOT EXIST %innoDir% (
+  IF NOT EXIST %innoDir2% (
+    echo Inno Setup 5 is not installed in expected place
+    echo Aborting!
+    pause
+    exit
+  )
+  set innoDir=%innoDir2%
+)
 
 :: Create a temporary release directory
 mkdir %tempDir%
 mkdir %tempDir%\models
 mkdir %tempDir%\bin
-mkdir %tempDir%\bin\MSVC
 mkdir %tempDir%\doc
 mkdir %tempDir%\doc\user
 mkdir %tempDir%\doc\user\html
@@ -65,7 +77,7 @@ del %tempDir%\bin\libHopsanCore_d.a
 xcopy bin\MSVC2008 %tempDir%\bin\MSVC2008 /s
 
 :: Build user documentation
-::call buildUserDocumentation
+call buildUserDocumentation
 
 :: Export "HopsanCore" SVN directory to "include" in temporary directory
 svn export HopsanCore\include %tempDir%\include
@@ -104,10 +116,12 @@ del "%tempDir%\Scripts\speedtest8.py"
 copy hopsandefaults %tempDir%\hopsandefaults
 
 :: Create zip package
+echo Creating zip package
  ThirdParty\7z\7z.exe a -tzip Hopsan-%version%-win32-zip.zip %tempDir%\*
  move Hopsan-%version%-win32-zip.zip output/
 
 :: Execute Inno compile script
+echo Executing Inno Setup installer creation
 %innoDir%\iscc.exe /o"output" /f"Hopsan-%version%-win32-installer" /dMyAppVersion=%version% %scriptFile%
 
 :: Move release notse to output directory

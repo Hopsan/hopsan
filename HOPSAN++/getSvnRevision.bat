@@ -1,28 +1,30 @@
+::$Id
 @echo off
-REM Batch script for extracting subversion revision number and writing to specified header define file in specified folder.
-REM If folder is missing no file is written
-REM Author: Peter Nordin peter.nordin@liu.se
-REM Date:   2011-10-26
-REM For use in Hopsan, requires TortoiseSVN installed
+:: Batch script for extracting subversion revision number and writing to specified header define file in specified folder.
+:: If folder is missing no file is written
+:: Author: Peter Nordin peter.nordin@liu.se
+:: Date:   2011-10-26
+:: For use in Hopsan, requires TortoiseSVN installed
 
-set PATH=%PATH%;"C:\Program Files\TortoiseSVN\bin" REM TODO: Add more potential paths here
+:: TODO: Add more potential paths here
+set PATH=%PATH%;"C:\Program Files\TortoiseSVN\bin" 
 set filename="svnrevnum.h"
 set foldername="include"
 
-REM -------------------------------------------
+:: -------------------------------------------
 set version=""
 set versionS=""
-REM Find the revison number, the fith token from the line
+:: Find the revison number, the fith token from the line
 for /f "tokens=5" %%i in ('SubWCRev .^|find "Last committed at revision"') do set version=%%i 
-REM Remove trailing space
+:: Remove trailing space
 for /f "tokens=1 delims=/ " %%a in ("%version%") do set versionS=%%a
 
-REM If the include folder exists write the svnrevnum.h file to that folder
+:: If the include folder exists write the svnrevnum.h file to that folder
 IF EXIST %foldername% (
   call:writeFile "%foldername%/%filename%" %versionS%
 )
 
-REM Determine what to report and what exit code to give
+:: Determine what to report and what exit code to give
 IF %versionS%=="" (
   echo "Revision information not found"
   EXIT /b 1
