@@ -1,4 +1,4 @@
-::$Id
+::$Id$
 @echo off
 
 :: HOPSAN RELEASE COMPILATION SCRIPT

@@ -1,4 +1,4 @@
-::$Id
+::$Id$
 @ECHO OFF
 cd doc
 doxygen devDoxyfile

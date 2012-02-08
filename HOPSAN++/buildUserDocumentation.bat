@@ -1,4 +1,4 @@
-::$Id
+::$Id$
 @ECHO OFF
 cd doc
 :: First remove output folders to be sure documenation is clean
