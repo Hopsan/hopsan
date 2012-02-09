@@ -1593,15 +1593,14 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     fmuSourceStream << "#include \"include/ComponentEssentials.h\"\n";
     fmuSourceStream << "#include \"include/ComponentUtilities.h\"\n";
     fmuSourceStream << "#include \"include/CoreUtilities/HmfLoader.h\"\n\n";
-    fmuSourceStream << "static double time=0;\n";
+    fmuSourceStream << "static double fmu_time=0;\n";
     fmuSourceStream << "static hopsan::ComponentSystem *spCoreComponentSystem;\n";
-    fmuSourceStream << "static std::vector<string> sComponentNames;\n\n";
+    fmuSourceStream << "static std::vector<std::string> sComponentNames;\n\n";
     fmuSourceStream << "void initializeHopsanWrapper(char* filename)\n";
     fmuSourceStream << "{\n";
-    fmuSourceStream << "    hopsan::HmfLoader coreHmfLoader;\n";
     fmuSourceStream << "    double startT;      //Dummy variable\n";
     fmuSourceStream << "    double stopT;       //Dummy variable\n";
-    fmuSourceStream << "    spCoreComponentSystem = coreHmfLoader.loadModel(filename, startT, stopT);\n";
+    fmuSourceStream << "    spCoreComponentSystem = hopsan::HopsanEssentials::getInstance()->loadHMFModel(filename, startT, stopT);\n";
     fmuSourceStream << "    spCoreComponentSystem->setDesiredTimestep(0.001);\n";           //!< @todo Time step should not be hard coded
     fmuSourceStream << "    spCoreComponentSystem->initialize(0,10,0);\n";
     fmuSourceStream << "}\n\n";
@@ -1610,12 +1609,12 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     fmuSourceStream << "    if(spCoreComponentSystem->isSimulationOk())\n";
     fmuSourceStream << "    {\n";
     fmuSourceStream << "        double timestep = spCoreComponentSystem->getDesiredTimeStep();\n";
-    fmuSourceStream << "        spCoreComponentSystem->simulate(time, time+timestep);\n";
-    fmuSourceStream << "        time = time+timestep;\n";
+    fmuSourceStream << "        spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);\n";
+    fmuSourceStream << "        fmu_time = fmu_time+timestep;\n";
     fmuSourceStream << "    }\n";
     fmuSourceStream << "    else\n";
     fmuSourceStream << "    {\n";
-    fmuSourceStream << "        cout << \"Simulation failed!\";\n";
+    fmuSourceStream << "        std::cout << \"Simulation failed!\";\n";
     fmuSourceStream << "    }\n";
     fmuSourceStream << "}\n\n";
     fmuSourceStream << "double getVariable(char* component, char* port, size_t idx)\n";
@@ -1630,7 +1629,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     fmuSourceFile.close();
 
 
-    progressBar.setLabelText("Writing compile.bat");
+    progressBar.setLabelText("Writing to compile.bat");
     progressBar.setValue(6);
 
 
@@ -1639,7 +1638,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     if(gccCompiler)
     {
         //! @todo Ship Mingw with Hopsan, or check if it exists in system and inform user if it does not.
-        clBatchStream << "g++ -DWRAPPERCOMPILATION -c HopsanFMU.cpp\n";
+        clBatchStream << "g++ -DWRAPPERCOMPILATION -c HopsanFMU.cpp -I./include\n";
         clBatchStream << "g++ -shared -o HopsanFMU.dll HopsanFMU.o -L./ -lHopsanCore";
     }
     else

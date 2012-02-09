@@ -662,6 +662,12 @@ void LibraryWidget::importFmu()
     fmuLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)\n";
     fmuLibStream << "{\n";
     fmuLibStream << "    cfact_ptr->registerCreatorFunction(\"" + fmuName + "\", " + fmuName + "::Creator);\n";
+    fmuLibStream << "}\n\n";
+    fmuLibStream << "extern \"C\" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)\n";
+    fmuLibStream << "{\n";
+    fmuLibStream << "    pHopsanExternalLibInfo->libName = (char*)\"HopsanFMULibrary_power\";\n";
+    fmuLibStream << "    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n";
+    fmuLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n";
     fmuLibStream << "}\n";
     fmuLibFile.close();
 

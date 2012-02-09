@@ -13,6 +13,11 @@ Hopsan Release Notes
 
 -- Version History --
 
+0.5.2
+- Fixed: Missing NodeMechanicRotational in documentation
+- Fixed: Replaced assert portType==SYSTEMPORT in determineCQSType() with if() check. (For very advanced users) 
+- Fixed: Compilation errors in FMU export/import
+
 0.5.1
 - Fixed: Issue with Read ports and Writeport types becomming inverted when connecting to a signal systemport. (Only graphics was affected)
 - Fixed: Added missing script files for optimization
