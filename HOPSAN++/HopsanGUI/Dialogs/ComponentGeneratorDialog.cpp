@@ -46,7 +46,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b" << "\\bVariableLimit\\b";
+    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b" << "\\bonPositive\\b" << "\\bonNegative\\b" << "\\bsignedSquareL\\b" << "\\bVariableLimit\\b";
 
     foreach (const QString &pattern, keywordPatterns)
     {
@@ -138,18 +138,30 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpEquationsWidget->setLayout(mpEquationsLayout);
     mpEquationsWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
-
+    mpInitAlgorithmsTextField = new QTextEdit(this);
+    mpInitAlgorithmsTextField->setFont(monoFont);
+    mpInitAlgorithmsTextField->setMaximumHeight(300);
+    mpInitAlgorithmsHighLighter = new ModelicaHighlighter(mpInitAlgorithmsTextField->document());
+    mpInitAlgorithmsLayout = new QGridLayout(this);
+    mpInitAlgorithmsLayout->addWidget(mpInitAlgorithmsTextField);
+    mpInitAlgorithmsWidget = new QWidget(this);
+    mpInitAlgorithmsWidget->setLayout(mpInitAlgorithmsLayout);
+    mpInitAlgorithmsWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     mpCodeTabs = new QTabWidget(this);                                          //Tab layout
     mpCodeTabs->addTab(mpInitWidget, "Initialize");
     mpCodeTabs->addTab(mpSimulateWidget, "Simulate");
     mpCodeTabs->addTab(mpFinalizeWidget, "Finalize");
     mpCodeTabs->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    mpEquationTabs = new QTabWidget(this);
+    mpEquationTabs->addTab(mpInitAlgorithmsWidget, "Initial Algorithms");
+    mpEquationTabs->addTab(mpEquationsWidget, "Equations");
+    mpEquationTabs->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpCodeLayout = new QGridLayout(this);
     mpCodeLayout->addWidget(mpGivenLabel, 0, 0);
     mpCodeLayout->addWidget(mpSoughtLabel, 1, 0);
     mpCodeLayout->addWidget(mpCodeTabs, 2, 0);
-    mpCodeLayout->addWidget(mpEquationsWidget, 3, 0);
+    mpCodeLayout->addWidget(mpEquationTabs, 2, 0);
     mpCodeGroupBox = new QGroupBox("Equations", this);
     mpCodeGroupBox->setLayout(mpCodeLayout);
     mpCodeGroupBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
@@ -405,7 +417,7 @@ void ComponentGeneratorDialog::removePort()
     QToolButton *button = qobject_cast<QToolButton *>(sender());
     int i = mvRemovePortButtons.indexOf(button);
     mPortList.removeAt(i);
-    qDebug() << "Removing port with index " << i;
+    //qDebug() << "Removing port with index " << i;
     updateValues();
     update();
 }
@@ -448,7 +460,7 @@ void ComponentGeneratorDialog::removeStaticVariable()
 //! Identifies the sender widget to avoid updating everything all the time
 void ComponentGeneratorDialog::updateValues()
 {
-    qDebug() << "updateValues()";
+    //qDebug() << "updateValues()";
 
     //Assume sender is a line edit
     QLineEdit *lineEdit = qobject_cast<QLineEdit *>(sender());
@@ -544,15 +556,15 @@ void ComponentGeneratorDialog::update()
     if(mpGenerateFromComboBox->currentIndex() == 0)
     {
         mpCodeTabs->hide();
-        mpEquationsWidget->show();
-        qDebug() << "CQSType = " << mpComponentTypeComboBox->currentText();
+        mpEquationTabs->show();
+        //qDebug() << "CQSType = " << mpComponentTypeComboBox->currentText();
         mpBoundaryEquationsTextField->setVisible(!mpBoundaryEquationsTextField->toPlainText().isEmpty() && mpComponentTypeComboBox->currentText() == "Q");
         mpBoundaryEquationsLabel->setVisible(mpBoundaryEquationsTextField->isVisible());
     }
     else
     {
         mpCodeTabs->show();
-        mpEquationsWidget->hide();
+        mpEquationTabs->hide();
     }
 
 
@@ -1026,7 +1038,7 @@ void ComponentGeneratorDialog::loadRecentComponent()
 
     if(!fileName.isEmpty())
     {
-        qDebug() << "Trying to open: " << fileName;
+        //qDebug() << "Trying to open: " << fileName;
         loadFromXml(fileName);
     }
 }
@@ -1049,31 +1061,31 @@ void ComponentGeneratorDialog::compile()
 
     if(!verifyParameteres(mParametersList))
     {
-        qDebug() << "Verification of parameters failed.";
+        //qDebug() << "Verification of parameters failed.";
         return;
     }
 
     if(!verifyPorts(mPortList))
     {
-        qDebug() << "Verification of ports failed.";
+        //qDebug() << "Verification of ports failed.";
         return;
     }
 
     if(!verifyUtilities(mUtilitiesList))
     {
-        qDebug() << "Verification of utilities failed.";
+        //qDebug() << "Verification of utilities failed.";
         return;
     }
 
     if(!verifyStaticVariables(mStaticVariablesList))
     {
-        qDebug() << "Verification of static variables failed.";
+        //qDebug() << "Verification of static variables failed.";
         return;
     }
 
     if(mpGenerateFromComboBox->currentIndex() == 0)         //Compile from equations
     {
-        qDebug() << "Compiling equations";
+        //qDebug() << "Compiling equations";
 
         pProgressBar->setLabelText("Saving to XML");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1082,6 +1094,10 @@ void ComponentGeneratorDialog::compile()
 
         pProgressBar->setLabelText("Collecting equations");
         pProgressBar->setValue(pProgressBar->value()+1);
+
+        //Create list of initial algorithms
+        QString plainInitAlgorithms = mpInitAlgorithmsTextField->toPlainText();
+        QStringList initAlgorithms = plainInitAlgorithms.split("\n");
 
         //Create list of equqtions
         QString plainEquations = mpEquationsTextField->toPlainText();
@@ -1116,7 +1132,7 @@ void ComponentGeneratorDialog::compile()
                 limitedVariableEquations << i-2;
                 limitedDerivativeEquations << i-1;
 
-                qDebug() << "Found limitation of variable " << limitedVariables.last() << " with derivative " << limitedDerivatives.last();
+                //qDebug() << "Found limitation of variable " << limitedVariables.last() << " with derivative " << limitedDerivatives.last();
 
                 equations.removeAt(i);
                 --i;
@@ -1135,7 +1151,7 @@ void ComponentGeneratorDialog::compile()
         //Verify the equations
         if(!verifyEquations(equations))
         {
-            qDebug() << "Verification failed.";
+            //qDebug() << "Verification failed.";
             gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equations failed.");
             return;
         }
@@ -1166,6 +1182,17 @@ void ComponentGeneratorDialog::compile()
             allSymbols.append(leftSymbols.at(i));
             allSymbols.append(rightSymbols.at(i));
         }
+
+        //Create list of variables defined by initial equations
+        QStringList initExpressions;
+        for(int i=0; i<initAlgorithms.size(); ++i)
+        {
+            QString var = initAlgorithms.at(i).section("=", 0, 0);
+            var.remove(" ");
+            initExpressions.append(var);
+        }
+        allSymbols.append(initExpressions);
+
         allSymbols.removeDuplicates();
 
         pProgressBar->setLabelText("Identifying state varaibles");
@@ -1203,6 +1230,10 @@ void ComponentGeneratorDialog::compile()
         {
             stateVars.removeAll(mParametersList[i].name);
         }
+        for(int i=0; i<initExpressions.size(); ++i)
+        {
+            stateVars.removeAll(initExpressions[i]);
+        }
         stateVars.removeAll("s");       //Laplace 's' is not a state variable
 
         pProgressBar->setLabelText("Identifying local variables");
@@ -1211,6 +1242,7 @@ void ComponentGeneratorDialog::compile()
         //Sort state variables so that each equation contains its correspondig variable
         //(otherwise Jacobian will become singular)
         int consecutiveChecks = 0;
+        int shuffles = 0;
         for(int i=0; i<stateVars.size(); ++i)
         {
             if(!(leftSymbols[i].contains(stateVars[i]) || rightSymbols[i].contains(stateVars[i])))
@@ -1220,11 +1252,22 @@ void ComponentGeneratorDialog::compile()
                 stateVars.move(i, stateVars.size()-1);      //Corresponding equation does not contain state variable, move it to back of list and try next variable
                 --i;
                 ++consecutiveChecks;
-                if(consecutiveChecks > stateVars.size())
+                if(consecutiveChecks > stateVars.size()*stateVars.size())
                 {
-                    //Tried (at least) all remaining variables on same equation, but did not converge.
-                    gpMainWindow->mpMessageWidget->printGUIErrorMessage("Component generator failed to make Jacobian non-singular.");
-                    return;
+                    //Failed to find solution, shuffle the variables and try again
+                    if(shuffles < 100)
+                    {
+                        shuffle(stateVars);
+                        ++shuffles;
+                        consecutiveChecks = 0;
+                        i=-1;       //Restart loop
+                    }
+                    else
+                    {
+                        //Shuffled the state variables 100 times and still no success, so abort
+                        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Component generator failed to make Jacobian non-singular.");
+                        return;
+                    }
                 }
             }
             else
@@ -1296,7 +1339,7 @@ void ComponentGeneratorDialog::compile()
 
         //Create custom functions
         QStringList allFunctions;
-        allFunctions << "hopsanLimit" << "hopsanDxLimit";
+        allFunctions << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL";
         for(int i=0; i<allFunctions.size(); ++i)
         {
             py->runCommand(allFunctions[i]+"=Function(\""+allFunctions[i]+"\")");
@@ -1330,7 +1373,7 @@ void ComponentGeneratorDialog::compile()
             QString max = limitMaxValues[i];
             py->runCommand(fStr+" = factor("+fStr+")");
             py->runCommand(fStr+" = "+fStr+".subs("+var+"*qi00, qi00_OLD)");
-            py->runCommand(fStr+" = "+var+"+hopsanLimit("+fStr+".subs("+var+",0)/"+fStr+".coeff("+var+"),"+min+","+max+").expand()");
+            py->runCommand(fStr+" = "+var+"-hopsanLimit(-simplify("+fStr+".expand().subs("+var+",0)/"+fStr+".expand().coeff("+var+")),"+min+","+max+").expand()");
             py->runCommand(fStr+" = "+fStr+".subs(qi00_OLD, "+var+"*qi00)");
 
             py->runCommand(dfStr+" = factor("+dfStr+")");
@@ -1356,10 +1399,10 @@ void ComponentGeneratorDialog::compile()
             }
         }
 
-        if(isSingular(jString))
-            qDebug() << "Matrix is singular!";
-        else
-            qDebug() << "Matrix is not singular!";
+        //if(isSingular(jString))
+            //qDebug() << "Matrix is singular!";
+        //else
+            //qDebug() << "Matrix is not singular!";
 
         pProgressBar->setLabelText("Collecting system equations");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1372,9 +1415,9 @@ void ComponentGeneratorDialog::compile()
             sysEquations.append(gpMainWindow->mpPyDockWidget->getLastOutput());
         }
 
-        //qDebug() << "Jacobian = " << jString;
-        //qDebug() << "System Equations = " << sysEquations;
-        //qDebug() << "State Variables = " << stateVars;
+        ////qDebug() << "Jacobian = " << jString;
+        ////qDebug() << "System Equations = " << sysEquations;
+        ////qDebug() << "State Variables = " << stateVars;
 
         pProgressBar->setLabelText("Translating delay operators");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1387,27 +1430,31 @@ void ComponentGeneratorDialog::compile()
         pProgressBar->setLabelText("Translating from SymPy to C++");
         pProgressBar->setValue(pProgressBar->value()+1);
 
-        qDebug() << "Blä 0";
-
+        //qDebug() << "Blä 0";
+        translateFunctionsFromPython(delayTerms);
         translateFunctionsFromPython(sysEquations);
         translateFunctionsFromPython(jString);
+        translateFunctionsFromPython(initAlgorithms);
 
-        qDebug() << "Blä 1";
+        //qDebug() << "Blä 1";
 
         //Translate all "x**y" to "pow(x,y)"
+        translatePowersFromPython(delayTerms);
         translatePowersFromPython(sysEquations);
         translatePowersFromPython(jString);
+        translatePowersFromPython(initAlgorithms);
 
-        qDebug() << "Blä 2";
+        //qDebug() << "Blä 2";
 
         pProgressBar->setLabelText("Enforcing floating point precision");
         pProgressBar->setValue(19);
 
         //Make sure all variables have double precision (to make sure "1.0/2.0 = 0.5" instead of "1/2 = 0")
+        translateIntsToDouble(delayTerms);
         translateIntsToDouble(sysEquations);
         translateIntsToDouble(jString);
-
-        qDebug() << "Blä 3";
+        translateIntsToDouble(initAlgorithms);
+        //qDebug() << "Blä 3";
 
         pProgressBar->setLabelText("Collecting general component data");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1425,15 +1472,15 @@ void ComponentGeneratorDialog::compile()
 
         showOutputDialog(jString, sysEquations, stateVars);
 
-    qDebug() << "Blä 4";
+    //qDebug() << "Blä 4";
 
         pProgressBar->setLabelText("Compiling component");
         pProgressBar->setValue(pProgressBar->value()+1);
 
         //Call utility to generate and compile the source code
-        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, mpAppearance, pProgressBar);
+        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, mpAppearance, pProgressBar);
 
-        qDebug() << "Blä 5";
+        //qDebug() << "Blä 5";
 
         delete(pProgressBar);
     }
@@ -1441,7 +1488,7 @@ void ComponentGeneratorDialog::compile()
     {
         //Generate a DOM document from member variables
 
-        qDebug() << "Compiling C++";
+        //qDebug() << "Compiling C++";
 
         saveDialogToXml();
 
@@ -1523,10 +1570,11 @@ void ComponentGeneratorDialog::compile()
         const int IndentSize = 4;
         if(!QDir(DATAPATH).exists())
             QDir().mkdir(DATAPATH);
-        QFile xmlFile(gExecPath + "generated_component.xml");
+        QFile xmlFile(QString(DATAPATH) + "generated_component.xml");
+        qDebug() << "Creating: " << xmlFile.fileName();
         if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
-            qDebug() << "Failed to open file for writing: " << gExecPath << "generated_component.xml";
+            //qDebug() << "Failed to open file for writing: " << gExecPath << "generated_component.xml";
             return;
         }
         QTextStream out(&xmlFile);
@@ -1681,7 +1729,7 @@ void ComponentGeneratorDialog::loadFromXml()
 void ComponentGeneratorDialog::loadFromXml(QString fileName)
 {
     QFile file(fileName);
-    qDebug() << "Reading config from " << file.fileName();
+    //qDebug() << "Reading config from " << file.fileName();
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -1734,7 +1782,7 @@ void ComponentGeneratorDialog::loadFromXml(QString fileName)
         p.description = parameterElement.attribute("description");
         p.unit = parameterElement.attribute("unit");
         mParametersList << p;
-        qDebug() << "Appended a parameter!";
+        //qDebug() << "Appended a parameter!";
         parameterElement=parameterElement.nextSiblingElement("parameter");
     }
 
@@ -1809,6 +1857,15 @@ void ComponentGeneratorDialog::loadFromXml(QString fileName)
     else
     {
         mpGenerateFromComboBox->setCurrentIndex(1);
+    }
+
+    mpInitAlgorithmsTextField->clear();
+    QDomElement initAlgorithmEquations = modelRoot.firstChildElement("initalgorithms");
+    QDomElement initAlgorithmEquation = initAlgorithmEquations.firstChildElement("equation");
+    while(!initAlgorithmEquation.isNull())
+    {
+        mpInitAlgorithmsTextField->append(initAlgorithmEquation.text());
+        initAlgorithmEquation = initAlgorithmEquation.nextSiblingElement("equation");
     }
 
     mpBoundaryEquationsTextField->clear();
@@ -1899,6 +1956,14 @@ void ComponentGeneratorDialog::saveDialogToXml()
         appendDomTextNode(finalizeElement,"equation",finalEquations.at(i));
     }
 
+    QDomElement initAlgorithmsElement = appendDomElement(componentRoot, "initalgorithms");
+    QString plainInitAlgorithms = mpInitAlgorithmsTextField->toPlainText();
+    QStringList initAlgorithms = plainInitAlgorithms.split("\n");
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        appendDomTextNode(initAlgorithmsElement,"equation",initAlgorithms.at(i));
+    }
+
     QDomElement equationsElement = appendDomElement(componentRoot,"equations");
     QString plainEquations = mpEquationsTextField->toPlainText();
     QStringList equations = plainEquations.split("\n");
@@ -1921,10 +1986,10 @@ void ComponentGeneratorDialog::saveDialogToXml()
     const int IndentSize = 4;
     if(!QDir(DATAPATH).exists())
         QDir().mkdir(DATAPATH);
-    QFile xmlFile(gExecPath + "generated_component.xml");
+    QFile xmlFile(QString(DATAPATH) + "generated_component.xml");
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " << gExecPath << "generated_component.xml";
+        //qDebug() << "Failed to open file for writing: " << gExecPath << "generated_component.xml";
         return;
     }
     QTextStream out(&xmlFile);
@@ -1936,11 +2001,11 @@ void ComponentGeneratorDialog::saveDialogToXml()
     dateString.replace(" ", "_");
     dateString.replace("/", "_");
     QDir().mkpath(QString(DATAPATH)+"compgen/");
-    qDebug() << "Copying to: " << QString(DATAPATH)+"compgen/component_"+dateString+".xml";
-    if(xmlFile.copy(QString(DATAPATH)+"compgen/component_"+dateString+".xml"))
-        qDebug() << "Copy succesful!";
-    else
-        qDebug() << "Copy failed!";
+    //qDebug() << "Copying to: " << QString(DATAPATH)+"compgen/component_"+dateString+".xml";
+    xmlFile.copy(QString(DATAPATH)+"compgen/component_"+dateString+".xml");
+        //qDebug() << "Copy succesful!";
+    //else
+        //qDebug() << "Copy failed!";
 
     update();
 }

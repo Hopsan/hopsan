@@ -177,7 +177,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
                                  QStringList delayTerms, QStringList delaySteps, QStringList localVars,
-                                 ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+                                 QStringList initAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
     if(pProgressBar)
     {
@@ -230,11 +230,18 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     comp.simEquations << "Vec stateVar("+QString().setNum(stateVars.size())+");";
     comp.simEquations << "Vec stateVark("+QString().setNum(stateVars.size())+");";
     comp.simEquations << "Vec deltaStateVar("+QString().setNum(stateVars.size())+");";
+    comp.simEquations << "";
 
     if(pProgressBar)
     {
         pProgressBar->setValue(pProgressBar->value()+1);
     }
+
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        comp.simEquations << initAlgorithms[i]+";";
+    }
+    comp.simEquations << "";
 
     for(int i=0; i<stateVars.size(); ++i)
     {
@@ -738,7 +745,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     p.waitForFinished();
 #else
     QString command = "g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + INCLUDEPATH + " -L./ -lHopsanCore\n";
-    qDebug() << "Command = " << command;
+    //qDebug() << "Command = " << command;
     FILE *fp;
     char line[130];
     command +=" 2>&1";
@@ -796,16 +803,16 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
 
     QString libPath = QDir().cleanPath(generatedDir.path());
 
-    qDebug() << "libPath = " << libPath;
-    qDebug() << "user libs: " << gConfig.getUserLibs();
+    //qDebug() << "libPath = " << libPath;
+    //qDebug() << "user libs: " << gConfig.getUserLibs();
     if(gConfig.hasUserLib(libPath))
     {
-        qDebug() << "Updated user libs: " << gConfig.getUserLibs();
+        //qDebug() << "Updated user libs: " << gConfig.getUserLibs();
         gpMainWindow->mpLibrary->updateExternalLibraries();
     }
     else
     {
-        qDebug() << "Loaded user libs: " << gConfig.getUserLibs();
+        //qDebug() << "Loaded user libs: " << gConfig.getUserLibs();
         gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath);
     }
 }
@@ -861,8 +868,8 @@ void identifyVariables(QString equation, QStringList &leftSideVariables, QString
             rightSideVariables.append(word);
         }
     }
-    //qDebug() << "Equation: " << equation;
-    //qDebug() << "Identified: " << leftSideVariables << rightSideVariables;
+    ////qDebug() << "Equation: " << equation;
+    ////qDebug() << "Identified: " << leftSideVariables << rightSideVariables;
 }
 
 
@@ -987,8 +994,8 @@ bool verifyEquation(QString equation)
 {
     //Verify that no unsupported functions are used
     QStringList legalFunctions;
-    //! @todo Add built-in auxiliary functions somehow
-    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "sign" << "abs" << "der";        //"der" is not Python, but still allowed
+    //! @todo These functions are hard coded on several places, not a good solution
+    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" ;        //"der" is not Python, but still allowed
     QStringList usedFunctions;
     identifyFunctions(equation, usedFunctions);
     for(int i=0; i<usedFunctions.size(); ++i)
@@ -1031,13 +1038,13 @@ void replaceReservedWords(QString &equation)
         }
         else if(!word.isEmpty() && currentChar != '(')
         {
-            //qDebug() << "Word = " << word;
+            ////qDebug() << "Word = " << word;
             if(reservedWords.contains(word))
             {
-                qDebug() << "Replacing: " << equation;
+                //qDebug() << "Replacing: " << equation;
                 equation.remove(i-word.size(), word.size());
                 equation.insert(i-word.size(), replacementWords[reservedWords.indexOf(word)]);
-                qDebug() << "Replaced: " << equation;
+                //qDebug() << "Replaced: " << equation;
                 i=0;
             }
             word.clear();
@@ -1050,13 +1057,13 @@ void replaceReservedWords(QString &equation)
 
     if(!word.isEmpty())
     {
-       // qDebug() << "Word = " << word;
+       // //qDebug() << "Word = " << word;
         if(reservedWords.contains(word))
         {
-            //qDebug() << "Replacing: " << equation;
+            ////qDebug() << "Replacing: " << equation;
             equation.remove(equation.size()-word.size(), word.size());
             equation.insert(equation.size(), replacementWords[reservedWords.indexOf(word)]);
-            //qDebug() << "Replaced: " << equation;
+            ////qDebug() << "Replaced: " << equation;
         }
     }
 }
@@ -1084,20 +1091,20 @@ void replaceReservedWords(QList<PortSpecification> &ports)
 //! @param equations List of system equations
 void identifyDerivatives(QStringList &equations)
 {
-    //qDebug() << "Before derivative check: " << equations;
+    ////qDebug() << "Before derivative check: " << equations;
     for(int i=0; i<equations.size(); ++i)
     {
         while(equations[i].contains("der("))
         {
             int j = equations[i].indexOf("der(");
             int k = equations[i].indexOf(")",j);
-            //qDebug() << "j = " << j << ", k = " << k;
+            ////qDebug() << "j = " << j << ", k = " << k;
             equations[i].remove(k, 1);
             equations[i].remove(j, 4);
             equations[i].insert(j, "s*");
         }
     }
-    //qDebug() << "After derivative check: " << equations;
+    ////qDebug() << "After derivative check: " << equations;
 }
 
 
@@ -1107,16 +1114,18 @@ void identifyDerivatives(QStringList &equations)
 //! @param delaySteps List with strings of integers telling how many steps each term is delayed
 void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps)
 {
-    //qDebug() << "Before delay translation: " << equations;
+    qDebug() << "Before delay translation: " << equations;
 
     int delayNum = 0;
     for(int i=0; i<equations.size(); ++i)
     {
+        QStringList localDelays;
+
         //Find all terms
         QStringList terms;
         getAllTerms(equations[i], terms);
 
-        //qDebug() << "Terms = " << terms;
+        ////qDebug() << "Terms = " << terms;
 
         //Find all terms containing a delay operator
         for(int j=0; j<terms.size(); ++j)
@@ -1138,42 +1147,54 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
                 }
 
                 if(ok)
-                    delayTerms.append(terms.at(j));
+                    localDelays.append(terms.at(j));
             }
         }
-        //qDebug() << "Terms with delay: " << delayTerms;
+        qDebug() << "Terms with delay: " << localDelays;
 
         //Remove delay operators and make a delay of the term
-        for(int j=0; j<delayTerms.size(); ++j)
+        for(int j=0; j<localDelays.size(); ++j)
         {
-            delayNum = j;
-            QString before = delayTerms.at(j);
+            delayNum = j+delayTerms.size();
+            QString before = localDelays.at(j);
             int steps = 0;
             //More than one delay step if the delay operator is raised to something
-            if(before.at(before.indexOf("ui00")+4) == '*' && before.at(before.indexOf("ui00")+5) == '*')
+            qDebug() << "Now checking.";
+            qDebug() << "Checking if " << before.size() << " is bigger than " << before.indexOf("qi00")+6;
+            if(before.size() > before.indexOf("qi00")+6)
             {
-                steps = QString(before.at(before.indexOf("ui00")+6)).toInt();
+                if(before.at(before.indexOf("qi00")+4) == '*' && before.at(before.indexOf("qi00")+5) == '*')
+                {
+                    steps = QString(before.at(before.indexOf("qi00")+6)).toInt()-1;   //! @todo This method will limit maximum number of steps to 9. Not a big deal really, but it is not nice.
+                }
             }
 
             QString after = "mDelay"+QString().setNum(delayNum)+".getIdx("+QString().setNum(steps)+")";
-            equations[i].replace(delayTerms.at(j), after);
+            equations[i].replace(localDelays.at(j), after);
 
-            delayTerms[j] = before.replace("qi00", "1");        //Replace delay operators with ones, to "remove" them
-            while(delayTerms[j].endsWith(" "))
-                delayTerms[j].chop(1);
-            delayTerms[j] = delayTerms[j].replace("*1*", "*");  //Attempt to be "smart" and remove unnecessary multiplications/divisions with one
-            delayTerms[j] = delayTerms[j].replace("*1/", "/");
-            delayTerms[j] = delayTerms[j].replace("/1*", "*");
-            if(delayTerms[j].startsWith("1*"))
-                delayTerms[j].remove(0, 2);
-            if(delayTerms[j].endsWith("*1"))
-                delayTerms[j].chop(2);
+            localDelays[j] = before.replace("qi00", "1");        //Replace delay operators with ones, to "remove" them
+            while(localDelays[j].endsWith(" "))
+                localDelays[j].chop(1);
+            localDelays[j] = localDelays[j].replace("**1**", "**");  //Attempt to be "smart" and remove unnecessary multiplications/divisions with one
+            localDelays[j] = localDelays[j].replace("**1*", "*");
+            //localDelays[j] = localDelays[j].replace("*1*", "*");      //Would not work if it actually says "*1**"
+            localDelays[j] = localDelays[j].replace("**1/", "/");
+            localDelays[j] = localDelays[j].replace("*1/", "/");
+            //localDelays[j] = localDelays[j].replace("/1*", "*");      //Same as above
+            if(localDelays[j].startsWith("1*") && !localDelays[j].startsWith("1**"))
+                localDelays[j].remove(0, 2);
+            if(localDelays[j].endsWith("**1"))
+                localDelays[j].chop(3);
+            if(localDelays[j].endsWith("*1"))
+                localDelays[j].chop(2);
 
             delaySteps << QString().setNum(steps);
         }
+
+        delayTerms.append(localDelays);
     }
-    //qDebug() << "After delay translation: " << equations;
-    //qDebug() << "Delay terms: " << delayTerms;
+    qDebug() << "After delay translation: " << equations;
+    qDebug() << "Delay terms: " << delayTerms;
 }
 
 
@@ -1191,9 +1212,11 @@ void translatePowersFromPython(QStringList &equations)
             int idxa = min(idx+2, equations[e].size()-1);
             if(equations[e][idx-1] != ')' && idxb != 0)      //Not a paretheses before
             {
-                while(equations[e][idxb].isLetterOrNumber())
+                while(equations[e][idxb].isLetterOrNumber() || equations[e][idxb] == '.')       //The '.' is because it may be a member function (for example "mDelay1.getIdx(0)**2")
                 {
                     --idxb;
+                    if(idxb < 0)
+                        break;
                 }
                 ++idxb;
             }
@@ -1207,6 +1230,10 @@ void translatePowersFromPython(QStringList &equations)
                         --parBalance;
                     if(equations[e][idxb] == '(')
                         ++parBalance;
+                    --idxb;
+                }
+                while(equations[e][idxb].isLetterOrNumber() || equations[e][idxb] == '.')
+                {
                     --idxb;
                 }
                 ++idxb;
@@ -1249,7 +1276,7 @@ void translateFunctionsFromPython(QStringList &equations)
 {
     for(int e=0; e<equations.size(); ++e)
     {
-        qDebug() << "Equation: " << equations[e];
+        //qDebug() << "Before Subs() replacement: " << equations[e];
 
         //Replace "Subs(f(x),x,y)" with "f(y)"
         int idx = equations[e].indexOf("Subs(", 0);
@@ -1308,22 +1335,24 @@ void translateFunctionsFromPython(QStringList &equations)
             }
 
             QString old = equations.at(e).mid(idx+5, idx2-idx-5);
-            //qDebug() << "old = " << old;
+            ////qDebug() << "old = " << old;
             QString replaceWord = equations.at(e).mid(idx2+3, idx3-idx2-5);
-            //qDebug() << "replaceWord = " << replaceWord;
+            ////qDebug() << "replaceWord = " << replaceWord;
             QString replacement = equations.at(e).mid(idx3+3, idx4-idx3-5);
-            //qDebug() << "replacement = " << replacement;
+            ////qDebug() << "replacement = " << replacement;
 
             old = old.replace(replaceWord, replacement);      //Do the replacement
 
-            //qDebug() << "new = " << old;
+            ////qDebug() << "new = " << old;
 
             equations[e].remove(idx, idx4-idx+1);
-            qDebug() << "After remove: " << equations[e];
+            //qDebug() << "After remove: " << equations[e];
             equations[e].insert(idx, old);      //Replace whole function with new string
 
             idx = equations[e].indexOf("Subs(", 0);
         }
+
+        //qDebug() << "After Subs() replacement: " << equations[e];
 
         //Replace "abs()" with "fabs()"
         idx = equations[e].indexOf("abs", 0);
@@ -1337,70 +1366,19 @@ void translateFunctionsFromPython(QStringList &equations)
         }
 
 
-        //Replace "D(hopsanLimit(x, min, max))" with "hopsanDxLimit(x, min, max)"
-        idx = equations[e].indexOf("D(hopsanLimit(", 0);
+        //Replace "abs()" with "fabs()"
+        idx = equations[e].indexOf("abs", 0, Qt::CaseInsensitive);
         while(idx > -1)
         {
-            int parBal = 2;         //Find index of end parenthesis
-            int idx2 = 0;
-            int idx3 = idx+13;
-            while(parBal != 0)
+            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+3) == '(')
             {
-                ++idx3;
-
-                if(equations[e].at(idx3) == '(')
-                {
-                    ++parBal;
-                }
-                if(equations[e].at(idx3) == ')')
-                {
-                    --parBal;
-                    if(parBal == 1 && idx2 == 0)        //Only do this first time (idx2 = 0 first time)
-                    {
-                        idx2 = idx3+1;      //idx2 is index after second last end parenthesis
-                    }
-                }
+                equations[e].replace(idx, 3, "fabs");
             }
-
-            equations[e].remove(idx2, idx3-idx2+1);     //Remove everything between second last and last parenthesis
-            equations[e].insert(idx+8, "Dx");           //Insert "Dx" in "hopsanLimit"
-            equations[e].remove(idx, 2);                //Remove "D("
-
-            idx = equations[e].indexOf("D(hopsanLimit(", idx);
+            idx = equations[e].indexOf("abs", idx+3, Qt::CaseInsensitive);
         }
 
 
-        //Replace "Derivative(hopsanLimit(x, min, max))" with "hopsanDxLimit(x, min, max)"
-        idx = equations[e].indexOf("Derivative(hopsanLimit(", 0);
-        while(idx > -1)
-        {
-            int parBal = 2;         //Find index of end parenthesis
-            int idx2 = 0;
-            int idx3 = idx+22;
-            while(parBal != 0)
-            {
-                ++idx3;
-
-                if(equations[e].at(idx3) == '(')
-                {
-                    ++parBal;
-                }
-                if(equations[e].at(idx3) == ')')
-                {
-                    --parBal;
-                    if(parBal == 1 && idx2 == 0)        //Only do this first time (idx2 = 0 first time)
-                    {
-                        idx2 = idx3+1;      //idx2 is index after second last end parenthesis
-                    }
-                }
-            }
-
-            equations[e].remove(idx2, idx3-idx2+1);     //Remove everything between second last and last parenthesis
-            equations[e].insert(idx+17, "Dx");           //Insert "Dx" in "hopsanLimit"
-            equations[e].remove(idx, 11);                //Remove "Derivative("
-
-            idx = equations[e].indexOf("Derivative(hopsanLimit(", idx);
-        }
+        replaceDerivative(equations[e], "hopsanLimit", "hopsanDxLimit");
 
 
         //Replace "D(hopsanDxLimit(x, min, max))" with 0
@@ -1457,13 +1435,15 @@ void translateFunctionsFromPython(QStringList &equations)
 
         //Replace "hopsanLimit" with "limit"
         idx = equations[e].indexOf("hopsanLimit(", 0);
+       // qDebug() << "Replacing hopsanLimit for equation: " << equations[e];
         while(idx > -1)
         {
-            qDebug() << "idx = " << idx;
+            qDebug() << "Found hopsanLimit at " << idx;
+            //qDebug() << "idx = " << idx;
 
             if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+11) == '(')
             {
-                equations[0].replace(idx, 11, "limit");      //Do the replacement
+                equations[e].replace(idx, 11, "limit");      //Do the replacement
 
                 idx = equations[e].indexOf("hopsanLimit(", idx+1);
             }
@@ -1471,6 +1451,8 @@ void translateFunctionsFromPython(QStringList &equations)
             {
                 idx = equations[e].indexOf("hopsanLimit(", idx+1);
             }
+
+            qDebug() << "Equation after replacement: " << equations[e];
         }
 
 
@@ -1519,7 +1501,7 @@ void translateFunctionsFromPython(QStringList &equations)
         {
             if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+2) == '(')
             {
-                qDebug() << "Found \"re\" at index: " << idx;
+                //qDebug() << "Found \"re\" at index: " << idx;
                 int parBal = 1;         //Find index of end parenthesis
                 int idx2 = idx+3;
                 while(parBal != 0)
@@ -1541,6 +1523,89 @@ void translateFunctionsFromPython(QStringList &equations)
                 idx = equations[e].indexOf("re(", idx+1);
             }
         }
+
+        replaceDerivative(equations[e], "onPositive", "dxOnPositive");
+        replaceDerivative(equations[e], "onNegative", "dxOnNegative");
+        replaceDerivative(equations[e], "signedSquareL", "dxSignedSquareL");
+    }
+}
+
+
+
+void replaceDerivative(QString &equation, QString f, QString dxf)
+{
+    //Replace "Derivative(f(x),x)" with "dxf(x)"
+    int idx = equation.indexOf("Derivative("+f+"(", 0);
+    while(idx > -1)
+    {
+        int parBal = 2;         //Find index of end parenthesis
+        int idx2 = 0;
+        int idx3 = idx+11+f.size();
+        while(parBal != 0)
+        {
+            ++idx3;
+
+            if(equation.at(idx3) == '(')
+            {
+                ++parBal;
+            }
+            if(equation.at(idx3) == ')')
+            {
+                --parBal;
+                if(parBal == 1 && idx2 == 0)        //Only do this first time (idx2 = 0 first time)
+                {
+                    idx2 = idx3+1;      //idx2 is index after second last end parenthesis
+                }
+            }
+        }
+
+        equation.remove(idx2, idx3-idx2+1);     //Remove everything between second last and last parenthesis
+        equation.replace(idx, 11+f.size(), dxf);        //Rename function
+
+        idx = equation.indexOf("Derivative("+f+"(", idx);
+    }
+
+
+    //Replace "D(f(x))" with "dxf(x)"
+    idx = equation.indexOf("Derivative("+f+"(", 0);
+    while(idx > -1)
+    {
+        int parBal = 2;         //Find index of end parenthesis
+        int idx2 = 0;
+        int idx3 = idx+2+f.size();
+        while(parBal != 0)
+        {
+            ++idx3;
+
+            if(equation.at(idx3) == '(')
+            {
+                ++parBal;
+            }
+            if(equation.at(idx3) == ')')
+            {
+                --parBal;
+                if(parBal == 1 && idx2 == 0)        //Only do this first time (idx2 = 0 first time)
+                {
+                    idx2 = idx3+1;      //idx2 is index after second last end parenthesis
+                }
+            }
+        }
+
+        equation.remove(idx2, idx3-idx2+1);     //Remove everything between second last and last parenthesis
+        equation.replace(idx, 2+f.size(), dxf);        //Rename function
+
+        idx = equation.indexOf("Derivative("+f+"(", idx);
+    }
+}
+
+
+//! @brief Shuffles the elements in a stringlist to a pseudo-random order
+void shuffle(QStringList &list)
+{
+    for(int i=list.size()-1; i>1; --i)
+    {
+        int j = qrand() % (i+1);
+        list.swap(i, j);
     }
 }
 
@@ -1607,9 +1672,9 @@ void translateIntsToDouble(QStringList &equations)
 void parseModelicaModel(QString code, QString &typeName, QString &displayName, QStringList &equations,
                         QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList)
 {
-    qDebug() << "Hej1";
+    //qDebug() << "Hej1";
     QStringList lines = code.split("\n");
-    qDebug() << "Hej2, lines = " << lines;
+    //qDebug() << "Hej2, lines = " << lines;
     QStringList portNames;
     bool equationPart = false;          //Are we in the "equations" part or not?
     for(int l=0; l<lines.size(); ++l)
@@ -1617,7 +1682,7 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
         if(!equationPart)
         {
             QStringList words = lines.at(l).trimmed().split(" ");
-            qDebug() << "Hej3, words = " << words;
+            //qDebug() << "Hej3, words = " << words;
             if(words.at(0) == "model")              //"model" keyword
             {
                 typeName = words.at(1);
@@ -1713,7 +1778,7 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
         {
             if(lines.at(l).trimmed().startsWith("end "))        //"end" line, we are finished
                 return;
-            //qDebug() << "Equation: " << lines.at(l).trimmed();
+            ////qDebug() << "Equation: " << lines.at(l).trimmed();
             equations << lines.at(l).trimmed();
             //Replace variables with Hopsan syntax, i.e. P2.q => q2
             for(int i=0; i<portNames.size(); ++i)
@@ -1721,14 +1786,14 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
                 QString temp = portNames.at(i)+".";
                 while(equations.last().contains(temp))
                 {
-                    qDebug() << "BEFORE: " << equations.last();
+                    //qDebug() << "BEFORE: " << equations.last();
                     int idx = equations.last().indexOf(temp);
                     int idx2=idx+temp.size()+1;
                     while(idx2 < equations.last().size()+1 && equations.last().at(idx2).isLetterOrNumber())
                         ++idx2;
                     equations.last().insert(idx2, QString().setNum(i+1));
                     equations.last().remove(idx, temp.size());
-                    qDebug() << "AFTER: " << equations.last();
+                    //qDebug() << "AFTER: " << equations.last();
                 }
             }
             equations.last().chop(1);

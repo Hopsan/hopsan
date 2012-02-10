@@ -100,7 +100,7 @@ public:
     QStringList finalEquations;
 };
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar = 0);
-void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
+void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, QStringList initAlgorithms, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
 void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 void identifyFunctions(QString equation, QStringList &functions);
@@ -124,5 +124,7 @@ QStringList getCVariables(QString nodeType);
 QStringList getVariableLabels(QString nodeType);
 void getAllTerms(QString equation, QStringList &terms);
 bool isSingular(QStringList matrix);
+void replaceDerivative(QString &equation, QString f, QString dxf);
+void shuffle(QStringList &list);
 
 #endif // COMPONENTGENERATORUTILITIES_H

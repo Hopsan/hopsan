@@ -104,6 +104,7 @@ private:
     //Initialization & equations text edits
     QLabel *mpGivenLabel;
     QLabel *mpSoughtLabel;
+    QTabWidget *mpEquationTabs;
     QTabWidget *mpCodeTabs;
     QGridLayout *mpInitLayout;
     QWidget *mpInitWidget;
@@ -115,6 +116,10 @@ private:
     QWidget *mpFinalizeWidget;
     QTextEdit *mpFinalizeTextField;
     QGridLayout *mpEquationsLayout;
+    QTextEdit *mpInitAlgorithmsTextField;
+    ModelicaHighlighter *mpInitAlgorithmsHighLighter;
+    QWidget *mpInitAlgorithmsWidget;
+    QGridLayout *mpInitAlgorithmsLayout;
     QWidget *mpEquationsWidget;
     QTextEdit *mpEquationsTextField;
     ModelicaHighlighter *mpEquationHighLighter;

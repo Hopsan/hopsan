@@ -380,8 +380,10 @@ void Matrix::print() const
 			if (fabs(v)<tiny) v = 0.0;
 			
 			printf("% 10.4g", v);
+                        cout << v << "  ";
 		}
 		printf("\n");
+                cout << "\n";
 	}
 }
 
