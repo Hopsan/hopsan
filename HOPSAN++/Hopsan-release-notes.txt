@@ -18,6 +18,8 @@ Hopsan Release Notes
 - Fixed: Replaced assert portType==SYSTEMPORT in determineCQSType() with if() check. (For very advanced users) 
 - Fixed: Compilation errors in FMU export/import
 
+- Feature: Added an intial algorithm section in equation based model generation tool
+
 0.5.1
 - Fixed: Issue with Read ports and Writeport types becomming inverted when connecting to a signal systemport. (Only graphics was affected)
 - Fixed: Added missing script files for optimization

@@ -39,47 +39,56 @@
 PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     : QDockWidget(tr("Python Console"), parent)
 {
-        PythonQt::init(PythonQt::RedirectStdOut);
-        PythonQt_QtAll::init();
+    PythonQt::init(PythonQt::RedirectStdOut);
+    PythonQt_QtAll::init();
 
-        PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyHopsanClassWrapper>);
-        PythonQt::self()->registerCPPClass("ModelObject", "","", PythonQtCreateObject<PyGUIObjectClassWrapper>);
-        PythonQt::self()->registerCPPClass("Port", "","", PythonQtCreateObject<PyGUIPortClassWrapper>);
+    PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyHopsanClassWrapper>);
+    PythonQt::self()->registerCPPClass("ModelObject", "","", PythonQtCreateObject<PyGUIObjectClassWrapper>);
+    PythonQt::self()->registerCPPClass("Port", "","", PythonQtCreateObject<PyGUIPortClassWrapper>);
 
-        PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
-        mainContext.addObject("hopsan", pMainWindow);
+    PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
+    mainContext.addObject("hopsan", pMainWindow);
 
 //        pyTestClass *test = new pyTestClass();
 //        mainContext.addObject("test", test);
 
-        mpPyConsole = new PythonQtScriptingConsole(NULL, mainContext);
-        mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan.");
-        mpPyConsole->appendCommandPrompt();
+    mpPyConsole = new PythonQtScriptingConsole(NULL, mainContext);
+    mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan.");
+    mpPyConsole->appendCommandPrompt();
 
-        mpScriptFileLineEdit = new QLineEdit();
-        //mpScriptFileLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-        //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
+    mpScriptFileLineEdit = new QLineEdit();
+    //mpScriptFileLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+    //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
 
-        QPushButton *pPyCustomButton = new QPushButton();
-        pPyCustomButton->setText("Run .py-file");
-        pPyCustomButton->connect(pPyCustomButton,SIGNAL(clicked()), this, SLOT(runPyScript()));
+    QPushButton *pPyCustomButton = new QPushButton();
+    pPyCustomButton->setText("Run .py-file");
+    pPyCustomButton->connect(pPyCustomButton,SIGNAL(clicked()), this, SLOT(runPyScript()));
 
-        QHBoxLayout *pScriptFileLayout = new QHBoxLayout();
-        pScriptFileLayout->addWidget(mpScriptFileLineEdit);
-        pScriptFileLayout->addWidget(pPyCustomButton);
+    QHBoxLayout *pScriptFileLayout = new QHBoxLayout();
+    pScriptFileLayout->addWidget(mpScriptFileLineEdit);
+    pScriptFileLayout->addWidget(pPyCustomButton);
 
-        QVBoxLayout *pPyLayout = new QVBoxLayout();
-        pPyLayout->addWidget(mpPyConsole);
-        pPyLayout->setContentsMargins(4,4,4,4);
-        pPyLayout->addLayout(pScriptFileLayout);
+    QVBoxLayout *pPyLayout = new QVBoxLayout();
+    pPyLayout->addWidget(mpPyConsole);
+    pPyLayout->setContentsMargins(4,4,4,4);
+    pPyLayout->addLayout(pScriptFileLayout);
 
-        PyWidget *pPyWidget = new PyWidget();
-        pPyWidget->setLayout(pPyLayout);
+    PyWidget *pPyWidget = new PyWidget();
+    pPyWidget->setLayout(pPyLayout);
 
-        mpScriptFileLineEdit->setText(gConfig.getLastScriptFile());
+    mpScriptFileLineEdit->setText(gConfig.getLastScriptFile());
 
-        setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-        setWidget(pPyWidget);//->setWidget(mpPythonConsole);
+    setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    setWidget(pPyWidget);//->setWidget(mpPythonConsole);
+
+    //Add script path to Python path
+    QString scriptPath = QString(SCRIPTPATH);
+    scriptPath.replace("\\", "/");
+    scriptPath.replace("//", "/");
+    runCommand("import sys");
+    runCommand("sys.path.append(\""+scriptPath+"\")");
+
+    mpPyConsole->clear();
 }
 
 
