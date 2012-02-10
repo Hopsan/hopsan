@@ -96,6 +96,9 @@ svn export componentLibraries\defaultLibrary\components %tempDir%\components
 
 ::Export "exampleComponentLib" SVN directory to temporary directory
 svn export componentLibraries\exampleComponentLib %tempDir%\exampleComponentLib
+::Change the include and lib paths to be correct
+ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../HopsanCore/include/|$${PWD}/../include/|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
+ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../bin|$${PWD}/../bin|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
 
 :: Export "help" SVN directory to temporary directory
 xcopy doc\user\html\* %tempDir%\doc\user\html\ /s
