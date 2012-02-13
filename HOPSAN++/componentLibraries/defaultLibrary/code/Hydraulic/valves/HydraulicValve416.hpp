@@ -7,6 +7,7 @@
 #include "ComponentUtilities/matrix.h"
 #include "math.h"
 
+
 //!
 //! @file HydraulicValve416.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -124,6 +125,8 @@ private:
      Delay mDelayedPart30;
      Delay mDelayedPart40;
 
+     EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -210,6 +213,8 @@ public:
         registerParameter("xvta", "Spool position", "m", mxvta);
         registerParameter("xvpb", "Spool position", "m", mxvpb);
         registerParameter("xvtb", "Spool position", "m", mxvtb);
+
+        pSolver = new EquationSystemSolver(this);
      }
 
     void initialize()
@@ -433,18 +438,8 @@ Kstb*dxSignedSquareL(-pb + pt,mplam);
           jacobianMatrix[7][7] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<8;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<8;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
           qp=stateVark[0];
           qt=stateVark[1];
           qa=stateVark[2];

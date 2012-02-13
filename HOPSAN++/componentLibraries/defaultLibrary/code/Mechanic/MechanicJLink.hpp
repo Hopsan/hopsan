@@ -6,6 +6,7 @@
 #include "ComponentUtilities.h"
 #include "math.h"
 
+
 //!
 //! @file MechanicJLink.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -83,6 +84,8 @@ private:
      Delay mDelayedPart20;
      Delay mDelayedPart21;
      Delay mDelayedPart22;
+
+     EquationSystemSolver *pSolver;
 
 public:
      static Component *Creator()
@@ -292,18 +295,8 @@ delayedPart[2][2],mthetamin,mthetamax))/(4.*mJL);
           jacobianMatrix[3][3] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<4;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<4;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
         }
         wmr2=stateVark[0];
         thetamr2=stateVark[1];

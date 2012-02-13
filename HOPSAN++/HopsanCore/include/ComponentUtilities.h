@@ -33,5 +33,6 @@
 #include "ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h"
 #include "ComponentUtilities/WhiteGaussianNoise.h"
 #include "ComponentUtilities/num2string.hpp"
+#include "ComponentUtilities/EquationSystemSolver.h"
 
 #endif // COMPONENTUTILITIES_H_INCLUDED

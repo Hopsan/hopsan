@@ -39,9 +39,9 @@ namespace hopsan {
     class Matrix;
     class Vec;
 
-    int DLLIMPORTEXPORT ludcmp(Matrix &a, int order[], ComponentSystem *pComponentSystem);
+    int DLLIMPORTEXPORT ludcmp(Matrix &a, int order[], bool &singular);
     void DLLIMPORTEXPORT solvlu(const Matrix &a, const Vec &b, Vec &x, const int order[]);
-    int DLLIMPORTEXPORT pivot(Matrix &a, int order[], int jcol, ComponentSystem *pComponentSystem);
+    int DLLIMPORTEXPORT pivot(Matrix &a, int order[], int jcol, bool &singular);
 }
 #define TINY 1e-20
 

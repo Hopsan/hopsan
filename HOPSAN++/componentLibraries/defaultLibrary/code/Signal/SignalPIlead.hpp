@@ -5,6 +5,7 @@
 #include "ComponentUtilities.h"
 #include <math.h>
 
+
 //!
 //! @file SignalPIlead.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -60,6 +61,8 @@ private:
      Delay mDelayedPart10;
      Delay mDelayedPart11;
 
+    EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -112,6 +115,8 @@ public:
         registerParameter("yref", "Reference value", "", myref);
         registerParameter("y", "Actual value", "", my);
         registerParameter("kx", "Break frequency", "rad/s", mkx);
+
+        pSolver = new EquationSystemSolver(this);
      }
 
     void initialize()
@@ -178,18 +183,8 @@ yref) - 2*yref))/(2.*kx) - delayedPart[1][1],mumin,mumax);
           jacobianMatrix[0][0] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<1;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<1;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
         }
         u=stateVark[0];
 

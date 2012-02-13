@@ -6,6 +6,7 @@
 #include "ComponentUtilities.h"
 #include <math.h>
 
+
 //!
 //! @file HydraulicAckumulator.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -67,6 +68,8 @@ private:
      Delay mDelayedPart21;
      Delay mDelayedPart30;
 
+     EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -109,6 +112,8 @@ public:
         registerParameter("V0", "Ack. Volume", "m^3", mV0);
         registerParameter("Kca", "Flow coefficent", "m^3/Pa", mKca);
         registerParameter("kappa", "polytropic exp. of gas", "", mkappa);
+
+        pSolver = new EquationSystemSolver(this);
      }
 
     void initialize()
@@ -216,18 +221,8 @@ Va,-1 - mkappa));
           jacobianMatrix[3][3] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<4;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<4;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
         }
         q1=stateVark[0];
         Va=stateVark[1];

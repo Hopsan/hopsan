@@ -6,6 +6,7 @@
 #include "ComponentUtilities.h"
 #include "math.h"
 
+
 //!
 //! @file ElectricInductance.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -68,6 +69,8 @@ private:
      Delay mDelayedPart10;
      Delay mDelayedPart11;
 
+     EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -100,6 +103,8 @@ public:
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Induct", "Inductance", "A/(Vs)", mInduct);
+
+        pSolver = new EquationSystemSolver(this);
      }
 
     void initialize()
@@ -192,18 +197,8 @@ mTimestep*uel2)/(2.*mInduct);
           jacobianMatrix[2][2] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<3;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<3;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
           iel2=stateVark[0];
           uel1=stateVark[1];
           uel2=stateVark[2];

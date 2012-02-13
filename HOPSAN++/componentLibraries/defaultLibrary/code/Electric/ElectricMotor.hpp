@@ -6,6 +6,7 @@
 #include "ComponentUtilities.h"
 #include "math.h"
 
+
 //!
 //! @file ElectricMotor.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -104,6 +105,8 @@ private:
      Delay mDelayedPart21;
      Delay mDelayedPart30;
 
+     EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -155,6 +158,8 @@ public:
         registerParameter("wc", "Friction speed", "rad/s", mwc);
         registerParameter("Bm", "Visc. fric. coeff., motor", "Ns/m", mBm);
         registerParameter("Jm", "Moment of inertia, motor", "kg m^2", mJm);
+
+        pSolver = new EquationSystemSolver(this);
      }
 
     void initialize()
@@ -317,18 +322,8 @@ delayedPart[2][1];
           jacobianMatrix[5][5] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<6;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<6;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
           wmr1=stateVark[0];
           thetamr1=stateVark[1];
           iel2=stateVark[2];

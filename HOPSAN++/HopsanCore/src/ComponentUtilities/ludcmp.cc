@@ -59,8 +59,9 @@ using namespace hopsan;
 *
 */
 
-int hopsan::ludcmp(Matrix &a, int order[], ComponentSystem *pComponentSystem)
+int hopsan::ludcmp(Matrix &a, int order[], bool &singular)
 {
+    singular = false;
     int i, j, k, n, nm1;
     int flag = 1;    /* changes sign with each row interchange */
     double sum, diag;
@@ -73,8 +74,8 @@ int hopsan::ludcmp(Matrix &a, int order[], ComponentSystem *pComponentSystem)
     for (i=0; i<n; i++) order[i] = i;
 
     /* do pivoting for first column and check for singularity */
+    if (pivot(a,order,0, singular)) flag = -flag;
 
-    if (pivot(a,order,0,pComponentSystem)) flag = -flag;
     diag = 1.0/a[0][0];
     for (i=1; i<n; i++) a[0][i] *= diag;
 
@@ -94,7 +95,7 @@ int hopsan::ludcmp(Matrix &a, int order[], ComponentSystem *pComponentSystem)
             a[i][j] -= sum;
         }
         /* pivot, and check for singularity */
-        if (pivot(a,order,j, pComponentSystem)) flag = -flag;
+        if (pivot(a,order,j, singular)) flag = -flag;
         /* row of U's */
         diag = 1.0/a[j][j];
         for (k=j+1; k<n; k++) {
@@ -125,7 +126,7 @@ int hopsan::ludcmp(Matrix &a, int order[], ComponentSystem *pComponentSystem)
 *  \param    jcol   - column of "a" being searched for pivot element
 *
 */
-int hopsan::pivot(Matrix &a, int order[], int jcol, ComponentSystem* pComponentSystem)
+int hopsan::pivot(Matrix &a, int order[], int jcol, bool &singular)
 {
     int i, ipvt,n;
     double big, anext;
@@ -148,8 +149,7 @@ int hopsan::pivot(Matrix &a, int order[], int jcol, ComponentSystem* pComponentS
 
     if(fabs(big) < TINY)
     {
-        gCoreMessageHandler.addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
-        pComponentSystem->stopSimulation();
+        singular = true;
     }
     //assert(fabs(big)>TINY); // otherwise Matrix is singular
 

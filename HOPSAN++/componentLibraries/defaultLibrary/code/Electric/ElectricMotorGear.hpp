@@ -6,6 +6,7 @@
 #include "ComponentUtilities.h"
 #include "math.h"
 
+
 //!
 //! @file ElectricMotorGear.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -114,6 +115,8 @@ private:
      Delay mDelayedPart21;
      Delay mDelayedPart30;
 
+     EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -182,6 +185,8 @@ mwc);
         registerParameter("BL", "Visc. fric. coeff., load", "Ns/m", mBL);
         registerParameter("JL", "Moment of inertia, load", "kg m^2", mJL);
         registerParameter("gearRatio", "gearing w1/w2", "", mgearRatio);
+
+        pSolver = new EquationSystemSolver(this);
      }
 
     void initialize()
@@ -358,19 +363,9 @@ Power(gearRatio,2)*(2*mJm + mBm*mTimestep));
           jacobianMatrix[5][4] = 0;
           jacobianMatrix[5][5] = 1;
 
-          //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+                 //Solving equation using LU-faktorisation
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<6;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<6;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
           wmr1=stateVark[0];
           thetamr1=stateVark[1];
           iel2=stateVark[2];

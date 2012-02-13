@@ -107,7 +107,8 @@ SOURCES += \
     src/Parameters.cc \
     src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
-    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc
+    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc \
+    src/ComponentUtilities/EquationSystemSolver.cpp
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -145,10 +146,13 @@ HEADERS += \
     Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     include/Parameters.h \
     ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h \
-    include/Components/DummyComponent.hpp
+    include/Components/DummyComponent.hpp \
+    include/ComponentUtilities/EquationSystemSolver.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
+
+
 
 
 

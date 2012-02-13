@@ -6,6 +6,7 @@
 #include "ComponentUtilities.h"
 #include <math.h>
 
+
 //!
 //! @file MechanicVehicle1D.hpp
 //! @author Petter Krus <petter.krus@liu.se>
@@ -92,6 +93,8 @@ private:
      Delay mDelayedPart30;
      Delay mDelayedPart31;
 
+     EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -141,6 +144,8 @@ public:
         registerParameter("C_dA", "Effective Front Area", "m^2", mCdA);
         registerParameter("r_wheel", "Wheel Radius", "m", mrwheel);
         registerParameter("rho", "Air Density", "kg/m3", mrho);
+
+        pSolver = new EquationSystemSolver(this);
      }
 
      void initialize()
@@ -295,18 +300,8 @@ delayedPart[3][1];
           jacobianMatrix[4][4] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<5;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<5;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
         }
         vc=stateVark[0];
         xc=stateVark[1];

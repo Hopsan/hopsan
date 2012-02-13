@@ -72,6 +72,8 @@ private:
      Delay mDelayedPart20;
      Delay mDelayedPart30;
 
+     EquationSystemSolver *pSolver;
+
 public:
      static Component *Creator()
      {
@@ -113,8 +115,9 @@ public:
         registerParameter("cond", "conductance (at 1)", "1/ohm", mcond);
         registerParameter("unom", "nominal voltage of battery", "V", munom);
         registerParameter("capacity", "capacity", "Ah", mcapacity);
-        registerParameter("kappa", "exponent of discharge function", "", \
-mkappa);
+        registerParameter("kappa", "exponent of discharge function", "", mkappa);
+
+       pSolver = new EquationSystemSolver(this);
      }
 
     void initialize()
@@ -220,18 +223,8 @@ Power(limit(soc,1.e-9,0.9999),2)));
           jacobianMatrix[3][3] = 1;
 
           //Solving equation using LU-faktorisation
-          ludcmp(jacobianMatrix, order, mpSystemParent);
-          solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);
+          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        for(i=0;i<4;i++)
-          {
-          stateVar[i] = stateVark[i] - 
-          jsyseqnweight[iter - 1] * deltaStateVar[i];
-          }
-        for(i=0;i<4;i++)
-          {
-          stateVark[i] = stateVar[i];
-          }
           soc=stateVark[0];
           iel1=stateVark[1];
           ubatt=stateVark[2];

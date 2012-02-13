@@ -122,6 +122,9 @@ public:
     void addErrorMessage(const std::string message);
     void addInfoMessage(const std::string message);
 
+    //Stop a running simulation
+    void stopSimulation();
+
 protected:
     //==========Protected member functions==========
     //Constructor - Destructor
@@ -131,9 +134,6 @@ protected:
     virtual void simulateOneTimestep();
     virtual void finalize();
     virtual void setTimestep(const double timestep);
-
-    //Stop a running simulation
-    void stopSimulation();
 
     //Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const NodeTypeT nodeType, const Port::ReqConnEnumT reqConnection);
