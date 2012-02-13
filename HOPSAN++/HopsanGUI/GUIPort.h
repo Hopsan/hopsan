@@ -69,6 +69,8 @@ public:
     void show();
     void hide();
 
+    void setEnable(bool enable);
+
     virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     virtual QString getNodeType();
 
@@ -85,6 +87,8 @@ public:
     QVector<Connector*> getAttachedConnectorPtrs() const; //!< @todo should this be virtual also
     virtual QVector<Port *> getConnectedPorts();
     bool isConnected();
+
+    bool isAutoPlaced();
 
     virtual Port* getRealPort();
 
@@ -105,6 +109,7 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openRightClickMenu(QPoint screenPos);
+    void moveEvent(QGraphicsSceneMoveEvent *event);
 
     QVector<Connector*> mConnectedConnectors;
 

@@ -69,6 +69,7 @@ protected:
     QGraphicsView *mpView;
     double mViewScale;
     QGridLayout *mpMainLayout;
+    QGridLayout *mpPortEnableLayout;
 
     QSlider *mpZoomSlider;
     QLabel *mpSelectedPortLabel;
@@ -79,6 +80,8 @@ protected:
     QLineEdit *mpPortYLineEdit;
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
+
+    QVector<QCheckBox*> mvPortEnable;
 };
 
 
@@ -87,10 +90,13 @@ class DragPort : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    DragPort(PortAppearance *appearance, QString name, QGraphicsItem *parentComponent);
+    DragPort(PortAppearance *pAppearance, QString name, QGraphicsItem *parentComponent);
 
     void setPosOnComponent(double x, double y, double rot);
     QPointF getPosOnComponent();
+
+public slots:
+    void setEnable(int state);
 
 signals:
     void activePort(QString portName, QString x, QString y);
@@ -100,6 +106,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void portMoved();
 
+    PortAppearance *mpPortAppearance;
     QGraphicsItem *mpParentComponent;
     QGraphicsSvgItem *mpSvg;
     QGraphicsTextItem *mpName;

@@ -77,7 +77,6 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
 {
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
 //    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
-
     mpParentGuiModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
     mPortDisplayName = portName;
@@ -171,12 +170,14 @@ void Port::magnify(bool doMagnify)
 //! Reimplemented to call custom show hide instead
 void Port::setVisible(bool value)
 {
-    if (value)
+    if (value && mpPortAppearance->mEnable)
     {
+        mpPortAppearance->mVisible = true;
         this->show();
     }
     else
     {
+        mpPortAppearance->mVisible = false;
         this->hide();
     }
 }
@@ -186,7 +187,7 @@ void Port::setVisible(bool value)
 //! @param *event defines the mouse event.
 void Port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (mpPortAppearance->mVisible)
+    if (mpPortAppearance->mVisible && mpPortAppearance->mEnable)
     {
         //qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
         QGraphicsWidget::hoverEnterEvent(event);
@@ -331,6 +332,16 @@ void Port::openRightClickMenu(QPoint screenPos)
             plot(parameterNames[i], "");
         }
     }
+}
+
+
+void Port::moveEvent(QGraphicsSceneMoveEvent */*event*/)
+{
+    double px = mpParentGuiModelObject->boundingRect().width();
+    double py = mpParentGuiModelObject->boundingRect().height();
+
+    mpPortAppearance->x = this->pos().x()/px;
+    mpPortAppearance->y = this->pos().y()/py;
 }
 
 
@@ -708,6 +719,13 @@ QVector<Port *> Port::getConnectedPorts()
     return vector;
 }
 
+
+bool Port::isAutoPlaced()
+{
+    return mpPortAppearance->mAutoPlaced;
+}
+
+
 //! @brief virtual function, only usefull for group port, guiport will return it self (this)
 Port* Port::getRealPort()
 {
@@ -720,6 +738,14 @@ qreal Port::getPortRotation()
 {
     return mpPortAppearance->rot;
 }
+
+
+void Port::setEnable(bool enable)
+{
+    setVisible(enable);
+    //! @todo disconnect component connections to this port
+}
+
 
 void Port::hide()
 {

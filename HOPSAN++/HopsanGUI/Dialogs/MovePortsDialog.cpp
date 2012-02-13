@@ -23,11 +23,15 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     mpView->setScene(new QGraphicsScene());
 
     mpCompAppearance = pComponentAppearance;
-    mpSVGComponent = new QGraphicsSvgItem(mpCompAppearance->getIconPath(gfxType, ABSOLUTE));
+    //QString apa = mpCompAppearance->getFullAvailableIconPath(gfxType);
+    //mpSVGComponent = new QGraphicsSvgItem(mpCompAppearance->getIconPath(gfxType, ABSOLUTE));
+    mpSVGComponent = new QGraphicsSvgItem(mpCompAppearance->getFullAvailableIconPath(gfxType));
     mpView->scene()->addRect(mpSVGComponent->boundingRect(), QPen(Qt::DashLine));
     mpView->scene()->addItem(mpSVGComponent);
 
     mpPortAppearanceMap = &(mpCompAppearance->getPortAppearanceMap());
+
+    mpPortEnableLayout = new QGridLayout();
 
     PortAppearanceMapT::Iterator it;
     for(it=mpPortAppearanceMap->begin(); it != mpPortAppearanceMap->end(); ++it)
@@ -38,6 +42,14 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
         mpView->scene()->addItem(pPort);
         mDragPortMap.insert(it.key(), pPort);
 
+        QCheckBox *pCb = new QCheckBox(it.key(), this);
+        bool enable =it-> mEnable;
+        pPort->setVisible(enable);
+        pCb->setChecked(enable);
+        mvPortEnable.append(pCb);
+        mpPortEnableLayout->addWidget(mvPortEnable.back());
+
+        connect(mvPortEnable.back(), SIGNAL(stateChanged(int)), pPort, SLOT(setEnable(int)), Qt::UniqueConnection);
         connect(pPort, SIGNAL(activePort(QString,QString,QString)), this, SLOT(updatePortInfo(QString,QString,QString)), Qt::UniqueConnection);
     }
 
@@ -86,6 +98,8 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     pPortInfoLayout->addWidget(mpPortYLineEdit);
     pPortInfoLayout->addStretch(1);
     mpMainLayout->addLayout(pPortInfoLayout,1,0);
+
+    mpMainLayout->addLayout(mpPortEnableLayout, 0, 2, 1, 1);
 
     connect(mpOkButton, SIGNAL(clicked()), this, SLOT(okButtonPressed()));
     connect(mpCancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonPressed()));
@@ -155,6 +169,8 @@ bool MovePortsDialog::okButtonPressed()
         it.value().x = p.x();
         it.value().y = p.y();
 
+        it.value().mAutoPlaced = false;
+
         //Port *port = mpComponent->getPort(it.key());
         //port->setCenterPosByFraction(p.x(), p.y());
     }
@@ -183,11 +199,12 @@ bool MovePortsDialog::cancelButtonPressed()
 //! @param[in] appearance Pointer to the port appearance data of the port that should be used
 //! @param[in] name Name of the port
 //! @param[in] parentComponent Pointer to the parent component on which the port is placed on
-DragPort::DragPort(PortAppearance *appearance, QString name, QGraphicsItem *parentComponent)
+DragPort::DragPort(PortAppearance *pAppearance, QString name, QGraphicsItem *parentComponent)
     : QGraphicsWidget()
 {
+    mpPortAppearance = pAppearance;
     mpParentComponent = parentComponent;
-    mpSvg = new QGraphicsSvgItem(appearance->mMainIconPath, this);
+    mpSvg = new QGraphicsSvgItem(pAppearance->mMainIconPath, this);
     mpName = new QGraphicsTextItem(name, this);
     QFont font = QFont();
     font.setPointSize(6);
@@ -254,4 +271,19 @@ QPointF DragPort::getPosOnComponent()
     double dy = (this->mapToScene(boundingRect().topLeft()).y()+oy) - mpParentComponent->mapToScene(mpParentComponent->boundingRect().topLeft()).y();
 
     return QPointF(max(0.0, min(1.0, dx/mpParentComponent->boundingRect().width())), max(0.0, min(1.0, dy/mpParentComponent->boundingRect().height())));
+}
+
+
+void DragPort::setEnable(int state)
+{
+    if(1 > state)
+    {
+        mpPortAppearance->mEnable = false;
+        setVisible(false);
+    }
+    else
+    {
+        mpPortAppearance->mEnable = true;
+        setVisible(true);
+    }
 }

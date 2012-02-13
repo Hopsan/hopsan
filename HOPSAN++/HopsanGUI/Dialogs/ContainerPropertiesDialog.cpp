@@ -236,9 +236,11 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
 
         //Done and Cancel Buttons
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    mpEditPortPos = new QPushButton(tr("&Move ports"), this);
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpDoneButton = new QPushButton(tr("&Done"), this);
     mpDoneButton->setDefault(true);
+    mpButtonBox->addButton(mpEditPortPos, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpDoneButton, QDialogButtonBox::ActionRole);
     mpScrollLayout->addWidget(mpButtonBox, 0, Qt::AlignHCenter);
@@ -277,6 +279,14 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     connect(mpIsoIconBrowseButton,  SIGNAL(clicked()), this, SLOT(browseIso()));
     connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
     connect(mpPyScriptBrowseButton, SIGNAL(clicked()), this, SLOT(browseScript()));
+    connect(mpEditPortPos,          SIGNAL(clicked()), this, SLOT(editPortPos()));
+}
+
+
+void ContainerPropertiesDialog::editPortPos()
+{
+    MovePortsDialog *dialog = new MovePortsDialog(mpContainerObject->getAppearanceData(), mpContainerObject->getGfxType());
+    connect(dialog, SIGNAL(finished()), mpContainerObject, SLOT(refreshAppearance()), Qt::UniqueConnection);
 }
 
 

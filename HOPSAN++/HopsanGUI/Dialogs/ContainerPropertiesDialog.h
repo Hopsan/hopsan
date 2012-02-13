@@ -84,9 +84,13 @@ private:
     QDialogButtonBox *mpButtonBox;
     QPushButton *mpCancelButton;
     QPushButton *mpDoneButton;
+    QPushButton *mpEditPortPos;
 
     QGroupBox *mpSystemParametersGroupBox;
     QVector<ParameterLayout*> mvParameterLayoutPtrs;
+
+protected slots:
+    void editPortPos();
 
 private slots:
     void setValues();

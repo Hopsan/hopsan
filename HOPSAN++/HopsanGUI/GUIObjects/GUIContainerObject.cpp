@@ -234,19 +234,22 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             assert(this->getPort(moit.value()->getName()) != 0);
 
             //We insert into maps for automatic sorting based on x or y position as key value
-            switch (edge) {
-            case RIGHTEDGE:
-                rightEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
-                break;
-            case BOTTOMEDGE:
-                bottomEdge.insertMulti(moit.value()->getCenterPos().x(),this->getPort(moit.value()->getName()));
-                break;
-            case LEFTEDGE:
-                leftEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
-                break;
-            case TOPEDGE:
-                topEdge.insertMulti(moit.value()->getCenterPos().x(), this->getPort(moit.value()->getName()));
-                break;
+            if(this->getPort(moit.value()->getName())->isAutoPlaced()) //Do not place if autoplaced is not set. Maybe a bit ugly to put an if statement here?
+            {
+                switch (edge) {
+                case RIGHTEDGE:
+                    rightEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
+                    break;
+                case BOTTOMEDGE:
+                    bottomEdge.insertMulti(moit.value()->getCenterPos().x(),this->getPort(moit.value()->getName()));
+                    break;
+                case LEFTEDGE:
+                    leftEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
+                    break;
+                case TOPEDGE:
+                    topEdge.insertMulti(moit.value()->getCenterPos().x(), this->getPort(moit.value()->getName()));
+                    break;
+                }
             }
         }
     }
