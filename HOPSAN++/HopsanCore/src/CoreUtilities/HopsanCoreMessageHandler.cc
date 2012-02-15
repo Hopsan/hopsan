@@ -45,6 +45,12 @@ HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 #endif
 }
 
+//! @brief Adds a message to the message queue
+//! @param [in] type The message type identifier
+//! @param [in] preFix A string to add before the message
+//! @param [in] message The message string
+//! @param [in] tag A tag describing the message
+//! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, const string message, const string tag, const int debuglevel)
 {
 #ifdef USETBB
@@ -67,28 +73,43 @@ void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, c
 #endif
 }
 
-
+//! @brief Convenience function to add info message
+//! @param [in] message The message string
+//! @param [in] tag A tag describing the message
+//! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addInfoMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::Info, "Info: ", message, tag, dbglevel);
 }
 
+//! @brief Convenience function to add warning message
+//! @param [in] message The message string
+//! @param [in] tag A tag describing the message
+//! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addWarningMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::Warning, "Warning: ", message, tag, dbglevel);
 }
 
+//! @brief Convenience function to add error message
+//! @param [in] message The message string
+//! @param [in] tag A tag describing the message
+//! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addErrorMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::Error, "Error: ", message, tag, dbglevel);
 }
 
+//! @brief Convenience function to add debug message
+//! @param [in] message The message string
+//! @param [in] tag A tag describing the message
+//! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addDebugMessage(const string message, const string tag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::Debug, "Debug: ", message, tag, dbglevel);
 }
 
-
+//! @brief Returns the next, (pops) message on the message queue
 HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
 {
 #ifdef USETBB
@@ -113,6 +134,7 @@ HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
     return msg;
 }
 
+//! @brief Returns the number of waiting messages on the message queue
 size_t HopsanCoreMessageHandler::getNumWaitingMessages() const
 {
 #ifdef USETBB
@@ -125,7 +147,13 @@ size_t HopsanCoreMessageHandler::getNumWaitingMessages() const
 #endif
 }
 
+//! @brief The global (within HopsanCore) message handler object
+//! @see hopsan::getCoreMessageHandlerPtr()
 HopsanCoreMessageHandler hopsan::gCoreMessageHandler;
+
+//! @brief Returns a pointer to the global (within HopsanCore) message handler object
+//! @details Use this function if you need to access the message handler object from outside the HopsanCore .dll/.so
+//! @returns A ptr to the global message handler object
 DLLIMPORTEXPORT HopsanCoreMessageHandler* hopsan::getCoreMessageHandlerPtr()
 {
     return &gCoreMessageHandler;

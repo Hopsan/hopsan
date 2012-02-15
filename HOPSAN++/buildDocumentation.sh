@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id$
 
 # Shell script building documentation using doxygen
 # Author: Peter Nordin peter.nordin@liu.se

@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id$
 
 # Shell script for extracting subversion revision number and writing to specified header define file in specified folder.
 # If folder is missing no file is written
