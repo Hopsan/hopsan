@@ -341,7 +341,7 @@ vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString po
 {
     //qDebug() << "getTimeVector, " << componentName << ", " << portName;
 
-    hopsan::Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString());
     hopsan::Port* pPort = 0;
     if (pComp != 0)
     {
@@ -625,7 +625,7 @@ hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString po
 {
     //We must use getcomponent here if we want to be able to find root system ptr
     //! @todo see if we can reduce the number f public get functions one, the one which only searches subcomponents make function in core to solve the other access type like bellow
-    hopsan::Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString());
     if (pComp)
     {
         return pComp->getPort(portName.toStdString());

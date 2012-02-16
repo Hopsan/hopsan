@@ -62,7 +62,7 @@ void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const stri
 {
     if (pSys)
     {
-        Component* pComp = pSys->getComponent(compName);
+        Component* pComp = pSys->getSubComponentOrThisIfSysPort(compName);
         if (pComp)
         {
             Port* pPort = pComp->getPort(portName);

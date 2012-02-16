@@ -93,7 +93,7 @@ namespace hopsan {
         void deleteSystemPort(const std::string name);
 
         //Getting added components and component names
-        Component* getComponent(std::string name);
+        Component* getSubComponentOrThisIfSysPort(std::string name);
         Component* getSubComponent(std::string name);
         ComponentSystem* getSubComponentSystem(std::string name);
         std::vector<std::string> getSubComponentNames();

@@ -396,8 +396,8 @@ std::string ComponentSystem::determineUniqueComponentName(std::string name)
 
 
 //! @brief Get a Component ptr to the component with supplied name, can also return a ptr to self if no subcomponent found but systemport with name found
-//! For this to work we need to make sure that the sub components and systemports have unique names
-Component* ComponentSystem::getComponent(string name)
+//! @details For this to work we need to make sure that the sub components and systemports have unique names
+Component* ComponentSystem::getSubComponentOrThisIfSysPort(string name)
 {
 //    cout << "getComponent: " << name << " in: " << mName << endl;
     //First try to find among subcomponents
@@ -725,8 +725,8 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     stringstream ss; //Error string stream
 
     //Check if the components exist (and can be found)
-    Component* pComp1 = getComponent(compname1);
-    Component* pComp2 = getComponent(compname2);
+    Component* pComp1 = getSubComponentOrThisIfSysPort(compname1);
+    Component* pComp2 = getSubComponentOrThisIfSysPort(compname2);
 
     if (pComp1 == 0)
     {
@@ -1524,8 +1524,8 @@ bool ComponentSystem::disconnect(string compname1, string portname1, string comp
     Component *pComp1, *pComp2;
     Port *pPort1, *pPort2;
 
-    pComp1 = getComponent(compname1);
-    pComp2 = getComponent(compname2);
+    pComp1 = getSubComponentOrThisIfSysPort(compname1);
+    pComp2 = getSubComponentOrThisIfSysPort(compname2);
 
     if ( (pComp1!=0) && (pComp2!=0) )
     {
