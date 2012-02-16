@@ -434,6 +434,7 @@ QString CoreSystemAccess::createSubSystem(QString name)
 void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
 {
     std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    //! @todo should check that component found before atempting to get parameter
     mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
     for(size_t i=0; i<parameterNames.size(); ++i)
     {
@@ -448,15 +449,24 @@ void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qP
 QStringList CoreSystemAccess::getParameterNames(QString componentName)
 {
     std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    //! @todo should check that component found before atempting to get parameter
     mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
     QStringList qParameterNames;
-    QVector<QString> qParameterValues, qDescriptions, qUnits;
     for(size_t i=0; i<parameterNames.size(); ++i)
     {
         qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
-        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
-        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
-        qUnits.push_back(QString::fromStdString(units[i]));
+    }
+    return qParameterNames;
+}
+
+QStringList CoreSystemAccess::getSystemParameterNames()
+{
+    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    mpCoreComponentSystem->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    QStringList qParameterNames;
+    for(size_t i=0; i<parameterNames.size(); ++i)
+    {
+        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
     }
     return qParameterNames;
 }
@@ -475,6 +485,7 @@ QString CoreSystemAccess::getParameterValue(QString componentName, QString param
 {
     QString parameterValue = "";
     std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+    //! @todo should check that component found before atempting to get parameter
     mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
     for(size_t i=0; i<parameterNames.size(); ++i)
     {

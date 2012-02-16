@@ -142,7 +142,7 @@ QString SystemContainer::getTypeCQS()
 //! @returns A QVector containing the parameter names
 QStringList SystemContainer::getParameterNames()
 {
-    return mpCoreSystemAccess->getParameterNames(this->getName());
+    return mpCoreSystemAccess->getSystemParameterNames();
 }
 
 void SystemContainer::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)

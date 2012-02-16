@@ -118,6 +118,7 @@ public:
     void unReserveUniqueName(QString name);
 
     void getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
+    QStringList getSystemParameterNames();
     QString getSystemParameterValue(const QString name);
     bool setSystemParameter(QString name, QString value, QString description="", QString unit="", QString type="", bool force=false);
     bool hasSystemParameter(const QString name);
