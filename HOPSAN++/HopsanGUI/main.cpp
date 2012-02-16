@@ -36,6 +36,8 @@
 //Global stuff
 MainWindow* gpMainWindow = 0;
 QString gExecPath;
+QString gModelsPath;
+QString gScriptsPath;
 
 void loadApplicationFonts();
 
@@ -60,6 +62,33 @@ int main(int argc, char *argv[])
     gExecPath = qApp->applicationDirPath().append('/');
     gConfig = Configuration();
     gCopyStack = CopyStack();
+
+#ifdef DEVELOPMENT
+    // Use development place for models and scripts
+    gModelsPath = MODELS_DEV_PATH;
+    gScriptsPath = SCRIPTS_DEV_PATH;
+#else
+    //Check if Models and Scripts folders exist in "release" place if not, use "development" place
+    QDir modelsDir(MODELS_REL_PATH);
+    if (modelsDir.exists())
+    {
+        gModelsPath = MODELS_REL_PATH;
+    }
+    else
+    {
+        gModelsPath = MODELS_DEV_PATH;
+    }
+
+    QDir scriptsDir(SCRIPTS_REL_PATH);
+    if (scriptsDir.exists())
+    {
+        gScriptsPath = SCRIPTS_REL_PATH;
+    }
+    else
+    {
+        gScriptsPath = SCRIPTS_DEV_PATH;
+    }
+#endif
 
     //Load settings
     loadApplicationFonts();

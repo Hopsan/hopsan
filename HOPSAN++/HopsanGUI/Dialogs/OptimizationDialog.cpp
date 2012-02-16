@@ -607,7 +607,7 @@ void OptimizationDialog::generateComplexScript()
     scriptStream << "\n";
     scriptStream << "startTime = time.time()\n";
     scriptStream << "\n";
-    scriptStream << "sys.path.append('" << QString(SCRIPTPATH) <<"')\n";
+    scriptStream << "sys.path.append('" << QString(gScriptsPath) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
     scriptStream << "from OptimizationObjectiveFunctions import *\n";
     scriptStream << "import random\n";
@@ -966,7 +966,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "\n";
     scriptStream << "startTime = time.time()\n";
     scriptStream << "\n";
-    scriptStream << "sys.path.append('" << QString(SCRIPTPATH) <<"')\n";
+    scriptStream << "sys.path.append('" << QString(gScriptsPath) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
     scriptStream << "from OptimizationObjectiveFunctions import *\n";
     scriptStream << "import random\n";
@@ -1644,7 +1644,7 @@ void OptimizationDialog::run()
     dateString.replace(":", "_");
     dateString.replace(".", "_");
     dateString.replace(" ", "_");
-    QString pyPath = QString(SCRIPTPATH)+generateFileName();
+    QString pyPath = QString(gScriptsPath)+generateFileName();
     pyPath.replace("\\", "/");
     pyPath.replace("//", "/");
 
@@ -1662,7 +1662,7 @@ void OptimizationDialog::run()
     QTime simTimer;
     simTimer.start();
 
-    QString scriptPath = QString(SCRIPTPATH);
+    QString scriptPath = QString(gScriptsPath);
     scriptPath.replace("\\", "/");
     scriptPath.replace("//", "/");
 
@@ -1704,7 +1704,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
     mObjectiveFunctionDataLists.clear();
 
     //Read from OptimizationObjectiveFunctions.xml
-    QFile file(QString(SCRIPTPATH) + "OptimizationObjectiveFunctions.xml");
+    QFile file(QString(gScriptsPath) + "OptimizationObjectiveFunctions.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),

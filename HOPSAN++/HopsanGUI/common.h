@@ -40,15 +40,21 @@
 #define DOWNLOADLINK "http://tiny.cc/hopsanarchive"
 #define AUTOUPDATELINK "http://tiny.cc/hopsanupdate"
 
-//Path definitions (development and release)
-#define MAINPATH "../"
+// Path definitions (development and release)
+// qrc paths
 #define OBJECTICONPATH ":graphics/objecticons/"
 #define BUILTINCAFPATH ":graphics/builtinCAF/"
 #define ICONPATH ":graphics/uiicons/"
 #define PORTICONPATH ":graphics/porticons/"
 #define GRAPHICSPATH ":graphics/"
 #define SOUNDSPATH ":sounds/"
+
+// common paths
+#define MAINPATH "../"
 #define HELPPATH "../doc/user/html/"
+#define MSVC2008PATH "MSVC2008/"
+
+// windows specific paths
 #ifdef WIN32
 #define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
 #define DOCSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/"
@@ -56,23 +62,25 @@
 #define DATAPATH gExecPath+MAINPATH
 #define DOCSPATH gExecPath+MAINPATH
 #endif
+
+// Paths that needs two alternatives
+#define MODELS_DEV_PATH gExecPath+"../Models/"
+#define SCRIPTS_DEV_PATH gExecPath+"../Scripts/"
+#define MODELS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
+#define SCRIPTS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
+
+// Paths that have one alternative depending on development OR release mode
 #ifdef DEVELOPMENT
-#define MSVC2008PATH "MSVC2008/"
-#define MODELPATH gExecPath+"../Models/"
-#define SCRIPTPATH gExecPath+"../Scripts/"
 #define BACKUPPATH gExecPath+"../Backup/"
 #define COMPONENTPATH gExecPath+"../componentLibraries/defaultLibrary/components/"
 #define INCLUDEPATH gExecPath+"../HopsanCore/include/"
 #else
-#define MSVC2008PATH "MSVC2008/"
-#define MODELPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
-#define SCRIPTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
 #define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
-#define COMPONENTPATH "../components/"
-#define INCLUDEPATH "../Include/"
+#define COMPONENTPATH gExecPath+"../components/"
+#define INCLUDEPATH gExecPath+"../include/"
 #endif
 
-//Gui TypeName defines
+// Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
 #define HOPSANGUISYSTEMTYPENAME "Subsystem"
 #define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
@@ -108,5 +116,7 @@ class CopyStack;
 extern CopyStack gCopyStack;
 
 extern QString gExecPath;
+extern QString gModelsPath;
+extern QString gScriptsPath;
 
 #endif // COMMON_H

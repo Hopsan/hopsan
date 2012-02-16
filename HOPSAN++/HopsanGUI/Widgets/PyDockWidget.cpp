@@ -82,7 +82,7 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     setWidget(pPyWidget);//->setWidget(mpPythonConsole);
 
     //Add script path to Python path
-    QString scriptPath = QString(SCRIPTPATH);
+    QString scriptPath = QString(gScriptsPath);
     scriptPath.replace("\\", "/");
     scriptPath.replace("//", "/");
     runCommand("import sys");
