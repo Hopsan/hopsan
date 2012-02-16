@@ -34,8 +34,9 @@ using namespace hopsan;
 void DoubleIntegratorWithDampingAndCoulombFriction::initialize(double timestep, double w0, double mass, double Fs, double Fk, double u0, double y0, double sy0)
 {
     mW0 = w0;
-    mUs = Fs/mass;
-    mUk = Fk/mass;
+    mMass = mass;
+    mUs = Fs/mMass;
+    mUk = Fk/mMass;
     mDelayU = u0;
     mDelayY = y0;
     mDelaySY = sy0;
@@ -54,6 +55,13 @@ void DoubleIntegratorWithDampingAndCoulombFriction::initializeValues(double u0, 
 void DoubleIntegratorWithDampingAndCoulombFriction::setDamping(double w0)
 {
     mW0 = w0;
+}
+
+
+void DoubleIntegratorWithDampingAndCoulombFriction::setFriction(double Fs, double Fk)
+{
+    mUs = Fs/mMass;
+    mUk = Fk/mMass;
 }
 
 

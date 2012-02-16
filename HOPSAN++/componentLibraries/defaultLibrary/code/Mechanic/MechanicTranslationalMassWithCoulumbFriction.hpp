@@ -42,7 +42,9 @@ namespace hopsan {
         double m, B, fs, fk, xMin, xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
         double mLength;                                                                                     //This length is not accesible by the user, it is set from the start values by the c-components in the ends
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;  //Node data pointers
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1;    //Node data pointers
+        double *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;
+        double *mpND_fs, *mpND_fk;
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
         //DoubleIntegratorWithDamping mIntegrator;                                                            //External functions
         double mNum[3];
@@ -50,7 +52,7 @@ namespace hopsan {
         DoubleIntegratorWithDampingAndCoulombFriction mIntegrator;
 //        SecondOrderFilter mFilter;
 //        Integrator mInt;
-        Port *mpP1, *mpP2;                                                                                  //Ports
+        Port *mpP1, *mpP2, *mpPfs, *mpPfk;                                                                                  //Ports
 
     public:
         static Component *Creator()
@@ -71,6 +73,8 @@ namespace hopsan {
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
+            mpPfs = addReadPort("Pfs", "NodeSignal", Port::NOTREQUIRED);
+            mpPfk = addReadPort("Pfk", "NodeSignal", Port::NOTREQUIRED);
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("m", "Mass", "[kg]", m);
@@ -98,6 +102,9 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
             mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS);
+
+            mpND_fs = getSafeNodeDataPtr(mpPfs, NodeSignal::VALUE, fs);
+            mpND_fk = getSafeNodeDataPtr(mpPfk, NodeSignal::VALUE, fk);
 
             f1 = (*mpND_f1);
             x1 = (*mpND_x1);
@@ -142,6 +149,10 @@ namespace hopsan {
             x2 = (*mpND_x2);
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
+            fs = (*mpND_fs);
+            fk = (*mpND_fk);
+
+            mIntegrator.setFriction(fs, fk);
 
             mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
             mIntegrator.integrateWithUndo((c1-c2)/m);

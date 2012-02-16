@@ -36,6 +36,7 @@ namespace hopsan {
         void initialize(double timestep, double w0, double mass, double Fs, double Fk, double u0, double y0, double sy0);
         void initializeValues(double u0, double y0, double sy0);
         void setDamping(double w0);
+        void setFriction(double Fs, double Fk);
         void integrate(double u);
         void integrateWithUndo(double u);
         void redoIntegrate(double u);
@@ -46,7 +47,7 @@ namespace hopsan {
         double mDelayU, mDelayY, mDelaySY;
         double mDelayUbackup, mDelayYbackup, mDelaySYbackup;
         double mTimeStep;
-        double mW0, mUs, mUk;
+        double mW0, mMass, mUs, mUk;
     };
 }
 
