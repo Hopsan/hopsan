@@ -77,6 +77,7 @@ public:
     QString getPlotGfxDir();
     QString getSimulinkExportDir();
     QString getSubsystemDir();
+    QString getModelicaModelsDir();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -107,6 +108,7 @@ public:
     void setPlotGfxDir(QString value);
     void setSimulinkExportDir(QString value);
     void setSubsystemDir(QString value);
+    void setModelicaModelsDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -140,6 +142,7 @@ private:
     QString mPlotGfxDir;
     QString mSimulinkExportDir;
     QString mSubsystemDir;
+    QString mModelicaModelsDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

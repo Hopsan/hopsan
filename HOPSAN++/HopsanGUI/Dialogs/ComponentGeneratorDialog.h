@@ -120,6 +120,10 @@ private:
     ModelicaHighlighter *mpInitAlgorithmsHighLighter;
     QWidget *mpInitAlgorithmsWidget;
     QGridLayout *mpInitAlgorithmsLayout;
+    QTextEdit *mpFinalAlgorithmsTextField;
+    ModelicaHighlighter *mpFinalAlgorithmsHighLighter;
+    QWidget *mpFinalAlgorithmsWidget;
+    QGridLayout *mpFinalAlgorithmsLayout;
     QWidget *mpEquationsWidget;
     QTextEdit *mpEquationsTextField;
     ModelicaHighlighter *mpEquationHighLighter;

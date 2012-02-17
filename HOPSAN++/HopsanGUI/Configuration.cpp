@@ -75,6 +75,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "plotgfxdir", mPlotGfxDir);
     appendDomTextNode(settings, "simulinkexportdir", mSimulinkExportDir);
     appendDomTextNode(settings, "subsystemdir", mSubsystemDir);
+    appendDomTextNode(settings, "modelicamodelsdir", mModelicaModelsDir);
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -251,6 +252,8 @@ void Configuration::loadFromXml()
                 mSimulinkExportDir = settingsElement.firstChildElement("simulinkexportdir").text();
             if(!settingsElement.firstChildElement("subsystemdir").isNull())
                 mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
+            if(!settingsElement.firstChildElement("modelicamodelsdir").isNull())
+                mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -425,6 +428,8 @@ void Configuration::loadDefaultsFromXml()
                 mSimulinkExportDir = settingsElement.firstChildElement("simulinkexportdir").text();
             if(!settingsElement.firstChildElement("subsystemdir").isNull())
                 mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
+            if(!settingsElement.firstChildElement("modelicamodelsdir").isNull())
+                mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
 
 
                 //Load default GUI style
@@ -812,6 +817,15 @@ QString Configuration::getSubsystemDir()
 }
 
 
+QString Configuration::getModelicaModelsDir()
+{
+    if(mModelicaModelsDir.isEmpty())
+    {
+        return QString(MODELPATH);
+    }
+    return mModelicaModelsDir;
+}
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -1055,4 +1069,9 @@ void Configuration::setSimulinkExportDir(QString value)
 void Configuration::setSubsystemDir(QString value)
 {
     mSubsystemDir = value;
+}
+
+void Configuration::setModelicaModelsDir(QString value)
+{
+    mModelicaModelsDir = value;
 }

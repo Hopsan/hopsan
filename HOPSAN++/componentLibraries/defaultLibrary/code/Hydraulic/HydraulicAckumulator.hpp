@@ -183,36 +183,22 @@ onPositive(Va),0.,1.))/2.;
          //Differential-algebraic system of equation parts
 
           //Assemble differential-algebraic equations
-          systemEquations[0] =q1 + mKca*(p1 - pa)*limit(onPositive(p1 - pa) + \
-onPositive(Va),0.,1.);
-          systemEquations[1] =Va - limit(-(mKca*mTimestep*(-p1 + \
-pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2. - \
-delayedPart[2][1],0.,mV0);
-          systemEquations[2] =pa - (mp0*Power(mV0,mkappa))/Power(mV0 - \
-Va,mkappa);
+          systemEquations[0] =q1 + mKca*(p1 - pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.);
+          systemEquations[1] =Va - limit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2. - delayedPart[2][1],0.,mV0);
+          systemEquations[2] =pa - (mp0*Power(mV0,mkappa))/Power(mV0 - Va,mkappa);
           systemEquations[3] =p1 - (c1 + q1*Zc1)*onPositive(p1);
 
           //Jacobian matrix
           jacobianMatrix[0][0] = 1;
           jacobianMatrix[0][1] = 0;
-          jacobianMatrix[0][2] = -(mKca*limit(onPositive(p1 - pa) + \
-onPositive(Va),0.,1.));
-          jacobianMatrix[0][3] = mKca*limit(onPositive(p1 - pa) + \
-onPositive(Va),0.,1.);
+          jacobianMatrix[0][2] = -(mKca*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.));
+          jacobianMatrix[0][3] = mKca*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.);
           jacobianMatrix[1][0] = 0;
           jacobianMatrix[1][1] = 1;
-          jacobianMatrix[1][2] = \
-(mKca*mTimestep*dxLimit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - pa) \
-+ onPositive(Va),0.,1.))/2. - delayedPart[2][1],0.,mV0)*limit(onPositive(p1 - \
-pa) + onPositive(Va),0.,1.))/2.;
-          jacobianMatrix[1][3] = \
--(mKca*mTimestep*dxLimit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - \
-pa) + onPositive(Va),0.,1.))/2. - \
-delayedPart[2][1],0.,mV0)*limit(onPositive(p1 - pa) + \
-onPositive(Va),0.,1.))/2.;
+          jacobianMatrix[1][2] = (mKca*mTimestep*dxLimit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2. - delayedPart[2][1],0.,mV0)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2.;
+          jacobianMatrix[1][3] = -(mKca*mTimestep*dxLimit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2. - delayedPart[2][1],0.,mV0)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2.;
           jacobianMatrix[2][0] = 0;
-          jacobianMatrix[2][1] = -(mkappa*mp0*Power(mV0,mkappa)*Power(mV0 - \
-Va,-1 - mkappa));
+          jacobianMatrix[2][1] = -(mkappa*mp0*Power(mV0,mkappa)*Power(mV0 - Va,-1 - mkappa));
           jacobianMatrix[2][2] = 1;
           jacobianMatrix[2][3] = 0;
           jacobianMatrix[3][0] = -(Zc1*onPositive(p1));
@@ -223,12 +209,12 @@ Va,-1 - mkappa));
           //Solving equation using LU-faktorisation
           pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
 
-        }
+
         q1=stateVark[0];
         Va=stateVark[1];
         pa=stateVark[2];
         p1=stateVark[3];
-
+        }
         //Calculate the delayed parts
         delayParts2[1] = (-2*Va - mKca*mTimestep*p1*limit(onPositive(p1 - pa) \
 + onPositive(Va),0.,1.) + mKca*mTimestep*pa*limit(onPositive(p1 - pa) + \

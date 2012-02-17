@@ -177,7 +177,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
                                  QStringList delayTerms, QStringList delaySteps, QStringList localVars,
-                                 QStringList initAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+                                 QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
     if(pProgressBar)
     {
@@ -211,84 +211,94 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.parInits << parameters[i].init;
     }
 
-    comp.varNames << "order["+QString().setNum(stateVars.size())+"]" << "jsyseqnweight[4]" << "jacobianMatrix" << "systemEquations";
-    comp.varTypes << "int" << "double" << "Matrix" << "Vec";
+    if(!jacobian.isEmpty())
+    {
+        comp.varNames << "order["+QString().setNum(stateVars.size())+"]" << "jsyseqnweight[4]" << "jacobianMatrix" << "systemEquations" << "mpSolver";
+        comp.varTypes << "int" << "double" << "Matrix" << "Vec" << "EquationSystemSolver*";
 
-    comp.initEquations << "jacobianMatrix.create("+QString().setNum(sysEquations.size())+","+QString().setNum(stateVars.size())+");";
-    comp.initEquations << "systemEquations.create("+QString().setNum(sysEquations.size())+");";
-    comp.initEquations << "";
-    comp.initEquations << "jsyseqnweight[0]=1.0;";
-    comp.initEquations << "jsyseqnweight[1]=0.67;";
-    comp.initEquations << "jsyseqnweight[2]=0.5;";
-    comp.initEquations << "jsyseqnweight[3]=0.5;";
-    comp.initEquations << "";
+        comp.initEquations << "jacobianMatrix.create("+QString().setNum(sysEquations.size())+","+QString().setNum(stateVars.size())+");";
+        comp.initEquations << "systemEquations.create("+QString().setNum(sysEquations.size())+");";
+        comp.initEquations << "";
+        comp.initEquations << "jsyseqnweight[0]=1.0;";
+        comp.initEquations << "jsyseqnweight[1]=0.67;";
+        comp.initEquations << "jsyseqnweight[2]=0.5;";
+        comp.initEquations << "jsyseqnweight[3]=0.5;";
+        comp.initEquations << "";
+    }
+
     for(int i=0; i<delayTerms.size(); ++i)
     {
         comp.initEquations << "mDelay"+QString().setNum(i)+".initialize("+QString().setNum(delaySteps.at(i).toInt()+1)+", "+delayTerms[i]+");";
     }
 
-    comp.simEquations << "Vec stateVar("+QString().setNum(stateVars.size())+");";
-    comp.simEquations << "Vec stateVark("+QString().setNum(stateVars.size())+");";
-    comp.simEquations << "Vec deltaStateVar("+QString().setNum(stateVars.size())+");";
-    comp.simEquations << "";
+    if(!jacobian.isEmpty())
+    {
+        comp.simEquations << "Vec stateVar("+QString().setNum(stateVars.size())+");";
+        comp.simEquations << "Vec stateVark("+QString().setNum(stateVars.size())+");";
+        comp.simEquations << "Vec deltaStateVar("+QString().setNum(stateVars.size())+");";
+        comp.simEquations << "";
+        comp.simEquations << "mpSolver = new EquationSystemSolver(this);";
+        comp.simEquations << "";
+    }
 
     if(pProgressBar)
     {
         pProgressBar->setValue(pProgressBar->value()+1);
     }
 
+    comp.simEquations << "//Initial algorithm section";
     for(int i=0; i<initAlgorithms.size(); ++i)
     {
         comp.simEquations << initAlgorithms[i]+";";
     }
     comp.simEquations << "";
 
-    for(int i=0; i<stateVars.size(); ++i)
+    if(!jacobian.isEmpty())
     {
-        comp.simEquations << "stateVark["+QString().setNum(i)+"] = "+stateVars[i]+";";
-    }
-
-    comp.simEquations << "for(int iter=1;iter<=2;iter++)" << "{";
-    comp.simEquations << "    //System Equations";
-    for(int i=0; i<sysEquations.size(); ++i)
-    {
-        comp.simEquations << "    systemEquations["+QString().setNum(i)+"] = "+sysEquations[i]+";";
-    }
-    comp.simEquations << "";
-
-    comp.simEquations << "";
-    comp.simEquations << "    //Jacobian Matrix";
-    for(int i=0; i<sysEquations.size(); ++i)
-    {
-        for(int j=0; j<stateVars.size(); ++j)
+        for(int i=0; i<stateVars.size(); ++i)
         {
-            comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[sysEquations.size()*i+j]+";";
+            comp.simEquations << "stateVark["+QString().setNum(i)+"] = "+stateVars[i]+";";
+        }
+
+        comp.simEquations << "for(int iter=1;iter<=2;iter++)" << "{";
+        comp.simEquations << "    //System Equations";
+        for(int i=0; i<sysEquations.size(); ++i)
+        {
+            comp.simEquations << "    systemEquations["+QString().setNum(i)+"] = "+sysEquations[i]+";";
+        }
+        comp.simEquations << "";
+
+        comp.simEquations << "";
+        comp.simEquations << "    //Jacobian Matrix";
+        for(int i=0; i<sysEquations.size(); ++i)
+        {
+            for(int j=0; j<stateVars.size(); ++j)
+            {
+                comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[sysEquations.size()*i+j]+";";
+            }
+        }
+        comp.simEquations << "";
+        comp.simEquations << "    //Solving equation using LU-faktorisation";
+        comp.simEquations << "    mpSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);";
+        comp.simEquations << "";
+        for(int i=0; i<stateVars.size(); ++i)
+        {
+            comp.simEquations << "    "+stateVars[i]+"=stateVark["+QString().setNum(i)+"];";
+        }
+        comp.simEquations << "}";
+        comp.simEquations << "";
+        for(int i=0; i<delayTerms.size(); ++i)
+        {
+            comp.simEquations << "mDelay"+QString().setNum(i)+".update("+delayTerms[i]+");";
         }
     }
     comp.simEquations << "";
-    comp.simEquations << "    //Solving equation using LU-faktorisation";
-    comp.simEquations << "    ludcmp(jacobianMatrix, order, mpSystemParent);";
-    comp.simEquations << "    solvlu(jacobianMatrix,systemEquations,deltaStateVar,order);";
-    comp.simEquations << "";
-    comp.simEquations << "    for(int i=0; i<"+QString().setNum(stateVars.size())+"; i++)";
-    comp.simEquations << "    {";
-    comp.simEquations << "        stateVar[i] = stateVark[i] - jsyseqnweight[iter - 1] * deltaStateVar[i];";
-    comp.simEquations << "    }";
-    comp.simEquations << "    for(int i=0; i<"+QString().setNum(stateVars.size())+"; i++)";
-    comp.simEquations << "    {";
-    comp.simEquations << "        stateVark[i] = stateVar[i];";
-    comp.simEquations << "    }";
-    comp.simEquations << "";
-    for(int i=0; i<stateVars.size(); ++i)
+    comp.simEquations << "//Final algorithm section";
+    for(int i=0; i<finalAlgorithms.size(); ++i)
     {
-        comp.simEquations << "    " << stateVars[i]+"=stateVark["+QString().setNum(i)+"];";
+        comp.simEquations << finalAlgorithms[i]+";";
     }
-    comp.simEquations << "}";
-    comp.simEquations << "";
-    for(int i=0; i<delayTerms.size(); ++i)
-    {
-        comp.simEquations << "mDelay"+QString().setNum(i)+".update("+delayTerms[i]+");";
-    }
+
 
     for(int i=0; i<localVars.size(); ++i)
     {
@@ -580,12 +590,17 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         {
             varNames << comp.portNames[i];
         }
-        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
+//        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
+//        {
+//            varNames << getQVariables(comp.portNodeTypes[i]);
+//        }
+//        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
+//        {
+//            varNames << getCVariables(comp.portNodeTypes[i]);
+//        }
+        else
         {
-            varNames << getQVariables(comp.portNodeTypes[i]);
-        }
-        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
-        {
+            varNames << getQVariables(comp.portNodeTypes[i]);       //Always create both C- and Q-type variables, regaradless of component type (they may be needed)
             varNames << getCVariables(comp.portNodeTypes[i]);
         }
 
@@ -770,11 +785,25 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         pProgressBar->setValue(pProgressBar->value()+1);
     }
 
+    QString libPath = QDir().cleanPath(generatedDir.path());
+    if(gConfig.hasUserLib(libPath))
+    {
+        //qDebug() << "Updated user libs: " << gConfig.getUserLibs();
+        gpMainWindow->mpLibrary->unloadExternalLibrary(libPath);
+    }
+
     QFile::remove(generatedDir.path() + "/" + xmlFile.fileName());
     xmlFile.copy(generatedDir.path() + "/" + xmlFile.fileName());
 
     QFile dllFile(QString(DATAPATH)+comp.typeName+".dll");
-    QFile::remove(generatedDir.path() + "/" + comp.typeName + ".dll");
+    if(QFile::remove(generatedDir.path() + "/" + comp.typeName + ".dll"))
+    {
+        qDebug() << "Successfully copied library file!";
+    }
+    else
+    {
+        qDebug() << "Failed to copy library file to new directory!";
+    }
     dllFile.copy(generatedDir.path() + "/" + comp.typeName + ".dll");
 
     QFile soFile(QString(DATAPATH)+comp.typeName+".so");
@@ -800,8 +829,6 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         pProgressBar->setValue(pProgressBar->value()+1);
     }
 
-
-    QString libPath = QDir().cleanPath(generatedDir.path());
 
     //qDebug() << "libPath = " << libPath;
     //qDebug() << "user libs: " << gConfig.getUserLibs();
@@ -909,8 +936,24 @@ bool verifyEquations(QStringList equations)
             return false;
     }
 
+
+
     //! @todo Verify equation system (number of unknowns etc)
     return true;
+}
+
+
+bool verifyEquationSystem(QStringList equations, QStringList stateVars)
+{
+    bool retval = true;
+
+    if(equations.size() != stateVars.size())
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Number of equations = " + QString().setNum(equations.size()) + ", number of state variables = " + QString().setNum(stateVars.size()));
+        retval = false;
+    }
+
+    return retval;
 }
 
 
@@ -995,7 +1038,7 @@ bool verifyEquation(QString equation)
     //Verify that no unsupported functions are used
     QStringList legalFunctions;
     //! @todo These functions are hard coded on several places, not a good solution
-    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" ;        //"der" is not Python, but still allowed
+    legalFunctions << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit";        //"der" is not Python, but still allowed
     QStringList usedFunctions;
     identifyFunctions(equation, usedFunctions);
     for(int i=0; i<usedFunctions.size(); ++i)
@@ -1232,7 +1275,7 @@ void translatePowersFromPython(QStringList &equations)
                         ++parBalance;
                     --idxb;
                 }
-                while(equations[e][idxb].isLetterOrNumber() || equations[e][idxb] == '.')
+                while(idxb > -1 && (equations[e][idxb].isLetterOrNumber() || equations[e][idxb] == '.'))
                 {
                     --idxb;
                 }
@@ -1263,8 +1306,15 @@ void translatePowersFromPython(QStringList &equations)
             before = equations[e].mid(idxb, idx-idxb);
             after = equations[e].mid(idx+2, idxa-idx-1);
 
+            qDebug() << "equations[e] = " << equations[e];
+            qDebug() << "before = " << before;
+            qDebug() << "after = " << after;
+            qDebug() << "idxb = " << idxb << ", idxa = " << idxa;
+
             equations[e].remove(idxb, idxa-idxb+1);
             equations[e].insert(idxb, "pow("+before+","+after+")");
+
+
         }
     }
 }
@@ -1379,6 +1429,7 @@ void translateFunctionsFromPython(QStringList &equations)
 
 
         replaceDerivative(equations[e], "hopsanLimit", "hopsanDxLimit");
+        replaceDerivative(equations[e], "limit", "dxLimit");
 
 
         //Replace "D(hopsanDxLimit(x, min, max))" with 0
@@ -1666,23 +1717,24 @@ void translateIntsToDouble(QStringList &equations)
 //! @param code Input Modelica code
 //! @param typeName Type name of new component
 //! @param displayName Display name of new component
+//! @param initAlgorithms Initial algorithms for new component
 //! @param equations Equations for new component
 //! @param portList List of port specifications for new component
 //! @param parametersList List of parameter specifications for new component
-void parseModelicaModel(QString code, QString &typeName, QString &displayName, QStringList &equations,
-                        QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList)
+void parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations,
+                        QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList)
 {
-    //qDebug() << "Hej1";
     QStringList lines = code.split("\n");
-    //qDebug() << "Hej2, lines = " << lines;
     QStringList portNames;
-    bool equationPart = false;          //Are we in the "equations" part or not?
+    bool initialAlgorithmPart = false;  //Are we in the intial "algorithms" part?
+    bool equationPart = false;          //Are we in the "equations" part?
+    bool finalAlgorithmPart = false;    //Are we in the final "algorithms" part?
     for(int l=0; l<lines.size(); ++l)
     {
-        if(!equationPart)
+        if(!initialAlgorithmPart && !equationPart && !finalAlgorithmPart)
         {
+            qDebug() << l << " - not in algorithms or equations";
             QStringList words = lines.at(l).trimmed().split(" ");
-            //qDebug() << "Hej3, words = " << words;
             if(words.at(0) == "model")              //"model" keyword
             {
                 typeName = words.at(1);
@@ -1698,6 +1750,13 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
                     }
                     displayName.chop(1);
                 }
+            }
+            else if(words.at(0).startsWith("annotation("))        //"annotation" keyword
+            {
+                QString tempLine = lines[l];
+                tempLine.remove(" ");
+                int idx = tempLine.indexOf("hopsanCqsType=");
+                cqsType = tempLine.at(idx+15);
             }
             else if(words.at(0) == "parameter")         //"parameter" keyword
             {
@@ -1716,8 +1775,28 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
 
                 QString parDisplayName = lines.at(l).section("\"", -2, -2);
 
-                ParameterSpecification par(name, parDisplayName, parDisplayName, unit, init);
+                ParameterSpecification par(name, name, parDisplayName, unit, init);
                 parametersList.append(par);
+            }
+            else if(words.at(0) == "NodeSignalOut")                //Signal connector (output)
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    PortSpecification port("WritePort", "NodeSignal", name);
+                    portList.append(port);
+                    portNames << name;
+                }
+            }
+            else if(words.at(0) == "NodeSignalIn")                //Signal connector (input)
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    PortSpecification port("ReadPort", "NodeSignal", name);
+                    portList.append(port);
+                    portNames << name;
+                }
             }
             else if(words.at(0) == "NodeMechanic")              //Mechanic connector
             {
@@ -1769,16 +1848,86 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
                     portNames << name;
                 }
             }
-            else if(words.at(0) == "equation")                  //Equation part begins!
+            else if(words.at(0) == "algorithm" && !equationPart)    //Initial algorithm part begins!
             {
+                initialAlgorithmPart = true;
+            }
+            else if(words.at(0) == "equation")                      //Equation part begins!
+            {
+                initialAlgorithmPart = false;
                 equationPart = true;
             }
+            else if(words.at(0) == "algorithm" && equationPart)     //Final algorithm part begins!
+            {
+                equationPart = false;
+                finalAlgorithmPart = true;
+            }
+            else if(words.at(0) == "end" && (initialAlgorithmPart || equationPart || finalAlgorithmPart))       //We are finished
+            {
+                break;
+            }
         }
-        else
+        else if(initialAlgorithmPart)
         {
-            if(lines.at(l).trimmed().startsWith("end "))        //"end" line, we are finished
-                return;
-            ////qDebug() << "Equation: " << lines.at(l).trimmed();
+            qDebug() << l << " - in algorithms";
+            QStringList words = lines.at(l).trimmed().split(" ");
+            if(words.at(0) == "end")       //We are finished
+            {
+                break;
+            }
+            if(words.at(0) == "equation")       //Equation part begings, end of algorithm section
+            {
+                initialAlgorithmPart = false;
+                equationPart = true;
+                continue;
+            }
+            initAlgorithms << lines.at(l).trimmed();
+            initAlgorithms.last().replace(":=", "=");
+            //Replace variables with Hopsan syntax, i.e. P2.q => q2
+            for(int i=0; i<portNames.size(); ++i)
+            {
+                QString temp = portNames.at(i)+".";
+                while(initAlgorithms.last().contains(temp))
+                {
+                    if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
+                    {
+                        int idx = initAlgorithms.last().indexOf(temp)+temp.size()-1;
+                        if(portList.at(i).porttype == "WritePort")
+                        {
+                            initAlgorithms.last().remove(idx, 4);
+                        }
+                        else if(portList.at(i).porttype == "ReadPort")
+                        {
+                            initAlgorithms.last().remove(idx, 3);
+                        }
+                    }
+                    else
+                    {
+                        int idx = initAlgorithms.last().indexOf(temp);
+                        int idx2=idx+temp.size()+1;
+                        while(idx2 < initAlgorithms.last().size()+1 && initAlgorithms.last().at(idx2).isLetterOrNumber())
+                            ++idx2;
+                        initAlgorithms.last().insert(idx2, QString().setNum(i+1));
+                        initAlgorithms.last().remove(idx, temp.size());
+                    }
+                }
+            }
+            initAlgorithms.last().chop(1);
+        }
+        else if(equationPart)
+        {
+            qDebug() << l << " - in equations";
+            QStringList words = lines.at(l).trimmed().split(" ");
+            if(words.at(0) == "end")       //We are finished
+            {
+                break;
+            }
+            if(words.at(0) == "algorithm")       //Final algorithm section begins
+            {
+                equationPart = false;
+                finalAlgorithmPart = true;
+                continue;
+            }
             equations << lines.at(l).trimmed();
             //Replace variables with Hopsan syntax, i.e. P2.q => q2
             for(int i=0; i<portNames.size(); ++i)
@@ -1786,17 +1935,88 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
                 QString temp = portNames.at(i)+".";
                 while(equations.last().contains(temp))
                 {
-                    //qDebug() << "BEFORE: " << equations.last();
-                    int idx = equations.last().indexOf(temp);
-                    int idx2=idx+temp.size()+1;
-                    while(idx2 < equations.last().size()+1 && equations.last().at(idx2).isLetterOrNumber())
-                        ++idx2;
-                    equations.last().insert(idx2, QString().setNum(i+1));
-                    equations.last().remove(idx, temp.size());
-                    //qDebug() << "AFTER: " << equations.last();
+                    if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
+                    {
+                        int idx = equations.last().indexOf(temp)+temp.size()-1;
+                        if(portList.at(i).porttype == "WritePort")
+                        {
+                            equations.last().remove(idx, 4);
+                        }
+                        else if(portList.at(i).porttype == "ReadPort")
+                        {
+                            equations.last().remove(idx, 3);
+                        }
+                    }
+                    else
+                    {
+                        int idx = equations.last().indexOf(temp);
+                        int idx2=idx+temp.size()+1;
+                        while(idx2 < equations.last().size()+1 && equations.last().at(idx2).isLetterOrNumber())
+                            ++idx2;
+                        equations.last().insert(idx2, QString().setNum(i+1));
+                        equations.last().remove(idx, temp.size());
+                    }
                 }
             }
             equations.last().chop(1);
+        }
+        else if(finalAlgorithmPart)
+        {
+            qDebug() << l << " - in algorithms";
+            QStringList words = lines.at(l).trimmed().split(" ");
+            if(words.at(0) == "end")       //We are finished
+            {
+                break;
+            }
+            finalAlgorithms << lines.at(l).trimmed();
+            finalAlgorithms.last().replace(":=", "=");
+            //Replace variables with Hopsan syntax, i.e. P2.q => q2
+            for(int i=0; i<portNames.size(); ++i)
+            {
+                QString temp = portNames.at(i)+".";
+                while(finalAlgorithms.last().contains(temp))
+                {
+                    if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
+                    {
+                        int idx = finalAlgorithms.last().indexOf(temp)+temp.size()-1;
+                        if(portList.at(i).porttype == "WritePort")
+                        {
+                            finalAlgorithms.last().remove(idx, 4);
+                        }
+                        else if(portList.at(i).porttype == "ReadPort")
+                        {
+                            finalAlgorithms.last().remove(idx, 3);
+                        }
+                    }
+                    else
+                    {
+                        int idx = finalAlgorithms.last().indexOf(temp);
+                        int idx2=idx+temp.size()+1;
+                        while(idx2 < finalAlgorithms.last().size()+1 && finalAlgorithms.last().at(idx2).isLetterOrNumber())
+                            ++idx2;
+                        finalAlgorithms.last().insert(idx2, QString().setNum(i+1));
+                        finalAlgorithms.last().remove(idx, temp.size());
+                    }
+                }
+            }
+            finalAlgorithms.last().chop(1);
+        }
+    }
+
+    equations.removeAll("\n");
+    equations.removeAll("");
+
+    //Remove extra boundary equations (assume that they are the last ones)
+    if(cqsType == "Q")
+    {
+        for(int i=0; i<portList.size(); ++i)
+        {
+            qDebug() << "Port " << i << " has nodetype " << portList.at(i).nodetype;
+            if(portList.at(i).nodetype != "NodeSignal")
+            {
+                equations.removeLast();
+                qDebug() << "Removing last equation!";
+            }
         }
     }
 }

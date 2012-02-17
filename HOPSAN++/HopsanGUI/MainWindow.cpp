@@ -1140,7 +1140,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     reply->deleteLater();
 
     QProcess *pProcess = new QProcess();
-    pProcess->start("update.exe", QStringList() << "/silent");
+    pProcess->start(QString(DATAPATH)+"/update.exe", QStringList() << "/silent");
     pProcess->waitForStarted();
     this->close();
 }

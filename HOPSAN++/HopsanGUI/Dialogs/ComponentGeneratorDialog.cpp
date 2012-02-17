@@ -46,7 +46,7 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b" << "\\bonPositive\\b" << "\\bonNegative\\b" << "\\bsignedSquareL\\b" << "\\bVariableLimit\\b";
+    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b" << "\\bonPositive\\b" << "\\bonNegative\\b" << "\\bsignedSquareL\\b" << "\\bVariableLimits\\b" << "\\bVariable2Limits\\b" << "\\blimit\\b";
 
     foreach (const QString &pattern, keywordPatterns)
     {
@@ -148,6 +148,16 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpInitAlgorithmsWidget->setLayout(mpInitAlgorithmsLayout);
     mpInitAlgorithmsWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
+    mpFinalAlgorithmsTextField = new QTextEdit(this);
+    mpFinalAlgorithmsTextField->setFont(monoFont);
+    mpFinalAlgorithmsTextField->setMaximumHeight(300);
+    mpFinalAlgorithmsHighLighter = new ModelicaHighlighter(mpFinalAlgorithmsTextField->document());
+    mpFinalAlgorithmsLayout = new QGridLayout(this);
+    mpFinalAlgorithmsLayout->addWidget(mpFinalAlgorithmsTextField);
+    mpFinalAlgorithmsWidget = new QWidget(this);
+    mpFinalAlgorithmsWidget->setLayout(mpFinalAlgorithmsLayout);
+    mpFinalAlgorithmsWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+
     mpCodeTabs = new QTabWidget(this);                                          //Tab layout
     mpCodeTabs->addTab(mpInitWidget, "Initialize");
     mpCodeTabs->addTab(mpSimulateWidget, "Simulate");
@@ -156,6 +166,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpEquationTabs = new QTabWidget(this);
     mpEquationTabs->addTab(mpInitAlgorithmsWidget, "Initial Algorithms");
     mpEquationTabs->addTab(mpEquationsWidget, "Equations");
+    mpEquationTabs->addTab(mpFinalAlgorithmsWidget, "Final Algorithms");
     mpEquationTabs->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     mpCodeLayout = new QGridLayout(this);
     mpCodeLayout->addWidget(mpGivenLabel, 0, 0);
@@ -1048,8 +1059,8 @@ void ComponentGeneratorDialog::loadRecentComponent()
 void ComponentGeneratorDialog::compile()
 {
     QProgressDialog *pProgressBar = new QProgressDialog(tr("Verifying"), QString(), 0, 0, gpMainWindow);
-    pProgressBar->show();
-    pProgressBar->setWindowModality(Qt::NonModal);
+    pProgressBar->setWindowFlags(Qt::Window);
+    pProgressBar->setWindowModality(Qt::ApplicationModal);
     pProgressBar->setWindowTitle(tr("Generating Hopsan Component"));
     pProgressBar->setMinimum(0);
     pProgressBar->setMaximum(33);
@@ -1061,31 +1072,35 @@ void ComponentGeneratorDialog::compile()
 
     if(!verifyParameteres(mParametersList))
     {
-        //qDebug() << "Verification of parameters failed.";
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of parameters failed.");
+        pProgressBar->cancel();
         return;
     }
 
     if(!verifyPorts(mPortList))
     {
-        //qDebug() << "Verification of ports failed.";
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of ports failed.");
+        pProgressBar->cancel();
         return;
     }
 
     if(!verifyUtilities(mUtilitiesList))
     {
-        //qDebug() << "Verification of utilities failed.";
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of utilities failed.");
+        pProgressBar->cancel();
         return;
     }
 
     if(!verifyStaticVariables(mStaticVariablesList))
     {
-        //qDebug() << "Verification of static variables failed.";
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of static variables failed.");
+        pProgressBar->cancel();
         return;
     }
 
     if(mpGenerateFromComboBox->currentIndex() == 0)         //Compile from equations
     {
-        //qDebug() << "Compiling equations";
+        qDebug() << "Compiling equations";
 
         pProgressBar->setLabelText("Saving to XML");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1102,10 +1117,16 @@ void ComponentGeneratorDialog::compile()
         //Create list of equqtions
         QString plainEquations = mpEquationsTextField->toPlainText();
         QStringList equations = plainEquations.split("\n");
-        QString plainBoundaryEquations = mpBoundaryEquationsTextField->toPlainText();
-        QStringList boundaryEquations = plainBoundaryEquations.split("\n");
-        equations.append(boundaryEquations);
+        if(mpComponentTypeComboBox->currentText() == "Q")
+        {
+            QString plainBoundaryEquations = mpBoundaryEquationsTextField->toPlainText();
+            QStringList boundaryEquations = plainBoundaryEquations.split("\n");
+            equations.append(boundaryEquations);
+        }
         equations.removeAll("");
+
+        QString plainFinalAlgorithms = mpFinalAlgorithmsTextField->toPlainText();
+        QStringList finalAlgorithms = plainFinalAlgorithms.split("\n");
 
         //Identify variable limitations, and remove them from the equations list
         QStringList limitedVariables;
@@ -1116,11 +1137,32 @@ void ComponentGeneratorDialog::compile()
         QList<int> limitedDerivativeEquations;
         for(int i=0; i<equations.size(); ++i)
         {
-            if(equations.at(i).startsWith("VariableLimit("))
+            if(equations.at(i).startsWith("VariableLimits("))
+            {
+                if(i<1)
+                {
+                    gpMainWindow->mpMessageWidget->printGUIErrorMessage("VariableLimits not preeded by equations defining variable.");
+                    return;
+                }
+
+                QString args = equations.at(i).section("(",1,1).section(")",0,0);
+                limitedVariables << args.section(",", 0,0);
+                limitedDerivatives << QString();
+                limitMinValues << args.section(",", 1,1);
+                limitMaxValues << args.section(",", 2,2);
+                limitedVariableEquations << i-1;
+                limitedDerivativeEquations << -1;
+
+                qDebug() << "Found limitation of variable " << limitedVariables.last();
+
+                equations.removeAt(i);
+                --i;
+            }
+            else if(equations.at(i).startsWith("Variable2Limits("))
             {
                 if(i<2)
                 {
-                    gpMainWindow->mpMessageWidget->printGUIErrorMessage("Variable limitation not preeded by equations defining variable and derivative.");
+                    gpMainWindow->mpMessageWidget->printGUIErrorMessage("Variable2Limits not preeded by equations defining variable and derivative.");
                     return;
                 }
 
@@ -1132,7 +1174,7 @@ void ComponentGeneratorDialog::compile()
                 limitedVariableEquations << i-2;
                 limitedDerivativeEquations << i-1;
 
-                //qDebug() << "Found limitation of variable " << limitedVariables.last() << " with derivative " << limitedDerivatives.last();
+                qDebug() << "Found limitation of variable " << limitedVariables.last() << " with derivative " << limitedDerivatives.last();
 
                 equations.removeAt(i);
                 --i;
@@ -1151,8 +1193,8 @@ void ComponentGeneratorDialog::compile()
         //Verify the equations
         if(!verifyEquations(equations))
         {
-            //qDebug() << "Verification failed.";
             gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equations failed.");
+            pProgressBar->cancel();
             return;
         }
 
@@ -1183,7 +1225,7 @@ void ComponentGeneratorDialog::compile()
             allSymbols.append(rightSymbols.at(i));
         }
 
-        //Create list of variables defined by initial equations
+        //Create list of variables defined by initial algorithms
         QStringList initExpressions;
         for(int i=0; i<initAlgorithms.size(); ++i)
         {
@@ -1191,9 +1233,26 @@ void ComponentGeneratorDialog::compile()
             var.remove(" ");
             initExpressions.append(var);
         }
-        allSymbols.append(initExpressions);
 
+        qDebug() << "Get!, initExpressions = " << initExpressions;
+
+        //Create list of variables defined by final algorithms
+        QStringList finalExpressions;
+        for(int i=0; i<finalAlgorithms.size(); ++i)
+        {
+            QString var = finalAlgorithms.at(i).section("=", 0, 0);
+            var.remove(" ");
+            finalExpressions.append(var);
+        }
+
+        for(int i=0; i<mParametersList.size(); ++i)
+        {
+            allSymbols.append(mParametersList[i].name);
+        }
+        allSymbols.append(initExpressions);
+        allSymbols.append(finalExpressions);
         allSymbols.removeDuplicates();
+        allSymbols.removeAll("");
 
         pProgressBar->setLabelText("Identifying state varaibles");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1236,8 +1295,18 @@ void ComponentGeneratorDialog::compile()
         }
         stateVars.removeAll("s");       //Laplace 's' is not a state variable
 
-        pProgressBar->setLabelText("Identifying local variables");
+        //Verify equation system
+        if(!verifyEquationSystem(equations, stateVars))
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equation system failed.");
+            pProgressBar->cancel();
+            return;
+        }
+
+        pProgressBar->setLabelText("Sorting system equations");
         pProgressBar->setValue(pProgressBar->value()+1);
+
+        qDebug() << "Gris!";
 
         //Sort state variables so that each equation contains its correspondig variable
         //(otherwise Jacobian will become singular)
@@ -1322,6 +1391,8 @@ void ComponentGeneratorDialog::compile()
         pProgressBar->setLabelText("Loading SymPy");
         pProgressBar->setValue(9);
 
+        qDebug() << "Varg!";
+
         //Load sympy libraries
         py->runCommand("from sympy import *");
 
@@ -1339,7 +1410,7 @@ void ComponentGeneratorDialog::compile()
 
         //Create custom functions
         QStringList allFunctions;
-        allFunctions << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL";
+        allFunctions << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit";
         for(int i=0; i<allFunctions.size(); ++i)
         {
             py->runCommand(allFunctions[i]+"=Function(\""+allFunctions[i]+"\")");
@@ -1359,28 +1430,42 @@ void ComponentGeneratorDialog::compile()
             py->runCommand("f"+iStr+" = simplify(f"+iStr+")");
         }
 
+        qDebug() << "Åsna!";
+
         pProgressBar->setLabelText("Applying variable limitations");
         pProgressBar->setValue(pProgressBar->value()+1);
 
         //Apply limitations
         for(int i=0; i<limitedVariableEquations.size(); ++i)
         {
+            qDebug() << "Åsna!";
+
             QString fStr = "f"+QString().setNum(limitedVariableEquations[i]);
             QString dfStr = "f"+QString().setNum(limitedDerivativeEquations[i]);
             QString var = limitedVariables[i];
             QString der = limitedDerivatives[i];
             QString min = limitMinValues[i];
             QString max = limitMaxValues[i];
+
+                    qDebug() << "Åsna!, der = " << der;
+
             py->runCommand(fStr+" = factor("+fStr+")");
             py->runCommand(fStr+" = "+fStr+".subs("+var+"*qi00, qi00_OLD)");
             py->runCommand(fStr+" = "+var+"-hopsanLimit(-simplify("+fStr+".expand().subs("+var+",0)/"+fStr+".expand().coeff("+var+")),"+min+","+max+").expand()");
             py->runCommand(fStr+" = "+fStr+".subs(qi00_OLD, "+var+"*qi00)");
 
-            py->runCommand(dfStr+" = factor("+dfStr+")");
-            py->runCommand(dfStr+" = "+dfStr+".subs("+der+"*qi00, qi00_OLD)");
-            py->runCommand(dfStr+" = "+der+"+hopsanDxLimit("+var+","+min+","+max+")*"+dfStr+".subs("+der+",0)/"+dfStr+".coeff("+der+").expand()");
-            py->runCommand(dfStr+" = "+dfStr+".subs(qi00_OLD, "+der+"*qi00)");
+            qDebug() << "Åsna!";
+
+            if(!der.isEmpty())      //Variable2Limits (has a derivative)
+            {
+                py->runCommand(dfStr+" = factor("+dfStr+")");
+                py->runCommand(dfStr+" = "+dfStr+".subs("+der+"*qi00, qi00_OLD)");
+                py->runCommand(dfStr+" = "+der+"+hopsanDxLimit("+var+","+min+","+max+")*"+dfStr+".subs("+der+",0)/"+dfStr+".coeff("+der+").expand()");
+                py->runCommand(dfStr+" = "+dfStr+".subs(qi00_OLD, "+der+"*qi00)");
+            }
         }
+
+        qDebug() << "Åsna 2!";
 
         pProgressBar->setLabelText("Generating Jacobian matrix");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1399,6 +1484,8 @@ void ComponentGeneratorDialog::compile()
             }
         }
 
+        qDebug() << "Åsna 3!";
+
         //if(isSingular(jString))
             //qDebug() << "Matrix is singular!";
         //else
@@ -1415,9 +1502,9 @@ void ComponentGeneratorDialog::compile()
             sysEquations.append(gpMainWindow->mpPyDockWidget->getLastOutput());
         }
 
-        ////qDebug() << "Jacobian = " << jString;
-        ////qDebug() << "System Equations = " << sysEquations;
-        ////qDebug() << "State Variables = " << stateVars;
+        qDebug() << "Jacobian = " << jString;
+        qDebug() << "System Equations = " << sysEquations;
+        qDebug() << "State Variables = " << stateVars;
 
         pProgressBar->setLabelText("Translating delay operators");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1430,21 +1517,23 @@ void ComponentGeneratorDialog::compile()
         pProgressBar->setLabelText("Translating from SymPy to C++");
         pProgressBar->setValue(pProgressBar->value()+1);
 
-        //qDebug() << "Blä 0";
+        qDebug() << "Blä 0";
         translateFunctionsFromPython(delayTerms);
         translateFunctionsFromPython(sysEquations);
         translateFunctionsFromPython(jString);
         translateFunctionsFromPython(initAlgorithms);
+        translateFunctionsFromPython(finalAlgorithms);
 
-        //qDebug() << "Blä 1";
+        qDebug() << "Blä 1";
 
         //Translate all "x**y" to "pow(x,y)"
         translatePowersFromPython(delayTerms);
         translatePowersFromPython(sysEquations);
         translatePowersFromPython(jString);
         translatePowersFromPython(initAlgorithms);
+        translatePowersFromPython(finalAlgorithms);
 
-        //qDebug() << "Blä 2";
+        qDebug() << "Blä 2";
 
         pProgressBar->setLabelText("Enforcing floating point precision");
         pProgressBar->setValue(19);
@@ -1454,7 +1543,8 @@ void ComponentGeneratorDialog::compile()
         translateIntsToDouble(sysEquations);
         translateIntsToDouble(jString);
         translateIntsToDouble(initAlgorithms);
-        //qDebug() << "Blä 3";
+        translateIntsToDouble(finalAlgorithms);
+        qDebug() << "Blä 3";
 
         pProgressBar->setLabelText("Collecting general component data");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1464,21 +1554,27 @@ void ComponentGeneratorDialog::compile()
         QString displayName = mpComponentDisplayEdit->text();
         QString cqsType = mpComponentTypeComboBox->currentText();
 
+        qDebug() << "Blä 3.5";
+
         pProgressBar->setLabelText("Generating component appearance");
         pProgressBar->setValue(pProgressBar->value()+1);
+
+        qDebug() << "Blä 3.6";
 
         //Make sure appearance is updated
         generateAppearance();
 
+        qDebug() << "Blä 3.7";
+
         showOutputDialog(jString, sysEquations, stateVars);
 
-    //qDebug() << "Blä 4";
+    qDebug() << "Blä 4";
 
         pProgressBar->setLabelText("Compiling component");
         pProgressBar->setValue(pProgressBar->value()+1);
 
         //Call utility to generate and compile the source code
-        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, mpAppearance, pProgressBar);
+        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, finalAlgorithms, mpAppearance, pProgressBar);
 
         //qDebug() << "Blä 5";
 
@@ -1565,24 +1661,6 @@ void ComponentGeneratorDialog::compile()
         }
 
         appendRootXMLProcessingInstruction(domDocument);
-
-        //Save to file
-        const int IndentSize = 4;
-        if(!QDir(DATAPATH).exists())
-            QDir().mkdir(DATAPATH);
-        QFile xmlFile(QString(DATAPATH) + "generated_component.xml");
-        qDebug() << "Creating: " << xmlFile.fileName();
-        if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-        {
-            //qDebug() << "Failed to open file for writing: " << gExecPath << "generated_component.xml";
-            return;
-        }
-        QTextStream out(&xmlFile);
-        domDocument.save(out, IndentSize);
-
-        QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
-        QDir().mkpath(QString(DATAPATH)+"compgen/");
-        xmlFile.copy(QString(DATAPATH)+"compgen/component_"+dateString+".xml");
 
         //Make sure appearance is updated
         generateAppearance();
@@ -1675,7 +1753,7 @@ void ComponentGeneratorDialog::showOutputDialog(QStringList jacobian, QStringLis
 void ComponentGeneratorDialog::loadFromModelica()
 {
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Modlica File"),
-                                                         gExecPath+"/",
+                                                         gConfig.getModelicaModelsDir(),
                                                          tr("Modelica File (*.mo)"));
     if(modelFileName.isEmpty())
     {
@@ -1683,30 +1761,56 @@ void ComponentGeneratorDialog::loadFromModelica()
     }
 
     QFile file(modelFileName);
+    QFileInfo fileInfo(file);
+    gConfig.setModelicaModelsDir(fileInfo.absolutePath());
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read Modelica file.");
         return;
     }
+
     QString code;
     QTextStream t(&file);
     code = t.readAll();
     file.close();
 
+    mPortList.clear();              //! @todo Make a clear() member function that wraps this
+    mParametersList.clear();
+    mStaticVariablesList.clear();
+    mUtilitiesList.clear();
+
     //Parse the file
-    QString typeName, displayName;
+    QString typeName, displayName, cqsType="Q";
+    QStringList initAlgorithms;
     QStringList equations;
-    parseModelicaModel(code, typeName, displayName, equations, mPortList, mParametersList);
+    QStringList finalAlgorithms;
+    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, mPortList, mParametersList);
 
     //Update everything
     update();
     updateValues();
     mpComponentNameEdit->setText(typeName);
     mpComponentDisplayEdit->setText(displayName);
+    mpInitAlgorithmsTextField->clear();
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        mpInitAlgorithmsTextField->append(initAlgorithms.at(i));
+    }
+    mpEquationsTextField->clear();
     for(int i=0; i<equations.size(); ++i)
     {
         mpEquationsTextField->append(equations.at(i));
     }
+    mpFinalAlgorithmsTextField->clear();
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        mpFinalAlgorithmsTextField->append(finalAlgorithms.at(i));
+    }
+
+    QStringList dummyCqs;               //Set correct cqs type
+    dummyCqs << "C" << "Q" << "S";
+    mpComponentTypeComboBox->setCurrentIndex(dummyCqs.indexOf(cqsType));
 }
 
 
@@ -1868,6 +1972,15 @@ void ComponentGeneratorDialog::loadFromXml(QString fileName)
         initAlgorithmEquation = initAlgorithmEquation.nextSiblingElement("equation");
     }
 
+    mpFinalAlgorithmsTextField->clear();
+    QDomElement finalAlgorithmEquations = modelRoot.firstChildElement("finalalgorithms");
+    QDomElement finalAlgorithmEquation = finalAlgorithmEquations.firstChildElement("equation");
+    while(!finalAlgorithmEquation.isNull())
+    {
+        mpFinalAlgorithmsTextField->append(finalAlgorithmEquation.text());
+        finalAlgorithmEquation = finalAlgorithmEquation.nextSiblingElement("equation");
+    }
+
     mpBoundaryEquationsTextField->clear();
     QDomElement boundaryEquations = modelRoot.firstChildElement("boundaryequations");
     QDomElement boundaryEquation = boundaryEquations.firstChildElement("equation");
@@ -1964,6 +2077,14 @@ void ComponentGeneratorDialog::saveDialogToXml()
         appendDomTextNode(initAlgorithmsElement,"equation",initAlgorithms.at(i));
     }
 
+    QDomElement finalAlgorithmsElement = appendDomElement(componentRoot, "finalalgorithms");
+    QString plainfinalAlgorithms = mpFinalAlgorithmsTextField->toPlainText();
+    QStringList finalAlgorithms = plainfinalAlgorithms.split("\n");
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        appendDomTextNode(finalAlgorithmsElement,"equation",finalAlgorithms.at(i));
+    }
+
     QDomElement equationsElement = appendDomElement(componentRoot,"equations");
     QString plainEquations = mpEquationsTextField->toPlainText();
     QStringList equations = plainEquations.split("\n");
@@ -1995,17 +2116,9 @@ void ComponentGeneratorDialog::saveDialogToXml()
     QTextStream out(&xmlFile);
     domDocument.save(out, IndentSize);
 
-    QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
-    dateString.replace(":", "_");
-    dateString.replace(".", "_");
-    dateString.replace(" ", "_");
-    dateString.replace("/", "_");
     QDir().mkpath(QString(DATAPATH)+"compgen/");
-    //qDebug() << "Copying to: " << QString(DATAPATH)+"compgen/component_"+dateString+".xml";
-    xmlFile.copy(QString(DATAPATH)+"compgen/component_"+dateString+".xml");
-        //qDebug() << "Copy succesful!";
-    //else
-        //qDebug() << "Copy failed!";
+    QFile().remove(QString(DATAPATH)+"compgen/component_"+mpComponentNameEdit->text()+".xml");
+    xmlFile.copy(QString(DATAPATH)+"compgen/component_"+mpComponentNameEdit->text()+".xml");
 
     update();
 }
