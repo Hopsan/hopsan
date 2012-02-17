@@ -918,7 +918,7 @@ void MainWindow::createToolbars()
     QAction *pTempAction;
     QStringList exampleModels;
 
-    QDir exampleModelsDir(QString(gModelsPath)+"Example Models/");
+    QDir exampleModelsDir(gModelsPath+"Example Models/");
     QStringList filters;
     filters << "*.hmf";
     exampleModelsDir.setNameFilters(filters);
@@ -1068,7 +1068,7 @@ void MainWindow::openExampleModel()
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
     {
-        QString modelPath = QString(gModelsPath) + "Example Models/" +action->text() + ".hmf";
+        QString modelPath = gModelsPath + "Example Models/" +action->text() + ".hmf";
         qDebug() << "Trying to open " << modelPath;
         mpProjectTabs->loadModel(modelPath);
     }

@@ -360,7 +360,7 @@ void ContainerPropertiesDialog::setValues()
 void ContainerPropertiesDialog::browseUser()
 {
     QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
-                                                        QString(gModelsPath));
+                                                        gModelsPath);
     if (!iconFileName.isEmpty())
     {
         mpUserIconPath->setText(iconFileName);
@@ -373,7 +373,7 @@ void ContainerPropertiesDialog::browseIso()
 {
     QDir fileDialogOpenDir;
     QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
-                                                        QString(gModelsPath));
+                                                        gModelsPath);
     if (!iconFileName.isEmpty())
     {
         mpIsoIconPath->setText(iconFileName);
@@ -386,7 +386,7 @@ void ContainerPropertiesDialog::browseScript()
 {
     //QDir fileDialogOpenDir;
     QString scriptFileName = QFileDialog::getOpenFileName(this, tr("Choose script"),
-                                                         QString(gModelsPath));
+                                                         gModelsPath);
     if (!scriptFileName.isEmpty())
     {
         mpPyScriptPath->setText(scriptFileName);

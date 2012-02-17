@@ -209,6 +209,9 @@ private:
     QVector<QLineEdit*> mvStaticVariableNameEdits;
     QVector<QToolButton*> mvRemoveStaticVariableButtons;
 
+    //SymPy Warning
+    QLabel *mpSymPyWarning;
+
     //Buttons
     QPushButton *mpCancelButton;
     QPushButton *mpAppearanceButton;

@@ -62,11 +62,11 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
 {
     bool singular;                  //Tells whether or not the Jaciabian is singular
     int n = variables.length();     //Number of variables
-    int order[n];                   //Used to keep track of the order of the equations
+    int *pOrder = new int[n];                   //Used to keep track of the order of the equations
     Vec deltaStateVar(n);           //Difference between nwe state variables and the previous ones
 
     //LU decomposition
-    ludcmp(jacobian, order, singular);
+    ludcmp(jacobian, pOrder, singular);
     if(singular)
     {
         mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
@@ -74,13 +74,15 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
     }
 
     //Solve system using L and U matrices
-    solvlu(jacobian,equations,deltaStateVar,order);
+    solvlu(jacobian,equations,deltaStateVar,pOrder);
 
     //Calculate new system variables
     for(int i=0; i<n; i++)
     {
         variables[i] = variables[i] - mSystemEquationWeight[iteration - 1] * deltaStateVar[i];
     }
+
+    delete(pOrder);
 }
 
 

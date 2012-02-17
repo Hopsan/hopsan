@@ -548,7 +548,7 @@ void OptimizationDialog::generateScriptFile()
         }
         if(!itsOk)
         {
-            QMessageBox::warning(this, "Warning", "Logarithmic scaling is selected, but parameters are allowed to be negative. This will probably not work.");
+            QMessageBox::warning(this, "Warning", "Logarithmic scaling is selected, but parameters are allowed to be negative or zero. This will probably not work.");
         }
     }
 
@@ -602,12 +602,10 @@ void OptimizationDialog::generateComplexScript()
     scriptStream << "\n";
     scriptStream << "##### Import required packages #####\n";
     scriptStream << "\n";
-    scriptStream << "import sys\n";
     scriptStream << "import time\n";
     scriptStream << "\n";
     scriptStream << "startTime = time.time()\n";
     scriptStream << "\n";
-    scriptStream << "sys.path.append('" << QString(gScriptsPath) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
     scriptStream << "from OptimizationObjectiveFunctions import *\n";
     scriptStream << "import random\n";
@@ -961,12 +959,10 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "\n";
     scriptStream << "##### Import required packages #####\n";
     scriptStream << "\n";
-    scriptStream << "import sys\n";
     scriptStream << "import time\n";
     scriptStream << "\n";
     scriptStream << "startTime = time.time()\n";
     scriptStream << "\n";
-    scriptStream << "sys.path.append('" << QString(gScriptsPath) <<"')\n";
     scriptStream << "from HopsanOptimization import *\n";
     scriptStream << "from OptimizationObjectiveFunctions import *\n";
     scriptStream << "import random\n";
@@ -1666,8 +1662,8 @@ void OptimizationDialog::run()
     scriptPath.replace("\\", "/");
     scriptPath.replace("//", "/");
 
-    gpMainWindow->mpPyDockWidget->runCommand("import sys");
-    gpMainWindow->mpPyDockWidget->runCommand("sys.path.append(\""+scriptPath+"\")");
+    //gpMainWindow->mpPyDockWidget->runCommand("import sys");
+    //gpMainWindow->mpPyDockWidget->runCommand("sys.path.append(\""+scriptPath+"\")");
     gpMainWindow->mpPyDockWidget->runPyScript(pyPath);
     QString timeString = QString().setNum(simTimer.elapsed());
     gpMainWindow->mpMessageWidget->printGUIInfoMessage("Optimization finished after " + timeString + " ms");

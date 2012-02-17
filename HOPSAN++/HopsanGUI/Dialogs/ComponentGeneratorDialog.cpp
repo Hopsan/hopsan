@@ -331,6 +331,9 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mStaticVariablesBoxVisible = true;
 
 
+    mpSymPyWarning = new QLabel(this);
+    mpSymPyWarning->setText("<font color='red'>When compiling from equations, you need to have Python 2.6 or 2.7 with the SymPy package installed.</font>");
+
     //Main layout (create widgets, but don't do anything before contents are updated)
     mpLayout = new QGridLayout(this);
     mpCentralWidget = new QWidget(this);
@@ -855,6 +858,9 @@ void ComponentGeneratorDialog::update()
     mpStaticVariablesGroupBox->setVisible(!mStaticVariablesList.isEmpty());
     mpStaticVariablesMinMaxButton->setVisible(!mStaticVariablesList.isEmpty());
 
+    //Warn about SymPy when compiling from equations
+    mpSymPyWarning->setVisible(mpGenerateFromComboBox->currentIndex() == 0);
+
     while(!mpLayout->isEmpty())
     {
         delete(mpLayout->itemAt(0));
@@ -896,8 +902,9 @@ void ComponentGeneratorDialog::update()
     mpLayout->addWidget(mpStaticVariablesGroupBox,          5, 0, 1, 11);
     mpLayout->addWidget(mpStaticVariablesMinMaxButton,      5, 0, 1, 1);
     mpLayout->setAlignment(mpStaticVariablesMinMaxButton, Qt::AlignTop);
-    mpLayout->addWidget(mpCodeGroupBox,                     6, 0, 1, 11);
-    mpLayout->addWidget(mpButtonBox,                        7, 0, 1, 11);
+    mpLayout->addWidget(mpSymPyWarning,                     6, 0, 1, 11);
+    mpLayout->addWidget(mpCodeGroupBox,                     7, 0, 1, 11);
+    mpLayout->addWidget(mpButtonBox,                        8, 0, 1, 11);
     mpLayout->setSizeConstraint(QLayout::SetMinimumSize);
     //mpLayout->setRowStretch(6, 1);
 

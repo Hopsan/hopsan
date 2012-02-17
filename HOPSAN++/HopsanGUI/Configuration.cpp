@@ -761,7 +761,7 @@ QString Configuration::getLoadModelDir()
 {
     if(mLoadModelDir.isEmpty())
     {
-        return QString(gModelsPath);
+        return gModelsPath;
     }
     return mLoadModelDir;
 }
@@ -811,7 +811,7 @@ QString Configuration::getSubsystemDir()
 {
     if(mSubsystemDir.isEmpty())
     {
-        return QString(gModelsPath);
+        return gModelsPath;
     }
     return mSubsystemDir;
 }
@@ -821,7 +821,7 @@ QString Configuration::getModelicaModelsDir()
 {
     if(mModelicaModelsDir.isEmpty())
     {
-        return QString(MODELPATH);
+        return gModelsPath;
     }
     return mModelicaModelsDir;
 }
