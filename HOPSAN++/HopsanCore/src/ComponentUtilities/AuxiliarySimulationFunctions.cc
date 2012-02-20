@@ -206,7 +206,7 @@ double hopsan::dxLimit(const double x, const double xmin, const double xmax)
 //! @returns Limited derivative of x
 double hopsan::dxLimit2(const double x, const double sx, const double xmin, const double xmax)
 {
-    if (x >= xmax && sx >= 0.0) { return 0.0; }
-    if (x <= xmin && sx <= 0.0) { return 0.0; }
+    if (x >= xmax && sx >= 0.0) { return 0.0000001; }
+    if (x <= xmin && sx <= 0.0) { return 0.0000001; }
     return 1.0;
 }
