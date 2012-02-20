@@ -86,6 +86,14 @@ void Parameter::getParameter(std::string &rParameterName, std::string &rParamete
     rType = mType;
 }
 
+//! @brief Returns a pointer directly to the parameter data variable
+//! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
+//! @warning This function may be removed in teh future
+void* Parameter::getDataPtr()
+{
+    return mpData;
+}
+
 
 bool Parameter::setParameter(std::string parameterValue, std::string description, std::string unit, std::string type, Parameter **pNeedEvaluation, bool force)
 {
@@ -459,6 +467,21 @@ void Parameters::getParameterValue(const std::string name, std::string &rValue)
         }
     }
     rValue = "";
+}
+
+//! @brief Returns a pointer directly to the parameter data variable
+//! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
+//! @warning This function may be removed in the future
+void* Parameters::getParameterDataPtr(const std::string name)
+{
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (mParameters[i]->getName() == name)
+        {
+            return mParameters[i]->getDataPtr();
+        }
+    }
+    return 0;
 }
 
 

@@ -50,6 +50,8 @@ public:
     void getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription,
                       std::string &rUnit, std::string &rType) const;
 
+    void* getDataPtr();
+
     std::string getType() const;
     std::string getName() const;
     std::string getValue() const;
@@ -84,6 +86,8 @@ public:
 
     void getParameterValue(const std::string name, std::string &rValue);
     bool setParameterValue(const std::string name, const std::string value, bool force=false);
+
+    void* getParameterDataPtr(const std::string name);
 
     bool evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe=0);
     bool evaluateParameters();

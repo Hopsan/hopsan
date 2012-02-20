@@ -88,6 +88,13 @@ void Component::getParameterValue(const std::string name, std::string &rValue)
     mpParameters->getParameterValue(name, rValue);
 }
 
+//! @brief Returns a pointer directly to the parameter data variable
+//! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
+//! @warning This function may be removed in the future
+void* Component::getParameterDataPtr(const std::string name)
+{
+    return mpParameters->getParameterDataPtr(name);
+}
 
 bool Component::setParameterValue(const std::string name, const std::string value, bool force)
 {
