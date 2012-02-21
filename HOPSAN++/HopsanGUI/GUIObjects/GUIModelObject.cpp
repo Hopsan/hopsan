@@ -1214,8 +1214,7 @@ void ModelObject::refreshAppearance()
         if(port != 0)
         {
             port->setCenterPosByFraction(it.value().x, it.value().y);
-            port->setVisible(it.value().mVisible);
-            port->setEnable(it.value().mEnable);
+            port->setEnable(it.value().mEnabled);
         }
     }
     redrawConnectors();

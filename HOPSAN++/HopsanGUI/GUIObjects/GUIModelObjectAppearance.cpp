@@ -82,7 +82,7 @@ void appendPortDomElement(QDomElement &rDomElement, const QString portName, cons
 
     // Save visible or not, only write if hidden is set, as default is visible (to avoid clutter in xml file)
     //! @todo maybe should always write
-    if (!rPortAppearance.mVisible)
+    if (!rPortAppearance.mEnabled)
     {
         xmlPort.setAttribute("visible", HMF_FALSETAG);
     }
@@ -105,7 +105,7 @@ void parsePortDomElement(QDomElement domElement, QString &rPortName, PortAppeara
     rPortAppearance.y = parseAttributeQreal(domElement, "y", 0);
     rPortAppearance.rot = parseAttributeQreal(domElement, "a", 0);
 
-    rPortAppearance.mVisible = parseAttributeBool(domElement, "visible", true);
+    rPortAppearance.mEnabled = parseAttributeBool(domElement, "visible", true);
 
     QDomElement xmlPortDescription = domElement.firstChildElement(CAF_DESCRIPTION);
     if (!xmlPortDescription.isNull())

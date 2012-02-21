@@ -43,7 +43,7 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
         mDragPortMap.insert(it.key(), pPort);
 
         QCheckBox *pCb = new QCheckBox(it.key(), this);
-        bool enable =it-> mEnable;
+        bool enable =it->mEnabled;
         pPort->setVisible(enable);
         pCb->setChecked(enable);
         mvPortEnable.append(pCb);
@@ -278,12 +278,12 @@ void DragPort::setEnable(int state)
 {
     if(1 > state)
     {
-        mpPortAppearance->mEnable = false;
+        mpPortAppearance->mEnabled = false;
         setVisible(false);
     }
     else
     {
-        mpPortAppearance->mEnable = true;
+        mpPortAppearance->mEnabled = true;
         setVisible(true);
     }
 }

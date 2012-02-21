@@ -29,8 +29,7 @@
 PortAppearance::PortAppearance()
 {
     //Default values
-    mVisible = true;
-    mEnable = true;
+    mEnabled = true;
     mAutoPlaced = true;
 }
 

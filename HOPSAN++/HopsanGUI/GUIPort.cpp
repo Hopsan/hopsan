@@ -170,14 +170,12 @@ void Port::magnify(bool doMagnify)
 //! Reimplemented to call custom show hide instead
 void Port::setVisible(bool value)
 {
-    if (value && mpPortAppearance->mEnable)
+    if (value && mpPortAppearance->mEnabled)
     {
-        mpPortAppearance->mVisible = true;
         this->show();
     }
     else
     {
-        mpPortAppearance->mVisible = false;
         this->hide();
     }
 }
@@ -187,7 +185,7 @@ void Port::setVisible(bool value)
 //! @param *event defines the mouse event.
 void Port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (mpPortAppearance->mVisible && mpPortAppearance->mEnable)
+    if (mpPortAppearance->mEnabled)
     {
         //qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
         QGraphicsWidget::hoverEnterEvent(event);
@@ -204,7 +202,7 @@ void Port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 //! @param *event defines the mouse event.
 void Port::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (mpPortAppearance->mVisible)
+    if (mpPortAppearance->mEnabled)
     {
         this->setCursor(Qt::ArrowCursor);
         magnify(false);
@@ -251,7 +249,7 @@ void Port::setRotation(qreal angle)
 //! @param *event defines the mouse event.
 void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (mpPortAppearance->mVisible)
+    if (mpPortAppearance->mEnabled)
     {
         if(!mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->isEditingEnabled())
             return;
@@ -279,7 +277,7 @@ void Port::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
 
 void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    if (mpPortAppearance->mVisible)
+    if (mpPortAppearance->mEnabled)
     {
         //std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
@@ -742,6 +740,7 @@ qreal Port::getPortRotation()
 
 void Port::setEnable(bool enable)
 {
+    mpPortAppearance->mEnabled = enable;
     setVisible(enable);
     //! @todo disconnect component connections to this port
 }
@@ -756,7 +755,7 @@ void Port::hide()
 
 void Port::show()
 {
-    if (mpPortAppearance->mVisible)
+    if (mpPortAppearance->mEnabled)
     {
         QGraphicsWidget::show();
     }

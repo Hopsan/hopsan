@@ -38,8 +38,7 @@ public:
     QString mMainIconPath;
     QString mCQSOverlayPath;
     QString mMultiPortOverlayPath;
-    bool mVisible;
-    bool mEnable;
+    bool mEnabled;
     bool mAutoPlaced;
     QString mDescription;
 };
