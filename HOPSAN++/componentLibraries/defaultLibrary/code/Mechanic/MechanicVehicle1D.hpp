@@ -145,7 +145,7 @@ public:
         registerParameter("r_wheel", "Wheel Radius", "m", mrwheel);
         registerParameter("rho", "Air Density", "kg/m3", mrho);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 5);
      }
 
      void initialize()

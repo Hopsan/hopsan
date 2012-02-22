@@ -116,7 +116,7 @@ public:
         registerParameter("y", "Actual value", "", my);
         registerParameter("kx", "Break frequency", "rad/s", mkx);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 1);
      }
 
     void initialize()

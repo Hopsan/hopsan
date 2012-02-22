@@ -78,6 +78,7 @@ public:
     QString getSimulinkExportDir();
     QString getSubsystemDir();
     QString getModelicaModelsDir();
+    QString getExternalLibDir();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -109,6 +110,7 @@ public:
     void setSimulinkExportDir(QString value);
     void setSubsystemDir(QString value);
     void setModelicaModelsDir(QString value);
+    void setExternalLibDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -143,6 +145,7 @@ private:
     QString mSimulinkExportDir;
     QString mSubsystemDir;
     QString mModelicaModelsDir;
+    QString mExternalLibDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

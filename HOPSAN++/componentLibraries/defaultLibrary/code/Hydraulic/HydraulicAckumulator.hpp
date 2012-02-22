@@ -113,7 +113,7 @@ public:
         registerParameter("Kca", "Flow coefficent", "m^3/Pa", mKca);
         registerParameter("kappa", "polytropic exp. of gas", "", mkappa);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 4);
      }
 
     void initialize()

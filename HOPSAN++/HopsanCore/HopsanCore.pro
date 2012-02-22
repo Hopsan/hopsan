@@ -145,7 +145,7 @@ HEADERS += \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
     Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     include/Parameters.h \
-    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h \
+    #../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h
 

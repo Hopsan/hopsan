@@ -104,7 +104,7 @@ public:
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Induct", "Inductance", "A/(Vs)", mInduct);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 3);
      }
 
     void initialize()

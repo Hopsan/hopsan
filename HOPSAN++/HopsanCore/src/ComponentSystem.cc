@@ -2352,6 +2352,25 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         simulateAndMeasureTime(5);                                  //Measure time
         sortComponentVectorsByMeasuredTime();                       //Sort component vectors
 
+        for(int q=0; q<mComponentQptrs.size(); ++q)
+        {
+            std::stringstream ss;
+            ss << "Time for " << mComponentQptrs.at(q)->getName() << ": " << mComponentQptrs.at(q)->getMeasuredTime();
+            gCoreMessageHandler.addDebugMessage(ss.str());
+        }
+        for(int c=0; c<mComponentCptrs.size(); ++c)
+        {
+            std::stringstream ss;
+            ss << "Time for " << mComponentCptrs.at(c)->getName() << ": " << mComponentCptrs.at(c)->getMeasuredTime();
+            gCoreMessageHandler.addDebugMessage(ss.str());
+        }
+        for(int s=0; s<mComponentSignalptrs.size(); ++s)
+        {
+            std::stringstream ss;
+            ss << "Time for " << mComponentSignalptrs.at(s)->getName() << ": " << mComponentSignalptrs.at(s)->getMeasuredTime();
+            gCoreMessageHandler.addDebugMessage(ss.str());
+        }
+
         distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
         distributeQcomponents(mSplitQVector, nThreads);
         distributeSignalcomponents(mSplitSignalVector, nThreads);
@@ -2443,38 +2462,41 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
         mComponentQptrs[q]->setMeasuredTime(0);
 
     //Measure time for each component during specified amount of steps
-    for(size_t t=0; t<steps; ++t)
+
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
     {
-        for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+        tbb::tick_count comp_start = tbb::tick_count::now();
+        for(size_t t=0; t<steps; ++t)
         {
-            tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
-            tbb::tick_count comp_end = tbb::tick_count::now();
-            time += double((comp_end-comp_start).seconds());
-            mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()+time);
         }
+        tbb::tick_count comp_end = tbb::tick_count::now();
+        time = double((comp_end-comp_start).seconds());
+        mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()+time);
+    }
 
-
-        for(size_t c=0; c<mComponentCptrs.size(); ++c)
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+    {
+        tbb::tick_count comp_start = tbb::tick_count::now();
+        for(size_t t=0; t<steps; ++t)
         {
-            tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
-            tbb::tick_count comp_end = tbb::tick_count::now();
-            time += double((comp_end-comp_start).seconds());
-            mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()+time);
         }
+        tbb::tick_count comp_end = tbb::tick_count::now();
+        time = double((comp_end-comp_start).seconds());
+        mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()+time);
+    }
 
-        for(size_t q=0; q<mComponentQptrs.size(); ++q)
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+    {
+        tbb::tick_count comp_start = tbb::tick_count::now();
+        for(size_t t=0; t<steps; ++t)
         {
-            tbb::tick_count comp_start = tbb::tick_count::now();
             mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
-            tbb::tick_count comp_end = tbb::tick_count::now();
-            time += double((comp_end-comp_start).seconds());
-            mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()+time);
         }
-
-        logAllNodes(mTime);
-        mTime += mTimestep;
+        tbb::tick_count comp_end = tbb::tick_count::now();
+        time = double((comp_end-comp_start).seconds());
+        mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()+time);
     }
 
     //Divide measured times with number of steps, to get the average

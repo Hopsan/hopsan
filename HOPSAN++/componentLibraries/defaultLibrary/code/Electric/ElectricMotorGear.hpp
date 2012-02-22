@@ -186,7 +186,7 @@ mwc);
         registerParameter("JL", "Moment of inertia, load", "kg m^2", mJL);
         registerParameter("gearRatio", "gearing w1/w2", "", mgearRatio);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 6);
      }
 
     void initialize()

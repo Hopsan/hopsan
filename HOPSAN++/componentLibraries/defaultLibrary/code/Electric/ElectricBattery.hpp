@@ -117,7 +117,7 @@ public:
         registerParameter("capacity", "capacity", "Ah", mcapacity);
         registerParameter("kappa", "exponent of discharge function", "", mkappa);
 
-       pSolver = new EquationSystemSolver(this);
+       pSolver = new EquationSystemSolver(this, 4);
      }
 
     void initialize()

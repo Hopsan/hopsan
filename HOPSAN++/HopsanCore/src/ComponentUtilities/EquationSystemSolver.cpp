@@ -41,7 +41,7 @@ using namespace hopsan;
 
 //! @brief Constructor for equation system solver utility
 //! @param pParentComponent Pointer to parent component
-EquationSystemSolver::EquationSystemSolver(Component *pParentComponent)
+EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n)
 {
     mpParentComponent = pParentComponent;
 
@@ -50,6 +50,11 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent)
     mSystemEquationWeight[1]=0.67;
     mSystemEquationWeight[2]=0.5;
     mSystemEquationWeight[3]=0.5;
+
+    mnVars = n;
+    mpOrder = new int[n];                   //Used to keep track of the order of the equations
+    mpDeltaStateVar = new Vec(n);           //Difference between nwe state variables and the previous ones
+    mSingular = false;                      //Tells whether or not the Jaciabian is singular
 }
 
 
@@ -60,27 +65,50 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent)
 //! @param iteration How many times the solver has been executed before in the same time step
 void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variables, int iteration)
 {
-    bool singular;                  //Tells whether or not the Jaciabian is singular
-    int n = variables.length();     //Number of variables
-    int *pOrder = new int[n];                   //Used to keep track of the order of the equations
-    Vec deltaStateVar(n);           //Difference between nwe state variables and the previous ones
-
     //LU decomposition
-    ludcmp(jacobian, pOrder, singular);
-    if(singular)
+    ludcmp(jacobian, mpOrder, mSingular);
+
+    //Stop simulation if LU decomposition failed due to singularity
+    if(mSingular)
     {
         mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
         mpParentComponent->stopSimulation();
     }
 
     //Solve system using L and U matrices
-    solvlu(jacobian,equations,deltaStateVar,pOrder);
+    solvlu(jacobian,equations,*mpDeltaStateVar,mpOrder);
 
     //Calculate new system variables
-    for(int i=0; i<n; i++)
+    for(int i=0; i<mnVars; ++i)
     {
-        variables[i] = variables[i] - mSystemEquationWeight[iteration - 1] * deltaStateVar[i];
+        variables[i] = variables[i] - mSystemEquationWeight[iteration - 1] * (*mpDeltaStateVar)[i];
+    }
+}
+
+
+
+//! @brief Solves a system of equations with just one iteration (slightly faster)
+//! @param jacobian Jacobian matrix
+//! @param equations Vector of system equations
+//! @param variables Vector of state variables
+void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variables)
+{
+    //LU decomposition
+    ludcmp(jacobian, mpOrder, mSingular);
+
+    //Stop simulation if LU decomposition failed due to singularity
+    if(mSingular)
+    {
+        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
+        mpParentComponent->stopSimulation();
     }
 
-    delete(pOrder);
+    //Solve system using L and U matrices
+    solvlu(jacobian,equations,*mpDeltaStateVar,mpOrder);
+
+    //Calculate new system variables
+    for(int i=0; i<mnVars; ++i)
+    {
+        variables[i] = variables[i] - (*mpDeltaStateVar)[i];
+    }
 }

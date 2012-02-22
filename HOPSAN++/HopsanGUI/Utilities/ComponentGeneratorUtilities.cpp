@@ -177,7 +177,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
                                  QStringList delayTerms, QStringList delaySteps, QStringList localVars,
-                                 QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+                                 QStringList initAlgorithms, QStringList finalAlgorithms, QStringList resEquations, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
     if(pProgressBar)
     {
@@ -213,16 +213,12 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
 
     if(!jacobian.isEmpty())
     {
-        comp.varNames << "order["+QString().setNum(stateVars.size())+"]" << "jsyseqnweight[4]" << "jacobianMatrix" << "systemEquations" << "mpSolver";
-        comp.varTypes << "int" << "double" << "Matrix" << "Vec" << "EquationSystemSolver*";
+        comp.varNames << "order["+QString().setNum(stateVars.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSolver";
+        comp.varTypes << "double" << "Matrix" << "Vec" << "Vec" << "EquationSystemSolver*";
 
         comp.initEquations << "jacobianMatrix.create("+QString().setNum(sysEquations.size())+","+QString().setNum(stateVars.size())+");";
         comp.initEquations << "systemEquations.create("+QString().setNum(sysEquations.size())+");";
-        comp.initEquations << "";
-        comp.initEquations << "jsyseqnweight[0]=1.0;";
-        comp.initEquations << "jsyseqnweight[1]=0.67;";
-        comp.initEquations << "jsyseqnweight[2]=0.5;";
-        comp.initEquations << "jsyseqnweight[3]=0.5;";
+        comp.initEquations << "stateVariables.create("+QString().setNum(sysEquations.size())+");";
         comp.initEquations << "";
     }
 
@@ -231,15 +227,8 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.initEquations << "mDelay"+QString().setNum(i)+".initialize("+QString().setNum(delaySteps.at(i).toInt()+1)+", "+delayTerms[i]+");";
     }
 
-    if(!jacobian.isEmpty())
-    {
-        comp.simEquations << "Vec stateVar("+QString().setNum(stateVars.size())+");";
-        comp.simEquations << "Vec stateVark("+QString().setNum(stateVars.size())+");";
-        comp.simEquations << "Vec deltaStateVar("+QString().setNum(stateVars.size())+");";
-        comp.simEquations << "";
-        comp.simEquations << "mpSolver = new EquationSystemSolver(this);";
-        comp.simEquations << "";
-    }
+    comp.initEquations << "";
+    comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+");";
 
     if(pProgressBar)
     {
@@ -253,21 +242,22 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
     }
     comp.simEquations << "";
 
+    //! @todo Add support for using more than one iteration
+
     if(!jacobian.isEmpty())
     {
         for(int i=0; i<stateVars.size(); ++i)
         {
-            comp.simEquations << "stateVark["+QString().setNum(i)+"] = "+stateVars[i]+";";
+            comp.simEquations << "stateVariables["+QString().setNum(i)+"] = "+stateVars[i]+";";
         }
 
-        comp.simEquations << "for(int iter=1;iter<=2;iter++)" << "{";
+        comp.simEquations << "";
         comp.simEquations << "    //System Equations";
         for(int i=0; i<sysEquations.size(); ++i)
         {
             comp.simEquations << "    systemEquations["+QString().setNum(i)+"] = "+sysEquations[i]+";";
+   //         comp.simEquations << "    "+stateVars[i]+" = " + resEquations[i]+";";
         }
-        comp.simEquations << "";
-
         comp.simEquations << "";
         comp.simEquations << "    //Jacobian Matrix";
         for(int i=0; i<sysEquations.size(); ++i)
@@ -279,13 +269,12 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         }
         comp.simEquations << "";
         comp.simEquations << "    //Solving equation using LU-faktorisation";
-        comp.simEquations << "    mpSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);";
+        comp.simEquations << "    mpSolver->solve(jacobianMatrix, systemEquations, stateVariables);";
         comp.simEquations << "";
         for(int i=0; i<stateVars.size(); ++i)
         {
-            comp.simEquations << "    "+stateVars[i]+"=stateVark["+QString().setNum(i)+"];";
+            comp.simEquations << "    "+stateVars[i]+"=stateVariables["+QString().setNum(i)+"];";
         }
-        comp.simEquations << "}";
         comp.simEquations << "";
         for(int i=0; i<delayTerms.size(); ++i)
         {
@@ -702,7 +691,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         return;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << gExecPath+QString(INCLUDEPATH) << "\" -L\""+gExecPath+"\" -lHopsanCore\n";
+    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << QString(INCLUDEPATH) << "\" -L\""+gExecPath+"\" -lHopsanCore\n";
     clBatchFile.close();
 
     if(pProgressBar)
@@ -1202,8 +1191,6 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
             QString before = localDelays.at(j);
             int steps = 0;
             //More than one delay step if the delay operator is raised to something
-            qDebug() << "Now checking.";
-            qDebug() << "Checking if " << before.size() << " is bigger than " << before.indexOf("qi00")+6;
             if(before.size() > before.indexOf("qi00")+6)
             {
                 if(before.at(before.indexOf("qi00")+4) == '*' && before.at(before.indexOf("qi00")+5) == '*')
@@ -1212,8 +1199,22 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
                 }
             }
 
-            QString after = "mDelay"+QString().setNum(delayNum)+".getIdx("+QString().setNum(steps)+")";
-            equations[i].replace(localDelays.at(j), after);
+            //! @todo Find a way to identify constant delays and ignore them
+            QString after;
+            if(localDelays.at(j) == "qi00")     //Lone qi00s should not become delay(1)
+            {
+                after = "1";
+                equations[i].replace(localDelays.at(j), after);
+                localDelays.removeAt(j);
+                --j;
+                continue;
+            }
+            else
+            {
+                after = "mDelay"+QString().setNum(delayNum)+".getIdx("+QString().setNum(steps)+")";
+                equations[i].replace(localDelays.at(j), after);
+            }
+
 
             localDelays[j] = before.replace("qi00", "1");        //Replace delay operators with ones, to "remove" them
             while(localDelays[j].endsWith(" "))
@@ -1326,259 +1327,263 @@ void translateFunctionsFromPython(QStringList &equations)
 {
     for(int e=0; e<equations.size(); ++e)
     {
-        //qDebug() << "Before Subs() replacement: " << equations[e];
-
-        //Replace "Subs(f(x),x,y)" with "f(y)"
-        int idx = equations[e].indexOf("Subs(", 0);
-        while(idx > -1)
-        {
-            int parBal = 0;         //Find index of first comma
-            int idx2 = idx+4;
-            while(true)
-            {
-                ++idx2;
-
-                if(equations[e].at(idx2) == '(')
-                {
-                    ++parBal;
-                }
-                if(equations[e].at(idx2) == ')')
-                {
-                    --parBal;
-                }
-                if(equations[e].at(idx2) == ',' && parBal == 0)
-                    break;
-            }
-
-            parBal = 0;         //Find index of second comma
-            int idx3 = idx2+1;
-            while(true)
-            {
-                ++idx3;
-
-                if(equations[e].at(idx3) == '(')
-                {
-                    ++parBal;
-                }
-                if(equations[e].at(idx3) == ')')
-                {
-                    --parBal;
-                }
-                if(equations[e].at(idx3) == ',' && parBal == 0)
-                    break;
-            }
-
-            parBal = 1;         //Find index of end parenthesis
-            int idx4 = idx+5;
-            while(parBal > 0)
-            {
-                ++idx4;
-
-                if(equations[e].at(idx4) == '(')
-                {
-                    ++parBal;
-                }
-                if(equations[e].at(idx4) == ')')
-                {
-                    --parBal;
-                }
-            }
-
-            QString old = equations.at(e).mid(idx+5, idx2-idx-5);
-            ////qDebug() << "old = " << old;
-            QString replaceWord = equations.at(e).mid(idx2+3, idx3-idx2-5);
-            ////qDebug() << "replaceWord = " << replaceWord;
-            QString replacement = equations.at(e).mid(idx3+3, idx4-idx3-5);
-            ////qDebug() << "replacement = " << replacement;
-
-            old = old.replace(replaceWord, replacement);      //Do the replacement
-
-            ////qDebug() << "new = " << old;
-
-            equations[e].remove(idx, idx4-idx+1);
-            //qDebug() << "After remove: " << equations[e];
-            equations[e].insert(idx, old);      //Replace whole function with new string
-
-            idx = equations[e].indexOf("Subs(", 0);
-        }
-
-        //qDebug() << "After Subs() replacement: " << equations[e];
-
-        //Replace "abs()" with "fabs()"
-        idx = equations[e].indexOf("abs", 0);
-        while(idx > -1)
-        {
-            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+3) == '(')
-            {
-                equations[e].insert(idx, "f");
-            }
-            idx = equations[e].indexOf("abs", idx+3);
-        }
-
-
-        //Replace "abs()" with "fabs()"
-        idx = equations[e].indexOf("abs", 0, Qt::CaseInsensitive);
-        while(idx > -1)
-        {
-            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+3) == '(')
-            {
-                equations[e].replace(idx, 3, "fabs");
-            }
-            idx = equations[e].indexOf("abs", idx+3, Qt::CaseInsensitive);
-        }
-
-
-        replaceDerivative(equations[e], "hopsanLimit", "hopsanDxLimit");
-        replaceDerivative(equations[e], "limit", "dxLimit");
-
-
-        //Replace "D(hopsanDxLimit(x, min, max))" with 0
-        idx = equations[e].indexOf("D(hopsanDxLimit(", 0);
-        while(idx > -1)
-        {
-            int parBal = 2;         //Find index of end parenthesis
-            int idx2 = idx+15;
-            while(parBal != 0)
-            {
-                ++idx2;
-
-                if(equations[e].at(idx2) == '(')
-                {
-                    ++parBal;
-                }
-                if(equations[e].at(idx2) == ')')
-                {
-                    --parBal;
-                }
-            }
-
-            equations[e].replace(idx, idx2-idx+1, "0");     //Replace entire expression with "0"
-
-            idx = equations[e].indexOf("D(hopsanDxLimit(", idx);
-        }
-
-
-        //Replace "D(hopsanDxLimit(x, min, max))" with 0
-        idx = equations[e].indexOf("Derivative(hopsanDxLimit(", 0);
-        while(idx > -1)
-        {
-            int parBal = 2;         //Find index of end parenthesis
-            int idx2 = idx+24;
-            while(parBal != 0)
-            {
-                ++idx2;
-
-                if(equations[e].at(idx2) == '(')
-                {
-                    ++parBal;
-                }
-                if(equations[e].at(idx2) == ')')
-                {
-                    --parBal;
-                }
-            }
-
-            equations[e].replace(idx, idx2-idx+1, "0");     //Replace entire expression with "0"
-
-            idx = equations[e].indexOf("Derivative(hopsanDxLimit(", idx);
-        }
-
-
-        //Replace "hopsanLimit" with "limit"
-        idx = equations[e].indexOf("hopsanLimit(", 0);
-       // qDebug() << "Replacing hopsanLimit for equation: " << equations[e];
-        while(idx > -1)
-        {
-            qDebug() << "Found hopsanLimit at " << idx;
-            //qDebug() << "idx = " << idx;
-
-            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+11) == '(')
-            {
-                equations[e].replace(idx, 11, "limit");      //Do the replacement
-
-                idx = equations[e].indexOf("hopsanLimit(", idx+1);
-            }
-            else
-            {
-                idx = equations[e].indexOf("hopsanLimit(", idx+1);
-            }
-
-            qDebug() << "Equation after replacement: " << equations[e];
-        }
-
-
-        //Replace "hopsanDxLimit" with "dxLimit"
-        idx = equations[e].indexOf("hopsanDxLimit(", 0);
-        while(idx > -1)
-        {
-            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+13) == '(')
-            {
-                equations[e].replace(idx, 13, "dxLimit");      //Do the replacement
-
-                idx = equations[e].indexOf("hopsanDxLimit(", idx);
-            }
-            else
-            {
-                idx = equations[e].indexOf("hopsanDxLimit(", idx+1);
-            }
-        }
-
-
-        //Replace "D(sign(x), x)" with 0 (derivative of sign(x) = 0 for all x except 0, but it should be ok)
-        idx = equations[e].indexOf("D(sign(", 0);
-        while(idx > -1)
-        {
-            int parBal = 2;         //Find index of end parenthesis
-            int idx2 = idx+6;
-            while(parBal != 0)
-            {
-                ++idx2;
-                if(equations[e].at(idx2) == '(')
-                    ++parBal;
-                if(equations[e].at(idx2) == ')')
-                    --parBal;
-            }
-
-            equations[e].remove(idx, idx2-idx+1);
-            equations[e].insert(idx, "0");
-
-            idx = equations[e].indexOf("D(sign(", idx);
-        }
-
-
-        //Replace "re(x)" with "x" (we only work with real numbers anyway)
-        idx = equations[e].indexOf("re(", 0);
-        while(idx > -1)
-        {
-            if((idx == 0 || !equations[e].at(idx-1).isLetterOrNumber()) && equations[e].at(idx+2) == '(')
-            {
-                //qDebug() << "Found \"re\" at index: " << idx;
-                int parBal = 1;         //Find index of end parenthesis
-                int idx2 = idx+3;
-                while(parBal != 0)
-                {
-                    ++idx2;
-                    if(equations[e].at(idx2) == '(')
-                        ++parBal;
-                    if(equations[e].at(idx2) == ')')
-                        --parBal;
-                }
-
-                equations[e].remove(idx2, 1);
-                equations[e].remove(idx, 3);
-
-                idx = equations[e].indexOf("re(", idx);
-            }
-            else
-            {
-                idx = equations[e].indexOf("re(", idx+1);
-            }
-        }
-
-        replaceDerivative(equations[e], "onPositive", "dxOnPositive");
-        replaceDerivative(equations[e], "onNegative", "dxOnNegative");
-        replaceDerivative(equations[e], "signedSquareL", "dxSignedSquareL");
+        translateFunctionsFromPython(equations[e]);
     }
+}
+
+
+void translateFunctionsFromPython(QString &equation)
+{
+    //Replace "Subs(f(x),x,y)" with "f(y)"
+    int idx = equation.indexOf("Subs(", 0);
+    while(idx > -1)
+    {
+        int parBal = 0;         //Find index of first comma
+        int idx2 = idx+4;
+        while(true)
+        {
+            ++idx2;
+
+            if(equation.at(idx2) == '(')
+            {
+                ++parBal;
+            }
+            if(equation.at(idx2) == ')')
+            {
+                --parBal;
+            }
+            if(equation.at(idx2) == ',' && parBal == 0)
+                break;
+        }
+
+        parBal = 0;         //Find index of second comma
+        int idx3 = idx2+1;
+        while(true)
+        {
+            ++idx3;
+
+            if(equation.at(idx3) == '(')
+            {
+                ++parBal;
+            }
+            if(equation.at(idx3) == ')')
+            {
+                --parBal;
+            }
+            if(equation.at(idx3) == ',' && parBal == 0)
+                break;
+        }
+
+        parBal = 1;         //Find index of end parenthesis
+        int idx4 = idx+5;
+        while(parBal > 0)
+        {
+            ++idx4;
+
+            if(equation.at(idx4) == '(')
+            {
+                ++parBal;
+            }
+            if(equation.at(idx4) == ')')
+            {
+                --parBal;
+            }
+        }
+
+        QString old = equation.mid(idx+5, idx2-idx-5);
+        ////qDebug() << "old = " << old;
+        QString replaceWord = equation.mid(idx2+3, idx3-idx2-5);
+        ////qDebug() << "replaceWord = " << replaceWord;
+        QString replacement = equation.mid(idx3+3, idx4-idx3-5);
+        ////qDebug() << "replacement = " << replacement;
+
+        old = old.replace(replaceWord, replacement);      //Do the replacement
+
+        ////qDebug() << "new = " << old;
+
+        equation.remove(idx, idx4-idx+1);
+        //qDebug() << "After remove: " << equation;
+        equation.insert(idx, old);      //Replace whole function with new string
+
+        idx = equation.indexOf("Subs(", 0);
+    }
+
+    //qDebug() << "After Subs() replacement: " << equation;
+
+    //Replace "abs()" with "fabs()"
+    idx = equation.indexOf("abs", 0);
+    while(idx > -1)
+    {
+        if((idx == 0 || !equation.at(idx-1).isLetterOrNumber()) && equation.at(idx+3) == '(')
+        {
+            equation.insert(idx, "f");
+        }
+        idx = equation.indexOf("abs", idx+3);
+    }
+
+
+    //Replace "abs()" with "fabs()"
+    idx = equation.indexOf("abs", 0, Qt::CaseInsensitive);
+    while(idx > -1)
+    {
+        if((idx == 0 || !equation.at(idx-1).isLetterOrNumber()) && equation.at(idx+3) == '(')
+        {
+            equation.replace(idx, 3, "fabs");
+        }
+        idx = equation.indexOf("abs", idx+3, Qt::CaseInsensitive);
+    }
+
+
+    replaceDerivative(equation, "hopsanLimit", "hopsanDxLimit");
+    replaceDerivative(equation, "limit", "dxLimit");
+
+
+    //Replace "D(hopsanDxLimit(x, min, max))" with 0
+    idx = equation.indexOf("D(hopsanDxLimit(", 0);
+    while(idx > -1)
+    {
+        int parBal = 2;         //Find index of end parenthesis
+        int idx2 = idx+15;
+        while(parBal != 0)
+        {
+            ++idx2;
+
+            if(equation.at(idx2) == '(')
+            {
+                ++parBal;
+            }
+            if(equation.at(idx2) == ')')
+            {
+                --parBal;
+            }
+        }
+
+        equation.replace(idx, idx2-idx+1, "0");     //Replace entire expression with "0"
+
+        idx = equation.indexOf("D(hopsanDxLimit(", idx);
+    }
+
+
+    //Replace "D(hopsanDxLimit(x, min, max))" with 0
+    idx = equation.indexOf("Derivative(hopsanDxLimit(", 0);
+    while(idx > -1)
+    {
+        int parBal = 2;         //Find index of end parenthesis
+        int idx2 = idx+24;
+        while(parBal != 0)
+        {
+            ++idx2;
+
+            if(equation.at(idx2) == '(')
+            {
+                ++parBal;
+            }
+            if(equation.at(idx2) == ')')
+            {
+                --parBal;
+            }
+        }
+
+        equation.replace(idx, idx2-idx+1, "0");     //Replace entire expression with "0"
+
+        idx = equation.indexOf("Derivative(hopsanDxLimit(", idx);
+    }
+
+
+    //Replace "hopsanLimit" with "limit"
+    idx = equation.indexOf("hopsanLimit(", 0);
+   // qDebug() << "Replacing hopsanLimit for equation: " << equation;
+    while(idx > -1)
+    {
+        qDebug() << "Found hopsanLimit at " << idx;
+        //qDebug() << "idx = " << idx;
+
+        if((idx == 0 || !equation.at(idx-1).isLetterOrNumber()) && equation.at(idx+11) == '(')
+        {
+            equation.replace(idx, 11, "limit");      //Do the replacement
+
+            idx = equation.indexOf("hopsanLimit(", idx+1);
+        }
+        else
+        {
+            idx = equation.indexOf("hopsanLimit(", idx+1);
+        }
+
+        qDebug() << "Equation after replacement: " << equation;
+    }
+
+
+    //Replace "hopsanDxLimit" with "dxLimit"
+    idx = equation.indexOf("hopsanDxLimit(", 0);
+    while(idx > -1)
+    {
+        if((idx == 0 || !equation.at(idx-1).isLetterOrNumber()) && equation.at(idx+13) == '(')
+        {
+            equation.replace(idx, 13, "dxLimit");      //Do the replacement
+
+            idx = equation.indexOf("hopsanDxLimit(", idx);
+        }
+        else
+        {
+            idx = equation.indexOf("hopsanDxLimit(", idx+1);
+        }
+    }
+
+
+    //Replace "D(sign(x), x)" with 0 (derivative of sign(x) = 0 for all x except 0, but it should be ok)
+    idx = equation.indexOf("D(sign(", 0);
+    while(idx > -1)
+    {
+        int parBal = 2;         //Find index of end parenthesis
+        int idx2 = idx+6;
+        while(parBal != 0)
+        {
+            ++idx2;
+            if(equation.at(idx2) == '(')
+                ++parBal;
+            if(equation.at(idx2) == ')')
+                --parBal;
+        }
+
+        equation.remove(idx, idx2-idx+1);
+        equation.insert(idx, "0");
+
+        idx = equation.indexOf("D(sign(", idx);
+    }
+
+
+    //Replace "re(x)" with "x" (we only work with real numbers anyway)
+    idx = equation.indexOf("re(", 0);
+    while(idx > -1)
+    {
+        if((idx == 0 || !equation.at(idx-1).isLetterOrNumber()) && equation.at(idx+2) == '(')
+        {
+            //qDebug() << "Found \"re\" at index: " << idx;
+            int parBal = 1;         //Find index of end parenthesis
+            int idx2 = idx+3;
+            while(parBal != 0)
+            {
+                ++idx2;
+                if(equation.at(idx2) == '(')
+                    ++parBal;
+                if(equation.at(idx2) == ')')
+                    --parBal;
+            }
+
+            equation.remove(idx2, 1);
+            equation.remove(idx, 3);
+
+            idx = equation.indexOf("re(", idx);
+        }
+        else
+        {
+            idx = equation.indexOf("re(", idx+1);
+        }
+    }
+
+    replaceDerivative(equation, "onPositive", "dxOnPositive");
+    replaceDerivative(equation, "onNegative", "dxOnNegative");
+    replaceDerivative(equation, "signedSquareL", "dxSignedSquareL");
 }
 
 

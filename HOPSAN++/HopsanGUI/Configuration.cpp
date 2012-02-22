@@ -76,6 +76,8 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "simulinkexportdir", mSimulinkExportDir);
     appendDomTextNode(settings, "subsystemdir", mSubsystemDir);
     appendDomTextNode(settings, "modelicamodelsdir", mModelicaModelsDir);
+    appendDomTextNode(settings, "externallibdir", mExternalLibDir);
+
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
@@ -254,6 +256,8 @@ void Configuration::loadFromXml()
                 mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
             if(!settingsElement.firstChildElement("modelicamodelsdir").isNull())
                 mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
+            if(!settingsElement.firstChildElement("externallibdir").isNull())
+                mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -430,6 +434,8 @@ void Configuration::loadDefaultsFromXml()
                 mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
             if(!settingsElement.firstChildElement("modelicamodelsdir").isNull())
                 mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
+            if(!settingsElement.firstChildElement("externallibdir").isNull())
+                mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
 
 
                 //Load default GUI style
@@ -826,6 +832,17 @@ QString Configuration::getModelicaModelsDir()
     return mModelicaModelsDir;
 }
 
+
+QString Configuration::getExternalLibDir()
+{
+    if(mExternalLibDir.isEmpty())
+    {
+        return QString(DATAPATH);
+    }
+    return mExternalLibDir;
+}
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -1074,4 +1091,9 @@ void Configuration::setSubsystemDir(QString value)
 void Configuration::setModelicaModelsDir(QString value)
 {
     mModelicaModelsDir = value;
+}
+
+void Configuration::setExternalLibDir(QString value)
+{
+    mExternalLibDir = value;
 }

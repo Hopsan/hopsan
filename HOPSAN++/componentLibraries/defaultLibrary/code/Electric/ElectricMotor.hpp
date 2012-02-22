@@ -159,7 +159,7 @@ public:
         registerParameter("Bm", "Visc. fric. coeff., motor", "Ns/m", mBm);
         registerParameter("Jm", "Moment of inertia, motor", "kg m^2", mJm);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 6);
      }
 
     void initialize()

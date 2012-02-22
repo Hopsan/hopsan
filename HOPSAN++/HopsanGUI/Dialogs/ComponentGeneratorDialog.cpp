@@ -1422,10 +1422,22 @@ void ComponentGeneratorDialog::compile()
         {
             py->runCommand(allFunctions[i]+"=Function(\""+allFunctions[i]+"\")");
         }
+
+        QStringList hopsanSpecificFunctions;
+        hopsanSpecificFunctions << "dxSignedSquareL" << "dxLimit" << "fabs" << "dxOnPositive" << "dxOnNegative";
+        for(int i=0; i<hopsanSpecificFunctions.size(); ++i)
+        {
+            py->runCommand(hopsanSpecificFunctions[i]+"=Function(\""+hopsanSpecificFunctions[i]+"\")");
+        }
+
         pProgressBar->setLabelText("Defining equations");
         pProgressBar->setValue(pProgressBar->value()+1);
 
+        qDebug() << "Varg 2!";
+
         //Define system equations
+        QString eqCommand;
+        eqCommand = "b = Matrix((";
         for(int i=0; i<equations.size(); ++i)
         {
             QString iStr = QString().setNum(i);
@@ -1435,9 +1447,11 @@ void ComponentGeneratorDialog::compile()
             py->runCommand("f"+iStr+" = f"+iStr+".subs(s, 2/mTimestep*(1-qi00)/(1+qi00))");
             py->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
             py->runCommand("f"+iStr+" = simplify(f"+iStr+")");
+            eqCommand.append("f"+iStr+",");
         }
-
-        qDebug() << "Åsna!";
+        eqCommand.chop(1);
+        eqCommand.append("))");
+        py->runCommand(eqCommand);      //Create vector with system equations
 
         pProgressBar->setLabelText("Applying variable limitations");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1445,8 +1459,6 @@ void ComponentGeneratorDialog::compile()
         //Apply limitations
         for(int i=0; i<limitedVariableEquations.size(); ++i)
         {
-            qDebug() << "Åsna!";
-
             QString fStr = "f"+QString().setNum(limitedVariableEquations[i]);
             QString dfStr = "f"+QString().setNum(limitedDerivativeEquations[i]);
             QString var = limitedVariables[i];
@@ -1454,14 +1466,10 @@ void ComponentGeneratorDialog::compile()
             QString min = limitMinValues[i];
             QString max = limitMaxValues[i];
 
-                    qDebug() << "Åsna!, der = " << der;
-
             py->runCommand(fStr+" = factor("+fStr+")");
             py->runCommand(fStr+" = "+fStr+".subs("+var+"*qi00, qi00_OLD)");
-            py->runCommand(fStr+" = "+var+"-hopsanLimit(-simplify("+fStr+".expand().subs("+var+",0)/"+fStr+".expand().coeff("+var+")),"+min+","+max+").expand()");
+            py->runCommand(fStr+" = "+var+"-hopsanLimit(-simplify("+fStr+".expand().subs("+var+",0)/"+fStr+".expand().coeff("+var+")).subs(qi00_OLD, qi00*xv).factor(qi00),"+min+","+max+")");
             py->runCommand(fStr+" = "+fStr+".subs(qi00_OLD, "+var+"*qi00)");
-
-            qDebug() << "Åsna!";
 
             if(!der.isEmpty())      //Variable2Limits (has a derivative)
             {
@@ -1472,31 +1480,65 @@ void ComponentGeneratorDialog::compile()
             }
         }
 
-        qDebug() << "Åsna 2!";
-
         pProgressBar->setLabelText("Generating Jacobian matrix");
         pProgressBar->setValue(pProgressBar->value()+1);
 
+        qDebug() << "Varg 3!";
+
         //Generate the Jacobian matrix
         QStringList jString;
+        QString jCommand;
+        jCommand = "J = Matrix((";
         for(int i=0; i<equations.size(); ++i)
         {
+            jCommand.append("(");
             for(int j=0; j<stateVars.size(); ++j)
             {
+
+
                 QString iStr = QString().setNum(i);
                 QString jStr = QString().setNum(j);
                 py->runCommand("j"+iStr+jStr+" = diff(f"+iStr+".subs(qi00, 0), "+stateVars.at(j)+")");
                 py->runCommand("print(j"+iStr+jStr+")");
                 jString.append(gpMainWindow->mpPyDockWidget->getLastOutput());      //Create C++ stringlist of Jacobian
+
+                translateFunctionsFromPython(jString.last());
+
+                py->runCommand("j"+iStr+jStr+" = "+jString.last());
+
+                jCommand.append("j"+iStr+jStr+",");
             }
+            jCommand.chop(1);
+            jCommand.append("),");
         }
+        jCommand.chop(1);
+        jCommand.append("))");
+        py->runCommand(jCommand);       //Create jacobian matrix object
 
-        qDebug() << "Åsna 3!";
+        qDebug() << "Varg 4!";
 
-        //if(isSingular(jString))
-            //qDebug() << "Matrix is singular!";
-        //else
-            //qDebug() << "Matrix is not singular!";
+        py->runCommand("res = J.LUsolve(b)");
+
+        qDebug() << "Varg 5!";
+
+        QStringList resEquations;
+//        for(int i=0; i<equations.size(); ++i)
+//        {
+//            py->runCommand("print((res["+QString().setNum(i)+"]*sign(res["+QString().setNum(i)+"].coeff("+stateVars[i]+"))*-1).subs("+stateVars[i]+",0))");
+//            QString plainEq = gpMainWindow->mpPyDockWidget->getLastOutput();
+//            //py->runCommand("print(factor((res["+QString().setNum(i)+"]*sign(res["+QString().setNum(i)+"].coeff("+stateVars[i]+"))*-1)).subs("+stateVars[i]+",0))");
+//            //QString factorEq = gpMainWindow->mpPyDockWidget->getLastOutput();
+//            py->runCommand("print((res["+QString().setNum(i)+"]*sign(res["+QString().setNum(i)+"].coeff("+stateVars[i]+"))*-1).ratsimp().subs("+stateVars[i]+",0))");
+//            QString ratsimpEq = gpMainWindow->mpPyDockWidget->getLastOutput();
+//            if(/*plainEq.size() <= factorEq.size() && */plainEq.size() <=ratsimpEq.size())   //Plain version shortest
+//                resEquations.append(plainEq);
+//            /*else if(factorEq.size() <= ratsimpEq.size())
+//                resEquations.append(factorEq);*/
+//            else
+//                resEquations.append(ratsimpEq);
+//        }
+
+        qDebug() << "Resulting equations: " << resEquations;
 
         pProgressBar->setLabelText("Collecting system equations");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1520,6 +1562,7 @@ void ComponentGeneratorDialog::compile()
         QStringList delayTerms;
         QStringList delaySteps;
         translateDelaysFromPython(sysEquations, delayTerms, delaySteps);
+        translateDelaysFromPython(resEquations, delayTerms, delaySteps);
 
         pProgressBar->setLabelText("Translating from SymPy to C++");
         pProgressBar->setValue(pProgressBar->value()+1);
@@ -1530,6 +1573,7 @@ void ComponentGeneratorDialog::compile()
         translateFunctionsFromPython(jString);
         translateFunctionsFromPython(initAlgorithms);
         translateFunctionsFromPython(finalAlgorithms);
+        translateFunctionsFromPython(resEquations);
 
         qDebug() << "Blä 1";
 
@@ -1539,6 +1583,7 @@ void ComponentGeneratorDialog::compile()
         translatePowersFromPython(jString);
         translatePowersFromPython(initAlgorithms);
         translatePowersFromPython(finalAlgorithms);
+        translatePowersFromPython(resEquations);
 
         qDebug() << "Blä 2";
 
@@ -1551,6 +1596,7 @@ void ComponentGeneratorDialog::compile()
         translateIntsToDouble(jString);
         translateIntsToDouble(initAlgorithms);
         translateIntsToDouble(finalAlgorithms);
+        translateIntsToDouble(resEquations);
         qDebug() << "Blä 3";
 
         pProgressBar->setLabelText("Collecting general component data");
@@ -1581,7 +1627,7 @@ void ComponentGeneratorDialog::compile()
         pProgressBar->setValue(pProgressBar->value()+1);
 
         //Call utility to generate and compile the source code
-        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, finalAlgorithms, mpAppearance, pProgressBar);
+        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, finalAlgorithms, resEquations, mpAppearance, pProgressBar);
 
         //qDebug() << "Blä 5";
 

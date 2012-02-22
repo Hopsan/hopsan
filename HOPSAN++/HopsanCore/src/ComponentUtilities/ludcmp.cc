@@ -61,7 +61,6 @@ using namespace hopsan;
 
 int hopsan::ludcmp(Matrix &a, int order[], bool &singular)
 {
-    singular = false;
     int i, j, k, n, nm1;
     int flag = 1;    /* changes sign with each row interchange */
     double sum, diag;

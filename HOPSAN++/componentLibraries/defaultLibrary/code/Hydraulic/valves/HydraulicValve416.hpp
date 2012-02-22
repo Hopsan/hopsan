@@ -214,7 +214,7 @@ public:
         registerParameter("xvpb", "Spool position", "m", mxvpb);
         registerParameter("xvtb", "Spool position", "m", mxvtb);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 8);
      }
 
     void initialize()

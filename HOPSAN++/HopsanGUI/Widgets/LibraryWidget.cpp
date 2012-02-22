@@ -476,10 +476,15 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     if(libDir.isEmpty())    //Let user select a directory if no directory is specified
     {
         libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
-                                                   fileDialogOpenDir.currentPath(),
+                                                   gConfig.getExternalLibDir(),
                                                    QFileDialog::ShowDirsOnly
                                                    | QFileDialog::DontResolveSymlinks);
     }
+    if(!libDir.isEmpty())
+    {
+        gConfig.setExternalLibDir(libDir);
+    }
+
     if(!gConfig.hasUserLib(libDir))     //Check so that path does not already exist
     {
         loadAndRememberExternalLibrary(libDir);    //Load and register the library in configuration

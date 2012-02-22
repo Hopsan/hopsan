@@ -131,7 +131,7 @@ public:
         registerParameter("imin", "i min limit", "A", mimin);
         registerParameter("umax", "u max limit", "V", mumax);
 
-        pSolver = new EquationSystemSolver(this);
+        pSolver = new EquationSystemSolver(this, 4);
      }
 
     void initialize()

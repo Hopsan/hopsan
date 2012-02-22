@@ -35,12 +35,17 @@ namespace hopsan {
 class DLLIMPORTEXPORT EquationSystemSolver
 {
 public:
-    EquationSystemSolver(Component *pParentComponent);
+    EquationSystemSolver(Component *pParentComponent, int n);
     void solve(Matrix &jacobian, Vec &equations, Vec &variables, int iteration);
+    void solve(Matrix &jacobian, Vec &equations, Vec &variables);
 
 private:
     Component *mpParentComponent;
     double mSystemEquationWeight[4];
+    int *mpOrder;
+    Vec *mpDeltaStateVar;
+    int mnVars;
+    bool mSingular;
 };
 
 }
