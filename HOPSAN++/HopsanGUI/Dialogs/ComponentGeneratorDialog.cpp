@@ -37,7 +37,6 @@
 
 
 
-
 ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
@@ -85,6 +84,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     this->setWindowTitle("Component Generator (experimental)");
     this->setPalette(gConfig.getPalette());
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    this->setMaximumHeight(480);
 
     //Equation Text Field
     mpGivenLabel = new QLabel("Given: ");
@@ -333,6 +333,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
     mpSymPyWarning = new QLabel(this);
     mpSymPyWarning->setText("<font color='red'>When compiling from equations, you need to have Python 2.6 or 2.7 with the SymPy package installed.</font>");
+    mpSymPyWarning->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     //Main layout (create widgets, but don't do anything before contents are updated)
     mpLayout = new QGridLayout(this);
@@ -349,6 +350,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpScrollArea->setWidget(mpCentralWidget);
     mpScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mpScrollArea->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    mpScrollArea->setMaximumHeight(480);
     mpCentralLayout->addWidget(mpScrollArea);
     setLayout(mpCentralLayout);
 
@@ -364,10 +366,10 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 //! @brief Auto resizes the dialog to fit contents and/or screen geometry
 void ComponentGeneratorDialog::autoResize()
 {
-    mpCentralWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    //mpCentralWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     mpLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     //mpCentralLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+    int maxHeight = qApp->desktop()->screenGeometry().height()*0.7;
     mpScrollArea->setFixedHeight(std::min(mpCentralWidget->height()+30, maxHeight));
     if(mpScrollArea->verticalScrollBar()->isVisible())
     {
@@ -381,6 +383,11 @@ void ComponentGeneratorDialog::autoResize()
     mpScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     this->resize(mpScrollArea->size());
+
+    this->move(qApp->desktop()->screenGeometry().center() - this->rect().center());
+
+    qDebug() << "mpCentralWidget.height() = " << mpCentralWidget->height();
+    qDebug() << "mpScrollArea.height() = " << mpScrollArea->height();
 }
 
 
@@ -1070,56 +1077,58 @@ void ComponentGeneratorDialog::compile()
     pProgressBar->setWindowModality(Qt::ApplicationModal);
     pProgressBar->setWindowTitle(tr("Generating Hopsan Component"));
     pProgressBar->setMinimum(0);
-    pProgressBar->setMaximum(33);
+    pProgressBar->setMaximum(1000);
     pProgressBar->setValue(0);
     pProgressBar->setMinimumDuration(0);
     pProgressBar->show();
 
-    //Verify that everything is ok
-
+    //Verify parameters
     if(!verifyParameteres(mParametersList))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of parameters failed.");
-        pProgressBar->cancel();
+        delete(pProgressBar);
         return;
     }
 
+    //Verify ports
     if(!verifyPorts(mPortList))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of ports failed.");
-        pProgressBar->cancel();
+        delete(pProgressBar);
         return;
     }
 
+    //Verify utilities
     if(!verifyUtilities(mUtilitiesList))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of utilities failed.");
-        pProgressBar->cancel();
+        delete(pProgressBar);
         return;
     }
 
+    //Verify static variables
     if(!verifyStaticVariables(mStaticVariablesList))
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of static variables failed.");
-        pProgressBar->cancel();
+        delete(pProgressBar);
         return;
     }
 
     if(mpGenerateFromComboBox->currentIndex() == 0)         //Compile from equations
     {
-        qDebug() << "Compiling equations";
+                pProgressBar->setLabelText("Saving to XML");
+                pProgressBar->setValue(1);
 
-        pProgressBar->setLabelText("Saving to XML");
-        pProgressBar->setValue(pProgressBar->value()+1);
-
+        //Save dialog to XML file
         saveDialogToXml();
 
-        pProgressBar->setLabelText("Collecting equations");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Collecting equations");
+                pProgressBar->setValue(41);
 
         //Create list of initial algorithms
         QString plainInitAlgorithms = mpInitAlgorithmsTextField->toPlainText();
         QStringList initAlgorithms = plainInitAlgorithms.split("\n");
+        initAlgorithms.removeAll("");
 
         //Create list of equqtions
         QString plainEquations = mpEquationsTextField->toPlainText();
@@ -1132,8 +1141,10 @@ void ComponentGeneratorDialog::compile()
         }
         equations.removeAll("");
 
+        //Create list of final algorithms
         QString plainFinalAlgorithms = mpFinalAlgorithmsTextField->toPlainText();
         QStringList finalAlgorithms = plainFinalAlgorithms.split("\n");
+        finalAlgorithms.removeAll("");
 
         //Identify variable limitations, and remove them from the equations list
         QStringList limitedVariables;
@@ -1160,8 +1171,6 @@ void ComponentGeneratorDialog::compile()
                 limitedVariableEquations << i-1;
                 limitedDerivativeEquations << -1;
 
-                qDebug() << "Found limitation of variable " << limitedVariables.last();
-
                 equations.removeAt(i);
                 --i;
             }
@@ -1181,39 +1190,39 @@ void ComponentGeneratorDialog::compile()
                 limitedVariableEquations << i-2;
                 limitedDerivativeEquations << i-1;
 
-                qDebug() << "Found limitation of variable " << limitedVariables.last() << " with derivative " << limitedDerivatives.last();
+                //qDebug() << "Found limitation of variable " << limitedVariables.last() << " with derivative " << limitedDerivatives.last();
 
                 equations.removeAt(i);
                 --i;
             }
         }
 
-        pProgressBar->setLabelText("Identifying derivatives");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Identifying derivatives");
+                pProgressBar->setValue(42);
 
         //Identify derivatives, and replace them with "s"
         identifyDerivatives(equations);
 
-        pProgressBar->setLabelText("Verifying equations");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Verifying equations");
+                pProgressBar->setValue(42);
 
-        //Verify the equations
+        //Verify each equation
         if(!verifyEquations(equations))
         {
             gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equations failed.");
-            pProgressBar->cancel();
+            delete(pProgressBar);
             return;
         }
 
-        pProgressBar->setLabelText("Replacing reserved words");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Replacing reserved words");
+                pProgressBar->setValue(42);
 
         //Replace reserved words to avoid collision
         replaceReservedWords(equations);
         replaceReservedWords(mPortList);
 
-        pProgressBar->setLabelText("Identifying symbols");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Identifying symbols");
+                pProgressBar->setValue(42);
 
         //Identify used variables in each equation
         QList<QStringList> leftSymbols, rightSymbols;
@@ -1241,8 +1250,6 @@ void ComponentGeneratorDialog::compile()
             initExpressions.append(var);
         }
 
-        qDebug() << "Get!, initExpressions = " << initExpressions;
-
         //Create list of variables defined by final algorithms
         QStringList finalExpressions;
         for(int i=0; i<finalAlgorithms.size(); ++i)
@@ -1261,8 +1268,8 @@ void ComponentGeneratorDialog::compile()
         allSymbols.removeDuplicates();
         allSymbols.removeAll("");
 
-        pProgressBar->setLabelText("Identifying state varaibles");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Identifying state varaibles");
+                pProgressBar->setValue(43);
 
         //Generate a list of state variables (= "output" variables & local variables)
         QStringList stateVars = allSymbols;
@@ -1306,14 +1313,12 @@ void ComponentGeneratorDialog::compile()
         if(!verifyEquationSystem(equations, stateVars))
         {
             gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equation system failed.");
-            pProgressBar->cancel();
+            delete(pProgressBar);
             return;
         }
 
-        pProgressBar->setLabelText("Sorting system equations");
-        pProgressBar->setValue(pProgressBar->value()+1);
-
-        qDebug() << "Gris!";
+                pProgressBar->setLabelText("Sorting system equations");
+                pProgressBar->setValue(43);
 
         //Sort state variables so that each equation contains its correspondig variable
         //(otherwise Jacobian will become singular)
@@ -1352,8 +1357,8 @@ void ComponentGeneratorDialog::compile()
             }
         }
 
-        pProgressBar->setLabelText("Identifying local variables");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Identifying local variables");
+                pProgressBar->setValue(48);
 
         //Generate list of local variables (variables that are neither input nor output)
         QStringList localVars = allSymbols;
@@ -1362,7 +1367,7 @@ void ComponentGeneratorDialog::compile()
             QString num = QString().setNum(i+1);
             if(mPortList[i].porttype == "ReadPort" || mPortList[i].porttype == "WritePort")
             {
-                localVars.removeAll(mPortList[i].name);
+                localVars.removeAll(mPortList[i].name);     //Remove all readport/writeport varibles
             }
             else if(mPortList[i].porttype == "PowerPort")
             {
@@ -1372,17 +1377,17 @@ void ComponentGeneratorDialog::compile()
                 cVars << getCVariables(mPortList[i].nodetype);
                 for(int v=0; v<qVars.size(); ++v)
                 {
-                    localVars.removeAll(qVars[v]+num);
+                    localVars.removeAll(qVars[v]+num);      //Remove all Q-type variables
                 }
                 for(int v=0; v<cVars.size(); ++v)
                 {
-                    localVars.removeAll(cVars[v]+num);
+                    localVars.removeAll(cVars[v]+num);      //Remove all C-type variables
                 }
             }
         }
         for(int i=0; i<mParametersList.size(); ++i)
         {
-            localVars.removeAll(mParametersList[i].name);
+            localVars.removeAll(mParametersList[i].name);   //Remove all parameters
         }
         localVars.removeAll("s");       //Laplace 's' is not a local variable
 
@@ -1395,34 +1400,31 @@ void ComponentGeneratorDialog::compile()
         //Create pointer to Python console
         PyDockWidget *py = gpMainWindow->mpPyDockWidget;
 
-        pProgressBar->setLabelText("Loading SymPy");
-        pProgressBar->setValue(9);
-
-        qDebug() << "Varg!";
+                pProgressBar->setLabelText("Loading SymPy");
+                pProgressBar->setValue(48);
 
         //Load sympy libraries
         py->runCommand("from sympy import *");
 
-        pProgressBar->setLabelText("Creating symbols");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Creating symbols");
+                pProgressBar->setValue(149);
 
-        //Create symbol objects for all variables
+        //Create "Symbol" objects for all variables
         for(int i=0; i<allSymbols.size(); ++i)
         {
             py->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
         }
 
-        pProgressBar->setLabelText("Creating custom functions");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Creating custom functions");
+                pProgressBar->setValue(156);
 
-        //Create custom functions
+        //Create "Function" objects for all custom functions
         QStringList allFunctions;
         allFunctions << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit";
         for(int i=0; i<allFunctions.size(); ++i)
         {
             py->runCommand(allFunctions[i]+"=Function(\""+allFunctions[i]+"\")");
         }
-
         QStringList hopsanSpecificFunctions;
         hopsanSpecificFunctions << "dxSignedSquareL" << "dxLimit" << "fabs" << "dxOnPositive" << "dxOnNegative";
         for(int i=0; i<hopsanSpecificFunctions.size(); ++i)
@@ -1430,14 +1432,10 @@ void ComponentGeneratorDialog::compile()
             py->runCommand(hopsanSpecificFunctions[i]+"=Function(\""+hopsanSpecificFunctions[i]+"\")");
         }
 
-        pProgressBar->setLabelText("Defining equations");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Defining equations");
+                pProgressBar->setValue(159);
 
-        qDebug() << "Varg 2!";
-
-        //Define system equations
-        QString eqCommand;
-        eqCommand = "b = Matrix((";
+        //Create expressions for all system equations
         for(int i=0; i<equations.size(); ++i)
         {
             QString iStr = QString().setNum(i);
@@ -1447,16 +1445,14 @@ void ComponentGeneratorDialog::compile()
             py->runCommand("f"+iStr+" = f"+iStr+".subs(s, 2/mTimestep*(1-qi00)/(1+qi00))");
             py->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
             py->runCommand("f"+iStr+" = simplify(f"+iStr+")");
-            eqCommand.append("f"+iStr+",");
+
+            pProgressBar->setValue(159+(420-159)*(i+1)/equations.size());
         }
-        eqCommand.chop(1);
-        eqCommand.append("))");
-        py->runCommand(eqCommand);      //Create vector with system equations
 
-        pProgressBar->setLabelText("Applying variable limitations");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Applying variable limitations");
+                pProgressBar->setValue(420);
 
-        //Apply limitations
+        //Apply variable limitations
         for(int i=0; i<limitedVariableEquations.size(); ++i)
         {
             QString fStr = "f"+QString().setNum(limitedVariableEquations[i]);
@@ -1478,20 +1474,17 @@ void ComponentGeneratorDialog::compile()
                 py->runCommand(dfStr+" = "+der+"+hopsanDxLimit("+var+","+min+","+max+")*"+dfStr+".subs("+der+",0)/"+dfStr+".coeff("+der+").expand()");
                 py->runCommand(dfStr+" = "+dfStr+".subs(qi00_OLD, "+der+"*qi00)");
             }
+
+            pProgressBar->setValue(420+(713-420)*(i+1)/limitedVariableEquations.size());
         }
 
-        pProgressBar->setLabelText("Generating Jacobian matrix");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Generating Jacobian matrix");
+                pProgressBar->setValue(713);
 
-        qDebug() << "Varg 3!";
-
-        //Generate the Jacobian matrix
+        //Generate each element in the Jacobian matrix
         QStringList jString;
-        QString jCommand;
-        jCommand = "J = Matrix((";
         for(int i=0; i<equations.size(); ++i)
         {
-            jCommand.append("(");
             for(int j=0; j<stateVars.size(); ++j)
             {
 
@@ -1501,47 +1494,11 @@ void ComponentGeneratorDialog::compile()
                 py->runCommand("j"+iStr+jStr+" = diff(f"+iStr+".subs(qi00, 0), "+stateVars.at(j)+")");
                 py->runCommand("print(j"+iStr+jStr+")");
                 jString.append(gpMainWindow->mpPyDockWidget->getLastOutput());      //Create C++ stringlist of Jacobian
-
-                translateFunctionsFromPython(jString.last());
-
-                py->runCommand("j"+iStr+jStr+" = "+jString.last());
-
-                jCommand.append("j"+iStr+jStr+",");
             }
-            jCommand.chop(1);
-            jCommand.append("),");
         }
-        jCommand.chop(1);
-        jCommand.append("))");
-        py->runCommand(jCommand);       //Create jacobian matrix object
 
-        qDebug() << "Varg 4!";
-
-        py->runCommand("res = J.LUsolve(b)");
-
-        qDebug() << "Varg 5!";
-
-        QStringList resEquations;
-//        for(int i=0; i<equations.size(); ++i)
-//        {
-//            py->runCommand("print((res["+QString().setNum(i)+"]*sign(res["+QString().setNum(i)+"].coeff("+stateVars[i]+"))*-1).subs("+stateVars[i]+",0))");
-//            QString plainEq = gpMainWindow->mpPyDockWidget->getLastOutput();
-//            //py->runCommand("print(factor((res["+QString().setNum(i)+"]*sign(res["+QString().setNum(i)+"].coeff("+stateVars[i]+"))*-1)).subs("+stateVars[i]+",0))");
-//            //QString factorEq = gpMainWindow->mpPyDockWidget->getLastOutput();
-//            py->runCommand("print((res["+QString().setNum(i)+"]*sign(res["+QString().setNum(i)+"].coeff("+stateVars[i]+"))*-1).ratsimp().subs("+stateVars[i]+",0))");
-//            QString ratsimpEq = gpMainWindow->mpPyDockWidget->getLastOutput();
-//            if(/*plainEq.size() <= factorEq.size() && */plainEq.size() <=ratsimpEq.size())   //Plain version shortest
-//                resEquations.append(plainEq);
-//            /*else if(factorEq.size() <= ratsimpEq.size())
-//                resEquations.append(factorEq);*/
-//            else
-//                resEquations.append(ratsimpEq);
-//        }
-
-        qDebug() << "Resulting equations: " << resEquations;
-
-        pProgressBar->setLabelText("Collecting system equations");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Collecting system equations");
+                pProgressBar->setValue(762);
 
         //Print each system quation and read output to create C++ strings from them
         QStringList sysEquations;
@@ -1551,44 +1508,34 @@ void ComponentGeneratorDialog::compile()
             sysEquations.append(gpMainWindow->mpPyDockWidget->getLastOutput());
         }
 
-        qDebug() << "Jacobian = " << jString;
-        qDebug() << "System Equations = " << sysEquations;
-        qDebug() << "State Variables = " << stateVars;
-
-        pProgressBar->setLabelText("Translating delay operators");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Translating delay operators");
+                pProgressBar->setValue(781);
 
         //Replace delay operators in equations with delay utilities
         QStringList delayTerms;
         QStringList delaySteps;
         translateDelaysFromPython(sysEquations, delayTerms, delaySteps);
-        translateDelaysFromPython(resEquations, delayTerms, delaySteps);
 
-        pProgressBar->setLabelText("Translating from SymPy to C++");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Translating from SymPy to C++");
+                pProgressBar->setValue(782);
 
-        qDebug() << "Blä 0";
+        //Translate all function names from Python/Sympy to Hopsan/C++
         translateFunctionsFromPython(delayTerms);
         translateFunctionsFromPython(sysEquations);
         translateFunctionsFromPython(jString);
         translateFunctionsFromPython(initAlgorithms);
         translateFunctionsFromPython(finalAlgorithms);
-        translateFunctionsFromPython(resEquations);
 
-        qDebug() << "Blä 1";
 
-        //Translate all "x**y" to "pow(x,y)"
+        //Translate all powers from Python syntax (x**y) to C++ syntax (pow(x,y))
         translatePowersFromPython(delayTerms);
         translatePowersFromPython(sysEquations);
         translatePowersFromPython(jString);
         translatePowersFromPython(initAlgorithms);
         translatePowersFromPython(finalAlgorithms);
-        translatePowersFromPython(resEquations);
 
-        qDebug() << "Blä 2";
-
-        pProgressBar->setLabelText("Enforcing floating point precision");
-        pProgressBar->setValue(19);
+                pProgressBar->setLabelText("Enforcing floating point precision");
+                pProgressBar->setValue(783);
 
         //Make sure all variables have double precision (to make sure "1.0/2.0 = 0.5" instead of "1/2 = 0")
         translateIntsToDouble(delayTerms);
@@ -1596,41 +1543,31 @@ void ComponentGeneratorDialog::compile()
         translateIntsToDouble(jString);
         translateIntsToDouble(initAlgorithms);
         translateIntsToDouble(finalAlgorithms);
-        translateIntsToDouble(resEquations);
-        qDebug() << "Blä 3";
 
-        pProgressBar->setLabelText("Collecting general component data");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Collecting general component data");
+                pProgressBar->setValue(783);
 
-        //General component data
+        //Fetch general component data
         QString typeName = mpComponentNameEdit->text();
         QString displayName = mpComponentDisplayEdit->text();
         QString cqsType = mpComponentTypeComboBox->currentText();
 
-        qDebug() << "Blä 3.5";
+                pProgressBar->setLabelText("Generating component appearance");
+                pProgressBar->setValue(804);
 
-        pProgressBar->setLabelText("Generating component appearance");
-        pProgressBar->setValue(pProgressBar->value()+1);
-
-        qDebug() << "Blä 3.6";
-
-        //Make sure appearance is updated
+        //Generate appearance object
         generateAppearance();
 
-        qDebug() << "Blä 3.7";
-
+        //Display equation system dialog
         showOutputDialog(jString, sysEquations, stateVars);
 
-    qDebug() << "Blä 4";
-
-        pProgressBar->setLabelText("Compiling component");
-        pProgressBar->setValue(pProgressBar->value()+1);
+                pProgressBar->setLabelText("Compiling component");
+                pProgressBar->setValue(804);
 
         //Call utility to generate and compile the source code
-        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, finalAlgorithms, resEquations, mpAppearance, pProgressBar);
+        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, finalAlgorithms, mpAppearance, pProgressBar);
 
-        //qDebug() << "Blä 5";
-
+        //Delete the progress bar to avoid memory leaks
         delete(pProgressBar);
     }
     else if(mpGenerateFromComboBox->currentIndex() == 1)        //Compile from C++ code
@@ -2184,7 +2121,7 @@ void ComponentGeneratorDialog::generateAppearance()
         mpAppearance = new ModelObjectAppearance();
     }
 
-    mpAppearance->setIconPath(QString(OBJECTICONPATH)+"generatedcomponenticon.svg", USERGRAPHICS, ABSOLUTE);
+    mpAppearance->setIconPath(QString(OBJECTICONPATH)+"generatedcomponenticon.svg", USERGRAPHICS, AbsoluteRelativeT(0));
 
     QStringList leftPortNames, rightPortNames, topPortNames;
     QList<PortAppearance> leftPorts, rightPorts, topPorts;

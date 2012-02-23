@@ -100,7 +100,7 @@ public:
     QStringList finalEquations;
 };
 void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar = 0);
-void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, QStringList initAlgorithms, QStringList finalAlgorithms, QStringList resEquations, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
+void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
 void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 void identifyFunctions(QString equation, QStringList &functions);

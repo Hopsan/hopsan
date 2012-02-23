@@ -22,14 +22,7 @@
 //!
 //$Id: GUIUtilities.cpp 3813 2012-01-05 17:11:57Z robbr48 $
 
-//#include <qmath.h>
-//#include <QPoint>
-//#include <QDir>
-//#include <QDebug>
 #include <QStringList>
-//#include <limits>
-//#include <math.h>
-//#include <complex>
 #include <QProcess>
 
 
@@ -40,6 +33,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
+
 
 using namespace std;
 
@@ -177,12 +171,12 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
                                  QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
                                  QStringList sysEquations, QStringList stateVars, QStringList jacobian,
                                  QStringList delayTerms, QStringList delaySteps, QStringList localVars,
-                                 QStringList initAlgorithms, QStringList finalAlgorithms, QStringList resEquations, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+                                 QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating component object");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(804);
     }
 
     ComponentSpecification comp(typeName, displayName, cqsType);
@@ -227,12 +221,15 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.initEquations << "mDelay"+QString().setNum(i)+".initialize("+QString().setNum(delaySteps.at(i).toInt()+1)+", "+delayTerms[i]+");";
     }
 
-    comp.initEquations << "";
-    comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+");";
+    if(!jacobian.isEmpty())
+    {
+        comp.initEquations << "";
+        comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+");";
+    }
 
     if(pProgressBar)
     {
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(804);
     }
 
     comp.simEquations << "//Initial algorithm section";
@@ -288,6 +285,11 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.simEquations << finalAlgorithms[i]+";";
     }
 
+    if(!jacobian.isEmpty())
+    {
+        comp.finalEquations << "delete(mpSolver);";
+    }
+
 
     for(int i=0; i<localVars.size(); ++i)
     {
@@ -308,7 +310,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating .hpp file");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(804);
     }
 
     //Initialize the file stream
@@ -415,7 +417,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
 
     if(pProgressBar)
     {
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(806);
     }
 
     fileStream << ";\n";
@@ -499,7 +501,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
 
     if(pProgressBar)
     {
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(806);
     }
 
     fileStream << "\n";
@@ -638,10 +640,17 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
         }
         ++portId;
     }
-    fileStream << "        }\n";
-    //! @todo Support finalize equations
+    fileStream << "        }\n\n";
+    fileStream << "        void finalize()\n";
+    fileStream << "        {\n";
+    for(int i=0; i<comp.finalEquations.size(); ++i)
+    {
+        fileStream << "            " << comp.finalEquations[i] << "\n";
+    }
+    fileStream << "        }\n\n";
     fileStream << "    };\n";
     fileStream << "}\n\n";
+
     fileStream << "#endif // " << comp.typeName.toUpper() << "_HPP_INCLUDED\n";
     file.close();
 
@@ -649,9 +658,8 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating tempLib.cc");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(807);
     }
-
 
     QFile ccLibFile;
     ccLibFile.setFileName(QString(DATAPATH)+"tempLib.cc");
@@ -679,9 +687,8 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating compile script");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(807);
     }
-
 
     QFile clBatchFile;
     clBatchFile.setFileName(QString(DATAPATH)+"compile.bat");
@@ -697,9 +704,8 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating appearance file");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(808);
     }
-
 
     QDir componentsDir(QString(DOCSPATH));
     QDir generatedDir(QString(DOCSPATH) + "Generated Componentes/");
@@ -722,7 +728,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     xmlStream << "    <icons>\n";
     //! @todo Make it possible to choose icon files
     //! @todo In the meantime, use a default "generated component" icon
-    xmlStream << "      <icon type=\"user\" path=\""+pAppearance->getIconPath(USERGRAPHICS, ABSOLUTE)+"\" iconrotation=\""+pAppearance->getIconRotationBehaviour()+"\" scale=\"1\"/>\n";
+    xmlStream << "      <icon type=\"user\" path=\""+pAppearance->getIconPath(USERGRAPHICS, AbsoluteRelativeT(0))+"\" iconrotation=\""+pAppearance->getIconRotationBehaviour()+"\" scale=\"1\"/>\n";
     xmlStream << "    </icons>\n";
     xmlStream << "    <ports>\n";
     for(int i=0; i<comp.portNames.size(); ++i)
@@ -738,9 +744,8 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Compiling component library");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(810);
     }
-
 
     //Execute HopsanFMU compile script
 #ifdef WIN32
@@ -771,7 +776,7 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Moving files");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(965);
     }
 
     QString libPath = QDir().cleanPath(generatedDir.path());
@@ -815,9 +820,8 @@ void generateComponentSourceCode(QString outputFile, ComponentSpecification comp
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Loading new library");
-        pProgressBar->setValue(pProgressBar->value()+1);
+        pProgressBar->setValue(1000);
     }
-
 
     //qDebug() << "libPath = " << libPath;
     //qDebug() << "user libs: " << gConfig.getUserLibs();
@@ -915,7 +919,7 @@ void identifyFunctions(QString equation, QStringList &functions)
 }
 
 
-//! @brief Verfies that a system of equations is Hopsan-solveable
+//! @brief Verfies each equation in a list of equations
 bool verifyEquations(QStringList equations)
 {
     //Loop through and verify each equation
@@ -924,14 +928,11 @@ bool verifyEquations(QStringList equations)
         if(!verifyEquation(equations[i]))
             return false;
     }
-
-
-
-    //! @todo Verify equation system (number of unknowns etc)
     return true;
 }
 
 
+//! @brief Verifies that a system of equations is solveable (number of equations = number of unknowns etc)
 bool verifyEquationSystem(QStringList equations, QStringList stateVars)
 {
     bool retval = true;
@@ -1146,7 +1147,7 @@ void identifyDerivatives(QStringList &equations)
 //! @param delaySteps List with strings of integers telling how many steps each term is delayed
 void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps)
 {
-    qDebug() << "Before delay translation: " << equations;
+    //qDebug() << "Before delay translation: " << equations;
 
     int delayNum = 0;
     for(int i=0; i<equations.size(); ++i)
@@ -1182,7 +1183,7 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
                     localDelays.append(terms.at(j));
             }
         }
-        qDebug() << "Terms with delay: " << localDelays;
+        //qDebug() << "Terms with delay: " << localDelays;
 
         //Remove delay operators and make a delay of the term
         for(int j=0; j<localDelays.size(); ++j)
@@ -1237,8 +1238,8 @@ void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, 
 
         delayTerms.append(localDelays);
     }
-    qDebug() << "After delay translation: " << equations;
-    qDebug() << "Delay terms: " << delayTerms;
+    //qDebug() << "After delay translation: " << equations;
+    //qDebug() << "Delay terms: " << delayTerms;
 }
 
 
@@ -1307,10 +1308,10 @@ void translatePowersFromPython(QStringList &equations)
             before = equations[e].mid(idxb, idx-idxb);
             after = equations[e].mid(idx+2, idxa-idx-1);
 
-            qDebug() << "equations[e] = " << equations[e];
-            qDebug() << "before = " << before;
-            qDebug() << "after = " << after;
-            qDebug() << "idxb = " << idxb << ", idxa = " << idxa;
+           // qDebug() << "equations[e] = " << equations[e];
+           // qDebug() << "before = " << before;
+            //qDebug() << "after = " << after;
+            //qDebug() << "idxb = " << idxb << ", idxa = " << idxa;
 
             equations[e].remove(idxb, idxa-idxb+1);
             equations[e].insert(idxb, "pow("+before+","+after+")");
@@ -1391,24 +1392,17 @@ void translateFunctionsFromPython(QString &equation)
         }
 
         QString old = equation.mid(idx+5, idx2-idx-5);
-        ////qDebug() << "old = " << old;
         QString replaceWord = equation.mid(idx2+3, idx3-idx2-5);
-        ////qDebug() << "replaceWord = " << replaceWord;
         QString replacement = equation.mid(idx3+3, idx4-idx3-5);
-        ////qDebug() << "replacement = " << replacement;
 
         old = old.replace(replaceWord, replacement);      //Do the replacement
 
-        ////qDebug() << "new = " << old;
-
         equation.remove(idx, idx4-idx+1);
-        //qDebug() << "After remove: " << equation;
         equation.insert(idx, old);      //Replace whole function with new string
 
         idx = equation.indexOf("Subs(", 0);
     }
 
-    //qDebug() << "After Subs() replacement: " << equation;
 
     //Replace "abs()" with "fabs()"
     idx = equation.indexOf("abs", 0);
@@ -1495,7 +1489,7 @@ void translateFunctionsFromPython(QString &equation)
    // qDebug() << "Replacing hopsanLimit for equation: " << equation;
     while(idx > -1)
     {
-        qDebug() << "Found hopsanLimit at " << idx;
+        //qDebug() << "Found hopsanLimit at " << idx;
         //qDebug() << "idx = " << idx;
 
         if((idx == 0 || !equation.at(idx-1).isLetterOrNumber()) && equation.at(idx+11) == '(')
@@ -1509,7 +1503,7 @@ void translateFunctionsFromPython(QString &equation)
             idx = equation.indexOf("hopsanLimit(", idx+1);
         }
 
-        qDebug() << "Equation after replacement: " << equation;
+        //qDebug() << "Equation after replacement: " << equation;
     }
 
 
@@ -1738,7 +1732,7 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
     {
         if(!initialAlgorithmPart && !equationPart && !finalAlgorithmPart)
         {
-            qDebug() << l << " - not in algorithms or equations";
+            //qDebug() << l << " - not in algorithms or equations";
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "model")              //"model" keyword
             {
@@ -1874,7 +1868,7 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
         }
         else if(initialAlgorithmPart)
         {
-            qDebug() << l << " - in algorithms";
+            //qDebug() << l << " - in algorithms";
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
             {
@@ -1921,7 +1915,7 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
         }
         else if(equationPart)
         {
-            qDebug() << l << " - in equations";
+           // qDebug() << l << " - in equations";
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
             {
@@ -1967,7 +1961,7 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
         }
         else if(finalAlgorithmPart)
         {
-            qDebug() << l << " - in algorithms";
+           // qDebug() << l << " - in algorithms";
             QStringList words = lines.at(l).trimmed().split(" ");
             if(words.at(0) == "end")       //We are finished
             {
@@ -2016,11 +2010,11 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
     {
         for(int i=0; i<portList.size(); ++i)
         {
-            qDebug() << "Port " << i << " has nodetype " << portList.at(i).nodetype;
+            //qDebug() << "Port " << i << " has nodetype " << portList.at(i).nodetype;
             if(portList.at(i).nodetype != "NodeSignal")
             {
                 equations.removeLast();
-                qDebug() << "Removing last equation!";
+                //qDebug() << "Removing last equation!";
             }
         }
     }
