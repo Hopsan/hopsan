@@ -145,26 +145,31 @@ double hopsan::diffAngle(const double fi1, const double fi2)
     return output;
 }
 
-//! @brief Induced drag coefficient for aircraft model
+//! @brief Lift coefficient for aircraft model
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln)
+double hopsan::CLift(const double alpha, const double CLalpha, const double ap, const double an, const double awp, const double awn)
 {
-    return sin(2.0*alpha)/sqrt(2.0) + ((-(1.0/sqrt(2.0)) + CLalpha/2.0)*sin(2.0*alpha))/
-            (1 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
-                      onPositive(sin(alpha))*pow(sin(alpha)/ap,expclp)));
+    return (1 - 1/(1 + pow(2.71828,(-2*(-alpha - an))/awn)) - 1/(1 + pow(2.71828,(-2*(alpha - ap))/awp)))*alpha*
+            CLalpha + 0.707107*(1/(1 + pow(2.71828,(-2*(-alpha - an))/awn)) +
+              1/(1 + pow(2.71828,(-2*(alpha - ap))/awp)))*sin(2*alpha);
 }
 
 //! @brief Induced drag coefficient for aircraft model
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln)
+double hopsan::CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double awp, const double awn)
 {
-    return 0.35355*(1.0 - 1.0/
-                    (1.0 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
-                                onPositive(sin(alpha))*pow(sin(alpha)/ap,expclp))))*(1 - cos(2.0*alpha)) +
-            ((1 - cos(2.0*alpha))*(sin(2.0*alpha)/sqrt(2.0) +
-                                   ((-(1.0/sqrt(2.0)) + CLalpha/2.0)*sin(2.0*alpha))/
-                                   (1 + fabs(onNegative(sin(alpha))*pow(sin(alpha)/an,expcln) +
-                                             onPositive(sin(alpha))*pow(sin(alpha)/ap,expclp)))))/(2.0*AR*e);
+    return (0.31831*(1 - 1/(1 + pow(2.71828,(-2*(-alpha - an))/awn)) - 1/(1 + pow(2.71828,(-2*(alpha - ap))/awp)))*
+             pow(alpha,2)*pow(CLalpha,2))/(AR*e) +
+          (1/(1 + pow(2.71828,(-2*(-alpha - an))/awn)) + 1/(1 + pow(2.71828,(-2*(alpha - ap))/awp)))*
+           pow(sin(alpha),2);
+}
+
+//! @brief Moment coefficient for aircraft model
+//! @ingroup AuxiliarySimulationFunctions
+double hopsan::CMoment(const double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double awp, const double awn)
+{
+    return (1 - 1/(1 + pow(2.71828,-20.*(-0.5 - alpha))) - 1/(1 + pow(2.71828,-20.*(-0.5 + alpha))))*Cm0 +
+            (1/(1 + pow(2.71828,-20.*(-0.5 - alpha))) + 1/(1 + pow(2.71828,-20.*(-0.5 + alpha))))*Cmfs*hopsan::sign(alpha);
 }
 
 //! @brief Overloads void hopsan::limitValue() with a return value.
