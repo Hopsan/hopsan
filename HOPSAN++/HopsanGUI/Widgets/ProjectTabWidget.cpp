@@ -88,10 +88,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     emit checkMessages();
 
-    double timeStep = mpSystem->getCoreSystemAccessPtr()->getDesiredTimeStep();
-
-    gpMainWindow->setTimeStepInToolBar(timeStep);
-
     mIsSaved = true;
 
     mpGraphicsView  = new GraphicsView(this);
@@ -161,7 +157,7 @@ void ProjectTab::setTopLevelSimulationTime(const QString startTime, const QStrin
     //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
 }
 
-//! help function to update teh toolbar simulation time parameters from a tab
+//! @brief Help function to update the toolbar simulation time parameters from a tab
 void ProjectTab::setToolBarSimulationTimeParametersFromTab()
 {
     QString ts;
@@ -691,6 +687,8 @@ void ProjectTabWidget::addProjectTab(ProjectTab *projectTab, QString tabName)
     addTab(projectTab, tabName);
     setCurrentWidget(projectTab);
 
+    projectTab->setToolBarSimulationTimeParametersFromTab();
+
     emit newTabAdded();
 }
 
@@ -706,6 +704,8 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 
     this->addTab(newTab, tabName);
     this->setCurrentWidget(newTab);
+
+    newTab->setToolBarSimulationTimeParametersFromTab();
 
     newTab->setSaved(true);
 
