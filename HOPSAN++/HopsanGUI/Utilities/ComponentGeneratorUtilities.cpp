@@ -86,7 +86,7 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 //! @brief Transforms a DOM element component description to a ComponentSpecification object and calls actual generator utility
 //! @param outputFile Filename for output
 //! @param rDomElement Reference to dom element with information about component
-void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
     QString typeName = rDomElement.attribute("typename");
     QString displayName = rDomElement.attribute("displayname");
@@ -152,7 +152,7 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, M
         equationElement=equationElement.nextSiblingElement("equation");
     }
 
-    generateComponentSourceCode(outputFile, comp, pAppearance, true);
+    compileComponentObject(outputFile, comp, pAppearance, true);
 }
 
 
@@ -167,11 +167,11 @@ void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, M
 //! @param jacobian List of Jacobian elements
 //! @param delayTerms List of delay terms
 //! @param delaySteps List of number of delay steps for each delay term
-void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType,
-                                 QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
-                                 QStringList sysEquations, QStringList stateVars, QStringList jacobian,
-                                 QStringList delayTerms, QStringList delaySteps, QStringList localVars,
-                                 QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+void generateComponentObject(QString typeName, QString displayName, QString cqsType,
+                             QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
+                             QStringList sysEquations, QStringList stateVars, QStringList jacobian,
+                             QStringList delayTerms, QStringList delaySteps, QStringList localVars,
+                             QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
     if(pProgressBar)
     {
@@ -297,7 +297,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
         comp.varTypes << "double";
     }
 
-    generateComponentSourceCode("equation.hpp", comp, pAppearance, false, pProgressBar);
+    compileComponentObject("equation.hpp", comp, pAppearance, false, pProgressBar);
 }
 
 
@@ -305,7 +305,7 @@ void generateComponentSourceCode(QString typeName, QString displayName, QString 
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues, QProgressDialog *pProgressBar)
+void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues, QProgressDialog *pProgressBar)
 {
     if(pProgressBar)
     {
@@ -1656,6 +1656,18 @@ void shuffle(QStringList &list)
     {
         int j = qrand() % (i+1);
         list.swap(i, j);
+    }
+}
+
+
+//! @brief Shuffles the elements in a stringlist and a list of stringlists to a pseudo-random order
+void shuffle(QList<QStringList> &list, QStringList &stringList)
+{
+    for(int i=list.size()-1; i>1; --i)
+    {
+        int j = qrand() % (i+1);
+        list.swap(i, j);
+        stringList.swap(i, j);
     }
 }
 

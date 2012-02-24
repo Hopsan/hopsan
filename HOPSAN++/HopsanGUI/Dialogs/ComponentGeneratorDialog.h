@@ -86,7 +86,7 @@ private slots:
     void updateRecentList();
     void removeRecentComponent();
     void loadRecentComponent();
-    void compile();
+    void generateComponent();
     void loadFromModelica();
     void loadFromXml();
     void loadFromXml(QString fileName);

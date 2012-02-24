@@ -99,9 +99,9 @@ public:
     QStringList simEquations;
     QStringList finalEquations;
 };
-void generateComponentSourceCode(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar = 0);
-void generateComponentSourceCode(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
-void generateComponentSourceCode(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);
+void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar = 0);
+void generateComponentObject(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
+void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 void identifyFunctions(QString equation, QStringList &functions);
 bool verifyParameteres(QList<ParameterSpecification> parameters);
@@ -128,5 +128,6 @@ void getAllTerms(QString equation, QStringList &terms);
 bool isSingular(QStringList matrix);
 void replaceDerivative(QString &equation, QString f, QString dxf);
 void shuffle(QStringList &list);
+void shuffle(QList<QStringList> &list, QStringList &stringList);
 
 #endif // COMPONENTGENERATORUTILITIES_H

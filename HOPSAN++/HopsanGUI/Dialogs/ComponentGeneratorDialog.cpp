@@ -358,7 +358,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
     //Connections
     connect(mpCancelButton,     SIGNAL(clicked()), this, SLOT(reject()));
-    connect(mpCompileButton,    SIGNAL(clicked()), this, SLOT(compile()));
+    connect(mpCompileButton,    SIGNAL(clicked()), this, SLOT(generateComponent()));
     connect(mpAppearanceButton, SIGNAL(clicked()), this, SLOT(openAppearanceDialog()));
 }
 
@@ -1070,7 +1070,7 @@ void ComponentGeneratorDialog::loadRecentComponent()
 
 
 //! @brief Generates XML and compiles the new component
-void ComponentGeneratorDialog::compile()
+void ComponentGeneratorDialog::generateComponent()
 {
     QProgressDialog *pProgressBar = new QProgressDialog(tr("Verifying"), QString(), 0, 0, gpMainWindow);
     pProgressBar->setWindowFlags(Qt::Window);
@@ -1320,42 +1320,42 @@ void ComponentGeneratorDialog::compile()
                 pProgressBar->setLabelText("Sorting system equations");
                 pProgressBar->setValue(43);
 
-        //Sort state variables so that each equation contains its correspondig variable
-        //(otherwise Jacobian will become singular)
-        int consecutiveChecks = 0;
-        int shuffles = 0;
-        for(int i=0; i<stateVars.size(); ++i)
-        {
-            if(!(leftSymbols[i].contains(stateVars[i]) || rightSymbols[i].contains(stateVars[i])))
-            {
-                qDebug() << "Equation " << i << " does not contain " << stateVars[i] << ", swapping.";
-                qDebug() << stateVars;
-                stateVars.move(i, stateVars.size()-1);      //Corresponding equation does not contain state variable, move it to back of list and try next variable
-                --i;
-                ++consecutiveChecks;
-                if(consecutiveChecks > stateVars.size()*stateVars.size())
-                {
-                    //Failed to find solution, shuffle the variables and try again
-                    if(shuffles < 100)
-                    {
-                        shuffle(stateVars);
-                        ++shuffles;
-                        consecutiveChecks = 0;
-                        i=-1;       //Restart loop
-                    }
-                    else
-                    {
-                        //Shuffled the state variables 100 times and still no success, so abort
-                        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Component generator failed to make Jacobian non-singular.");
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                consecutiveChecks = 0;
-            }
-        }
+//        //Sort state variables so that each equation contains its correspondig variable
+//        //(otherwise Jacobian will become singular)
+//        int consecutiveChecks = 0;
+//        int shuffles = 0;
+//        for(int i=0; i<stateVars.size(); ++i)
+//        {
+//            if(!(leftSymbols[i].contains(stateVars[i]) || rightSymbols[i].contains(stateVars[i])))
+//            {
+//                //qDebug() << "Equation " << i << " does not contain " << stateVars[i] << ", swapping.";
+//                //qDebug() << stateVars;
+//                stateVars.move(i, stateVars.size()-1);      //Corresponding equation does not contain state variable, move it to back of list and try next variable
+//                --i;
+//                ++consecutiveChecks;
+//                if(consecutiveChecks > stateVars.size()*stateVars.size())
+//                {
+//                    //Failed to find solution, shuffle the variables and try again
+//                    if(shuffles < 100*stateVars.size())
+//                    {
+//                        shuffle(stateVars);
+//                        ++shuffles;
+//                        consecutiveChecks = 0;
+//                        i=-1;       //Restart loop
+//                    }
+//                    else
+//                    {
+//                        //Shuffled the state variables 100 times and still no success, so abort
+//                        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Component generator failed to make Jacobian non-singular.");
+//                        return;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                consecutiveChecks = 0;
+//            }
+//        }
 
                 pProgressBar->setLabelText("Identifying local variables");
                 pProgressBar->setValue(48);
@@ -1508,6 +1508,80 @@ void ComponentGeneratorDialog::compile()
             sysEquations.append(gpMainWindow->mpPyDockWidget->getLastOutput());
         }
 
+        //Make a list of stringlists from the jacobian, used to sort rows
+        QList<QStringList> jacobian;
+        for(int i=0; i<stateVars.size(); ++i)
+        {
+            jacobian.append(jString.mid(i*stateVars.size(), stateVars.size()));
+        }
+
+        //Sort the Jacobian and system equations to avoid singularity
+        //If possible, Jacobian will get only constant elements on the diagonal.
+        //If not, it will get only non-zero elements.
+        //If not even this is possible, generation will be aborted because system is not solvable.
+        bool success=false;
+        bool poorsuccess=false;
+        QList<QStringList> poorJacobian;
+        QStringList poorEquations;
+        QStringList numChars = QStringList() << "." << "*" << "/" << "+" << "-";
+        for(int i=0; i<100*stateVars.size(); ++i)       //Run lots of times just to be sure (not good, but works...)
+        {
+            shuffle(jacobian, sysEquations);
+            bool badSolution = false;
+            bool allConstant=true;
+            for(int j=0; j<stateVars.size(); ++j)
+            {
+                QString element = jacobian.at(j).at(j);
+                if(element == "0" || element == "0.0")
+                {
+                    badSolution=true;
+                }
+                for(int k=0; k<element.size(); ++k)
+                {
+                    if(!element.at(k).isNumber() && !numChars.contains(QString(element.at(k))))
+                    {
+                        allConstant = false;
+                    }
+                }
+            }
+
+            if(badSolution)
+            {
+                continue;
+            }
+            else if(allConstant)
+            {
+                success = true;
+                break;
+            }
+            else
+            {
+                poorsuccess=true;
+                poorEquations = sysEquations;
+                poorJacobian = jacobian;
+            }
+        }
+
+        if(success)
+        {
+            qDebug() << "Successfully made Jacobian non-singular!";
+        }
+        else if(poorsuccess)
+        {
+            jacobian = poorJacobian;
+            sysEquations = poorEquations;
+            qDebug() << "Found a poor solution for making Jacobian non-singular!";
+        }
+        else
+        {
+            qDebug() << "Failed to make Jacobian non-singular!";
+        }
+        jString.clear();
+        for(int i=0; i<jacobian.size(); ++i)
+        {
+            jString.append(jacobian.at(i));
+        }
+
                 pProgressBar->setLabelText("Translating delay operators");
                 pProgressBar->setValue(781);
 
@@ -1565,7 +1639,7 @@ void ComponentGeneratorDialog::compile()
                 pProgressBar->setValue(804);
 
         //Call utility to generate and compile the source code
-        generateComponentSourceCode(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, finalAlgorithms, mpAppearance, pProgressBar);
+        generateComponentObject(typeName, displayName, cqsType, mPortList, mParametersList, sysEquations, stateVars, jString, delayTerms, delaySteps, localVars, initAlgorithms, finalAlgorithms, mpAppearance, pProgressBar);
 
         //Delete the progress bar to avoid memory leaks
         delete(pProgressBar);
@@ -1656,7 +1730,7 @@ void ComponentGeneratorDialog::compile()
         generateAppearance();
 
         //Call utility to generate and compile source code
-        generateComponentSourceCode("temp.hpp", componentRoot, mpAppearance);
+        generateComponentObject("temp.hpp", componentRoot, mpAppearance);
     }
 }
 
