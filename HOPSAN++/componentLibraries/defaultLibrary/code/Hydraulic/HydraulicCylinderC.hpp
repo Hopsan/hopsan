@@ -146,7 +146,7 @@ class HydraulicCylinderC : public ComponentC
 
             //Size of volumes
             V1 = V01+A1*(-x3);
-            V2 = V01+A2*(sl+x3);
+            V2 = V02+A2*(sl+x3);
             V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*1.0); //me is not written to node yet.
             V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*1.0);
             if(V1<V1min) V1 = V1min;
@@ -211,7 +211,7 @@ class HydraulicCylinderC : public ComponentC
 
             //Size of volumes
             V1 = V01+A1*(-x3);
-            V2 = V01+A2*(sl+x3);
+            V2 = V02+A2*(sl+x3);
             if(0 < me)
             {
                 V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
