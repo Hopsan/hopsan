@@ -153,7 +153,7 @@ class HydraulicCylinderC : public ComponentC
             if(V2<V2min) V2 = V2min;
 
             Zc1 = (mNumPorts1+2) / 2 * betae/V1*mTimestep/(1-alpha);    //Number of ports in volume is 2 internal plus the external ones
-            Zc2 = (mNumPorts1+2) / 2 * betae/V2*mTimestep/(1-alpha);
+            Zc2 = (mNumPorts2+2) / 2 * betae/V2*mTimestep/(1-alpha);
             Zx3 = A1*A1*Zc1 +A2*A2*Zc2 + bp;
 
             //Internal flows
