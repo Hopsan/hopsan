@@ -206,7 +206,8 @@ HEADERS += \
     code/Electric/ElectricCapacitanceMultiPort.hpp \
     code/Electric/ElectricBattery.hpp \
     code/Compgen/HydraulicLaminarOrificeCG.hpp \
-    code/defaultComponentLibraryInternal.h
+    code/defaultComponentLibraryInternal.h \
+    code/Signal/SignalSign.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \

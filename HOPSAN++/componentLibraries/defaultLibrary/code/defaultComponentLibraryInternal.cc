@@ -192,6 +192,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("SignalCos", SignalCos::Creator);
     pComponentFactory->registerCreatorFunction("SignalTan", SignalTan::Creator);
     pComponentFactory->registerCreatorFunction("SignalLookUpTable2D", SignalLookUpTable2D::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSign", SignalSign::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
 

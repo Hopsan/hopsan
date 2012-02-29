@@ -143,6 +143,7 @@
 #include "Signal/SignalCos.hpp"
 #include "Signal/SignalTan.hpp"
 #include "Signal/SignalLookUpTable2D.hpp"
+#include "Signal/SignalSign.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
