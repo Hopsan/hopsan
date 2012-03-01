@@ -60,10 +60,10 @@ Port::~Port()
         //! dataNames and dataUnits are here just to decide the number of elements in the start node.
         std::vector<std::string> dataNames, dataUnits;
         mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
-        for(size_t i = 0; i < dataNames.size(); ++i)
-        {
-//FIXA            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
-        }
+//        for(size_t i = 0; i < dataNames.size(); ++i)
+//        {
+//FIXA, the parameters will probably be deleted when parent component is deleted -> no problems            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
+//        }
     }
 
     //Remove dummy node if it exists
