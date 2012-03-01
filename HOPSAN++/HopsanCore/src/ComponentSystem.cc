@@ -2033,6 +2033,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
 
     //! @todo how should we handle if inidividual component fail to initialize
 
+    if (mStopSimulation)
+    {
+        return false;
+    }
     // We seems to have initialized successfully
     return true;
 }
