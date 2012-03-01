@@ -140,6 +140,8 @@ mlink);
 mtheta0);
         registerParameter("thetamin", "Min angle", "rad", mthetamin);
         registerParameter("thetamax", "Max angle", "rad", mthetamax);
+
+        pSolver = new EquationSystemSolver(this, 4);
      }
 
     void initialize()
@@ -344,5 +346,10 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
         mDelayedPart22.update(delayParts2[2]);
 
      }
+
+    void finalize()
+    {
+        delete(pSolver);
+    }
 };
 #endif // MECHANICJLINK_HPP_INCLUDED
