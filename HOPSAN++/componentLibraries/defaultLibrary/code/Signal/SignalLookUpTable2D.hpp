@@ -33,7 +33,13 @@
 namespace hopsan {
 
     //!
-    //! @brief
+    //! @brief The data csv file should be on semi-colon separated format, example:
+    //! 0;0
+    //! 1;1
+    //! 2;4
+    //! 3;9
+    //! 4;16
+    //!
     //! @ingroup SignalComponents
     //!
     class SignalLookUpTable2D : public ComponentSignal
