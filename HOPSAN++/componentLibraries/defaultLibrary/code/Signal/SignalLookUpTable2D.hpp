@@ -59,6 +59,9 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
+            mDataCurveFileName = "File name";
+            mOldDataCurveFileName = "apa";
+
             registerParameter("filename", "Data Curve", "", mDataCurveFileName);
 
             bool success;
