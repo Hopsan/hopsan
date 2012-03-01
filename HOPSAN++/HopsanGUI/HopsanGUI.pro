@@ -80,7 +80,7 @@ win32 {
     }
 
     #Get the svn revision in here if script succeed, we dont care about the external file generated,
-    system($${PWD}/../getSvnRevision.bat) {
+    system($${PWD}/../getSvnRevision.bat){
         DEFINES *= "HOPSANGUISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
     }
 }
