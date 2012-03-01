@@ -8,8 +8,8 @@
             <picture>massleverhelp.svg</picture>
         </help>
         <ports>
-            <port x="0.3" y="0.5487" a="270" name="P1"/>
-            <port x="0.8696" y="0.8996" a="270" name="P2"/>
+            <port x="0.4" y="0.4" a="0" name="P1"/>
+            <port x="1.0" y="0.87" a="180" name="P2"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
