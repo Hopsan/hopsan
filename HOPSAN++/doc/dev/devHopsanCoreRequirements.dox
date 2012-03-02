@@ -5,7 +5,7 @@ If TBB is not found by qmake, then the core will be compiled without multithread
 
 \section tbb TBB Intel Thread Building Blocks
 \subsection tbb-ubuntu Build/Install TBB on Ubuntu
--# sudo aptitude install libtbb-dev
+-# sudo apt-get install libtbb-dev
 
 \subsection tbb-windows-mingw Build/Install TBB on Windows using MinGW
 -# Download the latest stable releses sorce code, for example: "tbb30_20101215oss_src.tgz" from "http://threadingbuildingblocks.org/download.php" stable release.

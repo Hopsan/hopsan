@@ -7,7 +7,7 @@ If you want to build a pdf manual than latex must be installed (and pdf activate
 Open docs/html/index.html in a webbrowser after building.
 
 \section devDoxygenInstallUbuntu Install and build the documentation in Ubuntu
--# Install the necessary packages with: "aptitude install doxygen graphviz dvipng"\n
+-# Install the necessary packages with: "apt-get install doxygen graphviz dvipng"\n
 
 To build or later rebuild the documentation, run "doygen Doxyfile" from the directory in which the Doxyfile is located
 
@@ -19,7 +19,10 @@ To build or later rebuild the documentation, run "doygen Doxyfile" from the dire
    <a href="http://www.graphviz.org/Download_windows.php" target="_blank">http://www.graphviz.org/Download_windows.php</a>\n
 -# A LaTeX package including dvipng (to generate png for latex equations), 
    We recomend: <a href="http://miktex.org/" target="_blank">http://miktex.org/</a>
+-# You will also need Ghostscript \b 9.05 \b win32 for formulas, install to default directory. c:/"ProgramFiles (or similar)"/gs/gs9.05\n
+   You must use 9.05 because paths are hardcoded in buildDocumentation scripts, (you can set your global path as an alternative if you like some other version).
+   You can find it here <a href="http://sourceforge.net/projects/ghostscript/" target="_blank">http://sourceforge.net/projects/ghostscript/</a>
 
-To build or later rebuild the documentation, double click the makeDoc.bat file.
+To build or later rebuild the documentation, double click the buildDevDocumentation.bat or buildUserDocumentation.bat file.
 
 */

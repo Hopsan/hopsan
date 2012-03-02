@@ -2,39 +2,35 @@
 \page devHopsanGuiRequirements HopsanGUI Dependence libraries
 HopsanGUI depends on some external libraries. Here is a description on how to build and install them.
 
-\section hopsancore Build The Hopsan Core
-todo
-
 \section qwt Build/Install Qwt - Qt Widgets for Technical Applications
 \subsection qwt-ubuntu Ubuntu
 -# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
 -# Unpack into the HopsanGUI\\Dependencies directory
--# The default on Unix is to build only Release mode, if you want to change this, you can do that in qwtbuild.pri (if you want to debug into qwt)
--# Build the qwt project WITHOUT shadowbuild (make sure you uncheck both for debug and release)
+-# The default on Unix is to build only Release mode, if you want to change this (if you want to debug into qwt), you can do that in the qwtbuild.pri file. 
+-# Build the qwt project (you can use shadowbuild)
 -# If compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file automatically copy the needed binary files.
 
 \subsection qwt-windows Windows (minGW and VC++)
 -# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
 -# Unpack into the HopsanGUI\\Dependencies directory
 -# Build the qwt project with qtcreator (you can use shadowbuild)
 -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file automatically copy the needed binary files.
 
 \section pythonqt Build/Install PythonQt 
-If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
+If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h"
 \subsection pythonqt-ubuntu Ubuntu
--# Install the python-dev package (sudo aptitude install python-dev)
--# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
-  -# Place the ex: PythonQt2.0.1 directory in HopsanGUI\\Dependencies, qmake will search for it there
+-# Install the python-dev package (sudo apt-get install python-dev)
+-# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+  -# Place the ex: PythonQt2.0.1 directory in HopsanGUI\\Dependencies, HopsanGUI.pro will search for it there
 -# Go to the PythonQt directory and open the PythonQt project
-  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in common.prf (We need both a debug and a release build)
-  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
-  -# In python.prf, replace the line unix:PYTHON_VERSION=2.6 with your version of Python
-  -# DEACTIVATE shadow build in both debug and release config
+  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in build/common.prf (We need both a debug and a release build)
+  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h"
+  -# In build/python.prf, replace the line unix:PYTHON_VERSION=2.6 with your version of Python
+  -# \b DEACTIVATE shadow build in both debug and release config
   -# Build the PythonQt project, if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
--# In the HopsanGUI project. Go to the project tab and add the following variable:\n
-PYTHONQT_PATH = /home/homsi68/pythonqt or whatever your path is
--# In the HopsanGUI project. Go to the project tab and add the folowinf variable:\n
-LD_LIBRARY_PATH = /home/homsi68/pythonqt/lib or whatever your path is
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file automatically copy the needed binary files.
 
 \subsection pythonqt-windows-vc Windows (with Visual C++) --Needs update after new project files--
 -# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
@@ -57,22 +53,23 @@ PYTHON_LIB  = c:\\Python26\\libs
   -# Go to the project tab and add the following variables in BOTH Debug and Release mode:\n
 PYTHON_PATH = c:\\Python26 or c:\\Python27 \n
 PYTHON_LIB  = c:\\Python26\\libs or c:\\Python27\\libs
-  -# DEACTIVATE shadow build in both debug and release config under the projects tab
-  -# PythonQt uses strange includes, you will need to add the PythonQt/src dir to the INCLUDEPATH, one way to do this is to add (your own version of): "INCLUDEPATH += C:\Users\petno25\Desktop\subversion\HOPSAN++MinGW\HopsanGUI\Dependencies\PythonQt2.0.1\src" to the common.prf file. 
-  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all" only, in common.prf (We need both a debug and a release build)
+  -# \b DEACTIVATE shadow build in both debug and release config under the projects tab
+  -# PythonQt uses strange includes, you will need to add the PythonQt/src dir to the INCLUDEPATH, one way to do this is to add (your own version of): "INCLUDEPATH += C:\Users\petno25\Desktop\subversion\HOPSAN++MinGW\HopsanGUI\Dependencies\PythonQt2.0.1\src" to the build/common.prf file. 
+  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all" only, in build/common.prf (We need both a debug and a release build)
   -# Change the \#ifdef WIN32 in the code in file "PythonQtConversion.cpp" row 676 and 1041 to something else e.g. apaWIN32 so it is NOT true when you compile. 
-  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
-  -# In the file 'python.prf' make sure that "win32:PYTHON_VERSION=26" is correct, 26 or 27 depending on your python version\n
-  -# In the file 'python.prf' Change the row:\n
+  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h"
+  -# In the file 'build/python.prf' make sure that "win32:PYTHON_VERSION=26" is correct, 26 or 27 depending on your python version\n
+  -# In the file 'build/python.prf' Change the row:\n
 "win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib",  to:\n
 "win32:LIBS += -L$(PYTHON_LIB) -lpython$${PYTHON_VERSION}"
-  -# In the file 'pythonQt.prf' Change the row:\n
+  -# In the file 'build/pythonQt.prf' Change the row:\n
 "win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib",  to:\n
 "win32::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}"
-  -# In the file 'pythonQt_QtAll.prf' Change the row:\n
+  -# In the file 'build/pythonQt_QtAll.prf' Change the row:\n
 "win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib",  to:\n
 "win32::LIBS += -L$$PWD/../lib/ -lPythonQt_QtAll$${DEBUG_EXT}"
 -# Build PythonQt in release and debug mode. (Both will be build at once if you have selected that in common.prf)
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file automatically copy the needed binary files.
 
 \subsection pythonqt-windows-mingw_old Windows (with MinGW) OLD VERSION (Try the one above first)
 Some useful information can be found at <a href="http://www.emmestech.com/moron_guides/moron1.html" target="_blank">http://www.emmestech.com/moron_guides/moron1.html</a> and <a href="http://www.mingw.org/wiki/FAQ" target="_blank">http://www.mingw.org/wiki/FAQ</a>
@@ -117,4 +114,8 @@ PYTHONQT_PATH = c:\\pythonqt\n
 PYTHON_PATH = c:\\python26 or whatever your paths are
   -# Also add the path to the PythonQt libs in PATH (in Qt or in system) e.g. c:\\pythonqt\\lib
 -# Enjoy!
+
+\section hopsancore Build The Hopsan Core
+This will be handled automatically when you build the entire Hopsan project.
+
 */
