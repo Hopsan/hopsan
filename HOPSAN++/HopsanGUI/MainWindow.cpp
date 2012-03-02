@@ -709,13 +709,13 @@ void MainWindow::createActions()
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);
     mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
-    mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
+    mpStartTimeLineEdit->setValidator(new QDoubleValidator(-1e4, 1e6, 10, mpStartTimeLineEdit));
     mpTimeStepLineEdit = new QLineEdit("0.001");
     mpTimeStepLineEdit->setMaximumWidth(70);
     mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
-    mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 999.0, 6, mpStartTimeLineEdit));
+    mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 1e3, 10, mpTimeStepLineEdit));
     mpStopTimeLineEdit = new QLineEdit("10.0");
-    mpStopTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStopTimeLineEdit));
+    mpStopTimeLineEdit->setValidator(new QDoubleValidator(-1e4, 1e6, 10, mpStopTimeLineEdit));
     mpStopTimeLineEdit->setMaximumWidth(70);
     mpStopTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
