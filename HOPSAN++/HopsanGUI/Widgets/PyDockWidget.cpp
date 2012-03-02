@@ -60,12 +60,18 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     //mpScriptFileLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
 
-    QPushButton *pPyCustomButton = new QPushButton();
+    mpLoadScriptButton = new QToolButton(this);
+    mpLoadScriptButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
+    mpLoadScriptButton->setToolTip("Load Script File");
+    connect(mpLoadScriptButton, SIGNAL(clicked()), this, SLOT(loadPyScript()));
+
+    QPushButton *pPyCustomButton = new QPushButton(this);
     pPyCustomButton->setText("Run .py-file");
     pPyCustomButton->connect(pPyCustomButton,SIGNAL(clicked()), this, SLOT(runPyScript()));
 
     QHBoxLayout *pScriptFileLayout = new QHBoxLayout();
     pScriptFileLayout->addWidget(mpScriptFileLineEdit);
+    pScriptFileLayout->addWidget(mpLoadScriptButton);
     pScriptFileLayout->addWidget(pPyCustomButton);
 
     QVBoxLayout *pPyLayout = new QVBoxLayout();
@@ -121,6 +127,21 @@ void PyDockWidget::runPyScript()
 }
 
 
+void PyDockWidget::loadPyScript()
+{
+    QDir fileDialogOpenDir;
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Script File"),
+                                                         gConfig.getScriptDir(),
+                                                         tr("Python Scripts (*.py)"));
+    if(!modelFileName.isEmpty())
+    {
+        mpScriptFileLineEdit->setText(modelFileName);
+        QFileInfo fileInfo = QFileInfo(modelFileName);
+        gConfig.setScriptDir(fileInfo.absolutePath());
+    }
+}
+
+
 void PyDockWidget::runPyScript(QString path)
 {
     if(path.isEmpty()) return;
@@ -164,7 +185,7 @@ QString PyDockWidget::runCommand(QString command)
     return getLastOutput();
 }
 
-
+//! @todo Remove this! It is just a stupid test function, but I am too lazy to fix it now...
 void PyDockWidget::optimize()
 {
     runMultipleCommands("iterate()", 100);

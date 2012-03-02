@@ -77,6 +77,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "subsystemdir", mSubsystemDir);
     appendDomTextNode(settings, "modelicamodelsdir", mModelicaModelsDir);
     appendDomTextNode(settings, "externallibdir", mExternalLibDir);
+    appendDomTextNode(settings, "scriptdir", mScriptDir);
 
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
@@ -258,6 +259,8 @@ void Configuration::loadFromXml()
                 mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
             if(!settingsElement.firstChildElement("externallibdir").isNull())
                 mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
+            if(!settingsElement.firstChildElement("scriptdir").isNull())
+                mScriptDir = settingsElement.firstChildElement("scriptdir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -436,7 +439,8 @@ void Configuration::loadDefaultsFromXml()
                 mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
             if(!settingsElement.firstChildElement("externallibdir").isNull())
                 mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
-
+            if(!settingsElement.firstChildElement("scriptdir").isNull())
+                mScriptDir = settingsElement.firstChildElement("scriptdir").text();
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -843,6 +847,16 @@ QString Configuration::getExternalLibDir()
 }
 
 
+QString Configuration::getScriptDir()
+{
+    if(mScriptDir.isEmpty())
+    {
+        return getScriptDir();
+    }
+    return mScriptDir;
+}
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -1097,3 +1111,10 @@ void Configuration::setExternalLibDir(QString value)
 {
     mExternalLibDir = value;
 }
+
+
+void Configuration::setScriptDir(QString value)
+{
+    mScriptDir = value;
+}
+

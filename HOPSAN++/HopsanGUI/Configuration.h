@@ -79,6 +79,7 @@ public:
     QString getSubsystemDir();
     QString getModelicaModelsDir();
     QString getExternalLibDir();
+    QString getScriptDir();
 
     void setLibraryStyle(int value);
     void setShowWelcomeDialog(bool value);
@@ -111,6 +112,7 @@ public:
     void setSubsystemDir(QString value);
     void setModelicaModelsDir(QString value);
     void setExternalLibDir(QString value);
+    void setScriptDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -146,6 +148,7 @@ private:
     QString mSubsystemDir;
     QString mModelicaModelsDir;
     QString mExternalLibDir;
+    QString mScriptDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

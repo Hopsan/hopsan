@@ -49,9 +49,13 @@ public slots:
     void runMultipleCommands(QString command, int n);
     void optimize();
 
+private slots:
+    void loadPyScript();
+
 private:
     PythonQtScriptingConsole *mpPyConsole;
     QLineEdit *mpScriptFileLineEdit;
+    QToolButton *mpLoadScriptButton;
 };
 
 
