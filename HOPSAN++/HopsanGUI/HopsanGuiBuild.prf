@@ -11,32 +11,38 @@ defineReplace(setQWTPathInfo){
     QWT_PATHS *= $${PWD}/Dependencies/qwt-6.0.0
     QWT_PATH = $$selectPath($$externalSrc, $$QWT_PATHS, "qwt")
 
+    #message(QWT_PATH $${QWT_PATH})
+
     #Empty variables to fill in
     magic_hopsan_libpath =
     magic_hopsan_includepath =
     magic_hopsan_qmake_post_link =
+    libDir =
 
-    libDir = $${QWT_PATH}/lib
+    exists($${QWT_PATH}){
+        libDir = $${QWT_PATH}/lib
+        #message(libDir: $${libDir})
 
-    #Check libfolder path
-    exists($$libDir){
-        files =
-        libName = qwt
+        #Check libfolder path
+        exists($${libDir}){
+            files =
+            libName = qwt
 
-        #Add debug if debugmode in Windows
-        dbg_ext =
-        win32:CONFIG(debug, debug|release):dbg_ext = d
+            #Add debug if debugmode in Windows
+            dbg_ext =
+            win32:CONFIG(debug, debug|release):dbg_ext = d
 
-        magic_hopsan_libpath = -L$${libDir} -l$${libName}$${dbg_ext}
-        magic_hopsan_includepath = $${QWT_PATH}/src
+            magic_hopsan_libpath = -L$${libDir} -l$${libName}$${dbg_ext}
+            magic_hopsan_includepath = $${QWT_PATH}/src
 
-        #Set files to copy,  only qwt[d].dll/libqwt[d].dll
-        win32:files = $${libName}$${dbg_ext}$${DLL_EXT}
-        unix:files = lib$${libName}$${DLL_EXT}*
+            #Set files to copy,  only qwt[d].dll/libqwt[d].dll
+            win32:files = $${libName}$${dbg_ext}$${DLL_EXT}
+            unix:files = lib$${libName}$${DLL_EXT}*
 
-        #Generate the copy command
-        magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
-        #message(qmake_post_link $${magic_hopsan_qmake_post_link})
+            #Generate the copy command
+            magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
+            message(qmake_post_link: $${magic_hopsan_qmake_post_link})
+        }
     }
 
     !exists($${libDir}){
@@ -72,23 +78,25 @@ defineReplace(setPythonQtPathInfo){
     magic_hopsan_libpath =
     magic_hopsan_includepath =
     magic_hopsan_qmake_post_link =
+    libDir =
 
-    libDir = $${PYTHONQT_PATH}/lib
+    exists($${PYTHONQT_PATH}){
+        libDir = $${PYTHONQT_PATH}/lib
+        #Check libfolder path
+        exists($${libDir}){
+            files =
 
-    #Check libfolder path
-    exists($$libDir){
-        files =
+            magic_hopsan_libpath = -L$${libDir} -lPythonQt$${DEBUG_EXT} -lPythonQt_QtAll$${DEBUG_EXT}
+            magic_hopsan_includepath = $${PYTHONQT_PATH}/src $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
 
-        magic_hopsan_libpath = -L$${libDir} -lPythonQt$${DEBUG_EXT} -lPythonQt_QtAll$${DEBUG_EXT}
-        magic_hopsan_includepath = $${PYTHONQT_PATH}/src $${PYTHONQT_PATH}/extensions/PythonQt_QtAll
+            #Set files to copy
+            win32:files = PythonQt$${DEBUG_EXT}$${DLL_EXT} PythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}
+            unix:files = libPythonQt$${DEBUG_EXT}$${DLL_EXT}* libPythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}*
 
-        #Set files to copy
-        win32:files = PythonQt$${DEBUG_EXT}$${DLL_EXT} PythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}
-        unix:files = libPythonQt$${DEBUG_EXT}$${DLL_EXT}* libPythonQt_QtAll$${DEBUG_EXT}$${DLL_EXT}*
-
-        #Generate the copy command
-        magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
-        #message(qmake_post_link $${magic_hopsan_qmake_post_link})
+            #Generate the copy command
+            magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
+            #message(qmake_post_link $${magic_hopsan_qmake_post_link})
+        }
     }
 
     !exists($${libDir}){
