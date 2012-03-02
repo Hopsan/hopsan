@@ -219,7 +219,7 @@ void Node::copyNodeVariables(Node *pNode)
     }
 }
 
-void Node::setSpecialStartValues(Node */*pNode*/)
+void Node::setSpecialStartValues(Node* /*pNode*/)
 {
     //This method schould be implemented in child Nodes
     //cout << "This nodetype seem not to have any hidden variables for the user." << endl;
@@ -240,7 +240,7 @@ void Node::setLogSettingsNSamples(int nSamples, double start, double stop, doubl
         //! @todo may need som rounding tricks here
         if ( ((stop - start) / sampletime) < nSamples )
         {
-            mLogSlots = ((stop - start) / sampletime);
+            mLogSlots = size_t((stop - start) / sampletime);
             std::stringstream ss;
             ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mLogSlots;
             gCoreMessageHandler.addWarningMessage(ss.str(), "toofewsamples");

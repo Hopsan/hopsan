@@ -576,7 +576,7 @@ bool Parameters::evaluateParameters()
     bool success = true;
     for(size_t i=0; i<mParameters.size(); ++i)
     {
-        success *= mParameters[i]->evaluate();
+        success = (success && mParameters[i]->evaluate());
     }
     return success;
 }
@@ -610,8 +610,8 @@ bool Parameters::checkParameters(std::string &errParName)
     std::vector<Parameter*>::iterator parIt;
     for(parIt = mParametersNeedEvaluation.begin(); (parIt != mParametersNeedEvaluation.end()) && (!mParametersNeedEvaluation.empty()); ++parIt)
     {
-        success *= (*parIt)->evaluate();
-        if(!(success))
+        success = (success && (*parIt)->evaluate());
+        if(!success)
         {
             std::string parameterName, parameterValue, description, unit, type;
             (*parIt)->getParameter(parameterName, parameterValue, description, unit, type);

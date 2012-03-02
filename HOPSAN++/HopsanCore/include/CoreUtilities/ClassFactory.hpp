@@ -77,7 +77,7 @@ namespace hopsan {
         bool reserveKey(_Key idKey)
         {
             std::pair<typename FactoryMapT::iterator, bool> rc;
-            rc = mFactoryMap.insert(FactoryPairT(idKey, 0));
+            rc = mFactoryMap.insert(FactoryPairT(idKey, static_cast<CreatorFunctionT>(0)));
             return rc.second;
         }
 
