@@ -740,6 +740,7 @@ QFont Configuration::getFont()
 }
 
 
+//! @brief Returns the current style sheet
 QString Configuration::getStyleSheet()
 {
     if(mUseNativeStyleSheet)
@@ -749,24 +750,28 @@ QString Configuration::getStyleSheet()
 }
 
 
+//! @brief Returns the last used script file
 QString Configuration::getLastScriptFile()
 {
     return mLastScriptFile;
 }
 
 
+//! @brief Returns the group message by tag setting
 bool Configuration::getGroupMessagesByTag()
 {
     return mGroupMessagesByTag;
 }
 
 
+//! @brief Returns the limit setting for plot generations
 int Configuration::getGenerationLimit()
 {
     return mGenerationLimit;
 }
 
 
+//! @brief Returns the last used model directory
 QString Configuration::getLoadModelDir()
 {
     if(mLoadModelDir.isEmpty())
@@ -777,6 +782,7 @@ QString Configuration::getLoadModelDir()
 }
 
 
+//! @brief Returns the last used model graphics export directory
 QString Configuration::getModelGfxDir()
 {
     if(mModelGfxDir.isEmpty())
@@ -787,6 +793,7 @@ QString Configuration::getModelGfxDir()
 }
 
 
+//! @brief Returns the last used plot data export directory
 QString Configuration::getPlotDataDir()
 {
     if(mPlotDataDir.isEmpty())
@@ -797,6 +804,7 @@ QString Configuration::getPlotDataDir()
 }
 
 
+//! @brief Returns the last used plot graphics export directory
 QString Configuration::getPlotGfxDir()
 {
     if(mPlotGfxDir.isEmpty())
@@ -807,6 +815,7 @@ QString Configuration::getPlotGfxDir()
 }
 
 
+//! @brief Returns the last used simulink export directory
 QString Configuration::getSimulinkExportDir()
 {
     if(mSimulinkExportDir.isEmpty())
@@ -817,6 +826,7 @@ QString Configuration::getSimulinkExportDir()
 }
 
 
+//! @brief Returns the last used external subsystem directory
 QString Configuration::getSubsystemDir()
 {
     if(mSubsystemDir.isEmpty())
@@ -827,6 +837,7 @@ QString Configuration::getSubsystemDir()
 }
 
 
+//! @brief Returns the last used modelica model directory
 QString Configuration::getModelicaModelsDir()
 {
     if(mModelicaModelsDir.isEmpty())
@@ -837,6 +848,7 @@ QString Configuration::getModelicaModelsDir()
 }
 
 
+//! @brief Returns the last used external library directory
 QString Configuration::getExternalLibDir()
 {
     if(mExternalLibDir.isEmpty())
@@ -847,6 +859,7 @@ QString Configuration::getExternalLibDir()
 }
 
 
+//! @brief Returns the last used scripts directory
 QString Configuration::getScriptDir()
 {
     if(mScriptDir.isEmpty())

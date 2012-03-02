@@ -5,6 +5,7 @@ namespace hopsan::Component {
 -# \subpage introduction-component-libraries \n
 -# \subpage creating-modifying-component-appearance \n
 -# \subpage writing-components \n
+-# \subpage component-generator \n
 -# \subpage generating-components-mathematica \n
 
 \page introduction-component-libraries Introduction to Component Libraries
@@ -274,6 +275,27 @@ You may also get linker errors which are usually a bit more difficult to underst
 If you get something similar to the following error message: \"<tt>cannot find -lHopsanCore</tt>\" you have probably set the LIBS path incorrectly in your project file.\n
 
 If compilation was successful, a .dll or.so file will appear in the directory. It should now be possible to load the library from Hopsan, by pointing out the directory - see \ref introduction-component-libraries "Introduction".
+
+\page component-generator Component Generator Dialog
+Hopsan has a built-in component generator dialog, from where new components can be written without deeper knowledge of the Hopsan simulation core interface. It accessed from the "Generate New Component" icon at the bottom of the library widget.
+
+\htmlonly
+<table border="0">
+<tr>
+<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/generatenewcomponent_icon.png" border=0>
+</td>
+<td><b>Generate New Component</b></td>
+</tr>
+</table>
+\endhtmlonly
+
+In this dialog it is possible to specify component name (used by simulation core, must not contain spaces), display name (shown in graphical interface) and component type (C,Q or S - see the \ref userTransmissionLineElementMethod "transmission line element method"). It is also possible to add ports, parameters, utility functions and static variables. Finally, the code for the component can be written in two ways, either directly from C++ code, or from algebraic equations using a subset of the Modelica language.
+
+When writing C++ code, there are three functions available: Initialize, SimulateOneTimeStep and Finalize. Initialize are ran before the first time step of the simulation, SimulateOneTimeStep is ran every time step, and finalize are ran after the simulation is finished. Available and sought parameters are displayed above the code boxes. When clicking compile, the component will be converted to Hopsan interface syntax and compiled to an external library.
+
+The other option is to use equations. This function is currently an experimental feature, and full functionality is not guaranteed. Equation-based modeling has several advantages over plain code modeling. It allows equations written in arbitary ways, i.e. more than one variable on the left side. Equations can also be written in any order, as long as the number of equations equals the number of unknown variables. The language used is a subset of Modelica. It allows most basic functionality in the equation section. There is also an algorithm section, that will be executed prior to the equation solver each time step. This section does not support all modelica algorithm functionalities, and is basically intended only for defining explicit expressions that does not need to be part of the equation system. When compiling, a symbolic Jacobian matrix is generated and displayed in a popup window. This is then transformed to Hopsan syntax, together with a fixed-step equation system solver.
+
+Generated components are loaded automatically into a "Generated Component" library.
 
 \page generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
