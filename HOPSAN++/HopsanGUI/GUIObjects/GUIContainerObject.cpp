@@ -251,6 +251,10 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
                     break;
                 }
             }
+            else
+            {
+                this->createExternalPort(moit.value()->getName()); //Refresh for ports that are not autoplaced
+            }
         }
     }
 

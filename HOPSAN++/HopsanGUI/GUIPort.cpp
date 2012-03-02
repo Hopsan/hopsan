@@ -741,8 +741,16 @@ qreal Port::getPortRotation()
 void Port::setEnable(bool enable)
 {
     mpPortAppearance->mEnabled = enable;
-    setVisible(enable);
-    //! @todo disconnect component connections to this port
+
+    if(!enable) //Remove all connections to this port if it is set to disabled
+    {
+        QVector<Connector*> vConnectors = this->getAttachedConnectorPtrs();
+        QVector<Connector*>::iterator it;
+        for(it = vConnectors.begin(); it != vConnectors.end(); ++it)
+        {
+            this->getGuiModelObject()->getParentContainerObject()->removeSubConnector(*it);
+        }
+    }
 }
 
 
@@ -751,6 +759,7 @@ void Port::hide()
     this->magnify(false);
     mpPortLabel->hide();
     QGraphicsWidget::hide();
+    this->mpPortAppearance->mVisible = false;
 }
 
 void Port::show()
@@ -760,6 +769,7 @@ void Port::show()
         QGraphicsWidget::show();
     }
     mpPortLabel->hide();
+    this->mpPortAppearance->mVisible = true;
 }
 
 

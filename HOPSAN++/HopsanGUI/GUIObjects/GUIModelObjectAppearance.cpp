@@ -79,10 +79,26 @@ void appendPortDomElement(QDomElement &rDomElement, const QString portName, cons
     setQrealAttribute(xmlPort, "x", rPortAppearance.x, 10, 'g');
     setQrealAttribute(xmlPort, "y", rPortAppearance.y, 10, 'g');
     setQrealAttribute(xmlPort, "a", rPortAppearance.rot, 6, 'g');
+    if(rPortAppearance.mAutoPlaced)
+    {
+        xmlPort.setAttribute("autoplaced", HMF_TRUETAG);
+    }
+    else
+    {
+        xmlPort.setAttribute("autoplaced", HMF_FALSETAG);
+    }
+    if(rPortAppearance.mEnabled)
+    {
+        xmlPort.setAttribute("enabled", HMF_TRUETAG);
+    }
+    else
+    {
+        xmlPort.setAttribute("enabled", HMF_FALSETAG);
+    }
 
     // Save visible or not, only write if hidden is set, as default is visible (to avoid clutter in xml file)
-    //! @todo maybe should always write
-    if (!rPortAppearance.mEnabled)
+    //! @todo maybe should always write, this is wrong, should look at if it is hide or not instead... Now that is not in appearance
+    if (!rPortAppearance.mVisible) //This is wrong
     {
         xmlPort.setAttribute("visible", HMF_FALSETAG);
     }
@@ -105,7 +121,9 @@ void parsePortDomElement(QDomElement domElement, QString &rPortName, PortAppeara
     rPortAppearance.y = parseAttributeQreal(domElement, "y", 0);
     rPortAppearance.rot = parseAttributeQreal(domElement, "a", 0);
 
-    rPortAppearance.mEnabled = parseAttributeBool(domElement, "visible", true);
+    rPortAppearance.mAutoPlaced = parseAttributeBool(domElement, "autoplaced", true);
+    rPortAppearance.mEnabled = parseAttributeBool(domElement, "enabled", true);
+    rPortAppearance.mVisible = parseAttributeBool(domElement, "visible", true);
 
     QDomElement xmlPortDescription = domElement.firstChildElement(CAF_DESCRIPTION);
     if (!xmlPortDescription.isNull())
@@ -538,7 +556,7 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     }
 
     // Save port data
-    //! @todo maybe make the port appearance  class kapable of saving itself to DOM
+    //! @todo maybe make the port appearance  class capable of saving itself to DOM
     QDomElement xmlPorts = appendDomElement(xmlObject, CAF_PORTS);
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
