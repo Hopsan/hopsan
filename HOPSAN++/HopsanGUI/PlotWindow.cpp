@@ -1627,11 +1627,14 @@ void PlotTab::removeCurve(PlotCurve *curve)
 //! @param dataUnit Unit of new data
 void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QString portName, QString dataName, QString dataUnit, HopsanPlotID plotID)
 {
+    mHasSpecialXAxis = true;
+
     mVectorX = xArray;
 
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
         mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->setSamples(mVectorX, mPlotCurvePtrs[plotID].at(i)->getDataVector());
+        mPlotCurvePtrs[plotID].at(i)->setDataUnit(mPlotCurvePtrs[plotID].at(i)->getDataUnit());
     }
 
     rescaleToCurves();
@@ -1647,7 +1650,6 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
     updateLabels();
     update();
     mVectorX = xArray;
-    mHasSpecialXAxis = true;
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
 }
 
@@ -1729,15 +1731,17 @@ bool PlotTab::isGridVisible()
 
 void PlotTab::resetXVector()
 {
+    mHasSpecialXAxis = false;
+
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
         mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
+        mPlotCurvePtrs[FIRSTPLOT].at(i)->setDataUnit(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit());
     }
 
     mVectorXLabel = QString("Time [s]");
     updateLabels();
-
-    mHasSpecialXAxis = false;
+    update();
 
     rescaleToCurves();
     mpPlot[FIRSTPLOT]->replot();
