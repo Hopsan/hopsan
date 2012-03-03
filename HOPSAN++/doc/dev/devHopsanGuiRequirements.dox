@@ -1,24 +1,27 @@
 /*!
 \page devHopsanGuiRequirements HopsanGUI Dependence libraries
-HopsanGUI depends on some external libraries. Here is a description on how to build and install them.
+HopsanGUI depends on some external libraries. Here is a description on how to build them.
 
-\section qwt Build/Install Qwt - Qt Widgets for Technical Applications
+\section qwt Build Qwt - Qt Widgets for Technical Applications
 \subsection qwt-ubuntu Ubuntu
--# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
+-# First download a version >=6.0.0 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
 -# Unpack into the HopsanGUI\\Dependencies directory
--# The default on Unix is to build only Release mode, if you want to change this (if you want to debug into qwt), you can do that in the qwtbuild.pri file. 
+-# The default on Unix is to build only Release mode, if you want to change this (only if you want to debug into qwt), you can do that in the qwtbuild.pri file.
+  -# "Enable debug_and_release + build_all if you want to build both." 
 -# Build the qwt project (you can use shadowbuild)
 -# If compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file automatically copy the needed binary files.
+  -# \e Note! HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
 
 \subsection qwt-windows Windows (minGW and VC++)
--# First download a version >=6.0.0 from "http://sourceforge.net/projects/qwt/files/"
+-# First download a version >=6.0.0 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
 -# Unpack into the HopsanGUI\\Dependencies directory
 -# Build the qwt project with qtcreator (you can use shadowbuild)
 -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file automatically copy the needed binary files.
+  -# \e Note! HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
 
-\section pythonqt Build/Install PythonQt 
+\section pythonqt Build PythonQt 
 If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h"
 \subsection pythonqt-ubuntu Ubuntu
 -# Install the python-dev package (sudo apt-get install python-dev)
