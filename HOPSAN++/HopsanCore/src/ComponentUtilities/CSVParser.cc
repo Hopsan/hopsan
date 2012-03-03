@@ -87,9 +87,50 @@ CSVParser::CSVParser(bool &success,
 
 }
 
+
+bool CSVParser::checkData()
+{
+    mIncreasing.resize(mData.size(), true);
+    bool ok = false;
+    if(!(mData.empty()))
+    {
+        size_t dataLength = mData[0].size();
+        for(size_t row=0; row < mData.size(); ++row)
+        {
+            if(mData[row].size() != dataLength)
+            {
+                return ok;
+            }
+            if(0 < mData[row][max(mData[row].size()-1.0, 1.0)] - mData[row][0])
+            {
+                mIncreasing[row] = true;
+            }
+            else
+            {
+                mIncreasing[row] = false;
+            }
+            for(size_t i=0; i < mData[row].size(); ++i)
+            {
+                if(!(mIncreasing[row]) && (0 < mData[row][max(mData[row].size()-1.0, i+1.0)] - mData[row][i]))
+                {
+                    return ok;
+                }
+            }
+        }
+        ok = true;
+    }
+    return ok;
+}
+
+
 double CSVParser::interpolate(const double x, const size_t outIndex, const size_t inIndex)
 {
     size_t i;
+    if(((x<*mData[inIndex].begin()) && mIncreasing[inIndex]) || ((x>*mData[inIndex].begin()) && !(mIncreasing[inIndex])))
+        return *mData[outIndex].begin();
+    else if(((x>mData[inIndex].back()) && mIncreasing[inIndex]) || ((x<mData[inIndex].back()) && !(mIncreasing[inIndex])))
+        return mData[outIndex].back();
+
     //! @todo remove this stupid loop and use direct indexing instead
     for (i=0; i < mData[inIndex].size()-1; i++)
     {

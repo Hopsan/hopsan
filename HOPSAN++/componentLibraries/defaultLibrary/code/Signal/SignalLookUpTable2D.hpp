@@ -82,6 +82,7 @@ namespace hopsan {
             {
                 delete myDataCurve;
                 myDataCurve = new CSVParser(success, mDataCurveFileName);
+                success = success && myDataCurve->checkData();
                 if(!success)
                 {
                     std::stringstream ss;

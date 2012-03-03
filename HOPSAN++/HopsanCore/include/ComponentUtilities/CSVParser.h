@@ -42,10 +42,12 @@ namespace hopsan {
                   const char enclosure_char = '"',
                   const size_t linesToSkip = 0);
 
+        bool checkData();
         double interpolate(const double x, const size_t outIndex = 1, const size_t inIndex = 0);
 
     public: //Should be protected:
         std::vector< std::vector<double> > mData;
+        std::vector< bool > mIncreasing;
     };
 }
 

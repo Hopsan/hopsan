@@ -4,6 +4,11 @@
         <icons>
             <icon scale="1" path="lookuptable.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <text>This component is a 2 dimension look up table. The input is a .csv file separated with ";". 
+The first column is the input values and the second is the output values. See example file above.</text>
+            <picture>lookuptablehelp.svg</picture>
+        </help>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>
