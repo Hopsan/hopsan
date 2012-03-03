@@ -41,7 +41,7 @@ defineReplace(setQWTPathInfo){
 
             #Generate the copy command
             magic_hopsan_qmake_post_link = $$generateCopyDllCommand($$files, $$libDir, $$dstDir)
-            message(qmake_post_link: $${magic_hopsan_qmake_post_link})
+            #message(qmake_post_link: $${magic_hopsan_qmake_post_link})
         }
     }
 
