@@ -1,0 +1,13 @@
+Source: hopsan
+Section: unknown
+Priority: extra
+Maintainer: Peter Nordin <peter.nordin@liu.se>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.2
+Homepage: <http://www.iei.liu.se/flumes/system-simulation/hopsanng?l=en>
+
+Package: hopsan
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
