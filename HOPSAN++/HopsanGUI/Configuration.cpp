@@ -864,7 +864,7 @@ QString Configuration::getScriptDir()
 {
     if(mScriptDir.isEmpty())
     {
-        return getScriptDir();
+        return gScriptsPath;
     }
     return mScriptDir;
 }

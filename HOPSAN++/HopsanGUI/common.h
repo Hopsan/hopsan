@@ -53,6 +53,7 @@
 #define MAINPATH "../"
 #define HELPPATH "../doc/user/html/"
 #define MSVC2008PATH "MSVC2008/"
+#define MSVC2010PATH "MSVC2010/"
 
 // windows specific paths
 #ifdef WIN32
