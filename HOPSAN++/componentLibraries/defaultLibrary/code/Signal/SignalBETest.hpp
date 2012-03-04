@@ -96,7 +96,8 @@ namespace hopsan {
 
                 std::stringstream ss;
                 //            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
-                ss << mGain << "  " << myDataCurve->interpolate(mGain);
+                bool ok;
+                ss << mGain << "  " << myDataCurve->interpolate(ok, mGain);
                 addInfoMessage(ss.str());
 
                 mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);

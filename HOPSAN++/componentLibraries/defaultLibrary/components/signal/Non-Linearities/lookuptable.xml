@@ -6,7 +6,8 @@
         </icons>
         <help>
             <text>This component is a 2 dimension look up table. The input is a .csv file separated with ";". 
-The first column is the input values and the second is the output values. See example file above.</text>
+The first column is the input values and the second is the output values. The input value vector has to be either strict increasing or strict decreasing. 
+See example file above.</text>
             <picture>lookuptablehelp.svg</picture>
         </help>
         <ports>

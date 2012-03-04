@@ -109,7 +109,13 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = myDataCurve->interpolate(*mpND_in);
+            bool ok;
+            (*mpND_out) = myDataCurve->interpolate(ok, *mpND_in);
+            if(!ok)
+            {
+                addErrorMessage("Error in Look Up 2D indata vector, not strict increasing/decreasing.");
+                stopSimulation();
+            }
         }
     };
 }

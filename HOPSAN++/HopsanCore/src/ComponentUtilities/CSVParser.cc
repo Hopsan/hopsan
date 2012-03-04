@@ -90,7 +90,7 @@ CSVParser::CSVParser(bool &success,
 
 bool CSVParser::checkData()
 {
-    mIncreasing.resize(mData.size(), true);
+    mIncreasing.resize(mData.size(), 0);
     bool ok = false;
     if(!(mData.empty()))
     {
@@ -103,17 +103,17 @@ bool CSVParser::checkData()
             }
             if(0 < mData[row][max(mData[row].size()-1.0, 1.0)] - mData[row][0])
             {
-                mIncreasing[row] = true;
+                mIncreasing[row] = 1;
             }
             else
             {
-                mIncreasing[row] = false;
+                mIncreasing[row] = -1;
             }
             for(size_t i=0; i < mData[row].size(); ++i)
             {
-                if(!(mIncreasing[row]) && (0 < mData[row][max(mData[row].size()-1.0, i+1.0)] - mData[row][i]))
+                if((mIncreasing[row]==-1) && (0 < mData[row][max(mData[row].size()-1.0, i+1.0)] - mData[row][i]))
                 {
-                    return ok;
+                    mIncreasing[row] = 0;
                 }
             }
         }
@@ -123,24 +123,39 @@ bool CSVParser::checkData()
 }
 
 
-double CSVParser::interpolate(const double x, const size_t outIndex, const size_t inIndex)
+double CSVParser::interpolate(bool &okInIndex, const double x, const size_t outIndex, const size_t inIndex)
 {
-    size_t i;
-    if(((x<*mData[inIndex].begin()) && mIncreasing[inIndex]) || ((x>*mData[inIndex].begin()) && !(mIncreasing[inIndex])))
-        return *mData[outIndex].begin();
-    else if(((x>mData[inIndex].back()) && mIncreasing[inIndex]) || ((x<mData[inIndex].back()) && !(mIncreasing[inIndex])))
-        return mData[outIndex].back();
-
-    //! @todo remove this stupid loop and use direct indexing instead
-    for (i=0; i < mData[inIndex].size()-1; i++)
+    //okInIndex =
+    if(mIncreasing[inIndex] != 0)
     {
-        if(((x <= mData[inIndex][i]) && (x > mData[inIndex][i+1])) ||
-           ((x >= mData[inIndex][i]) && (x < mData[inIndex][i+1])))
+            okInIndex = true;
+    }
+    else
+    {
+        okInIndex = false;
+    }
+    if(okInIndex)
+    {
+        size_t i;
+        //out of index
+        if(((x<*mData[inIndex].begin()) && (mIncreasing[inIndex]==1)) || ((x>*mData[inIndex].begin()) && (mIncreasing[inIndex]==-1)))
+            return *mData[outIndex].begin();
+        else if(((x>mData[inIndex].back()) && (mIncreasing[inIndex]==1)) || ((x<mData[inIndex].back()) && (mIncreasing[inIndex]==-1)))
+            return mData[outIndex].back();
+        else
         {
-            //Value is between i and i+1
-            //return  mData[outIndex][i];
-            return mData[outIndex][i] + (x - mData[inIndex][i])*(mData[outIndex][i+1] -  mData[outIndex][i])/(mData[inIndex][i+1] -  mData[inIndex][i]);
-            break;
+            //! @todo remove this stupid loop and use direct indexing instead
+            for (i=0; i < mData[inIndex].size()-1; i++)
+            {
+                if(((x <= mData[inIndex][i]) && (x > mData[inIndex][i+1])) ||
+                        ((x >= mData[inIndex][i]) && (x < mData[inIndex][i+1])))
+                {
+                    //Value is between i and i+1
+                    //return  mData[outIndex][i];
+                    return mData[outIndex][i] + (x - mData[inIndex][i])*(mData[outIndex][i+1] -  mData[outIndex][i])/(mData[inIndex][i+1] -  mData[inIndex][i]);
+                    break;
+                }
+            }
         }
     }
     return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
