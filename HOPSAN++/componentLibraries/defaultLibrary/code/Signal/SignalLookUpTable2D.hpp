@@ -50,7 +50,7 @@ namespace hopsan {
 
         double *mpND_in, *mpND_out;
 
-        std::string mDataCurveFileName, mOldDataCurveFileName;
+        std::string mDataCurveFileName;
 
         CSVParser *myDataCurve;
 
@@ -66,40 +66,35 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             mDataCurveFileName = "File name";
-            mOldDataCurveFileName = "apa";
-
             registerParameter("filename", "Data Curve", "", mDataCurveFileName);
 
-            bool success;
-            myDataCurve = new CSVParser(success);
+            myDataCurve = 0;
         }
 
 
         void initialize()
         {
             bool success=false;
-            if(mDataCurveFileName != mOldDataCurveFileName)
+            if (myDataCurve!=0)
             {
                 delete myDataCurve;
-                myDataCurve = new CSVParser(success, mDataCurveFileName);
-                success = success && myDataCurve->checkData();
-                if(!success)
-                {
-                    std::stringstream ss;
-                    ss << "Unable to initialize CVS file: " << mDataCurveFileName;
-                    addErrorMessage(ss.str());
-                    stopSimulation();
-                }
-                else
-                {
-                    mOldDataCurveFileName = mDataCurveFileName;
-                }
+                myDataCurve=0;
             }
-            if(success)
+
+            myDataCurve = new CSVParser(success, mDataCurveFileName);
+            success = success && myDataCurve->checkData();
+            if(!success)
             {
-//                std::stringstream ss;
-//                ss << mGain << "  " << myDataCurve->interpolate(mGain);
-//                addInfoMessage(ss.str());
+                std::stringstream ss;
+                ss << "Unable to initialize CSV file: " << mDataCurveFileName;
+                addErrorMessage(ss.str());
+                stopSimulation();
+            }
+            else
+            {
+                //                std::stringstream ss;
+                //                ss << mGain << "  " << myDataCurve->interpolate(mGain);
+                //                addInfoMessage(ss.str());
 
                 mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
                 mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
@@ -111,10 +106,22 @@ namespace hopsan {
         {
             bool ok;
             (*mpND_out) = myDataCurve->interpolate(ok, *mpND_in);
+            //! @todo maybe this check should be done in initialize instead, so that we know its ok before we begin simulate
             if(!ok)
             {
                 addErrorMessage("Error in Look Up 2D indata vector, not strict increasing/decreasing.");
                 stopSimulation();
+            }
+        }
+
+        void finalize()
+        {
+            //! @todo actuallty this is only needed in destructor to cleanup
+            //Cleanup data curve
+            if (myDataCurve!=0)
+            {
+                delete myDataCurve;
+                myDataCurve=0;
             }
         }
     };

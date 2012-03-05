@@ -138,10 +138,14 @@ double CSVParser::interpolate(bool &okInIndex, const double x, const size_t outI
     {
         size_t i;
         //out of index
-        if(((x<*mData[inIndex].begin()) && (mIncreasing[inIndex]==1)) || ((x>*mData[inIndex].begin()) && (mIncreasing[inIndex]==-1)))
+        if( ((x<*mData[inIndex].begin()) && (mIncreasing[inIndex]==1)) || ((x>*mData[inIndex].begin()) && (mIncreasing[inIndex]==-1)) )
+        {
             return *mData[outIndex].begin();
-        else if(((x>mData[inIndex].back()) && (mIncreasing[inIndex]==1)) || ((x<mData[inIndex].back()) && (mIncreasing[inIndex]==-1)))
+        }
+        else if( ((x>=mData[inIndex].back()) && (mIncreasing[inIndex]==1)) || ((x<=mData[inIndex].back()) && (mIncreasing[inIndex]==-1)) )
+        {
             return mData[outIndex].back();
+        }
         else
         {
             //! @todo remove this stupid loop and use direct indexing instead
