@@ -139,7 +139,7 @@ protected:
 private:
     void commonConstructorCode();
 
-    size_t mNumberOfLogSamples;
+    int mNumberOfLogSamples;
 
     QString mLoadType;
     CoreSystemAccess *mpCoreSystemAccess;

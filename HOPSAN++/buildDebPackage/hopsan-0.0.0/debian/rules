@@ -19,14 +19,14 @@ build:
 
 clean:
 	dh_testdir
-	rm -r hopsanShadowBuild
+	rm -rf hopsanShadowBuild
 	dh_clean
 
 install:
 	dh_testdir
 	dh_prep
 	dh_installdirs
-	../copyInstallHopsan.sh ../../ debian/hopsan/
+	../copyInstallHopsan.sh ../../ debian/hopsan/opt/hopsan
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -34,21 +34,21 @@ binary-indep: build install
 
 # Build architecture-dependent files here.
 binary-arch: build install
-#        dh_testdir
+	dh_testdir
 #        dh_testroot
-#        dh_installchangelogs
+	dh_installchangelogs
 #        dh_installdocs
 #        dh_installexamples
 #        dh_installman
 #        dh_link
-#        dh_strip
-#        dh_compress
-#        dh_fixperms
-#        dh_installdeb
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
 #        dh_shlibdeps
-#        dh_gencontrol
+	dh_gencontrol
 #        dh_md5sums
-#        dh_builddeb
+	dh_builddeb
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install

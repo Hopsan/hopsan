@@ -1,10 +1,10 @@
 Source: hopsan
-Section: unknown
+Section: non-free/x11
 Priority: extra
 Maintainer: Peter Nordin <peter.nordin@liu.se>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.2
-Homepage: <http://www.iei.liu.se/flumes/system-simulation/hopsanng?l=en>
+Homepage: http://www.iei.liu.se/flumes/system-simulation/hopsanng?l=en
 
 Package: hopsan
 Architecture: any
