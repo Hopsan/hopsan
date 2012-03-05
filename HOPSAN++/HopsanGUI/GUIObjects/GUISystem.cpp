@@ -480,6 +480,7 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement)
 
     // Save Core related stuff
     this->saveCoreDataToDomElement(xmlSubsystem);
+    xmlSubsystem.setAttribute(HMF_LOGSAMPLES, mNumberOfLogSamples);
 
     // Save gui object stuff
     this->saveGuiDataToDomElement(xmlSubsystem);
@@ -571,6 +572,12 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), startT, stepT, stopT, inheritTs);
         this->setTimeStep(stepT.toDouble());
         mpCoreSystemAccess->setInheritTimeStep(inheritTs);
+
+        //Load number of log samples
+        if(rDomElement.hasAttribute(HMF_LOGSAMPLES))
+        {
+            mNumberOfLogSamples = rDomElement.attribute(HMF_LOGSAMPLES).toInt();
+        }
 
         //Only set start stop time for the top level system
         if (mpParentContainerObject == 0)
@@ -2387,7 +2394,6 @@ void SystemContainer::createSimulinkSourceFiles()
 
     progressBar.setValue(8);
     progressBar.setLabelText("Copying Visual Studio binaries");
-
 
     if(pMSVC2008RadioButton->isChecked())
     {

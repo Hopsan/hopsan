@@ -514,7 +514,7 @@ void LibraryWidget::importFmu()
     progressBar.setValue(0);
 
 
-    QFileInfo fmuFileInfo = QFile(filePath);
+    QFileInfo fmuFileInfo = QFileInfo(filePath);
     fmuFileInfo.setFile(filePath);
 
     QDir zipDir;

@@ -100,6 +100,7 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 #define HMF_BOXWIDGETTAG "boxwidget"
 #define HMF_PORTSTAG "ports"
 #define HMF_NAMESTAG "names"
+#define HMF_LOGSAMPLES "logsamples"
 
 #define HMF_NAMETAG "name"
 #define HMF_TYPENAME "typename"
