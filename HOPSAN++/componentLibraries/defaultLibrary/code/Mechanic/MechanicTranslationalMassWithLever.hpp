@@ -17,7 +17,7 @@
 
 namespace hopsan {
 
-    //Verified with AMESim 2011-03-21
+    //Verified with another simulation software 2011-03-21
     //!
     //! @brief
     //! @ingroup MechanicalComponents
@@ -86,11 +86,13 @@ namespace hopsan {
             f1 = (*mpND_f1);
             f2 = (*mpND_f2);
             x1 = (*mpND_x1);
-            v2 = (*mpND_v1);
+            v1 = (*mpND_v1);
 
             w = (L1+L2)/L1;
 
-            mIntegrator.initialize(mTimestep, 0, (f1-f2)/m, -x1/w, -v1/w);
+            mIntegrator.initialize(mTimestep, 0, (f1-f2)/m, -x1*w, -v1*w);
+            (*mpND_x2) = -x1*w;
+            (*mpND_v2) = -v1*w;
 
             //Print debug message if velocities do not match
             if(mpP1->readNode(NodeMechanic::VELOCITY)*w != -mpP2->readNode(NodeMechanic::VELOCITY))
