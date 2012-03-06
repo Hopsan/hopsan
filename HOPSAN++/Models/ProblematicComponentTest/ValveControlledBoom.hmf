@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r4081">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system typename="Subsystem" name="ValveControlledBoom">
+        <simulationtime stop="5" timestep="0.001" start="-10" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2449" y="2609" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="1"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="ValveControlledBoom">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicPressureSensor" name="Pressure Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2530" y="2591" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="C-type Piston">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Flow"/>
+                    <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="0" type="double" name="P3::Velocity"/>
+                    <parameter value="0" type="double" name="P3::Force"/>
+                    <parameter value="0" type="double" name="P3::Position"/>
+                    <parameter value="0.01" type="double" name="A_1"/>
+                    <parameter value="0.01" type="double" name="A_2"/>
+                    <parameter value="1" type="double" name="s_l"/>
+                    <parameter value="1e-2" type="double" name="V_1"/>
+                    <parameter value="1e-2" type="double" name="V_2"/>
+                    <parameter value="1000" type="double" name="B_p"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0" type="double" name="c_leak"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2382.2" y="2556" flipped="true" a="270"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2667" y="2506" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic22Valve" name="2/2 Directional Valve">
+                <parameters>
+                    <parameter value="0" type="double" name="xv::Value"/>
+                    <parameter value="0.67" type="double" name="C_q"/>
+                    <parameter value="890" type="double" name="rho"/>
+                    <parameter value="0.01" type="double" name="d"/>
+                    <parameter value="0.102" type="double" name="f"/>
+                    <parameter value="0.01" type="double" name="x_v,max"/>
+                    <parameter value="-1e-006" type="double" name="x"/>
+                    <parameter value="100" type="double" name="omega_h"/>
+                    <parameter value="1" type="double" name="delta_h"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2249" y="2651" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPulse" name="Pulse">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="10" type="double" name="t_end"/>
+                    <parameter value="0.003" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2099" y="2661" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceQ" name="Q-type Pressure Source">
+                <parameters>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2164" y="2744" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Source">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="5000" type="double" name="F"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2472.7664" y="2519" flipped="true" a="270"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMassWithLever" name="Lever with Mass">
+                <parameters>
+                    <parameter value="1" type="double" name="L_1"/>
+                    <parameter value="19" type="double" name="L_2"/>
+                    <parameter value="500" type="double" name="m"/>
+                    <parameter value="0" type="double" name="B"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2414" y="2461" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceC" name="C-type Pressure Source">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1.11e7" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2288.0082" y="2738" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicPositionSensor" name="Position Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2572" y="2459" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Lever with Mass" startport="P3" startcomponent="C-type Piston">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2382.19999999999981810106" y="2496.50000000000000000000"/>
+                        <coordinate x="2382.19999999999981810106" y="2481.31489999999985229806"/>
+                        <coordinate x="2382.19999999999981810106" y="2481.31489999999985229806"/>
+                        <coordinate x="2382.19999999999981810106" y="2462.31489999999985229806"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Piston" startport="PA" startcomponent="2/2 Directional Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2288.00820000000021536835" y="2626.00000000000000000000"/>
+                        <coordinate x="2288.00820000000021536835" y="2610.52579999999989013304"/>
+                        <coordinate x="2362.19999999999981810106" y="2610.52579999999989013304"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="2/2 Directional Valve" startport="P1" startcomponent="C-type Pressure Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2288.00820000000021536835" y="2726.00000000000000000000"/>
+                        <coordinate x="2288.00820000000021536835" y="2696.00000000000000000000"/>
+                        <coordinate x="2288.00820000000021536835" y="2696.00000000000000000000"/>
+                        <coordinate x="2288.00820000000021536835" y="2676.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="C-type Piston" startport="P1" startcomponent="Q-type Pressure Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2164.00000000000000000000" y="2732.00000000000000000000"/>
+                        <coordinate x="2164.00000000000000000000" y="2530.93859999999995125108"/>
+                        <coordinate x="2362.19999999999981810106" y="2530.93859999999995125108"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="2/2 Directional Valve" startport="out" startcomponent="Pulse">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2111.50000000000000000000" y="2661.00000000000000000000"/>
+                        <coordinate x="2169.50000000000000000000" y="2661.00000000000000000000"/>
+                        <coordinate x="2169.50000000000000000000" y="2661.00000000000000000000"/>
+                        <coordinate x="2189.50000000000000000000" y="2661.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Lever with Mass" startport="P1" startcomponent="Force Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2472.76639999999997598934" y="2499.50000000000000000000"/>
+                        <coordinate x="2472.76639999999997598934" y="2499.50000000000000000000"/>
+                        <coordinate x="2472.76639999999997598934" y="2471.78920000000016443664"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PA" endcomponent="2/2 Directional Valve" startport="P1" startcomponent="Pressure Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2530.00000000000000000000" y="2609.00000000000000000000"/>
+                        <coordinate x="2530.00000000000000000000" y="2624.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2624.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2623.50000000000000000000"/>
+                        <coordinate x="2288.00820000000021536835" y="2623.50000000000000000000"/>
+                        <coordinate x="2288.00820000000021536835" y="2626.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Pressure Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2530.00000000000000000000" y="2573.00000000000000000000"/>
+                        <coordinate x="2530.00000000000000000000" y="2506.00000000000000000000"/>
+                        <coordinate x="2647.00000000000000000000" y="2506.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Position Transducer" startport="P1" startcomponent="Lever with Mass">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2382.19999999999981810106" y="2462.31489999999985229806"/>
+                        <coordinate x="2382.19999999999981810106" y="2483.50000000000000000000"/>
+                        <coordinate x="2572.00000000000000000000" y="2483.50000000000000000000"/>
+                        <coordinate x="2572.00000000000000000000" y="2477.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink" startport="out" startcomponent="Position Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2572.00000000000000000000" y="2441.00000000000000000000"/>
+                        <coordinate x="2572.00000000000000000000" y="2426.00000000000000000000"/>
+                        <coordinate x="2709.00000000000000000000" y="2426.00000000000000000000"/>
+                        <coordinate x="2709.00000000000000000000" y="2506.00000000000000000000"/>
+                        <coordinate x="2687.00000000000000000000" y="2506.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
