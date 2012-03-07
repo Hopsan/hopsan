@@ -14,7 +14,7 @@ build:
 
 	#Let qmake build, we assume all dependencis already build
 	mkdir -p hopsanShadowBuild
-	cd hopsanShadowBuild; qmake-qt4 ../../../HopsanNG.pro -unix -config release
+	cd hopsanShadowBuild; qmake-qt4 ../../../HopsanNG.pro -r -spec linux-g++ -config release
 	make -C hopsanShadowBuild
 
 clean:
@@ -37,7 +37,7 @@ binary-arch: build install
 	dh_testdir
 #        dh_testroot
 	dh_installchangelogs
-#        dh_installdocs
+	dh_installdocs
 #        dh_installexamples
 #        dh_installman
 #        dh_link
@@ -45,7 +45,7 @@ binary-arch: build install
 	dh_compress
 	dh_fixperms
 	dh_installdeb
-#        dh_shlibdeps
+	dh_shlibdeps --exclude=PythonQt --exclude=qwt
 	dh_gencontrol
 #        dh_md5sums
 	dh_builddeb

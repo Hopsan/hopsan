@@ -2,12 +2,17 @@ Source: hopsan
 Section: non-free/x11
 Priority: extra
 Maintainer: Peter Nordin <peter.nordin@liu.se>
-Build-Depends: debhelper (>= 8.0.0)
+Build-Depends: debhelper (>= 8.0.0), libtbb-dev, python-dev (<< 3.0.0), libqt4-dev
 Standards-Version: 3.9.2
 Homepage: http://www.iei.liu.se/flumes/system-simulation/hopsanng?l=en
 
 Package: hopsan
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: A free simulation environment for fluid and mechatronic systems.
+ Hopsan is a free simulation environment for fluid and mechatronic systems,
+ developed at Linköping University. Although originally developed for 
+ simulation of fluid power systems, it has also been adopted for other domains
+ such as electric power, flight dynamics and vehicle dynamics.
+ It uses bi-directional delay lines (or transmission line elements, TLM)
+ to connect different components.

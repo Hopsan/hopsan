@@ -1,32 +1,27 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: hopsan
-Source: <url://example.com>
+upstream-name: hopsan
+upstream-contact: Peter Nordin <peter.nordin@liu.se>
+Source: www.nosource.yet
 
-Files: *
-Copyright: <years> <put author's name and email here>
-           <years> <likewise for another author>
-License: GPL-3.0+
+Files: hopsan/*
+Copyright: 2009-2012 Robert Braun <robert.braun@liu.se>
+           2009-2012 Björn Eriksson <bjorn.eriksson@liu.se>
+           2009-2012 Peter Nordin <peter.nordin@liu.se>
+           2009-2010 Mikael Axin
+           2009-2010 Alessandro Dell'Amico
+           2009-2010 Karl Pettersson
+           2009-2010 Petter Krus
+           2009-2010 Ingo Staack
+License: HopsanLicense
 
 Files: debian/*
 Copyright: 2012 Peter Nordin <peter.nordin@liu.se>
-License: GPL-3.0+
+License: HopsanLicense
 
-License: GPL-3.0+
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
- .
- This package is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- .
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
- .
- On Debian systems, the complete text of the GNU General
- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
-
-# Please also look if there are files or directories which have a
-# different copyright/license attached and list them here.
+License: HopsanLicense
+ This program and all of its files are provided "as is", with no guarantee
+ or warranty for the functionality or reliability of the contents.
+ All contents in this program is the original work of the copyright holders at
+ the Division of Fluid and Mechatronic Systems (Flumes) at Linköping University.
+ Modifying, using or redistributing any part of the program or its files is 
+ prohibited without explicit permission from the copyright holders.
