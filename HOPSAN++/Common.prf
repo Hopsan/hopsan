@@ -65,7 +65,7 @@ defineReplace(generateCopyDllCommand){
     #On unix we dont need to replace slashes
     unix {
         for(file, files){
-            qmake_post_link += $$quote(cp -f $${file} $${dstDir}$$escape_expand(\\n\\t))
+            qmake_post_link += $$quote(cp -df $${file} $${dstDir}$$escape_expand(\\n\\t))
         }
     }
 
