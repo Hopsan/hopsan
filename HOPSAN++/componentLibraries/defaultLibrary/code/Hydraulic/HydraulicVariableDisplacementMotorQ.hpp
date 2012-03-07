@@ -190,7 +190,7 @@ namespace hopsan {
             q1 = q1a + q1leak;
             q2 = q2a + q2leak;
 
-            t3 = c3 + a3 * Zx3;
+            t3 = c3 + w3 * Zx3;
 
             //Write new values to nodes
             (*mpND_p1) = p1;
