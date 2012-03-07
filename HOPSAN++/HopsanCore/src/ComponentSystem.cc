@@ -780,7 +780,7 @@ bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
 //! Assumes that nodetype is set in both nodes
 bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode)
 {
-    std::cout << "-----------------------------createNewNodeConnection" << std::endl;
+    //std::cout << "-----------------------------createNewNodeConnection" << std::endl;
     if (!ensureSameNodeType(pPort1, pPort2))
     {
         return false;
@@ -822,7 +822,7 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
 
 bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode)
 {
-    std::cout << "-----------------------------mergeOrJoinNodeConnection" << std::endl;
+    //std::cout << "-----------------------------mergeOrJoinNodeConnection" << std::endl;
     Port *pMergeFrom, *pMergeTo;
     assert(pPort1->isConnected() || pPort2->isConnected());
 

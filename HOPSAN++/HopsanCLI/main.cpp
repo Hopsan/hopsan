@@ -18,10 +18,12 @@
 #include <string>
 #include <vector>
 #include <fstream>
-
+#include <cmath>
 
 #include <tclap/CmdLine.h>
 #include "TicToc.hpp"
+
+#include "ComponentUtilities/CSVParser.h"
 
 // If we dont have the revision number then define blank
 #ifndef HOPSANCLISVNREVISION
@@ -38,6 +40,23 @@
 
 using namespace std;
 using namespace hopsan;
+
+
+//! @brief Changes color on console output
+//! @param color Color number (0-15)
+void setColor(unsigned int color)
+{
+    if (color >15 || color <=0)
+    {
+        cout <<"Error!" <<endl;
+    }
+    else
+    {
+        HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(hcon,color);
+    }
+}
+
 
 void printWaitingMessages(const bool printDebug=true)
 {
@@ -151,6 +170,148 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
     }
 }
 
+
+//! @brief Compares a vector with a reference vector
+//! @param vec Vector to compare
+//! @param ref Reference vector
+//! @param Tolereance (%) for acceptance
+bool compareVectors(vector<double> vec, vector<double> ref, double tol)
+{
+    if(vec.size() != ref.size())
+    {
+        //! @todo Error message, size mismatch
+        cout << "Size mismatch!";
+        return false;
+    }
+
+    for(int i=0; i<vec.size(); ++i)
+    {
+        if(fabs(1-vec.at(i)/ref.at(i)) > tol && !(vec.at(i) < 1e-100 && ref.at(i) < 1e-10))
+        {
+            //cout << "Test failed: comparing " << vec.at(i) << " with " << ref.at(i) << " at index " << i << endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+
+//! @brief Performs a unit test on a model
+//! @param modelName Name of test model
+void performModelTest(string modelName)
+{
+    std::streambuf* cout_sbuf = std::cout.rdbuf(); // save original sbuf
+    std::ofstream   fout("/dev/null");
+    std::cout.rdbuf(fout.rdbuf()); // redirect 'cout' to a 'fout'
+
+    string compName;
+    string portName;
+    int dataId;
+
+    stringstream ss;
+    ss << modelName << ".txt";
+    ifstream ifs(ss.str().c_str());
+    getline(ifs, compName);
+    getline(ifs, portName);
+    string temp;
+    getline(ifs, temp);
+    ifs.close();
+    stringstream ss2(temp);
+    ss2 >> dataId;
+
+    cout << "Component name: " << compName;
+    cout << "Port name: " << portName;
+    cout << "Data name: " << dataId;
+
+    vector<double> vRef;
+    vector<double> vSim1;
+    vector<double> vSim2;
+    vector<double> vTime;
+
+
+    //Load reference data curve
+    CSVParser *refDataCurve;
+    bool success=false;
+    refDataCurve = new CSVParser(success, modelName+".csv", ',', '\n', '"', 0);
+    if(!success || !refDataCurve->checkData())
+    {
+        cout << "Unable to initialize CSV file: " << modelName+".csv";
+        return;
+    }
+
+    double startTime=0, stopTime=1;
+    ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(modelName+".hmf", startTime, stopTime);
+    printWaitingMessages();
+
+    if (pRootSystem!=0)
+    {
+        //First simulation
+        if (pRootSystem->initialize(startTime, stopTime))
+        {
+            pRootSystem->simulate(startTime, stopTime);
+        }
+        else
+        {
+            cout << "Initialize failed, Simulation aborted!" << endl;
+            return;
+        }
+
+        for(int i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
+        {
+            vTime.push_back((*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).at(i));
+            vSim1.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
+        }
+
+        //Second simulation
+        if (pRootSystem->initialize(startTime, stopTime))
+        {
+            pRootSystem->simulate(startTime, stopTime);
+        }
+        else
+        {
+            cout << "Initialize failed, Simulation aborted!" << endl;
+            return;
+        }
+
+        for(int i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
+        {
+            vSim2.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
+        }
+    }
+
+
+    for(int i=0; i<vTime.size(); ++i)
+    {
+        vRef.push_back(refDataCurve->interpolate(vTime.at(i)));
+    }
+
+    std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
+
+    setColor(12);
+
+    if(!compareVectors(vSim1, vRef, 0.01))
+    {
+        cout << "Test failed: " << pRootSystem->getName() << endl;
+        setColor(15);
+        return;
+    }
+
+    if(!compareVectors(vSim1, vSim2, 0.01))
+    {
+        cout << "Test failed (inconsistent result): " << pRootSystem->getName();
+        setColor(15);
+        return;
+    }
+
+    setColor(10);
+
+    cout << "Test successful: " << pRootSystem->getName() << endl;
+
+    setColor(15);
+
+}
+
+
 int main(int argc, char *argv[])
 {
     try {
@@ -159,6 +320,7 @@ int main(int argc, char *argv[])
         // Define a value argument and add it to the command line.
         TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","String containing file path", cmd);
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","String containing file path", cmd);
+        TCLAP::ValueArg<std::string> modelTestOption("t","test","Model test to perform",false,"","Model name", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -166,10 +328,10 @@ int main(int argc, char *argv[])
         // Get the value parsed by each arg.
         string hmfFilePath = hmfPathOption.getValue();
         string extFilePaths = extLibPathsOption.getValue();
+        string testFilePath = modelTestOption.getValue();
 
         // Load default hopasn component lib
         HopsanEssentials::getInstance()->loadExternalComponentLib(DEFAULTCOMPONENTLIB);
-        printWaitingMessages(false);
 
         // Load external libs
         vector<string> extLibs;
@@ -182,47 +344,60 @@ int main(int argc, char *argv[])
             }
         }
 
-        printWaitingMessages();
-
-        double startTime=0, stopTime=2;
-        ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startTime, stopTime);
-        printWaitingMessages();
-
-        cout << endl << "Component Hieararcy:" << endl << endl;
-        printComponentHierarchy(pRootSystem, "", true, true);
-        cout << endl;
-
-        if (pRootSystem!=0)
+        if(!hmfFilePath.empty())
         {
-            TicToc initTimer("InitializeTime");
-            bool initSuccess = pRootSystem->initialize(startTime, stopTime);
-            initTimer.TocPrint();
-            if (initSuccess)
+            printWaitingMessages();
+
+            double startTime=0, stopTime=2;
+            ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startTime, stopTime);
+            printWaitingMessages();
+
+            cout << endl << "Component Hieararcy:" << endl << endl;
+            printComponentHierarchy(pRootSystem, "", true, true);
+            cout << endl;
+
+            if (pRootSystem!=0)
             {
-                TicToc simuTimer("SimulationTime");
-                pRootSystem->simulate(startTime, stopTime);
-                simuTimer.TocPrint();
+                TicToc initTimer("InitializeTime");
+                bool initSuccess = pRootSystem->initialize(startTime, stopTime);
+                initTimer.TocPrint();
+                if (initSuccess)
+                {
+                    TicToc simuTimer("SimulationTime");
+                    pRootSystem->simulate(startTime, stopTime);
+                    simuTimer.TocPrint();
+                }
+                else
+                {
+                    cout << "Initialize failed, Simulation aborted!" << endl;
+                }
             }
-            else
-            {
-                cout << "Initialize failed, Simulation aborted!" << endl;
-            }
+
+            //cout << endl << "Component Hieararcy:" << endl << endl;
+            //printComponentHierarchy(pRootSystem, "", true);
+
+            cout << "Saving NodeData to file" << endl;
+            //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
+            //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
+            saveNodeDataToFile(pRootSystem,"MyExampleSum","out","ExSumOut.txt");
         }
 
-        //cout << endl << "Component Hieararcy:" << endl << endl;
-        //printComponentHierarchy(pRootSystem, "", true);
-
-        cout << "Saving NodeData to file" << endl;
-        //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
-        //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
-        saveNodeDataToFile(pRootSystem,"MyExampleSum","out","ExSumOut.txt");
-
-        printWaitingMessages();
-        cout << endl << "HopsanCLI Done!" << endl;
+        //Perform a unit test
+        if(!testFilePath.empty())
+        {
+            performModelTest(testFilePath);
+        }
+        else
+        {
+            printWaitingMessages();
+            cout << endl << "HopsanCLI Done!" << endl;
+        }
 
     } catch (TCLAP::ArgException &e)  // catch any exceptions
     {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
     }
+
+
 }

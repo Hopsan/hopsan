@@ -1166,9 +1166,9 @@ void PlotTabWidget::tabChanged()
 
         connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
         connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
-        connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(triggered()),      getCurrentTab(),    SLOT(setBackgroundColor()));
+        connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(setBackgroundColor()));
         connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
-        connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(triggered()),      getCurrentTab(),    SLOT(resetXVector()));
+        connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(triggered()),    getCurrentTab(),    SLOT(resetXVector()));
         connect(mpParentPlotWindow->mpExportToXmlAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToXml()));
         connect(mpParentPlotWindow->mpExportToCsvAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToCsv()));
         connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
@@ -1827,33 +1827,61 @@ void PlotTab::exportToCsv()
     }
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
 
-        //Cycle plot curves
-    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
-    {
-        fileStream << "x" << i;                                         //Write time/X vector
-        if(mHasSpecialXAxis)
-        {
-            for(int j=0; j<mVectorX.size(); ++j)
-            {
-                fileStream << "," << mVectorX[j];
-            }
-        }
-        else
-        {
-            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector().size(); ++j)
-            {
-                fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
-            }
-        }
-        fileStream << "\n";
 
-        fileStream << "y" << i;                                             //Write data vector
-        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
+        //Cycle plot curves
+    if(mHasSpecialXAxis)
+    {
+        for(int i=0; i<mVectorX.size(); ++i)
         {
-            fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
+            fileStream << mVectorX[i];
+            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+            {
+                fileStream << ", " << mPlotCurvePtrs[FIRSTPLOT][j]->getDataVector()[i];
+            }
+            fileStream << "\n";
         }
-        fileStream << "\n";
     }
+    else
+    {
+        for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++i)
+        {
+            fileStream << mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[i];
+            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+            {
+                fileStream << ", " << mPlotCurvePtrs[FIRSTPLOT][j]->getDataVector()[i];
+            }
+            fileStream << "\n";
+        }
+    }
+
+
+//        //Cycle plot curves
+//    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+//    {
+//        fileStream << "x" << i;                                         //Write time/X vector
+//        if(mHasSpecialXAxis)
+//        {
+//            for(int j=0; j<mVectorX.size(); ++j)
+//            {
+//                fileStream << "," << mVectorX[j];
+//            }
+//        }
+//        else
+//        {
+//            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector().size(); ++j)
+//            {
+//                fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
+//            }
+//        }
+//        fileStream << "\n";
+
+//        fileStream << "y" << i;                                             //Write data vector
+//        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
+//        {
+//            fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
+//        }
+//        fileStream << "\n";
+//    }
 
     file.close();
 }
