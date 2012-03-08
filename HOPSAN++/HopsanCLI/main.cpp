@@ -44,8 +44,10 @@ using namespace hopsan;
 
 //! @brief Changes color on console output
 //! @param color Color number (0-15)
+//! @todo Make this support Linux as well
 void setColor(unsigned int color)
 {
+#ifdef WIN32
     if (color >15 || color <=0)
     {
         cout <<"Error!" <<endl;
@@ -55,6 +57,7 @@ void setColor(unsigned int color)
         HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hcon,color);
     }
+#endif
 }
 
 
@@ -256,7 +259,7 @@ void performModelTest(string modelName)
             return;
         }
 
-        for(int i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
+        for(size_t i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
         {
             vTime.push_back((*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).at(i));
             vSim1.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
@@ -273,7 +276,7 @@ void performModelTest(string modelName)
             return;
         }
 
-        for(int i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
+        for(size_t i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
         {
             vSim2.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
         }
@@ -281,7 +284,7 @@ void performModelTest(string modelName)
 
 
     bool ok;
-    for(int i=0; i<vTime.size(); ++i)
+    for(size_t i=0; i<vTime.size(); ++i)
     {
         vRef.push_back(refDataCurve->interpolate(ok, vTime.at(i)));
     }
