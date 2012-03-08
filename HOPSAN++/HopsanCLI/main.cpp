@@ -280,9 +280,10 @@ void performModelTest(string modelName)
     }
 
 
+    bool ok;
     for(int i=0; i<vTime.size(); ++i)
     {
-        vRef.push_back(refDataCurve->interpolate(vTime.at(i)));
+        vRef.push_back(refDataCurve->interpolate(ok, vTime.at(i)));
     }
 
     std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
