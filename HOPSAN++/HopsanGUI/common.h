@@ -50,36 +50,22 @@
 #define SOUNDSPATH ":sounds/"
 
 // common paths
-#define MAINPATH "../"
-#define HELPPATH "../doc/user/html/"
-#define MSVC2008PATH "MSVC2008/"
-#define MSVC2010PATH "MSVC2010/"
+#define MAINPATH gExecPath+"../"
+#define HELPPATH gExecPath+"../doc/user/html/"
+#define COMPONENTSPATH gExecPath+"../componentLibraries/defaultLibrary/components/"
+#define COREINCLUDEPATH gExecPath+"../HopsanCore/include/"
+#define MSVC2008PATH gExecPath+"MSVC2008/"
+#define MSVC2010PATH gExecPath+"MSVC2010/"
 
-// windows specific paths
-#ifdef WIN32
 #define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
-#define DOCSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/"
-#else
-#define DATAPATH gExecPath+MAINPATH
-#define DOCSPATH gExecPath+MAINPATH
-#endif
+#define DOCUMENTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/"
+#define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
 
-// Paths that needs two alternatives
+// Paths that needs two alternatives, DEV = development, REL = release
 #define MODELS_DEV_PATH gExecPath+"../Models/"
 #define SCRIPTS_DEV_PATH gExecPath+"../Scripts/"
 #define MODELS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
 #define SCRIPTS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
-
-// Paths that have one alternative depending on development OR release mode
-#ifdef DEVELOPMENT
-#define BACKUPPATH gExecPath+"../Backup/"
-#define COMPONENTPATH gExecPath+"../componentLibraries/defaultLibrary/components/"
-#define INCLUDEPATH gExecPath+"../HopsanCore/include/"
-#else
-#define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
-#define COMPONENTPATH gExecPath+"../components/"
-#define INCLUDEPATH gExecPath+"../include/"
-#endif
 
 // Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"

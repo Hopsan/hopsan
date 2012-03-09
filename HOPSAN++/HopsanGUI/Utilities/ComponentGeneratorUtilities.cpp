@@ -699,7 +699,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         return;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << QString(INCLUDEPATH) << "\" -L\""+gExecPath+"\" -lHopsanCore\n";
+    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << QString(COREINCLUDEPATH) << "\" -L\""+gExecPath+"\" -lHopsanCore\n";
     clBatchFile.close();
 
     if(pProgressBar)
@@ -708,8 +708,8 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         pProgressBar->setValue(808);
     }
 
-    QDir componentsDir(QString(DOCSPATH));
-    QDir generatedDir(QString(DOCSPATH) + "Generated Componentes/");
+    QDir componentsDir(QString(DOCUMENTSPATH));
+    QDir generatedDir(QString(DOCUMENTSPATH) + "Generated Componentes/");
     if(!generatedDir.exists())
     {
         componentsDir.mkdir("Generated Componentes");
@@ -754,7 +754,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     p.start("cmd.exe", QStringList() << "/c" << "cd " + QString(DATAPATH) + " & compile.bat");
     p.waitForFinished();
 #else
-    QString command = "g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + INCLUDEPATH + " -L./ -lHopsanCore\n";
+    QString command = "g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + COREINCLUDEPATH + " -L./ -lHopsanCore\n";
     //qDebug() << "Command = " << command;
     FILE *fp;
     char line[130];

@@ -68,17 +68,16 @@ int main(int argc, char *argv[])
     gModelsPath = MODELS_DEV_PATH;
     gScriptsPath = SCRIPTS_DEV_PATH;
 #else
-    //Check if Models and Scripts folders exist in "release" place if not, use "development" place
+    // Make sure model folder exists, create it if not
     QDir modelsDir(MODELS_REL_PATH);
-    if (modelsDir.exists())
+    if (!modelsDir.exists())
     {
+        modelsDir.mkpath(MODELS_REL_PATH);
         gModelsPath = MODELS_REL_PATH;
     }
-    else
-    {
-        gModelsPath = MODELS_DEV_PATH;
-    }
 
+    // Select which scripts path to use
+    //! @todo problem in linux if scripts must be changed, as they  are not installed to user home
     QDir scriptsDir(SCRIPTS_REL_PATH);
     if (scriptsDir.exists())
     {

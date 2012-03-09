@@ -662,7 +662,7 @@ void LibraryWidget::importFmu()
 
     QTextStream fmuLibStream(&fmuLibFile);
     fmuLibStream << "#include \"component_code/"+fmuName+".hpp\"\n";
-    fmuLibStream << "#include \""+gExecPath+INCLUDEPATH+"ComponentEssentials.h\"\n";
+    fmuLibStream << "#include \""+gExecPath+COREINCLUDEPATH+"ComponentEssentials.h\"\n";
     fmuLibStream << "using namespace hopsan;\n\n";
     fmuLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)\n";
     fmuLibStream << "{\n";
@@ -701,7 +701,7 @@ void LibraryWidget::importFmu()
     fmuComponentHppStream << "#define _WIN32_WINNT 0x0502\n";
     fmuComponentHppStream << "#include \"../fmi_me.h\"\n";
     fmuComponentHppStream << "#include \"../xml_parser.h\"\n";
-    fmuComponentHppStream << "#include \""+gExecPath+INCLUDEPATH+"ComponentEssentials.h\"\n\n";
+    fmuComponentHppStream << "#include \""+gExecPath+COREINCLUDEPATH+"ComponentEssentials.h\"\n\n";
     fmuComponentHppStream << "#include <sstream>\n";
     fmuComponentHppStream << "#include <string>\n";
     fmuComponentHppStream << "#include <stdio.h>\n";

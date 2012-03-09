@@ -1674,11 +1674,11 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     }
     else
     {
-        dllFile.setFileName(gExecPath + QString(MSVC2008PATH) + "HopsanCore.dll");
+        dllFile.setFileName(QString(MSVC2008PATH) + "HopsanCore.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
-        libFile.setFileName(gExecPath + QString(MSVC2008PATH) + "HopsanCore.lib");
+        libFile.setFileName(QString(MSVC2008PATH) + "HopsanCore.lib");
         libFile.copy(savePath + "/HopsanCore.lib");
-        expFile.setFileName(gExecPath + QString(MSVC2008PATH) + "HopsanCore.exp");
+        expFile.setFileName(QString(MSVC2008PATH) + "HopsanCore.exp");
         expFile.copy(savePath + "/HopsanCore.exp");
     }
 
@@ -2397,20 +2397,20 @@ void SystemContainer::createSimulinkSourceFiles()
 
     if(pMSVC2008RadioButton->isChecked())
     {
-        QFile dllFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.dll");
+        QFile dllFile(QString(MSVC2008PATH) + "HopsanCore.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
-        QFile libFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.lib");
+        QFile libFile(QString(MSVC2008PATH) + "HopsanCore.lib");
         libFile.copy(savePath + "/HopsanCore.lib");
-        QFile expFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.exp");
+        QFile expFile(QString(MSVC2008PATH) + "HopsanCore.exp");
         expFile.copy(savePath + "/HopsanCore.exp");
     }
     else if(pMSVC2010RadioButton->isChecked())
     {
-        QFile dllFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.dll");
+        QFile dllFile(QString(MSVC2010PATH) + "HopsanCore.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
-        QFile libFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.lib");
+        QFile libFile(QString(MSVC2010PATH) + "HopsanCore.lib");
         libFile.copy(savePath + "/HopsanCore.lib");
-        QFile expFile(gExecPath + QString(MSVC2008PATH) + "HopsanCore.exp");
+        QFile expFile(QString(MSVC2010PATH) + "HopsanCore.exp");
         expFile.copy(savePath + "/HopsanCore.exp");
     }
 #else

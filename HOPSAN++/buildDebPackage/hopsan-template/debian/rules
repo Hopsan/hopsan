@@ -28,9 +28,13 @@ install:
 	dh_installdirs
 	../copyInstallHopsan.sh ../../ debian/hopsan/opt/hopsan
 
+# Arch and indep Build targets
+build-arch: build
+build-indep: build
+
 # Build architecture-independent files here.
 binary-indep: build install
-# We have nothing to do by default.
+# We have nothing special to do by default.
 
 # Build architecture-dependent files here.
 binary-arch: build install
@@ -45,13 +49,14 @@ binary-arch: build install
 	dh_compress
 	dh_fixperms
 	dh_installdeb
-	dh_shlibdeps --exclude=PythonQt --exclude=qwt
+#	dh_shlibdeps --exclude=PythonQt --exclude=qwt
+	dh_shlibdeps -l/opt/hopsan/bin
 	dh_gencontrol
 #        dh_md5sums
 	dh_builddeb
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install
+.PHONY: build build-arch build-indep clean binary-indep binary-arch binary install
 
 #%:
 #	dh $@ 

@@ -245,7 +245,8 @@ double hopsan::div(const double x, const double y)
 //! @returns x%y
 double hopsan::mod(const double x, const double y)
 {
-    return x%y;
+    // The inputs will be rounded to closest int value
+    return double(int(x+0.5)%int(y+0.5));
 }
 
 

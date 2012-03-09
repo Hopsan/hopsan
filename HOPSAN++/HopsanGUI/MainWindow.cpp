@@ -256,7 +256,7 @@ void MainWindow::initializeWorkspace()
     mpLibrary->loadHiddenSecretDir(QString(BUILTINCAFPATH) + "hidden/");
 
     // Load default and user specified libraries
-    QString componentPath = QString(COMPONENTPATH);
+    QString componentPath = QString(COMPONENTSPATH);
 
     // Load built in default Library
     mpLibrary->loadLibrary(componentPath, INTERNAL);
@@ -918,7 +918,7 @@ void MainWindow::createToolbars()
     QAction *pTempAction;
     QStringList exampleModels;
 
-    QDir exampleModelsDir(gModelsPath+"Example Models/");
+    QDir exampleModelsDir(QString(MODELS_DEV_PATH+"Example Models/"));
     QStringList filters;
     filters << "*.hmf";
     exampleModelsDir.setNameFilters(filters);
@@ -1068,7 +1068,7 @@ void MainWindow::openExampleModel()
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
     {
-        QString modelPath = gModelsPath + "Example Models/" +action->text() + ".hmf";
+        QString modelPath = QString(MODELS_DEV_PATH+"Example Models/") +action->text() + ".hmf";
         qDebug() << "Trying to open " << modelPath;
         mpProjectTabs->loadModel(modelPath);
     }

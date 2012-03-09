@@ -12,7 +12,7 @@ If TBB is not found by qmake, then the core will be compiled without multithread
   -# Unpack the contents to HopsanCore\\Dependencies\\tbb30_20101215oss (or whatever your version is)
 -# Open a Qt Command Prompt (you can find it in the start menu). Navigate to the tbb directory.
 -# Run "mingw32-make compiler=gcc" to build both release and debug libraries
--# After a successful compilation you are done. You do not need to install or copy any files. The HopsanCore.pro file automatically copy the needed binary files.
+-# After a successful compilation you are done. You do not need to install or copy any files. The HopsanCore.pro file will automatically copy the needed binary files.
   -# \e Note! HopsanCore will have a set of default paths to search for, if you install a newer stable version of TBB you should add this version to the TOP of the defaults list in the HopsanCoreBuild.prf file.
 
 \subsection tbb-windows-vcpp Build TBB on Windows using VC++ --Needs update after new project file structure--

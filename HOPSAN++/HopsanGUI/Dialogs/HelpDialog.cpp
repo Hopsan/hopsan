@@ -61,8 +61,8 @@ HelpDialog::HelpDialog(MainWindow *parent)
 
 void HelpDialog::open()
 {
-    qDebug() << gExecPath + QString(HELPPATH) + "index.html";
-    mpHelp->load(QUrl::fromLocalFile(gExecPath + QString(HELPPATH) + "index.html"));
+    qDebug() << QString(HELPPATH) + "index.html";
+    mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + "index.html"));
 
     QDialog::open();
 }

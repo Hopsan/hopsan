@@ -20,7 +20,7 @@ fi
 
 # Create needed dst directories
 mkdir -p $dstDir/HopsanCore
-mkdir -p $dstDir/componentLibraries
+mkdir -p $dstDir/componentLibraries/defaultLibrary
 mkdir -p $dstDir/Models
 #mkdir -p $dstDir/Scripts
 mkdir -p $dstDir/doc/user
@@ -29,6 +29,7 @@ mkdir -p $dstDir/bin
 
 # Do svn export of svn directories
 svn export $srcDir/HopsanCore/include $dstDir/HopsanCore/include
+svn export $srcDir/componentLibraries/defaultLibrary/components $dstDir/componentLibraries/defaultLibrary/components
 svn export $srcDir/componentLibraries/exampleComponentLib $dstDir/componentLibraries/exampleComponentLib
 svn export $srcDir/Models/Example\ Models $dstDir/Models/Example\ Models
 svn export $srcDir/doc/graphics $dstDir/doc/graphics
@@ -39,3 +40,7 @@ svn export $srcDir/Scripts $dstDir/Scripts
 cp -a $srcDir/doc/user/html $dstDir/doc/user/
 cp -a $srcDir/bin/*.so* $dstDir/bin/
 cp -a $srcDir/bin/Hopsan* $dstDir/bin/
+cp -a $srcDir/componentLibraries/defaultLibrary/components/*.so* $dstDir/componentLibraries/defaultLibrary/components/
+cp -a $srcDir/hopsandefaults $dstDir/
+cp -a $srcDir/Hopsan-release-notes.txt $dstDir/
+

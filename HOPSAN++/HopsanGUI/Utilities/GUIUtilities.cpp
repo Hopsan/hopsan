@@ -477,7 +477,7 @@ void copyIncludeFilesToDir(QString path)
     saveDir.mkpath("include");
     saveDir.cd("include");
 
-    copyDir( QString(INCLUDEPATH), saveDir.path() );
+    copyDir( QString(COREINCLUDEPATH), saveDir.path() );
 }
 
 
