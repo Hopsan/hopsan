@@ -37,7 +37,8 @@ cd buildDebPackage
 
 # Determine deb dir name
 packagedir=$name-$version
-packageorigsrcfile=$name\_$version.orig.tar.gz
+outputbasename=$name\_$version
+packageorigsrcfile=$outputbasename.orig.tar.gz
 
 # First clear dir if it already exist
 rm -rf $packagedir
@@ -45,7 +46,7 @@ rm -rf $packageorigsrcfile
 
 # Create the source code file
 # Lets make a fake one for now
-tar -czf $packageorigsrcfile SOURCE
+tar -czf $packageorigsrcfile HOPSANSOURCE
 
 # Export template
 svn export hopsan-template $packagedir
@@ -61,7 +62,11 @@ dch -p -m --release ""
 debuild -us -uc --lintian-opts --color always -X files
 cd ..
 
-# TODO: Should try to put output in some special folder
+# Move new files to output dir
+rm -rf output
+mkdir -p output
+mv $packagedir* output
+mv $outputbasename* output
 
 # TODO: MAYBE cleanup build dir, or ask user, or not
 #------------------------------------------------------------------------------
