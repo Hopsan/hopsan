@@ -52,6 +52,9 @@ extern "C" {
     double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
     double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
     double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
+    double DLLIMPORTEXPORT div(const double x, const double y);
+    double DLLIMPORTEXPORT mod(const double x, const double y);
+    double DLLIMPORTEXPORT rem(const double x, const double y);
 }
 
 // ----------Inline Functions converted from auxhop in old Hopsan----------

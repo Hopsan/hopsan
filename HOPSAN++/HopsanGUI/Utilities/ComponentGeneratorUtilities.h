@@ -102,8 +102,10 @@ public:
 void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar = 0);
 void generateComponentObject(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
 void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);
+
 void identifyVariables(QString equation, QStringList &leftSideVariables, QStringList &righrSideVariables);
 void identifyFunctions(QString equation, QStringList &functions);
+
 bool verifyParameteres(QList<ParameterSpecification> parameters);
 bool verifyPorts(QList<PortSpecification> ports);
 bool verifyUtilities(QList<UtilitySpecification> utilities);
@@ -111,9 +113,7 @@ bool verifyStaticVariables(QList<StaticVariableSpecification> variables);
 bool verifyEquations(QStringList equations);
 bool verifyEquationSystem(QStringList equations, QStringList stateVars);
 bool verifyEquation(QString equation);
-void replaceReservedWords(QStringList &equations);
-void replaceReservedWords(QString &equation);
-void replaceReservedWords(QList<PortSpecification> &ports);
+
 void identifyDerivatives(QStringList &equations);
 void translateDelaysFromPython(QStringList &equations, QStringList &delayTerms, QStringList &delaySteps);
 void translatePowersFromPython(QStringList &equations);
@@ -121,13 +121,27 @@ void translateFunctionsFromPython(QStringList &equations);
 void translateFunctionsFromPython(QString &equation);
 void translateIntsToDouble(QStringList &equations);
 void parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);
+
 QStringList getQVariables(QString nodeType);
 QStringList getCVariables(QString nodeType);
 QStringList getVariableLabels(QString nodeType);
 void getAllTerms(QString equation, QStringList &terms);
 bool isSingular(QStringList matrix);
-void replaceDerivative(QString &equation, QString f, QString dxf);
+
 void shuffle(QStringList &list);
 void shuffle(QList<QStringList> &list, QStringList &stringList);
+
+void performSympySubstitutions(QString &equation);
+void replaceReservedWords(QStringList &equations);
+void replaceReservedWords(QString &equation);
+void replaceReservedWords(QList<PortSpecification> &ports);
+void replaceFunction(QString &equation, QString function, QString replacement);
+void replaceFunctionName(QString &equation, QString oldFunc, QString newFunc);
+void replaceDerivative(QString &equation, QString function, QString replacement);
+void replaceDerivativeFunction(QString &equation, QString f, QString dxf);
+
+QStringList getSupportedFunctionsList();
+QStringList getCustomFunctionList();
+
 
 #endif // COMPONENTGENERATORUTILITIES_H

@@ -58,6 +58,27 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n)
 }
 
 
+EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n, Matrix *pJacobian, Vec *pEquations, Vec *pVariables)
+{
+    mpParentComponent = pParentComponent;
+
+    // Weights for equations, used when running several iterations
+    mSystemEquationWeight[0]=1;
+    mSystemEquationWeight[1]=0.67;
+    mSystemEquationWeight[2]=0.5;
+    mSystemEquationWeight[3]=0.5;
+
+    mnVars = n;
+    mpOrder = new int[n];                   //Used to keep track of the order of the equations
+    mpDeltaStateVar = new Vec(n);           //Difference between nwe state variables and the previous ones
+    mSingular = false;                      //Tells whether or not the Jaciabian is singular
+
+    mpJacobian = pJacobian;
+    mpEquations = pEquations;
+    mpVariables = pVariables;
+}
+
+
 //! @brief Solves a system of equations
 //! @param jacobian Jacobian matrix
 //! @param equations Vector of system equations
@@ -110,5 +131,35 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
     for(int i=0; i<mnVars; ++i)
     {
         variables[i] = variables[i] - (*mpDeltaStateVar)[i];
+    }
+}
+
+
+
+
+//! @brief Solves a system of equations
+//! @param jacobian Jacobian matrix
+//! @param equations Vector of system equations
+//! @param variables Vector of state variables
+//! @param iteration How many times the solver has been executed before in the same time step
+void EquationSystemSolver::solve()
+{
+    //LU decomposition
+    ludcmp(*mpJacobian, mpOrder, mSingular);
+
+    //Stop simulation if LU decomposition failed due to singularity
+    if(mSingular)
+    {
+        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
+        mpParentComponent->stopSimulation();
+    }
+
+    //Solve system using L and U matrices
+    solvlu(*mpJacobian,*mpEquations,*mpDeltaStateVar,mpOrder);
+
+    //Calculate new system variables
+    for(int i=0; i<mnVars; ++i)
+    {
+        (*mpVariables)[i] = (*mpVariables)[i] - (*mpDeltaStateVar)[i];
     }
 }

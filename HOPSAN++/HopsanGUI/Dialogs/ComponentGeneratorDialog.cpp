@@ -45,7 +45,12 @@ ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
-    keywordPatterns << "\\bder\\b" << "\\bsin\\b" << "\\bcos\\b" << "\\btan\\b" << "\\batan\\b" << "\\bacos\\b" << "\\basin\\b" << "\\bexp\\b" << "\\bsign\\b" << "\\babs\\b" << "\\bsqrt\\b" << "\\bonPositive\\b" << "\\bonNegative\\b" << "\\bsignedSquareL\\b" << "\\bVariableLimits\\b" << "\\bVariable2Limits\\b" << "\\blimit\\b";
+    keywordPatterns  << "\\bVariableLimits\\b" << "\\bVariable2Limits\\b";       //These are special and will not be treated as normal functions later on
+    QStringList functions = getSupportedFunctionsList();
+    for(int i=0; i<functions.size(); ++i)
+    {
+        keywordPatterns << "\\b"+functions[i]+"\\b";
+    }
 
     foreach (const QString &pattern, keywordPatterns)
     {
@@ -1307,6 +1312,10 @@ void ComponentGeneratorDialog::generateComponent()
         {
             stateVars.removeAll(initExpressions[i]);
         }
+        for(int i=0; i<finalExpressions.size(); ++i)
+        {
+            stateVars.removeAll(finalExpressions[i]);
+        }
         stateVars.removeAll("s");       //Laplace 's' is not a state variable
 
         //Verify equation system
@@ -1420,16 +1429,10 @@ void ComponentGeneratorDialog::generateComponent()
 
         //Create "Function" objects for all custom functions
         QStringList allFunctions;
-        allFunctions << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit";
+        allFunctions = getCustomFunctionList();
         for(int i=0; i<allFunctions.size(); ++i)
         {
             py->runCommand(allFunctions[i]+"=Function(\""+allFunctions[i]+"\")");
-        }
-        QStringList hopsanSpecificFunctions;
-        hopsanSpecificFunctions << "dxSignedSquareL" << "dxLimit" << "fabs" << "dxOnPositive" << "dxOnNegative";
-        for(int i=0; i<hopsanSpecificFunctions.size(); ++i)
-        {
-            py->runCommand(hopsanSpecificFunctions[i]+"=Function(\""+hopsanSpecificFunctions[i]+"\")");
         }
 
                 pProgressBar->setLabelText("Defining equations");

@@ -36,8 +36,10 @@ class DLLIMPORTEXPORT EquationSystemSolver
 {
 public:
     EquationSystemSolver(Component *pParentComponent, int n);
+    EquationSystemSolver(Component *pParentComponent, int n, Matrix *pJacobian, Vec *pEquations, Vec *pVariables);
     void solve(Matrix &jacobian, Vec &equations, Vec &variables, int iteration);
     void solve(Matrix &jacobian, Vec &equations, Vec &variables);
+    void solve();
 
 private:
     Component *mpParentComponent;
@@ -46,6 +48,10 @@ private:
     Vec *mpDeltaStateVar;
     int mnVars;
     bool mSingular;
+
+    Matrix *mpJacobian;
+    Vec *mpEquations;
+    Vec *mpVariables;
 };
 
 }
