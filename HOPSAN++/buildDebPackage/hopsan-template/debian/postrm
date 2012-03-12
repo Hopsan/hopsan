@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# This POSTRM script removes the dummy file from /opt 
+# after remove or purge of hopsan
+
+
+case "$1" in
+  remove)
+    rm -f /opt/hopsan_dummy
+    ;;
+  purge)
+    rm -f /opt/hopsan_dummy
+    ;;
+
+  *)
+    #Do nothing
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

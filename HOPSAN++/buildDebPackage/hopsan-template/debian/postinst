@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+# This POSTINST script adds a dummy file to /opt to make
+# sure that /opt is not removed when hopsan is uninstalled
+
+case "$1" in
+  configure)
+    touch /opt/hopsan_dummy
+    ;;
+
+  *)
+    #Do nothing
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
