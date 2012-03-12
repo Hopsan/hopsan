@@ -42,6 +42,8 @@ binary-arch: build install
 #        dh_testroot
 	dh_installchangelogs
 	dh_installdocs
+	dh_install ../HopsanGUI.desktop usr/share/applications/
+	dh_install ../../HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
 #        dh_installexamples
 #        dh_installman
 #        dh_link
