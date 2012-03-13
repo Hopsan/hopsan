@@ -109,6 +109,8 @@ namespace hopsan {
         void setAllNodesDoLogData(const bool logornot);
 
         //initialize and simulate
+        bool doesKeepStartValues();
+        void setLoadStartValues(bool load);
         bool isSimulationOk();
         void loadStartValues();
         void loadStartValuesFromSimulation();
@@ -188,6 +190,8 @@ namespace hopsan {
         std::vector<Node*> mSubNodePtrs;
 
         bool volatile mStopSimulation;
+
+        bool mKeepStartValues;
 
         std::vector< std::vector<Component*> > mSplitCVector;                  //Create split vectors
         std::vector< std::vector<Component*> > mSplitQVector;

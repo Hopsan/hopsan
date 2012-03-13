@@ -50,6 +50,7 @@ ComponentSystem::ComponentSystem() : Component()
     mIsComponentSystem = true;
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
+    mKeepStartValues = false;
 #ifdef USETBB
     mpStopMutex = new tbb::mutex();
 #endif
@@ -1803,6 +1804,20 @@ void ComponentSystem::setAllNodesDoLogData(const bool logornot)
 }
 
 
+//! @brief Returns if start values should be loaded before simulation. If not, old simulation results is used as startvalues.
+bool ComponentSystem::doesKeepStartValues()
+{
+    return mKeepStartValues;
+}
+
+
+//! @brief Set if or not start values should be loaded before simulation. If not, old simulation results is used as startvalues.
+void ComponentSystem::setLoadStartValues(bool load)
+{
+    mKeepStartValues = load;
+}
+
+
 //! @brief Checks that everything is OK before simulation
 bool ComponentSystem::isSimulationOk()
 {
@@ -1967,7 +1982,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
     this->sortComponentVector(mComponentCptrs);
     this->sortComponentVector(mComponentQptrs);
 
-    loadStartValues();
+    if(!mKeepStartValues)
+    {
+        loadStartValues();
+    }
 
     //Init
     updateParameters();

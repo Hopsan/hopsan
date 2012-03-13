@@ -42,6 +42,7 @@ namespace hopsan {
     class DLLIMPORTEXPORT Node
     {
         friend class Port;
+        friend class MultiPort;
         friend class PowerPort;
         friend class WritePort;
         friend class Component;

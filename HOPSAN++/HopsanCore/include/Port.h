@@ -176,7 +176,7 @@ namespace hopsan {
 //        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values, const size_t portIdx=0);
 //        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx=0);
 
-//        double getStartValue(const size_t idx, const size_t portIdx=0);
+        double getStartValue(const size_t idx, const size_t portIdx=0);
 //        void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
 
         void loadStartValues();

@@ -204,7 +204,8 @@ void Node::copyNodeVariables(Node *pNode)
         for(size_t i=0; i<mDataNames.size(); ++i)
         {
             //cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
-            if(mPlotBehaviour[i] == Node::PLOT)
+            //! @todo look over if all vector positions should be set or not.
+            //if(mPlotBehaviour[i] == Node::PLOT)
             {
                 //pNode->mDataNames[i] = mDataNames[i];
                 pNode->mDataVector[i] = mDataVector[i];

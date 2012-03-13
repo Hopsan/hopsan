@@ -92,7 +92,7 @@ public:
     bool checkParameters(std::string &errParName);
 
     //Start values
-    double getStartValue(Port* pPort, const size_t idx);
+    double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
     void setStartValue(Port* pPort, const size_t idx, const double value);
     void disableStartValue(Port* pPort, const size_t idx);
 

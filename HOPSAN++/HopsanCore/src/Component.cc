@@ -702,9 +702,9 @@ void Component::addInfoMessage(const string message)
 //! @param[in] pPort is the port which should be read from
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @returns the start value
-double Component::getStartValue(Port* pPort, const size_t idx)
+double Component::getStartValue(Port* pPort, const size_t idx, const size_t portIdx)
 {
-    return pPort->getStartValue(idx);
+    return pPort->getStartValue(idx, portIdx);
 }
 
 

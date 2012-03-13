@@ -415,8 +415,12 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 //! @returns the start value
 double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 {
-    if(mpStartNode)
+    if(mpStartNode && !mpComponent->getSystemParent()->doesKeepStartValues())
         return mpStartNode->getData(idx);
+    else if(mpStartNode)
+    {
+        return mpNode->getData(idx);
+    }
     assert(false);
     return 0.0;
 }
@@ -682,6 +686,21 @@ std::vector<double> *MultiPort::getTimeVectorPtr(const size_t portIdx)
 std::vector<std::vector<double> > *MultiPort::getDataVectorPtr(const size_t portIdx)
 {
     return mSubPortsVector[portIdx]->getDataVectorPtr();
+}
+
+//! @brief Get the an actual start value of the port
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @returns the start value
+double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
+{
+    if(mpStartNode && !mpComponent->getSystemParent()->doesKeepStartValues())
+        return mpStartNode->getData(idx);
+    else if(mpStartNode)
+    {
+        return mSubPortsVector[portIdx]->mpNode->getData(idx);
+    }
+    assert(false);
+    return 0.0;
 }
 
 void MultiPort::loadStartValues()
