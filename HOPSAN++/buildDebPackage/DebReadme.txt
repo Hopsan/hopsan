@@ -1,0 +1,47 @@
+----------------------------------------
+ Package Info:
+----------------------------------------
+This DEB package is meant for installation on *Ubuntu systems.
+
+Hopsan will be installed to /opt/hopsan, this is not the standard Debian way.
+To avoid that /opt is removed when Hopsan is uninstalled a hopsan_dummy file will be create in the /opt directory.
+This dummy file will be automatically removed after Hopsan has been uninstalled.
+
+A "shortcut" to HopsanGUI should end up under the Development category in your menu.
+HopsanCLI and libHopsanCore.so can be found in /opt/hopsan/bin
+
+
+----------------------------------------
+ How to Install:
+----------------------------------------
+There are various installation methods.
+
+Method 1:
+In Ubuntu, double click the package file to open it in Ubuntu Software Center, where you can choose to install it.
+Dependencies will be automatically installed.
+
+Method 2:
+If you want to see what is going on during installation, I recommend that you use a tool such as "gdebi" or "qapt" to install the package.
+"apt-get install gdebi"
+
+Method 3:
+You can also install manually using dpkg directly, "dpkg -i hopsanPackageName". 
+But you will need to install dependencies manually, dpkg will tell you what you need. (Use apt-get install for dependencies)
+
+
+----------------------------------------
+ How to Upgrade:
+----------------------------------------
+Download a new version and then just install it over the older version.
+
+
+----------------------------------------
+ How to Remove:
+----------------------------------------
+Method 1:
+Use the Ubuntu Software Center to uninstall.
+
+Method 2:
+Use a terminal to uninstall, "apt-get remove hopsan" followed by "apt-get autoremove" to automatically remove dependencies.
+Dependencies will only be removed if install method 1 or 2 was used, and if no other package is using them.
+
