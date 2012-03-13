@@ -1830,7 +1830,7 @@ void SystemContainer::createSimulinkSourceFiles()
     QLabel *pExportDialogLabel1 = new QLabel(tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console."), pExportDialog);
     pExportDialogLabel1->setWordWrap(true);
     QGroupBox *pCompilerGroupBox = new QGroupBox(tr("Choose compiler:"), pExportDialog);
-    //! @todo Delete these buttons (they don't have parent)
+
     QRadioButton *pMSVC2008RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2008"));
     QRadioButton *pMSVC2010RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2010"));
     pMSVC2008RadioButton->setChecked(true);
@@ -1840,7 +1840,9 @@ void SystemContainer::createSimulinkSourceFiles()
     pCompilerLayout->addStretch(1);
     pCompilerGroupBox->setLayout(pCompilerLayout);
 
-    QLabel *pExportDialogLabel2 = new QLabel("Matlab must use the same compiler during compilation.", pExportDialog);
+    QLabel *pExportDialogLabel2 = new QLabel("Matlab must use the same compiler during compilation.    ", pExportDialog);
+
+    QCheckBox *pDisablePortLabels = new QCheckBox("Disable port labels (for older versions of Matlab)");
 
     QDialogButtonBox *pExportButtonBox = new QDialogButtonBox(pExportDialog);
     QPushButton *pExportButtonOk = new QPushButton("Ok", pExportDialog);
@@ -1852,6 +1854,7 @@ void SystemContainer::createSimulinkSourceFiles()
     pExportDialogLayout->addWidget(pExportDialogLabel1);
     pExportDialogLayout->addWidget(pCompilerGroupBox);
     pExportDialogLayout->addWidget(pExportDialogLabel2);
+    pExportDialogLayout->addWidget(pDisablePortLabels);
     pExportDialogLayout->addWidget(pExportButtonBox);
     pExportDialog->setLayout(pExportDialogLayout);
 
@@ -1882,7 +1885,6 @@ void SystemContainer::createSimulinkSourceFiles()
 
 
         //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
     QString savePath;
     savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Simulink Source Files"),
                                                     gConfig.getSimulinkExportDir(),
@@ -2234,7 +2236,10 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "    if (isOkToSimulate)";
     wrpLineStream << "    {";
     wrpLineStream << "        pComponentSystem->initialize(0,10,0);";
-    wrpLineStream << "        mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+    if(pDisablePortLabels->isChecked())
+    {
+        wrpLineStream << "        mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+    }
     wrpLineStream << "    }";
     wrpLineStream << "    else";
     wrpLineStream << "    {";
@@ -2460,6 +2465,10 @@ void SystemContainer::createSimulinkSourceFiles()
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
     xmlhmf.close();
+
+    delete(pDisablePortLabels);
+    delete(pMSVC2008RadioButton);
+    delete(pMSVC2010RadioButton);
 }
 
 
