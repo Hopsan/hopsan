@@ -79,7 +79,10 @@ CSVParser::CSVParser(bool &success,
                 is.str(s);
                 double d;
                 is >> d;
-                mData[i].push_back(d);
+                if(row.size() == mData.size())
+                    mData[i].push_back(d);
+                else
+                    success = false;
             }
 
             row_count++;
