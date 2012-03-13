@@ -107,20 +107,22 @@ namespace hopsan {
             //Write to nodes
             (*mpND_q1) = getStartValue(mpP1,NodeHydraulic::FLOW);
             (*mpND_p1) = getStartValue(mpP1,NodeHydraulic::PRESSURE);
-            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW);
             (*mpND_Zc1) = mZc;
             (*mpND_q2) = getStartValue(mpP2,NodeHydraulic::FLOW);
             (*mpND_p2) = getStartValue(mpP2,NodeHydraulic::PRESSURE);
-            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW);
             (*mpND_Zc2) = mZc;
             (*mpND_q3) = getStartValue(mpP3,NodeHydraulic::FLOW);
             (*mpND_p3) = getStartValue(mpP3,NodeHydraulic::PRESSURE);
-            (*mpND_c3) = getStartValue(mpP3,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP3,NodeHydraulic::FLOW);
             (*mpND_Zc3) = mZc;
             (*mpND_q4) = getStartValue(mpP4,NodeHydraulic::FLOW);
             (*mpND_p4) = getStartValue(mpP4,NodeHydraulic::PRESSURE);
-            (*mpND_c4) = getStartValue(mpP4,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP4,NodeHydraulic::FLOW);
             (*mpND_Zc4) = mZc;
+
+            double pMean = (((*mpND_p1) + mZc * (*mpND_q1)) + ((*mpND_p2) + mZc * (*mpND_q2)) + ((*mpND_p3) + mZc * (*mpND_q3)) + ((*mpND_p4) + mZc * (*mpND_q4))) / 4.0;
+            (*mpND_c1) = pMean - (*mpND_p1) - mZc * (*mpND_q1);
+            (*mpND_c2) = pMean - (*mpND_p2) - mZc * (*mpND_q2);
+            (*mpND_c3) = pMean - (*mpND_p3) - mZc * (*mpND_q3);
+            (*mpND_c4) = pMean - (*mpND_p4) - mZc * (*mpND_q4);
         }
 
         void simulateOneTimestep()
