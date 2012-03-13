@@ -2,9 +2,27 @@
 # $Id$
 
 name=hopsan
-version=0.5.3d
+devversion=0.6.x
+devrelease="false"
 
-# TODO: should ask user for version input maybe
+# Ask user for version input 
+echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
+read version
+
+if [ -z "$version" ]; then
+  devrelease="true"
+  version=$devversion
+  echo
+  echo Building DEV release
+else
+  echo
+  echo Version will be: $version is this OK, y/n
+  read ans
+  if [ "$ans" != "y" ]; then
+    echo Aborting!
+    exit 1
+  fi
+fi
 
 # -----------------------------------------------------------------------------
 # First prepare source folders
@@ -16,21 +34,23 @@ rm -f ./bin/*
 # Build user documentation
 ./buildDocumentation.sh user
 
-# Set version numbers (by changing .h files) BEFORE build
-sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/version.h
-sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i HopsanGUI/version_gui.h
+if [ $devrelease = "false" ]; then
+  # Set version numbers (by changing .h files) BEFORE build
+  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/version.h
+  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i HopsanGUI/version_gui.h
 
-# Set splash screen version number
-sed "s|X\.X\.X|$version|g" -i HopsanGUI/graphics/splash2.svg
-inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
-# Revert changes in svg
-svn revert ./HopsanGUI/graphics/splash2.svg
+  # Set splash screen version number
+  sed "s|X\.X\.X|$version|g" -i HopsanGUI/graphics/splash2.svg
+  inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
+  # Revert changes in svg
+  svn revert ./HopsanGUI/graphics/splash2.svg
+  
+  # Make sure development flag is not defined
+  sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI/common.h
+fi
 
 # Make a png version of the 128x128 icon
 cp -a ./HopsanGUI/graphics/uiicons/hopsan.ico ./HopsanGUI/graphics/uiicons/hopsan128x128.png 
-
-# Make sure development flag is not defined
-sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI/common.h
 #------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
