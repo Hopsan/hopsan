@@ -33,8 +33,8 @@ namespace hopsan {
 
     private:
         double v;
-        double signal, f, vin, x, c, Zx;
-        double *mpND_xin, *mpND_vin, *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx;
+        double signal, f, vin, x, c, Zx, me;
+        double *mpND_xin, *mpND_vin, *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx, *mpND_me;
         Integrator mInt;
         Port *mpXin, *mpVin, *mpPm1;
 
@@ -48,6 +48,7 @@ namespace hopsan {
         {
             //Set member attributes
             v = 0.0;
+            me = 10;
 
             //Add ports to the component
             mpXin = addReadPort("xin", "NodeSignal", Port::NOTREQUIRED);
@@ -56,6 +57,7 @@ namespace hopsan {
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("v", "Generated Velocity", "[m/s]", v);
+            registerParameter("m_e", "Equivalent Mass", "[kg]", me);
         }
 
 
@@ -69,9 +71,11 @@ namespace hopsan {
             mpND_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::VELOCITY);
             mpND_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx = getSafeNodeDataPtr(mpPm1, NodeMechanic::CHARIMP);
+            mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EQMASS);
 
             mInt.initialize(mTimestep, (*mpND_v), (*mpND_x));
 
+            *mpND_me = me;
 
             if(mpXin->isConnected() && !mpVin->isConnected())
             {
