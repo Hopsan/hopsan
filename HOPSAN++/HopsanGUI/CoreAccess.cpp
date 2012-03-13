@@ -363,6 +363,18 @@ vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString po
 }
 
 
+bool CoreSystemAccess::doesKeepStartValues()
+{
+    return mpCoreComponentSystem->doesKeepStartValues();
+}
+
+
+void CoreSystemAccess::setLoadStartValues(bool load)
+{
+    mpCoreComponentSystem->setLoadStartValues(load);
+}
+
+
 bool CoreSystemAccess::isSimulationOk()
 {
     return mpCoreComponentSystem->isSimulationOk();

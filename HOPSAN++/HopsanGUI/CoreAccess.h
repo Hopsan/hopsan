@@ -101,6 +101,8 @@ public:
     QString createSubSystem(QString name="");
     void removeSubComponent(QString componentName, bool doDelete);
 
+    bool doesKeepStartValues();
+    void setLoadStartValues(bool load);
     bool isSimulationOk();
     bool initialize(double mStartTime, double mFinishTime, int nSamples=2048);
     void simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0, bool modelHasNotChanged=false);

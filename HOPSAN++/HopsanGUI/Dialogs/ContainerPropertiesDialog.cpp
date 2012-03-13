@@ -127,6 +127,11 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpAppearanceLayout->addWidget(mpIsoCheckBox, 5, 0, 1, -1);
     mpAppearanceGroupBox->setLayout(mpAppearanceLayout);
 
+        //Load start values or not
+    mpUseStartValues = new QCheckBox("Keep start values from previous simulation", this);
+    mpUseStartValues->setCheckable(true);
+    mpUseStartValues->setChecked(mpContainerObject->getCoreSystemAccessPtr()->doesKeepStartValues());
+
         //Disable undo checkbox
     mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), this);
     mpDisableUndoCheckBox->setCheckable(true);
@@ -150,8 +155,9 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpSettingsLayout->addWidget(mpPyScriptLabel,        0, 0);
     mpSettingsLayout->addWidget(mpPyScriptPath,         0, 1);
     mpSettingsLayout->addWidget(mpPyScriptBrowseButton, 0, 2);
-    mpSettingsLayout->addWidget(mpDisableUndoCheckBox,  1, 0, 1, 2);
-    mpSettingsLayout->addWidget(mpSaveUndoCheckBox,     2, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpUseStartValues,       1, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpDisableUndoCheckBox,  2, 0, 1, 2);
+    mpSettingsLayout->addWidget(mpSaveUndoCheckBox,     3, 0, 1, 2);
     mpSettingsGroupBox->setLayout(mpSettingsLayout);
 
         //Set GuiSystem specific stuff
@@ -170,9 +176,9 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpTimeStepEdit->setDisabled(mpTimeStepCheckBox->isChecked());
         connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepLabel, SLOT(setDisabled(bool)));
         connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepEdit, SLOT(setDisabled(bool)));
-        mpSettingsLayout->addWidget(mpTimeStepCheckBox, 3, 0, 1, 2);
-        mpSettingsLayout->addWidget(mpTimeStepLabel, 4, 0, 1, 1);
-        mpSettingsLayout->addWidget(mpTimeStepEdit, 4, 1, 1, 1);
+        mpSettingsLayout->addWidget(mpTimeStepCheckBox, 4, 0, 1, 2);
+        mpSettingsLayout->addWidget(mpTimeStepLabel, 5, 0, 1, 1);
+        mpSettingsLayout->addWidget(mpTimeStepEdit, 5, 1, 1, 1);
 
             //Log sampels
         mpNSamplesLabel = new QLabel(tr("Log Samples:"), this);
@@ -182,8 +188,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpNSamplesEdit = new QLineEdit(this);
         mpNSamplesEdit->setValidator(new QIntValidator(0, 2000000000, this));
         mpNSamplesEdit->setText(NSamplesText);
-        mpSettingsLayout->addWidget(mpNSamplesLabel, 5, 0);
-        mpSettingsLayout->addWidget(mpNSamplesEdit, 5, 1);
+        mpSettingsLayout->addWidget(mpNSamplesLabel, 6, 0);
+        mpSettingsLayout->addWidget(mpNSamplesEdit, 6, 1);
 
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
     }
@@ -306,6 +312,8 @@ void ContainerPropertiesDialog::setValues()
         this->mpContainerObject->setGfxType(USERGRAPHICS);
         gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
     }
+
+    mpContainerObject->getCoreSystemAccessPtr()->setLoadStartValues(mpUseStartValues->isChecked());
 
     if(mpContainerObject->isUndoEnabled() == mpDisableUndoCheckBox->isChecked())
     {
