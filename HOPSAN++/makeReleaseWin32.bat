@@ -320,12 +320,12 @@ del %tempDir%\bin\*_d.dll
 del %tempDir%\bin\tbb_debug.dll
 del %tempDir%\bin\qwtd.dll
 
-set pythonFailed=false
-IF NOT EXIST %tempDir%\bin\python26.zip set pythonFailed=true
-IF NOT EXIST %tempDir%\bin\python27.zip set pythonFailed=true
-IF "%res%" == "true" (
+set pythonFailed=true
+IF EXIST %tempDir%\bin\python26.zip set pythonFailed=false
+IF EXIST %tempDir%\bin\python27.zip set pythonFailed=false
+IF "%pythonFailed%" == "true" (
   COLOR 04
-  echo Failed to compile installer executable!
+  echo Failed to find python26.zip or python27.zip.
   echo Aborting!
   pause
   goto cleanup
