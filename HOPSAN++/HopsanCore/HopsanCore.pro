@@ -85,7 +85,7 @@ unix {
 # -------------------------------------------------
 SOURCES += \
     #DO NOT remove the commented line bellow, it will be autoreplaced by script
-    #INTERNALCOMLIB.CC#
+    #INTERNALCOMPLIB.CC#
     src/Port.cc \
     src/Nodes.cc \
     src/Node.cc \
