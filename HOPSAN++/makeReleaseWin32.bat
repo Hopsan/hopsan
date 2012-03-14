@@ -42,27 +42,32 @@ set innoDir="C:\Program Files\Inno Setup 5"
 set innoDir2="C:\Program Files (x86)\Inno Setup 5"
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
 set hopsanDir=%CD%
-set qtsdkDir="C:\QtSDK"
-set qmakeDir="%qtsdkDir%\Desktop\Qt\4.7.4\mingw\bin"
-set mingwDir="%qtsdkDir%\mingw\bin"
-set jomDir="%qtsdkDir%\QtCreator\bin"
+set qtsdkDir="C:\Qt"
+set qtsdkDir2="C:\QtSDK"
 set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\bin"
 set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\bin"
 
 :: Make sure Qt SDK exist
 if not exist %qtsdkDir% (
-  COLOR 04
-  echo %qtsdkDir% could not be found, you may need to change default dir in this script!
-  echo Aborting!
-  pause
-  exit
+  if not exist %qtsdkDir2% (
+    COLOR 04
+    echo Qt SDK could not be found in expected location.
+    echo Aborting!
+    pause
+    goto cleanup
+  )
+  set qtsdkDir=%qtsdkDir2%
 )
+
+set jomDir="%qtsdkDir%\QtCreator\bin"
+set qmakeDir="%qtsdkDir%\Desktop\Qt\4.7.4\mingw\bin"
+set mingwDir="%qtsdkDir%\mingw\bin"
 
 :: Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
 IF NOT EXIST %innoDir% (
   IF NOT EXIST %innoDir2% (
     COLOR 04
-    echo Inno Setup 5 is not installed in expected place
+    echo Inno Setup 5 is not installed in expected place.
     echo Aborting!
     pause
     goto cleanup
