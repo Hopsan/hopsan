@@ -39,7 +39,7 @@ set tempDir=C:\temp_release
 set inkscapeDir="C:\Program Files\Inkscape"
 set inkscapeDir2="C:\Program Files (x86)\Inkscape"
 set innoDir="C:\Program Files\Inno Setup 5"
-set innoDir2="C:\Program Files (x86)\Inno Setup 5"      
+set innoDir2="C:\Program Files (x86)\Inno Setup 5"
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
 set hopsanDir=%CD%
 set qtsdkDir="C:\QtSDK"
@@ -289,6 +289,7 @@ IF NOT EXIST %tempDir% (
 mkdir %tempDir%\models
 mkdir %tempDir%\scripts
 mkdir %tempDir%\bin
+mkdir %tempDir%\HopsanCore
 mkdir %tempDir%\componentLibraries
 mkdir %tempDir%\componentLibraries\defaultLibrary
 mkdir %tempDir%\doc
@@ -345,7 +346,7 @@ IF NOT EXIST doc\user\html\index.html (
 
 
 :: Export "HopsanCore" SVN directory to "include" in temporary directory
-svn export HopsanCore\include %tempDir%\include
+svn export HopsanCore\include %tempDir%\HopsanCore\include
 
 
 :: Export "Example Models" SVN directory to temporary directory
@@ -362,7 +363,7 @@ REM xcopy componentLibraries\defaultLibrary\components\defaultComponentLibrary.d
 
 
 ::Export "exampleComponentLib" SVN directory to temporary directory
-svn export componentLibraries\exampleComponentLib %tempDir%\exampleComponentLib
+svn export componentLibraries\exampleComponentLib %tempDir%\componentLibraries\exampleComponentLib
 
 
 ::Change the include and lib paths to be correct
@@ -414,9 +415,8 @@ IF NOT EXIST "output/Hopsan-%version%-win32-installer.exe" (
 :: Move release notse to output directory
 copy Hopsan-release-notes.txt "output/"
 
-pause
-
 echo Finished!
+pause
 
 
 

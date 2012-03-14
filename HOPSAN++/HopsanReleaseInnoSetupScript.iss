@@ -54,24 +54,22 @@ Type: filesandordirs; Name: "{app}"
 ;Create installation directories
 Name: "{app}\bin"
 Name: "{app}\componentLibraries"
-Name: "{app}\componentLibraries\defualtLibrary"
-Name: "{app}\componentLibraries\defaultLibrary\components"
 Name: "{app}\doc"
-Name: "{app}\include"
+Name: "{app}\HopsanCore"
+Name: "{app}\models"
 Name: "{userdocs}\Hopsan"
 Name: "{userdocs}\Hopsan\Models"
 Name: "{userdocs}\Hopsan\Scripts"
 
 [Files]
 ;Hopsan files
-Source: "C:\temp_release\bin\*";                  DestDir: "{app}\bin";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\componentLibraries\defaultLibrary\components\*";           DestDir: "{app}\componentLibraries\defaultLibrary\components";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\doc\*";                  DestDir: "{app}\doc";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\include\*";              DestDir: "{app}\include";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\exampleComponentLib\*";  DestDir: "{app}\exampleComponentLib";   Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\hopsandefaults";         DestDir: "{app}";     Flags: ignoreversion
-Source: "C:\temp_release\models\*";               DestDir: "{userdocs}\Hopsan\Models";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\scripts\*";              DestDir: "{userdocs}\Hopsan\Scripts";     Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\bin\*";                  DestDir: "{app}\bin";                   Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\componentLibraries\*";   DestDir: "{app}\componentLibraries";    Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\HopsanCore\*";           DestDir: "{app}\HopsanCore";            Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\hopsandefaults";         DestDir: "{app}";                       Flags: ignoreversion
+Source: "C:\temp_release\doc\*";                  DestDir: "{app}\doc";                   Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\models\*";               DestDir: "{app}\Models";                Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\scripts\*";              DestDir: "{userdocs}\Hopsan\Scripts";   Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 
