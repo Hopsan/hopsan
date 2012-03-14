@@ -57,7 +57,7 @@ IF NOT EXIST %innoDir% (
     echo Inno Setup 5 is not installed in expected place
     echo Aborting!
     pause
-    exit
+    goto cleanup
   )
   set innoDir=%innoDir2%
 )
@@ -70,7 +70,7 @@ IF NOT EXIST %inkscapeDir% (
     echo Inkscape is not installed in expected place
     echo Aborting!
     pause
-    exit
+    goto cleanup
   )
   set inkscapeDir=%inkscapeDir2%
 )
@@ -89,7 +89,7 @@ if "%version%"=="" (
     COLOR 04
     echo Aborting!
     pause
-    exit
+    goto cleanup
   )
 )
 
@@ -115,7 +115,7 @@ IF NOT EXIST HopsanCore\Dependencies\tbb30_20110704oss (
   echo Cannot find correct TBB version, you must use tbb30_20110704oss!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 cd HopsanCore\Dependencies
@@ -154,7 +154,7 @@ IF NOT EXIST HopsanCore.dll (
   echo Failed to build HopsanCore with Visual Studio 2008!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 :: Move files to MSVC2008 directory
@@ -200,7 +200,7 @@ IF NOT EXIST HopsanCore.dll (
   echo Failed to build HopsanCore with Visual Studio 2010!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 :: Move files to MSVC2010 directory
@@ -249,7 +249,7 @@ IF NOT EXIST HopsanGUI.exe (
   echo Failed to build Hopsan with MinGW32!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 cd ..
 cd ..
@@ -269,7 +269,7 @@ IF NOT EXIST %tempDir% (
   echo Failed to build temporary directory!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 mkdir %tempDir%\models
 mkdir %tempDir%\scripts
@@ -285,7 +285,7 @@ IF NOT EXIST output (
   echo Failed to create output folder!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 
@@ -313,7 +313,7 @@ IF "%res%" == "true" (
   echo Failed to compile installer executable!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 
@@ -325,7 +325,7 @@ IF NOT EXIST doc\user\html\index.html (
   echo Failed to build user documentation!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 
@@ -380,7 +380,7 @@ IF NOT EXIST "output/Hopsan-%version%-win32-zip.zip" (
   echo Failed to create zip package!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 
@@ -393,7 +393,7 @@ IF NOT EXIST "output/Hopsan-%version%-win32-installer.exe" (
   echo Failed to compile installer executable!
   echo Aborting!
   pause
-  exit
+  goto cleanup
 )
 
 :: Move release notse to output directory
@@ -401,9 +401,20 @@ copy Hopsan-release-notes.txt "output/"
 
 pause
 
+echo Finished!
+
+
+
+:cleanup 
+
 :: Remove temporary directory
 rd /s/q %tempDir%
 
-echo Finished!
+cd HopsanCore\Dependencies
+rename tbb30_20110704oss_nope tbb30_20110704oss
+cd ..
+cd ..
+
+echo Performed cleanup.
 
 pause
