@@ -53,7 +53,9 @@ Type: filesandordirs; Name: "{app}"
 [Dirs]
 ;Create installation directories
 Name: "{app}\bin"
-Name: "{app}\components"
+Name: "{app}\componentLibraries"
+Name: "{app}\componentLibraries\defualtLibrary"
+Name: "{app}\componentLibraries\defaultLibrary\components"
 Name: "{app}\doc"
 Name: "{app}\include"
 Name: "{userdocs}\Hopsan"
@@ -63,7 +65,7 @@ Name: "{userdocs}\Hopsan\Scripts"
 [Files]
 ;Hopsan files
 Source: "C:\temp_release\bin\*";                  DestDir: "{app}\bin";     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\components\*";           DestDir: "{app}\components";     Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\componentLibraries\defaultLibrary\components\*";           DestDir: "{app}\componentLibraries\defaultLibrary\components";     Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\doc\*";                  DestDir: "{app}\doc";     Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\include\*";              DestDir: "{app}\include";     Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\exampleComponentLib\*";  DestDir: "{app}\exampleComponentLib";   Flags: ignoreversion recursesubdirs createallsubdirs

@@ -63,31 +63,43 @@ int main(int argc, char *argv[])
     gConfig = Configuration();
     gCopyStack = CopyStack();
 
-#ifdef DEVELOPMENT
-    // Use development place for models and scripts
-    gModelsPath = MODELS_DEV_PATH;
-    gScriptsPath = SCRIPTS_DEV_PATH;
-#else
+
+//    // Use development place for models and scripts
+//    gModelsPath = MODELS_DEV_PATH;
+//    gScriptsPath = SCRIPTS_DEV_PATH;
+
     // Make sure model folder exists, create it if not
     QDir modelsDir(MODELS_REL_PATH);
     if (!modelsDir.exists())
     {
         modelsDir.mkpath(MODELS_REL_PATH);
-        gModelsPath = MODELS_REL_PATH;
+        if(modelsDir.exists())
+        {
+            gModelsPath = MODELS_REL_PATH;
+        }
+        else
+        {
+            gModelsPath = MODELS_DEV_PATH;
+        }
+
     }
 
     // Select which scripts path to use
     //! @todo problem in linux if scripts must be changed, as they  are not installed to user home
     QDir scriptsDir(SCRIPTS_REL_PATH);
-    if (scriptsDir.exists())
+    if (!scriptsDir.exists())
     {
-        gScriptsPath = SCRIPTS_REL_PATH;
+        scriptsDir.mkpath(SCRIPTS_REL_PATH);
+        if(scriptsDir.exists())
+        {
+            gScriptsPath = SCRIPTS_REL_PATH;
+        }
+        else
+        {
+            gScriptsPath = SCRIPTS_DEV_PATH;
+        }
     }
-    else
-    {
-        gScriptsPath = SCRIPTS_DEV_PATH;
-    }
-#endif
+
 
     //Load settings
     loadApplicationFonts();

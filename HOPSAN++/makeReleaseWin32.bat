@@ -39,7 +39,7 @@ set tempDir=C:\temp_release
 set inkscapeDir="C:\Program Files\Inkscape"
 set inkscapeDir2="C:\Program Files (x86)\Inkscape"
 set innoDir="C:\Program Files\Inno Setup 5"
-set innoDir2="C:\Program Files (x86)\Inno Setup 5"
+set innoDir2="C:\Program Files (x86)\Inno Setup 5"      
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
 set hopsanDir=%CD%
 set qtsdkDir="C:\Qt"
@@ -141,7 +141,7 @@ cd HopsanCore_bd
 call %msvc2008Dir%\SetEnv.cmd /x86
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
-call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release"
+call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
 
 :: Create build directory
@@ -187,7 +187,7 @@ cd HopsanCore_bd
 call %msvc2010Dir%\SetEnv.cmd /x86
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
-call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release"
+call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
 
 ::Create build directory
@@ -274,8 +274,8 @@ IF NOT EXIST %tempDir% (
 mkdir %tempDir%\models
 mkdir %tempDir%\scripts
 mkdir %tempDir%\bin
-mkdir %tempDir%\componenetLibraries
-mkdir %tempDir%\componenetLibraries\defaultLibrary
+mkdir %tempDir%\componentLibraries
+mkdir %tempDir%\componentLibraries\defaultLibrary
 mkdir %tempDir%\doc
 mkdir %tempDir%\doc\user
 mkdir %tempDir%\doc\user\html
@@ -342,8 +342,8 @@ svn export "Models\Benchmark Models" "%tempDir%\models\Benchmark Models"
 
 
 :: Export and copy "componentData" SVN directory to temporary directory
-svn export componentLibraries\defaultLibrary\components %tempDir%\defaultLibrary\components
-xcopy componentLibraries\defaultLibrary\components\defaultComponentLibrary.dll %tempDir%\defaultLibrary\components
+svn export componentLibraries\defaultLibrary\components %tempDir%\componentLibraries\defaultLibrary\components
+xcopy componentLibraries\defaultLibrary\components\defaultComponentLibrary.dll %tempDir%\componentLibraries\defaultLibrary\components
 
 
 ::Export "exampleComponentLib" SVN directory to temporary directory
