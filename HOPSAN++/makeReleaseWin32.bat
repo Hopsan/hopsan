@@ -34,13 +34,18 @@
 
 :: Define path variables
 set version=0.5.3
-set tempDir=c:\temp_release
+set tempDir=C:\temp_release
 set inkscapeDir="C:\Program Files\Inkscape"
 set inkscapeDir2="C:\Program Files (x86)\Inkscape"
 set innoDir="C:\Program Files\Inno Setup 5"
 set innoDir2="C:\Program Files (x86)\Inno Setup 5"
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
 set hopsanDir=%CD%
+set qmakeDir="C:\Qt\Desktop\Qt\4.7.4\mingw\bin"
+set mingwDir="C:\Qt\mingw\bin"
+set jomDir="C:\Qt\QtCreator\bin"
+set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\bin"
+set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\bin"
 
 
 :: Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
@@ -111,11 +116,11 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 :: Setup compiler and compile
-call C:\"Program Files"\"Microsoft Visual Studio 9.0"\VC\bin\vcvars32.bat
-call C:\Qt\Desktop\Qt\4.7.4\mingw\bin\qtenv2.bat
-call C:\Qt\QtCreator\bin\jom.exe clean
-call C:\Qt\Desktop\Qt\4.7.4\mingw\bin\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release"
-call C:\Qt\QtCreator\bin\jom.exe
+call %msvc2008Dir%\SetEnv.cmd /x86
+call %qmakeDir%\qtenv2.bat
+call %jomDir%\jom.exe clean
+call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release"
+call %jomDir%\jom.exe
 
 :: Create build directory
 cd ..
@@ -157,11 +162,11 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 ::Setup compiler and compile
-call C:\"Program Files"\"Microsoft Visual Studio 10.0"\VC\bin\vcvars32.bat
-call C:\Qt\Desktop\Qt\4.7.4\mingw\bin\qtenv2.bat
-call C:\Qt\QtCreator\bin\jom.exe clean
-call C:\Qt\Desktop\Qt\4.7.4\mingw\bin\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release"
-call C:\Qt\QtCreator\bin\jom.exe
+call %msvc2010Dir%\SetEnv.cmd /x86
+call %qmakeDir%\qtenv2.bat
+call %jomDir%\jom.exe clean
+call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release"
+call %jomDir%\jom.exe
 
 ::Create build directory
 cd ..
@@ -210,10 +215,10 @@ mkdir HopsanGUI_bd
 cd HopsanGUI_bd
 
 ::Setup compiler and compile
-call C:\Qt\Desktop\Qt\4.7.4\mingw\bin\qtenv2.bat
-call C:\Qt\mingw\bin\mingw32-make.exe clean
-call C:\Qt\Desktop\Qt\4.7.4\mingw\bin\qmake.exe %hopsanDir%\HopsanNG.pro -r -spec win32-g++ "CONFIG+=release"
-call C:\Qt\mingw\bin\mingw32-make.exe
+call %qmakeDir%\qtenv2.bat
+call %mingwDir%\mingw32-make.exe clean
+call %qmakeDir%\qmake.exe %hopsanDir%\HopsanNG.pro -r -spec win32-g++ "CONFIG+=release"
+call %mingwDir%\mingw32-make.exe
 
 cd %hopsanDir%\bin
 
@@ -245,7 +250,10 @@ IF NOT EXIST %tempDir% (
   exit
 )
 mkdir %tempDir%\models
+mkdir %tempDir%\scripts
 mkdir %tempDir%\bin
+mkdir %tempDir%\componenetLibraries
+mkdir %tempDir%\componenetLibraries\defaultLibrary
 mkdir %tempDir%\doc
 mkdir %tempDir%\doc\user
 mkdir %tempDir%\doc\user\html
@@ -305,18 +313,15 @@ svn export HopsanCore\include %tempDir%\include
 
 :: Export "Example Models" SVN directory to temporary directory
 svn export "Models\Example Models" "%tempDir%\models\Example Models"
-del "%tempDir%\Models\Example Models\AircraftActuationSystem.hmf"
-del "%tempDir%\Models\Example Models\ElectricVehicle2.hmf"
-del "%tempDir%\Models\Example Models\ElectricVehicleSystem.hmf"
-del "%tempDir%\Models\Example Models\newtontest.hmf"
 
 
 :: Export "Benchmark Models" SVN directory to temporary directory
 svn export "Models\Benchmark Models" "%tempDir%\models\Benchmark Models"
 
 
-:: Export "componentData" SVN directory to temporary directory
-svn export componentLibraries\defaultLibrary\components %tempDir%\components
+:: Export and copy "componentData" SVN directory to temporary directory
+svn export componentLibraries\defaultLibrary\components %tempDir%\defaultLibrary\components
+xcopy componentLibraries\defaultLibrary\components\defaultComponentLibrary.dll %tempDir%\defaultLibrary\components
 
 
 ::Export "exampleComponentLib" SVN directory to temporary directory
@@ -334,16 +339,9 @@ xcopy doc\graphics\* %tempDir%\doc\graphics\ /s
 
 
 :: Export "Scripts" folder to temporary directory
-xcopy Scripts\* %tempDir%\Scripts\ /s
-del "%tempDir%\Scripts\benchmark.py"
-del "%tempDir%\Scripts\opttest.py"
-del "%tempDir%\Scripts\plot.py"
-del "%tempDir%\Scripts\speedtest.py"
-del "%tempDir%\Scripts\speedtest1.py"
-del "%tempDir%\Scripts\speedtest2.py"
-del "%tempDir%\Scripts\speedtest4.py"
-del "%tempDir%\Scripts\speedtest8.py"
-del "%tempDir%\Scripts\random.py"
+xcopy Scripts\HopsanOptimization.py %tempDir%\scripts\ /s
+xcopy Scripts\OptimizationObjectiveFunctions.py %tempDir%\scripts\ /s
+xcopy Scripts\OptimizationObjectiveFunctions.xml %tempDir%\scripts\ /s
 
 
 :: Copy "hopsandefaults" file to temporary directory
