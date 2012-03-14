@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 :: HOPSAN RELEASE COMPILATION SCRIPT
 :: Written by Robert Braun 2011-10-30
@@ -33,7 +34,7 @@
 :: AUTOMATED PART (performed by this script):
 
 :: Define path variables
-set version=0.5.3
+set devversion=0.6.x
 set tempDir=C:\temp_release
 set inkscapeDir="C:\Program Files\Inkscape"
 set inkscapeDir2="C:\Program Files (x86)\Inkscape"
@@ -41,9 +42,10 @@ set innoDir="C:\Program Files\Inno Setup 5"
 set innoDir2="C:\Program Files (x86)\Inno Setup 5"
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
 set hopsanDir=%CD%
-set qmakeDir="C:\Qt\Desktop\Qt\4.7.4\mingw\bin"
-set mingwDir="C:\Qt\mingw\bin"
-set jomDir="C:\Qt\QtCreator\bin"
+set qtsdkDir="C:\Qt"
+set qmakeDir="%qtsdkDir%\Desktop\Qt\4.7.4\mingw\bin"
+set mingwDir="%qtsdkDir%\mingw\bin"
+set jomDir="%qtsdkDir%\QtCreator\bin"
 set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\bin"
 set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\bin"
 
@@ -73,19 +75,39 @@ IF NOT EXIST %inkscapeDir% (
   set inkscapeDir=%inkscapeDir2%
 )
 
+set dodevrelease=false
+set /P version="Enter release version number on the form a.b.c or leave blank for DEV build release: "
+if "%version%"=="" (
+  echo Building DEV release
+  set version=%devversion%
+  set dodevrelease=true
+) else (
+  echo Release version will be: %version% is this OK?
+  set /P ans="Answer y or n: "
+  echo isok:!ans!
+  if not "!ans!"=="y" (
+    COLOR 04
+    echo Aborting!
+    pause
+    exit
+  )
+)
 
-:: Set version numbers (by changing .h files) BEFORE build
-ThirdParty\sed-4.2.1\sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"%version%\"|g" -i HopsanCore\include\version.h
-ThirdParty\sed-4.2.1\sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"%version%\"|g" -i HopsanGUI\version_gui.h
+echo %dodevrelease%
+if "%dodevrelease%"=="false" (
+  REM Set version numbers (by changing .h files) BEFORE build
+  ThirdParty\sed-4.2.1\sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"%version%\"|g" -i HopsanCore\include\version.h
+  ThirdParty\sed-4.2.1\sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"%version%\"|g" -i HopsanGUI\version_gui.h
 
-:: Set splash screen version number
-ThirdParty\sed-4.2.1\sed "s|X\.X\.X|%version%|g" -i HopsanGUI\graphics\splash2.svg
-%inkscapeDir%\inkscape.exe HopsanGUI/graphics/splash2.svg --export-background=rgb(255,255,255) --export-png HopsanGUI/graphics/splash.png
-:: Revert changes in svg
-svn revert HopsanGUI\graphics\splash2.svg
+  REM Set splash screen version number
+  ThirdParty\sed-4.2.1\sed "s|X\.X\.X|%version%|g" -i HopsanGUI\graphics\splash2.svg
+  %inkscapeDir%\inkscape.exe HopsanGUI/graphics/splash2.svg --export-background="#ffffff" --export-png HopsanGUI/graphics/splash.png
+  REM Revert changes in svg
+  svn revert HopsanGUI\graphics\splash2.svg
 
-:: Make sure development flag is not defined
-ThirdParty\sed-4.2.1\sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI\common.h
+  REM Make sure development flag is not defined
+  ThirdParty\sed-4.2.1\sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI\common.h
+)
 
 :: Rename TBB so it is not found when compiling with Visual Studio
 IF NOT EXIST HopsanCore\Dependencies\tbb30_20110704oss (
