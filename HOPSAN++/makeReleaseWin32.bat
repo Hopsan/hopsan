@@ -42,13 +42,21 @@ set innoDir="C:\Program Files\Inno Setup 5"
 set innoDir2="C:\Program Files (x86)\Inno Setup 5"      
 set scriptFile="HopsanReleaseInnoSetupScript.iss"
 set hopsanDir=%CD%
-set qtsdkDir="C:\Qt"
+set qtsdkDir="C:\QtSDK"
 set qmakeDir="%qtsdkDir%\Desktop\Qt\4.7.4\mingw\bin"
 set mingwDir="%qtsdkDir%\mingw\bin"
 set jomDir="%qtsdkDir%\QtCreator\bin"
 set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\bin"
 set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\bin"
 
+:: Make sure Qt SDK exist
+if not exist %qtsdkDir% (
+  COLOR 04
+  echo %qtsdkDir% could not be found, you may need to change default dir in this script!
+  echo Aborting!
+  pause
+  exit
+)
 
 :: Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
 IF NOT EXIST %innoDir% (
@@ -93,7 +101,6 @@ if "%version%"=="" (
   )
 )
 
-echo %dodevrelease%
 if "%dodevrelease%"=="false" (
   REM Set version numbers (by changing .h files) BEFORE build
   ThirdParty\sed-4.2.1\sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"%version%\"|g" -i HopsanCore\include\version.h
@@ -109,13 +116,21 @@ if "%dodevrelease%"=="false" (
   ThirdParty\sed-4.2.1\sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI\common.h
 )
 
+:: Make sure we compile defaultLibrary into core
+ThirdParty\sed-4.2.1\sed "s|.*DEFINES \*= INTERNALDEFAULTCOMPONENTS|DEFINES *= INTERNALDEFAULTCOMPONENTS|g" -i HopsanCore\HopsanCore.pro
+ThirdParty\sed-4.2.1\sed "s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\|" -i HopsanCore\HopsanCore.pro
+ThirdParty\sed-4.2.1\sed "s|componentLibraries||" -i HopsanNG.pro
+
+
 :: Rename TBB so it is not found when compiling with Visual Studio
 IF NOT EXIST HopsanCore\Dependencies\tbb30_20110704oss (
-  COLOR 04
-  echo Cannot find correct TBB version, you must use tbb30_20110704oss!
-  echo Aborting!
-  pause
-  goto cleanup
+  if not exist HopsanCore\Dependencies\tbb30_20110704oss_nope (
+    COLOR 04
+    echo Cannot find correct TBB version, you must use tbb30_20110704oss!
+    echo Aborting!
+    pause
+    goto cleanup
+  )
 )
 
 cd HopsanCore\Dependencies
@@ -343,7 +358,7 @@ svn export "Models\Benchmark Models" "%tempDir%\models\Benchmark Models"
 
 :: Export and copy "componentData" SVN directory to temporary directory
 svn export componentLibraries\defaultLibrary\components %tempDir%\componentLibraries\defaultLibrary\components
-xcopy componentLibraries\defaultLibrary\components\defaultComponentLibrary.dll %tempDir%\componentLibraries\defaultLibrary\components
+REM xcopy componentLibraries\defaultLibrary\components\defaultComponentLibrary.dll %tempDir%\componentLibraries\defaultLibrary\components
 
 
 ::Export "exampleComponentLib" SVN directory to temporary directory
@@ -351,8 +366,8 @@ svn export componentLibraries\exampleComponentLib %tempDir%\exampleComponentLib
 
 
 ::Change the include and lib paths to be correct
-ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../HopsanCore/include/|$${PWD}/../include/|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
-ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../bin|$${PWD}/../bin|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
+REM ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../HopsanCore/include/|$${PWD}/../include/|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
+REM ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../bin|$${PWD}/../bin|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
 
 
 :: Export "help" SVN directory to temporary directory
