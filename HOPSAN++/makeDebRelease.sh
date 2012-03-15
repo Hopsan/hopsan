@@ -48,9 +48,6 @@ if [ $devrelease = "false" ]; then
   # Make sure development flag is not defined
   sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI/common.h
 fi
-
-# Make a png version of the 128x128 icon
-cp -a ./HopsanGUI/graphics/uiicons/hopsan.ico ./HopsanGUI/graphics/uiicons/hopsan128x128.png 
 #------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
