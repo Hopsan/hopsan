@@ -1959,7 +1959,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     // Make sure timestep is not to low
-    if (mTimestep < 10*std::numeric_limits<double>::min())
+    if (mTimestep < 10*(std::numeric_limits<double>::min)())
     {
         gCoreMessageHandler.addErrorMessage("The timestep is to low");
         return false;

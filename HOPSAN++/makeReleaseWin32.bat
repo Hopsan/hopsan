@@ -46,13 +46,13 @@ set qtsdkDir="C:\Qt"
 set qtsdkDir2="C:\QtSDK"
 set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\bin"
 set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\bin"
-
+                
 :: Make sure Qt SDK exist
 if not exist %qtsdkDir% (
   if not exist %qtsdkDir2% (
-    COLOR 04
+    COLOR 0C
     echo Qt SDK could not be found in expected location.
-    echo Aborting!
+    echo Aborting
     pause
     goto cleanup
   )
@@ -66,9 +66,9 @@ set mingwDir="%qtsdkDir%\mingw\bin"
 :: Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
 IF NOT EXIST %innoDir% (
   IF NOT EXIST %innoDir2% (
-    COLOR 04
+    COLOR 0C
     echo Inno Setup 5 is not installed in expected place.
-    echo Aborting!
+    echo Aborting
     pause
     goto cleanup
   )
@@ -79,9 +79,9 @@ IF NOT EXIST %innoDir% (
 :: Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
 IF NOT EXIST %inkscapeDir% (
   IF NOT EXIST %inkscapeDir2% (
-    COLOR 04
+    COLOR 0C
     echo Inkscape is not installed in expected place
-    echo Aborting!
+    echo Aborting
     pause
     goto cleanup
   )
@@ -99,8 +99,8 @@ if "%version%"=="" (
   set /P ans="Answer y or n: "
   echo isok:!ans!
   if not "!ans!"=="y" (
-    COLOR 04
-    echo Aborting!
+    COLOR 0C
+    echo Aborting
     pause
     goto cleanup
   )
@@ -130,9 +130,9 @@ ThirdParty\sed-4.2.1\sed "s|componentLibraries||" -i HopsanNG.pro
 :: Rename TBB so it is not found when compiling with Visual Studio
 IF NOT EXIST HopsanCore\Dependencies\tbb30_20110704oss (
   if not exist HopsanCore\Dependencies\tbb30_20110704oss_nope (
-    COLOR 04
-    echo Cannot find correct TBB version, you must use tbb30_20110704oss!
-    echo Aborting!
+    COLOR 0C
+    echo Cannot find correct TBB version, you must use tbb30_20110704oss
+    echo Aborting
     pause
     goto cleanup
   )
@@ -144,7 +144,7 @@ cd ..
 cd ..
 
 
-:: BUILD WITH MSVC2008
+:: BUILD WITH MSVC2008 32-bit
 
 :: Remove previous files
 cd bin
@@ -154,11 +154,59 @@ del HopsanCore.lib
 cd ..
 
 :: Create build directory and enter it
+rd \s\q HopsanCore_bd
 mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 :: Setup compiler and compile
 call %msvc2008Dir%\SetEnv.cmd /x86
+call %qmakeDir%\qtenv2.bat
+call %jomDir%\jom.exe clean
+call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
+call %jomDir%\jom.exe
+
+:: Remove build directory
+cd ..
+rd /s/q HopsanCore_bd
+cd bin
+
+IF NOT EXIST HopsanCore.dll (
+  COLOR 0C
+  echo Failed to build HopsanCore with Visual Studio 2008 32-bit
+  echo Aborting
+  pause
+  goto cleanup
+)
+
+:: Move files to MSVC2008 directory
+mkdir MSVC2008_x86
+cd MSVC2008_x86
+del HopsanCore.dll
+del HopsanCore.exp
+del HopsanCore.lib
+cd ..
+copy HopsanCore.dll MSVC2008_x86\HopsanCore.dll 
+copy HopsanCore.exp MSVC2008_x86\HopsanCore.exp 
+copy HopsanCore.lib MSVC2008_x86\HopsanCore.lib 
+cd ..
+
+
+:: BUILD WITH MSVC2008 64-bit
+
+:: Remove previous files
+cd bin
+del HopsanCore.dll
+del HopsanCore.exp
+del HopsanCore.lib
+cd ..
+
+:: Create build directory and enter it
+rd \s\q HopsanCore_bd
+mkdir HopsanCore_bd
+cd HopsanCore_bd
+
+:: Setup compiler and compile
+call %msvc2008Dir%\SetEnv.cmd /x64
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
@@ -170,27 +218,27 @@ rd /s/q HopsanCore_bd
 cd bin
 
 IF NOT EXIST HopsanCore.dll (
-  COLOR 04
-  echo Failed to build HopsanCore with Visual Studio 2008!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to build HopsanCore with Visual Studio 2008 64-bit
+  echo Aborting
   pause
   goto cleanup
 )
 
 :: Move files to MSVC2008 directory
-mkdir MSVC2008
-cd MSVC2008
+mkdir MSVC2008_x64
+cd MSVC2008_x64
 del HopsanCore.dll
 del HopsanCore.exp
 del HopsanCore.lib
 cd ..
-copy HopsanCore.dll MSVC2008\HopsanCore.dll 
-copy HopsanCore.exp MSVC2008\HopsanCore.exp 
-copy HopsanCore.lib MSVC2008\HopsanCore.lib 
+copy HopsanCore.dll MSVC2008_x64\HopsanCore.dll 
+copy HopsanCore.exp MSVC2008_x64\HopsanCore.exp 
+copy HopsanCore.lib MSVC2008_x64\HopsanCore.lib 
 cd ..
 
 
-::BUILD WITH MSVC2010
+::BUILD WITH MSVC2010 (32-bit)
 
 ::Remove previous files
 cd bin
@@ -200,6 +248,7 @@ del HopsanCore.lib
 cd ..
 
 ::Create build directory and enter it
+rd \s\q HopsanCore_bd
 mkdir HopsanCore_bd
 cd HopsanCore_bd
 
@@ -216,9 +265,9 @@ rd /s/q HopsanCore_bd
 cd bin
 
 IF NOT EXIST HopsanCore.dll (
-  COLOR 04
-  echo Failed to build HopsanCore with Visual Studio 2010!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to build HopsanCore with Visual Studio 2010 32-bit
+  echo Aborting
   pause
   goto cleanup
 )
@@ -235,6 +284,55 @@ copy HopsanCore.exp MSVC2010\HopsanCore.exp
 copy HopsanCore.lib MSVC2010\HopsanCore.lib 
 cd ..
 
+
+::BUILD WITH MSVC2010 (64-bit)
+
+::Remove previous files
+cd bin
+del HopsanCore.dll
+del HopsanCore.exp
+del HopsanCore.lib
+cd ..
+
+::Create build directory and enter it
+rd \s\q HopsanCore_bd
+mkdir HopsanCore_bd
+cd HopsanCore_bd
+
+::Setup compiler and compile
+call %msvc2010Dir%\SetEnv.cmd /x64
+call %qmakeDir%\qtenv2.bat
+call %jomDir%\jom.exe clean
+call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
+call %jomDir%\jom.exe
+
+::Create build directory
+cd ..
+rd /s/q HopsanCore_bd
+cd bin
+
+IF NOT EXIST HopsanCore.dll (
+  COLOR 0C
+  echo Failed to build HopsanCore with Visual Studio 2010 64-bit
+  echo Aborting
+  pause
+  goto cleanup
+)
+
+:: Move files to MSVC2010 directory
+mkdir MSVC2010_x64
+cd MSVC2010_x64
+del HopsanCore.dll
+del HopsanCore.exp
+del HopsanCore.lib
+cd ..
+copy HopsanCore.dll MSVC2010_x64\HopsanCore.dll 
+copy HopsanCore.exp MSVC2010_x64\HopsanCore.exp 
+copy HopsanCore.lib MSVC2010_x64\HopsanCore.lib 
+cd ..
+
+
+::Activate TBB
 cd HopsanCore\Dependencies
 rename tbb30_20110704oss_nope tbb30_20110704oss
 cd ..
@@ -265,9 +363,9 @@ call %mingwDir%\mingw32-make.exe
 cd %hopsanDir%\bin
 
 IF NOT EXIST HopsanGUI.exe (
-  COLOR 04
-  echo Failed to build Hopsan with MinGW32!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to build Hopsan with MinGW32
+  echo Aborting
   pause
   goto cleanup
 )
@@ -285,9 +383,9 @@ cd %hopsanDir%
 
 mkdir %tempDir%
 IF NOT EXIST %tempDir% (
-  COLOR 04
-  echo Failed to build temporary directory!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to build temporary directory
+  echo Aborting
   pause
   goto cleanup
 )
@@ -300,11 +398,27 @@ mkdir %tempDir%\componentLibraries\defaultLibrary
 mkdir %tempDir%\doc
 mkdir %tempDir%\doc\user
 mkdir %tempDir%\doc\user\html
+
+::Clear old output folder
+rd /s/q output
+IF EXIST output (
+  COLOR 0C
+  echo Unable to clear old output folder. Continue?
+  set /P ans="Answer y or n: "
+  echo isok:!ans!
+  if not "!ans!"=="n" (
+    echo Aborting
+    goto cleanup
+  )
+  COLOR 07
+)
+  
+::Create new output folder
 mkDir output
 IF NOT EXIST output (
-  COLOR 04
-  echo Failed to create output folder!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to create output folder
+  echo Aborting
   pause
   goto cleanup
 )
@@ -330,9 +444,9 @@ set pythonFailed=true
 IF EXIST %tempDir%\bin\python26.zip set pythonFailed=false
 IF EXIST %tempDir%\bin\python27.zip set pythonFailed=false
 IF "%pythonFailed%" == "true" (
-  COLOR 04
+  COLOR 0C
   echo Failed to find python26.zip or python27.zip.
-  echo Aborting!
+  echo Aborting
   pause
   goto cleanup
 )
@@ -342,9 +456,9 @@ IF "%pythonFailed%" == "true" (
 call buildUserDocumentation
 
 IF NOT EXIST doc\user\html\index.html (
-  COLOR 04
-  echo Failed to build user documentation!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to build user documentation
+  echo Aborting
   pause
   goto cleanup
 )
@@ -352,6 +466,7 @@ IF NOT EXIST doc\user\html\index.html (
 
 :: Export "HopsanCore" SVN directory to "include" in temporary directory
 svn export HopsanCore\include %tempDir%\HopsanCore\include
+xcopy HopsanCore\include\svnrevnum.h %tempDir%\HopsanCore\include\ /s
 
 
 :: Export "Example Models" SVN directory to temporary directory
@@ -397,9 +512,9 @@ echo Creating zip package
  move Hopsan-%version%-win32-zip.zip output/
 
 IF NOT EXIST "output/Hopsan-%version%-win32-zip.zip" (
-  COLOR 04
-  echo Failed to create zip package!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to create zip package
+  echo Aborting
   pause
   goto cleanup
 )
@@ -410,9 +525,9 @@ echo Executing Inno Setup installer creation
 %innoDir%\iscc.exe /o"output" /f"Hopsan-%version%-win32-installer" /dMyAppVersion=%version% %scriptFile%
 
 IF NOT EXIST "output/Hopsan-%version%-win32-installer.exe" (
-  COLOR 04
-  echo Failed to compile installer executable!
-  echo Aborting!
+  COLOR 0C
+  echo Failed to compile installer executable
+  echo Aborting
   pause
   goto cleanup
 )
@@ -420,7 +535,7 @@ IF NOT EXIST "output/Hopsan-%version%-win32-installer.exe" (
 :: Move release notse to output directory
 copy Hopsan-release-notes.txt "output/"
 
-echo Finished!
+echo Finished
 pause
 
 

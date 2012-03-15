@@ -1674,11 +1674,11 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     }
     else
     {
-        dllFile.setFileName(QString(MSVC2008PATH) + "HopsanCore.dll");
+        dllFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
-        libFile.setFileName(QString(MSVC2008PATH) + "HopsanCore.lib");
+        libFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.lib");
         libFile.copy(savePath + "/HopsanCore.lib");
-        expFile.setFileName(QString(MSVC2008PATH) + "HopsanCore.exp");
+        expFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.exp");
         expFile.copy(savePath + "/HopsanCore.exp");
     }
 
@@ -1829,8 +1829,8 @@ void SystemContainer::createSimulinkSourceFiles()
 
     QLabel *pExportDialogLabel1 = new QLabel(tr("This will create source files for Simulink from the current model. These can be compiled into an S-function library by executing HopsanSimulinkCompile.m from Matlab console."), pExportDialog);
     pExportDialogLabel1->setWordWrap(true);
-    QGroupBox *pCompilerGroupBox = new QGroupBox(tr("Choose compiler:"), pExportDialog);
 
+    QGroupBox *pCompilerGroupBox = new QGroupBox(tr("Choose compiler:"), pExportDialog);
     QRadioButton *pMSVC2008RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2008"));
     QRadioButton *pMSVC2010RadioButton = new QRadioButton(tr("Microsoft Visual Studio 2010"));
     pMSVC2008RadioButton->setChecked(true);
@@ -1839,6 +1839,16 @@ void SystemContainer::createSimulinkSourceFiles()
     pCompilerLayout->addWidget(pMSVC2010RadioButton);
     pCompilerLayout->addStretch(1);
     pCompilerGroupBox->setLayout(pCompilerLayout);
+
+    QGroupBox *pArchitectureGroupBox = new QGroupBox(tr("Choose architecture:"), pExportDialog);
+    QRadioButton *p32bitRadioButton = new QRadioButton(tr("32-bit (x86)"));
+    QRadioButton *p64bitRadioButton = new QRadioButton(tr("64-bit (x64)"));
+    p32bitRadioButton->setChecked(true);
+    QVBoxLayout *pArchitectureLayout = new QVBoxLayout;
+    pArchitectureLayout->addWidget(p32bitRadioButton);
+    pArchitectureLayout->addWidget(p64bitRadioButton);
+    pArchitectureLayout->addStretch(1);
+    pArchitectureGroupBox->setLayout(pArchitectureLayout);
 
     QLabel *pExportDialogLabel2 = new QLabel("Matlab must use the same compiler during compilation.    ", pExportDialog);
 
@@ -1853,6 +1863,7 @@ void SystemContainer::createSimulinkSourceFiles()
     QVBoxLayout *pExportDialogLayout = new QVBoxLayout(pExportDialog);
     pExportDialogLayout->addWidget(pExportDialogLabel1);
     pExportDialogLayout->addWidget(pCompilerGroupBox);
+    pExportDialogLayout->addWidget(pArchitectureGroupBox);
     pExportDialogLayout->addWidget(pExportDialogLabel2);
     pExportDialogLayout->addWidget(pDisablePortLabels);
     pExportDialogLayout->addWidget(pExportButtonBox);
@@ -2236,7 +2247,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "    if (isOkToSimulate)";
     wrpLineStream << "    {";
     wrpLineStream << "        pComponentSystem->initialize(0,10,0);";
-    if(pDisablePortLabels->isChecked())
+    if(!pDisablePortLabels->isChecked())
     {
         wrpLineStream << "        mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
     }
@@ -2400,24 +2411,35 @@ void SystemContainer::createSimulinkSourceFiles()
     progressBar.setValue(8);
     progressBar.setLabelText("Copying Visual Studio binaries");
 
-    if(pMSVC2008RadioButton->isChecked())
+
+    //Select path to MSVC library depending on user selection
+    QString msvcPath;
+    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
     {
-        QFile dllFile(QString(MSVC2008PATH) + "HopsanCore.dll");
-        dllFile.copy(savePath + "/HopsanCore.dll");
-        QFile libFile(QString(MSVC2008PATH) + "HopsanCore.lib");
-        libFile.copy(savePath + "/HopsanCore.lib");
-        QFile expFile(QString(MSVC2008PATH) + "HopsanCore.exp");
-        expFile.copy(savePath + "/HopsanCore.exp");
+        msvcPath = QString(MSVC2008_X86_PATH);
     }
-    else if(pMSVC2010RadioButton->isChecked())
+    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
     {
-        QFile dllFile(QString(MSVC2010PATH) + "HopsanCore.dll");
-        dllFile.copy(savePath + "/HopsanCore.dll");
-        QFile libFile(QString(MSVC2010PATH) + "HopsanCore.lib");
-        libFile.copy(savePath + "/HopsanCore.lib");
-        QFile expFile(QString(MSVC2010PATH) + "HopsanCore.exp");
-        expFile.copy(savePath + "/HopsanCore.exp");
+        msvcPath = QString(MSVC2008_X64_PATH);
     }
+    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
+    {
+        msvcPath = QString(MSVC2010_X86_PATH);
+    }
+    else if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())
+    {
+        msvcPath = QString(MSVC2010_X64_PATH);
+    }
+
+
+    //Copy MSVC binaries to export folder
+    QFile dllFile(msvcPath + "HopsanCore.dll");
+    dllFile.copy(savePath + "/HopsanCore.dll");
+    QFile libFile(msvcPath + "HopsanCore.lib");
+    libFile.copy(savePath + "/HopsanCore.lib");
+    QFile expFile(msvcPath + "HopsanCore.exp");
+    expFile.copy(savePath + "/HopsanCore.exp");
+
 #else
     compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
     compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
@@ -2466,9 +2488,12 @@ void SystemContainer::createSimulinkSourceFiles()
     domDocument.save(out, IndentSize);
     xmlhmf.close();
 
+    //Clean up widgets that do not have a parent
     delete(pDisablePortLabels);
     delete(pMSVC2008RadioButton);
     delete(pMSVC2010RadioButton);
+    delete(p32bitRadioButton);
+    delete(p64bitRadioButton);
 }
 
 
