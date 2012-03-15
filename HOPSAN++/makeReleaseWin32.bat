@@ -466,7 +466,10 @@ IF NOT EXIST doc\user\html\index.html (
 
 :: Export "HopsanCore" SVN directory to "include" in temporary directory
 svn export HopsanCore\include %tempDir%\HopsanCore\include
-xcopy HopsanCore\include\svnrevnum.h %tempDir%\HopsanCore\include\ /s
+:: Copy the svnrevnum.h file Assume it exist
+if "%dodevrelease%"=="true" (
+  xcopy HopsanCore\include\svnrevnum.h %tempDir%\HopsanCore\include\ /s
+)
 
 
 :: Export "Example Models" SVN directory to temporary directory
