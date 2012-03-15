@@ -134,9 +134,9 @@ double hopsan::diffAngle(const double fi1, const double fi2)
     double output0 = fi1-fi2;
     double output1 = fi1-fi2 + 2.0*pi;//3.14159;
     double output2 = fi1-fi2 - 2.0*pi;//3.14159;
-                            output = output0;
-    if (fabs(output0)< -pi){output = output1;}
-    if (fabs(output0)> pi) {output = output2;}
+                                      output = output0;
+    if (fabs(output0)> fabs(output1)){output = output1;}
+    if (fabs(output0)> fabs(output2)){output = output2;}
 
     return output;
 }
