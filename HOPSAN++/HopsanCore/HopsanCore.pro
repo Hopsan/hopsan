@@ -59,6 +59,8 @@ win32 {
         LIBS *= $$magic_hopsan_libpath
         INCLUDEPATH *= $$magic_hopsan_includepath
         QMAKE_POST_LINK *= $$magic_hopsan_qmake_post_link
+    } else {
+        message(Compiling HopsanCore WITHOUT TBB support)
     }
     #--------------------------------------------------------
 
@@ -147,7 +149,6 @@ HEADERS += \
     include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h \
     Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     include/Parameters.h \
-    #../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h
 

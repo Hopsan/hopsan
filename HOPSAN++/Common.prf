@@ -32,7 +32,7 @@ defineReplace(selectPath){
         message(Using custom $${NAME} path $${PATH})
     }
     !exists($${PATH}){
-        warning(Warning! The $${NAME} path $${PATH} does not exist)
+        warning(The $${NAME} path $${PATH} does not exist)
     }
     return($${PATH})
 }
