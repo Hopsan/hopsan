@@ -35,6 +35,7 @@ setlocal enabledelayedexpansion
 
 :: Define path variables
 set devversion=0.6.x
+set tbbversion=tbb30_20110704oss
 set tempDir=C:\temp_release
 set inkscapeDir="C:\Program Files\Inkscape"
 set inkscapeDir2="C:\Program Files (x86)\Inkscape"
@@ -44,18 +45,12 @@ set scriptFile="HopsanReleaseInnoSetupScript.iss"
 set hopsanDir=%CD%
 set qtsdkDir="C:\Qt"
 set qtsdkDir2="C:\QtSDK"
-set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\bin"
-set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\bin"
+set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"
+set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin"
                 
 :: Make sure Qt SDK exist
 if not exist %qtsdkDir% (
-  if not exist %qtsdkDir2% (
-    COLOR 0C
-    echo Qt SDK could not be found in expected location.
-    echo Aborting
-    pause
-    goto cleanup
-  )
+  call :abortIfNotExist %qtsdkDir2% "Qt SDK could not be found in one of the expected locations."
   set qtsdkDir=%qtsdkDir2%
 )
 
@@ -65,26 +60,14 @@ set mingwDir="%qtsdkDir%\mingw\bin"
 
 :: Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
 IF NOT EXIST %innoDir% (
-  IF NOT EXIST %innoDir2% (
-    COLOR 0C
-    echo Inno Setup 5 is not installed in expected place.
-    echo Aborting
-    pause
-    goto cleanup
-  )
+  call :abortIfNotExist %innoDir2% "Inno Setup 5 is not installed in expected place."
   set innoDir=%innoDir2%
 )
 
 
 :: Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
 IF NOT EXIST %inkscapeDir% (
-  IF NOT EXIST %inkscapeDir2% (
-    COLOR 0C
-    echo Inkscape is not installed in expected place
-    echo Aborting
-    pause
-    goto cleanup
-  )
+  call :abortIfNotExist %inkscapeDir2% "Inkscape is not installed in expected place"
   set inkscapeDir=%inkscapeDir2%
 )
 
@@ -92,19 +75,19 @@ set dodevrelease=false
 set /P version="Enter release version number on the form a.b.c or leave blank for DEV build release: "
 if "%version%"=="" (
   echo Building DEV release
-  set version=%devversion%
+  call getSvnRevision.bat
+  set /P revnum="Enter the revnum shown above: "
+  call set version=%devversion%_r!revnum!
   set dodevrelease=true
-) else (
-  echo Release version will be: %version% is this OK?
-  set /P ans="Answer y or n: "
-  echo isok:!ans!
-  if not "!ans!"=="y" (
-    COLOR 0C
-    echo Aborting
-    pause
-    goto cleanup
-  )
 )
+echo.
+echo ---------------------------------------
+echo This is a DEV release: %dodevrelease%
+echo Release version number: %version%
+echo ---------------------------------------
+echo Is this OK?
+set /P ans="Answer y or n: "
+call :abortIfStrNotMatch "%ans%" "y"
 
 if "%dodevrelease%"=="false" (
   REM Set version numbers (by changing .h files) BEFORE build
@@ -128,18 +111,12 @@ ThirdParty\sed-4.2.1\sed "s|componentLibraries||" -i HopsanNG.pro
 
 
 :: Rename TBB so it is not found when compiling with Visual Studio
-IF NOT EXIST HopsanCore\Dependencies\tbb30_20110704oss (
-  if not exist HopsanCore\Dependencies\tbb30_20110704oss_nope (
-    COLOR 0C
-    echo Cannot find correct TBB version, you must use tbb30_20110704oss
-    echo Aborting
-    pause
-    goto cleanup
-  )
+IF NOT EXIST HopsanCore\Dependencies\%tbbversion% (
+  call :abortIfNotExist HopsanCore\Dependencies\%tbbversion%_nope "Cannot find correct TBB version, you must use %tbbversion%"
 )
 
 cd HopsanCore\Dependencies
-rename tbb30_20110704oss tbb30_20110704oss_nope
+rename %tbbversion% %tbbversion%_nope
 cd ..
 cd ..
 
@@ -170,13 +147,7 @@ cd ..
 rd /s/q HopsanCore_bd
 cd bin
 
-IF NOT EXIST HopsanCore.dll (
-  COLOR 0C
-  echo Failed to build HopsanCore with Visual Studio 2008 32-bit
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2008 32-bit"
 
 :: Move files to MSVC2008 directory
 mkdir MSVC2008_x86
@@ -212,18 +183,12 @@ call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
 
-:: Create build directory
+:: Remove build directory
 cd ..
 rd /s/q HopsanCore_bd
 cd bin
 
-IF NOT EXIST HopsanCore.dll (
-  COLOR 0C
-  echo Failed to build HopsanCore with Visual Studio 2008 64-bit
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2008 64-bit"
 
 :: Move files to MSVC2008 directory
 mkdir MSVC2008_x64
@@ -264,13 +229,7 @@ cd ..
 rd /s/q HopsanCore_bd
 cd bin
 
-IF NOT EXIST HopsanCore.dll (
-  COLOR 0C
-  echo Failed to build HopsanCore with Visual Studio 2010 32-bit
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2010 32-bit"
 
 :: Move files to MSVC2010 directory
 mkdir MSVC2010
@@ -283,7 +242,6 @@ copy HopsanCore.dll MSVC2010\HopsanCore.dll
 copy HopsanCore.exp MSVC2010\HopsanCore.exp 
 copy HopsanCore.lib MSVC2010\HopsanCore.lib 
 cd ..
-
 
 ::BUILD WITH MSVC2010 (64-bit)
 
@@ -306,18 +264,12 @@ call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
 
-::Create build directory
+::Remove build directory
 cd ..
 rd /s/q HopsanCore_bd
 cd bin
 
-IF NOT EXIST HopsanCore.dll (
-  COLOR 0C
-  echo Failed to build HopsanCore with Visual Studio 2010 64-bit
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2010 64-bit"
 
 :: Move files to MSVC2010 directory
 mkdir MSVC2010_x64
@@ -334,7 +286,7 @@ cd ..
 
 ::Activate TBB
 cd HopsanCore\Dependencies
-rename tbb30_20110704oss_nope tbb30_20110704oss
+rename %tbbversion%_nope %tbbversion%
 cd ..
 cd ..
 
@@ -362,13 +314,7 @@ call %mingwDir%\mingw32-make.exe
 
 cd %hopsanDir%\bin
 
-IF NOT EXIST HopsanGUI.exe (
-  COLOR 0C
-  echo Failed to build Hopsan with MinGW32
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist HopsanGUI.exe "Failed to build Hopsan with MinGW32"
 cd ..
 cd ..
 
@@ -380,15 +326,9 @@ cd %hopsanDir%
 
 
 :: Create a temporary release directory
-
 mkdir %tempDir%
-IF NOT EXIST %tempDir% (
-  COLOR 0C
-  echo Failed to build temporary directory
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist %tempDir% "Failed to build temporary directory"
+
 mkdir %tempDir%\models
 mkdir %tempDir%\scripts
 mkdir %tempDir%\bin
@@ -405,23 +345,13 @@ IF EXIST output (
   COLOR 0C
   echo Unable to clear old output folder. Continue?
   set /P ans="Answer y or n: "
-  echo isok:!ans!
-  if not "!ans!"=="n" (
-    echo Aborting
-    goto cleanup
-  )
+  call :abortIfStrNotMatch "!ans!" "y"
   COLOR 07
 )
   
 ::Create new output folder
 mkDir output
-IF NOT EXIST output (
-  COLOR 0C
-  echo Failed to create output folder
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist output "Failed to create output folder"
 
 
 :: Copy "bin" folder to temporary directory
@@ -444,29 +374,19 @@ set pythonFailed=true
 IF EXIST %tempDir%\bin\python26.zip set pythonFailed=false
 IF EXIST %tempDir%\bin\python27.zip set pythonFailed=false
 IF "%pythonFailed%" == "true" (
-  COLOR 0C
   echo Failed to find python26.zip or python27.zip.
-  echo Aborting
-  pause
-  goto cleanup
 )
+call :abortIfStrNotMatch %pythonFailed% "false"
+:: TODO build in OPTIONAL theird argument message support in abortIf subroutine
 
 
 :: Build user documentation
 call buildUserDocumentation
-
-IF NOT EXIST doc\user\html\index.html (
-  COLOR 0C
-  echo Failed to build user documentation
-  echo Aborting
-  pause
-  goto cleanup
-)
-
+call :abortIfNotExist doc\user\html\index.html "Failed to build user documentation"
 
 :: Export "HopsanCore" SVN directory to "include" in temporary directory
 svn export HopsanCore\include %tempDir%\HopsanCore\include
-:: Copy the svnrevnum.h file Assume it exist
+:: Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
 if "%dodevrelease%"=="true" (
   xcopy HopsanCore\include\svnrevnum.h %tempDir%\HopsanCore\include\ /s
 )
@@ -489,11 +409,6 @@ REM xcopy componentLibraries\defaultLibrary\components\defaultComponentLibrary.d
 svn export componentLibraries\exampleComponentLib %tempDir%\componentLibraries\exampleComponentLib
 
 
-::Change the include and lib paths to be correct
-REM ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../HopsanCore/include/|$${PWD}/../include/|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
-REM ThirdParty\sed-4.2.1\sed.exe "s|$${PWD}/../../bin|$${PWD}/../bin|" -i %tempDir%\exampleComponentLib\exampleComponentLib.pro
-
-
 :: Export "help" SVN directory to temporary directory
 xcopy doc\user\html\* %tempDir%\doc\user\html\ /s
 xcopy doc\graphics\* %tempDir%\doc\graphics\ /s
@@ -511,48 +426,53 @@ copy hopsandefaults %tempDir%\hopsandefaults
 
 :: Create zip package
 echo Creating zip package
- ThirdParty\7z\7z.exe a -tzip Hopsan-%version%-win32-zip.zip %tempDir%\*
- move Hopsan-%version%-win32-zip.zip output/
-
-IF NOT EXIST "output/Hopsan-%version%-win32-zip.zip" (
-  COLOR 0C
-  echo Failed to create zip package
-  echo Aborting
-  pause
-  goto cleanup
-)
+ThirdParty\7z\7z.exe a -tzip Hopsan-%version%-win32-zip.zip %tempDir%\*
+move Hopsan-%version%-win32-zip.zip output/
+call :abortIfNotExist "output/Hopsan-%version%-win32-zip.zip" "Failed to create zip package"
 
 
 :: Execute Inno compile script
 echo Executing Inno Setup installer creation
 %innoDir%\iscc.exe /o"output" /f"Hopsan-%version%-win32-installer" /dMyAppVersion=%version% %scriptFile%
-
-IF NOT EXIST "output/Hopsan-%version%-win32-installer.exe" (
-  COLOR 0C
-  echo Failed to compile installer executable
-  echo Aborting
-  pause
-  goto cleanup
-)
+call :abortIfNotExist "output/Hopsan-%version%-win32-installer.exe" "Failed to compile installer executable"
 
 :: Move release notse to output directory
 copy Hopsan-release-notes.txt "output/"
 
 echo Finished
 pause
+goto cleanup 
 
+:abortIfStrNotMatch
+if not "%~1"=="%~2" (
+    COLOR 0C
+    echo Aborting
+    pause
+    goto cleanup
+)
+goto:eof
 
+:abortIfNotExist
+if not exist %1 (
+  COLOR 0C
+  echo %~2
+  echo Aborting
+  pause
+  goto cleanup
+)
+goto:eof
 
 :cleanup 
-
+echo.
+echo Performing cleanup
 :: Remove temporary directory
 rd /s/q %tempDir%
 
 cd HopsanCore\Dependencies
-rename tbb30_20110704oss_nope tbb30_20110704oss
+rename %tbbversion%_nope %tbbversion%
 cd ..
 cd ..
 
-echo Performed cleanup.
-
+echo Performed cleanup
 pause
+exit
