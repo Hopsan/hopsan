@@ -28,7 +28,7 @@ if exist %foldername% (
 :: Determine what to report and what exit code to give
 :: Exit with code 0 (sucess) or 1 (failed)
 if %versionS%=="" (
-  echo "Revision information not found"
+  echo "RevisionInformationNotFound"
   exit /b 1
 ) else (
   echo %versionS%
