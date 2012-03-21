@@ -37,7 +37,7 @@ fi
 
 # Determine what to report and what exit code to give
 if [ -z "$rev" ]; then
-  echo "Revision information not found"
+  echo "RevisionInformationNotFound"
   exit -1
 else 
   echo $rev
