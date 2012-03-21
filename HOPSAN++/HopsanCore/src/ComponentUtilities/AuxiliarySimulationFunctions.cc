@@ -211,3 +211,21 @@ double hopsan::dxLimit2(const double x, const double sx, const double xmin, cons
     if (x <= xmin && sx <= 0.0) { return 0.0000001; }
     return 1.0;
 }
+
+//! @brief Returns the algebraic quotient x/y with any fractional parts discarded
+//! @ingroup AuxiliarySimlationFunctions
+//! @ingroup ModelicaWrapperFunctions
+//! @param x Numinator
+//! @param y Denominator
+//! @returns Algebraic quotient with any fracrional parts discarded
+double div(const double x, const double y)
+{
+    if(x/y > 0)
+    {
+        return floor(x/y);
+    }
+    else
+    {
+        return ceil(x/y);
+    }
+}

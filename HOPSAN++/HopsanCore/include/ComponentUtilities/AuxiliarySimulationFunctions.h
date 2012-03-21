@@ -52,6 +52,7 @@ extern "C" {
     double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
     double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
     double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
+    double DLLIMPORTEXPORT div(const double x, const double y);
 }
 
 // ----------Inline Functions converted from auxhop in old Hopsan----------
@@ -195,24 +196,6 @@ inline double limit2(const double x, const double /*sx*/, const double xmin, con
 }
 
 // ----------Inline Functions Modelica Wrappers----------
-
-//! @brief Returns the algebraic quotient x/y with any fractional parts discarded
-//! @ingroup AuxiliarySimlationFunctions
-//! @ingroup ModelicaWrapperFunctions
-//! @param x Numinator
-//! @param y Denominator
-//! @returns Algebraic quotient with any fracrional parts discarded
-inline double div(const double x, const double y)
-{
-    if(x/y > 0)
-    {
-        return floor(x/y);
-    }
-    else
-    {
-        return ceil(x/y);
-    }
-}
 
 
 //! @brief Returns the integer modulus of x/y
