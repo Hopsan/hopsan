@@ -47,6 +47,8 @@ set qtsdkDir="C:\Qt"
 set qtsdkDir2="C:\QtSDK"
 set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"
 set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin"
+set dependecyBinFiles=hopsan_bincontents_Qt474_MinGW_Py27.7z
+set dependecyBinFiles2=hopsan_bincontents_Qt474_MinGW_Py26.7z
                 
 :: Make sure Qt SDK exist
 if not exist %qtsdkDir% (
@@ -69,6 +71,12 @@ IF NOT EXIST %innoDir% (
 IF NOT EXIST %inkscapeDir% (
   call :abortIfNotExist %inkscapeDir2% "Inkscape is not installed in expected place"
   set inkscapeDir=%inkscapeDir2%
+)
+
+:: Make sure the 3d party dependency file exists
+if not exist %dependecyBinFiles% (
+  call :abortIfNotExist %dependecyBinFiles2% "The %dependecyBinFiles% or %dependecyBinFiles2% file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan"
+  set dependecyBinFiles=%dependecyBinFiles2%
 )
 
 set dodevrelease=false
@@ -338,6 +346,9 @@ mkdir %tempDir%\componentLibraries\defaultLibrary
 mkdir %tempDir%\doc
 mkdir %tempDir%\doc\user
 mkdir %tempDir%\doc\user\html
+
+:: Unpack depedency bin files to bin folder
+ThirdParty\7z\7z.exe x %dependecyBinFiles% -o%tempDir%\bin
 
 ::Clear old output folder
 rd /s/q output
