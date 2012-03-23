@@ -109,7 +109,8 @@ if "%dodevrelease%"=="false" (
   svn revert HopsanGUI\graphics\splash2.svg
 
   REM Make sure development flag is not defined
-  ThirdParty\sed-4.2.1\sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI\common.h
+  REM ThirdParty\sed-4.2.1\sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI\common.h
+  ThirdParty\sed-4.2.1\sed "s|.*DEFINES *= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro
 )
 
 :: Make sure we compile defaultLibrary into core

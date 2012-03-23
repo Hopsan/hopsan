@@ -27,9 +27,6 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-//Development flag
-#define DEVELOPMENT
-
 //Numerical definitions
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10

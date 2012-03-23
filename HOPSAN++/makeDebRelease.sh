@@ -46,7 +46,7 @@ if [ $devrelease = "false" ]; then
   svn revert ./HopsanGUI/graphics/splash2.svg
   
   # Make sure development flag is not defined
-  sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI/common.h
+  sed "s|.*DEFINES *= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI/HopsanGUI.pro
 fi
 #------------------------------------------------------------------------------
 

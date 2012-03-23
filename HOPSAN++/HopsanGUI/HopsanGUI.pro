@@ -45,6 +45,12 @@ INCLUDEPATH *= $${PWD}/
 #--------------------------------------------------------
 
 # -------------------------------------------------
+# Platform independent additional project options
+# -------------------------------------------------
+# Development flag, will Gui be development version
+DEFINES *= DEVELOPMENT
+
+# -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
 unix {
