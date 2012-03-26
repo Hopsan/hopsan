@@ -1,6 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
+::$Id$
 :: HOPSAN RELEASE COMPILATION SCRIPT
 :: Written by Robert Braun 2011-10-30
 :: Revised by Robert Braun and Peter Nordin 2012-03-05
@@ -10,9 +11,7 @@ setlocal enabledelayedexpansion
 
 :: Check out the release branch for current release number
 :: Make sure the branch is updated, and that all changes are commited
-:: Make sure the "DEVELOPMENT" flag is disabled in HopsanGUI project file
 :: Make sure release notes are correctly updated
-:: Update version number in this file
 :: --- Run this script ---
 :: Validate critical functions in the program:
 ::  - Loading models
@@ -110,7 +109,7 @@ if "%dodevrelease%"=="false" (
 
   REM Make sure development flag is not defined
   REM ThirdParty\sed-4.2.1\sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI\common.h
-  ThirdParty\sed-4.2.1\sed "s|.*DEFINES *= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro
+  ThirdParty\sed-4.2.1\sed "s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro
 )
 
 :: Make sure we compile defaultLibrary into core
@@ -241,15 +240,15 @@ cd bin
 call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2010 32-bit"
 
 :: Move files to MSVC2010 directory
-mkdir MSVC2010
-cd MSVC2010
+mkdir MSVC2010_x86
+cd MSVC2010_x86
 del HopsanCore.dll
 del HopsanCore.exp
 del HopsanCore.lib
 cd ..
-copy HopsanCore.dll MSVC2010\HopsanCore.dll 
-copy HopsanCore.exp MSVC2010\HopsanCore.exp 
-copy HopsanCore.lib MSVC2010\HopsanCore.lib 
+copy HopsanCore.dll MSVC2010_x86\HopsanCore.dll 
+copy HopsanCore.exp MSVC2010_x86\HopsanCore.exp 
+copy HopsanCore.lib MSVC2010_x86\HopsanCore.lib 
 cd ..
 
 ::BUILD WITH MSVC2010 (64-bit)
@@ -482,9 +481,11 @@ rd /s/q %tempDir%
 
 cd HopsanCore\Dependencies
 rename %tbbversion%_nope %tbbversion%
-cd ..
-cd ..
-
 echo Performed cleanup
+cd ..
+cd ..
+echo.
+echo This script have changed the contents of some .pro .h .png files. You SHOULD REVERT them. Do NOT commit these automatic changes.
+echo.
 pause
 exit
