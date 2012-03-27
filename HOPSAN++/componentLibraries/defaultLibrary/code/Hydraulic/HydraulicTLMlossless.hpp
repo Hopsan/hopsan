@@ -101,6 +101,7 @@ namespace hopsan {
             (*mpND_Zc2) = mZc;
 
             //Init delay
+            //! @todo is this correct really, I think we should send In MTimeDelay only and let Delay class do the rest
             mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW)); //-mTimestep due to calc time
             mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW));
         }

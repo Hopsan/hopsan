@@ -65,7 +65,7 @@ public:
     }
 
     //! @brief Initialize Delay size based on known number of delay steps
-    //! @param [in] delaySteps The number of delay steps
+    //! @param [in] delaySteps The number of delay steps, must be > 1
     //! @param [in] initValue The initial value of all buffer elements
     void initialize(const size_t delaySteps, const T initValue)
     {
