@@ -5,6 +5,7 @@
             <icon scale="1" path="sinewave.svg" iconrotation="OFF" type="iso"/>
         </icons>
         <help>
+            <text>Implemets the function y=Ya*sin(((T-Tstart)-y_offset)*2PI*f)</text>
             <picture>sinewavehelp.svg</picture>
         </help>
         <ports>

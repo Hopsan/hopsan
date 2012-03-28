@@ -55,7 +55,7 @@ namespace hopsan {
         double mStartTime;
         double mFrequency;
         double mAmplitude;
-        double mOffset;
+        double mPhaseTOffset;
         double *mpND_out;
         Port *mpOut;
 
@@ -70,14 +70,14 @@ namespace hopsan {
             mStartTime = 0.0;
             mFrequency = 1.0;
             mAmplitude = 1.0;
-            mOffset = 0.0;
+            mPhaseTOffset = 0.0;
 
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("t_start", "Start Time", "[s]", mStartTime);
             registerParameter("f", "Frequencty", "[Hz]", mFrequency);
             registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-            registerParameter("y_offset", "Offset", "[s]", mOffset);
+            registerParameter("y_offset", "(Phase) Offset", "[s]", mPhaseTOffset);
 
             disableStartValue(mpOut, NodeSignal::VALUE);
         }
@@ -100,7 +100,7 @@ namespace hopsan {
             }
             else
             {
-                (*mpND_out) = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
+                (*mpND_out) = mAmplitude*sin(((mTime-mStartTime) - mPhaseTOffset)*2*M_PI*mFrequency);
             }
         }
     };

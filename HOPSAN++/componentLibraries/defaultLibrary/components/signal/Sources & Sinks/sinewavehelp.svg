@@ -14,7 +14,7 @@
    height="165"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="sinewavehelp.svg">
   <defs
      id="defs4">
@@ -158,9 +158,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="21.722213"
-     inkscape:cy="105.96655"
+     inkscape:zoom="2.8284272"
+     inkscape:cx="50.108797"
+     inkscape:cy="82.711936"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -168,8 +168,8 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1152"
-     inkscape:window-height="802"
+     inkscape:window-width="1440"
+     inkscape:window-height="838"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
@@ -250,15 +250,17 @@
     <text
        xml:space="preserve"
        style="font-size:22.51150322px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#2837a6;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold"
-       x="360.3616"
-       y="515.52319"
+       x="358.3616"
+       y="512.46252"
        id="text6917"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6919"
-         x="360.3616"
-         y="515.52319"
-         style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#2837a6;fill-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri Bold">a</tspan></text>
+         x="358.3616"
+         y="512.46252"
+         style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#2837a6;fill-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri Bold">y<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3025">a</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:22.51150322px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#008000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold"
@@ -270,7 +272,7 @@
          id="tspan6919-2"
          x="413.20425"
          y="539.38251"
-         style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#008000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold">ω</tspan></text>
+         style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#008000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold">1/f</tspan></text>
     <path
        sodipodi:type="star"
        style="fill:#2935a6;fill-opacity:1;stroke:#2936a5;stroke-width:4.30925655;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -384,8 +386,8 @@
          id="tspan6919-2-0-4-0-9"
          x="342.11032"
          y="627.8692"
-         style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#d45500;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold">x<tspan
-   style="font-size:65%;baseline-shift:sub"
+         style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#d45500;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold">y<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan5055">offset</tspan></tspan></text>
   </g>
 </svg>

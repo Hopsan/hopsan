@@ -14,7 +14,7 @@
    height="180"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="squarewavehelp.svg">
   <defs
      id="defs4">
@@ -118,9 +118,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.4154142"
-     inkscape:cx="127.50194"
-     inkscape:cy="125.46335"
+     inkscape:zoom="1.7079558"
+     inkscape:cx="-12.804691"
+     inkscape:cy="61.707009"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -128,10 +128,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1680"
-     inkscape:window-height="982"
+     inkscape:window-width="1440"
+     inkscape:window-height="838"
      inkscape:window-x="-8"
-     inkscape:window-y="38"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -152,18 +152,18 @@
      transform="translate(-300.7221,-483.13732)">
     <path
        style="fill:none;stroke:#aa0000;stroke-width:1.14999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:2.3, 2.3;stroke-dashoffset:0"
-       d="m 445.46234,602.80536 c 0,-5.96736 0,-89.82421 0,-89.82421"
+       d="m 445.46234,614.80536 c 0,-5.96736 0,-89.82421 0,-89.82421"
        id="path6915-7-3-2"
        inkscape:connector-curvature="0" />
     <path
        style="fill:none;stroke:#aa0000;stroke-width:1.14999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:2.3, 2.3;stroke-dashoffset:0"
-       d="m 384.10355,602.80536 c 0,-5.96736 0,-89.82421 0,-89.82421"
+       d="m 384.10355,580.04313 c 0,-3.65797 0,-55.06198 0,-55.06198"
        id="path6915-7-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#2a36a6;stroke-width:1.14999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:2.3, 2.3;stroke-dashoffset:0"
-       d="m 363.37262,527.45406 c 3.36189,0 50.60525,0 50.60525,0"
+       d="m 363.37262,539.45406 c 3.36189,0 50.60525,0 50.60525,0"
        id="path6915"
        inkscape:connector-curvature="0" />
     <path
@@ -173,13 +173,13 @@
        inkscape:connector-curvature="0" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.68836272;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 310.35038,609.12922 73.81605,0 0,-81.54985 30.73762,-5e-5 0,81.5499 30.73762,0 0,-81.5499 30.73762,0 0,81.5499 30.73762,0 0,-81.5499 30.73762,0 0,81.5499 9.22316,0"
+       d="m 310.35038,580.33732 73.81605,0 0,-40.75795 30.73762,-5e-5 0,81.5499 30.73762,0 0,-81.5499 30.73762,0 0,81.5499 30.73762,0 0,-81.5499 30.73762,0 0,81.5499 9.22316,0"
        id="path3755"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccccccccc" />
     <path
-       style="fill:none;stroke:#2936a5;stroke-width:1.1469171;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-start:none;marker-mid:none;marker-end:none"
-       d="m 373.35061,535.42493 0,66.09457"
+       style="fill:none;stroke:#2936a5;stroke-width:1.14999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-start:none;marker-mid:none;marker-end:none"
+       d="m 373.35061,547.42493 0,27.9541"
        id="path5151"
        inkscape:connector-curvature="0" />
     <path
@@ -198,22 +198,22 @@
        inkscape:randomized="0"
        d="m 142.4375,460.41996 -22.08219,0 11.0411,-19.12374 z"
        inkscape:transform-center-y="-1.0790773"
-       transform="matrix(0.18814138,0,0,0.28674052,348.57778,403.11972)" />
+       transform="matrix(0.18814138,0,0,0.28674052,348.57778,415.11972)" />
     <text
        xml:space="preserve"
        style="font-size:22.51150322px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#2837a6;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold"
        x="318.43216"
-       y="572.51831"
+       y="562.85211"
        id="text6917"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6919"
          x="318.43216"
-         y="572.51831"
+         y="562.85211"
          style="font-size:11.25575161px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#2837a6;fill-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri Bold">Amplitude</tspan></text>
     <path
-       style="fill:#008000;stroke:#008000;stroke-width:1.14999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:2.3, 2.3;stroke-dashoffset:0"
-       d="m 383.97839,650.60748 c 0,-2.67556 0,-40.27422 0,-40.27422"
+       style="fill:#008000;stroke:#008000;stroke-width:1.15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:2.3,2.3;stroke-dashoffset:0"
+       d="m 383.97839,650.60748 c 0,-4.66904 0,-70.2814 0,-70.2814"
        id="path6915-7"
        inkscape:connector-curvature="0" />
     <text
@@ -232,14 +232,14 @@
        xml:space="preserve"
        style="font-size:22.51150322px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa0000;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold"
        x="391.9736"
-       y="506.35217"
+       y="518.35217"
        id="text6917-4-0"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6919-2-9"
          x="391.9736"
-         y="506.35217"
-         style="font-size:11.25575161px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#aa0000;fill-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri Bold">Frequency</tspan></text>
+         y="518.35217"
+         style="font-size:11.25575161px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#aa0000;fill-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri Bold">1/Frequency</tspan></text>
     <path
        sodipodi:type="star"
        style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:5.00060654;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -273,7 +273,7 @@
        inkscape:randomized="0"
        d="m 142.4375,460.41996 -22.08219,0 11.0411,-19.12374 z"
        inkscape:transform-center-y="1.0790788"
-       transform="matrix(-0.18814138,0,0,-0.28674052,398.03423,733.43378)" />
+       transform="matrix(-0.18814138,0,0,-0.28674052,398.03423,704.52489)" />
     <path
        sodipodi:type="star"
        style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:5.00060654;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
@@ -295,13 +295,13 @@
        xml:space="preserve"
        style="font-size:22.51150322px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d45500;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold"
        x="324.27963"
-       y="626.99164"
+       y="613.12238"
        id="text6917-4-5"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6919-2-0"
          x="324.27963"
-         y="626.99164"
+         y="613.12238"
          style="font-size:11.25575161px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#d45500;fill-opacity:1;stroke:none;font-family:Calibri;-inkscape-font-specification:Calibri Bold">Base Value</tspan></text>
     <path
        sodipodi:type="star"
@@ -336,15 +336,15 @@
        inkscape:randomized="0"
        d="m 142.4375,460.41996 -22.08219,0 11.0411,-19.12374 z"
        inkscape:transform-center-y="-1.0790773"
-       transform="matrix(0.18814138,0,0,0.28674052,293.69971,485.11095)" />
+       transform="matrix(0.18814138,0,0,0.28674052,293.69971,456.12419)" />
     <path
-       style="fill:#d45500;stroke:#d45500;stroke-width:1.14999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-start:none;marker-mid:none;marker-end:none"
-       d="m 318.42081,616.5258 0,16.50303"
+       style="fill:#d45500;stroke:#d45500;stroke-width:1.15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-start:none;marker-mid:none;marker-end:none"
+       d="m 318.42081,586.77522 0,44.33935"
        id="path5151-8"
        inkscape:connector-curvature="0" />
     <path
        style="fill:#800000;stroke:#800000;stroke-width:1.06989598;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-start:none;marker-mid:none;marker-end:none"
-       d="m 441.53326,515.81227 -49.78198,0"
+       d="m 441.53326,527.81227 -49.78198,0"
        id="path5151-6"
        inkscape:connector-curvature="0" />
     <path
@@ -362,7 +362,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 142.4375,460.41996 -22.08219,0 11.0411,-19.12374 z"
-       transform="matrix(0,0.18814138,-0.28674052,0,569.83676,491.11675)"
+       transform="matrix(0,0.18814138,-0.28674052,0,569.83676,503.11675)"
        inkscape:transform-center-x="-1.0790807" />
     <path
        sodipodi:type="star"
@@ -379,7 +379,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 142.4375,460.41996 -22.08219,0 11.0411,-19.12374 z"
-       transform="matrix(0,-0.18814138,0.28674052,0,259.837,540.5732)"
+       transform="matrix(0,-0.18814138,0.28674052,0,259.837,552.5732)"
        inkscape:transform-center-x="1.0790754" />
   </g>
 </svg>

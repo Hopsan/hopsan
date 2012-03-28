@@ -95,12 +95,21 @@ namespace hopsan {
             //Step Equations
             if (mTime < mStartTime)
             {
-                (*mpND_out) = 0;
+                (*mpND_out) = mBaseValue;
             }
             else
             {
-                relTimeInt = (int)ceil((mTime-mStartTime)*mFrequency);
-                (*mpND_out) = mBaseValue + (2*mAmplitude * (relTimeInt % 2)) - mAmplitude;
+                //relTimeInt = int(ceil((mTime-mStartTime)*mFrequency)+0.1);
+                //(*mpND_out) = mBaseValue + (2*mAmplitude * (relTimeInt % 2)) - mAmplitude;
+                //! @todo maybe figure out the correct version of the above code wich may be faster to calculate taht if stuff bellow
+                if ( sin( (mTime-mStartTime)*2.0*M_PI*mFrequency ) > 0.0 )
+                {
+                    (*mpND_out) = mBaseValue + mAmplitude;
+                }
+                else
+                {
+                    (*mpND_out) = mBaseValue - mAmplitude;
+                }
             }
         }
     };
