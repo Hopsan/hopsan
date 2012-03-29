@@ -10,6 +10,12 @@ pythonqtname="PythonQt2.0.1"
 
 basepwd=`pwd`
 
+doRelease="false"
+if [ "$1" = "release" ]; then
+  doRelease="true"    
+  echo Building release versions only
+fi
+
 buildQWT()
 {
   rm -rf $qwtname
@@ -31,10 +37,14 @@ buildPythonQt()
   echo "Applying Hopsan fixes to code"
   # Fix cocoa thing
   sed "s|CocoaRequestModal = QEvent::CocoaRequestModal,|/\*CocoaRequestModal = QEvent::CocoaRequestModal,\*/|" -i generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h
+
   # Set build mode
-  #sed "s|#CONFIG += debug_and_release build_all|CONFIG += debug_and_release build_all|" -i build/common.prf
-  # Set python version  TODO should ask user
-  sed "s|unix:PYTHON_VERSION=2.6|unix:PYTHON_VERSION=2.7|" -i build/python.prf
+  if [ "$1" = "false" ]; then
+    sed "s|#CONFIG += debug_and_release build_all|CONFIG += debug_and_release build_all|" -i build/common.prf
+  fi
+
+  # Set python version
+  sed "s|unix:PYTHON_VERSION=2.6|unix:PYTHON_VERSION=$2|" -i build/python.prf
   
   qmake PythonQt.pro -r -spec linux-g++
   make -w
@@ -44,8 +54,7 @@ buildPythonQt()
 
 # First build QWT
 buildQWT
-echo "Sleeping 5 seconds to let you view output from QWT build"
-sleep 5
-buildPythonQt
-echo "Sleeping 5 seconds to let you view output from PythonQt build"
-sleep 5
+echo "Sleeping 5 seconds to let you view output from QWT build"; sleep 5
+# TODO should ask for pyversion or use commandline
+buildPythonQt $doRelease 2.7
+echo "Sleeping 5 seconds to let you view output from PythonQt build" sleep 5

@@ -25,6 +25,8 @@
 #ifndef DELAY_HPP_INCLUDED
 #define DELAY_HPP_INCLUDED
 
+#include "stddef.h"
+
 namespace hopsan {
 
 //! @brief Delay template class, implementing a circle buffer
