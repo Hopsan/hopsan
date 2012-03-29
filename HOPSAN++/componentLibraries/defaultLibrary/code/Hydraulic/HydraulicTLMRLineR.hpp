@@ -102,6 +102,12 @@ namespace hopsan {
             (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+(mZc+mR2)*getStartValue(mpP2,NodeHydraulic::FLOW);
             (*mpND_Zc2) = mZc+mR2;
 
+            if (mTimeDelay-mTimestep < 0)
+            {
+                addWarningMessage("TimeDelay must be >= Ts");
+                //stopSimulation();
+            }
+
             //Init delay
             mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP1,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP1,NodeHydraulic::FLOW)); //-mTimestep sue to calc time
             mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP2,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP2,NodeHydraulic::FLOW));

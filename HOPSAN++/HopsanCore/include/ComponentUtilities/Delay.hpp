@@ -25,10 +25,6 @@
 #ifndef DELAY_HPP_INCLUDED
 #define DELAY_HPP_INCLUDED
 
-#include "assert.h"
-#include <cmath>
-#include <iostream>
-
 namespace hopsan {
 
 //! @brief Delay template class, implementing a circle buffer
@@ -50,7 +46,7 @@ public:
         }
     }
 
-    //! @brief Initialize Delay size based on timeDelay at a given timestep
+    //! @brief Initialize Delay buffer size based on timeDelay and timestep, Td/Ts must be multiple of 1
     //! @param [in] timeDelay The total time delay for a value to come out on the other side of the circle buffer
     //! @param [in] Ts The timestep between each call
     //! @param [in] initValue The initial value of all buffer elements
@@ -65,7 +61,7 @@ public:
     }
 
     //! @brief Initialize Delay size based on known number of delay steps
-    //! @param [in] delaySteps The number of delay steps, must be > 1
+    //! @param [in] delaySteps The number of delay steps, must be >= 1
     //! @param [in] initValue The initial value of all buffer elements
     void initialize(const size_t delaySteps, const T initValue)
     {
@@ -73,11 +69,16 @@ public:
         {
             delete  mpArray;
         }
-        assert(delaySteps > 0);
+
         mSize = delaySteps+1;
 
+        // Make sure we will not crash if someone entered 0 delaysteps
+        if (mSize < 2)
+        {
+            mSize = 2;
+        }
+
         mpArray = new double[mSize];
-        std::cout << "DelayBuffer, size: " << delaySteps << ", mSize: " << mSize << std::endl;
 
         //! @todo maybe use c++ vector to init, or some smarter init, does not really matter I think
         for (size_t i=0; i<mSize; ++i)
@@ -97,7 +98,7 @@ public:
         // First get the oldes value
         T oldestValue = mpArray[oldest];
 
-        // Increment the pointers, newets will after incrementaion overwrite previous oldest
+        // Increment the pointers, newest will after incrementaion overwrite previous oldest
         ++newest;
         ++oldest;
 
@@ -160,8 +161,8 @@ public:
         }
     }
 
-    //! @brief Get the size of the ring buffer (the number of elements)
-    //! @return The size of the buffer (the number of elements)
+    //! @brief Get the size of the delay (the number of delaySteps)
+    //! @return The size of the delay (the number of delaySteps)
     size_t getSize() const
     {
         return mSize-1;
