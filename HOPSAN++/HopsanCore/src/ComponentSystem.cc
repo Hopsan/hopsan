@@ -51,6 +51,7 @@ ComponentSystem::ComponentSystem() : Component()
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
     mKeepStartValues = false;
+    mnLogSamples = 2048;
 #ifdef USETBB
     mpStopMutex = new tbb::mutex();
 #endif
@@ -66,6 +67,17 @@ ComponentSystem::~ComponentSystem()
 double ComponentSystem::getDesiredTimeStep() const
 {
     return mDesiredTimestep;
+}
+
+
+void ComponentSystem::setNumLogSamples(const size_t nLogSamples)
+{
+    mnLogSamples = nLogSamples;
+}
+
+size_t ComponentSystem::getNumLogSamples()
+{
+    return mnLogSamples;
 }
 
 
@@ -1953,7 +1965,7 @@ void ComponentSystem::loadStartValuesFromSimulation()
 //! @param startT Start time of simulation
 //! @param stopT Stop time of simulation
 //! @param nSamples Number of log samples
-bool ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
+bool ComponentSystem::initialize(const double startT, const double stopT)
 {
     //cout << "Initializing SubSystem: " << this->mName << endl;
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
@@ -1966,7 +1978,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
     }
 
     //preAllocate local logspace
-    this->preAllocateLogSpace(startT, stopT, nSamples);
+    this->preAllocateLogSpace(startT, stopT, mnLogSamples);
 
     // If we failed allocation then abort
     if (mStopSimulation)
@@ -2001,7 +2013,9 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
 
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
-            mComponentSignalptrs[s]->initialize(startT, stopT, nSamples);
+            //! @todo should we use our own nSamples ore the subsystems own ?
+            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mnLogSamples);
+            mComponentSignalptrs[s]->initialize(startT, stopT);
         }
         else
         {
@@ -2021,7 +2035,9 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
 
         if (mComponentCptrs[c]->isComponentSystem())
         {
-            mComponentCptrs[c]->initialize(startT, stopT, nSamples);
+            //! @todo should we use our own nSamples ore the subsystems own ?
+            static_cast<ComponentSystem*>(mComponentCptrs[c])->setNumLogSamples(mnLogSamples);
+            mComponentCptrs[c]->initialize(startT, stopT);
         }
         else
         {
@@ -2041,7 +2057,9 @@ bool ComponentSystem::initialize(const double startT, const double stopT, const 
 
         if (mComponentQptrs[q]->isComponentSystem())
         {
-            mComponentQptrs[q]->initialize(startT, stopT, nSamples);
+            //! @todo should we use our own nSamples ore the subsystems own ?
+            static_cast<ComponentSystem*>(mComponentQptrs[q])->setNumLogSamples(mnLogSamples);
+            mComponentQptrs[q]->initialize(startT, stopT);
         }
         else
         {

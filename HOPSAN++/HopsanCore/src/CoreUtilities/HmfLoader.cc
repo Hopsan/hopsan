@@ -53,6 +53,22 @@ double readDoubleAttribute(const rapidxml::xml_node<> *pNode, const string attrN
     return defaultValue;
 }
 
+//! @brief Helpfunction, reads a int xml attribute
+int readIntAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const int defaultValue)
+{
+    if (pNode!=0)
+    {
+        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
+        if (pAttr)
+        {
+            //Convert char* to int, assume null terminated strings
+            return atoi(pAttr->value());
+        }
+    }
+
+    return defaultValue;
+}
+
 //! @brief Helpfunction, reads a string xml attribute
 string readStringAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const string defaultValue)
 {
@@ -216,6 +232,14 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     double Ts = readDoubleAttribute(pSimtimeNode, "timestep", 0.001);
     pSystem->setDesiredTimestep(Ts);
     pSystem->setInheritTimestep(readBoolAttribute(pSimtimeNode,"inherit_timestep",true));
+
+    //Load number of log samples
+    if(hasAttribute(pSysNode,  "logsamples"))
+    {
+        pSystem->setNumLogSamples(readIntAttribute(pSysNode, "logsamples", pSystem->getNumLogSamples()));
+    }
+
+    //! @todo we really need defines for allof these "strings"
 
     //Load contents
     rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");

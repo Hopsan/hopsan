@@ -63,7 +63,7 @@ public:
     virtual void loadStartValues();
     virtual void loadStartValuesFromSimulation();
     virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
-    virtual bool initialize(const double startT, const double stopT, const size_t nSamples);
+    virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double startT, const double Ts);
     virtual void finalize(const double startT, const double Ts);
     virtual void setDesiredTimestep(const double timestep);

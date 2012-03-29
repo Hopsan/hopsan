@@ -383,7 +383,9 @@ bool CoreSystemAccess::isSimulationOk()
 
 bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSamples)
 {
-    return mpCoreComponentSystem->initialize(mStartTime, mFinishTime, nSamples);
+    //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
+    mpCoreComponentSystem->setNumLogSamples(nSamples);
+    return mpCoreComponentSystem->initialize(mStartTime, mFinishTime);
 }
 
 

@@ -114,7 +114,7 @@ namespace hopsan {
         bool isSimulationOk();
         void loadStartValues();
         void loadStartValuesFromSimulation();
-        bool initialize(const double startT, const double stopT, const size_t nSamples=2048);
+        bool initialize(const double startT, const double stopT);
         void simulateMultiThreadedOld(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
         void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool noChanges=false);
@@ -141,6 +141,10 @@ namespace hopsan {
         void setInheritTimestep(const bool inherit=true);
         bool doesInheritTimestep() const;
         double getDesiredTimeStep() const;
+
+        //Get and set nLogSamples
+        void setNumLogSamples(const size_t nLogSamples);
+        size_t getNumLogSamples();
 
         //Stop a running init or simulation
         void stopSimulation();
@@ -201,6 +205,8 @@ namespace hopsan {
         std::vector< std::vector<ComponentSystem *> > mSplitSystemVector;
 
         std::vector<double *> mvTimePtrs;
+
+        size_t mnLogSamples;
 
         //Finns i Component        Parameters *mSystemParameters;
     };

@@ -91,12 +91,12 @@ namespace hopsan {
         }
 
 
-        bool initialize(const double startT, const double stopT, const size_t nSamples)     //Important, initialize must have these arguments
+        bool initialize(const double startT, const double stopT)     //Important, initialize must have these arguments
         {
             //Set parameters
             mpVolume->setParameterValue("V", to_string(Volume), true);
 
-            return ComponentSystem::initialize(startT, stopT, nSamples);
+            return ComponentSystem::initialize(startT, stopT);
         }
 
 
