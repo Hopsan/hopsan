@@ -154,6 +154,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("SignalHP2Filter", SignalHP2Filter::Creator);
     pComponentFactory->registerCreatorFunction("SignalPIlead", SignalPIlead::Creator);
     pComponentFactory->registerCreatorFunction("SignalPulse", SignalPulse::Creator);
+    pComponentFactory->registerCreatorFunction("SignalPulseWave", SignalPulseWave::Creator);
     pComponentFactory->registerCreatorFunction("SignalMin", SignalMin::Creator);
     pComponentFactory->registerCreatorFunction("SignalMax", SignalMax::Creator);
     pComponentFactory->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);

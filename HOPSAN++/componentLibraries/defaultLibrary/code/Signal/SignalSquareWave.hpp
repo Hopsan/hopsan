@@ -23,11 +23,11 @@
 //$Id$
 
 ///////////////////////////////////////////////////////////
-//                â  XXXXX   XXXXX   XXXXX                //
-//      Amplitude |  X   X   X   X   X   X                //
-//                â  X   XXXXX   XXXXX   XXX  â BaseValue //
-//                   X                                    //
-// Zero â  XXXXXXXXXXX                                   //
+//                â  XXXXX   XXXXX   XXXXX               //
+//      Amplitude |  X   X   X   X   X   X               //
+//  BaseValue XXXXXXXX   X   X   X   X   XXX             //
+//                       X   X   X   X                   //
+//                       XXXXX   XXXXX                   //
 //                                                       //
 //                   â                                   //
 //              StartTime                                //

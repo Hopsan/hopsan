@@ -105,6 +105,7 @@
 #include "Signal/SignalMin.hpp"
 #include "Signal/SignalMax.hpp"
 #include "Signal/SignalPulse.hpp"
+#include "Signal/SignalPulseWave.hpp"
 #include "Signal/SignalRoute.hpp"
 #include "Signal/SignalSoftStep.hpp"
 #include "Signal/SignalIntegrator.hpp"

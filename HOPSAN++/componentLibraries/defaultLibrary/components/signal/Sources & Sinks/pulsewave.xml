@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalPulseWave" displayname="PulseWave">
+        <icons>
+            <icon scale="1" path="pulsewave.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <help>
+            <text>The dutycycle D, is the ratio of the PeroidTime dT when the signal is high</text>
+            <picture>pulsewavehelp.svg</picture>
+        </help>
+        <ports>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

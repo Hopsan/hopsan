@@ -208,7 +208,8 @@ HEADERS += \
     code/Compgen/HydraulicLaminarOrificeCG.hpp \
     code/defaultComponentLibraryInternal.h \
     code/Signal/SignalSign.hpp \
-    code/Signal/SignalSub.hpp
+    code/Signal/SignalSub.hpp \
+    code/Signal/SignalPulseWave.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \

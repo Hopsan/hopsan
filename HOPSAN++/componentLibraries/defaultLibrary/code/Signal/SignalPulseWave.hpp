@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -15,26 +15,18 @@
 
 //!
 //! @file   SignalPulse.hpp
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-01-14
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2012-03-29
 //!
-//! @brief Contains a pulse signal generator
+//! @brief Contains a pulse wave (train) signal generator
 //!
 //$Id$
 
-////////////////////////////////////////////////
-//                    XXXXX       â           //
-//                    X   X       | Amplitude //
-//                    X   X       |           //
-// BaseValue â  XXXXXXX   XXXXXXX â           //
-//                    â   â                   //
-//            StartTime   StopTime            //
-////////////////////////////////////////////////
-
-#ifndef SIGNALPULSE_HPP_INCLUDED
-#define SIGNALPULSE_HPP_INCLUDED
+#ifndef SIGNALPULSEWAVE_HPP
+#define SIGNALPULSEWAVE_HPP
 
 #include "ComponentEssentials.h"
+#include <cmath>
 
 namespace hopsan {
 
@@ -42,44 +34,47 @@ namespace hopsan {
     //! @brief
     //! @ingroup SignalComponents
     //!
-    class SignalPulse : public ComponentSignal
+    class SignalPulseWave : public ComponentSignal
     {
 
     private:
         double mBaseValue;
         double mStartTime;
-        double mStopTime;
+        double mPeriodT;
+        double mDutyCycle;
         double mAmplitude;
         double *mpND_out;
-        Port *mpOut;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
         {
-            return new SignalPulse();
+            return new SignalPulseWave();
         }
 
-        SignalPulse() : ComponentSignal()
+        SignalPulseWave() : ComponentSignal()
         {
             mBaseValue = 0.0;
-            mStartTime = 1.0;
-            mStopTime = 2.0;
+            mStartTime = 0.0;
+            mPeriodT = 1.0;
             mAmplitude = 1.0;
+            mDutyCycle = 0.5;
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOutPort = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("y_0", "Base Value", "[-]", mBaseValue);
             registerParameter("t_start", "Start Time", "[s]", mStartTime);
-            registerParameter("t_end", "Stop Time", "[s]", mStopTime);
+            registerParameter("dT", "Time Period", "[s]", mPeriodT);
+            registerParameter("D", "Duty Cycle, (ratio 0<=x<=1)", "[-]", mDutyCycle);
             registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
 
-            disableStartValue(mpOut, NodeSignal::VALUE);
+            disableStartValue(mpOutPort, NodeSignal::VALUE);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::VALUE);
 
             (*mpND_out) = mBaseValue;
         }
@@ -87,17 +82,19 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-                //Step Equations
-            if (mTime > mStartTime && mTime < mStopTime)
+            const double time = (mTime-mStartTime);
+            bool high = (time - std::floor(time/mPeriodT)*mPeriodT) < mDutyCycle*mPeriodT;
+
+            if ( (mTime > mStartTime) && high)
             {
                 (*mpND_out) = mBaseValue + mAmplitude;     //During pulse
             }
             else
             {
-                (*mpND_out) = mBaseValue;                   //Not during pulse
+                (*mpND_out) = mBaseValue;                  //Not during pulse
             }
         }
     };
 }
 
-#endif // SIGNALPULSE_HPP_INCLUDED
+#endif // SIGNALPULSEWAVE_HPP
