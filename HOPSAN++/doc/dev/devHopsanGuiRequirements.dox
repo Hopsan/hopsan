@@ -5,12 +5,12 @@ HopsanGUI depends on some external libraries. Here is a description on how to bu
 \section qwt Build Qwt - Qt Widgets for Technical Applications
 \subsection qwt-ubuntu-auto Ubuntu (Automatically)
 This will build against your system version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
--# Run the unpackPatchAndBuildQwt.sh script, it will build Qwt
+-# Run the unpackPatchAndBuildQwt.sh script in HopsanGUI/Dependencies, it will build Qwt
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection qwt-ubuntu-manual Ubuntu (Manually)
 -# First download a version >=6.0.0 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
--# Unpack into the HopsanGUI\\Dependencies directory
+-# Unpack into the HopsanGUI/Dependencies directory
 -# The default on Unix is to build only Release mode, if you want to change this (only if you want to debug into qwt), you can do that in the qwtbuild.pri file.
   -# "Enable debug_and_release + build_all if you want to build both." 
 -# Build the qwt project (you can use shadowbuild)
@@ -31,13 +31,13 @@ This will build against your system version of the Qt libs, if you have a differ
 \subsection pythonqt-ubuntu-auto Ubuntu (Automatically)
 This will build against your system version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
 -# Install the python-dev package (sudo apt-get install python-dev)
--# Run the unpackPatchAndBuildPythonQt.sh script, it will build PythonQt, (assumes python 2.7, (second commandline arg to change))
+-# Run the unpackPatchAndBuildPythonQt.sh script in HopsanGUI/Dependencies, it will build PythonQt, (assumes python 2.7, (second commandline arg to change))
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection pythonqt-ubuntu-manual Ubuntu (Manually)
 -# Install the python-dev package (sudo apt-get install python-dev)
 -# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
-  -# Place the ex: PythonQt2.0.1 directory in HopsanGUI\\Dependencies, HopsanGUI.pro will search for it there
+  -# Place the ex: PythonQt2.0.1 directory in HopsanGUI/Dependencies, HopsanGUI.pro will search for it there
 -# Go to the PythonQt directory and open the PythonQt project
   -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in build/common.prf (We need both a debug and a release build)
   -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h"
