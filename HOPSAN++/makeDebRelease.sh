@@ -2,34 +2,55 @@
 # $Id$
 
 name=hopsan
-devversion=0.6.x
-devrelease="false"
+devversion=0.6.
+
+# Pbuildnames
+pbuildpath_oneiric386="/var/cache/pbuilder/oneiric386.tgz"
+pbuildpath_oneiric64="/var/cache/pbuilder/oneiric64.tgz"
 
 # Ask user for version input 
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
 read version
 
+devrelease="false"
 if [ -z "$version" ]; then
   devrelease="true"
-  version=$devversion
-  echo
-  echo Building DEV release
-else
-  echo
-  echo Version will be: $version is this OK, y/n
-  read ans
-  if [ "$ans" != "y" ]; then
-    echo Aborting!
-    exit 1
-  fi
+  svnrev=`./getSvnRevision.sh`
+  version=$devversion"r"$svnrev
 fi
+
+echo
+echo "Do you want to build for all supported dists, using pbuilder (This WILL taka a LOONG time) NOT YET WORKING"
+echo "Answer: y/n"
+read ans
+
+dopbuild="false"
+if [ "$ans" = "y" ]; then
+    dopbuild="true"
+fi
+
+echo
+echo ---------------------------------------
+echo This is a DEV release: $devrelease
+echo Release version number: $version
+echo Using pbuilder: $dopbuild
+echo ---------------------------------------
+echo Is this OK, y/n
+read ans
+if [ "$ans" != "y" ]; then
+  echo Aborting!
+  exit 1
+fi
+
+echo
+
 
 # -----------------------------------------------------------------------------
 # First prepare source folders
 #
 
 # Clean bin folder
-rm -f ./bin/*
+rm -rf ./bin/*
 
 # Build user documentation
 ./buildDocumentation.sh user
@@ -75,18 +96,36 @@ cd $packagedir
 # Generate NEW changelog file for this release version with no content in particular
 rm debian/changelog
 #dch -p -M --create --package $name --newversion=$version See Hopsan-release-notes.txt for changes
-dch -p -M -d --create See Hopsan-release-notes.txt for changes
+dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
 dch -p -m --release ""
 
-# Now lets create and test the package
-debuild -us -uc --lintian-opts --color always -X files
-cd ..
+if [ "$dopbuild" = "true" ]; then
+    
+  # Update or create pbuild environments
+  # TODO should not have manual if for each dist
+  if [ -f $pbuildpath_oneiric64 ]; then
+      sudo pbuilder --update --basetgz $pbuildpath_oneiric64
+  else
+      sudo pbuilder --create --distribution oneiric --architecture amd64 --basetgz $pbuildpath_oneiric64
+  fi
+  
+  if [ -f $pbuildpath_oneiric386 ]; then
+      sudo pbuilder --update --basetgz $pbuildpath_oneiric386
+  else
+      sudo pbuilder --create --distribution oneiric --architecture i386 --basetgz $pbuildpath_oneiric386
+  fi
 
-# Move new files to output dir
-rm -rf output
-mkdir -p output
-mv $packagedir* output
-mv $outputbasename* output
+else
+  # Now lets create and test the package
+  debuild -us -uc --lintian-opts --color always -X files
+  cd ..
+
+  # Move new files to output dir
+  rm -rf output
+  mkdir -p output
+  mv $packagedir* output
+  mv $outputbasename* output
+fi
 
 # TODO: MAYBE cleanup build dir, or ask user, or not
 #------------------------------------------------------------------------------
