@@ -84,6 +84,7 @@ private:
      Delay mDelayedPart20;
      Delay mDelayedPart21;
      Delay mDelayedPart22;
+     Vec stateVark;
 
      EquationSystemSolver *pSolver;
 
@@ -141,8 +142,11 @@ mtheta0);
         registerParameter("thetamin", "Min angle", "rad", mthetamin);
         registerParameter("thetamax", "Max angle", "rad", mthetamax);
 
-        pSolver = new EquationSystemSolver(this, 4);
-     }
+        stateVark.create(4);
+        jacobianMatrix.create(4,4);
+        systemEquations.create(4);
+
+    }
 
     void initialize()
      {
@@ -220,11 +224,12 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
         delayedPart[2][2] = mDelayedPart22.getIdx(1);
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
-     }
+
+        pSolver = new EquationSystemSolver(this, 4, &jacobianMatrix, &systemEquations, &stateVark);
+    }
     void simulateOneTimestep()
      {
         Vec stateVar(4);
-        Vec stateVark(4);
         Vec deltaStateVar(4);
 
         //Read variables from nodes
@@ -297,7 +302,7 @@ delayedPart[2][2],mthetamin,mthetamax))/(4.*mJL);
           jacobianMatrix[3][3] = 1;
 
           //Solving equation using LU-faktorisation
-          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
+          pSolver->solve();
 
         }
         wmr2=stateVark[0];

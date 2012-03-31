@@ -87,6 +87,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicPressureControlledValve", HydraulicPressureControlledValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureCompensatingValve", HydraulicPressureCompensatingValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicCheckValvePreLoaded", HydraulicCheckValvePreLoaded::Creator);
 
     // ----- Other Hydraulic Components -----
     pComponentFactory->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);

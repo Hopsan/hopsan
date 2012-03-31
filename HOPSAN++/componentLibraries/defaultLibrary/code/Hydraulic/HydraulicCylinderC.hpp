@@ -180,12 +180,12 @@ class HydraulicCylinderC : public ComponentC
             c3 = A1*ci1 - A2*ci2;
 
             //Write to nodes
-            for(int i=0; i<mNumPorts1; ++i)
+            for(size_t i=0; i<mNumPorts1; ++i)
             {
                 *(mvpND_c1[i]) = p1 + Zc1*(*mvpND_q1[i]);
                 *(mvpND_Zc1[i]) = Zc1;
             }
-            for(int i=0; i<mNumPorts2; ++i)
+            for(size_t i=0; i<mNumPorts2; ++i)
             {
                 *(mvpND_c2[i]) = p2 + Zc2*(*mvpND_q2[i]);
                 *(mvpND_Zc2[i]) = Zc2;
@@ -242,7 +242,7 @@ class HydraulicCylinderC : public ComponentC
             //Volume 1
             Zc1 = (mNumPorts1+2) / 2 * betae/V1*mTimestep/(1-alpha);    //Number of ports in volume is 2 internal plus the external ones
             p1mean = (ci1 + Zc1*2*qi1) + (cl1 + Zc1*2*(-qLeak));
-            for(int i=0; i<mNumPorts1; ++i)
+            for(size_t i=0; i<mNumPorts1; ++i)
             {
                 p1mean += (*mvpND_c1[i]) + 2.0*Zc1*(*mvpND_q1[i]);
             }
@@ -253,7 +253,7 @@ class HydraulicCylinderC : public ComponentC
             //Volume 2
             Zc2 = (mNumPorts2+2) / 2 * betae/V2*mTimestep/(1-alpha);
             p2mean = (ci2 + Zc2*2*qi2) + (cl2 + Zc2*2*qLeak);
-            for(int i=0; i<mNumPorts2; ++i)
+            for(size_t i=0; i<mNumPorts2; ++i)
             {
                 p2mean += (*mvpND_c2[i]) + 2.0*Zc2*(*mvpND_q2[i]);
             }
@@ -281,12 +281,12 @@ class HydraulicCylinderC : public ComponentC
 //            }
 
             //Write to nodes
-            for(int i=0; i<mNumPorts1; ++i)
+            for(size_t i=0; i<mNumPorts1; ++i)
             {
                 *(mvpND_c1[i]) = std::max(0.0, alpha * (*mvpND_c1[i]) + (1.0 - alpha)*(p1mean*2 - (*mvpND_c1[i]) - 2*Zc1*(*mvpND_q1[i])));
                 *(mvpND_Zc1[i]) = Zc1;
             }
-            for(int i=0; i<mNumPorts2; ++i)
+            for(size_t i=0; i<mNumPorts2; ++i)
             {
                 *(mvpND_c2[i]) = std::max(0.0, alpha * (*mvpND_c2[i]) + (1.0 - alpha)*(p2mean*2 - (*mvpND_c2[i]) - 2*Zc2*(*mvpND_q2[i])));
                 *(mvpND_Zc2[i]) = Zc2;

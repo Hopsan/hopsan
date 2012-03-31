@@ -2183,6 +2183,11 @@ void ComponentGeneratorDialog::saveDialogToXml()
     QTextStream out(&xmlFile);
     domDocument.save(out, IndentSize);
 
+    if(!QDir(DATAPATH).exists())
+    {
+        QDir().mkpath(DATAPATH);
+    }
+
     QDir().mkpath(QString(DATAPATH)+"compgen/");
     QFile().remove(QString(DATAPATH)+"compgen/component_"+mpComponentNameEdit->text()+".xml");
     xmlFile.copy(QString(DATAPATH)+"compgen/component_"+mpComponentNameEdit->text()+".xml");

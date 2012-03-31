@@ -94,7 +94,7 @@ private slots:
 
 private:
     void loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree=0);
-    void updateLibraryFolder(LibraryContentsTree *pTree);
+    void updateLibraryFolder(LibraryContentsTree /**pTree*/);
     void unLoadLibrarySubTree(LibraryContentsTree *pTree);
 
     YesNoToAllEnumT mUpConvertAllCAF;

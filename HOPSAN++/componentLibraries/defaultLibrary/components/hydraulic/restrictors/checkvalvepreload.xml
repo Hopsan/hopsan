@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HydraulicCheckValvePreLoaded" displayname="Pre-Loaded Check Valve">
+        <icons>
+            <icon scale="1" path="checkvalvepreload_user.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <help>
+            <text>Hydraulic pre-loaded check valve with turbulent flow equation. This is a Q-type component.</text>
+        </help>
+        <ports>
+            <port x="1" y="0.5" a="0" name="P1"/>
+            <port x="0" y="0.5" a="180" name="P2"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

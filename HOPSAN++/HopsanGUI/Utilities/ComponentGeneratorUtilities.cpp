@@ -262,7 +262,15 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         {
             for(int j=0; j<stateVars.size(); ++j)
             {
-                comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[sysEquations.size()*i+j]+";";
+//                bool constant = true;
+//                for(int k=0; k<jacobian[sysEquations.size()*i+j].size(); ++k)
+//                {
+//                    if(!jacobian[sysEquations.size()*i+j].at(k).isNumber())
+//                        constant = false;
+//                }
+
+//                if(!constant)
+                    comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[sysEquations.size()*i+j]+";";
             }
         }
         comp.simEquations << "";
@@ -312,6 +320,11 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     {
         pProgressBar->setLabelText("Creating .hpp file");
         pProgressBar->setValue(804);
+    }
+
+    if(!QDir(DATAPATH).exists())
+    {
+        QDir().mkpath(DATAPATH);
     }
 
     //Initialize the file stream
@@ -754,8 +767,8 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     p.start("cmd.exe", QStringList() << "/c" << "cd " + QString(DATAPATH) + " & compile.bat");
     p.waitForFinished();
 #else
-    QString command = "g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + COREINCLUDEPATH + " -L./ -lHopsanCore\n";
-    //qDebug() << "Command = " << command;
+    QString command = "cd "+QString(DATAPATH)+" && g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + COREINCLUDEPATH + " -L"+gExecPath+" -lHopsanCore\n";
+    qDebug() << "Command = " << command;
     FILE *fp;
     char line[130];
     command +=" 2>&1";
@@ -1433,9 +1446,8 @@ void replaceDerivativeFunction(QString &equation, QString f, QString dxf)
         idx = equation.indexOf("Derivative("+f+"(", idx);
     }
 
-
     //Replace "D(f(x))" with "dxf(x)"
-    idx = equation.indexOf("Derivative("+f+"(", 0);
+    idx = equation.indexOf("D("+f+"(", 0);
     while(idx > -1)
     {
         int parBal = 2;         //Find index of end parenthesis

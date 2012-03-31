@@ -70,7 +70,7 @@ Component::Component()
 
 
 //! Virtual Function, base version which gives you an error if you try to use it.
-bool Component::initialize(const double /*startT*/, const double /*stopT*/)
+bool Component::initialize(const double startT, const double stopT)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
     assert(false);

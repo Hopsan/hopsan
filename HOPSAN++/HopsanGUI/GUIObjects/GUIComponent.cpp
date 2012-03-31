@@ -182,6 +182,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 }
 
 //! @brief Set a start value to be mapped to a System parameter
+//! @todo What does the "variable" parameter do?
 bool Component::setStartValue(QString portName, QString variable, QString sysParName)
 {
 //    QVector<QString> vVariable;

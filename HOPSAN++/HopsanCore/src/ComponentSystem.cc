@@ -2392,19 +2392,19 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         simulateAndMeasureTime(5);                                  //Measure time
         sortComponentVectorsByMeasuredTime();                       //Sort component vectors
 
-        for(int q=0; q<mComponentQptrs.size(); ++q)
+        for(size_t q=0; q<mComponentQptrs.size(); ++q)
         {
             std::stringstream ss;
             ss << "Time for " << mComponentQptrs.at(q)->getName() << ": " << mComponentQptrs.at(q)->getMeasuredTime();
             gCoreMessageHandler.addDebugMessage(ss.str());
         }
-        for(int c=0; c<mComponentCptrs.size(); ++c)
+        for(size_t c=0; c<mComponentCptrs.size(); ++c)
         {
             std::stringstream ss;
             ss << "Time for " << mComponentCptrs.at(c)->getName() << ": " << mComponentCptrs.at(c)->getMeasuredTime();
             gCoreMessageHandler.addDebugMessage(ss.str());
         }
-        for(int s=0; s<mComponentSignalptrs.size(); ++s)
+        for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         {
             std::stringstream ss;
             ss << "Time for " << mComponentSignalptrs.at(s)->getName() << ": " << mComponentSignalptrs.at(s)->getMeasuredTime();

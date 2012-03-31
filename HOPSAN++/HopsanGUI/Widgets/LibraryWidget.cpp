@@ -1613,7 +1613,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
 
 
 
-void LibraryWidget::updateLibraryFolder(LibraryContentsTree *pTree)
+void LibraryWidget::updateLibraryFolder(LibraryContentsTree /**pTree*/)
 {
 //    QDir libDirObject(pTree->mLibDir);
 //    //if(!libDirObject.exists() && gConfig.hasUserLib(libDir))

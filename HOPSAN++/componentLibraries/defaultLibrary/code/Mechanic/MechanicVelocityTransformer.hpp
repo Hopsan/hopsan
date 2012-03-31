@@ -75,7 +75,7 @@ namespace hopsan {
 
             mInt.initialize(mTimestep, (*mpND_v), (*mpND_x));
 
-            *mpND_me = me;
+            (*mpND_me) = me;
 
             if(mpXin->isConnected() && !mpVin->isConnected())
             {

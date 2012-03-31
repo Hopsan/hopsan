@@ -74,6 +74,7 @@
 #include "Hydraulic/HydraulicOverCenterValve.hpp"
 #include "Hydraulic/HydraulicInterfaceC.hpp"
 #include "Hydraulic/HydraulicInterfaceQ.hpp"
+#include "Hydraulic/valves/HydraulicCheckValvePreLoaded.hpp"
 
 #include "Hydraulic/HydraulicComponentsInComponentTest.hpp"
 

@@ -209,6 +209,7 @@ HEADERS += \
     code/defaultComponentLibraryInternal.h \
     code/Signal/SignalSign.hpp \
     code/Signal/SignalSub.hpp \
+    code/Hydraulic/valves/HydraulicCheckValvePreLoaded.hpp \
     code/Signal/SignalPulseWave.hpp
 
 SOURCES += \
