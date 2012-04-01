@@ -14,7 +14,7 @@ build:
 
 	#Let qmake build, we assume all dependencis already build
 	mkdir -p hopsanShadowBuild
-	cd hopsanShadowBuild; qmake-qt4 ../../../HopsanNG.pro -r -spec linux-g++ -config release
+	cd hopsanShadowBuild; qmake-qt4 ../HopsanNG.pro -r -spec linux-g++ -config release
 	make -C hopsanShadowBuild
 
 clean:
@@ -26,7 +26,7 @@ install:
 	dh_testdir
 	dh_prep
 	dh_installdirs
-	../copyInstallHopsan.sh ../../ debian/hopsan/opt/hopsan
+	../copyInstallHopsan.sh ../ debian/hopsan/opt/hopsan
 
 # Arch and indep Build targets
 build-arch: build
@@ -43,7 +43,7 @@ binary-arch: build install
 	dh_installchangelogs
 	dh_installdocs
 	dh_install ../HopsanGUI.desktop usr/share/applications/
-	dh_install ../../HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
+	dh_install ../HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
 #        dh_installexamples
 #        dh_installman
 #        dh_link

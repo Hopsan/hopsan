@@ -45,60 +45,32 @@ fi
 echo
 
 
-# -----------------------------------------------------------------------------
-# First prepare source folders
-#
-
-# Clean bin folder
-rm -rf ./bin/*
-
-# Build user documentation
-./buildDocumentation.sh user
-
-# Remove the inclusion of the svnrevnum file in core. It is only usefull in for dev trunk use
-sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/version.h
-
-# Determine the Core Gui and CLI svn rev numbers for this relase
-cd HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd ..
-cd HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd ..
-cd HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd ..
-sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION \"$coresvnrev\"|g" -i HopsanCore/include/version.h
-sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION \"$guisvnrev\"|g" -i HopsanGUI/version_gui.h
-sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION \"$clisvnrev\"|g" -i HopsanCLI/main.cpp
-
-if [ $doDevRelease = "false" ]; then
-  # Set version numbers (by changing .h files) BEFORE build
-  sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/version.h
-  sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i HopsanGUI/version_gui.h
-
-  # Set splash screen version number
-  sed "s|X\.X\.X|$version|g" -i HopsanGUI/graphics/splash2.svg
-  inkscape ./HopsanGUI/graphics/splash2.svg --export-background=rgb\(255,255,255\) --export-png ./HopsanGUI/graphics/splash.png
-  # Revert changes in svg
-  svn revert ./HopsanGUI/graphics/splash2.svg
-  
-  # Make sure development flag is not defined
-  sed "s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|g" -i HopsanGUI/HopsanGUI.pro
-fi
-#------------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------
-# Now build DEB package
-#
 cd buildDebPackage
-
+# -----------------------------------------------------------------------------
 # Determine deb dir name
+#
 packagedir=$name-$version
 outputbasename=$name\_$version
 packageorigsrcfile=$outputbasename.orig.tar.gz
 
+# -----------------------------------------------------------------------------
+# Prepare source code
+#
+srcExportDir=hopsanSrcExport\_$version
+makeSourceCodePackage.sh ../ $packageorigsrcfile $srcExportDir
+
+
+# -----------------------------------------------------------------------------
+# Now build DEB package
+#
+
 # First clear dir if it already exist
 rm -rf $packagedir
-rm -rf $packageorigsrcfile
+####rm -rf $packageorigsrcfile
 
 # Create the source code file
 # Lets make a fake one for now
-tar -czf $packageorigsrcfile HOPSANSOURCE
+###tar -czf $packageorigsrcfile HOPSANSOURCE
 
 # Export template
 svn export hopsan-template $packagedir

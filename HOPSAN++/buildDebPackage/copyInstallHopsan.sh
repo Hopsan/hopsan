@@ -2,9 +2,9 @@
 # $Id$
 
 # Shell script for copying "Installing" the necessary files from a prebuild hopsan root dir
+# The root dir is assumed to have been exported from svn
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-04
-# For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
 
 srcDir=$1
 dstDir=$2
@@ -22,22 +22,20 @@ fi
 mkdir -p $dstDir/HopsanCore
 mkdir -p $dstDir/componentLibraries/defaultLibrary
 mkdir -p $dstDir/Models
-#mkdir -p $dstDir/Scripts
 mkdir -p $dstDir/doc/user
 mkdir -p $dstDir/bin
 
 
-# Do svn export of svn directories
-svn export $srcDir/HopsanCore/include $dstDir/HopsanCore/include
-svn export $srcDir/componentLibraries/defaultLibrary/components $dstDir/componentLibraries/defaultLibrary/components
-svn export $srcDir/componentLibraries/exampleComponentLib $dstDir/componentLibraries/exampleComponentLib
-svn export $srcDir/Models/Example\ Models $dstDir/Models/Example\ Models
-svn export $srcDir/doc/graphics $dstDir/doc/graphics
-svn export $srcDir/Scripts $dstDir/Scripts 
-
-
-# Copy files not under version control (the build binary files and documentation)
+# Copy whole directories
+cp -a $srcDir/HopsanCore/include $dstDir/HopsanCore/include
+cp -a $srcDir/componentLibraries/defaultLibrary/components $dstDir/componentLibraries/defaultLibrary/components
+cp -a $srcDir/componentLibraries/exampleComponentLib $dstDir/componentLibraries/exampleComponentLib
+cp -a $srcDir/Models/Example\ Models $dstDir/Models/Example\ Models
+cp -a $srcDir/doc/graphics $dstDir/doc/graphics
+cp -a $srcDir/Scripts $dstDir/Scripts 
 cp -a $srcDir/doc/user/html $dstDir/doc/user/
+
+# copy files
 cp -a $srcDir/bin/*.so* $dstDir/bin/
 cp -a $srcDir/bin/Hopsan* $dstDir/bin/
 cp -a $srcDir/componentLibraries/defaultLibrary/components/*.so* $dstDir/componentLibraries/defaultLibrary/components/
