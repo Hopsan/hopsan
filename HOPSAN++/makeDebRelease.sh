@@ -1,6 +1,7 @@
 #!/bin/bash
 # $Id$
 
+outputDir=output
 name=hopsan
 devversion=0.6.
 
@@ -44,21 +45,32 @@ fi
 
 echo
 
-
+# -----------------------------------------------------------------------------
+# Go to dir and clear old files
+#
 cd buildDebPackage
+rm -rf $outputDir
+mkdir -p $outputDir
+
 # -----------------------------------------------------------------------------
 # Determine deb dir name
 #
 packagedir=$name-$version
 outputbasename=$name\_$version
 packageorigsrcfile=$outputbasename.orig.tar.gz
+packagesrcfile=$name-$version.tar.gz
 
 # -----------------------------------------------------------------------------
 # Prepare source code
 #
-srcExportDir=hopsanSrcExport\_$version
-makeSourceCodePackage.sh ../ $packageorigsrcfile $srcExportDir
+srcExportDir=$outputDir/hopsanSrcExport\_$version
+./prepareSourceCode.sh ../  $srcExportDir $version $doDevRelease
 
+cd $srcExportDir
+tar -czf $packageorigsrcfile *
+cd $OLDPWD
+mv $srcExportDir/$packageorigsrcfile .
+#cp -a $packageorigsrcfile $packagesrcfile
 
 # -----------------------------------------------------------------------------
 # Now build DEB package
@@ -74,7 +86,11 @@ rm -rf $packagedir
 
 # Export template
 svn export hopsan-template $packagedir
+# Copy "unpack" prepared source  files to this dir
+tar -xzf $packageorigsrcfile -C $packagedir
+
 cd $packagedir
+
 
 # Generate NEW changelog file for this release version with no content in particular
 rm debian/changelog
@@ -99,17 +115,13 @@ if [ "$doPbuild" = "true" ]; then
   fi
 
 else
+  # Remove the dependency build from rules, we use our pre build ones
+
   # Now lets create and test the package
   debuild -us -uc --lintian-opts --color always -X files
   cd ..
 
   # Move new files to output dir
-  rm -rf output
-  mkdir -p output
-  mv $packagedir* output
-  mv $outputbasename* output
+  mv $packagedir* $outputDir
+  mv $outputbasename* $outputDir
 fi
-
-# TODO: MAYBE cleanup build dir, or ask user, or not
-#------------------------------------------------------------------------------
-

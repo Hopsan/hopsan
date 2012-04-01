@@ -9,8 +9,7 @@
 srcDir=$1
 dstDir=$2
 
-echo $srcDir
-echo $dstDir
+echo Copy installing Hopsan from $srcDir to $dstDir
 
 if [ $# -lt 2 ]; then
   echo "Error: To few input arguments!"

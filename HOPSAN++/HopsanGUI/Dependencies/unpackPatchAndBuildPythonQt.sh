@@ -13,8 +13,14 @@ if [ "$2" != "" ]; then
   pyversion="$2"  
 fi
 
+# Abort if dir already exist. When running release build script we dont want to build twice
+if [ -d $pythonqtname ]; then
+  echo Directory $pythonqtname already exist. Remove it if you want build using this script.
+  exit 0
+fi
+
 rm -rf $pythonqtname
-unzip $pythonqtname.zip
+unzip -q $pythonqtname.zip
 cd $pythonqtname
   
 echo "Applying Hopsan fixes to code"
@@ -24,6 +30,9 @@ sed "s|CocoaRequestModal = QEvent::CocoaRequestModal,|/\*CocoaRequestModal = QEv
 # Set build mode
 if [ "$1" != "release" ]; then
   sed "s|#CONFIG += debug_and_release build_all|CONFIG += debug_and_release build_all|" -i build/common.prf
+else
+  #Remove tests and examples in release build
+  sed "s|tests examples||" -i PythonQt.pro
 fi
 
 # Set python version

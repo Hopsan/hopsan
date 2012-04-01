@@ -1,32 +1,40 @@
 #!/bin/bash
-# $Id: makeSourceCodePackage.sh 4161 2012-03-09 16:50:04Z petno25 $
+# $Id: prepareSourceCode.sh 4161 2012-03-09 16:50:04Z petno25 $
 
-# Shell script for exporting and taringin the Hopsan src code into an orig file for deb package building
+# Shell script for exporting and preparingn the Hopsan src code before RELASE build
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-04-01
 # For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
 
-if [ $# -lt 3 ]; then
+if [ $# -lt 4 ]; then
   echo "Error: To few input arguments!"
-  echo "Usage: `basename $0` {srcDir dstSrcPackageName tmpDir}"
+  echo "Usage: `basename $0` {srcDir dstDir version doDevRelease}"
   exit $E_BADARGS
 fi
 
 srcDir="$1"
-dstSrcPackage="$2"
-tmpDir="3"
+dstDir="$2"
+version="$3"
+doDevRelease="$4"
+
+# -----------------------------------------------------------------------------
+# Determine the Core Gui and CLI svn rev numbers for this relase
+#
+cd $srcDir/HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd $OLDPWD
+cd $srcDir/HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
+cd $srcDir/HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 
 # -----------------------------------------------------------------------------
 # Export source dirs and files
 #
-echo Exporting $srcDir to $tmpDir taring to $dstSrcPackage
-rm -rf $tmpDir
-svn export srcDir $tmpDir
-cd $tmpDir
+echo Exporting $srcDir to $dstDir for preparation
+rm -rf $dstDir
+svn export $srcDir $dstDir
 
 # -----------------------------------------------------------------------------
 # Prepare source dirs and files
 #
+cd $dstDir
 
 # Clean bin folder
 rm -rf ./bin/*
@@ -34,10 +42,7 @@ rm -rf ./bin/*
 # Remove the inclusion of the svnrevnum file in core. It is only usefull in for dev trunk use
 sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/version.h
 
-# Determine the Core Gui and CLI svn rev numbers for this relase
-cd HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd ..
-cd HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd ..
-cd HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd ..
+# Set the Core Gui and CLI svn rev numbers for this relase
 sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION \"$coresvnrev\"|g" -i HopsanCore/include/version.h
 sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION \"$guisvnrev\"|g" -i HopsanGUI/version_gui.h
 sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION \"$clisvnrev\"|g" -i HopsanCLI/main.cpp
@@ -57,11 +62,3 @@ fi
 
 # Build user documentation
 ./buildDocumentation.sh user
-
-#------------------------------------------------------------------------------
-# gzTar into source package
-# 
-
-tar -czf ../$dstSrcPackage *
-cd ..
-

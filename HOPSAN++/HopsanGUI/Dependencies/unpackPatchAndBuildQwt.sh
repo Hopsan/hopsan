@@ -8,9 +8,15 @@
 qwtname="qwt-6.0.1"
 basepwd=`pwd`
 
+# Abort if dir already exist. When running release build script we dont want to build twice
+if [ -d $qwtname ]; then
+  echo Directory $qwtname already exist. Remove it if you want build using this script.
+  exit 0
+fi
+
 rm -rf $qwtname
 rm -rf $qwtname\_shb
-unzip $qwtname.zip
+unzip -q $qwtname.zip
 mkdir $qwtname\_shb #Shadowbbuild directory
 cd $qwtname\_shb
 qmake ../$qwtname/qwt.pro -r -spec linux-g++
