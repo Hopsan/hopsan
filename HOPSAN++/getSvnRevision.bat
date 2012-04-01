@@ -41,7 +41,7 @@ if %versionS%=="" (
   echo #ifndef SVNREVNUM_H >> %~1
   echo #define SVNREVNUM_H >> %~1
   if not "%~2"=="" (
-    echo #define SVNREVNUM "%~2" >> %~1 
+    echo #define HOPSANCORESVNREVISION "%~2" >> %~1 
   ) else (
     echo //Revision information not found >> %~1
   )

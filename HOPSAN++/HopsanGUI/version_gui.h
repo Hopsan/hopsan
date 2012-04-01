@@ -24,7 +24,8 @@
 #ifndef VERSION_GUI_H
 #define VERSION_GUI_H
 
-// If we dont have the revision number then define blank
+// If we dont have the revision number then define UNKNOWN
+// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANGUISVNREVISION
 #define HOPSANGUISVNREVISION "UNKNOWN"
 #endif

@@ -16,14 +16,15 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-// We need to use this include because external dependencies will need the revision of the core when it was compiled last time, not the lates revision that you get when compiling the external component
+// We need to use this include because external dependencies will need the revision of the core when it was compiled last time,
+// not the lates revision that you get when compiling the external component.
+// Only for trunk builds, NOT in RELEASE, (will be auto removed by script)
 #include "svnrevnum.h"
 
-// If we dont have the revision number then define blank
-#ifndef SVNREVNUM
+// If we dont have the revision number then define UNKNOWN
+// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
+#ifndef HOPSANCORESVNREVISION
 #define HOPSANCORESVNREVISION "UNKNOWN"
-#else
-#define HOPSANCORESVNREVISION SVNREVNUM
 #endif
 
 #define HOPSANCOREVERSION "0.6.x_r" HOPSANCORESVNREVISION

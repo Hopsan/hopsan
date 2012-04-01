@@ -73,7 +73,7 @@ unix {
     INCLUDEPATH += /usr/include/tbb/
 
     #Generate the svnrevnum.h file
-    system($${PWD}/../getSvnRevision.sh)
+    system($${PWD}/../getSvnRevision.sh include HOPSANCORESVNREVISION)
 }
 
 #Debug output

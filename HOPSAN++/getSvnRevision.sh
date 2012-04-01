@@ -8,7 +8,13 @@
 # For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
 
 filename="svnrevnum.h"
-foldername="include"
+
+foldername="$1"
+if [ "$2" != "" ]; then
+  defname="$2"
+else
+  defname="DefNameNotGiven"
+fi
 
 writeFile()
 {
@@ -18,7 +24,7 @@ writeFile()
   if [ -z "$2" ]; then
     echo "//Revision information not found" >> $1
   else
-    echo "#define SVNREVNUM \"$2\"" >> $1 
+    echo "#define $2 \"$3\"" >> $1 
   fi
   echo "#endif" >> $1
 }
@@ -31,8 +37,8 @@ else
 fi
 
 #Check if dir exist, if so write the file
-if [ -d $foldername ]; then
-  writeFile "$foldername/$filename" $rev
+if [ -d "$foldername" ]; then
+  writeFile "$foldername/$filename" $defname $rev
 fi 
 
 # Determine what to report and what exit code to give

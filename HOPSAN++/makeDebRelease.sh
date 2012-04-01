@@ -12,9 +12,9 @@ pbuildpath_oneiric64="/var/cache/pbuilder/oneiric64.tgz"
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
 read version
 
-devrelease="false"
+doDevRelease="false"
 if [ -z "$version" ]; then
-  devrelease="true"
+  doDevRelease="true"
   svnrev=`./getSvnRevision.sh`
   version=$devversion"r"$svnrev
 fi
@@ -24,16 +24,16 @@ echo "Do you want to build for all supported dists, using pbuilder (This WILL ta
 echo "Answer: y/n"
 read ans
 
-dopbuild="false"
+doPbuild="false"
 if [ "$ans" = "y" ]; then
-    dopbuild="true"
+    doPbuild="true"
 fi
 
 echo
 echo ---------------------------------------
-echo This is a DEV release: $devrelease
+echo This is a DEV release: $doDevRelease
 echo Release version number: $version
-echo Using pbuilder: $dopbuild
+echo Using pbuilder: $doPbuild
 echo ---------------------------------------
 echo Is this OK, y/n
 read ans
@@ -55,7 +55,18 @@ rm -rf ./bin/*
 # Build user documentation
 ./buildDocumentation.sh user
 
-if [ $devrelease = "false" ]; then
+# Remove the inclusion of the svnrevnum file in core. It is only usefull in for dev trunk use
+sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/version.h
+
+# Determine the Core Gui and CLI svn rev numbers for this relase
+cd HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd ..
+cd HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd ..
+cd HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd ..
+sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION \"$coresvnrev\"|g" -i HopsanCore/include/version.h
+sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION \"$guisvnrev\"|g" -i HopsanGUI/version_gui.h
+sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION \"$clisvnrev\"|g" -i HopsanCLI/main.cpp
+
+if [ $doDevRelease = "false" ]; then
   # Set version numbers (by changing .h files) BEFORE build
   sed "s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION \"$version\"|g" -i HopsanCore/include/version.h
   sed "s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \"$version\"|g" -i HopsanGUI/version_gui.h
@@ -67,7 +78,7 @@ if [ $devrelease = "false" ]; then
   svn revert ./HopsanGUI/graphics/splash2.svg
   
   # Make sure development flag is not defined
-  sed "s|.*DEFINES *= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI/HopsanGUI.pro
+  sed "s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|g" -i HopsanGUI/HopsanGUI.pro
 fi
 #------------------------------------------------------------------------------
 
@@ -99,7 +110,7 @@ rm debian/changelog
 dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
 dch -p -m --release ""
 
-if [ "$dopbuild" = "true" ]; then
+if [ "$doPbuild" = "true" ]; then
     
   # Update or create pbuild environments
   # TODO should not have manual if for each dist

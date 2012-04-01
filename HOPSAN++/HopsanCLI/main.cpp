@@ -25,7 +25,8 @@
 
 #include "ComponentUtilities/CSVParser.h"
 
-// If we dont have the revision number then define blank
+// If we dont have the revision number then define UNKNOWN
+// On real relase  builds, UNKNOWN will be replaced by actual revnum by external script
 #ifndef HOPSANCLISVNREVISION
 #define HOPSANCLISVNREVISION "UNKNOWN"
 #endif
