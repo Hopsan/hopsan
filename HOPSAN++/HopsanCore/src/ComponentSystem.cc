@@ -2975,6 +2975,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         {
             mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         }
+        //! @todo this will log q and p from last Ts but c Zc from this Ts, this is strange
         logAllNodes(mTime); //MOVED HERE BECAUSE C-COMP ARE SETTING START TIMES
 
         //Q components
