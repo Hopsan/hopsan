@@ -106,10 +106,11 @@ namespace hopsan {
                 //stopSimulation();
             }
 
-            //Init delay
-            //! @todo is this correct really, I think we should send In MTimeDelay only and let Delay class do the rest
-            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW)); //-mTimestep due to calc time
-            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW));
+            // Init delay
+            // We use -Ts to make the delay one step shorter as the TLM already have one built in timstep delay
+            //! @todo for Td=Ts the delay will actually be 2Ts (the delay and inherited) need if check to avoid using delays if Td=Ts
+            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c1));
+            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c1));
         }
 
 
@@ -133,7 +134,6 @@ namespace hopsan {
             c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
 
             //Write new values to nodes
-            //! @todo now when we update, in the next step we will read a value that is delayed two times, or??
             (*mpND_c1) = mDelayedC1.update(c1);
             (*mpND_Zc1) = mZc;
             (*mpND_c2) = mDelayedC2.update(c2);

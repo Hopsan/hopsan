@@ -109,8 +109,10 @@ namespace hopsan {
             }
 
             //Init delay
-            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP1,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP1,NodeHydraulic::FLOW)); //-mTimestep sue to calc time
-            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP2,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP2,NodeHydraulic::FLOW));
+            // We use -Ts to make the delay one step shorter as the TLM already have one built in timstep delay
+            //! @todo for Td=Ts the delay will actually be 2Ts (the delay and inherited) need if check to avoid using delays if Td=Ts
+            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c1));
+            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c2));
         }
 
 
@@ -134,15 +136,10 @@ namespace hopsan {
             c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
 
             //Write new values to nodes
-            //! @todo now when we update, in the next step we will read a value that is delayed two times, or?? Previously we updated after getting latest (at least it seems that way) (but value used to perform update also)
             (*mpND_c1) = mDelayedC1.update(c1);
             (*mpND_Zc1) = mZc + mR1;
             (*mpND_c2) = mDelayedC2.update(c2);
             (*mpND_Zc2) = mZc + mR2;
-
-            //Update the delayed variabels
-//            mDelayedC1.update(c1);
-//            mDelayedC2.update(c2);
         }
     };
 }

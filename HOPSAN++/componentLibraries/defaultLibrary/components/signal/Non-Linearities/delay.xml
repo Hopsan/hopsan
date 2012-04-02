@@ -8,5 +8,8 @@
             <port x="0" y="0.5" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="out"/>
         </ports>
+        <help>
+          <text>Will delay the signal at least one Ts (sample time step) </text>
+        </help>
     </modelobject>
 </hopsanobjectappearance>
