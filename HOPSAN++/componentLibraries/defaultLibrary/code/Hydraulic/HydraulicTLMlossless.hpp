@@ -97,7 +97,7 @@ namespace hopsan {
             (*mpND_Zc1) = mZc;
             (*mpND_q2) = getStartValue(mpP2,NodeHydraulic::FLOW);
             (*mpND_p2) = getStartValue(mpP2,NodeHydraulic::PRESSURE);
-            (*mpND_c1) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW);
+            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW);
             (*mpND_Zc2) = mZc;
 
             if (mTimeDelay-mTimestep < 0)
@@ -110,7 +110,7 @@ namespace hopsan {
             // We use -Ts to make the delay one step shorter as the TLM already have one built in timstep delay
             //! @todo for Td=Ts the delay will actually be 2Ts (the delay and inherited) need if check to avoid using delays if Td=Ts
             mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c1));
-            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c1));
+            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, (*mpND_c2));
         }
 
 
