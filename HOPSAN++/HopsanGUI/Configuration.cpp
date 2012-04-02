@@ -510,6 +510,9 @@ void Configuration::loadDefaultsFromXml()
             mPalette = QPalette(windowText, button, light, dark, mid, text, bright_text, base, window);
             QDomElement fontElement = styleElement.firstChildElement("font");
             mFont = QFont(fontElement.attribute("family"), fontElement.attribute("size").toInt());
+            mFont.setStyleStrategy(QFont::PreferAntialias);
+            mFont.setStyleHint(QFont::SansSerif);
+            qDebug() << "Setting font to: " << mFont.family();
             QDomElement styleSheetElement = styleElement.firstChildElement("stylesheet");
             mStyleSheet.append(styleSheetElement.text());
 
@@ -732,13 +735,8 @@ QPalette Configuration::getPalette()
 QFont Configuration::getFont()
 {
     //! @note Embedded truetype fonts does not seem to work in Linux, so ignore them
-#ifdef WIN32
     return mFont;
-#else
-    QFont tempFont = qApp->font();
-    tempFont.setPointSize(mFont.pointSize());
-    return tempFont;
-#endif
+
 }
 
 

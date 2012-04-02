@@ -125,26 +125,27 @@ int main(int argc, char *argv[])
 //! @todo This error checking may slow down startup, and it is probably never needed. Remove when this functionality is tested and verified.
 void loadApplicationFonts()
 {
-    QFontDatabase fontDatabase;
     bool error=false;
     int i;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibri.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibri.ttf");
     if(i == -1) error=true;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrib.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrib.ttf");
     if(i == -1) error=true;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrii.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibrii.ttf");
     if(i == -1) error=true;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibriz.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/calibriz.ttf");
     if(i == -1) error=true;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consola.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consola.ttf");
     if(i == -1) error=true;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolab.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolab.ttf");
     if(i == -1) error=true;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolai.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolai.ttf");
     if(i == -1) error=true;
-    i = fontDatabase.addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolaz.ttf");
+    i = QFontDatabase::addApplicationFont(QString(GRAPHICSPATH)+"uifonts/consolaz.ttf");
     if(i == -1) error=true;
 
     if(error)
         qDebug() << "Error loading fonts!";
+    else
+        qDebug() << "Successfully loaded fonts!";
 }
