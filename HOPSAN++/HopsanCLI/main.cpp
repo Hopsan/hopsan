@@ -357,9 +357,9 @@ int main(int argc, char *argv[])
         TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
         // Define a value argument and add it to the command line.
-        TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","String containing file path", cmd);
-        TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","String containing file path", cmd);
-        TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with component name and portname to save node data from", false, "", "String containing file path", cmd);
+        TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
+        TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
+        TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","test","Model test to perform",false,"","Model name", cmd);
 
         // Parse the argv array.
