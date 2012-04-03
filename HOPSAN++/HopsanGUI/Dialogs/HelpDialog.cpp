@@ -64,5 +64,6 @@ void HelpDialog::open()
     qDebug() << QString(HELPPATH) + "index.html";
     mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + "index.html"));
 
-    QDialog::open();
+    //Using show isntead of open for modaless window
+    QDialog::show();
 }
