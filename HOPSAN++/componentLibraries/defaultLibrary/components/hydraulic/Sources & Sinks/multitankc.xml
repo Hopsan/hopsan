@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HydraulicMultiTankC" displayname="C-type MultiPort Tank">
+        <icons>
+            <icon scale="1" path="tank_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="tank_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="0" a="90" name="MP"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
