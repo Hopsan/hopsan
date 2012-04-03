@@ -119,17 +119,17 @@ double SecondOrderTransferFunction::update(double u)
 
     if (mValue > mMax)
     {
-        mDelayU[1] = mDelayU[0];
-        mDelayU[0] = mDelayU[0];
-        mDelayY[1] = mDelayY[0];
+        mDelayU[1] = mMax;
+        mDelayU[0] = mMax;
+        mDelayY[1] = mMax;
         mDelayY[0] = mMax;
         mValue     = mMax;
     }
     else if (mValue < mMin)
     {
-        mDelayU[1] = mDelayU[0];
-        mDelayU[0] = mDelayU[0];
-        mDelayY[1] = mDelayY[0];
+        mDelayU[1] = mMin;
+        mDelayU[0] = mMin;
+        mDelayY[1] = mMin;
         mDelayY[0] = mMin;
         mValue     = mMin;
     }
