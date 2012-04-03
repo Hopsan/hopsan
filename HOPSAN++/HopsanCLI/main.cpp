@@ -174,6 +174,40 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
     }
 }
 
+void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::string> &rComps, std::vector<std::string> &rPorts)
+{
+    rComps.clear();
+    rPorts.clear();
+    std::string line;
+    std::ifstream file;
+    file.open(filePath.c_str());
+    if ( file.is_open() )
+    {
+        while ( file.good() )
+        {
+            getline(file, line);
+            cout << "line: " << line << endl;
+            if (*line.begin() != '#')
+            {
+                std::string comp, port;
+                size_t sep;
+
+                sep = line.find(';');
+                comp = line.substr(0, sep);
+                port = line.substr(sep+1);
+
+                rComps.push_back(comp);
+                rPorts.push_back(port);
+            }
+        }
+        file.close();
+    }
+    else
+    {
+        cout << "error, could not open file: " << filePath << endl;
+    }
+}
+
 
 //! @brief Compares a vector with a reference vector
 //! @param vec Vector to compare
@@ -325,6 +359,7 @@ int main(int argc, char *argv[])
         // Define a value argument and add it to the command line.
         TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","String containing file path", cmd);
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","String containing file path", cmd);
+        TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with component name and portname to save node data from", false, "", "String containing file path", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","test","Model test to perform",false,"","Model name", cmd);
 
         // Parse the argv array.
@@ -334,6 +369,7 @@ int main(int argc, char *argv[])
         string hmfFilePath = hmfPathOption.getValue();
         string extFilePaths = extLibPathsOption.getValue();
         string testFilePath = modelTestOption.getValue();
+        string saveNodeFilePath = saveNodesPathsOption.getValue();
 
         // Load default hopasn component lib
         HopsanEssentials::getInstance()->loadExternalComponentLib(DEFAULTCOMPONENTLIB);
@@ -381,10 +417,19 @@ int main(int argc, char *argv[])
             //cout << endl << "Component Hieararcy:" << endl << endl;
             //printComponentHierarchy(pRootSystem, "", true);
 
-            cout << "Saving NodeData to file" << endl;
-            //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
-            //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
-            saveNodeDataToFile(pRootSystem,"MyExampleSum","out","ExSumOut.txt");
+            if (!saveNodeFilePath.empty())
+            {
+                cout << "Saving NodeData to file" << endl;
+                vector<string> comps, ports;
+                readNodesToSaveFromTxtFile(saveNodeFilePath, comps, ports);
+                //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
+                //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
+                for (size_t i=0; i<comps.size(); ++i)
+                {
+                    string outfile = comps[i]+"_"+ports[i]+".txt";
+                    saveNodeDataToFile(pRootSystem, comps[i], ports[i], outfile);
+                }
+            }
         }
 
         //Perform a unit test

@@ -690,7 +690,15 @@ QString Configuration::getDefaultUnit(QString key)
 //! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
 QMap<QString, double> Configuration::getCustomUnits(QString key)
 {
-    return this->mCustomUnits.find(key).value();
+    QMap<QString, double> dummy;
+    if(mCustomUnits.contains(key))
+    {
+        return mCustomUnits.find(key).value();
+    }
+    else
+    {
+        return dummy;
+    }
 }
 
 

@@ -3369,7 +3369,12 @@ void PlotCurve::setActive(bool value)
 //! Updates a curve with regard to special X-axis, units and scaling.
 void PlotCurve::updateCurve()
 {
-    double unitScale = gConfig.getCustomUnits(mDataName).find(mDataUnit).value();
+    double unitScale = 1;
+    if (gConfig.getCustomUnits(mDataName).contains(mDataUnit))
+    {
+        unitScale = gConfig.getCustomUnits(mDataName).find(mDataUnit).value();
+    }
+
     QVector<double> tempX;
     QVector<double> tempY;
     if(mpParentPlotTab->mHasSpecialXAxis)
