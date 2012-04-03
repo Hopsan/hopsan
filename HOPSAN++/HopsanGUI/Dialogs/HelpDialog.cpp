@@ -23,14 +23,10 @@
 //$Id$
 
 #include <QWebView>
-#include <QGridLayout>
-#include <QPushButton>
 
 #include "MainWindow.h"
 #include "HelpDialog.h"
 #include "common.h"
-#include "version_gui.h"
-
 
 //! @class HelpDialog
 //! @brief A class for displaying the "Help" dialog
@@ -41,18 +37,14 @@
 //! Constructor for the help dialog
 //! @param parent Pointer to the main window
 HelpDialog::HelpDialog(MainWindow *parent)
-    : QDialog(parent)
+    : QMainWindow(parent)
 {
     this->setObjectName("HelpDialog");
     this->setWindowTitle("Hopsan User Guide");
-    this->setSizeGripEnabled(true);
     this->setMinimumSize(640, 480);
 
     mpHelp = new QWebView(this);
-
-    mpLayout = new QGridLayout;
-    mpLayout->addWidget(mpHelp, 0, 0);
-    setLayout(mpLayout);
+    setCentralWidget(mpHelp);
 
     //! @todo Set size depending one screen size
     this->resize(1024,768);
@@ -61,9 +53,8 @@ HelpDialog::HelpDialog(MainWindow *parent)
 
 void HelpDialog::open()
 {
-    qDebug() << QString(HELPPATH) + "index.html";
     mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + "index.html"));
 
-    //Using show isntead of open for modaless window
-    QDialog::show();
+    //Using show instead of open for modaless window
+    QMainWindow::show();
 }

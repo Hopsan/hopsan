@@ -25,13 +25,12 @@
 #ifndef HELPDIALOG_H
 #define HELPDIALOG_H
 
-#include <QDialog>
 #include <QWebView>
-#include <QGridLayout>
+#include <QMainWindow>
 
 class MainWindow;
 
-class HelpDialog : public QDialog
+class HelpDialog : public QMainWindow
 {
     Q_OBJECT
 
@@ -43,8 +42,6 @@ public slots:
 
 private:
     QWebView *mpHelp;
-    QPushButton *mpOkButton;
-    QGridLayout *mpLayout;
 };
 
 #endif // HELPDIALOG_H
