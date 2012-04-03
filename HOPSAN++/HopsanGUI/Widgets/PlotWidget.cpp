@@ -284,23 +284,20 @@ void PlotVariableTree::refreshLastPlotWindow()
 //! @param dataUnit Name of the unit of the variable
 PlotWindow *PlotVariableTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit, QColor desiredColor)
 {
-    //QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
-    QPair<QVector<double>, QVector<double> > vectors;
-    gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, vectors);
+    if (gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->havePlotData(componentName, portName, dataName))
+    {
+        PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
+        plotWindow->show();
+        plotWindow->addPlotCurve(mpCurrentContainer->getNumberOfPlotGenerations()-1, componentName, portName, dataName, dataUnit, QwtPlot::yLeft, QString(), desiredColor);
 
-    QVector<double> xVector = vectors.first;
-    QVector<double> yVector = vectors.second;
+        mOpenPlotWindows.append(plotWindow);
 
-    if((xVector.isEmpty()) || (yVector.isEmpty()))
+        return plotWindow;
+    }
+    else
+    {
         return 0;
-
-    PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
-    plotWindow->show();
-    plotWindow->addPlotCurve(mpCurrentContainer->getNumberOfPlotGenerations()-1, componentName, portName, dataName, dataUnit, QwtPlot::yLeft, QString(), desiredColor);
-
-    mOpenPlotWindows.append(plotWindow);
-
-    return plotWindow;
+    }
 }
 
 

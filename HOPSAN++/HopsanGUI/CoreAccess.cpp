@@ -575,26 +575,50 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
     int dataId = -1;
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
+    {
         if(pPort->isConnected())
         {
-        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
-
-        if (dataId >= 0)
-        {
-            vector< vector<double> > *pData = pPort->getDataVectorPtr();
-            vector<double> *pTime = pPort->getTimeVectorPtr();
-
-            //Ok lets copy all of the data to a Qt vector
-            rData.first.clear();
-            rData.first.resize(pTime->size());    //Allocate memory for time
-            rData.second.clear();           //Allocate memory for data
-            rData.second.resize(pData->size());
-            for (size_t i=0; i<pData->size() && i<pTime->size(); ++i)
+            dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+            if (dataId >= 0)
             {
-                rData.first[i] = pTime->at(i);
-                rData.second[i] = pData->at(i).at(dataId);
+                vector< vector<double> > *pData = pPort->getDataVectorPtr();
+                vector<double> *pTime = pPort->getTimeVectorPtr();
+
+                //Ok lets copy all of the data to a Qt vector
+                rData.first.clear();
+                rData.first.resize(pTime->size());    //Allocate memory for time
+                rData.second.clear();           //Allocate memory for data
+                rData.second.resize(pData->size());
+                for (size_t i=0; i<pData->size() && i<pTime->size(); ++i)
+                {
+                    rData.first[i] = pTime->at(i);
+                    rData.second[i] = pData->at(i).at(dataId);
+                }
             }
         }
+    }
+}
+
+bool CoreSystemAccess::havePlotData(const QString compname, const QString portname, const QString dataname)
+{
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
+    if (pPort)
+    {
+        if(pPort->isConnected())
+        {
+            int dataId = -1;
+            dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+
+            if (pPort->getDataVectorPtr()->empty() || pPort->getTimeVectorPtr()->empty())
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
     }
 }
 

@@ -605,17 +605,11 @@ PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveCo
 void Port::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit, int axisY)
 {
     //Make sure plot data exists
-    QPair<QVector<double>, QVector<double> > vectors;
-    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotData(mpParentGuiModelObject->getName(), this->getPortName(), dataName, vectors);
-
-    QVector<double> xVector = vectors.first;
-    QVector<double> yVector = vectors.second;
-
-    if((xVector.isEmpty()) || (yVector.isEmpty()))
-        return;         //Return if it does not
-
-    //Add new curve to the plot window
-    pPlotWindow->addPlotCurve(mpParentGuiModelObject->getParentContainerObject()->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
+    if (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->havePlotData(mpParentGuiModelObject->getName(), this->getPortName(), dataName))
+    {
+        //Add new curve to the plot window
+        pPlotWindow->addPlotCurve(mpParentGuiModelObject->getParentContainerObject()->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
+    }
 }
 
 

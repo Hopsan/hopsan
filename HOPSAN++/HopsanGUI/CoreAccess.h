@@ -135,6 +135,7 @@ public:
     //void getPlotDataUnit(const QString compname, const QString portname, const string dataname, QString &rUnit);
     //QVector<QString> getPlotDataUnits();
     void getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData);
+    bool havePlotData(const QString compname, const QString portname, const QString dataname);
     bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData);
     bool isPortConnected(QString componentName, QString portName);
 
