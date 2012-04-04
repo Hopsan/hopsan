@@ -30,7 +30,7 @@ install:
 	dh_testdir
 	dh_prep
 	dh_installdirs
-	../copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
+	buildDebPackage/copyInstallHopsan.sh ./ debian/hopsan/opt/hopsan
 
 
 # Arch and indep Build targets
@@ -48,8 +48,8 @@ binary-arch:	build install
 #        dh_testroot
 	dh_installchangelogs
 	dh_installdocs
-	dh_install ../HopsanGUI.desktop usr/share/applications/
-	dh_install ../../HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
+	dh_install buildDebPackage/HopsanGUI.desktop usr/share/applications/
+	dh_install HopsanGUI/graphics/uiicons/hopsan128x128.png usr/share/icons/hicolor/128x128/apps/
 #        dh_installexamples
 #        dh_installman
 #        dh_link

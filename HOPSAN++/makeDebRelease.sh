@@ -5,9 +5,8 @@ outputDir=output
 name=hopsan
 devversion=0.6.
 
-# Pbuildnames
-pbuildpath_oneiric386="/var/cache/pbuilder/oneiric386.tgz"
-pbuildpath_oneiric64="/var/cache/pbuilder/oneiric64.tgz"
+# Pbuildpath
+pbuilderBaseTGZpath="/var/cache/pbuilder/"
 
 # Ask user for version input 
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
@@ -99,20 +98,42 @@ dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
 dch -p -m --release ""
 
 if [ "$doPbuild" = "true" ]; then
-    
+  
+  # Generate dsc source file
+  cd ..
+  dpkg-source --before-build $packagedir
+  dpkg-source -b $packagedir
+  dscFile=`ls $outputbasename*.dsc`
+  
+  doCreateUpdatePbuilderBaseTGZ="true"
+  dist=oneiric
+  arch=amd64
+  basetgzFile=$pbuilderBaseTGZpath$dist$arch.tgz
+  resultPath="$pbuilderBaseTGZpath/result/$dist"
+  
   # Update or create pbuild environments
-  # TODO should not have manual if for each dist
-  if [ -f $pbuildpath_oneiric64 ]; then
-      sudo pbuilder --update --basetgz $pbuildpath_oneiric64
-  else
-      sudo pbuilder --create --distribution oneiric --architecture amd64 --basetgz $pbuildpath_oneiric64
+  if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
+    if [ -f $basetgzFile ]; then
+      sudo pbuilder --update --basetgz $basetgzFile
+    else
+	  sudo pbuilder --create --components "main universe" --extrapackages "debhelper unzip libtbb-dev libqt4-dev" --distribution $dist --architecture $arch --basetgz $basetgzFile
+    fi
   fi
   
-  if [ -f $pbuildpath_oneiric386 ]; then
-      sudo pbuilder --update --basetgz $pbuildpath_oneiric386
-  else
-      sudo pbuilder --create --distribution oneiric --architecture i386 --basetgz $pbuildpath_oneiric386
-  fi
+  # Now build source package
+  sudo pbuilder --build --basetgz $basetgzFile --buildresult $resultPath $dscFile
+  
+  # Now copy/move files to correct output dir
+  mkdir -p $outputDir/$dist
+  cp $resultPath/* $outputDir/$dist
+  mv $packagedir* $outputDir/$dist
+  mv $outputbasename* $outputDir
+  
+  # Add distname to filename
+  cd $outputDir/$dist
+  debName=`ls $outputbasename*_$arch.deb`
+  mv $debName $outputbasename\_$dist\_$arch.deb
+  cd $OLDPWD
 
 else
   # Remove the dependency build from rules, we use our pre build ones
@@ -122,6 +143,7 @@ else
   cd ..
 
   # Move new files to output dir
-  mv $packagedir* $outputDir
-  mv $outputbasename* $outputDir
+  mkdir -p $outputDir/thismachine
+  mv $packagedir* $outputDir/thismachine
+  mv $outputbasename* $outputDir/thismachine
 fi
