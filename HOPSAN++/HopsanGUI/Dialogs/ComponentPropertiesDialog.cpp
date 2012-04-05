@@ -322,6 +322,9 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
         //Get the old value to se if it changed
         QString oldValueTxt = mpGUIComponent->getParameterValue(vParLayout[i]->getDataName());
 
+        //Strip trailing and leading spaces
+        stripLTSpaces(valueTxt);
+
         //Parameter has changed, add to undo stack and set the parameter
         verifyNewValue(valueTxt);
 
@@ -517,24 +520,31 @@ void ComponentPropertiesDialog::verifyNewValue(QString &value)
     {
         bool onlyNumbers=true;
         value.replace(",", ".");
-        for(int i=1; i<value.size(); ++i)
+
+        if( value.count("e") > 1 || value.count(".") > 1 || value.count("E") > 1 )
         {
-            if(!value[i].isDigit() && !(value[i] == 'e') && !(value[i] == '+') && !(value[i] == '-') && !(value[i] == '.') && !(value[i] == ','))
+            onlyNumbers=false;
+        }
+        else
+        {
+            for(int i=1; i<value.size(); ++i)
             {
-                onlyNumbers=false;
-            }
-            else if(value.count("e") > 1 || value.count(".") > 1 || value.count(",") > 1)
-            {
-                onlyNumbers=false;
-            }
-            else if((value[i] == '+' || value[i] == '-') && !(value[i-1] == 'e'))
-            {
-                onlyNumbers=false;
+                if(!value[i].isDigit() && (value[i] != 'e') && (value[i] != 'E') && (value[i] != '+') && (value[i] != '-') && (value[i] != '.'))
+                {
+                    onlyNumbers=false;
+                    break;
+                }
+                else if( (value[i] == '+' || value[i] == '-') && !((value[i-1] == 'e') || (value[i-1] == 'E')) )
+                {
+                    onlyNumbers=false;
+                    break;
+                }
             }
         }
+
         if(!onlyNumbers)
         {
-           QMessageBox::warning(this, "Warning", "Parameter with value \"" + value + "\" will (probably) be truncated into a number.");
+           QMessageBox::warning(this, "Warning", "Invalid Parameter string \"" + value + "\" will be truncated into the first nummeric sub string.");
         }
     }
 }

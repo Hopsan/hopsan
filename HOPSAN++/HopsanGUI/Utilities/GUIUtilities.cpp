@@ -70,6 +70,19 @@ QString readName(QTextStream &rTextStream)
     }
 }
 
+//! @brief Strips leading and trailing spaces from a string
+void stripLTSpaces(QString &rString)
+{
+    while (rString.startsWith(' '))
+    {
+        rString.remove(0,1);
+    }
+    while (rString.endsWith(' '))
+    {
+        rString.chop(1);
+    }
+}
+
 
 //! @brief Convenience function if you dont have a stream to read from
 //! @return The extracted name without quotes, empty string if failed

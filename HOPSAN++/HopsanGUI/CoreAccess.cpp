@@ -618,8 +618,8 @@ bool CoreSystemAccess::havePlotData(const QString compname, const QString portna
                 return true;
             }
         }
-
     }
+    return false;
 }
 
 

@@ -37,6 +37,7 @@
 
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
+void stripLTSpaces(QString &rString);
 QString addQuotes(QString str);
 QString relativePath(QFileInfo pathtochange, QDir basedir);
 qreal deg2rad(const qreal deg);
