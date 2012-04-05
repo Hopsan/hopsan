@@ -42,7 +42,9 @@ else
     exit 0
   fi
 
-  svn co -r 209 https://pythonqt.svn.sourceforge.net/svnroot/pythonqt/trunk $pythonqtname
+  #svn co -r 209 https://pythonqt.svn.sourceforge.net/svnroot/pythonqt/trunk $pythonqtname
+  rm -rf $pythonqtname
+  unzip -q $pythonqtname.zip
 
   echo "Applying Hopsan fixes to code"
   # Apply patch to remove qt all extensions and cocoa thing

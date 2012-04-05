@@ -16,7 +16,8 @@ pbuilderBaseTGZpath="/var/cache/pbuilder/"
 distArchArray=( precise:amd64 precise:i386 oneiric:amd64 oneiric:i386 natty:amd64 natty:i386 )
 distArchArrayDo=()
 
-# Ask user for version input 
+# Ask user for version input
+echo
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
 read version
 
@@ -28,14 +29,12 @@ if [ -z "$version" ]; then
 fi
 
 echo
-echo "Do you want to build for all supported dists, using pbuilder (This WILL take a LOONG time)"
-echo "Answer: y/n"
+echo -n "Do you want to build for all supported dists, using pbuilder? Answer: y/n : "
 read ans
 
 doPbuild="false"
 if [ "$ans" = "y" ]; then
   doPbuild="true"
-    
   for i in "${distArchArray[@]}"; do
     echo -n "Do you want to build, "$i", y/n: "
     read ans
@@ -57,7 +56,7 @@ if [ "$doPbuild" = "true" ]; then
   echo ${distArchArrayDo[@]}
 fi
 echo ---------------------------------------
-echo Is this OK, y/n
+echo -n "Is this OK? y/n: "
 read ans
 if [ "$ans" != "y" ]; then
   echo Aborting!
@@ -131,11 +130,12 @@ if [ "$doPbuild" = "true" ]; then
       resultPath="$pbuilderBaseTGZpath/result/$dist"
 
       # Update or create pbuild environments
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
-	      sudo pbuilder --update --basetgz $basetgzFile
+	      sudo pbuilder --update --extrapackages "$extraPackages" --basetgz $basetgzFile
 	    else
-	      sudo pbuilder --create --components "main universe" --extrapackages "debhelper unzip libtbb-dev libqt4-dev" --distribution $dist --architecture $arch --basetgz $basetgzFile
+	      sudo pbuilder --create --components "main universe" --extrapackages "$extraPackages" --distribution $dist --architecture $arch --basetgz $basetgzFile
 	    fi
       fi
       
