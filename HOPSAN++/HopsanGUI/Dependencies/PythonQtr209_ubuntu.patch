@@ -1,0 +1,82 @@
+Index: PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.pro
+===================================================================
+--- PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	(revision 209)
++++ PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	(working copy)
+@@ -18,18 +18,19 @@
+   PythonQt_QtAll.cpp
+ 
+ CONFIG += uitools
+-QT += webkit gui svg sql network xml xmlpatterns opengl
++#QT += webkit gui svg sql network xml xmlpatterns opengl
++QT += gui
+ #QT += phonon 
+ 
+ include (../../generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core.pri)
+ include (../../generated_cpp/com_trolltech_qt_gui/com_trolltech_qt_gui.pri)
+-include (../../generated_cpp/com_trolltech_qt_svg/com_trolltech_qt_svg.pri)
+-include (../../generated_cpp/com_trolltech_qt_sql/com_trolltech_qt_sql.pri)
+-include (../../generated_cpp/com_trolltech_qt_network/com_trolltech_qt_network.pri)
+-include (../../generated_cpp/com_trolltech_qt_opengl/com_trolltech_qt_opengl.pri)
+-include (../../generated_cpp/com_trolltech_qt_webkit/com_trolltech_qt_webkit.pri)
+-include (../../generated_cpp/com_trolltech_qt_xml/com_trolltech_qt_xml.pri)
+-include (../../generated_cpp/com_trolltech_qt_uitools/com_trolltech_qt_uitools.pri)
++#include (../../generated_cpp/com_trolltech_qt_svg/com_trolltech_qt_svg.pri)
++#include (../../generated_cpp/com_trolltech_qt_sql/com_trolltech_qt_sql.pri)
++#include (../../generated_cpp/com_trolltech_qt_network/com_trolltech_qt_network.pri)
++#include (../../generated_cpp/com_trolltech_qt_opengl/com_trolltech_qt_opengl.pri)
++#include (../../generated_cpp/com_trolltech_qt_webkit/com_trolltech_qt_webkit.pri)
++#include (../../generated_cpp/com_trolltech_qt_xml/com_trolltech_qt_xml.pri)
++#include (../../generated_cpp/com_trolltech_qt_uitools/com_trolltech_qt_uitools.pri)
+ 
+ #include (../../generated_cpp/com_trolltech_qt_xmlpatterns/com_trolltech_qt_xmlpatterns.pri)
+ #include (../../generated_cpp/com_trolltech_qt_phonon/com_trolltech_qt_phonon.pri)
+Index: PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp
+===================================================================
+--- PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	(revision 209)
++++ PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	(working copy)
+@@ -35,29 +35,29 @@
+ #include "PythonQt.h"
+ 
+ void PythonQt_init_QtGui(PyObject*);
+-void PythonQt_init_QtSvg(PyObject*);
+-void PythonQt_init_QtSql(PyObject*);
+-void PythonQt_init_QtNetwork(PyObject*);
++//void PythonQt_init_QtSvg(PyObject*);
++//void PythonQt_init_QtSql(PyObject*);
++//void PythonQt_init_QtNetwork(PyObject*);
+ void PythonQt_init_QtCore(PyObject*);
+-void PythonQt_init_QtWebKit(PyObject*);
+-void PythonQt_init_QtOpenGL(PyObject*);
+-void PythonQt_init_QtXml(PyObject*);
+-void PythonQt_init_QtXmlPatterns(PyObject*);
+-void PythonQt_init_QtUiTools(PyObject*);
+-void PythonQt_init_QtPhonon(PyObject*);
++//void PythonQt_init_QtWebKit(PyObject*);
++//void PythonQt_init_QtOpenGL(PyObject*);
++//void PythonQt_init_QtXml(PyObject*);
++//void PythonQt_init_QtXmlPatterns(PyObject*);
++//void PythonQt_init_QtUiTools(PyObject*);
++//void PythonQt_init_QtPhonon(PyObject*);
+ 
+ namespace PythonQt_QtAll
+ {
+   PYTHONQT_QTALL_EXPORT void init() {
+     PythonQt_init_QtCore(0);
+-    PythonQt_init_QtNetwork(0);
++//    PythonQt_init_QtNetwork(0);
+     PythonQt_init_QtGui(0);
+-    PythonQt_init_QtXml(0);
+-    PythonQt_init_QtSvg(0);
+-    PythonQt_init_QtSql(0);
+-    PythonQt_init_QtWebKit(0);
+-    PythonQt_init_QtOpenGL(0);
+-    PythonQt_init_QtUiTools(0);
++//    PythonQt_init_QtXml(0);
++//    PythonQt_init_QtSvg(0);
++//    PythonQt_init_QtSql(0);
++//    PythonQt_init_QtWebKit(0);
++//    PythonQt_init_QtOpenGL(0);
++//    PythonQt_init_QtUiTools(0);
+     // Does not compile yet:
+ //    PythonQt_init_QtXmlPatterns(0);
+ //    PythonQt_init_QtPhonon(0);

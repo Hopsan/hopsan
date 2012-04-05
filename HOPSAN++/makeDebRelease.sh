@@ -13,7 +13,7 @@ devversion=0.6.
 pbuilderBaseTGZpath="/var/cache/pbuilder/"
 
 # Pbuilder dists and archs
-distArchArray=( oneiric:amd64 oneiric:i386 )
+distArchArray=( precise:amd64 precise:i386 oneiric:amd64 oneiric:i386 natty:amd64 natty:i386 )
 distArchArrayDo=()
 
 # Ask user for version input 
