@@ -135,28 +135,25 @@ if [ "$doPbuild" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
 	      sudo pbuilder --update --basetgz $basetgzFile
 	    else
-	          sudo pbuilder --create --components "main universe" --extrapackages "debhelper unzip libtbb-dev libqt4-dev" --distribution $dist --architecture $arch --basetgz $basetgzFile
+	      sudo pbuilder --create --components "main universe" --extrapackages "debhelper unzip libtbb-dev libqt4-dev" --distribution $dist --architecture $arch --basetgz $basetgzFile
 	    fi
       fi
       
       # Now build source package
       sudo pbuilder --build --basetgz $basetgzFile --buildresult $resultPath $dscFile
+      outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
       
-      # Now copy/move files to correct output dir
+      # Now copy adn rename output deb file to dist output dir
       mkdir -p $outputDir/$dist
-      cp $resultPath/*.deb $outputDir/$dist
+      cp $outputDebName $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
       
-      # Add distname to filename
-      cd $outputDir/$dist
-      debName=`ls $outputbasename*_$arch.deb`
-      mv $debName $outputbasename\_$dist\_$arch.deb
-      lintian --color always -X files $outputbasename\_$dist\_$arch.deb
-      cd $OLDPWD
+      # Check package with lintian
+      lintian --color always -X files $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
     fi
   done
   
-  mv $packagedir* $outputDir
-  mv $outputbasename* $outputDir
+  mv $packagedir* $outputDir/
+  mv $outputbasename* $outputDir/
 
 else
   # Remove the dependency build from rules, we use our pre build ones
