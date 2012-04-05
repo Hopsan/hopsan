@@ -21,11 +21,13 @@ fi
 
 rm -rf $pythonqtname
 unzip -q $pythonqtname.zip
-cd $pythonqtname
+
   
 echo "Applying Hopsan fixes to code"
-# Fix cocoa thing
-sed "s|CocoaRequestModal = QEvent::CocoaRequestModal,|/\*CocoaRequestModal = QEvent::CocoaRequestModal,\*/|" -i generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h
+# Apply patch to remove qt all extensions and cocoa thing
+patch -p0 < PythonQt201_ubuntu.patch
+
+cd $pythonqtname
 
 # Set build mode
 if [ "$1" != "release" ]; then
