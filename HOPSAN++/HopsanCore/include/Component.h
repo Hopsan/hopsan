@@ -80,6 +80,7 @@ public:
 
     //Parameters
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
     void unRegisterParameter(const std::string name);

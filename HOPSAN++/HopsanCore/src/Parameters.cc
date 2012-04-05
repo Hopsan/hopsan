@@ -53,7 +53,6 @@ Parameter::Parameter(std::string parameterName, std::string parameterValue, std:
     mParameterValue = parameterValue;
     mDescription = description;
     mUnit = unit;
-    std::string tmp = type;
     if((type=="double") || (type=="integer") || (type=="bool") || (type=="string"))
     {
         mType = type;

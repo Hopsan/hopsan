@@ -287,6 +287,29 @@ void Component::registerParameter(const string name, const string description, c
     }
 }
 
+//! @brief Register a double parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! @ingroup ConvenientParameterFunctions
+//! @param [in] name The name of the parameter
+//! @param [in] description A description of the parameter
+//! @param [in] unit The unit of the parameter value
+//! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
+//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
+void Component::registerParameter(const string name, const string description, const string unit, int &rValue)
+{
+    if(mpParameters->exist(name))
+        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
+
+    stringstream ss;
+    if(ss << rValue)
+    {
+        mpParameters->addParameter(name, ss.str(), description, unit, "integer", &rValue);
+    }
+    else
+    {
+        assert(false);
+    }
+}
+
 
 //! @brief Register a string parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
 //! @ingroup ConvenientParameterFunctions
