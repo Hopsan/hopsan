@@ -33,7 +33,7 @@ setlocal enabledelayedexpansion
 :: AUTOMATED PART (performed by this script):
 
 :: Define path variables
-set devversion=0.6.x
+set devversion=0.6.
 set tbbversion=tbb30_20110704oss
 set tempDir=C:\temp_release
 set inkscapeDir="C:\Program Files\Inkscape"
@@ -84,7 +84,7 @@ if "%version%"=="" (
   echo Building DEV release
   call getSvnRevision.bat
   set /P revnum="Enter the revnum shown above: "
-  call set version=%devversion%_r!revnum!
+  call set version=%devversion%r!revnum!
   set dodevrelease=true
 )
 echo.
@@ -373,7 +373,7 @@ xcopy bin\*.lib %tempDir%\bin /s
 xcopy bin\*.exp %tempDir%\bin /s
 xcopy bin\python26.zip %tempDir%\bin /s
 xcopy bin\python27.zip %tempDir%\bin /s
-del %tempDir%\bin\HopsanCLI*
+del %tempDir%\bin\HopsanCLI_d.exe
 del %tempDir%\bin\HopsanGUI_d.exe
 del %tempDir%\bin\HopsanCore_d.dll
 del %tempDir%\bin\libHopsanCore_d.a
