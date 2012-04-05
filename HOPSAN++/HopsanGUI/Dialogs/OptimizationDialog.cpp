@@ -1701,6 +1701,15 @@ bool OptimizationDialog::loadObjectiveFunctions()
 
     //Read from OptimizationObjectiveFunctions.xml
     QFile file(QString(gScriptsPath) + "OptimizationObjectiveFunctions.xml");
+
+    // If the file could not be found, try in the DEV path
+    // This is usefull for Linux builds that do not install files to Documents folder
+    // It should also be usefull for zip and portable releases that has not installed the script files
+    if (!file.exists())
+    {
+        file.setFileName(QString(SCRIPTS_DEV_PATH) + "OptimizationObjectiveFunctions.xml");
+    }
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
