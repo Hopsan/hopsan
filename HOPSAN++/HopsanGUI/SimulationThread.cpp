@@ -64,6 +64,7 @@ void SimulationThread::run()
     {
         mpCoreSystemAccess->simulate(mStartTime, mFinishTime, SINGLECORE);
     }
+    //! @todo we should run finalize at some other place even if initialize is aborted
     mpCoreSystemAccess->finalize(mStartTime, mFinishTime);
 
     //exec(); //Is used if one want to run an event loop in this thread.
