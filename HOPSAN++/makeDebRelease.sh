@@ -91,7 +91,6 @@ cd $srcExportDir
 tar -czf $packageorigsrcfile *
 cd $OLDPWD
 mv $srcExportDir/$packageorigsrcfile .
-#cp -a $packageorigsrcfile $packagesrcfile
 
 # -----------------------------------------------------------------------------
 # Now build DEB package
@@ -108,7 +107,6 @@ tar -xzf $packageorigsrcfile -C $packagedir
 # Generate NEW changelog file for this release version with no content in particular
 cd $packagedir
 rm debian/changelog
-#dch -p -M --create --package $name --newversion=$version See Hopsan-release-notes.txt for changes
 dch -p -M -d --create "See Hopsan-release-notes.txt for changes"
 dch -p -m --release ""
 cd ..
@@ -134,11 +132,11 @@ if [ "$doPbuild" = "true" ]; then
 
       # Update or create pbuild environments
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
-	if [ -f $basetgzFile ]; then
-	  sudo pbuilder --update --basetgz $basetgzFile
-	else
-	      sudo pbuilder --create --components "main universe" --extrapackages "debhelper unzip libtbb-dev libqt4-dev" --distribution $dist --architecture $arch --basetgz $basetgzFile
-	fi
+	    if [ -f $basetgzFile ]; then
+	      sudo pbuilder --update --basetgz $basetgzFile
+	    else
+	          sudo pbuilder --create --components "main universe" --extrapackages "debhelper unzip libtbb-dev libqt4-dev" --distribution $dist --architecture $arch --basetgz $basetgzFile
+	    fi
       fi
       
       # Now build source package
@@ -147,16 +145,18 @@ if [ "$doPbuild" = "true" ]; then
       # Now copy/move files to correct output dir
       mkdir -p $outputDir/$dist
       cp $resultPath/*.deb $outputDir/$dist
-      mv $packagedir* $outputDir/$dist
-      mv $outputbasename* $outputDir
       
       # Add distname to filename
       cd $outputDir/$dist
       debName=`ls $outputbasename*_$arch.deb`
       mv $debName $outputbasename\_$dist\_$arch.deb
+      lintian --color always -X files $outputbasename\_$dist\_$arch.deb
       cd $OLDPWD
     fi
   done
+  
+  mv $packagedir* $outputDir
+  mv $outputbasename* $outputDir
 
 else
   # Remove the dependency build from rules, we use our pre build ones
