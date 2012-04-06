@@ -3049,6 +3049,7 @@ void PlotCurve::setGeneration(int generation)
     }
 
     updateCurve();
+    mpParentPlotTab->rescaleToCurves();
     mpParentPlotTab->update();
     updatePlotInfoBox();
 }
