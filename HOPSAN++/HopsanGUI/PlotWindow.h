@@ -234,6 +234,7 @@ public:
     void setBottomAxisLogarithmic(bool value);
     bool hasLogarithmicBottomAxis();
     void setLegendsVisible(bool value);
+    void exportToCsv(QString fileName);
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);

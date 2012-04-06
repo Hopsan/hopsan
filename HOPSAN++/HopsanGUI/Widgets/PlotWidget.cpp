@@ -244,7 +244,14 @@ PlotWindow *PlotVariableTree::createPlotWindow(QTreeWidgetItem *item)
 
 PlotWindow *PlotVariableTree::getPlotWindow(int number)
 {
-    return mOpenPlotWindows.at(number);
+    if(number > mOpenPlotWindows.size()-1)
+    {
+        return 0;
+    }
+    else
+    {
+        return mOpenPlotWindows.at(number);
+    }
 }
 
 

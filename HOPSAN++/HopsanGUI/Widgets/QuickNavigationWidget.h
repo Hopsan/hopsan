@@ -38,6 +38,7 @@ class QuickNavigationWidget : public QWidget
 public:
     QuickNavigationWidget(QWidget *parent = 0);
     void addOpenContainer(ContainerObject* pContainer);
+    int getCurrentId();
 
 signals:
 

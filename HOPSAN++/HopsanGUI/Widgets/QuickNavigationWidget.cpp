@@ -91,3 +91,9 @@ void QuickNavigationWidget::refreshVisible()
         this->hide();
     }
 }
+
+
+int QuickNavigationWidget::getCurrentId()
+{
+    return mpButtonGroup->buttons().size();
+}

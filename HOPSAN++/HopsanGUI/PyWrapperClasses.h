@@ -26,18 +26,20 @@
 #define PYWRAPPERCLASSES_H
 
 #include <QObject>
+
+#include "Configuration.h"
+#include "GUIConnector.h"
+#include "GUIPort.h"
 #include "MainWindow.h"
+#include "PlotWindow.h"
+#include "Widgets/LibraryWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/PlotWidget.h"
-#include "GUIObjects/GUIModelObject.h"
-#include "GUIObjects/GUISystem.h"
-#include "GUIPort.h"
-#include "Configuration.h"
-#include "PlotWindow.h"
 #include "Widgets/PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"
-
+#include "GUIObjects/GUIModelObject.h"
+#include "GUIObjects/GUISystem.h"
 
 //Just for test purposes
 class pyTestClass : public QObject
@@ -154,6 +156,11 @@ public slots:
 //    {
 //        delete o;
 //    }
+
+    void newModel(MainWindow* o)
+    {
+        o->mpProjectTabs->addNewProjectTab();
+    }
 
     void loadModel(MainWindow* o, const QString& modelFileName)
     {
@@ -278,6 +285,70 @@ public slots:
         o->mpSystemParametersWidget->update();
     }
 
+    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const int& x, const int& y, const int& rot)
+    {
+        ModelObjectAppearance *pAppearance = o->mpLibrary->getAppearanceData(typeName);
+        if(!pAppearance)
+            return "Could not find component type.";
+        pAppearance->setName(name);
+        ModelObject *pObj = o->mpProjectTabs->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
+        if(!pObj)
+            return "Could not create component.";
+        return pObj->getName();
+    }
+
+
+    bool connect(MainWindow* o, const QString& comp1, const QString& port1, const QString& comp2, const QString& port2)
+    {
+        Port *pPort1 = o->mpProjectTabs->getCurrentContainer()->getModelObject(comp1)->getPort(port1);
+        Port *pPort2 = o->mpProjectTabs->getCurrentContainer()->getModelObject(comp2)->getPort(port2);
+        Connector *pConn = o->mpProjectTabs->getCurrentContainer()->createConnector(pPort1, pPort2);
+
+        if (pConn != 0)
+        {
+            QVector<QPointF> pointVector;
+            pointVector.append(pPort1->pos());
+            pointVector.append(pPort2->pos());
+
+            QStringList geometryList;
+            geometryList.append("diagonal");
+
+            pConn->setPointsAndGeometries(pointVector, geometryList);
+            pConn->refreshConnectorAppearance();
+
+            //! @todo Register undo!
+
+            return true;
+        }
+        return false;
+    }
+
+
+    void enterSystem(MainWindow* o, const QString& sysName)
+    {
+        ModelObject *sysObj = o->mpProjectTabs->getCurrentContainer()->getModelObject(sysName);
+        SystemContainer *system = dynamic_cast<SystemContainer *>(sysObj);
+        system->enterContainer();
+    }
+
+
+    void exitSystem(MainWindow* o)
+    {
+        //o->mpProjectTabs->getCurrentContainer()->exitContainer();
+        int id = o->mpProjectTabs->getCurrentTab()->getQuickNavigationWidget()->getCurrentId();
+        o->mpProjectTabs->getCurrentTab()->getQuickNavigationWidget()->gotoContainerAndCloseSubcontainers(id-1);
+    }
+
+
+    void clear(MainWindow* o)
+    {
+        while(!o->mpProjectTabs->getCurrentContainer()->getModelObjectNames().isEmpty())
+        {
+            o->mpProjectTabs->getCurrentContainer()->deleteModelObject(o->mpProjectTabs->getCurrentContainer()->getModelObjectNames().first());
+        }
+    }
+
+
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
         o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
@@ -304,6 +375,11 @@ public slots:
     void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
     {
         o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowNumber)->addPlotCurve(generation, compName, portName, dataName);
+    }
+
+    void savePlotData(MainWindow* o, const QString& fileName, const int& windowNumber)
+    {
+        o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowNumber)->getCurrentPlotTab()->exportToCsv(fileName);
     }
 
     void closeLastPlotWindow(MainWindow* o)

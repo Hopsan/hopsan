@@ -1809,22 +1809,31 @@ void PlotTab::exportToXml()
 void PlotTab::exportToCsv()
 {
         //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
     QString filePath;
     QFileInfo fileInfo;
-    QFile file;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
                                             gConfig.getPlotDataDir(),
                                             tr("Comma-separated values (*.csv)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
     fileInfo.setFile(filePath);
     gConfig.setPlotDataDir(fileInfo.absolutePath());
-    file.setFileName(fileInfo.filePath());   //Create a QFile object
+
+    exportToCsv(filePath);
+}
+
+
+//! @brief Exports plot tab to comma-separated value file with specified filename
+//! @param fileName File name
+void PlotTab::exportToCsv(QString fileName)
+{
+    QFile file;
+    file.setFileName(fileName);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + fileName);
         return;
     }
+
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
 
 
