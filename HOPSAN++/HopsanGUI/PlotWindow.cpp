@@ -3327,8 +3327,8 @@ void PlotCurve::updateToNewGeneration()
 //! @brief Updates buttons and text in plot info box to correct values
 void PlotCurve::updatePlotInfoBox()
 {
-    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getNumberOfPlotGenerations() > 1 && mAutoUpdate);
-    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getNumberOfPlotGenerations()-1 && mpContainerObject->getNumberOfPlotGenerations() > 1 && mAutoUpdate);
+    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getNumberOfPlotGenerations() > 1);
+    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getNumberOfPlotGenerations()-1 && mpContainerObject->getNumberOfPlotGenerations() > 1);
 
     QString numString1, numString2;
     numString1.setNum(mGeneration+1);
