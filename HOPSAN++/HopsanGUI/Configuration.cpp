@@ -54,7 +54,7 @@ void Configuration::saveToXml()
 
     QDomElement settings = appendDomElement(configRoot,"settings");
     appendDomIntegerNode(settings, "librarystyle", mLibraryStyle);
-    appendDomBooleanNode(settings, "showwelcomedialog", mShowWelcomeDialog);
+    appendDomBooleanNode(settings, "alwaysloadlastsession", mAlwaysLoadLastSession);
     appendDomBooleanNode(settings, "showpopuphelp", mShowPopupHelp);
     appendDomBooleanNode(settings, "nativestylesheet", mUseNativeStyleSheet);
     appendDomTextNode(settings, "backgroundcolor", mBackgroundColor.name());
@@ -215,8 +215,8 @@ void Configuration::loadFromXml()
 
             if(!settingsElement.firstChildElement("librarystyle").isNull())
                 mLibraryStyle = parseDomIntegerNode(settingsElement.firstChildElement("librarystyle"));
-            if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
-                mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
+            if(!settingsElement.firstChildElement("alwaysloadlastsession").isNull())
+                mAlwaysLoadLastSession = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
             if(!settingsElement.firstChildElement("showpopuphelp").isNull())
                 mShowPopupHelp = parseDomBooleanNode(settingsElement.firstChildElement("showpopuphelp"));
             if(!settingsElement.firstChildElement("nativestylesheet").isNull())
@@ -395,8 +395,8 @@ void Configuration::loadDefaultsFromXml()
             QDomElement settingsElement = configRoot.firstChildElement("settings");
             if(!settingsElement.firstChildElement("librarystyle").isNull())
                 mLibraryStyle = parseDomIntegerNode(settingsElement.firstChildElement("librarystyle"));
-            if(!settingsElement.firstChildElement("showwelcomedialog").isNull())
-                mShowWelcomeDialog = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
+            if(!settingsElement.firstChildElement("alwaysloadlastsession").isNull())
+                mAlwaysLoadLastSession = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
             if(!settingsElement.firstChildElement("showpopuphelp").isNull())
                 mShowPopupHelp = parseDomBooleanNode(settingsElement.firstChildElement("showpopuphelp"));
             if(!settingsElement.firstChildElement("nativestylesheet").isNull())
@@ -564,9 +564,9 @@ int Configuration::getLibraryStyle()
 
 
 //! @brief Returns whether or not the welcome dialog shall be shown
-bool Configuration::getShowWelcomeDialog()
+bool Configuration::getAlwaysLoadLastSession()
 {
-    return this->mShowWelcomeDialog;
+    return this->mAlwaysLoadLastSession;
 }
 
 
@@ -892,9 +892,9 @@ void Configuration::setLibraryStyle(int value)
 
 //! @brief Set function for invert wheel option
 //! @param value Desired setting
-void Configuration::setShowWelcomeDialog(bool value)
+void Configuration::setAlwaysLoadLastSession(bool value)
 {
-    this->mShowWelcomeDialog = value;
+    this->mAlwaysLoadLastSession = value;
     saveToXml();
 }
 

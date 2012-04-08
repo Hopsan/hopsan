@@ -36,6 +36,7 @@
 #include "Widgets/PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
+#include "Widgets/WelcomeWidget.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -92,16 +93,6 @@ MainWindow::MainWindow(QWidget *parent)
         setPalette(gConfig.getPalette());
     }
     qApp->setFont(gConfig.getFont());
-
-    //Set the size and position of the main window
-    int sh = qApp->desktop()->screenGeometry().height();
-    int sw = qApp->desktop()->screenGeometry().width();
-    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
-    int w = this->size().width();
-    int h = this->size().height();
-    int x = (sw - w)/2;
-    int y = (sh - h)/2;
-    this->move(x, y);       //Move window to center of screen
 
     //Set name and icon of main window
 #ifdef DEVELOPMENT
@@ -162,6 +153,9 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs->setObjectName("projectTabs");
     mpProjectTabs->setMouseTracking(true);
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0,4,4);
+
+    mpWelcomeWidget = new WelcomeWidget(this);
+    mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
 
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
@@ -235,6 +229,17 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->loadConfig();
 
     initializeWorkspace();
+
+
+    //Set the size and position of the main window
+    int sh = qApp->desktop()->screenGeometry().height();
+    int sw = qApp->desktop()->screenGeometry().width();
+    this->resize(sw*0.8, sh*0.8);   //Resize window to 80% of screen height and width
+//    int w = this->size().width();
+//    int h = this->size().height();
+//    int x = (sw - w)/2;
+//    int y = (sh - h)/2;
+//    this->move(x, y);       //Move window to center of screen
 }
 
 
@@ -373,23 +378,19 @@ void MainWindow::initializeWorkspace()
         }
     }
 
-    if(gConfig.getShowWelcomeDialog())
+    if(gConfig.getAlwaysLoadLastSession())
     {
-        mpWelcomeDialog = new WelcomeDialog(this);
-        mpWelcomeDialog->setModal(true);
-        mpWelcomeDialog->show();
-    }
-    else
-    {
+//        mpWelcomeDialog = new WelcomeDialog(this);
+//        mpWelcomeDialog->setModal(true);
+//        mpWelcomeDialog->show();
+//    }
+//    else
+//    {
         if(!gConfig.getLastSessionModels().empty())
         {
             for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
             {
                 mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
-            }
-            if(mpProjectTabs->count() != 0) // Failed loading last session models
-            {
-                //mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
             }
         }
         else
@@ -1086,9 +1087,9 @@ void MainWindow::launchAutoUpdate()
     qDebug() << "FewrSpeil";
     //QString path = QString(AUTOUPDATELINK);
     //QString path = "http://tiny.cc/hopsanupdate";
-    QUrl url = QUrl(mpWelcomeDialog->mpUpdateLink);
+    QUrl url = QUrl(mpWelcomeWidget->getUpdateLink());
 
-    qDebug() << "Downloading: " << mpWelcomeDialog->mpUpdateLink;
+    qDebug() << "Downloading: " << mpWelcomeWidget->getUpdateLink();
 
     mpDownloadDialog = new QProgressDialog("Downloading new version...", "Cancel",0, 100, this);
     mpDownloadDialog->setWindowTitle("Hopsan Auto Updater");
@@ -1186,6 +1187,8 @@ void MainWindow::updateToolBarsToNewTab()
     mpPlotAction->setEnabled(!noTabs);
     mpPropertiesAction->setEnabled(!noTabs);
     mpOpenSystemParametersAction->setEnabled(!noTabs);
+
+    mpWelcomeWidget->setVisible(noTabs);
 }
 
 

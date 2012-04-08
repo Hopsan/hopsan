@@ -46,7 +46,7 @@ public:
     void loadDefaultsFromXml();
 
     int getLibraryStyle();
-    bool getShowWelcomeDialog();
+    bool getAlwaysLoadLastSession();
     bool getShowPopupHelp();
     bool getUseNativeStyleSheet();
     bool getInvertWheel();
@@ -82,7 +82,7 @@ public:
     QString getScriptDir();
 
     void setLibraryStyle(int value);
-    void setShowWelcomeDialog(bool value);
+    void setAlwaysLoadLastSession(bool value);
     void setShowPopupHelp(bool value);
     void setUseNativeStyleSheet(bool value);
     void setInvertWheel(bool value);
@@ -116,7 +116,7 @@ public:
 
 private:
     int mLibraryStyle;
-    bool mShowWelcomeDialog;
+    bool mAlwaysLoadLastSession;
     bool mShowPopupHelp;
     bool mUseNativeStyleSheet;
     bool mInvertWheel;

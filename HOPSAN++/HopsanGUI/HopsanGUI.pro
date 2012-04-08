@@ -155,7 +155,8 @@ SOURCES += main.cpp \
     Dialogs/ComponentGeneratorDialog.cpp \
     Dialogs/MovePortsDialog.cpp \
     loadFunctions.cpp \
-    Utilities/ComponentGeneratorUtilities.cpp
+    Utilities/ComponentGeneratorUtilities.cpp \
+    Widgets/WelcomeWidget.cpp
 
 
 HEADERS += MainWindow.h \
@@ -210,7 +211,8 @@ HEADERS += MainWindow.h \
     Dialogs/ComponentGeneratorDialog.h \
     Dialogs/MovePortsDialog.h \
     loadFunctions.h \
-    Utilities/ComponentGeneratorUtilities.h
+    Utilities/ComponentGeneratorUtilities.h \
+    Widgets/WelcomeWidget.h
 
 OTHER_FILES += \
     ../hopsandefaults \

@@ -120,5 +120,7 @@
         <file>graphics/objecticons/containerport.svg</file>
         <file>graphics/uiicons/Hopsan-Sub.png</file>
         <file>graphics/uiicons/Hopsan-NewComponent.png</file>
+        <file>graphics/options.png</file>
+        <file>graphics/optionsactive.png</file>
     </qresource>
 </RCC>

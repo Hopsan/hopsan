@@ -80,8 +80,8 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpNativeStyleSheetCheckBox->setCheckable(true);
 
 
-    mpShowWelcomeDialogCheckBox = new QCheckBox(tr("Show Welcome Dialog"));
-    mpShowWelcomeDialogCheckBox->setCheckable(true);
+    mpAlwaysLoadLastSessionCheckBox = new QCheckBox(tr("Always Load Last Session On Startup"));
+    mpAlwaysLoadLastSessionCheckBox->setCheckable(true);
 
     mpShowPopupHelpCheckBox = new QCheckBox(tr("Show Popup Help Messages"));
     mpShowPopupHelpCheckBox->setCheckable(true);
@@ -99,7 +99,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpInterfaceWidget = new QWidget(this);
     mpInterfaceLayout = new QGridLayout;
     mpInterfaceLayout->addWidget(mpNativeStyleSheetCheckBox,    0, 0);
-    mpInterfaceLayout->addWidget(mpShowWelcomeDialogCheckBox,   1, 0);
+    mpInterfaceLayout->addWidget(mpAlwaysLoadLastSessionCheckBox,   1, 0);
     mpInterfaceLayout->addWidget(mpShowPopupHelpCheckBox,       2, 0);
     mpInterfaceLayout->addWidget(mpInvertWheelCheckBox,         3, 0);
     mpInterfaceLayout->addWidget(mpAntiAliasingCheckBox,        4, 0);
@@ -290,7 +290,7 @@ void OptionsDialog::reset()
 //! Slot that updates and saves the settings based on the choices made in the dialog box
 void OptionsDialog::updateValues()
 {
-    gConfig.setShowWelcomeDialog(mpShowWelcomeDialogCheckBox->isChecked());
+    gConfig.setAlwaysLoadLastSession(mpAlwaysLoadLastSessionCheckBox->isChecked());
     gConfig.setShowPopupHelp(mpShowPopupHelpCheckBox->isChecked());
     gConfig.setUseNativeStyleSheet(mpNativeStyleSheetCheckBox->isChecked());
 
@@ -397,7 +397,7 @@ void OptionsDialog::show()
     mPickedBackgroundColor = gConfig.getBackgroundColor();
 
     mpNativeStyleSheetCheckBox->setChecked(gConfig.getUseNativeStyleSheet());
-    mpShowWelcomeDialogCheckBox->setChecked(gConfig.getShowWelcomeDialog());
+    mpAlwaysLoadLastSessionCheckBox->setChecked(gConfig.getAlwaysLoadLastSession());
     mpShowPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
     mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
     mpInvertWheelCheckBox->setChecked(gConfig.getInvertWheel());

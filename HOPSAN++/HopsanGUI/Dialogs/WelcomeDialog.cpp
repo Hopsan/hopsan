@@ -190,7 +190,7 @@ WelcomeDialog::WelcomeDialog(MainWindow *parent)
     connect(mpWeb, SIGNAL(linkClicked(const QUrl &)), this, SLOT(urlClicked(const QUrl &)));
 
     mpDontShowMe = new QCheckBox("Always load last session");
-    mpDontShowMe->setChecked(!gConfig.getShowWelcomeDialog());
+    mpDontShowMe->setChecked(!gConfig.getAlwaysLoadLastSession());
 
     mpPopupHelpCheckBox = new QCheckBox("Enable popup help messages");
     mpPopupHelpCheckBox->setChecked(gConfig.getShowPopupHelp());
@@ -294,7 +294,7 @@ void WelcomeDialog::createNewModel()
 {
     gpMainWindow->mpProjectTabs->addNewProjectTab();
     gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
-    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
 }
@@ -307,7 +307,7 @@ void WelcomeDialog::loadExistingModel()
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
         //gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
-        gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+        gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
         gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
         this->close();
     }
@@ -323,7 +323,7 @@ void WelcomeDialog::loadLastSession()
         gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
     }
     //gpMainWindow->mpProjectTabs->getCurrentTab()->getGraphicsView()->centerView();
-    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
 }
@@ -333,7 +333,7 @@ void WelcomeDialog::loadLastSession()
 void WelcomeDialog::openRecentModel()
 {
     gpMainWindow->mpProjectTabs->loadModel(mModelList.at(mpRecentList->currentIndex().row()));
-    gConfig.setShowWelcomeDialog(!mpDontShowMe->isChecked());
+    gConfig.setAlwaysLoadLastSession(!mpDontShowMe->isChecked());
     gConfig.setShowPopupHelp(mpPopupHelpCheckBox->isChecked());
     this->close();
 }

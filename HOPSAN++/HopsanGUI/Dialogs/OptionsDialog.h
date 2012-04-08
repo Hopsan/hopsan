@@ -73,7 +73,7 @@ private:
     QColor mPickedBackgroundColor;
 
     QCheckBox *mpNativeStyleSheetCheckBox;
-    QCheckBox *mpShowWelcomeDialogCheckBox;
+    QCheckBox *mpAlwaysLoadLastSessionCheckBox;
     QCheckBox *mpShowPopupHelpCheckBox;
     QCheckBox *mpInvertWheelCheckBox;
     QCheckBox *mpAntiAliasingCheckBox;

@@ -40,6 +40,7 @@ class MessageWidget;
 class PlotTreeWidget;
 class PyDockWidget;
 class SystemParametersWidget;
+class WelcomeWidget;
 class Configuration;
 class CopyStack;
 class AboutDialog;
@@ -84,6 +85,7 @@ public:
     //! @todo These should probably not be public
     UndoWidget *mpUndoWidget;
     ProjectTabWidget *mpProjectTabs;
+    WelcomeWidget *mpWelcomeWidget;
     LibraryWidget *mpLibrary;
     MessageWidget *mpMessageWidget;
     PlotTreeWidget *mpPlotWidget;
