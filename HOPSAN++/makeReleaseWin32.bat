@@ -144,7 +144,7 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 :: Setup compiler and compile
-call %msvc2008Dir%\SetEnv.cmd /x86
+call %msvc2008Dir%\SetEnv.cmd /Release /x86
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
@@ -185,7 +185,7 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 :: Setup compiler and compile
-call %msvc2008Dir%\SetEnv.cmd /x64
+call %msvc2008Dir%\SetEnv.cmd /Release /x64
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
@@ -226,7 +226,7 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 ::Setup compiler and compile
-call %msvc2010Dir%\SetEnv.cmd /x86
+call %msvc2010Dir%\SetEnv.cmd /Release /x86
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
@@ -266,7 +266,7 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 ::Setup compiler and compile
-call %msvc2010Dir%\SetEnv.cmd /x64
+call %msvc2010Dir%\SetEnv.cmd /Release /x64
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
