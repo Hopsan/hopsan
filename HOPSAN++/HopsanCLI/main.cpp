@@ -270,7 +270,7 @@ void performModelTest(string modelName)
     //Load reference data curve
     CSVParser *refDataCurve;
     bool success=false;
-    refDataCurve = new CSVParser(success, modelName+".csv", ',', '\n', '"', 0);
+    refDataCurve = new CSVParser(success, modelName+".csv", '\n', '"');
     if(!success || !refDataCurve->checkData())
     {
         cout << "Unable to initialize CSV file: " << modelName+".csv";

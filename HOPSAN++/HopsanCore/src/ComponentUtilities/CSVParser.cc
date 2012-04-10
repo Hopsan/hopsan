@@ -26,21 +26,47 @@
 #include "csv_parser.hpp"
 #include <algorithm>
 #include <sstream>
+#include <fstream>
 
 using namespace hopsan;
 
 CSVParser::CSVParser(bool &success,
           const std::string filename,
-          const char field_terminator,
           const char line_terminator,
-          const char enclosure_char,
-          const size_t linesToSkip)
+          const char enclosure_char)
 {
+
+    //Figure out field terminator and number of lines to skip
+    char field_terminator;
+    int lines_to_skip = 0;
+    std::string line = "";
+    std::ifstream myfile (filename.c_str());
+    if (myfile.is_open())
+    {
+        while(line.find(',')==string::npos && line.find(';')==string::npos)
+        {
+            getline (myfile,line);
+            ++lines_to_skip;
+        }
+    }
+    myfile.close();
+
+    --lines_to_skip;
+    if(line.find(';')!=string::npos)
+    {
+        field_terminator = ';';     //Use semicolon
+    }
+    else
+    {
+        field_terminator = ',';     //Use comma
+    }
+
+
 
     csv_parser file_parser;
 
     // Define how many records we're gonna skip. This could be used to skip the column definitions.
-    file_parser.set_skip_lines(linesToSkip);
+    file_parser.set_skip_lines(lines_to_skip);
 
     // Specify the file to parse
     success = file_parser.init(filename.c_str());

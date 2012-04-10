@@ -37,10 +37,8 @@ namespace hopsan {
     public:
         CSVParser(bool &success,
                   const std::string filename = "Book1.csv",
-                  const char field_terminator = ';',
                   const char line_terminator = '\n',
-                  const char enclosure_char = '"',
-                  const size_t linesToSkip = 0);
+                  const char enclosure_char = '"');
 
         bool checkData();
         double interpolate(bool &okInIndex, const double x, const size_t outIndex = 1, const size_t inIndex = 0);
