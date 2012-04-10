@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicTranslationalLosslessConnector" displayname="Translational Lossless Connector">
-        <icons>
+	<icons>
             <icon scale="1" path="losslessconnector_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="losslessconnector_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <help>
+            <text>This component is implemented as a rigid body with zero inertia. It can for example be used to connect two springs directly with no inertia in-between. A time delay will however be introduced, possibly reducing the numerical stability. Note that this component will not define any velocity in the system. A system with only springs and lossless connectors will result in undefined movements.</text>
+        </help>
         <ports>
             <port x="0" y="0.5" a="0" name="P1"/>
             <port x="1" y="0.5" a="0" name="P2"/>
