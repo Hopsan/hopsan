@@ -1699,17 +1699,25 @@ bool OptimizationDialog::loadObjectiveFunctions()
     mObjectiveFunctionUsesTimeVector.clear();
     mObjectiveFunctionDataLists.clear();
 
-    //Read from OptimizationObjectiveFunctions.xml
-    QFile file(QString(gScriptsPath) + "OptimizationObjectiveFunctions.xml");
-
     // If the file could not be found, try in the DEV path
     // This is usefull for Linux builds that do not install files to Documents folder
     // It should also be usefull for zip and portable releases that has not installed the script files
-    if (!file.exists())
-    {
-        file.setFileName(QString(SCRIPTS_DEV_PATH) + "OptimizationObjectiveFunctions.xml");
-    }
+    //! @todo this is a quickhack that copies the optimization files to the Documents/Scripts folder every time if they do not exist, in the future we should handle this in a smarter way (ex: if we have updated scripts in new release, then we should copy)
+    //! @todo The Qfile copy will not overwrite if already exist, but we dont want to overwrite if user has made changes
+    // If OptimizationObjectiveFunctions.xml missing
+    QString dstPath = QString(gScriptsPath) + "OptimizationObjectiveFunctions.xml";
+    QString srcPath = QString(SCRIPTS_DEV_PATH) + "OptimizationObjectiveFunctions.xml";
+    QFile::copy(srcPath,dstPath);
+    // If OptimizationObjectiveFunctions.py missing
+    dstPath = QString(gScriptsPath) + "OptimizationObjectiveFunctions.py";
+    srcPath = QString(SCRIPTS_DEV_PATH) + "OptimizationObjectiveFunctions.py";
+    QFile::copy(srcPath,dstPath);
+    // If HopsanOptimization.py missing
+    dstPath = QString(gScriptsPath) + "HopsanOptimization.py";
+    srcPath = QString(SCRIPTS_DEV_PATH) + "HopsanOptimization.py";
+    QFile::copy(srcPath,dstPath);
 
+    QFile file(QString(gScriptsPath) + "OptimizationObjectiveFunctions.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),

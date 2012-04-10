@@ -454,7 +454,7 @@ void removeDir(QString path)
     dir.rmdir(path);
 }
 
-//! @brief Copy adiractory with contents
+//! @brief Copy a directory with contents
 //! @param [in] fromPath The absolute path to the directory to copy
 //! @param [in] toPath The absolute path to the destination (including resulting dir name)
 //! @details Copy example:  copyDir(.../files/inlude, .../files2/include)
