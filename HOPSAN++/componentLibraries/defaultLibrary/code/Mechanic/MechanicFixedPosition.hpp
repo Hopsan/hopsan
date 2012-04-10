@@ -33,8 +33,9 @@ namespace hopsan {
     {
 
     private:
+        double me;
         Port *mpPm1;
-        double *mpND_f, *mpND_x, *mpND_v, *mpND_c;
+        double *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_me;
 
     public:
         static Component *Creator()
@@ -45,6 +46,10 @@ namespace hopsan {
         MechanicFixedPosition() : ComponentQ()
         {
             mpPm1 = addPowerPort("Pm1", "NodeMechanic");
+
+            me = 1;
+
+            registerParameter("m_e", "Equivalent Mass", "[kg]", me);
         }
 
         void initialize()
@@ -53,9 +58,11 @@ namespace hopsan {
             mpND_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::POSITION);
             mpND_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::VELOCITY);
             mpND_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WAVEVARIABLE);
+            mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EQMASS);
 
             (*mpND_x) = 0;
             (*mpND_v) = 0;
+            (*mpND_me) = me;
         }
 
 

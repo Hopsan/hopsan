@@ -34,8 +34,8 @@ namespace hopsan {
     {
 
     private:
-        double B;
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1;  //Node data pointers
+        double B, me;
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_me1, *mpND_c1, *mpND_Zx1;  //Node data pointers
         double f1, x1, v1, c1, Zx1;                                                    //Node data variables
         double mNumX[2], mNumV[2];
         double mDenX[2], mDenV[2];
@@ -53,12 +53,14 @@ namespace hopsan {
         {
             //Set member attributes
             B = 0.001;              //Must not be zero - velocity will become very oscillative
+            me = 1;
 
             //Add ports to the component
             mpP1 = addPowerPort("Pm1", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("B", "Viscous Friction", "[Ns/m]",    B);
+            registerParameter("m_e", "Equivalent Mass", "[kg]", me);
         }
 
 
@@ -68,6 +70,7 @@ namespace hopsan {
             mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
             mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
             mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
@@ -87,6 +90,8 @@ namespace hopsan {
 
             mFilterX.initialize(mTimestep, mNumX, mDenX, -f1, x1);
             mFilterV.initialize(mTimestep, mNumV, mDenV, -f1, v1);
+
+            (*mpND_me1) = me;
         }
 
 

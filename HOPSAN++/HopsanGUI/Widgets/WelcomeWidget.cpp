@@ -15,8 +15,8 @@
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
     QWidget(parent)
 {
-    int frameH = 230;
-    int frameW = 160;
+    int frameH = 180;
+    int frameW = 140;
     int spacing = 20;
 
     this->setMouseTracking(true);
@@ -75,9 +75,11 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLastSessionIcon = new QLabel(this);
     mpLastSessionIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsession.png"));
     mpLastSessionIcon->setMouseTracking(true);
+    mpLastSessionIcon->setEnabled(!gConfig.getLastSessionModels().empty());
     mpLastSessionText = new QLabel("Last Session", this);
     mpLastSessionText->setAlignment(Qt::AlignCenter);
     mpLastSessionText->setMouseTracking(true);
+    mpLastSessionText->setEnabled(!gConfig.getLastSessionModels().empty());
     mpLastSessionLayout = new QVBoxLayout(this);
     mpLastSessionLayout->addWidget(mpLastSessionIcon,1,Qt::AlignCenter);
     mpLastSessionLayout->addWidget(mpLastSessionText,0,Qt::AlignBottom);
@@ -89,7 +91,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLastSessionFrame->setLayout(mpLastSessionLayout);
 
     mpRecentList = new QListWidget(this);
-    mpRecentList->setFixedSize(frameW-20,frameH-50);
+    mpRecentList->setFixedSize(frameW*2+spacing-20,frameH-50);
     mpRecentList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpRecentList->setMouseTracking(true);
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
@@ -102,7 +104,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpRecentFrame = new QFrame(this);
     mpRecentFrame->setFrameShape(QFrame::StyledPanel);
     mpRecentFrame->setMouseTracking(true);
-    mpRecentFrame->setFixedSize(frameW,frameH);
+    mpRecentFrame->setFixedSize(frameW*2+spacing,frameH);
     mpRecentFrame->setLayout(mpRecentLayout);
     QStringList recentModels = gConfig.getRecentModels();
     for(int i=0; i<recentModels.size(); ++i)
@@ -114,7 +116,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
             displayName = displayName.section('/', -1);
             displayName.chop(4);
             QString toolTipName = displayName;
-            while(mpRecentList->fontMetrics().width(displayName) > frameW-35)
+            while(mpRecentList->fontMetrics().width(displayName) > frameW*2+spacing-35)
             {
                 displayName.chop(4);
                 displayName.append("...");
@@ -126,7 +128,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
 
     mpExampleList = new QListWidget(this);
-    mpExampleList->setFixedSize(frameW-20,frameH-50);
+    mpExampleList->setFixedSize(frameW*2+spacing-20,frameH-50);
     mpExampleList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpExampleList->setMouseTracking(true);
     connect(mpExampleList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openExampleModel()));
@@ -139,7 +141,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleFrame = new QFrame(this);
     mpExampleFrame->setFrameShape(QFrame::StyledPanel);
     mpExampleFrame->setMouseTracking(true);
-    mpExampleFrame->setFixedSize(frameW,frameH);
+    mpExampleFrame->setFixedSize(frameW*2+spacing,frameH);
     mpExampleFrame->setLayout(mpExampleLayout);
     QDir exampleModelsDir(QString(MODELS_DEV_PATH+"Example Models/"));
     QStringList filters;
@@ -155,7 +157,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
             displayName = displayName.section('/', -1);
             displayName.chop(4);
             QString toolTipName = displayName;
-            while(mpExampleList->fontMetrics().width(displayName) > frameW-35)
+            while(mpExampleList->fontMetrics().width(displayName) > frameW*2+spacing-35)
             {
                 displayName.chop(4);
                 displayName.append("...");
@@ -247,11 +249,11 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLayout->addWidget(mpNewFrame,                         1, 0, 1, 1);
     mpLayout->addWidget(mpLoadFrame,                        1, 1, 1, 1);
     mpLayout->addWidget(mpLastSessionFrame,                 1, 2, 1, 1);
-    mpLayout->addWidget(mpRecentFrame,                      2, 0, 1, 1);
-    mpLayout->addWidget(mpExampleFrame,                     2, 1, 1, 1);
-    mpLayout->addWidget(mpOptionsFrame,                     2, 2, 1, 1);
-    mpLayout->addWidget(mpNewsFrame,                        1, 3, 2, 1);
-    mpLayout->addWidget(mpNewVersionButton,                 0, 3, 1, 1);
+    mpLayout->addWidget(mpOptionsFrame,                     1, 3, 1, 1);
+    mpLayout->addWidget(mpRecentFrame,                      2, 0, 1, 2);
+    mpLayout->addWidget(mpExampleFrame,                     2, 2, 1, 2);
+    mpLayout->addWidget(mpNewsFrame,                        1, 4, 2, 1);
+    mpLayout->addWidget(mpNewVersionButton,                 0, 4, 1, 1);
     mpLayout->setSpacing(spacing);
     mpLayout->setSizeConstraint(QLayout::SetFixedSize);
     //mpLayout->addWidget(pTestLabel);
@@ -304,7 +306,7 @@ void WelcomeWidget::updateHoverEffects()
         mpLoadIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "open.png"));
     }
 
-    if(mpLastSessionFrame->underMouse())
+    if(mpLastSessionFrame->underMouse() && mpLastSessionIcon->isEnabled())
     {
         mpLastSessionFrame->setFrameShape(QFrame::Panel);
         mpLastSessionIcon->setPixmap(QPixmap(QString(GRAPHICSPATH) + "lastsessionactive.png"));
