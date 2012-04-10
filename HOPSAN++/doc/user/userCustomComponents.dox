@@ -237,6 +237,7 @@ For parameter registration the following functions are available. The correct re
 The register functions will register the given name, unit and description and connect this information to a pointer pointing at the variable you specify as the \b rValue argument.
 \code
 void registerParameter(const string name, const string description, const string unit, double &rValue);
+void registerParameter(const string name, const string description, const string unit, int &rValue);
 void registerParameter(const string name, const string description, const string unit, string &rValue);
 void registerParameter(const string name, const string description, const string unit, bool &rValue);
 \endcode
