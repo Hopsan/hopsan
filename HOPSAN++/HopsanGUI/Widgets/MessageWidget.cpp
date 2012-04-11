@@ -171,6 +171,8 @@ void MessageWidget::updateNewMessagesOnly()
 
     mPrintedMessageList.append(mNewMessageList);
     mNewMessageList.clear();
+
+    mpTextEdit->verticalScrollBar()->setValue(mpTextEdit->verticalScrollBar()->maximum());
 }
 
 
@@ -188,6 +190,8 @@ void MessageWidget::updateEverything()
     {
         appendOneMessage(mPrintedMessageList.at(msg));
     }
+
+    mpTextEdit->verticalScrollBar()->setValue(mpTextEdit->verticalScrollBar()->maximum());
 }
 
 
