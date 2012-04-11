@@ -129,14 +129,10 @@ cd ..
 cd ..
 
 
-:: BUILD WITH MSVC2008 32-bit
+:: BUILD HOPSANCORE WITH MSVC2008 32-bit
 
 :: Remove previous files
-cd bin
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
+del /q bin\HopsanCore*.*
 
 :: Create build directory and enter it
 rd \s\q HopsanCore_bd
@@ -149,35 +145,27 @@ call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
+cd ..
 
 :: Remove build directory
-cd ..
 rd /s/q HopsanCore_bd
-cd bin
 
+cd bin
 call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2008 32-bit"
 
-:: Move files to MSVC2008 directory
+:: Move files to MSVC2008 directory, clear it first
 mkdir MSVC2008_x86
-cd MSVC2008_x86
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
-copy HopsanCore.dll MSVC2008_x86\HopsanCore.dll 
-copy HopsanCore.exp MSVC2008_x86\HopsanCore.exp 
-copy HopsanCore.lib MSVC2008_x86\HopsanCore.lib 
+del /q MSVC2008_x86\*.*
+move HopsanCore.dll MSVC2008_x86\HopsanCore.dll 
+move HopsanCore.exp MSVC2008_x86\HopsanCore.exp 
+move HopsanCore.lib MSVC2008_x86\HopsanCore.lib 
 cd ..
 
 
-:: BUILD WITH MSVC2008 64-bit
+:: BUILD HOPSANCORE WITH MSVC2008 64-bit
 
 :: Remove previous files
-cd bin
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
+del /q bin\HopsanCore*.*
 
 :: Create build directory and enter it
 rd \s\q HopsanCore_bd
@@ -190,35 +178,27 @@ call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
+cd ..
 
 :: Remove build directory
-cd ..
 rd /s/q HopsanCore_bd
-cd bin
 
+cd bin
 call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2008 64-bit"
 
 :: Move files to MSVC2008 directory
 mkdir MSVC2008_x64
-cd MSVC2008_x64
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
-copy HopsanCore.dll MSVC2008_x64\HopsanCore.dll 
-copy HopsanCore.exp MSVC2008_x64\HopsanCore.exp 
-copy HopsanCore.lib MSVC2008_x64\HopsanCore.lib 
+del /q MSVC2008_x64\*.*
+move HopsanCore.dll MSVC2008_x64\HopsanCore.dll 
+move HopsanCore.exp MSVC2008_x64\HopsanCore.exp 
+move HopsanCore.lib MSVC2008_x64\HopsanCore.lib 
 cd ..
 
 
 ::BUILD WITH MSVC2010 (32-bit)
 
 ::Remove previous files
-cd bin
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
+del /q bin\HopsanCore*.*
 
 ::Create build directory and enter it
 rd \s\q HopsanCore_bd
@@ -231,34 +211,26 @@ call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
-
-::Create build directory
 cd ..
-rd /s/q HopsanCore_bd
-cd bin
 
+:: Remove build directory
+rd /s/q HopsanCore_bd
+
+cd bin
 call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2010 32-bit"
 
 :: Move files to MSVC2010 directory
 mkdir MSVC2010_x86
-cd MSVC2010_x86
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
-copy HopsanCore.dll MSVC2010_x86\HopsanCore.dll 
-copy HopsanCore.exp MSVC2010_x86\HopsanCore.exp 
-copy HopsanCore.lib MSVC2010_x86\HopsanCore.lib 
+del /q MSVC2010_x86\*.*
+move HopsanCore.dll MSVC2010_x86\HopsanCore.dll 
+move HopsanCore.exp MSVC2010_x86\HopsanCore.exp 
+move HopsanCore.lib MSVC2010_x86\HopsanCore.lib 
 cd ..
 
 ::BUILD WITH MSVC2010 (64-bit)
 
 ::Remove previous files
-cd bin
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
+del /q bin\HopsanCore*.*
 
 ::Create build directory and enter it
 rd \s\q HopsanCore_bd
@@ -271,24 +243,20 @@ call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"
 call %jomDir%\jom.exe
+cd ..
 
 ::Remove build directory
-cd ..
 rd /s/q HopsanCore_bd
-cd bin
 
+cd bin
 call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with Visual Studio 2010 64-bit"
 
 :: Move files to MSVC2010 directory
 mkdir MSVC2010_x64
-cd MSVC2010_x64
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
-copy HopsanCore.dll MSVC2010_x64\HopsanCore.dll 
-copy HopsanCore.exp MSVC2010_x64\HopsanCore.exp 
-copy HopsanCore.lib MSVC2010_x64\HopsanCore.lib 
+del /q MSVC2010_x64\*.*
+move HopsanCore.dll MSVC2010_x64\HopsanCore.dll 
+move HopsanCore.exp MSVC2010_x64\HopsanCore.exp 
+move HopsanCore.lib MSVC2010_x64\HopsanCore.lib 
 cd ..
 
 
@@ -302,34 +270,32 @@ cd ..
 ::BUILD WITH MINGW32
 
 ::Remove previous files
-cd bin
-del HopsanGUI.exe
-del HopsanCore.dll
-del HopsanCore.exp
-del HopsanCore.lib
-cd ..
-cd ..
+del /q bin\HopsanCore*.*
+del /q bin\HopsanGUI*.*
+del /q bin\HopsanCLI*.*
 
 ::Create build directory and enter it
-mkdir HopsanGUI_bd
-cd HopsanGUI_bd
+rd /s/q HopsanNG_bd
+mkdir HopsanNG_bd
+cd HopsanNG_bd
 
 ::Setup compiler and compile
 call %qmakeDir%\qtenv2.bat
 call %mingwDir%\mingw32-make.exe clean
 call %qmakeDir%\qmake.exe %hopsanDir%\HopsanNG.pro -r -spec win32-g++ "CONFIG+=release"
 call %mingwDir%\mingw32-make.exe
-
-cd %hopsanDir%\bin
-
-call :abortIfNotExist HopsanGUI.exe "Failed to build Hopsan with MinGW32"
 cd ..
+
+cd bin
+call :abortIfNotExist HopsanCore.dll "Failed to build HopsanCore with MinGW32"
+call :abortIfNotExist HopsanGUI.exe "Failed to build HopsanGUI with MinGW32"
+call :abortIfNotExist HopsanCLI.exe "Failed to build HopsanCLI with MinGW32"
 cd ..
 
 ECHO Success!
 
 ::Remove temporary build files
-rd /s/q HopsanGUI_bd
+rd /s/q HopsanNG_bd
 cd %hopsanDir%
 
 
@@ -479,11 +445,11 @@ echo Performing cleanup
 :: Remove temporary directory
 rd /s/q %tempDir%
 
+cd %hopsanDir%
 cd HopsanCore\Dependencies
 rename %tbbversion%_nope %tbbversion%
 echo Performed cleanup
-cd ..
-cd ..
+cd %hopsanDir%
 echo.
 echo This script have changed the contents of some .pro .h .png files. You SHOULD REVERT them. Do NOT commit these automatic changes.
 echo.

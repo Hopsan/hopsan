@@ -4,21 +4,96 @@ Hopsan Release Notes
 
 --Known issues--
 
+- See issue-tracker (link on web page) for all known issues.
+
 - Some compatibility issues exist between version 0.3.0 and older versions, because some components were discarded. 
   These will not appear when loading the models. Some parameter names was also changed, these parameters will be reset.
 - All components are not completely validated
-- See issue-tracker (link on web page) for all known issues
-
+- On WindowsXP fonts may look strange, ex: decimal point not visible. You need to activate ClearType font smoothing in:
+  Desktop->Properties->Appearance->Effects
 
 
 -- Version History --
+
+0.5.4
+- Important: Some signal components and the Delay utility have changed, read below for details.
+
+- Fixed: Corrections to diffAngle aux function
+- Fixed: Volume components start values in initialize works
+- Fixed: Mechanic position source handle equivalent mass to be used with for example CylinderC
+- Fixed: Mechanic mass with lever start value and graphics fixed
+- Fixed: Added a patch found on CSV parser project homepage to deal with blank rows in file
+- Fixed: CSV parser do not crash if wrong deliminator is used
+- Fixed: CSV parser is now able to handle new lines in file
+- Fixed: Behaviour of Signal Sin and Square wave, also updated help figure and text to match. Make sure you look at help for new behaviour.
+- Fixed: Correct parameter names in help figure for ramp and pulse component
+- Fixed: Delay utility no longer assert(false) if you input a to low delayTime, ( Td < Ts), it will then use one delay step.
+- Fixed: Rewrote the Delay utility to use elements==delaySteps instead of elements==(delaySteps+1). This avoids one extra (unwanted) delay when using update function.
+- Fixed: SecondOrder Transfer Function Utility max min limit function fixed. CylinderQ (and others) now should not get stuck in end position (under special circumstances).
+- Fixed: Help documentation can now be open at the same time as the rest of Hopsan is used.
+- Fixed: Register parameter function for integer parameters was missing in HopsanCore
+- Fixed: Setting parameter value will now not warn when entering 2E10 as value, that is, both e and E will work.
+- Fixed: Made switch generation buttons work regardless of auto update setting
+- Fixed: Made plot window export data to CSV files in row direction instead of column direction
+- Fixed: Made plots auto-scale correctly when changing generations
+- Fixed: On portable release (zip-release) the optimization files will now end up in the correct directory. "Documents/Hopsan/Scripts"
+- Fixed: Added some help text for fictive components such as TLM-element and mechanical lossless connector component
+- Fixed: Message widgets now auto scrolls to bottom when new messages appears, so that they are always visible
+- Fixed: Multi-threaded optimization algorithms now use correct model path
+- Fixed: Fixed position and Free length wall components now have an equivalent mass parameter, so that they can be connected directly to a cylinder
+
+- Feature: Start values can be saved to be used in next simulation
+- Feature: Made it possible to disable port labels in Simulink export function, for compatibility with older Matlab versions
+
+- New component: Signal PulseWave
+- New component: HydraulicTankC with MultiPort
+
+- Other: Renamed Sink to Scope (only display name, old name will still work)
+- Other: Component parameter value strings will automatically be stripped of leading and traling spaces (when entered in GUI)
+- Other: Example Models and Benchmark Models have been moved to the Hopsan installation directory instead of Documents/Hopsan/Models
+
+0.5.3
+- Fixed: External library directory is now remembered in the file dialog
+- Fixed: If you open a new tab (or load new model) the timestep from the new tab would also be set in the previous tab
+- Fixed: C-type piston component now uses correct variables for dead volume and number of connections
+- Fixed: C-type piston now users correct start values in multi-ports
+- Fixed: Crash when simulating with JLink component
+- Fixed: Plot window forgets unit scaling on Y-axes when changing X-axis
+- Fixed: Crash when not recognized file loaded in Look Up Table 2D
+- Fixed: Look Up Table 2D Now always reloads the input data before simulation 
+- Fixed: Look Up Table 2D Output vectors nolonger have to be strictly increasing or decreasing
+- Fixed: Port placement in Lever Mass component
+- Fixed: Bug that generated successful simulation message even if component terminated simulation in init
+- Fixed: Latex formulas were not genereated as pictures in doxygen documentation (for trasfer function help)
+- Fixed: Number of log samples are now remembered when saving/loading models
+
+- Feature: Added a "load script file" button in Python widget
+
+- New component: Sign signal component
+- New component: Subtract multi port component
 
 0.5.2
 - Fixed: Missing NodeMechanicRotational in documentation
 - Fixed: Replaced assert portType==SYSTEMPORT in determineCQSType() with if() check. (For very advanced users) 
 - Fixed: Compilation errors in FMU export/import
+- Fixed: Sensitivity analysis button should be disabled when no model is open
+- Fixed: Hopsan installer should not delete all contents of target dir without asking
+- Fixed: The Scripts folder was not included in the installer
+- Fixed: The zip-release version should now fall back to its own scripts and models folder if no such folders exist in "mydocuments/Hopsan"
+- Fixed: Some Python scripts necessary for optimization were not included (Python would have to be manually installed)
+- Fixed: Optimization does not work with 0 as parameter minimum if log scale used
+- Fixed: The exampleComponentLib have incorrect include and lib path for release, the dev paths were used
+- Fixed: Crash when opening optimization dialog if model contains a subsystem
+- Fixed: The Scripts folder is now automatically added to the Python path in Hopsan
+- Fixed: Many bugs in the component generator utility
 
 - Feature: Added an intial algorithm section in equation based model generation tool
+- Feature: Added possibility to use algorithm sections before and after equations in component generator utility
+- Feature: Made some more file dialogs remember the last used directory
+
+- Documentation: Improved the documenetation on how to create custom components
+
+- Other: The Python scripts from the defualt Python installation are now distributed with Hopsan
 
 0.5.1
 - Fixed: Issue with Read ports and Writeport types becomming inverted when connecting to a signal systemport. (Only graphics was affected)
