@@ -10,6 +10,7 @@
 #include <QWebView>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QScrollArea>
 
 class WelcomeWidget : public QWidget
 {
@@ -64,6 +65,10 @@ private:
     QVBoxLayout *mpLoadingWebLayout;
     QWidget *mpLoadingWebWidget;
     QWebView *mpWeb;
+    QVBoxLayout *mpNewsScrollLayout;
+    QScrollArea *mpNewsScrollArea;
+    QWidget *mpNewsScrollWidget;
+    QNetworkAccessManager *mpFeed;
 
     QStringList mRecentModelList;
     QStringList mExampleModelList;
@@ -90,7 +95,8 @@ private slots:
     void updateHoverEffects();
     void openRecentModel();
     void openExampleModel();
-    void showNews(bool loadedSuccessfully);
+    void showNews(QNetworkReply *pReply);
+    void checkVersion(bool loadedSuccessfully);
     void updateLoadingWebProgressBar();
     void urlClicked(const QUrl &link);
     void openDownloadPage();

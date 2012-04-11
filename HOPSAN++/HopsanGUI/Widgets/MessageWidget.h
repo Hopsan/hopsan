@@ -55,6 +55,10 @@ public slots:
     void showDebugMessages(bool value);
     void copy();
 
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *);
+    bool eventFilter(QObject *obj, QEvent *event);
+
 private:
     void setMessageColor(QString type);
     void updateNewMessagesOnly();

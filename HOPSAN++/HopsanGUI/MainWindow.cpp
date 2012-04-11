@@ -230,6 +230,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpWelcomeWidget = new WelcomeWidget(this);
     mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
+    mpCentralGridLayout->setAlignment(mpWelcomeWidget, Qt::AlignTop);
 
     //Set the size and position of the main window
     int sh = qApp->desktop()->screenGeometry().height();

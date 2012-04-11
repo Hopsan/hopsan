@@ -33,7 +33,8 @@
 
 //Web link definitions
 #define HOPSANLINK "http://tiny.cc/hopsan"
-#define NEWSLINK "http://tiny.cc/hopsannews"
+#define VERSIONLINK "http://tiny.cc/hopsannews"
+#define NEWSLINK "http://tiny.cc/hopsannewsfeed"
 #define DOWNLOADLINK "http://tiny.cc/hopsanarchive"
 #define AUTOUPDATELINK "http://tiny.cc/hopsanupdate"
 

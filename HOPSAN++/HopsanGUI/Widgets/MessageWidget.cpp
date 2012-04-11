@@ -41,9 +41,13 @@ using namespace hopsan;
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QWidget(pParent)
 {
+    this->setMouseTracking(true);
+
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setReadOnly(true);
     mpTextEdit->setFont(QFont(this->font().family(), 8));
+    mpTextEdit->setMouseTracking(true);
+    mpTextEdit->installEventFilter(this);
 
     mGroupByTag = gConfig.getGroupMessagesByTag();
 
@@ -351,6 +355,33 @@ void MessageWidget::copy()
     if(mpTextEdit->hasFocus())
     {
         mpTextEdit->copy();
+    }
+}
+
+
+void MessageWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    mpTextEdit->setFrameShape(QFrame::NoFrame);
+
+    qDebug() << "Mouse move event!";
+
+    QWidget::mouseMoveEvent(event);
+}
+
+
+bool MessageWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseMove)
+    {
+        qDebug() << "Ate an event!";
+
+        mpTextEdit->setFrameShape(QFrame::NoFrame);
+
+        return true;
+    }
+    else
+    {
+        return QObject::eventFilter(obj, event);
     }
 }
 

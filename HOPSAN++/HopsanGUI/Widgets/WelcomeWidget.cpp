@@ -204,23 +204,31 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadingWebWidget->setLayout(mpLoadingWebLayout);
 
 
-    mpWeb = new QWebView(this);
-    //mpNewsLabel->hide();
+    mpWeb = new QWebView(this);     //! @todo This could be a QNetworkAccessManager as well, since it is never shown
     mpWeb->hide();
-    connect(mpWeb, SIGNAL(loadFinished(bool)), this, SLOT(showNews(bool)));
-    mpWeb->load(QUrl(QString(NEWSLINK)));
-   // mpWeb->setMaximumHeight(140);
-    //mpWeb->setMaximumWidth(400);
-    mpWeb->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    connect(mpWeb, SIGNAL(linkClicked(const QUrl &)), this, SLOT(urlClicked(const QUrl &)));
-    mpWeb->setMouseTracking(true);
+    connect(mpWeb, SIGNAL(loadFinished(bool)), this, SLOT(checkVersion(bool)));
+    mpWeb->load(QUrl(QString(VERSIONLINK)));
+
+    mpFeed = new QNetworkAccessManager(this);
+    connect(mpFeed, SIGNAL(finished(QNetworkReply*)), this, SLOT(showNews(QNetworkReply*)));
+    mpFeed->get(QNetworkRequest(QUrl(NEWSLINK)));
+
+    mpNewsScrollWidget = new QWidget(this);
+    mpNewsScrollLayout = new QVBoxLayout(mpNewsScrollWidget);
+    mpNewsScrollArea = new QScrollArea(this);
+    mpNewsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mpNewsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    mpNewsScrollArea->setWidget(mpNewsScrollWidget);
+    mpNewsScrollArea->setWidgetResizable(true);
+
     mpNewsText = new QLabel("Hopsan News", this);
     mpNewsText->setAlignment(Qt::AlignCenter);
     mpNewsText->setMouseTracking(true);
     mpNewsLayout = new QVBoxLayout(this);
     mpNewsLayout->addWidget(mpNewsText, 0, Qt::AlignTop);
     mpNewsLayout->addWidget(mpLoadingWebWidget);
-    mpNewsLayout->addWidget(mpWeb);
+    //mpNewsLayout->addWidget(mpWeb);
+    mpNewsLayout->addWidget(mpNewsScrollArea);
     mpNewsFrame = new QFrame(this);
     mpNewsFrame->setFrameShape(QFrame::StyledPanel);
     mpNewsFrame->setMouseTracking(true);
@@ -409,15 +417,70 @@ void WelcomeWidget::openExampleModel()
 
 //! @brief Slot that shows the news box if the page was successfully loaded.
 //! @param loadedSuccessfully True if a page was loaded (this does NOT mean that the loaded page is the correct one!)
-void WelcomeWidget::showNews(bool loadedSuccessfully)
+void WelcomeWidget::showNews(QNetworkReply *pReply)
+{
+    QVariant redirection = pReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if(!redirection.toUrl().isEmpty())
+    {
+        mpFeed->get(QNetworkRequest(redirection.toUrl()));
+        return;
+    }
+
+    if(pReply->error() == QNetworkReply::NoError)
+    {
+
+        QByteArray feedData=pReply->readAll();
+        QString feedString(feedData);
+        qDebug() << "Feed: " << feedString;
+
+        QDomDocument feedDocument;
+        feedDocument.setContent(feedString);
+
+        QDomElement feedRoot = feedDocument.documentElement();
+
+        QDomElement entryElement = feedRoot.firstChildElement("entry");
+        while(!entryElement.isNull())
+        {
+            QString title = entryElement.firstChildElement("title").text();
+            QString link = entryElement.firstChildElement("link").attribute("href");
+            QString date = entryElement.firstChildElement("updated").text().left(10);
+            QString html = entryElement.firstChildElement("content").text().left(120).append("...");
+
+            QLabel *pTitleLabel = new QLabel("<a href=\""+link+"\">"+title+"</a>", this);
+            pTitleLabel->setOpenExternalLinks(true);
+            QFont boldFont = pTitleLabel->font();
+            boldFont.setBold(true);
+            pTitleLabel->setFont(boldFont);
+
+            QLabel *pDateLabel = new QLabel(date, this);
+            QFont italicFont = pDateLabel->font();
+            italicFont.setItalic(true);
+            pDateLabel->setFont(italicFont);
+
+            QLabel *pContentLabel = new QLabel(html, this);
+            pContentLabel->setWordWrap(true);
+
+            mpNewsScrollLayout->addWidget(pTitleLabel);
+            mpNewsScrollLayout->addWidget(pDateLabel);
+            mpNewsScrollLayout->addWidget(pContentLabel);
+            mpNewsScrollLayout->setSizeConstraint(QLayout::SetNoConstraint);
+
+            entryElement = entryElement.nextSiblingElement("entry");
+        }
+
+        mpLoadingWebWidget->setVisible(false);
+    }
+
+    mpLoadingWebProgressBarTimer->stop();
+
+}
+
+
+void WelcomeWidget::checkVersion(bool loadedSuccessfully)
 {
     //Verify that the loaded page is the correct one, otherwise do not show it
     if(mpWeb->page()->currentFrame()->metaData().contains("type", "hopsanngnews"))
     {
-        mpLoadingWebWidget->setVisible(!loadedSuccessfully);
-        //mpNewsLabel->setVisible(loadedSuccessfully);
-        mpWeb->setVisible(loadedSuccessfully);
-
         QString webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
         webVersionString.remove('.');
         double webVersion = webVersionString.toDouble();
@@ -430,14 +493,8 @@ void WelcomeWidget::showNews(bool loadedSuccessfully)
         mpNewVersionButton->setVisible(webVersion>thisVersion);
 #endif
         mpUpdateLink = mpWeb->page()->currentFrame()->metaData().find("hopsanupdatelink").value();
-
-        if(loadedSuccessfully)
-        {
-            mpLoadingWebProgressBarTimer->stop();
-        }
     }
 }
-
 
 
 void WelcomeWidget::updateLoadingWebProgressBar()
