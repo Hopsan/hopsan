@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: prepareSourceCode.sh 4161 2012-03-09 16:50:04Z petno25 $
+# $Id$
 
 # Shell script for exporting and preparingn the Hopsan src code before RELASE build
 # Author: Peter Nordin peter.nordin@liu.se
