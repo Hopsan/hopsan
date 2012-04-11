@@ -2103,7 +2103,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "";
 
     wrpLineStream << "ComponentSystem* pComponentSystem;";
-    wrpLineStream << "bool isOkToSimulate = false";
+    wrpLineStream << "bool isOkToSimulate = false;";
     wrpLineStream << "";
 
     wrpLineStream << "static void mdlInitializeSizes(SimStruct *S)";
