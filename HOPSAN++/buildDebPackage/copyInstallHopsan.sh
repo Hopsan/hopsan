@@ -32,7 +32,7 @@ cp -a $srcDir/componentLibraries/exampleComponentLib $dstDir/componentLibraries/
 cp -a $srcDir/Models/Example\ Models $dstDir/Models/Example\ Models
 cp -a $srcDir/doc/graphics $dstDir/doc/graphics
 cp -a $srcDir/Scripts $dstDir/Scripts 
-cp -a $srcDir/doc/user/html $dstDir/doc/user/
+cp -a $srcDir/doc/user/html $dstDir/doc/user/html
 
 # copy files
 cp -a $srcDir/bin/*.so* $dstDir/bin/

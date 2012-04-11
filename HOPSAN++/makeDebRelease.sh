@@ -140,7 +140,7 @@ if [ "$doPbuild" = "true" ]; then
       resultPath="$pbuilderBaseTGZpath/result/$dist"
 
       # Update or create pbuild environments
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev"
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqt4-webkit"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
 	      sudo pbuilder --update --extrapackages "$extraPackages" --basetgz $basetgzFile

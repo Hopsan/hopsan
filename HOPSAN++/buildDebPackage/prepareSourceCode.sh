@@ -63,10 +63,11 @@ fi
 
 # Make sure we compile defaultLibrary into core
 if [ "$doBuildInComponents" = "true" ]; then
-  sed "s|.*DEFINES \*= INTERNALDEFAULTCOMPONENTS|DEFINES *= INTERNALDEFAULTCOMPONENTS|g" -i HopsanCore/HopsanCore.pro
-  sed "s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\|" -i HopsanCore/HopsanCore.pro
-  sed "s|componentLibraries||" -i HopsanNG.pro
+  sed 's|.*DEFINES \*= INTERNALDEFAULTCOMPONENTS|DEFINES *= INTERNALDEFAULTCOMPONENTS|g' -i HopsanCore/HopsanCore.pro
+  sed 's|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\|g' -i HopsanCore/HopsanCore.pro
+  sed 's|componentLibraries||g' -i HopsanNG.pro
 fi
 
 # Build user documentation
 ./buildDocumentation.sh user
+
