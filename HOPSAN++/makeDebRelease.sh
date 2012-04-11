@@ -29,6 +29,15 @@ if [ -z "$version" ]; then
 fi
 
 echo
+echo -n "Do you want the defaultComponentLibrary to be build in? Answer: y/n : "
+read ans
+
+doBuildInComponents="false"
+if [ "$ans" = "y" ]; then
+  doBuildInComponents="true"
+fi
+
+echo
 echo -n "Do you want to build for all supported dists, using pbuilder? Answer: y/n : "
 read ans
 
@@ -49,9 +58,10 @@ fi
 
 echo
 echo ---------------------------------------
-echo This is a DEV release: $doDevRelease
-echo Release version number: $version
-echo Using pbuilder: $doPbuild
+echo "This is a DEV release: $doDevRelease"
+echo "Release version number: $version"
+echo "Built in components: $doBuildInComponents"
+echo "Using pbuilder: $doPbuild"
 if [ "$doPbuild" = "true" ]; then
   echo ${distArchArrayDo[@]}
 fi
@@ -84,7 +94,7 @@ packagesrcfile=$name-$version.tar.gz
 # Prepare source code
 #
 srcExportDir=$outputDir/hopsanSrcExport\_$version
-./prepareSourceCode.sh ../  $srcExportDir $version $doDevRelease
+./prepareSourceCode.sh ../  $srcExportDir $version $doDevRelease $doBuildInComponents
 
 cd $srcExportDir
 tar -czf $packageorigsrcfile *

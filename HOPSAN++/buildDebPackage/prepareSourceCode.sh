@@ -6,9 +6,9 @@
 # Date:   2012-04-01
 # For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 5 ]; then
   echo "Error: To few input arguments!"
-  echo "Usage: `basename $0` {srcDir dstDir version doDevRelease}"
+  echo "Usage: `basename $0` {srcDir dstDir version doDevRelease doBuildInComponents}"
   exit $E_BADARGS
 fi
 
@@ -16,6 +16,7 @@ srcDir="$1"
 dstDir="$2"
 version="$3"
 doDevRelease="$4"
+doBuildInComponents="$5"
 
 # -----------------------------------------------------------------------------
 # Determine the Core Gui and CLI svn rev numbers for this relase
@@ -27,7 +28,7 @@ cd $srcDir/HopsanCLI; clisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 # -----------------------------------------------------------------------------
 # Export source dirs and files
 #
-echo Exporting $srcDir to $dstDir for preparation
+echo "Exporting $srcDir to $dstDir for preparation"
 rm -rf $dstDir
 svn export $srcDir $dstDir
 
@@ -58,6 +59,13 @@ if [ $doDevRelease = "false" ]; then
   
   # Make sure development flag is not defined
   sed "s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|g" -i HopsanGUI/HopsanGUI.pro
+fi
+
+# Make sure we compile defaultLibrary into core
+if [ "$doBuildInComponents" = "true" ]; then
+  sed "s|.*DEFINES \*= INTERNALDEFAULTCOMPONENTS|DEFINES *= INTERNALDEFAULTCOMPONENTS|g" -i HopsanCore/HopsanCore.pro
+  sed "s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\|" -i HopsanCore/HopsanCore.pro
+  sed "s|componentLibraries||" -i HopsanNG.pro
 fi
 
 # Build user documentation
