@@ -10,6 +10,15 @@ This dummy file will be automatically removed after Hopsan has been uninstalled.
 A "shortcut" to HopsanGUI should end up under the Development category in your menu.
 HopsanCLI and libHopsanCore.so can be found in /opt/hopsan/bin
 
+----------------------------------------
+ What version to choose:
+----------------------------------------
+The deb packages have been build as 32-bit and 64-bit for a few different distributions.
+If you do not know which Ubuntu version you have, run the following commands in a terminal:
+
+Ubuntu version: "lsb_release -a"
+Architecture: "uname -m", (x86_64 means 64-bit choose a amd64 deb)
+
 
 ----------------------------------------
  How to Install:
