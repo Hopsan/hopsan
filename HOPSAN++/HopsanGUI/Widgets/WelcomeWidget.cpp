@@ -9,6 +9,8 @@
 #include "common.h"
 #include "version_gui.h"
 #include "Dialogs/OptionsDialog.h"
+#include "Widgets/LibraryWidget.h"
+#include "Widgets/PlotWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/WelcomeWidget.h"
 
@@ -259,6 +261,10 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     //mpLayout->addWidget(pTestLabel);
 
     this->setLayout(mpLayout);
+
+    connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
+    connect(this, SIGNAL(hovered()), gpMainWindow->mpPlotWidget, SLOT(clearHoverEffects()));
+
 }
 
 
@@ -271,6 +277,8 @@ QString WelcomeWidget::getUpdateLink()
 void WelcomeWidget::mouseMoveEvent(QMouseEvent *event)
 {
     updateHoverEffects();
+
+    emit hovered();
 
     QWidget::mouseMoveEvent(event);
 }

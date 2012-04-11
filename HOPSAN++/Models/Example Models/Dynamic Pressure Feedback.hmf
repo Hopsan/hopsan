@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3949" hopsancoreversion="0.5.x_r3943">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4284" hopsancoreversion="0.6.x_r4249">
     <requirements>
+        <componentlibrary>HopsanGeneratedComponent_ConstantSignalSource</componentlibrary>
+        <componentlibrary>HopsanGeneratedComponent_FlowSource</componentlibrary>
+        <componentlibrary>HopsanGeneratedComponent_MyMass</componentlibrary>
+        <componentlibrary>HopsanGeneratedComponent_PressureReliefValve</componentlibrary>
+        <componentlibrary>HopsanGeneratedComponent_StepSignalSource</componentlibrary>
+        <componentlibrary>HopsanGeneratedComponent_Tank</componentlibrary>
+        <componentlibrary>HopsanGeneratedComponent_TurbulentOrifice</componentlibrary>
+        <componentlibrary>HopsanGeneratedComponent_Volume</componentlibrary>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
-    <system typename="Subsystem" name="Dynamic Pressure Feedback">
+    <system logsamples="2048" typename="Subsystem" name="Dynamic Pressure Feedback">
         <simulationtime stop="3" timestep="0.001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters>
@@ -13,7 +21,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.5" y="2500.5" zoom="1"/>
+            <viewport x="2576.5" y="2407" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -31,16 +39,41 @@
                     <niter>100</niter>
                     <nsearchp>8</nsearchp>
                     <refcoeff>1.3</refcoeff>
-                    <randfac>0.3</randfac>
-                    <forgfac>0</forgfac>
-                    <functol>1e-05</functol>
-                    <partol>0.0001</partol>
+                    <randfac>0.5</randfac>
+                    <forgfac>0.2</forgfac>
+                    <functol>1e-06</functol>
+                    <partol>1e-05</partol>
                     <plot>true</plot>
                     <savecsv>false</savecsv>
-                    <logpar>false</logpar>
+                    <logpar>true</logpar>
                 </settings>
-                <parameters/>
-                <objectives/>
+                <parameters>
+                    <parameter>
+                        <componentname>First order high pass filter</componentname>
+                        <parametername>omega</parametername>
+                        <minmax>0.5 500</minmax>
+                    </parameter>
+                </parameters>
+                <objectives>
+                    <objective>
+                        <functionname>Average absolute difference</functionname>
+                        <weight>1</weight>
+                        <norm>1</norm>
+                        <exp>2</exp>
+                        <variables>
+                            <variable>
+                                <componentname>Position Sensor</componentname>
+                                <portname>out</portname>
+                                <variablename>Value</variablename>
+                            </variable>
+                            <variable>
+                                <componentname>Square Wave</componentname>
+                                <portname>out</portname>
+                                <variablename>Value</variablename>
+                            </variable>
+                        </variables>
+                    </objective>
+                </objectives>
             </optimization>
         </hopsangui>
         <objects>
@@ -161,7 +194,7 @@
             </component>
             <component typename="SignalSource" name="Routing">
                 <parameters>
-                    <parameter value="1" type="double" name="y"/>
+                    <parameter value="3" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2770" y="2414" flipped="false" a="0"/>
@@ -171,7 +204,7 @@
             <component typename="SignalHP1Filter" name="First order high pass filter">
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
-                    <parameter value="w_cutoff" type="double" name="omega"/>
+                    <parameter value="0.501476" type="double" name="omega"/>
                     <parameter value="-1.5e+300" type="double" name="y_min"/>
                     <parameter value="1.5e+300" type="double" name="y_max"/>
                 </parameters>

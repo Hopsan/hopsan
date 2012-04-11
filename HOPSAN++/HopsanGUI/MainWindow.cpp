@@ -154,9 +154,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs->setMouseTracking(true);
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0,4,4);
 
-    mpWelcomeWidget = new WelcomeWidget(this);
-    mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
-
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
     mpSystemParametersWidget->setVisible(false);
@@ -230,6 +227,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     initializeWorkspace();
 
+
+    mpWelcomeWidget = new WelcomeWidget(this);
+    mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
 
     //Set the size and position of the main window
     int sh = qApp->desktop()->screenGeometry().height();

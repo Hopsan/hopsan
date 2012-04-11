@@ -582,6 +582,7 @@ void OptimizationDialog::generateComplexScript()
 {
     bool multicore = mpMultiThreadedCheckBox->isChecked();
     int nThreads = mpThreadsSpinBox->value();
+    QString modelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
     QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
     QString alphaString = QString().setNum(mpAlphaLineEdit->text().toDouble());
     QString betaString = QString().setNum(mpBetaLineEdit->text().toDouble());
@@ -631,7 +632,7 @@ void OptimizationDialog::generateComplexScript()
         scriptStream << "\n";
         scriptStream << "##### Load More Models #####\n";
         scriptStream << "\n";
-        scriptStream << "modelPath = \"../Models/Example Models/Position Servo.hmf\"\n";
+        scriptStream << "modelPath = \"" << modelPath << "\"\n";
         scriptStream << "hopsan.closeAllModels()\n";
         scriptStream << "for i in range(nThreads):\n";
         scriptStream << "  hopsan.loadModel(modelPath)\n";
@@ -801,16 +802,16 @@ void OptimizationDialog::generateComplexScript()
         scriptStream << "    if obj[worstIds[w]] > previousObj[worstIds[w]]:\n";
         if(mpParametersLogCheckBox->isChecked())
         {
-            scriptStream << "    toLogSpace(minValues)\n";
-            scriptStream << "    toLogSpace(maxValues)\n";
-            scriptStream << "    toLogSpace2(parameters)\n";
+            scriptStream << "      toLogSpace(minValues)\n";
+            scriptStream << "      toLogSpace(maxValues)\n";
+            scriptStream << "      toLogSpace2(parameters)\n";
         }
         scriptStream << "      contract(parameters, worstIds[w], previousWorstIds,minValues,maxValues)\n";
         if(mpParametersLogCheckBox->isChecked())
         {
-            scriptStream << "    toLinearSpace(minValues)\n";
-            scriptStream << "    toLinearSpace(maxValues)\n";
-            scriptStream << "    toLinearSpace2(parameters)\n";
+            scriptStream << "      toLinearSpace(minValues)\n";
+            scriptStream << "      toLinearSpace(maxValues)\n";
+            scriptStream << "      toLinearSpace2(parameters)\n";
         }
         scriptStream << "      contracted = True\n";
         scriptStream << "\n";
@@ -943,6 +944,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     int nParameters = mpParameterLabels.size();
     int nParticles = mpParticlesSpinBox->value();
     int nComponents = mSelectedComponents.size();
+    QString modelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
 
     mScript.clear();
 
@@ -993,7 +995,7 @@ void OptimizationDialog::generateParticleSwarmScript()
         scriptStream << "\n";
         scriptStream << "##### Load More Models #####\n";
         scriptStream << "\n";
-        scriptStream << "modelPath = \"../Models/Example Models/Position Servo.hmf\"\n";
+        scriptStream << "modelPath = \"" << modelPath << "\"\n";
         scriptStream << "hopsan.closeAllModels()\n";
         scriptStream << "for i in range(nThreads):\n";
         scriptStream << "  hopsan.loadModel(modelPath)\n";

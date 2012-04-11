@@ -72,6 +72,9 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 
     this->updateViewPort();
     this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+
+    connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
+    connect(this, SIGNAL(hovered()), gpMainWindow->mpPlotWidget, SLOT(clearHoverEffects()));
 }
 
 
@@ -504,7 +507,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     //! @todo This is a stupid solution, graphics view need to remove the text from the library because mouse move event in library is too slow...
-    gpMainWindow->mpLibrary->mpComponentNameField->setText(QString());
+    emit hovered();
 
         //If creating connector, the end port shall be updated to the mouse position.
     if (mpContainerObject->isCreatingConnector())

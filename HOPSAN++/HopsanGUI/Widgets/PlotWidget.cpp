@@ -100,8 +100,6 @@ QString PlotVariableTreeItem::getDataUnit()
 PlotVariableTree::PlotVariableTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
-    qDebug() << "Creating PlotVariableTree!";
-
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
         mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
@@ -116,6 +114,7 @@ PlotVariableTree::PlotVariableTree(MainWindow *parent)
     this->updateList();
     this->setHeaderHidden(true);
     this->setColumnCount(1);
+    this->setMouseTracking(true);
 
     connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(gpMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
@@ -335,6 +334,8 @@ void PlotVariableTree::mousePressEvent(QMouseEvent *event)
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
 {
+    this->setFrameShape(QFrame::Box);
+
     gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
     if (!(event->buttons() & Qt::LeftButton))
     {
@@ -358,6 +359,8 @@ void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
         drag->setMimeData(mimeData);
         drag->exec();
     }
+
+    QTreeWidget::mouseMoveEvent(event);
 }
 
 
@@ -439,6 +442,8 @@ PlotTreeWidget::PlotTreeWidget(MainWindow *parent)
         : QWidget(parent)
 {
     mpPlotVariableTree = new PlotVariableTree(gpMainWindow);
+
+    this->setMouseTracking(true);
 
     mpLoadButton = new QPushButton(tr("&Load Plot Window from XML"), this);
     mpLoadButton->setAutoDefault(false);
@@ -562,4 +567,15 @@ void PlotTreeWidget::loadFromXml()
 }
 
 
+void PlotTreeWidget::clearHoverEffects()
+{
+    mpPlotVariableTree->setFrameShape(QFrame::StyledPanel);
+}
 
+
+void PlotTreeWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    clearHoverEffects();
+
+    QWidget::mouseMoveEvent(event);
+}

@@ -63,9 +63,11 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpSecretHiddenContentsTree = new LibraryContentsTree();
 
     //mpTree = new LibraryTreeWidget(this);
-    mpTree = new QTreeWidget(this);
+    mpTree = new LibraryTreeWidget(this);
     mpTree->setHeaderHidden(true);
     mpTree->setColumnCount(1);
+    mpTree->setMouseTracking(true);
+    this->setAttribute(Qt::WA_MouseNoMask);
 
     mpComponentNameField = new QLabel();
     mpComponentNameField->hide();
@@ -401,6 +403,14 @@ void LibraryWidget::initializeDrag(QTreeWidgetItem *item, int /*dummy*/)
     drag->setPixmap(icon.pixmap(40,40));
     drag->setHotSpot(QPoint(20, 20));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
+}
+
+
+void LibraryWidget::clearHoverEffects()
+{
+    mpComponentNameField->setText(QString());
+    mpTree->setFrameShape(QFrame::StyledPanel);
+    mpList->setFrameShape(QFrame::StyledPanel);
 }
 
 
@@ -1962,9 +1972,30 @@ void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
     mpComponentNameField->setText(QString());
     gpMainWindow->hideHelpPopupMessage();
 
-    //qDebug() << "You are hovering me!";
+    qDebug() << "You are hovering me!";
+
+    mpTree->setFrameShape(QFrame::StyledPanel);
+    mpList->setFrameShape(QFrame::StyledPanel);
 
     QWidget::mouseMoveEvent(event);
+}
+
+
+LibraryTreeWidget::LibraryTreeWidget(LibraryWidget *parent)
+    : QTreeWidget(parent)
+{
+    //Nothing to do yet
+}
+
+
+//! @brief Reimplementation of mouse move event
+//! Used to update the component name display field while hovering the icons.
+//! @param event Contains information about the event
+void LibraryTreeWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    this->setFrameShape(QFrame::Box);
+
+    QTreeWidget::mouseMoveEvent(event);
 }
 
 
@@ -1999,6 +2030,9 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
         mpLibraryWidget->mpComponentNameField->setFont(QFont(mpLibraryWidget->mpComponentNameField->font().family(), min(10.0, .9*mpLibraryWidget->width()/(0.615*componentName.size()))));
         mpLibraryWidget->mpComponentNameField->setText(componentName);
     }
+
+    mpLibraryWidget->mpList->setFrameShape(QFrame::Box);
+
     QListWidget::mouseMoveEvent(event);
 }
 

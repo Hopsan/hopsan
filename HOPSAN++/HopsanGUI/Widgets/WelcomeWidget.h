@@ -81,6 +81,7 @@ private:
     QMap <QListWidgetItem *, QString> exampleModelsMap;
 
 signals:
+    void hovered();
 
 public slots:
 

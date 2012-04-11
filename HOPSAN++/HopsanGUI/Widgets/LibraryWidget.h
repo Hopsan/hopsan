@@ -46,6 +46,7 @@ class LibraryListWidgetItem;
 class LibraryComponent;
 class MainWindow;
 class LibraryContentsTree;
+class LibraryTreeWidget;
 class LibraryListWidget;
 
 class LibraryWidget : public QWidget
@@ -92,6 +93,9 @@ private slots:
     void initializeDrag(QListWidgetItem* item);
     void initializeDrag(QTreeWidgetItem* item, int dummy);
 
+public slots:
+    void clearHoverEffects();
+
 private:
     void loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree=0);
     void updateLibraryFolder(LibraryContentsTree /**pTree*/);
@@ -102,7 +106,7 @@ private:
     LibraryContentsTree *mpContentsTree;
     LibraryContentsTree *mpSecretHiddenContentsTree;
 
-    QTreeWidget *mpTree;
+    LibraryTreeWidget *mpTree;
 
     LibraryListWidget *mpList;
     QToolButton *mpTreeViewButton;
@@ -118,6 +122,16 @@ private:
     QMap<QTreeWidgetItem *, LibraryContentsTree *> mTreeItemToContentsTreeMap;
 
     QDir mUpdateXmlBackupDir;
+};
+
+
+class LibraryTreeWidget : public QTreeWidget
+{
+    Q_OBJECT
+public:
+    LibraryTreeWidget(LibraryWidget *parent);
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *event);
 };
 
 

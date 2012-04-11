@@ -127,6 +127,10 @@ public:
 
 public slots:
     void loadFromXml();
+    void clearHoverEffects();
+
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *event);
 
 private:
     //MainWindow *mpParentMainWindow;
