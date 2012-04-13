@@ -72,6 +72,12 @@ inline double Sec(const double x)
     return 1.0/cos(x);
 }
 
+//! @brief function for using Mathematica syntax
+inline double SecL(const double x)
+{
+    return 1.0/cos(x);
+}
+
 //! @brief Wrapper function, for using Mathematica syntax
 inline double Sqrt(const double x)
 {
