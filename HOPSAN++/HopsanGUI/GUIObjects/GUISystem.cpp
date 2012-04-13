@@ -1913,7 +1913,7 @@ void SystemContainer::createSimulinkSourceFiles()
     progressBar.setMaximum(10);
     progressBar.setValue(0);
 
-
+    QStringList tunableParameters = this->getParameterNames();
 
     QStringList inputComponents;
     QStringList inputPorts;
@@ -2242,21 +2242,10 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "    startT = ssGetTStart(S);";
     wrpLineStream << "    stopT = ssGetTFinal(S);";
     wrpLineStream << "    pComponentSystem->setDesiredTimestep(0.001);";
-
-    wrpLineStream << "    isOkToSimulate = pComponentSystem->isSimulationOk();";
-    wrpLineStream << "    if (isOkToSimulate)";
-    wrpLineStream << "    {";
-    wrpLineStream << "        pComponentSystem->initialize(0,10,0);";
     if(!pDisablePortLabels->isChecked())
     {
-        wrpLineStream << "        mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+        wrpLineStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
     }
-    wrpLineStream << "    }";
-    wrpLineStream << "    else";
-    wrpLineStream << "    {";
-    wrpLineStream << "        ssSetErrorStatus(S,\"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.\");";
-    wrpLineStream << "        return;";
-    wrpLineStream << "    }";
     wrpLineStream << "}";
     wrpLineStream << "";
 
@@ -2264,6 +2253,50 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "{";
     wrpLineStream << "    ssSetSampleTime(S, 0, 0.001);";
     wrpLineStream << "    ssSetOffsetTime(S, 0, 0.0);";
+    wrpLineStream << "";
+    wrpLineStream << "    //Update tunable parameters";
+    wrpLineStream << "    const mxArray* in;";
+    wrpLineStream << "    const char* c_str;";
+    wrpLineStream << "    std::string str;";
+
+    /////////////////////////////////////////////////////////////////////
+
+    for(int p=0; p<tunableParameters.size(); ++p)
+    {
+    wrapperStream << "    in = mexGetVariable(\"caller\",\"" << tunableParameters[p] << "\");\n";
+    wrpLineStream << "    if(in == NULL )";
+    wrpLineStream << "    {";
+    wrapperStream << "        mexErrMsgTxt(\"Unable to read parameter \\\""+tunableParameters[p]+"\\\"!\");\n";
+    wrpLineStream << "    	return;";
+    wrpLineStream << "    }";
+    wrpLineStream << "";
+    wrpLineStream << "    c_str = (const char*)mxGetData(in);";
+    wrpLineStream << "";
+    wrpLineStream << "    str = \"\";";
+    wrpLineStream << "    for(int i=0; i<mxGetNumberOfElements(in); ++i)";
+    wrpLineStream << "    {";
+    wrpLineStream << "    	str.append(c_str);";
+    wrpLineStream << "    	c_str += 2*sizeof(char);";
+    wrpLineStream << "    }";
+    wrpLineStream << "";
+    wrapperStream << "    pComponentSystem->setParameterValue(\""+tunableParameters[p]+"\", str);\n";
+    }
+
+    /////////////////////////////////////////////////////////////////////
+
+    wrpLineStream << "";
+    wrpLineStream << "";
+    wrpLineStream << "    isOkToSimulate = pComponentSystem->isSimulationOk();";
+    wrpLineStream << "    if (isOkToSimulate)";
+    wrpLineStream << "    {";
+    wrpLineStream << "        pComponentSystem->initialize(0,10);";
+    wrpLineStream << "    }";
+    wrpLineStream << "    else";
+    wrpLineStream << "    {";
+    wrpLineStream << "        ssSetErrorStatus(S,\"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.\");";
+    wrpLineStream << "        return;";
+    wrpLineStream << "    }";
+
     wrpLineStream << "}\n";
 
     wrpLineStream << "static void mdlOutputs(SimStruct *S, int_T tid)";
@@ -2305,35 +2338,35 @@ void SystemContainer::createSimulinkSourceFiles()
     for(int i=0; i<nMechanicQ; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
     }
     tot+=nMechanicQ*2;
     for(int i=0; i<nMechanicC; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
     }
     tot+=nMechanicC*2;
     for(int i=0; i<nMechanicRotationalQ; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
     }
     tot+=nMechanicRotationalQ*2;
     for(int i=0; i<nMechanicRotationalC; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
     }
     tot+=nMechanicRotationalC*2;
     for(int i=0; i<nInputs; ++i)
     {
         j = tot+i;
-        wrapperStream << "        pComponentSystem->getComponent(\"" << inputComponents.at(i) << "\")->getPort(\"" << inputPorts.at(i) << "\")->writeNode(0, input" << i << ");\n";
+        wrapperStream << "        pComponentSystem->getSubComponent(\"" << inputComponents.at(i) << "\")->getPort(\"" << inputPorts.at(i) << "\")->writeNode(0, input" << i << ");\n";
     }
     wrapperStream << "        double timestep = pComponentSystem->getDesiredTimeStep();\n";
     wrapperStream << "        double time = ssGetT(S);\n";
@@ -2343,35 +2376,35 @@ void SystemContainer::createSimulinkSourceFiles()
     for(int i=0; i<nMechanicQ; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(3);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(4);\n";
+        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(3);\n";
+        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(4);\n";
     }
     tot+=nMechanicQ*2;
     for(int i=0; i<nMechanicC; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(2);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(0);\n";
+        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(2);\n";
+        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(0);\n";
     }
     tot+=nMechanicC*2;
     for(int i=0; i<nMechanicRotationalQ; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(3);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(4);\n";
+        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(3);\n";
+        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(4);\n";
     }
     tot+=nMechanicRotationalQ*2;
     for(int i=0; i<nMechanicRotationalC; ++i)
     {
         j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(2);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(0);\n";
+        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(2);\n";
+        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(0);\n";
     }
     tot+=nMechanicRotationalC*2;
     for(int i=0; i<nOutputs; ++i)
     {
         j = tot+i;
-        wrapperStream << "        output" << j << " = pComponentSystem->getComponent(\"" << outputComponents.at(i) << "\")->getPort(\"" << outputPorts.at(i) << "\")->readNode(0);\n";
+        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << outputComponents.at(i) << "\")->getPort(\"" << outputPorts.at(i) << "\")->readNode(0);\n";
     }
     wrapperStream << "    }\n";
     wrapperStream << "\n";
@@ -2395,9 +2428,23 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperFile.close();
 
     portLabelsStream << "set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n";
-    portLabelsStream << "set_param(gcb,'Name','" << this->getName() << "')";
-    portLabelsFile.close();
+    portLabelsStream << "set_param(gcb,'Name','" << this->getName() << "')\n";
+    portLabelsStream << "set_param(gcb,'MaskPrompts',{";
+    for(int p=0; p<tunableParameters.size(); ++p)
+    {
+        portLabelsStream << "'"+tunableParameters[p]+"'";
+        if(p<tunableParameters.size()-1)
+            portLabelsStream << ",";
+    }
+    portLabelsStream << "})\n";
+    portLabelsStream << "set_param(gcb,'MaskVariables','";
+    for(int p=0; p<tunableParameters.size(); ++p)
+    {
+        portLabelsStream << tunableParameters[p]+"=&"+QString().setNum(p+1)+";";
+    }
+    portLabelsStream << "')\n";
 
+    portLabelsFile.close();
 
     progressBar.setValue(7);
     progressBar.setLabelText("Writing HopsanSimulinkCompile.m");
