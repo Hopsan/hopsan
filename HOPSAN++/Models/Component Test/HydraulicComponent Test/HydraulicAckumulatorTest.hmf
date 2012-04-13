@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r4162" hopsancoreversion="0.5.x_r4204">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
-    <system typename="Subsystem" name="HydraulicAckumulatorTest">
+    <system logsamples="2048" typename="Subsystem" name="HydraulicAckumulatorTest">
         <simulationtime stop="50" timestep="0.001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2456" y="2389" zoom="1"/>
+            <viewport x="2459" y="2393" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -375,6 +375,443 @@
                         <newpos>2261 2314</newpos>
                     </stuff>
                 </post>
+                <post number="48">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2454 2460</oldpos>
+                        <newpos>2452 2453</newpos>
+                    </stuff>
+                </post>
+                <post number="49">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_2" startport="Ppa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2386.00000000000000000000" y="2475.00000000000000000000"/>
+                                    <coordinate x="2452.00000000000000000000" y="2475.00000000000000000000"/>
+                                    <coordinate x="2452.00000000000000000000" y="2468.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="50">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2452 2453</oldpos>
+                        <newpos>2452 2457</newpos>
+                    </stuff>
+                </post>
+                <post number="51">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2452 2457</oldpos>
+                        <newpos>2455 2457</newpos>
+                    </stuff>
+                </post>
+                <post number="52" type="changedparameters">
+                    <stuff newvalue="1e5" what="changedparameter" oldvalue="0" parametername="PVa::Value" objectname="Gas Accumulator"/>
+                    <stuff newvalue="1e5" what="changedparameter" oldvalue="0" parametername="Ppa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="53" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="1e5" parametername="PVa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="54" type="changedparameters">
+                    <stuff newvalue="1e6" what="changedparameter" oldvalue="1e5" parametername="Ppa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="55" type="changedparameters">
+                    <stuff newvalue="1e7" what="changedparameter" oldvalue="1e6" parametername="Ppa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="56">
+                    <stuff what="movedobject" name="Gas Accumulator">
+                        <oldpos>2346 2430</oldpos>
+                        <newpos>2345 2430</newpos>
+                    </stuff>
+                </post>
+                <post number="57">
+                    <stuff what="movedobject" name="Gas Accumulator">
+                        <oldpos>2345 2430</oldpos>
+                        <newpos>2343 2431</newpos>
+                    </stuff>
+                </post>
+                <post number="58" type="changedparameters">
+                    <stuff newvalue="1e-3" what="changedparameter" oldvalue="0" parametername="PVa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="59">
+                    <stuff what="movedobject" name="Sine Wave">
+                        <oldpos>2156.5 2580.5</oldpos>
+                        <newpos>2156.5 2579.5</newpos>
+                    </stuff>
+                </post>
+                <post number="60">
+                    <stuff what="movedobject" name="Sine Wave">
+                        <oldpos>2156.5 2579.5</oldpos>
+                        <newpos>2155.5 2579.5</newpos>
+                    </stuff>
+                </post>
+                <post number="61" type="changedparameters">
+                    <stuff newvalue="-2" what="changedparameter" oldvalue="0" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="62">
+                    <stuff what="deletedconnector">
+                        <connect endport="P1" endcomponent="Pressure Transducer" startport="P1" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2363.00000000000000000000" y="2521.00000000000000000000"/>
+                                    <coordinate x="2363.00000000000000000000" y="2546.50000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2546.50000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2531.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="63">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Pressure Transducer" startport="P1" startcomponent="Q-type Flow Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2250.00000000000000000000" y="2593.00000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2593.00000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2531.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="64">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2455 2457</oldpos>
+                        <newpos>2456 2457</newpos>
+                    </stuff>
+                </post>
+                <post number="65" type="changedparameters">
+                    <stuff newvalue="0.01" what="changedparameter" oldvalue="0.0001" parametername="V" objectname="Hydraulic Volume Multi Port"/>
+                </post>
+                <post number="66">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2457 2457</oldpos>
+                        <newpos>2467 2465</newpos>
+                    </stuff>
+                </post>
+                <post number="67" type="changedparameters">
+                    <stuff newvalue="-1" what="changedparameter" oldvalue="-2" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="68" type="changedparameters">
+                    <stuff newvalue="-1.5" what="changedparameter" oldvalue="-1" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="69">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2467 2465</oldpos>
+                        <newpos>2457 2431</newpos>
+                    </stuff>
+                </post>
+                <post number="70" type="changedparameters">
+                    <stuff newvalue="-1.8" what="changedparameter" oldvalue="-1.5" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="71" type="changedparameters">
+                    <stuff newvalue="-1.9" what="changedparameter" oldvalue="-1.8" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="72" type="changedparameters">
+                    <stuff newvalue="-1.85" what="changedparameter" oldvalue="-1.9" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="73">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_2" startport="Ppa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2383.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2457.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2457.00000000000000000000" y="2446.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="74">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink_1">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2669" y="2597" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="75">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2649 2582</oldpos>
+                        <newpos>2649 2579</newpos>
+                    </stuff>
+                </post>
+                <post number="76">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.00000000000000000000" y="2495.00000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2594.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="77">
+                    <stuff what="movedobject" name="Pressure Transducer">
+                        <oldpos>2406 2495</oldpos>
+                        <newpos>2406 2516</newpos>
+                    </stuff>
+                </post>
+                <post number="78">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="Ppa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2383.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="79">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="Ppa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2383.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="80">
+                    <stuff what="movedobject" name="Pressure Transducer">
+                        <oldpos>2406 2516</oldpos>
+                        <newpos>2406 2539</newpos>
+                    </stuff>
+                </post>
+                <post number="81">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.00000000000000000000" y="2539.00000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2594.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="82">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.00000000000000000000" y="2539.00000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2561.00000000000000000000" y="2529.00000000000000000000"/>
+                                    <coordinate x="2561.00000000000000000000" y="2594.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="83">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="Ppa" startcomponent="Gas Accumulator">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2383.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2391.00000000000000000000" y="2476.00000000000000000000"/>
+                                    <coordinate x="2391.00000000000000000000" y="2520.00000000000000000000"/>
+                                    <coordinate x="2573.00000000000000000000" y="2520.00000000000000000000"/>
+                                    <coordinate x="2573.00000000000000000000" y="2594.00000000000000000000"/>
+                                    <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="84" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="1e-3" parametername="PVa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="85" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="-1.85" parametername="t_start" objectname="Sine Wave"/>
+                </post>
+                <post number="86">
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2543 2460</oldpos>
+                        <newpos>2540 2448</newpos>
+                    </stuff>
+                </post>
+                <post number="87">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2560 2382</oldpos>
+                        <newpos>2556 2362</newpos>
+                    </stuff>
+                </post>
+                <post number="88">
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2540 2448</oldpos>
+                        <newpos>2559 2430</newpos>
+                    </stuff>
+                </post>
+                <post number="89">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2457 2431</oldpos>
+                        <newpos>2469 2438</newpos>
+                    </stuff>
+                </post>
+                <post number="90">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2556 2362</oldpos>
+                        <newpos>2628 2310</newpos>
+                    </stuff>
+                </post>
+                <post number="91">
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2559 2430</oldpos>
+                        <newpos>2682 2411</newpos>
+                    </stuff>
+                </post>
+                <post number="92">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2500 2393</oldpos>
+                        <newpos>2552 2354</newpos>
+                    </stuff>
+                </post>
+                <post number="93">
+                    <stuff what="movedobject" name="Sink_2">
+                        <oldpos>2469 2438</oldpos>
+                        <newpos>2607 2429</newpos>
+                    </stuff>
+                </post>
+                <post number="94">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>0 12</newpos>
+                        <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.00000000000000000000" y="2539.00000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2486.00000000000000000000"/>
+                                    <coordinate x="2607.00000000000000000000" y="2486.00000000000000000000"/>
+                                    <coordinate x="2607.00000000000000000000" y="2444.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="95">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 12</oldpos>
+                        <newpos>1 10</newpos>
+                        <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2424.00000000000000000000" y="2539.00000000000000000000"/>
+                                    <coordinate x="2424.00000000000000000000" y="2484.00000000000000000000"/>
+                                    <coordinate x="2607.00000000000000000000" y="2484.00000000000000000000"/>
+                                    <coordinate x="2607.00000000000000000000" y="2444.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="96">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2628 2310</oldpos>
+                        <newpos>2681 2325</newpos>
+                    </stuff>
+                </post>
+                <post number="97">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2261 2314</oldpos>
+                        <newpos>2363 2242</newpos>
+                    </stuff>
+                </post>
+                <post number="98">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="0" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Test of a hydraulic gas ackumulator" font_old="Calibri,14,-1,5,75,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Test of a hydraulic gas ackumulator" font="Calibri,14,-1,5,75,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="99">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2363 2242</oldpos>
+                        <newpos>2353 2237</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -386,7 +823,7 @@
                     <parameter value="0" type="double" name="y_offset"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2169" y="2593" flipped="false" a="0"/>
+                    <pose x="2168" y="2592" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -395,14 +832,14 @@
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2424" y="2513" flipped="false" a="0"/>
+                    <pose x="2424" y="2557" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2520" y="2408" flipped="false" a="0"/>
+                    <pose x="2572" y="2369" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -410,12 +847,19 @@
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
                     <parameter value="1e6" type="double" name="P1::Pressure"/>
-                    <parameter value="0.0001" type="double" name="V"/>
+                    <parameter value="0.01" type="double" name="V"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2366" y="2592" flipped="false" a="0"/>
+                    <pose x="2363" y="2592" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2669" y="2594" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -440,35 +884,35 @@
             <component typename="SignalSink" name="Sink_2">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2474" y="2475" flipped="false" a="0"/>
+                    <pose x="2627" y="2444" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicAckumulator" name="Gas Accumulator">
                 <parameters>
                     <parameter value="0" type="double" name="PVa::Value"/>
-                    <parameter value="0" type="double" name="Ppa::Value"/>
+                    <parameter value="1e7" type="double" name="Ppa::Value"/>
                     <parameter value="1e+007" type="double" name="p0"/>
                     <parameter value="0.01" type="double" name="V0"/>
                     <parameter value="1e-008" type="double" name="Kca"/>
                     <parameter value="1.2" type="double" name="kappa"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2366" y="2475" flipped="false" a="0"/>
+                    <pose x="2363" y="2476" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2261.000000" y="2314.000000"/>
+                    <pose x="2353.000000" y="2237.000000"/>
                     <textobject fontcolor="#556b2f" text="Test of a hydraulic gas ackumulator" font="Calibri,14,-1,5,75,0,0,0,0,0"/>
                     <size width="284.000000" height="31.000000"/>
-                    <line width="2.000000" visible="1" style="solidline"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2560.000000" y="2382.000000"/>
+                    <pose x="2681.000000" y="2325.000000"/>
                     <textobject fontcolor="#556b2f" text="Plotting of oil volume in ack as a function&#xa;of integrated flow (should be linear relation)" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                     <size width="295.000000" height="52.000000"/>
                     <line width="2.000000" visible="1" style="solidline"/>
@@ -476,7 +920,7 @@
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2543.000000" y="2460.000000"/>
+                    <pose x="2682.000000" y="2411.000000"/>
                     <textobject fontcolor="#556b2f" text="pressure as a function of &#xa;flow volume (integrated flow) " font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                     <size width="202.000000" height="49.000000"/>
                     <line width="2.000000" visible="1" style="solidline"/>
@@ -487,9 +931,9 @@
             <connect endport="P1" endcomponent="Gas Accumulator" startport="P1" startcomponent="Hydraulic Volume Multi Port">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2366.00000000000000000000" y="2592.00000000000000000000"/>
-                        <coordinate x="2366.00000000000000000000" y="2592.00000000000000000000"/>
-                        <coordinate x="2366.00000000000000000000" y="2520.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2521.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -502,8 +946,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2250.00000000000000000000" y="2593.00000000000000000000"/>
-                        <coordinate x="2366.00000000000000000000" y="2593.00000000000000000000"/>
-                        <coordinate x="2366.00000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2592.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -515,8 +959,8 @@
             <connect endport="in" endcomponent="Q-type Flow Source" startport="out" startcomponent="Sine Wave">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2181.50000000000000000000" y="2593.00000000000000000000"/>
-                        <coordinate x="2206.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2180.50000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2206.00000000000000000000" y="2592.00000000000000000000"/>
                         <coordinate x="2206.00000000000000000000" y="2593.00000000000000000000"/>
                         <coordinate x="2226.00000000000000000000" y="2593.00000000000000000000"/>
                     </coordinates>
@@ -531,8 +975,8 @@
             <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Sine Wave">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2181.50000000000000000000" y="2593.00000000000000000000"/>
-                        <coordinate x="2189.50000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2180.50000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2189.50000000000000000000" y="2592.00000000000000000000"/>
                         <coordinate x="2189.50000000000000000000" y="2644.00000000000000000000"/>
                         <coordinate x="2209.50000000000000000000" y="2644.00000000000000000000"/>
                     </coordinates>
@@ -544,29 +988,13 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Pressure Transducer" startport="P1" startcomponent="Gas Accumulator">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2366.00000000000000000000" y="2520.00000000000000000000"/>
-                        <coordinate x="2366.00000000000000000000" y="2546.50000000000000000000"/>
-                        <coordinate x="2424.00000000000000000000" y="2546.50000000000000000000"/>
-                        <coordinate x="2424.00000000000000000000" y="2531.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Pressure Transducer">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2424.00000000000000000000" y="2495.00000000000000000000"/>
-                        <coordinate x="2424.00000000000000000000" y="2474.00000000000000000000"/>
-                        <coordinate x="2454.00000000000000000000" y="2474.00000000000000000000"/>
-                        <coordinate x="2454.00000000000000000000" y="2475.00000000000000000000"/>
+                        <coordinate x="2424.00000000000000000000" y="2539.00000000000000000000"/>
+                        <coordinate x="2424.00000000000000000000" y="2484.00000000000000000000"/>
+                        <coordinate x="2607.00000000000000000000" y="2484.00000000000000000000"/>
+                        <coordinate x="2607.00000000000000000000" y="2444.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -579,9 +1007,9 @@
             <connect endport="in" endcomponent="Sink" startport="PVa" startcomponent="Gas Accumulator">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2366.00000000000000000000" y="2430.00000000000000000000"/>
-                        <coordinate x="2366.00000000000000000000" y="2408.00000000000000000000"/>
-                        <coordinate x="2500.00000000000000000000" y="2408.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2431.00000000000000000000"/>
+                        <coordinate x="2363.00000000000000000000" y="2369.00000000000000000000"/>
+                        <coordinate x="2552.00000000000000000000" y="2369.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -594,8 +1022,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2244.50000000000000000000" y="2644.00000000000000000000"/>
-                        <coordinate x="2474.00000000000000000000" y="2644.00000000000000000000"/>
-                        <coordinate x="2474.00000000000000000000" y="2490.00000000000000000000"/>
+                        <coordinate x="2627.00000000000000000000" y="2644.00000000000000000000"/>
+                        <coordinate x="2627.00000000000000000000" y="2459.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -608,12 +1036,92 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2244.50000000000000000000" y="2644.00000000000000000000"/>
-                        <coordinate x="2520.00000000000000000000" y="2644.00000000000000000000"/>
-                        <coordinate x="2520.00000000000000000000" y="2423.00000000000000000000"/>
+                        <coordinate x="2572.00000000000000000000" y="2644.00000000000000000000"/>
+                        <coordinate x="2572.00000000000000000000" y="2384.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="Ppa" startcomponent="Gas Accumulator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2383.00000000000000000000" y="2476.00000000000000000000"/>
+                        <coordinate x="2607.00000000000000000000" y="2476.00000000000000000000"/>
+                        <coordinate x="2607.00000000000000000000" y="2444.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Transducer" startport="P1" startcomponent="Q-type Flow Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2250.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2424.00000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2424.00000000000000000000" y="2575.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="Ppa" startcomponent="Gas Accumulator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2383.00000000000000000000" y="2476.00000000000000000000"/>
+                        <coordinate x="2607.00000000000000000000" y="2476.00000000000000000000"/>
+                        <coordinate x="2607.00000000000000000000" y="2444.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2424.00000000000000000000" y="2539.00000000000000000000"/>
+                        <coordinate x="2424.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2561.00000000000000000000" y="2529.00000000000000000000"/>
+                        <coordinate x="2561.00000000000000000000" y="2594.00000000000000000000"/>
+                        <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="Ppa" startcomponent="Gas Accumulator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2383.00000000000000000000" y="2476.00000000000000000000"/>
+                        <coordinate x="2391.00000000000000000000" y="2476.00000000000000000000"/>
+                        <coordinate x="2391.00000000000000000000" y="2520.00000000000000000000"/>
+                        <coordinate x="2573.00000000000000000000" y="2520.00000000000000000000"/>
+                        <coordinate x="2573.00000000000000000000" y="2594.00000000000000000000"/>
+                        <coordinate x="2649.00000000000000000000" y="2594.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>

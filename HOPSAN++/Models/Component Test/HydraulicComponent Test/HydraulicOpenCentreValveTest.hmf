@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r4162" hopsancoreversion="0.5.x_r4204">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
-    <system typename="Subsystem" name="HydraulicOpenCentreValveTest">
+    <system logsamples="2048" typename="Subsystem" name="HydraulicOpenCentreValveTest">
         <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2462" y="2266" zoom="1"/>
+            <viewport x="2729.76" y="2457.63" zoom="0.70922"/>
             <ports hidden="1"/>
-            <names hidden="0"/>
+            <names hidden="1"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="HydraulicOpenCentreValveTest">
@@ -137,6 +137,75 @@
                         <newpos>2246 2202</newpos>
                     </stuff>
                 </post>
+                <post number="9">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink" startport="out" startcomponent="Soft step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2253.50000000000000000000" y="2553.00000000000000000000"/>
+                                    <coordinate x="2864.40000000000009094947" y="2553.00000000000000000000"/>
+                                    <coordinate x="2864.40000000000009094947" y="2278.19999999999981810106"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2246 2202</oldpos>
+                        <newpos>2247.41 2123.04</newpos>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="0" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Test of 6/3 open centre directional valve" font_old="Calibri,16,-1,5,75,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Test of 6/3 open centre directional valve" font="Calibri,16,-1,5,75,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="12">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2247.41 2123.04</oldpos>
+                        <newpos>2333.42 2108.94</newpos>
+                    </stuff>
+                </post>
+                <post number="13">
+                    <stuff what="addedtextboxwidget" index="1">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2854.000000" y="2209.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="14">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2854 2209</oldpos>
+                        <newpos>2830.03 2134.27</newpos>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Flows as a function of input signals" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="16">
+                    <stuff h_new="35.140000" what="resizedtextboxwidget" w_old="238.000000" h_old="100.000000" index="1" w_new="238.000000">
+                        <oldpos>2830.03 2134.27</oldpos>
+                        <newpos>2830.03 2134.27</newpos>
+                    </stuff>
+                </post>
+                <post number="17">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>2830.03 2134.27</oldpos>
+                        <newpos>2752.48 2196.31</newpos>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Flows as a function of input signals" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Flows as a function of input signal" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -146,7 +215,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2687.4" y="2339.2" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="C-type Tank_1">
@@ -156,7 +225,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2601" y="2626" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor_4">
@@ -165,7 +234,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2733" y="2338" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicOpenCenterValve" name="6/3 Open Center Valve">
@@ -189,14 +258,14 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2421" y="2543" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
                     <pose x="2864.4" y="2263.2" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor_5">
@@ -205,7 +274,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2779" y="2338" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="C-type Tank">
@@ -215,7 +284,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2536" y="2630" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicLaminarOrifice" name="Laminar Orifice">
@@ -224,7 +293,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2439" y="2417" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalSoftStep" name="Soft step">
@@ -236,7 +305,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2241" y="2553" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
@@ -249,7 +318,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2379" y="2460" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source">
@@ -258,7 +327,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2295" y="2633" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor">
@@ -267,7 +336,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2547.4" y="2337.2" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port_1">
@@ -280,7 +349,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2502" y="2460" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port_2">
@@ -293,7 +362,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2428.4894" y="2633" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor_1">
@@ -302,7 +371,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2594.4" y="2338.2" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSensor" name="Flow Sensor_2">
@@ -311,14 +380,22 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2643.4" y="2339.2" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2246.000000" y="2202.000000"/>
+                    <pose x="2333.420000" y="2108.940000"/>
                     <textobject fontcolor="#556b2f" text="Test of 6/3 open centre directional valve" font="Calibri,16,-1,5,75,0,0,0,0,0"/>
                     <size width="360.000000" height="46.000000"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2752.480000" y="2196.310000"/>
+                    <textobject fontcolor="#556b2f" text="Flows as a function of input signal" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="238.000000" height="35.140000"/>
                     <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
@@ -666,6 +743,20 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink" startport="out" startcomponent="Soft step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2253.50000000000000000000" y="2553.00000000000000000000"/>
+                        <coordinate x="2864.40000000000009094947" y="2553.00000000000000000000"/>
+                        <coordinate x="2864.40000000000009094947" y="2278.19999999999981810106"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
