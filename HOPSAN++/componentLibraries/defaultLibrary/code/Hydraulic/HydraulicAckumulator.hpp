@@ -4,13 +4,12 @@
 #include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
-#include <math.h>
-
+#include "math.h"
 
 //!
 //! @file HydraulicAckumulator.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 12 Sep 2011 22:31:30
+//! @date Fri 13 Apr 2012 08:57:00
 //! @brief Hydraulic lossless ackumulator
 //! @ingroup HydraulicComponents
 //!
@@ -41,7 +40,7 @@ private:
      int i;
      int iter;
      int mNoiter;
-     int jsyseqnweight[4];
+     double jsyseqnweight[4];
      int order[4];
      int mNstep;
      //Port P1 variable
@@ -64,11 +63,10 @@ private:
      double *mpND_Va;
      double *mpND_pa;
      Delay mDelayedPart10;
+     Delay mDelayedPart11;
      Delay mDelayedPart20;
-     Delay mDelayedPart21;
      Delay mDelayedPart30;
-
-     EquationSystemSolver *pSolver;
+     EquationSystemSolver *mpSolver;
 
 public:
      static Component *Creator()
@@ -76,13 +74,13 @@ public:
         return new HydraulicAckumulator();
      }
 
-     HydraulicAckumulator(const double p0 = 1.e7
-                         ,const double V0 = 0.001
-                         ,const double Kca = 1.e-8
-                         ,const double kappa = 1.2
-                             )
-        : ComponentQ()
+     HydraulicAckumulator() : ComponentQ()
      {
+        const double p0 = 1.e7;
+        const double V0 = 0.001;
+        const double Kca = 1.e-8;
+        const double kappa = 1.2;
+
         mNstep=9;
         jacobianMatrix.create(4,4);
         systemEquations.create(4);
@@ -112,8 +110,7 @@ public:
         registerParameter("V0", "Ack. Volume", "m^3", mV0);
         registerParameter("Kca", "Flow coefficent", "m^3/Pa", mKca);
         registerParameter("kappa", "polytropic exp. of gas", "", mkappa);
-
-        pSolver = new EquationSystemSolver(this, 4);
+        mpSolver = new EquationSystemSolver(this,4);
      }
 
     void initialize()
@@ -145,10 +142,9 @@ public:
 
 
         //Initialize delays
-        delayParts2[1] = (-2*Va - mKca*mTimestep*p1*limit(onPositive(p1 - pa) \
-+ onPositive(Va),0.,1.) + mKca*mTimestep*pa*limit(onPositive(p1 - pa) + \
-onPositive(Va),0.,1.))/2.;
-        mDelayedPart21.initialize(mNstep,delayParts2[1]);
+        delayParts1[1] = (-(mKca*mTimestep*p1) + mKca*mTimestep*pa - \
+2*Va)/2.;
+        mDelayedPart11.initialize(mNstep,delayParts1[1]);
 
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
@@ -171,8 +167,8 @@ onPositive(Va),0.,1.))/2.;
         //LocalExpressions
 
         //Initializing variable vector for Newton-Raphson
-        stateVark[0] = q1;
-        stateVark[1] = Va;
+        stateVark[0] = Va;
+        stateVark[1] = q1;
         stateVark[2] = pa;
         stateVark[3] = p1;
 
@@ -183,42 +179,48 @@ onPositive(Va),0.,1.))/2.;
          //Differential-algebraic system of equation parts
 
           //Assemble differential-algebraic equations
-          systemEquations[0] =q1 + mKca*(p1 - pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.);
-          systemEquations[1] =Va - limit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2. - delayedPart[2][1],0.,mV0);
-          systemEquations[2] =pa - (mp0*Power(mV0,mkappa))/Power(mV0 - Va,mkappa);
+          systemEquations[0] =Va - limit((mKca*mTimestep*(p1 - pa))/2. - \
+delayedPart[1][1],0.,1);
+          systemEquations[1] =q1 + mKca*(p1 - pa)*dxLimit((mKca*mTimestep*(p1 - pa))/2. - \
+delayedPart[1][1],0.,1);
+          systemEquations[2] =pa - (mp0*Power(mV0,mkappa))/Power(mV0 - \
+Va,mkappa);
           systemEquations[3] =p1 - (c1 + q1*Zc1)*onPositive(p1);
 
           //Jacobian matrix
           jacobianMatrix[0][0] = 1;
           jacobianMatrix[0][1] = 0;
-          jacobianMatrix[0][2] = -(mKca*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.));
-          jacobianMatrix[0][3] = mKca*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.);
+          jacobianMatrix[0][2] = (mKca*mTimestep*dxLimit((mKca*mTimestep*(p1 \
+- pa))/2. - delayedPart[1][1],0.,1))/2.;
+          jacobianMatrix[0][3] = -(mKca*mTimestep*dxLimit((mKca*mTimestep*(p1 \
+- pa))/2. - delayedPart[1][1],0.,1))/2.;
           jacobianMatrix[1][0] = 0;
           jacobianMatrix[1][1] = 1;
-          jacobianMatrix[1][2] = (mKca*mTimestep*dxLimit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2. - delayedPart[2][1],0.,mV0)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2.;
-          jacobianMatrix[1][3] = -(mKca*mTimestep*dxLimit(-(mKca*mTimestep*(-p1 + pa)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2. - delayedPart[2][1],0.,mV0)*limit(onPositive(p1 - pa) + onPositive(Va),0.,1.))/2.;
-          jacobianMatrix[2][0] = 0;
-          jacobianMatrix[2][1] = -(mkappa*mp0*Power(mV0,mkappa)*Power(mV0 - Va,-1 - mkappa));
+          jacobianMatrix[1][2] = -(mKca*dxLimit((mKca*mTimestep*(p1 - pa))/2. - \
+delayedPart[1][1],0.,1));
+          jacobianMatrix[1][3] = mKca*dxLimit((mKca*mTimestep*(p1 - pa))/2. - \
+delayedPart[1][1],0.,1);
+          jacobianMatrix[2][0] = -(mkappa*mp0*Power(mV0,mkappa)*Power(mV0 - \
+Va,-1 - mkappa));
+          jacobianMatrix[2][1] = 0;
           jacobianMatrix[2][2] = 1;
           jacobianMatrix[2][3] = 0;
-          jacobianMatrix[3][0] = -(Zc1*onPositive(p1));
-          jacobianMatrix[3][1] = 0;
+          jacobianMatrix[3][0] = 0;
+          jacobianMatrix[3][1] = -(Zc1*onPositive(p1));
           jacobianMatrix[3][2] = 0;
           jacobianMatrix[3][3] = 1;
 
           //Solving equation using LU-faktorisation
-          pSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
-
-
-        q1=stateVark[0];
-        Va=stateVark[1];
-        pa=stateVark[2];
-        p1=stateVark[3];
+          mpSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
+          Va=stateVark[0];
+          q1=stateVark[1];
+          pa=stateVark[2];
+          p1=stateVark[3];
         }
+
         //Calculate the delayed parts
-        delayParts2[1] = (-2*Va - mKca*mTimestep*p1*limit(onPositive(p1 - pa) \
-+ onPositive(Va),0.,1.) + mKca*mTimestep*pa*limit(onPositive(p1 - pa) + \
-onPositive(Va),0.,1.))/2.;
+        delayParts1[1] = (-(mKca*mTimestep*p1) + mKca*mTimestep*pa - \
+2*Va)/2.;
 
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
@@ -227,14 +229,14 @@ onPositive(Va),0.,1.))/2.;
 
         //Write new values to nodes
         //Port P1
-        (*mpND_p1)=p1;
+        (*mpND_p1)=p1*onPositive(p1);
         (*mpND_q1)=q1;
         //outputVariables
         (*mpND_Va)=Va;
         (*mpND_pa)=pa;
 
         //Update the delayed variabels
-        mDelayedPart21.update(delayParts2[1]);
+        mDelayedPart11.update(delayParts1[1]);
 
      }
 };
