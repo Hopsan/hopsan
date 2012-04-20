@@ -31,7 +31,8 @@ SOURCES += \
 HEADERS += \
     component_code/MyExampleVolume.hpp \
     component_code/MyExampleOrifice.hpp \
-    component_code/SignalSum.hpp
+    component_code/SignalSum.hpp \
+    component_code/MyDynParOrifice.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf

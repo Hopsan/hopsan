@@ -263,6 +263,66 @@ void Component::stopSimulation()
     #endif
 }
 
+void Component::registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue)
+{
+    if(mpParameters->exist(name))
+        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
+
+    this->addReadPort(name, "NodeSignal", Port::NOTREQUIRED);
+
+    stringstream ss;
+    if(ss << rValue)
+    {
+        mpParameters->addParameter(name, ss.str(), description, unit, "double", &rValue);
+    }
+    else
+    {
+        assert(false);
+    }
+}
+
+void Component::initializeDynamicParameters()
+{
+    mDynamicParameterDataPtrs.clear();
+    vector<string> parNames;
+    mpParameters->getParameterNames(parNames);
+
+    for (size_t i=0; i<parNames.size(); ++i)
+    {
+        // For now make sure enabled by default
+        //! @todo maybe this should be set when enabling disabling not every time
+        mpParameters->enableParameter(parNames[i], true);
+
+        // Check if dynamic parameter, Port with same name exist
+        //! @todo must make sure that otehr ports with this name do not exist, of other types then signal 1d readport
+        if (mPortPtrMap.count(parNames[i]) > 0)
+        {
+            Port* pPort = mPortPtrMap.find(parNames[i])->second;
+            if (pPort->isConnected())
+            {
+                mpParameters->enableParameter(parNames[i], false);
+                //! @todo Not getNodeData(0) not hardcoded 0
+                //! @todo this assumes signal node and double data ptr in parameter
+                mDynamicParameterDataPtrs.push_back(make_pair(pPort->getNodeDataPtr(0),
+                                                              static_cast<double*>(mpParameters->getParameterDataPtr(parNames[i]))));
+
+            }
+        }
+    }
+}
+
+void Component::updateDynamicParameterValues()
+{
+    for (size_t i=0; i<mDynamicParameterDataPtrs.size(); ++i)
+    {
+//        std::cout << &(mDynamicParameterDataPtrs[i].first) << std::endl;
+//        std::cout << &(mDynamicParameterDataPtrs[i].second) << std::endl << std::endl;
+//        std::cout << *(mDynamicParameterDataPtrs[i].first) << std::endl;
+//        std::cout << *(mDynamicParameterDataPtrs[i].second) << std::endl << std::endl;
+        *(mDynamicParameterDataPtrs[i].second) = *(mDynamicParameterDataPtrs[i].first);
+    }
+}
+
 
 //! @brief Register a double parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
 //! @ingroup ConvenientParameterFunctions

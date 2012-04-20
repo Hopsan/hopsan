@@ -49,6 +49,7 @@ using namespace std;
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
 Parameter::Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* pDataPtr, Parameters* pParentParameters)
 {
+    mEnabled = true;
     mParameterName = parameterName;
     mParameterValue = parameterValue;
     mDescription = description;
@@ -91,6 +92,11 @@ void Parameter::getParameter(std::string &rParameterName, std::string &rParamete
 void* Parameter::getDataPtr()
 {
     return mpData;
+}
+
+void Parameter::setEnabled(const bool enabled)
+{
+    mEnabled = enabled;
 }
 
 
@@ -207,7 +213,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData)
+            if( (mpData!=0) && mEnabled )
             {
                 *static_cast<double*>(mpData) = tmpParameterValue;
             }
@@ -224,7 +230,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData)
+            if( (mpData!=0) && mEnabled )
             {
                 *static_cast<int*>(mpData) = tmpParameterValue;
             }
@@ -241,7 +247,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData)
+            if( (mpData!=0) && mEnabled )
             {
                 *static_cast<bool*>(mpData) = tmpParameterValue;
             }
@@ -249,7 +255,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         else if((evaluatedParameterValue == "false") || (evaluatedParameterValue == "0"))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData)
+            if( (mpData!=0) && mEnabled )
             {
                 *static_cast<bool*>(mpData) = false;
             }
@@ -257,7 +263,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         else if((evaluatedParameterValue == "true") || (evaluatedParameterValue == "1"))
         {
             // If a data pointer has been set, then write evaluated value to data variable
-            if(mpData)
+            if( (mpData!=0) && mEnabled )
             {
                 *static_cast<bool*>(mpData) = true;
             }
@@ -270,7 +276,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     else if(mType=="string")
     {
         // If a data pointer has been set, then write evaluated value to data variable
-        if(mpData)
+        if( (mpData!=0) && mEnabled )
         {
             *static_cast<string*>(mpData) = evaluatedParameterValue;
         }
@@ -302,6 +308,11 @@ std::string Parameter::getUnit() const
 std::string Parameter::getDescription() const
 {
     return mDescription;
+}
+
+bool Parameter::isEnabled() const
+{
+    return mEnabled;
 }
 
 //! @class hopsan::Parameters
@@ -433,6 +444,22 @@ void Parameters::deleteParameter(const std::string parameterName)
 }
 
 
+void Parameters::enableParameter(std::string parameterName, const bool enable)
+{
+    std::vector<Parameter*>::iterator parIt;
+    for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
+    {
+        if( parameterName == (*parIt)->getName() )
+        {
+            (*parIt)->setEnabled(enable);
+
+            //We can return now, since there should never be multiple parameters with same name
+            return;
+        }
+    }
+}
+
+
 //! @brief Read out all parameters
 //! @param [out] rParameterNames The parameter names
 //! @param [out] rParameterValues The value of the parameters
@@ -449,6 +476,15 @@ void Parameters::getParameters(std::vector<std::string> &rParameterNames, std::v
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
         mParameters[i]->getParameter(rParameterNames[i], rParameterValues[i], rDescriptions[i], rUnits[i], rTypes[i]);
+    }
+}
+
+void Parameters::getParameterNames(std::vector<std::string> &rParameterNames)
+{
+    rParameterNames.resize(mParameters.size());
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        rParameterNames[i] = mParameters[i]->getName();
     }
 }
 

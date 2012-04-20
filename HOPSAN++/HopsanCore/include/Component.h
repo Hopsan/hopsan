@@ -79,6 +79,10 @@ public:
     std::string getTypeCQSString() const;
 
     //Parameters
+    void registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
+    void initializeDynamicParameters();
+    void updateDynamicParameterValues();
+
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
@@ -164,6 +168,7 @@ protected:
     bool mIsComponentSystem;
 
     size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
+    std::vector< std::pair<double*, double*> > mDynamicParameterDataPtrs;
 
     ComponentSystem* mpSystemParent;
 
