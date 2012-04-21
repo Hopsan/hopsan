@@ -10,5 +10,9 @@
             <port x="0" y="0.5" a="180" name="P2"/>
             <port x="0.5" y="0" a="270" name="Kc"/>
         </ports>
+		<replacables>
+		    <replacable typename="HydraulicTurbulentOrifice"/>
+			<replacable typename="HydraulicLosslessConnector"/>
+		</replacables>
     </modelobject>
 </hopsanobjectappearance>

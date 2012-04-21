@@ -25,6 +25,7 @@
 #include "GUIModelObjectAppearance.h"
 #include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
+#include "Widgets/LibraryWidget.h"
 #include "version_gui.h"
 
 //These are only used in temporary save to file
@@ -51,6 +52,10 @@
 #define CAF_DESCRIPTION "description"
 #define CAF_PORTPOSITIONS "portpositions"
 #define CAF_PORTPOSE "portpose"
+
+#define CAF_REPLACABLES "replacables"
+#define CAF_REPLACABLE "replacable"
+#define CAF_TYPENAME "typename"
 
 // =============== Help Functions ===============
 
@@ -336,6 +341,7 @@ PortAppearanceMapT &ModelObjectAppearance::getPortAppearanceMap()
     return mPortAppearanceMap;
 }
 
+
 //! @brief Removes a port appearance post for a specified portname
 //! @param[in] portName The port name for the port Appearance to be erased
 void ModelObjectAppearance::erasePortAppearance(const QString portName)
@@ -436,8 +442,23 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
         }
         // There should only be one <ports>, but lets check for more just in case
-        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTPOSITIONS);
+        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTPOSITIONS);      //! @todo Shouldn't this be CAF_PORTS?
     }
+
+    QDomElement xmlReplacables = domElement.firstChildElement(CAF_REPLACABLES);
+    while (!xmlReplacables.isNull())
+    {
+        QDomElement xmlReplacable = xmlReplacables.firstChildElement(CAF_REPLACABLE);
+        while (!xmlReplacable.isNull())
+        {
+            QString typeName = xmlReplacable.attribute(CAF_TYPENAME);
+            gpMainWindow->mpLibrary->addReplacement(mTypeName, typeName);
+            xmlReplacable = xmlReplacable.nextSiblingElement(CAF_REPLACABLE);
+        }
+
+        xmlReplacables = xmlReplacables.nextSiblingElement(CAF_REPLACABLES);
+    }
+
 
     // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format 0.2 Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 

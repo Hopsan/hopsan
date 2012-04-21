@@ -10,5 +10,10 @@
             <port x="0.5741" y="0" a="270" name="P2"/>
             <port x="1" y="0.055" a="0" name="in"/>
         </ports>
+		<replacables>
+			<replacable typename="HydraulicFixedDisplacementMotorQ"/>
+			<replacable typename="HydraulicFixedDisplacementPump"/>
+			<replacable typename="HydraulicVariableDisplacementMotorQ"/>
+		</replacables>
     </modelobject>
 </hopsanobjectappearance>

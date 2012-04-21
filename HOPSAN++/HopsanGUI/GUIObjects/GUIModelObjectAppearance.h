@@ -91,6 +91,7 @@ private:
     ModelObjectIconAppearance mUserIconAppearance;
     QString mDefaultMissingIconPath;
     QPointF mNameTextPos;
+    QStringList mReplacementObjects;
 
     PortAppearanceMapT mPortAppearanceMap;
 

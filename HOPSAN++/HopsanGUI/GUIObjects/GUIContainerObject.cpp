@@ -1812,6 +1812,79 @@ void ContainerObject::groupSelected(QPointF pt)
 }
 
 
+void ContainerObject::replaceComponent(QString name, QString newType)
+{
+    ModelObject *obj = getModelObject(name);
+
+    qDebug() << "Replacing " << obj->getTypeName() << " with " << newType;
+
+
+    CopyStack *xmlStack = new CopyStack();
+    QDomElement *copyRoot = xmlStack->getCopyRoot();
+
+        //Copy connectors
+    for(int i = 0; i != obj->getConnectorPtrs().size(); ++i)
+    {
+        obj->getConnectorPtrs().at(i)->saveToDomElement(*copyRoot);
+    }
+
+    qDebug() << copyRoot->toDocument().toString();
+
+    QStringList parNames = obj->getParameterNames();
+    QStringList parValues;
+    for(int i=0; i<parNames.size(); ++i)
+    {
+        parValues << obj->getParameterValue(parNames.at(i));
+    }
+
+    qDebug() << "Parameters: " << parNames << parValues;
+
+    QPointF pos = obj->getCenterPos();
+    double rot = obj->rotation();
+
+    deleteModelObject(name);
+
+    qDebug() << "Name = " << name;
+
+    ModelObject *newObj = addModelObject(newType, pos, rot);
+    renameModelObject(newObj->getName(), name);
+
+
+
+        //Paste connectors
+    QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
+    while(!connectorElement.isNull())
+    {
+
+        bool sucess = loadConnector(connectorElement, this, UNDO);
+        if (sucess)
+        {
+            Connector *tempConnector = this->findConnector(connectorElement.attribute("startcomponent"), connectorElement.attribute("startport"),
+                                                              connectorElement.attribute("endcomponent"), connectorElement.attribute("endport"));
+
+                //Apply offset to connector and register it in undo stack
+            tempConnector->drawConnector(true);
+            for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
+            {
+                mpUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
+                                                      tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
+            }
+        }
+
+    connectorElement = connectorElement.nextSiblingElement("connect");
+    }
+
+
+    for(int i=0; i<parNames.size(); ++i)
+    {
+        if(newObj->getParameterNames().contains(parNames.at(i)))
+        {
+            newObj->setParameterValue(parNames.at(i), parValues.at(i), true);
+        }
+    }
+}
+
+
 //! @brief Selects model objects in section with specified number.
 //! @param no Number of section
 //! @param append True if previously selected objects shall remain selected

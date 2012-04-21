@@ -67,6 +67,9 @@ public:
     void updateExternalLibraries();
     void loadHiddenSecretDir(QString dir);
 
+    void addReplacement(QString type1, QString type2);
+    QStringList getReplacements(QString type);
+
     ModelObjectAppearance *getAppearanceData(QString componentType);
     QSize sizeHint() const;
 
@@ -122,6 +125,8 @@ private:
     QMap<QTreeWidgetItem *, LibraryContentsTree *> mTreeItemToContentsTreeMap;
 
     QDir mUpdateXmlBackupDir;
+
+    QMap<QString, QStringList> mReplacementsMap;
 };
 
 

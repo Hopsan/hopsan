@@ -31,6 +31,7 @@
 #include "GUIConnector.h"
 #include "GUIPort.h"
 #include "Widgets/MessageWidget.h"
+#include "Widgets/LibraryWidget.h"
 #include "UndoStack.h"
 #include "Configuration.h"
 #include "MainWindow.h"
@@ -876,6 +877,19 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     QAction *rotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
     QAction *flipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+D)"));
     QAction *flipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+F)"));
+    //QStringList replacements = this->getAppearanceData()->getReplacementObjects();
+    QStringList replacements = gpMainWindow->mpLibrary->getReplacements(this->getTypeName());
+    qDebug() << "Replacements = " << replacements;
+    QList<QAction *> replaceActionList;
+    if(!replacements.isEmpty())
+    {
+        QMenu *replaceMenu = rMenu.addMenu(tr("Replace component"));
+        for(int i=0; i<replacements.size(); ++i)
+        {
+            QAction *replaceAction = replaceMenu->addAction(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i))->getName());
+            replaceActionList.append(replaceAction);
+        }
+    }
     showNameAction->setCheckable(true);
     showNameAction->setChecked(mpNameText->isVisible());
     rMenu.addSeparator();
@@ -925,9 +939,16 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     }
     else
     {
+        for(int i=0; i<replaceActionList.size(); ++i)
+        {
+            if(selectedAction == replaceActionList.at(i))
+            {
+                this->mpParentContainerObject->replaceComponent(this->getName(), replacements.at(i));
+                return 0;
+            }
+        }
         return selectedAction;
     }
-
     //Return 0 action if any of the above actions were triggered
     return 0;
 }

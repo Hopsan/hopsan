@@ -142,6 +142,8 @@ public:
     QStringList getModelObjectNames();
     QList<Widget*> getWidgets();
 
+    void replaceComponent(QString name, QString newType);
+
     //Numbered sections methods
     void selectSection(int no, bool append=false);
     void assignSection(int no);

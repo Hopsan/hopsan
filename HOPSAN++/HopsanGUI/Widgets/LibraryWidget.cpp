@@ -1397,6 +1397,46 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
 }
 
 
+void LibraryWidget::addReplacement(QString type1, QString type2)
+{
+    qDebug() << "Adding replacement: " << type1 << ", " << type2;
+
+    if(mReplacementsMap.contains(type1))
+    {
+        if(!mReplacementsMap.find(type1).value().contains(type2))
+        {
+            mReplacementsMap.find(type1).value().append(type2);
+        }
+    }
+    else
+    {
+        mReplacementsMap.insert(type1, QStringList() << type2);
+    }
+
+    if(mReplacementsMap.contains(type2))
+    {
+        if(!mReplacementsMap.find(type2).value().contains(type1))
+        {
+            mReplacementsMap.find(type2).value().append(type1);
+        }
+    }
+    else
+    {
+        mReplacementsMap.insert(type2, QStringList() << type1);
+    }
+}
+
+
+QStringList LibraryWidget::getReplacements(QString type)
+{
+    if(mReplacementsMap.contains(type))
+    {
+        return mReplacementsMap.find(type).value();
+    }
+    return QStringList();
+}
+
+
 //! @brief Recursive function that searches through subdirectories and adds components to the library contents tree
 //! @param libDir Current directory
 //! @param pParentTree Current contents tree node
