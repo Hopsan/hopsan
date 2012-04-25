@@ -31,8 +31,10 @@ class AnimatedComponent : public QObject
 public:
     //Make room for some additional params passed form children
     AnimatedComponent(ModelObject* unanimatedComponent, QString basePath, QStringList movablePaths, QStringList dataPorts,
-                      QStringList dataNames, QVector<double> movementX, QVector<double> movementY, QVector<double> movementTheta, QVector<double> startX,
-                      QVector<double> startY, QVector<double> startTheta, QVector<double> transformOriginX, QVector<double> transformOriginY, AnimationWidget *parent);
+                      QStringList dataNames, QStringList parameterMultipliers, QStringList parameterDivisors,
+                      QVector<double> movementX, QVector<double> movementY, QVector<double> movementTheta,
+                      QVector<double> startX, QVector<double> startY, QVector<double> startTheta,
+                      QVector<double> transformOriginX, QVector<double> transformOriginY, AnimationWidget *parent);
 
     virtual void draw();
     virtual void update();
@@ -59,6 +61,8 @@ protected:
     QVector<double> mStartX;
     QVector<double> mStartY;
     QVector<double> mStartTheta;
+    QStringList mParameterMultipliers;
+    QStringList mParameterDivisors;
 
     int mnMovableParts;
 };

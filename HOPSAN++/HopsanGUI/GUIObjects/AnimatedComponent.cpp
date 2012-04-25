@@ -5,7 +5,7 @@
 
 
 AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString basePath, QStringList movablePaths, QStringList dataPorts,
-                                     QStringList dataNames, QVector<double> movementX, QVector<double> movementY, QVector<double> movementTheta, QVector<double> startX,
+                                     QStringList dataNames, QStringList parameterMultipliers, QStringList parameterDivisors, QVector<double> movementX, QVector<double> movementY, QVector<double> movementTheta, QVector<double> startX,
                                      QVector<double> startY, QVector<double> startTheta, QVector<double> transformOriginX, QVector<double> transformOriginY, AnimationWidget *parent)
     : QObject(parent /*parent*/)
 {
@@ -29,7 +29,10 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString b
     mvMovementY = movementY;
     mvMovementTheta = movementTheta;
 
-    qDebug() << "mvMovementTheta = " << mvMovementTheta;
+    mParameterMultipliers = parameterMultipliers;
+    mParameterDivisors = parameterDivisors;
+
+   // qDebug() << "mvMovementTheta = " << mvMovementTheta;
 
     if(mnMovableParts > 0)
     {
@@ -42,21 +45,9 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString b
             {
                 mpData->insert(i,mpParent->getPlotDataPtr()->at(mpParent->getNumberOfPlotGenerations()-1).find(unanimatedComponent->getName()).value().find(dataPorts.at(i)).value().find(dataNames.at(i)).value().second);
             }
-            else
-            {
-//                    mpTimeValues = new QVector<double>((mpContainer->getTimeVector(numberOfPlotGenerations-1)));
-
-//                for(int j=0; j<unanimatedComponent->getParentContainerObject()->getTimeVector(unanimatedComponent->getParentContainerObject()->getNumberOfPlotGenerations()).size(); ++j)
-//                {
-//                    temp.append(0);
-//                }
-//                mpData->insert(i, temp);
-            }
         }
 
         this->calculateMinsAndMaxes();
-
-        qDebug() << "mpMaxes = " << *mpMaxes;
     }
 }
 
@@ -87,14 +78,19 @@ void AnimatedComponent::update()
     for(int b=0; b<mnMovableParts; ++b)
     {
         double data = mpData->at(b).at(mpParent->getIndex());
+        if(mParameterMultipliers.at(b) != QString())
+        {
+            data = data*mpUnanimatedComponent->getParameterValue(mParameterMultipliers.at(b)).toDouble();
+        }
+        if(mParameterDivisors.at(b) != QString())
+        {
+            data = data/mpUnanimatedComponent->getParameterValue(mParameterDivisors.at(b)).toDouble();
+        }
+
         double x = mpOriginal->pos().x() + mStartX.at(b) - (data*mvMovementX.at(b));
         double y = mpOriginal->pos().y() + mStartY.at(b) - (data*mvMovementY.at(b));
-        //qDebug() << "pos = [" << x << " , " << y << "]";
         mpMovables.at(b)->setPos(x, y);
-        //qDebug() << "max = " << mpMaxes->at(b);
         mpMovables.at(b)->setRotation(data/mpMaxes->at(b)*mvMovementTheta.at(b) - mStartTheta.at(b));
-
-       // qDebug() << "Angle = " << data/mpMaxes->at(b)*mvMovementTheta.at(b) - mStartTheta.at(b);
     }
     return;
 }

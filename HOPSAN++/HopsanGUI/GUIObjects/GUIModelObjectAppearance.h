@@ -76,6 +76,8 @@ public:
     QStringList getAnimationMovableIconPaths();
     QStringList getAnimationDataPorts();
     QStringList getAnimationDataNames();
+    QStringList getAnimationMultipliers();
+    QStringList getAnimationDivisors();
     
     QVector<double> getAnimationSpeedX();
     QVector<double> getAnimationSpeedY();
@@ -111,6 +113,8 @@ private:
     QStringList mAnimationMovableIconPaths;
     QStringList mAnimationDataPorts;
     QStringList mAnimationDataNames;
+    QStringList mAnimationMultipliers;
+    QStringList mAnimationDivisors;
     QVector<double> mAnimationSpeedX;
     QVector<double> mAnimationSpeedY;
     QVector<double> mAnimationSpeedTheta;

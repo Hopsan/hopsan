@@ -356,6 +356,16 @@ QStringList ModelObjectAppearance::getAnimationDataNames()
     return mAnimationDataNames;
 }
 
+QStringList ModelObjectAppearance::getAnimationMultipliers()
+{
+    return mAnimationMultipliers;
+}
+
+QStringList ModelObjectAppearance::getAnimationDivisors()
+{
+    return mAnimationDivisors;
+}
+
 QVector<double> ModelObjectAppearance::getAnimationSpeedX()
 {
     return mAnimationSpeedX;
@@ -573,6 +583,8 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             mAnimationMovableIconPaths.append(xmlMovable.firstChildElement("icon").attribute("userpath"));
             mAnimationDataPorts.append(xmlMovable.firstChildElement("data").attribute("port"));
             mAnimationDataNames.append(xmlMovable.firstChildElement("data").attribute("dataname"));
+            mAnimationMultipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
+            mAnimationDivisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
             mAnimationSpeedX.append(xmlMovable.firstChildElement("speed").attribute("x").toDouble());
             mAnimationSpeedY.append(xmlMovable.firstChildElement("speed").attribute("y").toDouble());
             mAnimationSpeedTheta.append(xmlMovable.firstChildElement("speed").attribute("a").toDouble());

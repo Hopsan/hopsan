@@ -330,6 +330,8 @@ AnimatedComponent* AnimationWidget::createComponent(ModelObject* unanimatedCompo
         QStringList movablePaths = pApp->getAnimationMovableIconPaths();
         QStringList dataPorts = pApp->getAnimationDataPorts();
         QStringList dataNames = pApp->getAnimationDataNames();
+        QStringList parameterMultipliers = pApp->getAnimationMultipliers();
+        QStringList parameterDivisors = pApp->getAnimationDivisors();
         QVector<double> movementX = pApp->getAnimationSpeedX();
         QVector<double> movementY = pApp->getAnimationSpeedY();
         QVector<double> movementTheta = pApp->getAnimationSpeedTheta();
@@ -340,8 +342,8 @@ AnimatedComponent* AnimationWidget::createComponent(ModelObject* unanimatedCompo
         QVector<double> transformOriginY = pApp->getAnimationTransformOriginY();
 
         return new AnimatedComponent(unanimatedComponent,basePath, movablePaths, dataPorts, dataNames,
-                                     movementX, movementY, movementTheta, startX, startY, startTheta,
-                                     transformOriginX, transformOriginY, parent);
+                                     parameterMultipliers, parameterDivisors, movementX, movementY, movementTheta,
+                                     startX, startY, startTheta, transformOriginX, transformOriginY, parent);
 
 //        //return (new AnimatedCTypeCylinder(unanimatedComponent,1,parent));
 //    }
