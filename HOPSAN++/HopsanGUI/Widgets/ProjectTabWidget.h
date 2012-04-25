@@ -28,12 +28,14 @@
 #include <QTabWidget>
 #include "CoreAccess.h"
 #include "QuickNavigationWidget.h"
+#include "AnimationWidget.h"
 
 //Forward declaration
 class QGraphicsScene;
 class GraphicsView;
 class ProjectTab;
 class SystemContainer;
+class AnimationWidget;
 
 class ProjectTabWidget : public QTabWidget
 {
@@ -100,6 +102,7 @@ public:
     bool isEditingEnabled();
     ProjectTabWidget *mpParentProjectTabWidget;
     GraphicsView *mpGraphicsView;
+    AnimationWidget *mpAnimationWidget;
 
 public slots:
     bool simulate();
@@ -112,6 +115,8 @@ public slots:
 private slots:
     void collectPlotData();
     void openCurrentContainerInNewTab();
+    void openAnimation();
+    void closeAnimation();
 
 signals:
     void checkMessages();

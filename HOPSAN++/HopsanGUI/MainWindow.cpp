@@ -593,6 +593,9 @@ void MainWindow::createActions()
     mpOptionsAction->setShortcut(QKeySequence("Ctrl+Shift+o"));
     connect(mpOptionsAction, SIGNAL(triggered()), mpOptionsDialog, SLOT(show()));
 
+    mpAnimateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Animation.png"), tr("&Animate"), this);
+    mpAnimateAction->setToolTip("Animate");
+
     mpAlignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
     mpAlignXAction->setText("Align Vertical");
 
@@ -786,6 +789,7 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
+    mpSimulationMenu->addAction(mpAnimateAction);
     mpSimulationMenu->addAction(mpOptimizeAction);
     mpSimulationMenu->addAction(mpSensitivityAnalysisAction);
     mpSimulationMenu->addAction(mpPlotAction);
@@ -874,6 +878,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
+    mpSimToolBar->addAction(mpAnimateAction);
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
     mpSimToolBar->addAction(mpPlotAction);

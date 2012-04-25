@@ -766,7 +766,7 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 //        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->getGraphicsView());
 //        drag->setMimeData(mimeData);
-//        drag->setPixmap(QIcon(QPixmap(this->mGUIModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
+//        drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
 //        drag->setHotSpot(QPoint(20, 20));
 //        drag->exec(Qt::CopyAction | Qt::MoveAction);
 //    }

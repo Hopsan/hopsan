@@ -80,6 +80,33 @@ Connector::~Connector()
 }
 
 
+Connector *Connector::createDummyCopy()
+{
+    Connector* pTempConnector = new Connector(mpParentContainerObject);
+
+    pTempConnector->setStartPort(mpStartPort);
+    pTempConnector->setEndPort(mpEndPort);
+    pTempConnector->setParentContainer(mpParentContainerObject);
+    mpParentContainerObject->rememberSubConnector(pTempConnector);
+    pTempConnector->setConnected();
+
+    //Convert geometry vector to string list (because setPointAndGeometries wants strings)
+    QStringList geometries;
+    for(int i=0; i<mGeometries.size(); ++i)
+    {
+        if(mGeometries.at(i) == DIAGONAL)
+            geometries.append("diagonal");
+        else if(mGeometries.at(i) == VERTICAL)
+            geometries.append("vertical");
+        else
+            geometries.append("horizontal");
+    }
+
+    pTempConnector->setPointsAndGeometries(mPoints, geometries);
+    return pTempConnector;
+}
+
+
 void Connector::disconnectPortSigSlots(Port* pPort)
 {
     bool sucess1 = true;
@@ -981,6 +1008,12 @@ void Connector::setDashed(bool value)
             tempPen.setStyle(Qt::SolidLine);
         mpLines.at(i)->setPen(tempPen);
     }
+}
+
+
+void Connector::setConnected()
+{
+    mIsConnected = true;
 }
 
 

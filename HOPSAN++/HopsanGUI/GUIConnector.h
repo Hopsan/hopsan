@@ -47,9 +47,12 @@ class Connector : public QGraphicsWidget
 {
     Q_OBJECT
     friend class ConnectorLine;
+    friend class AnimatedConnector;
 public:
     Connector(ContainerObject *pParentContainer);
     ~Connector();
+
+    Connector *createDummyCopy();
 
     void setParentContainer(ContainerObject *pParentContainer);
     ContainerObject *getParentContainer();
@@ -109,6 +112,7 @@ public slots:
     void deselect();
     void select();
     void setDashed(bool value);
+    void setConnected();
 
 private slots:
     void setVisible(bool visible);
@@ -143,6 +147,7 @@ private:
 class ConnectorLine : public QObject, public QGraphicsLineItem
 {
     friend class Connector;
+    friend class AnimatedConnector;
     Q_OBJECT
 public:
     ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, int lineNumber, Connector *parent = 0);

@@ -233,7 +233,7 @@ GroupContainer::~GroupContainer()
 ////        GUIConnector *pTransitConnector = mGUITransitConnList[i];
 
 ////        //Get the right appearance data for the group port
-////        GUIModelObjectAppearance appData;
+////        ModelObjectAppearance appData;
 ////        appData = *(gpMainWindow->mpLibrary->getAppearanceData("SystemPort"));
 ////        appData.setName("aPaApA-port");
 
@@ -382,14 +382,14 @@ void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 
 //}
 
-//GUIGroupPort::GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent)
+//GUIGroupPort::GUIGroupPort(ModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent)
 //    : GUIModelObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 
 //{
 //    //Sets the ports
 //    //! @todo Only one port in group ports could simplify this
 //    PortAppearanceMapT::iterator i;
-//    for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
+//    for (i = mModelObjectAppearance.getPortAppearanceMap().begin(); i != mModelObjectAppearance.getPortAppearanceMap().end(); ++i)
 //    {
 //        qDebug() << "DEBUG: " << i.key();
 //        qreal x = i.value().x;
@@ -397,12 +397,12 @@ void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 
 //        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-////        mGUIModelObjectAppearance.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
-//        mGUIModelObjectAppearance.setName(i.key());
+////        mModelObjectAppearance.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
+//        mModelObjectAppearance.setName(i.key());
 
 //        //We supply ptr to rootsystem to indicate that this is a systemport
 //        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-//        mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+//        mpGuiPort = new GUIPort(mModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
 //        mpOuterGuiPort = 0;
 //        mPortListPtrs.append(mpGuiPort);
 //    }

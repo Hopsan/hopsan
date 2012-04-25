@@ -92,6 +92,7 @@ public:
     PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
+    QGridLayout *mpCentralGridLayout;
 
     //Actions (public because other widgets connect to them)
     QAction *mpNewAction;
@@ -117,6 +118,7 @@ public:
     QAction *mpLoadLibsAction;
     QAction *mpPropertiesAction;
     QAction *mpOptionsAction;
+    QAction *mpAnimateAction;
     QAction *mpResetZoomAction;
     QAction *mpZoomInAction;
     QAction *mpZoomOutAction;
@@ -205,7 +207,6 @@ private:
     QDockWidget *mpSystemParametersDock;
 
     QWidget *mpCentralWidget;
-    QGridLayout *mpCentralGridLayout;
     QGridLayout *mpTabgrid;
 
     //Menubar items

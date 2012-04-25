@@ -56,6 +56,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mStartTime.setNum(0.0,'g',10);
     mStopTime.setNum(10.0,'g',10);
 
+    mpAnimationWidget = 0;
+
     mEditingEnabled = true;
     this->setPalette(gConfig.getPalette());
     this->setMouseTracking(true);
@@ -378,6 +380,15 @@ bool ProjectTab::simulate()
     }
     emit checkMessages();
 
+    //Generate animation dialog
+    if(mpAnimationWidget !=0)
+    {
+        delete this->mpParentProjectTabWidget->getCurrentTab()->mpAnimationWidget;
+    }
+    mpAnimationWidget = new AnimationWidget(gpMainWindow);
+    connect(gpMainWindow->mpAnimateAction, SIGNAL(triggered()),this, SLOT(openAnimation()));
+
+
     return (!progressBar.wasCanceled() && initSuccess);
 }
 
@@ -478,6 +489,22 @@ void ProjectTab::collectPlotData()
     this->mpGraphicsView->getContainerPtr()->collectPlotData();
 }
 
+
+void ProjectTab::openAnimation()
+{
+    gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);
+    mpAnimationWidget->show();
+    mpParentProjectTabWidget->hide();
+}
+
+
+void ProjectTab::closeAnimation()
+{
+    //mpAnimationWidget->hide();
+    gpMainWindow->mpCentralGridLayout->removeWidget(mpAnimationWidget);
+    mpAnimationWidget->hide();
+    mpParentProjectTabWidget->show();
+}
 
 //! @brief Opens current container in new tab
 //! Used for opening external subsystems for editing. If current container is not external, it will

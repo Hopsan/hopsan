@@ -460,7 +460,7 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 //! @param[in] rDomElement The DOM Element to save to
 void SystemContainer::saveToDomElement(QDomElement &rDomElement)
 {
-    //qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
+    //qDebug() << "Saving to dom node in: " << this->mModelObjectAppearance.getName();
     QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
 
     //! @todo maybe use enums instead of strings

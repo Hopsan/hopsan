@@ -156,7 +156,10 @@ SOURCES += main.cpp \
     Dialogs/MovePortsDialog.cpp \
     loadFunctions.cpp \
     Utilities/ComponentGeneratorUtilities.cpp \
-    Widgets/WelcomeWidget.cpp
+    Widgets/WelcomeWidget.cpp \
+    Widgets/AnimationWidget.cpp \
+    GUIObjects/AnimatedComponent.cpp \
+    AnimatedConnector.cpp
 
 
 HEADERS += MainWindow.h \
@@ -212,7 +215,10 @@ HEADERS += MainWindow.h \
     Dialogs/MovePortsDialog.h \
     loadFunctions.h \
     Utilities/ComponentGeneratorUtilities.h \
-    Widgets/WelcomeWidget.h
+    Widgets/WelcomeWidget.h \
+    Widgets/AnimationWidget.h \
+    GUIObjects/AnimatedComponent.h \
+    AnimatedConnector.h
 
 OTHER_FILES += \
     ../hopsandefaults \

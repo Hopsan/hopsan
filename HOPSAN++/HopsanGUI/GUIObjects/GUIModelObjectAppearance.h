@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   GUIModelObjectAppearance.h
+//! @file   ModelObjectAppearance.h
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-04-22
 //!
@@ -22,8 +22,8 @@
 //!
 //$Id$
 
-#ifndef GUIMODELOBJECTAPPEARANCE_H
-#define GUIMODELOBJECTAPPEARANCE_H
+#ifndef ModelObjectAppearance_H
+#define ModelObjectAppearance_H
 
 #include <QString>
 #include <QPointF>
@@ -72,6 +72,20 @@ public:
     qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
     QString getIconRotationBehaviour(const graphicsType gfxType=USERGRAPHICS);
     QPointF getNameTextPos();
+    QString getAnimationBaseIconPath();
+    QStringList getAnimationMovableIconPaths();
+    QStringList getAnimationDataPorts();
+    QStringList getAnimationDataNames();
+    
+    QVector<double> getAnimationSpeedX();
+    QVector<double> getAnimationSpeedY();
+    QVector<double> getAnimationSpeedTheta();
+    QVector<double> getAnimationStartX();
+    QVector<double> getAnimationStartY();
+    QVector<double> getAnimationStartTheta();
+    QVector<double> getAnimationTransformOriginX();
+    QVector<double> getAnimationTransformOriginY();
+    
     PortAppearanceMapT &getPortAppearanceMap();
     void erasePortAppearance(const QString portName);
     void addPortAppearance(const QString portName, PortAppearance *pPortAppearance=0);
@@ -92,6 +106,19 @@ private:
     QString mDefaultMissingIconPath;
     QPointF mNameTextPos;
     QStringList mReplacementObjects;
+    
+    QString mAnimationBaseIconPath;
+    QStringList mAnimationMovableIconPaths;
+    QStringList mAnimationDataPorts;
+    QStringList mAnimationDataNames;
+    QVector<double> mAnimationSpeedX;
+    QVector<double> mAnimationSpeedY;
+    QVector<double> mAnimationSpeedTheta;
+    QVector<double> mAnimationStartX;
+    QVector<double> mAnimationStartY;
+    QVector<double> mAnimationStartTheta;
+    QVector<double> mAnimationTransformOriginX;
+    QVector<double> mAnimationTransformOriginY;
 
     PortAppearanceMapT mPortAppearanceMap;
 

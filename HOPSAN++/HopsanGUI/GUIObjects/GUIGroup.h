@@ -90,7 +90,7 @@ private:
 //{
 //    Q_OBJECT
 //public:
-//    GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent = 0);
+//    GUIGroupPort(ModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent = 0);
 //    QString getTypeName();
 //    void setName(QString newName);
 

@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   GUIModelObjectAppearance.cpp
+//! @file   ModelObjectAppearance.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-04-22
 //!
@@ -26,6 +26,7 @@
 #include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/LibraryWidget.h"
+#include "Utilities/XMLUtilities.h"
 #include "version_gui.h"
 
 //These are only used in temporary save to file
@@ -334,6 +335,68 @@ QPointF ModelObjectAppearance::getNameTextPos()
     return mNameTextPos;
 }
 
+
+QString ModelObjectAppearance::getAnimationBaseIconPath()
+{
+    return mAnimationBaseIconPath;
+}
+
+QStringList ModelObjectAppearance::getAnimationMovableIconPaths()
+{
+    return mAnimationMovableIconPaths;
+}
+
+QStringList ModelObjectAppearance::getAnimationDataPorts()
+{
+    return mAnimationDataPorts;
+}
+
+QStringList ModelObjectAppearance::getAnimationDataNames()
+{
+    return mAnimationDataNames;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationSpeedX()
+{
+    return mAnimationSpeedX;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationSpeedY()
+{
+    return mAnimationSpeedY;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationSpeedTheta()
+{
+    return mAnimationSpeedTheta;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationStartX()
+{
+    return mAnimationStartX;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationStartY()
+{
+    return mAnimationStartY;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationStartTheta()
+{
+    return mAnimationStartTheta;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationTransformOriginX()
+{
+    return mAnimationTransformOriginX;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationTransformOriginY()
+{
+    return mAnimationTransformOriginY;
+}
+
+
 //! @brief Returns a reference to the map containing port appearance
 //! @returns Reference to mPortAppearanceMap
 PortAppearanceMapT &ModelObjectAppearance::getPortAppearanceMap()
@@ -353,7 +416,7 @@ void ModelObjectAppearance::erasePortAppearance(const QString portName)
     }
     else
     {
-        qDebug() << "GUIModelObjectAppearance, ERROR: specified portappearance could not be found in the map: " << portName;
+        qDebug() << "ModelObjectAppearance, ERROR: specified portappearance could not be found in the map: " << portName;
     }
 }
 
@@ -491,6 +554,43 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         // There should only be one <ports>, but lets check for more just in case
         xmlPorts_02 = xmlPorts_02.nextSiblingElement(CAF_PORTPOSITIONS);
     }
+    
+    QDomElement xmlAnimation = domElement.firstChildElement("animation");
+    if(!xmlAnimation.isNull())
+    {
+        mAnimationBaseIconPath = xmlAnimation.firstChildElement("icon").attribute("userpath");
+
+        QFileInfo baseIconFileInfo(mAnimationBaseIconPath);
+        if (baseIconFileInfo.isRelative() && !mAnimationBaseIconPath.isEmpty())
+        {
+            baseIconFileInfo.setFile(QDir(mBasePath), mAnimationBaseIconPath);
+            mAnimationBaseIconPath = baseIconFileInfo.absoluteFilePath();
+        }
+
+        QDomElement xmlMovable = xmlAnimation.firstChildElement("movable");
+        while(!xmlMovable.isNull())
+        {
+            mAnimationMovableIconPaths.append(xmlMovable.firstChildElement("icon").attribute("userpath"));
+            mAnimationDataPorts.append(xmlMovable.firstChildElement("data").attribute("port"));
+            mAnimationDataNames.append(xmlMovable.firstChildElement("data").attribute("dataname"));
+            mAnimationSpeedX.append(xmlMovable.firstChildElement("speed").attribute("x").toDouble());
+            mAnimationSpeedY.append(xmlMovable.firstChildElement("speed").attribute("y").toDouble());
+            mAnimationSpeedTheta.append(xmlMovable.firstChildElement("speed").attribute("a").toDouble());
+            mAnimationStartX.append(xmlMovable.firstChildElement("start").attribute("x").toDouble());
+            mAnimationStartY.append(xmlMovable.firstChildElement("start").attribute("y").toDouble());
+            mAnimationStartTheta.append(xmlMovable.firstChildElement("start").attribute("a").toDouble());
+            mAnimationTransformOriginX.append(xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble());
+            mAnimationTransformOriginY.append(xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble());
+            QFileInfo movableIconFileInfo(mAnimationMovableIconPaths.last());
+            if (movableIconFileInfo.isRelative() && !mAnimationMovableIconPaths.last().isEmpty())
+            {
+                movableIconFileInfo.setFile(QDir(mBasePath), mAnimationMovableIconPaths.last());
+                mAnimationMovableIconPaths.last() = movableIconFileInfo.absoluteFilePath();
+            }
+            xmlMovable = xmlMovable.nextSiblingElement("movable");
+        }
+    }
+    
 
     // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format 0.1 Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 

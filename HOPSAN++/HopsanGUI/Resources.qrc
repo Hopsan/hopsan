@@ -122,5 +122,10 @@
         <file>graphics/uiicons/Hopsan-NewComponent.png</file>
         <file>graphics/options.png</file>
         <file>graphics/optionsactive.png</file>
+        <file>graphics/uiicons/Hopsan-Pause.png</file>
+        <file>graphics/uiicons/Hopsan-Play.png</file>
+        <file>graphics/uiicons/Hopsan-Stop.png</file>
+        <file>graphics/uiicons/Hopsan-Rewind.png</file>
+        <file>graphics/uiicons/Hopsan-Animation.png</file>
     </qresource>
 </RCC>
