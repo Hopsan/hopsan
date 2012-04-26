@@ -104,7 +104,7 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
     }
     else
     {
-        success = mpParameters->addParameter(name, value, description, unit, type, 0, force);
+        success = mpParameters->addParameter(name, value, description, unit, type, false, 0, force);
     }
 
     return success;

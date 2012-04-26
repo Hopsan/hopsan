@@ -47,7 +47,7 @@ using namespace std;
 //! @param [in] type The type of the parameter e.g. double
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
-Parameter::Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* pDataPtr, Parameters* pParentParameters)
+Parameter::Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, bool isDynamic, void* pDataPtr, Parameters* pParentParameters)
 {
     mEnabled = true;
     mParameterName = parameterName;
@@ -63,6 +63,7 @@ Parameter::Parameter(std::string parameterName, std::string parameterValue, std:
         //! @todo we should not assert false here, need to handle in some nicer way
         assert(false);
     }
+    mIsDynamic = isDynamic;
     mpData = pDataPtr;
     mpParentParameters = pParentParameters;
     evaluate();
@@ -315,6 +316,11 @@ bool Parameter::isEnabled() const
     return mEnabled;
 }
 
+bool Parameter::isDynamic() const
+{
+    return mIsDynamic;
+}
+
 //! @class hopsan::Parameters
 //! @brief The Parameters class implements the parameters used in both Componenets and ComponentSystems
 //!
@@ -346,7 +352,7 @@ Parameters::~Parameters()
 //! @param [in] type The type of the parameter e.g. double, default: ""
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @return true if success, otherwise false
-bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, void* dataPtr, bool force)
+bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, bool isDynamic, void* dataPtr, bool force)
 {
     bool success = false;
 //    istringstream is(parameterValue);
@@ -408,7 +414,7 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
 
     if(!exist(parameterName))
     {
-        Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, dataPtr, this);
+        Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, isDynamic, dataPtr, this);
         success = newParameter->evaluate();
         if(success || force)
         {
@@ -517,6 +523,11 @@ void* Parameters::getParameterDataPtr(const std::string name)
         }
     }
     return 0;
+}
+
+const std::vector<Parameter*> *Parameters::getParametersVectorPtr() const
+{
+    return &mParameters;
 }
 
 

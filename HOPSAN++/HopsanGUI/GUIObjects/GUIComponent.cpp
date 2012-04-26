@@ -148,9 +148,9 @@ QString Component::getTypeCQS()
 }
 
 
-void Component::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+void Component::getParameters(QVector<CoreParameterData> &rParameterDataVec)
 {
-    mpParentContainerObject->getCoreSystemAccessPtr()->getParameters(this->getName(), qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+    mpParentContainerObject->getCoreSystemAccessPtr()->getParameters(this->getName(), rParameterDataVec);
 }
 
 
@@ -265,14 +265,16 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
 
     //Save parameters (also core related)
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
-    QVector<QString> parameterNames, parameterValues, descriptions, units, types;
-    getParameters(parameterNames, parameterValues, descriptions, units, types);
-    for(int pit=0; pit<parameterNames.size(); ++pit)
+    //QVector<QString> parameterNames, parameterValues, descriptions, units, types;
+    //getParameters(parameterNames, parameterValues, descriptions, units, types);
+    QVector<CoreParameterData> paramDataVec;
+    getParameters(paramDataVec);
+    for(int i=0; i<paramDataVec.size(); ++i)
     {
         QDomElement xmlParam = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
-        xmlParam.setAttribute(HMF_NAMETAG, parameterNames[pit]);
-        xmlParam.setAttribute(HMF_VALUETAG, parameterValues[pit]);
-        xmlParam.setAttribute(HMF_TYPE, types[pit]);
+        xmlParam.setAttribute(HMF_NAMETAG, paramDataVec[i].name);
+        xmlParam.setAttribute(HMF_VALUETAG, paramDataVec[i].value);
+        xmlParam.setAttribute(HMF_TYPE, paramDataVec[i].type);
 
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {

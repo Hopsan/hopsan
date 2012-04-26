@@ -28,6 +28,7 @@
 #include <QtGui>
 
 #include "MainWindow.h"
+#include "CoreAccess.h" //!< @todo mayeb should have parameter stuff in h file of its own so that we dont need to include coreaccess whenever we want to work with parameters
 
 class ModelObject;
 class Component;
@@ -81,6 +82,7 @@ class ParameterLayout : public QGridLayout
 public:
  //   ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
     ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", QString typeName="", ModelObject *pModelObject=0, QWidget *pParent=0);
+    ParameterLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent);
 
     QString getDescriptionName();
     QString getDataName();

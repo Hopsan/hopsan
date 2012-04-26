@@ -115,32 +115,38 @@ void ComponentPropertiesDialog::createEditStuff()
     QGridLayout *parameterLayout = new QGridLayout();
     QGridLayout *startValueLayout = new QGridLayout();
 
-    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
-    mpGUIComponent->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+    //QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
+    //mpGUIComponent->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+
+    QVector<CoreParameterData> paramDataVector;
+    mpGUIComponent->getParameters(paramDataVector);
+
     size_t nParam=0;
     size_t nStV=0;
-    for(int i=0; i<qParameterNames.size(); ++i)
+    for(int i=0; i<paramDataVector.size(); ++i)
     {
-        if(interpretedAsStartValue(qDescriptions[i]))
+        if(interpretedAsStartValue(paramDataVector[i].description))
         {
             //QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
-            QString unit = qUnits[i];
+            QString unit = paramDataVector[i].unit;
             unit.prepend("[");
             unit.append("]");
-            mvStartValueLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
-                                                             qParameterValues[i],
+            mvStartValueLayout.push_back(new ParameterLayout(paramDataVector[i].name,
+                                                             paramDataVector[i].description,
+                                                             paramDataVector[i].value,
                                                              unit,
-                                                             qTypes[i],
+                                                             paramDataVector[i].type,
                                                              mpGUIComponent));
             startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
             ++nParam;
         }
         else
         {
-            mvParameterLayout.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
-                                                            qParameterValues[i],
-                                                            qUnits[i],
-                                                            qTypes[i],
+            mvParameterLayout.push_back(new ParameterLayout(paramDataVector[i].name,
+                                                            paramDataVector[i].description,
+                                                            paramDataVector[i].value,
+                                                            paramDataVector[i].unit,
+                                                            paramDataVector[i].type,
                                                             mpGUIComponent));
             parameterLayout->addLayout(mvParameterLayout.back(), nStV, 0);
             ++nStV;
@@ -364,14 +370,14 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
 //    commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject);
 //}
 
-
+//! @deprecated
 ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, ModelObject *pModelObject, QWidget *pParent)
     : QGridLayout(pParent)
 {
     commonConstructorCode(dataName, descriptionName, dataValue, unitName, typeName, pModelObject);
 }
 
-
+//! @deprecated
 void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString /*typeName*/, ModelObject *pModelObject)
 {
     mDataName = dataName;
@@ -401,6 +407,50 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     mDescriptionNameLabel.adjustSize();
     mUnitNameLabel.setText(parseVariableUnit(unitName));
     mDataValuesLineEdit.setText(dataValue);
+
+    addWidget(&mDescriptionNameLabel, 0, 0);
+    addWidget(&mDataNameLabel, 0, 1);
+    addWidget(&mDataValuesLineEdit, 0, 2);
+    addWidget(&mUnitNameLabel, 0, 3);
+    addWidget(&mResetDefaultToolButton, 0, 4);
+    addWidget(&mSystemParameterToolButton, 0, 5);
+
+    pickColor();
+
+    connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
+    connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
+    connect(&mDataValuesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickColor()));
+}
+
+ParameterLayout::ParameterLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent)
+{
+    mDataName = rParameterData.name;
+
+    mpModelObject = pModelObject;
+
+    mDescriptionNameLabel.setMinimumWidth(100);
+    mDescriptionNameLabel.setMaximumWidth(1000);
+    //mDescriptionNameLabel.setWordWrap(true);
+    mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    mDataNameLabel.setMinimumWidth(10);
+    mDataNameLabel.setMaximumWidth(100);
+    mDataValuesLineEdit.setMinimumWidth(100);
+    mDataValuesLineEdit.setMaximumWidth(100);
+    mUnitNameLabel.setMinimumWidth(50);
+    mUnitNameLabel.setMaximumWidth(50);
+
+    mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
+    mResetDefaultToolButton.setToolTip("Reset Default Value");
+
+    mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
+    mSystemParameterToolButton.setToolTip("Map To System Parameter");
+
+    mDataNameLabel.setText(parseVariableDescription(mDataName));
+    mDataNameLabel.adjustSize();
+    mDescriptionNameLabel.setText(rParameterData.description);
+    mDescriptionNameLabel.adjustSize();
+    mUnitNameLabel.setText(parseVariableUnit(rParameterData.unit));
+    mDataValuesLineEdit.setText(rParameterData.value);
 
     addWidget(&mDescriptionNameLabel, 0, 0);
     addWidget(&mDataNameLabel, 0, 1);

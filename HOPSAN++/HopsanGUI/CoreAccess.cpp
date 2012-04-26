@@ -445,6 +445,32 @@ QString CoreSystemAccess::createSubSystem(QString name)
     return QString::fromStdString(pTempComponentSystem->getName());
 }
 
+void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParameterData> &rParameterDataVec)
+{
+    rParameterDataVec.clear();
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    if (pComp!=0)
+    {
+        const std::vector<hopsan::Parameter*> *pParams = pComp->getParametersVectorPtr();
+
+        rParameterDataVec.resize(pParams->size()); //preAllocate storage
+        for(size_t i=0; i<pParams->size(); ++i)
+        {
+            CoreParameterData data;
+            data.name = QString::fromStdString(pParams->at(i)->getName());
+            data.type = QString::fromStdString(pParams->at(i)->getType());
+            data.value = QString::fromStdString(pParams->at(i)->getValue());
+            data.unit = QString::fromStdString(pParams->at(i)->getUnit());
+            data.description = QString::fromStdString(pParams->at(i)->getDescription());
+            data.isDynamic = pParams->at(i)->isDynamic();
+            data.isEnabled = pParams->at(i)->isEnabled();
+
+            rParameterDataVec[i] = data;
+        }
+    }
+}
+
+//! @deprecated
 void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
 {
     std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;

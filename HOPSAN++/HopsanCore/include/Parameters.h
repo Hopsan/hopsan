@@ -34,11 +34,11 @@ namespace hopsan {
 class Component;
 class Parameters;
 
-class Parameter
+class DLLIMPORTEXPORT Parameter
 {
 public:
     Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit,
-              std::string type, void* pDataPtr=0, Parameters* parentParameters=0);
+              std::string type, bool isDynamic=false, void* pDataPtr=0, Parameters* parentParameters=0);
 
     bool setParameterValue(const std::string value, Parameter **pNeedEvaluation=0);
     bool setParameter(std::string parameterValue, std::string description, std::string unit,
@@ -61,9 +61,11 @@ public:
     std::string getDescription() const;
 
     bool isEnabled() const;
+    bool isDynamic() const;
 
 protected:
     bool mEnabled;
+    bool mIsDynamic;
     std::string mParameterName;
     std::string mParameterValue;
     std::string mDescription;
@@ -81,11 +83,12 @@ public:
     ~Parameters();
 
     bool addParameter(std::string parameterName, std::string parameterValue, std::string description="",
-                      std::string unit="", std::string type="", void* dataPtr=0, bool force=false);
+                      std::string unit="", std::string type="", bool isDynamic=false, void* dataPtr=0, bool force=false);
     void deleteParameter(const std::string parameterName);
 
     void enableParameter(std::string parameterName, const bool enable);
 
+    const std::vector<Parameter*> *getParametersVectorPtr() const;
     void getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions,
                        std::vector<std::string> &rUnits, std::vector<std::string> &rTypes) const;
     void getParameterNames(std::vector<std::string> &rParameterNames);

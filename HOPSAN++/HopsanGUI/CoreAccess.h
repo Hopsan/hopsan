@@ -54,6 +54,18 @@ public:
     void getMessage(QString &rMessage, QString &rType, QString &rTag);
 };
 
+class CoreParameterData
+{
+public:
+    QString name;
+    QString description;
+    QString unit;
+    QString value;
+    QString type;
+    bool    isDynamic;
+    bool    isEnabled;
+};
+
 class CoreSystemAccess
 {
 public:
@@ -89,6 +101,7 @@ public:
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rStartDataValues, QVector<QString> &rUnits);
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rStartDataValuesTxt, QVector<QString> &rUnits);
 
+    void getParameters(QString componentName, QVector<CoreParameterData> &rParameterDataVec);
     void getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     QStringList getParameterNames(QString componentName);
     QString getParameterUnit(QString componentName, QString parameterName);

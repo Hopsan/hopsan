@@ -77,10 +77,14 @@ bool Component::initialize(const double startT, const double stopT)
     return false;
 }
 
-
 void Component::getParameters(vector<string> &parameterNames, vector<string> &parameterValues, vector<string> &descriptions, vector<string> &units, vector<string> &types)
 {
     mpParameters->getParameters(parameterNames, parameterValues, descriptions, units, types);
+}
+
+const std::vector<Parameter*> *Component::getParametersVectorPtr() const
+{
+    return mpParameters->getParametersVectorPtr();
 }
 
 void Component::getParameterValue(const std::string name, std::string &rValue)
@@ -273,7 +277,7 @@ void Component::registerDynamicParameter(const std::string name, const std::stri
     stringstream ss;
     if(ss << rValue)
     {
-        mpParameters->addParameter(name, ss.str(), description, unit, "double", &rValue);
+        mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
     }
     else
     {
