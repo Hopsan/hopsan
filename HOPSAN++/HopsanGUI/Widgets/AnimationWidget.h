@@ -1,3 +1,28 @@
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
+
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   AnimationWidget.cpp
+//! @author Pratik Deschpande <pratik661@gmail.com>
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2012-04-25
+//!
+//! @brief Contains a widget for showing animations
+//!
+//$Id$
+
 #ifndef AnimationWidget_H
 #define AnimationWidget_H
 
@@ -66,7 +91,6 @@ class AnimationWidget : public QWidget
     Q_OBJECT
 public:
     AnimationWidget(MainWindow *parent = 0);
-    ~AnimationWidget();
 
     AnimatedComponent* createComponent(ModelObject* unanimatedComponent, AnimationWidget* parent);
     QGraphicsScene* getScenePtr();
@@ -79,6 +103,9 @@ public:
 
     //These are used for testing. We can see the numerical results of tests through these
     QLineEdit* mpTextDisplay;
+
+    QMap<QString, double> mIntensityMaxMap;
+    QMap<QString, double> mIntensityMinMap;
 
 private slots:
     void stop();

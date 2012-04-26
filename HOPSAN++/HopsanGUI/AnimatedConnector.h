@@ -14,11 +14,11 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   AnimatedConnector.h
-//! @author Robert Braun <robert.braun@liu.se>
+//! @file   AnimatedConnector.cpp
+//! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-04-25
 //!
-//! @brief Contains the animated connector class
+//! @brief Contains a class for animated connectors
 //!
 //$Id$
 
@@ -52,12 +52,16 @@ class AnimatedConnector : public QGraphicsWidget
 public:
     AnimatedConnector(Connector *pConnector, AnimationWidget *parent);
     ~AnimatedConnector();
+    virtual void update();
 
     AnimationWidget *mpParentAnimationWidget;
 
 private:
     bool mIsActive;
     bool mIsDashed;
+    QVector<double> mvIntensityData;
+    double mMaxIntensity;
+    double mMinIntensity;
 
     ConnectorAppearance *mpConnectorAppearance;
 

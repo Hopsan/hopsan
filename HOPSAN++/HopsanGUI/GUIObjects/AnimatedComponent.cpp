@@ -1,7 +1,34 @@
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
+
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   AnimatedComponent.cpp
+//! @author Pratik Deschpande <pratik661@gmail.com>
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2012-04-25
+//!
+//! @brief Contains a class for animated components
+//!
+//$Id$
+
+#include <math.h>
+
 #include "AnimatedComponent.h"
 #include <float.h>
 #include "GUIPort.h"
-
+#include "Utilities/GUIUtilities.h"
 
 
 AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString basePath, QStringList movablePaths, QStringList dataPorts,
@@ -86,13 +113,13 @@ void AnimatedComponent::update()
         {
             data = data/mpUnanimatedComponent->getParameterValue(mParameterDivisors.at(b)).toDouble();
         }
+        double rot = mpOriginal->rotation()+data/mpMaxes->at(b)*mvMovementTheta.at(b) - mStartTheta.at(b);
+        double x = mpBase->getCenterPos().x() - mpBase->size().width()/2*cos(deg2rad(rot)) + mpBase->size().height()/2*sin(deg2rad(rot)) + mStartX.at(b) - cos(deg2rad(rot))*data*mvMovementX.at(b) - sin(deg2rad(rot))*data*mvMovementY.at(b);
+        double y = mpBase->getCenterPos().y() - mpBase->size().height()/2*cos(deg2rad(rot)) - mpBase->size().width()/2*sin(deg2rad(rot)) + mStartY.at(b) - sin(deg2rad(rot))*data*mvMovementX.at(b) - cos(deg2rad(rot))*data*mvMovementY.at(b);
 
-        double x = mpOriginal->pos().x() + mStartX.at(b) - (data*mvMovementX.at(b));
-        double y = mpOriginal->pos().y() + mStartY.at(b) - (data*mvMovementY.at(b));
+        mpMovables.at(b)->setRotation(rot);
         mpMovables.at(b)->setPos(x, y);
-        mpMovables.at(b)->setRotation(data/mpMaxes->at(b)*mvMovementTheta.at(b) - mStartTheta.at(b));
     }
-    return;
 }
 
 void AnimatedComponent::calculateMinsAndMaxes()
@@ -139,7 +166,17 @@ void AnimatedComponent::setupAnimationMovable(int n, QString movablePath, int st
     tempNUMBER->setIconPath(movablePath,USERGRAPHICS, RELATIVE);
     this->mpMovables.append(new ModelObject(QPoint(0,0),0, tempNUMBER ,DESELECTED,USERGRAPHICS,0,0));
     this->mpMovables.at(n)->setTransformOriginPoint(transformOriginX,transformOriginY);
-    mpMovables.at(n)->setPos(mpOriginal->pos().x()+startX, mpOriginal->pos().y()+startY);
+
+    double rot = mpUnanimatedComponent->rotation() - mStartTheta.at(n);
+    double x = mpUnanimatedComponent->getCenterPos().x() - mpBase->size().width()/2*cos(deg2rad(rot)) + mpBase->size().height()/2*sin(deg2rad(rot)) + mStartX.at(n);
+    double y = mpUnanimatedComponent->getCenterPos().y() - mpBase->size().height()/2*cos(deg2rad(rot)) - mpBase->size().width()/2*sin(deg2rad(rot)) + mStartY.at(n);
+
+    mpMovables.at(n)->setRotation(rot);
+    mpMovables.at(n)->setPos(x, y);
+
+    //mpMovables.at(n)->setPos(QPointF(mpUnanimatedComponent->pos().x()+startX, mpUnanimatedComponent->pos().y()+startY));
+    //qDebug() << "Setting pos to " << mpMovables.at(n)->getCenterPos();
+    //mpMovables.at(n)->setRotation(mpOriginal->rotation());
 }
 
 

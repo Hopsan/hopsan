@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4284" hopsancoreversion="0.6.x_r4249">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4333" hopsancoreversion="0.6.x_r4329">
     <requirements>
-        <componentlibrary>HopsanGeneratedComponent_ConstantSignalSource</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_FlowSource</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_MyMass</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_PressureReliefValve</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_StepSignalSource</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_Tank</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_TurbulentOrifice</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_Volume</componentlibrary>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
     <system logsamples="2048" typename="Subsystem" name="Dynamic Pressure Feedback">
@@ -21,7 +13,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2576.5" y="2407" zoom="1"/>
+            <viewport x="2516.31" y="2570.21" zoom="1.41"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -96,7 +88,7 @@
                     <parameter value="0.5" type="double" name="delta_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2521" y="2645" flipped="true" a="0"/>
+                    <pose x="2501.141844" y="2647.12766" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -194,7 +186,7 @@
             </component>
             <component typename="SignalSource" name="Routing">
                 <parameters>
-                    <parameter value="3" type="double" name="y"/>
+                    <parameter value="2" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2770" y="2414" flipped="false" a="0"/>
@@ -256,6 +248,13 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2417" y="2328" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2431" y="2717" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -358,8 +357,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2395.00000000000000000000" y="2503.93859999999995125108"/>
-                        <coordinate x="2511.07839999999987412593" y="2503.93859999999995125108"/>
-                        <coordinate x="2511.07839999999987412593" y="2620.00000000000000000000"/>
+                        <coordinate x="2511.06344397163184112287" y="2503.93859999999995125108"/>
+                        <coordinate x="2511.06344397163184112287" y="2622.12765957446845277445"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -372,8 +371,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2395.00000000000000000000" y="2583.52579999999989013304"/>
-                        <coordinate x="2491.02849999999989449861" y="2583.52579999999989013304"/>
-                        <coordinate x="2491.02849999999989449861" y="2620.00000000000000000000"/>
+                        <coordinate x="2531.11334397163182075019" y="2583.52579999999989013304"/>
+                        <coordinate x="2531.11334397163182075019" y="2622.12765957446845277445"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -386,7 +385,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2511.00000000000000000000" y="2697.50000000000000000000"/>
-                        <coordinate x="2511.07839999999987412593" y="2670.00000000000000000000"/>
+                        <coordinate x="2511.06344397163184112287" y="2672.12765957446845277445"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -397,7 +396,7 @@
             <connect endport="P1" endcomponent="Prescribed Pressure C" startport="PT" startcomponent="4/3 Servo Valve">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2491.02849999999989449861" y="2670.00000000000000000000"/>
+                        <coordinate x="2531.11334397163182075019" y="2672.12765957446845277445"/>
                         <coordinate x="2491.00000000000000000000" y="2734.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -434,7 +433,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2630.50000000000000000000" y="2654.00000000000000000000"/>
-                        <coordinate x="2600.50000000000000000000" y="2655.00000000000000000000"/>
+                        <coordinate x="2421.64184397163171524880" y="2657.12765957446845277445"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -554,7 +553,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2460.00000000000000000000" y="2566.00000000000000000000"/>
-                        <coordinate x="2491.02849999999989449861" y="2620.00000000000000000000"/>
+                        <coordinate x="2531.11334397163182075019" y="2622.12765957446845277445"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -566,7 +565,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2547.00000000000000000000" y="2566.00000000000000000000"/>
-                        <coordinate x="2511.07839999999987412593" y="2620.00000000000000000000"/>
+                        <coordinate x="2511.06344397163184112287" y="2622.12765957446845277445"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -614,6 +613,22 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="xv" endcomponent="4/3 Servo Valve" startport="in" startcomponent="Scope">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2411.00000000000000000000" y="2717.00000000000000000000"/>
+                        <coordinate x="2368.00000000000000000000" y="2717.00000000000000000000"/>
+                        <coordinate x="2368.00000000000000000000" y="2647.12765957446845277445"/>
+                        <coordinate x="2580.64184397163171524880" y="2647.12765957446845277445"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>

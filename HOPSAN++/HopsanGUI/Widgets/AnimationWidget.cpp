@@ -1,3 +1,28 @@
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
+
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   AnimationWidget.cpp
+//! @author Pratik Deschpande <pratik661@gmail.com>
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2012-04-25
+//!
+//! @brief Contains a widget for showing animations
+//!
+//$Id$
+
 #include "AnimationWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "GUIObjects/AnimatedComponent.h"
@@ -123,8 +148,19 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpPlotData = mpContainer->getAllPlotData();
     //This might need to be updated
     numberOfPlotGenerations = mpContainer->getNumberOfPlotGenerations();
-    QString componentName = mpContainer->getModelObjectNames().first();
-    QString portName = mpContainer->getModelObject(componentName)->getPortListPtrs().first()->getPortName();
+    QString componentName;
+    QString portName;
+    int i=0;
+    while(true)
+    {
+        componentName = mpContainer->getModelObjectNames().at(i);
+        portName = mpContainer->getModelObject(componentName)->getPortListPtrs().first()->getPortName();
+        if(mpContainer->getModelObject(componentName)->getPort(portName)->isConnected())
+            break;
+        else
+            ++i;
+    }
+
     mpTimeValues = new QVector<double>((mpContainer->getTimeVector(numberOfPlotGenerations-1, componentName, portName)));
     timeStep = mpTimeValues->at(1);//at(1);
 
@@ -155,41 +191,12 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
         }
     }
 
-    qDebug() << "Found " << mConnectorList.size() << " vectors!";
-
-
 
     for(int f=0;f<mConnectorList.size();f++)
     {
-//        GUIModelObject* tempObject1 = mpGUIConnectorList.at(f)->getStartPort()->getGuiModelObject();
-//        GUIModelObject* tempObject2 = mpGUIConnectorList.at(f)->getEndPort()->getGuiModelObject();
-
-//        if(!mpGUIModelObjects->contains(tempObject1))
-//        {
-//            mpGUIModelObjects->append(tempObject1);
-//        }
-//        if(!mpGUIModelObjects->contains(tempObject2))
-//        {
-//            mpGUIModelObjects->append(tempObject2);
-//        }
-
-//        mpGUIConnectorList.replace(f,new GUIConnector(mpGUIConnectorList.at(f)));
-//        mpGraphicsScene->addItem(mpGUIConnectorList.at(f));
-        //for(int l=0; l<mpConnectorList.at(f)->getNumberOfLines(); ++l)
-        //{
-            //ConnectorLine *pConnectorLine = mpConnectorList.at(f)->getLine(l);
-            //QGraphicsLineItem *pLine = dynamic_cast<QGraphicsLineItem *>(pConnectorLine);
-            //pLine->setPos(mpConnectorList.at(f)->x()+pConnectorLine->x(),
-            //              mpConnectorList.at(f)->y()+pConnectorLine->y());
-            //mpGraphicsScene->addItem(pLine);
-        //}
-//        Connector *dummyConnector = mpConnectorList.at(f)->createDummyCopy();
         AnimatedConnector *pAnimatedConnector = new AnimatedConnector(mConnectorList.at(f), this);
         mpGraphicsScene->addItem(pAnimatedConnector);
         mAnimatedConnectorList.append(pAnimatedConnector);
-
-        //mpConnectorList.removeAt(f);
-        //mpConnectorList.insert(f, dummyConnector);
     }
 
 
@@ -211,20 +218,6 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
   //  connect( mpPushButton_forward, SIGNAL( clicked() ), this, SLOT( forward() ) );
     connect( mpStopButton, SIGNAL( clicked() ), this, SLOT( stop() ) );
     connect(mpCloseButton, SIGNAL(pressed()), mpParent->mpProjectTabs->getCurrentTab(), SLOT(closeAnimation()));
-}
-
-
-AnimationWidget::~AnimationWidget()
-{
-//    //Make sure the ports in the real model "forgets" the dummy component before they are removed
-//    for(int i=0; i<mpConnectorList.size(); ++i)
-//    {
-//        gpMainWindow->mpProjectTabs->getCurrentContainer()->removeSubConnector(mpConnectorList.at(i));
-//        //mpConnectorList.at(i)->getStartPort()->removeConnection(mpConnectorList.at(i));
-//        //mpConnectorList.at(i)->getEndPort()->removeConnection(mpConnectorList.at(i));
-//        //delete(mpConnectorList.at(i));
-//    }
-
 }
 
 
@@ -268,7 +261,6 @@ void AnimationWidget::changeSpeed(int newSpeed)
 void AnimationWidget::changeIndex(int newIndex)
 {
     index = std::min(std::max(newIndex,0), mpTimeValues->size()-1);
-    index = newIndex;
     previousSimulationTime = mpTimeValues->at(index);
     return;
 }
@@ -278,7 +270,6 @@ void AnimationWidget::updateAnimation()
     //This code snippet converts the actual time into simulation time
     currentSimulationTime  = std::min(mpTimeValues->last(), std::max(0.0,previousSimulationTime + (simulationSpeed)*(WALL_CLOCK_INTERVAL_MILLISECONDS * .005))); // originally was .001
     previousSimulationTime = currentSimulationTime;
-
 
     //This is the index that points to where in the Data/Time Vector the simulation is currently in.
     index= std::min(double(mpTimeValues->size()-1), std::max(0.0, currentSimulationTime/mpTimeValues->last()*mpTimeValues->size()));
@@ -291,9 +282,13 @@ void AnimationWidget::updateAnimation()
     //is blank.
     if(currentSimulationTime>0)
     {
-        for(int c=0;c<mAnimatedComponentList.size();c++)
+       for(int c=0; c<mAnimatedComponentList.size(); ++c)
        {
           mAnimatedComponentList.at(c)->update();
+       }
+       for(int c=0; c<mAnimatedConnectorList.size(); ++c)
+       {
+           mAnimatedConnectorList.at(c)->update();
        }
     }
 

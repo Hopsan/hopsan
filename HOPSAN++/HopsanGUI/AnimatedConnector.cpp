@@ -14,28 +14,26 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Connector.cpp
-//! @author Flumes <flumes@lists.iei.liu.se>
-//! @date   2010-01-01
+//! @file   AnimatedConnector.cpp
+//! @author Robert Braun <robert.braun@liu.se
+//! @date   2012-04-25
 //!
-//! @brief Contains the Connector class
+//! @brief Contains a class for animated connectors
 //!
 //$Id$
 
 #include <QDebug>
+#include <QColor>
 #include <QStyleOptionGraphicsItem>
 
 #include "MainWindow.h"
-//#include "GUIPort.h"
 #include "GraphicsView.h"
-#include "Utilities/GUIUtilities.h"
-//#include "GUIObjects/GUIModelObject.h"
+//#include "Utilities/GUIUtilities.h"
 #include "AnimatedConnector.h"
-#include "UndoStack.h"
+//#include "UndoStack.h"
 #include "Widgets/ProjectTabWidget.h"
-#include "GUIObjects/GUISystem.h"
-//#include "loadFunctions.h"
-#include "Configuration.h"
+//#include "GUIObjects/GUISystem.h"
+//#include "Configuration.h"
 
 class UndoStack;
 
@@ -47,7 +45,40 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *par
 {
     mpParentAnimationWidget = parent;
 
+    if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic")
+    {
+        if(pConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
+        {
+            int g = pConnector->getParentContainer()->getNumberOfPlotGenerations()-1;
+            QString componentName = pConnector->getEndPort()->getGuiModelObject()->getName();
+            QString portName = pConnector->getEndPort()->getPortName();
+            mvIntensityData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Pressure");
+        }
+        else
+        {
+            int g = pConnector->getParentContainer()->getNumberOfPlotGenerations()-1;
+            QString componentName = pConnector->getStartPort()->getGuiModelObject()->getName();
+            QString portName = pConnector->getStartPort()->getPortName();
+            mvIntensityData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Pressure");
+        }
 
+        if(!mpParentAnimationWidget->mIntensityMinMap.contains("NodeHydraulic"))
+        {
+            mpParentAnimationWidget->mIntensityMinMap.insert("NodeHydraulic", 0);
+        }
+        if(!mpParentAnimationWidget->mIntensityMaxMap.contains("NodeHydraulic"))
+        {
+            mpParentAnimationWidget->mIntensityMaxMap.insert("NodeHydraulic", 0);
+        }
+        for(int i=0; i<mvIntensityData.size(); ++i)
+        {
+            if(mvIntensityData.at(i) > mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value())
+            {
+                mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value() = mvIntensityData.at(i);
+                qDebug() << "Max = " << mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
+            }
+        }
+    }
 
     // Determine inital appearance
     mpConnectorAppearance = pConnector->mpConnectorAppearance;
@@ -97,6 +128,27 @@ AnimatedConnector::~AnimatedConnector()
 }
 
 
+void AnimatedConnector::update()
+{
+    if(!mvIntensityData.isEmpty())
+    {
+        double max = mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
+        double min = mpParentAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
+
+
+        QPen tempPen = mpLines.first()->pen();
+        double data = mvIntensityData.at(mpParentAnimationWidget->getIndex());
+        int red = 255*(data-min)/(0.8*max-min);
+        int blue = 255-255*(data-min)/(0.8*max-min);
+        qDebug() << "Red = " << red;
+        tempPen.setColor(QColor(red,0,blue));
+
+        for(int i=0; i<mpLines.size(); ++i)
+        {
+            mpLines.at(i)->setPen(tempPen);
+        }
+    }
+}
 
 
 //------------------------------------------------------------------------------------------------------------------------//
