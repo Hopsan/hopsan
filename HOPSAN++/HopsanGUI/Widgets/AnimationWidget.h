@@ -26,28 +26,6 @@
 #ifndef AnimationWidget_H
 #define AnimationWidget_H
 
-#include <QWidget>
-#include <QObject>
-#include <QGroupBox>
-#include <QSlider>
-#include <QDialog>
-#include "MainWindow.h"
-#include <QPushButton>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include "GraphicsView.h"
-#include "GUIObjects/GUISystem.h"
-#include "GUIObjects/GUIContainerObject.h"
-#include "GUIConnector.h"
-#include "GUIObjects/GUIObject.h"
-#include "GUIObjects/GUIModelObjectAppearance.h"
-#include "GUIObjects/GUIComponent.h"
-#include "GUIObjects/GUIGroup.h"
-#include "MainWindow.h"
-#include "Configuration.h"
-#include "Widgets/LibraryWidget.h"
-#include <QtGui>
-#include "Widgets/ProjectTabWidget.h"
 #include <QTimer>
 #include <QTextEdit>
 #include <QList>
@@ -56,19 +34,23 @@
 #include <QVector3D>
 #include <QGraphicsRectItem>
 #include <QTransform>
-#include "Widgets/LibraryWidget.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "MainWindow.h"
-#include "GUIObjects/AnimatedComponent.h"
-//#include "GUIObjects/AnimatedPressureGauge.h"
-
-#define WALL_CLOCK_INTERVAL_MILLISECONDS 1
+#include <QWidget>
+#include <QObject>
+#include <QGroupBox>
+#include <QSlider>
+#include <QDialog>
+#include <QPushButton>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QtGui>
 
 class ContainerObject;
 class ProjectTabWidget;
 class ProjectTab;
 class GUIGroup;
 class GUIComponent;
+class Connector;
+class Port;
 class AnimatedConnector;
 
 class ProjectTabWidget;
@@ -91,12 +73,14 @@ class AnimationWidget : public QWidget
     Q_OBJECT
 public:
     AnimationWidget(MainWindow *parent = 0);
+    ~AnimationWidget();
 
     AnimatedComponent* createComponent(ModelObject* unanimatedComponent, AnimationWidget* parent);
     QGraphicsScene* getScenePtr();
     QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > >* getPlotDataPtr();
     int getNumberOfPlotGenerations();
     int getIndex(); // returns the current position inside the time vector
+    int getLastIndex();
     void closeEvent(QCloseEvent *event);
     GraphicsView *mpGraphicsView;
 
@@ -112,8 +96,9 @@ private slots:
     void rewind();
     void pause();
     void play();
-    void forward();
+    void updateAnimationSpeed();
     void updateAnimation();
+    void updateMovables();
 
 private:
 
@@ -150,7 +135,9 @@ private:
 
     double currentSimulationTime;
     double previousSimulationTime;
-    double simulationSpeed;
+    int simulationSpeed;
+
+    double mTimeStep;
 
     int numberOfPlotGenerations;
     double timeStep;

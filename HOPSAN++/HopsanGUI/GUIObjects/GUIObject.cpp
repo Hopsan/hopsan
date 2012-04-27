@@ -158,12 +158,17 @@ void WorkspaceObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(mpParentContainerObject == 0)
+    {
+        return;
+    }
+
     setFlag(QGraphicsItem::ItemIsMovable, true); //Make the component movable if not (it is not movable during creation of connector)
     setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not (it is not selectable during creation of connector)
 
         //Store old positions for all components, in case more than one is selected
     mOldPos = this->pos();  //Make sure current objects oldpos is changed (it may not be selected before being clicked)
-    if(event->button() == Qt::LeftButton)
+    if(event->button() == Qt::LeftButton && mpParentContainerObject != 0)
     {
         for(int i = 0; i < mpParentContainerObject->getSelectedGUIWidgetPtrs().size(); ++i)
         {
@@ -205,7 +210,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        if (this->isSelected())
+        if (this->isSelected() && mpParentContainerObject != 0)
         {
             mpSelectionBox->setActive();
             connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
@@ -222,7 +227,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
             connect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             emit objectSelected();
         }
-        else
+        else if(mpParentContainerObject != 0)
         {
             disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
             disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsRight()), this, SLOT(rotate90cw()));

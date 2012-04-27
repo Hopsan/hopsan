@@ -241,6 +241,8 @@ MainWindow::MainWindow(QWidget *parent)
 //    int x = (sw - w)/2;
 //    int y = (sh - h)/2;
 //    this->move(x, y);       //Move window to center of screen
+
+    updateToolBarsToNewTab();
 }
 
 
@@ -595,6 +597,7 @@ void MainWindow::createActions()
 
     mpAnimateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Animation.png"), tr("&Animate"), this);
     mpAnimateAction->setToolTip("Animate");
+    connect(mpAnimateAction, SIGNAL(triggered()),mpProjectTabs, SLOT(openAnimation()));
 
     mpAlignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
     mpAlignXAction->setText("Align Vertical");
@@ -878,11 +881,11 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
-    mpSimToolBar->addAction(mpAnimateAction);
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
     mpSimToolBar->addAction(mpPlotAction);
     mpSimToolBar->addAction(mpShowLossesAction);
+    mpSimToolBar->addAction(mpAnimateAction);
     mpSimToolBar->addAction(mpPropertiesAction);
     mpSimToolBar->addAction(mpOpenSystemParametersAction);
 
@@ -1191,6 +1194,8 @@ void MainWindow::updateToolBarsToNewTab()
     mpOptimizeAction->setEnabled(!noTabs);
     mpSensitivityAnalysisAction->setEnabled(!noTabs);
     mpPlotAction->setEnabled(!noTabs);
+    mpShowLossesAction->setEnabled(!noTabs);
+    mpAnimateAction->setEnabled(!noTabs);
     mpPropertiesAction->setEnabled(!noTabs);
     mpOpenSystemParametersAction->setEnabled(!noTabs);
 

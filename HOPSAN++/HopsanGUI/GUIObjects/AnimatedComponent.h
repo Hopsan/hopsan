@@ -26,16 +26,11 @@
 #ifndef ANIMATEDCOMPONENT_H
 #define ANIMATEDCOMPONENT_H
 
-
-#include "GUIModelObject.h"
 #include <QTransform>
 #include <QList>
 #include <QObject>
 #include <QPen>
 #include <cassert>
-#include "../common.h"
-#include "Widgets/AnimationWidget.h"
-
 
 class AnimationWidget;
 class ModelObject;
@@ -55,7 +50,7 @@ public:
 
     virtual void draw();
     virtual void update();
-    ModelObject* getOriginal();
+   // ModelObject* getOriginal();
 
 protected:
     void setupAnimationBase(QString basePath);

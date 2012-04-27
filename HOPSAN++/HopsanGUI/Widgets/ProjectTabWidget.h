@@ -67,6 +67,7 @@ public slots:
     void showLosses(bool show);
     bool simulateAllOpenModels(bool modelsHaveNotChanged=false);
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
+    void openAnimation();
 
 signals:
     void checkMessages();
@@ -110,12 +111,12 @@ public slots:
     void saveAs();
     void setExternalSystem(bool value);
     void setEditingEnabled(bool value);
+    void openAnimation();
 
 
 private slots:
     void collectPlotData();
     void openCurrentContainerInNewTab();
-    void openAnimation();
     void closeAnimation();
 
 signals:

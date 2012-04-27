@@ -173,7 +173,7 @@ void Connector::addPoint(QPointF point)
     mPoints.push_back(point);
 
 
-    qDebug() << "the enum: " << getStartPort()->getPortDirection();
+    //qDebug() << "the enum: " << getStartPort()->getPortDirection();
 
     if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == TOPBOTTOM)
     {

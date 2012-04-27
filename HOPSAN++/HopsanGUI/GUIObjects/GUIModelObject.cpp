@@ -804,6 +804,11 @@ void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //! @brief Defines what happens if a mouse key is released while hovering an object
 void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(mpParentContainerObject == 0)
+    {
+        return;
+    }
+
     mDragCopying = false;
 
     qDebug() << "mouseReleaseEvent()";
@@ -963,13 +968,13 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        if(this->isSelected())
+        if(this->isSelected() && mpParentContainerObject != 0)
         {
             mpParentContainerObject->rememberSelectedModelObject(this);
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
-        else
+        else if(mpParentContainerObject != 0)
         {
             mpParentContainerObject->forgetSelectedModelObject(this);
             disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));

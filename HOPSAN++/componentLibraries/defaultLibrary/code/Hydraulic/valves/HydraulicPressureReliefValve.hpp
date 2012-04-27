@@ -44,12 +44,12 @@ namespace hopsan {
         double x0, pmax, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, ph, x0max;
         double mPrevX0;
 
-        double *mpND_in, *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+        double *mpND_in, *mpND_out, *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderTransferFunction mFilterLP;
-        Port *mpP1, *mpP2, *mpIn;
+        Port *mpP1, *mpP2, *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -70,6 +70,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("p_max", "Maximum opening pressure", "[Pa]", pmax);
             registerParameter("tao", "Time Constant of Spool", "[s]", tao);
@@ -83,6 +84,7 @@ namespace hopsan {
         void initialize()
         {
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 1);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE, 0);
 
             mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
             mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
@@ -231,6 +233,7 @@ namespace hopsan {
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
+            (*mpND_out) = x0;
         }
     };
 }

@@ -385,9 +385,10 @@ bool ProjectTab::simulate()
     {
         delete this->mpParentProjectTabWidget->getCurrentTab()->mpAnimationWidget;
     }
-    mpAnimationWidget = new AnimationWidget(gpMainWindow);
-    connect(gpMainWindow->mpAnimateAction, SIGNAL(triggered()),this, SLOT(openAnimation()));
-
+    if(!getTopLevelSystem()->getModelObjectNames().isEmpty())   //Animation widget cannot be created with no objects
+    {
+        mpAnimationWidget = new AnimationWidget(gpMainWindow);
+    }
 
     return (!progressBar.wasCanceled() && initSuccess);
 }
@@ -484,6 +485,7 @@ void ProjectTab::collectPlotData()
     //If we collect plot data, we can plot and calculate losses, so enable these buttons
     gpMainWindow->mpPlotAction->setEnabled(true);
     gpMainWindow->mpShowLossesAction->setEnabled(true);
+    gpMainWindow->mpAnimateAction->setEnabled(true);
 
     //Tell container to do the job
     this->mpGraphicsView->getContainerPtr()->collectPlotData();
@@ -492,9 +494,12 @@ void ProjectTab::collectPlotData()
 
 void ProjectTab::openAnimation()
 {
-    gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);
-    mpAnimationWidget->show();
-    mpParentProjectTabWidget->hide();
+    if(!getTopLevelSystem()->getModelObjectNames().isEmpty())
+    {
+        gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);
+        mpAnimationWidget->show();
+        mpParentProjectTabWidget->hide();
+    }
 }
 
 
@@ -1165,5 +1170,14 @@ void ProjectTabWidget::setCurrentTopLevelSimulationTimeParameters(const QString 
     if (count() > 0)
     {
         getCurrentTab()->setTopLevelSimulationTime(startTime, timeStep, stopTime);
+    }
+}
+
+
+void ProjectTabWidget::openAnimation()
+{
+    if(count() > 0)
+    {
+        getCurrentTab()->openAnimation();
     }
 }

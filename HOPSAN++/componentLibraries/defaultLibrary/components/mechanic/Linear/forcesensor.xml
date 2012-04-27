@@ -9,5 +9,16 @@
             <port x="0.5" y="1" a="90" name="P1"/>
             <port x="0.5" y="0" a="270" name="out"/>
         </ports>
+        <animation>
+            <icon userpath="forcesensor_user_base.svg"/>
+            <movable>
+                <icon userpath="sensor_user_movable.svg"/>
+                <data port="out" dataname="Value"/> 
+                <speed x="0" y="0" a="90"/>
+                <start x="0" y="0" a="45"/>
+                <transformorigin x="0" y="0"/>
+                <transformorigin x="18" y="18"/>                
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

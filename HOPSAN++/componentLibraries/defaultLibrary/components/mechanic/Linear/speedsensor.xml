@@ -17,6 +17,7 @@
                 <speed x="0" y="0" a="90"/>
                 <start x="0" y="0" a="45"/>
                 <transformorigin x="0" y="0"/>
+                <transformorigin x="18" y="18"/>                
             </movable>
         </animation>
     </modelobject>

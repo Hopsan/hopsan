@@ -28,12 +28,13 @@
 
 #include "MainWindow.h"
 #include "GraphicsView.h"
-//#include "Utilities/GUIUtilities.h"
 #include "AnimatedConnector.h"
-//#include "UndoStack.h"
 #include "Widgets/ProjectTabWidget.h"
-//#include "GUIObjects/GUISystem.h"
-//#include "Configuration.h"
+#include "GUIPort.h"
+#include "GUIObjects/GUIModelObject.h"
+#include "GUIConnectorAppearance.h"
+#include "GUIConnector.h"
+#include "GUIObjects/GUIContainerObject.h"
 
 class UndoStack;
 
@@ -43,7 +44,7 @@ class UndoStack;
 AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *parent)
         : QGraphicsWidget()
 {
-    mpParentAnimationWidget = parent;
+    mpAnimationWidget = parent;
 
     if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic")
     {
@@ -53,6 +54,7 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *par
             QString componentName = pConnector->getEndPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getEndPort()->getPortName();
             mvIntensityData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Pressure");
+            mvFlowData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Flow");
         }
         else
         {
@@ -60,22 +62,23 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *par
             QString componentName = pConnector->getStartPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getStartPort()->getPortName();
             mvIntensityData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Pressure");
+            mvFlowData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Flow");
+
         }
 
-        if(!mpParentAnimationWidget->mIntensityMinMap.contains("NodeHydraulic"))
+        if(!mpAnimationWidget->mIntensityMinMap.contains("NodeHydraulic"))
         {
-            mpParentAnimationWidget->mIntensityMinMap.insert("NodeHydraulic", 0);
+            mpAnimationWidget->mIntensityMinMap.insert("NodeHydraulic", 0);
         }
-        if(!mpParentAnimationWidget->mIntensityMaxMap.contains("NodeHydraulic"))
+        if(!mpAnimationWidget->mIntensityMaxMap.contains("NodeHydraulic"))
         {
-            mpParentAnimationWidget->mIntensityMaxMap.insert("NodeHydraulic", 0);
+            mpAnimationWidget->mIntensityMaxMap.insert("NodeHydraulic", 0);
         }
         for(int i=0; i<mvIntensityData.size(); ++i)
         {
-            if(mvIntensityData.at(i) > mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value())
+            if(mvIntensityData.at(i) > mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value())
             {
-                mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value() = mvIntensityData.at(i);
-                qDebug() << "Max = " << mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
+                mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value() = mvIntensityData.at(i);
             }
         }
     }
@@ -94,16 +97,6 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *par
                                                  mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
                                                  mpConnectorAppearance, i, this);
 
-//            QPen tempPen = pLine->pen();
-//            if(pConnector->mIsDashed)
-//            {
-//                tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
-//                tempPen.setStyle(Qt::CustomDashLine);
-//            }
-//            else
-//            {
-//                tempPen.setStyle(Qt::SolidLine);
-//            }
         QPen tempPen = pConnector->mpLines.at(i)->pen();
         pLine->setPen(tempPen);
         mpLines.push_back(pLine);
@@ -117,7 +110,14 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *par
         }
     }
 
-    //mpParentAnimationWidget->mpGraphicsView->updateViewPort();
+    if(pConnector->getStartPort()->getGuiModelObject()->getTypeCQS() == "C")
+    {
+        mDirectionCorrection = 1;
+    }
+    else
+    {
+        mDirectionCorrection = -1;
+    }
 }
 
 
@@ -130,18 +130,25 @@ AnimatedConnector::~AnimatedConnector()
 
 void AnimatedConnector::update()
 {
-    if(!mvIntensityData.isEmpty())
+    if(!mvIntensityData.isEmpty())      //Should consider flow as well, somehow...
     {
-        double max = mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
-        double min = mpParentAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
+        //double max = mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
+        //double min = mpParentAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
 
+        double max = 2e7;       //HARD CODED!!!
+        double min = 0;
 
         QPen tempPen = mpLines.first()->pen();
-        double data = mvIntensityData.at(mpParentAnimationWidget->getIndex());
-        int red = 255*(data-min)/(0.8*max-min);
-        int blue = 255-255*(data-min)/(0.8*max-min);
-        qDebug() << "Red = " << red;
+        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+
+        int index = mpAnimationWidget->getIndex();
+        int lastIndex = mpAnimationWidget->getLastIndex();
+        double data = mvIntensityData.at(index);
+        double flowData = mvFlowData.at(index);
+        int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
+        int blue = 255-red;
         tempPen.setColor(QColor(red,0,blue));
+        tempPen.setDashOffset(mDirectionCorrection*25000*flowData*index/lastIndex);  //HARD CODED!!!
 
         for(int i=0; i<mpLines.size(); ++i)
         {

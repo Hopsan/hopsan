@@ -34,7 +34,7 @@
 #include <QtXml>
 
 #include "common.h"
-#include "GUIConnectorAppearance.h"
+
 
 class AnimatedConnectorLine;
 class GraphicsView;
@@ -44,6 +44,7 @@ class SystemContainer;
 class ContainerObject;
 class Connector;
 class AnimationWidget;
+class ConnectorAppearance;
 
 class AnimatedConnector : public QGraphicsWidget
 {
@@ -54,14 +55,16 @@ public:
     ~AnimatedConnector();
     virtual void update();
 
-    AnimationWidget *mpParentAnimationWidget;
+    AnimationWidget *mpAnimationWidget;
 
 private:
     bool mIsActive;
     bool mIsDashed;
     QVector<double> mvIntensityData;
+    QVector<double> mvFlowData;
     double mMaxIntensity;
     double mMinIntensity;
+    int mDirectionCorrection;
 
     ConnectorAppearance *mpConnectorAppearance;
 

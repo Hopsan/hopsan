@@ -2,13 +2,13 @@
  This source file is part of Hopsan NG
 
  Copyright (c) 2011
-    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, BjÃ¶rn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
  This file is provided "as is", with no guarantee or warranty for the
  functionality or reliability of the contents. All contents in this file is
  the original work of the copyright holders at the Division of Fluid and
- Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ Mechatronic Systems (Flumes) at LinkÃ¶ping University. Modifying, using or
  redistributing any part of this file is prohibited without explicit
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
@@ -24,11 +24,17 @@
 //$Id$
 
 #include <math.h>
+#include <float.h>
 
 #include "AnimatedComponent.h"
-#include <float.h>
 #include "GUIPort.h"
 #include "Utilities/GUIUtilities.h"
+#include "MainWindow.h"
+#include "GUIModelObject.h"
+#include "../common.h"
+#include "Widgets/AnimationWidget.h"
+#include "Widgets/ProjectTabWidget.h"
+//#include "GraphicsView.h"
 
 
 AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString basePath, QStringList movablePaths, QStringList dataPorts,
@@ -40,8 +46,8 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString b
     //Something all Animated Components Should have. ie. Base, movable, etc.
     mpParent = parent;
     mpUnanimatedComponent = unanimatedComponent;
-    mpOriginal = new ModelObject(unanimatedComponent->getCenterPos().toPoint(),unanimatedComponent->rotation(),unanimatedComponent->getAppearanceData(),DESELECTED,USERGRAPHICS, unanimatedComponent->getParentContainerObject(),unanimatedComponent->parentItem());
-    gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->scene()->removeItem(mpOriginal);
+    //mpOriginal = new ModelObject(unanimatedComponent->getCenterPos().toPoint(),unanimatedComponent->rotation(),unanimatedComponent->getAppearanceData(),DESELECTED,USERGRAPHICS, unanimatedComponent->getParentContainerObject(),unanimatedComponent->parentItem());
+   // gpMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->scene()->removeItem(mpOriginal);
     mpParent = parent;
     this->mnMovableParts = movablePaths.size();
     this->mpData = new QList<QVector<double> >();
@@ -61,10 +67,10 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString b
 
    // qDebug() << "mvMovementTheta = " << mvMovementTheta;
 
+    setupAnimationBase(basePath);
+
     if(mnMovableParts > 0)
     {
-        setupAnimationBase(basePath);
-
         for(int i=0; i<movablePaths.size(); ++i)
         {
             setupAnimationMovable(0,movablePaths.at(i),startX.at(i),startY.at(i),transformOriginX.at(i),transformOriginY.at(i));
@@ -78,25 +84,17 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString b
     }
 }
 
-ModelObject* AnimatedComponent::getOriginal()
-{
-    return this->mpOriginal;
-}
 
 void AnimatedComponent::draw()
 {
-    //mpParent->getScenePtr()->addItem(mpOriginal);
+    this->mpParent->getScenePtr()->addItem(this->mpBase);
+
     if(mnMovableParts > 0)
     {
-        this->mpParent->getScenePtr()->addItem(this->mpBase);
         for(int b=0; b<mnMovableParts; ++b)
         {
             this->mpParent->getScenePtr()->addItem(this->mpMovables.at(b));
         }
-    }
-    else
-    {
-        this->mpParent->getScenePtr()->addItem(this->mpOriginal);
     }
 }
 
@@ -104,7 +102,15 @@ void AnimatedComponent::update()
 {
     for(int b=0; b<mnMovableParts; ++b)
     {
-        double data = mpData->at(b).at(mpParent->getIndex());
+        double data;
+        if(mpData->isEmpty())
+        {
+            data = 0;
+        }
+        else
+        {
+            data = mpData->at(b).at(mpParent->getIndex());
+        }
         if(mParameterMultipliers.at(b) != QString())
         {
             data = data*mpUnanimatedComponent->getParameterValue(mParameterMultipliers.at(b)).toDouble();
@@ -113,9 +119,13 @@ void AnimatedComponent::update()
         {
             data = data/mpUnanimatedComponent->getParameterValue(mParameterDivisors.at(b)).toDouble();
         }
-        double rot = mpOriginal->rotation()+data/mpMaxes->at(b)*mvMovementTheta.at(b) - mStartTheta.at(b);
-        double x = mpBase->getCenterPos().x() - mpBase->size().width()/2*cos(deg2rad(rot)) + mpBase->size().height()/2*sin(deg2rad(rot)) + mStartX.at(b) - cos(deg2rad(rot))*data*mvMovementX.at(b) - sin(deg2rad(rot))*data*mvMovementY.at(b);
-        double y = mpBase->getCenterPos().y() - mpBase->size().height()/2*cos(deg2rad(rot)) - mpBase->size().width()/2*sin(deg2rad(rot)) + mStartY.at(b) - sin(deg2rad(rot))*data*mvMovementX.at(b) - cos(deg2rad(rot))*data*mvMovementY.at(b);
+        //double rot = mpOriginal->rotation()+data/mpMaxes->at(b)*mvMovementTheta.at(b) - mStartTheta.at(b);
+        //double x = mpBase->getCenterPos().x() - mpBase->size().width()/2*cos(deg2rad(rot)) + mpBase->size().height()/2*sin(deg2rad(rot)) + mStartX.at(b) - cos(deg2rad(rot))*data*mvMovementX.at(b) - sin(deg2rad(rot))*data*mvMovementY.at(b);
+        //double y = mpBase->getCenterPos().y() - mpBase->size().height()/2*cos(deg2rad(rot)) - mpBase->size().width()/2*sin(deg2rad(rot)) + mStartY.at(b) - sin(deg2rad(rot))*data*mvMovementX.at(b) - cos(deg2rad(rot))*data*mvMovementY.at(b);
+
+        double x = mStartX.at(b) - data*mvMovementX.at(b);
+        double y = mStartY.at(b) - data*mvMovementY.at(b);
+        double rot = mStartTheta.at(b) - data*mvMovementTheta.at(b);
 
         mpMovables.at(b)->setRotation(rot);
         mpMovables.at(b)->setPos(x, y);
@@ -155,7 +165,20 @@ void AnimatedComponent::calculateMinsAndMaxes()
 void AnimatedComponent::setupAnimationBase(QString basePath)
 {
     ModelObjectAppearance *baseAppearance = new ModelObjectAppearance();
-    baseAppearance->setIconPath(basePath, USERGRAPHICS, RELATIVE);
+    if(basePath.isEmpty())
+    {
+        basePath = mpUnanimatedComponent->getAppearanceData()->getIconPath(USERGRAPHICS, ABSOLUTE);
+        if(basePath.isEmpty())
+        {
+            basePath = mpUnanimatedComponent->getAppearanceData()->getIconPath(ISOGRAPHICS, ABSOLUTE);
+        }
+        baseAppearance->setIconPath(basePath, USERGRAPHICS, ABSOLUTE);
+        qDebug() << "Base path = " << basePath;
+    }
+    else
+    {
+        baseAppearance->setIconPath(basePath, USERGRAPHICS, RELATIVE);
+    }
     mpBase = new ModelObject(mpUnanimatedComponent->pos().toPoint(),mpUnanimatedComponent->rotation(),baseAppearance,DESELECTED,USERGRAPHICS,0,0);
 }
 
@@ -164,15 +187,15 @@ void AnimatedComponent::setupAnimationMovable(int n, QString movablePath, int st
 {
     ModelObjectAppearance* tempNUMBER = new ModelObjectAppearance();
     tempNUMBER->setIconPath(movablePath,USERGRAPHICS, RELATIVE);
-    this->mpMovables.append(new ModelObject(QPoint(0,0),0, tempNUMBER ,DESELECTED,USERGRAPHICS,0,0));
+    this->mpMovables.append(new ModelObject(QPoint(0,0),0, tempNUMBER ,DESELECTED,USERGRAPHICS,0,mpBase));
     this->mpMovables.at(n)->setTransformOriginPoint(transformOriginX,transformOriginY);
 
     double rot = mpUnanimatedComponent->rotation() - mStartTheta.at(n);
     double x = mpUnanimatedComponent->getCenterPos().x() - mpBase->size().width()/2*cos(deg2rad(rot)) + mpBase->size().height()/2*sin(deg2rad(rot)) + mStartX.at(n);
     double y = mpUnanimatedComponent->getCenterPos().y() - mpBase->size().height()/2*cos(deg2rad(rot)) - mpBase->size().width()/2*sin(deg2rad(rot)) + mStartY.at(n);
 
-    mpMovables.at(n)->setRotation(rot);
-    mpMovables.at(n)->setPos(x, y);
+    mpMovables.at(n)->setRotation(mStartTheta.at(n));
+    mpMovables.at(n)->setPos(mStartX.at(n), mStartY.at(n));
 
     //mpMovables.at(n)->setPos(QPointF(mpUnanimatedComponent->pos().x()+startX, mpUnanimatedComponent->pos().y()+startY));
     //qDebug() << "Setting pos to " << mpMovables.at(n)->getCenterPos();

@@ -1386,7 +1386,7 @@ bool ContainerObject::finilizeConnector(Port *endPort)
     {
         pEndRealPort = endPort;
     }
-    qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
+    //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
 
     // Abort with error if trying to connect two group ports to each other
     //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
@@ -2349,6 +2349,7 @@ void ContainerObject::updateMainWindowButtons()
 
     gpMainWindow->mpPlotAction->setDisabled(mPlotData.isEmpty());
     gpMainWindow->mpShowLossesAction->setDisabled(mPlotData.isEmpty());
+    gpMainWindow->mpAnimateAction->setDisabled(mPlotData.isEmpty());
 }
 
 
