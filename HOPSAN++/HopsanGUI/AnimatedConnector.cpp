@@ -148,7 +148,7 @@ void AnimatedConnector::update()
         int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
         int blue = 255-red;
         tempPen.setColor(QColor(red,0,blue));
-        tempPen.setDashOffset(mDirectionCorrection*25000*flowData*index/lastIndex);  //HARD CODED!!!
+        tempPen.setDashOffset(mDirectionCorrection*50000*flowData*index/lastIndex);  //HARD CODED!!!
 
         for(int i=0; i<mpLines.size(); ++i)
         {

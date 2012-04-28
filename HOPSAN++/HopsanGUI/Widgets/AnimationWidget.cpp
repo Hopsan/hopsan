@@ -97,8 +97,8 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
 
     mpSpeedSlider = new QSlider(Qt::Horizontal);
-    mpSpeedSlider->setMinimum(-40);
-    mpSpeedSlider->setMaximum(40);
+    mpSpeedSlider->setMinimum(-20);
+    mpSpeedSlider->setMaximum(20);
     mpSpeedSlider->setSingleStep(1);
 
 
@@ -156,7 +156,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     //define slider max and min here. the time slider should have the index
     mpTimeSlider->setMinimum(0);
     mpTimeSlider->setMaximum(mpTimeValues->size());
-    mpTimeSlider->setSingleStep(1);
+    mpTimeSlider->setSingleStep(mpTimeValues->size()/100);
 
     mpSpeedSlider->setValue(simulationSpeed);
 
@@ -208,8 +208,8 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     connect(mpCloseButton,  SIGNAL(pressed()),          mpParent->mpProjectTabs->getCurrentTab(), SLOT(closeAnimation()));
 
     connect(mpTimeSlider,   SIGNAL(sliderPressed()),    this,   SLOT(pause()));
-    connect(mpTimeSlider,   SIGNAL(sliderMoved(int)),   this,   SLOT(changeIndex(int)));
-    connect(mpTimeSlider,   SIGNAL(sliderReleased()),   this,   SLOT(play()));
+    connect(mpTimeSlider,   SIGNAL(valueChanged(int)),   this,   SLOT(changeIndex(int)));
+    //connect(mpTimeSlider,   SIGNAL(sliderReleased()),   this,   SLOT(play()));
     connect(mpTimer,        SIGNAL(timeout()),          this,   SLOT(updateAnimation()));
     connect(mpSpeedSlider,  SIGNAL(valueChanged(int)),  this,   SLOT(changeSpeed(int)));
 }
@@ -233,7 +233,7 @@ void AnimationWidget::stop()
 
 void AnimationWidget::rewind()
 {
-    simulationSpeed = -1;
+    simulationSpeed = -10;
     updateAnimationSpeed();
 }
 
@@ -245,7 +245,7 @@ void AnimationWidget::pause()
 
 void AnimationWidget::play()
 {
-    simulationSpeed = 1;
+    simulationSpeed = 10;
     updateAnimationSpeed();
 }
 
@@ -264,17 +264,20 @@ void AnimationWidget::changeIndex(int newIndex)
 }
 
 
+//! @brief Stops the timer object if speed is zero
 void AnimationWidget::updateAnimationSpeed()
 {
     qDebug() << "Setting animation speed to: " << simulationSpeed;
-    qDebug() << "Timer interval: " << fabs(1000*mTimeStep/simulationSpeed);
     if(simulationSpeed == 0)
     {
         mpTimer->stop();
     }
     else
     {
-        mpTimer->start(fabs(1000*mTimeStep/simulationSpeed));
+        if(!mpTimer->isActive())
+        {
+            mpTimer->start(10);
+        }
     }
 }
 
@@ -286,12 +289,12 @@ void AnimationWidget::updateAnimation()
     //previousSimulationTime = currentSimulationTime;
 
     //This is the index that points to where in the Data/Time Vector the simulation is currently in.
-    double currentTime = previousSimulationTime+double(simulationSpeed)*mTimeStep;
     double totalTime = mpTimeValues->last();
     double nSamples = mpTimeValues->size();
+    double currentTime = std::min(totalTime, std::max(0.0, previousSimulationTime+double(simulationSpeed)/10.0 * 0.01)); // 10 = speed reduction factor, 0.01 = 100 Hz
     double newIndex = currentTime/totalTime*nSamples;
     index = ceil(std::min(double(mpTimeValues->size()-1), std::max(0.0, newIndex)));
-    previousSimulationTime = mpTimeValues->at(index);
+    previousSimulationTime = currentTime;//mpTimeValues->at(index);
 
     qDebug() << "index = " << index;
 

@@ -13,6 +13,17 @@
             <port x="0.0274" y="1" a="90" name="P1"/>
             <port x="0.466" y="1" a="90" name="P2"/>
             <port x="1" y="0.5" a="0" name="P3"/>
-        </ports>
+        </ports>        
+	<animation>
+            <icon userpath="cylinderq_user_base.svg"/>
+            <movable>
+                <icon userpath="cylinderq_user_movable.svg"/>
+                <data port="P3" dataname="Position"/> 
+		<divisor name="s_l"/>
+                <speed x="77.5" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

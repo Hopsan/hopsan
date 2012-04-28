@@ -8,5 +8,15 @@
             <port x="1" y="0.5" a="0" name="P1"/>
             <port x="0" y="0.5" a="180" name="in"/>
         </ports>
-    </modelobject>
+	<animation>
+            <icon userpath="forcetransformer_base.svg"/>
+            <movable>
+                <icon userpath="forcetransformer.svg"/>
+                <data port="P1" dataname="Position"/> 
+                <speed x="77.5" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation> 
+    </modelobject>   
 </hopsanobjectappearance>

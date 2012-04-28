@@ -56,7 +56,7 @@ DEFINES *= DEVELOPMENT
 unix {
     QMAKE_CXXFLAGS *= $$system(python$${PYTHON_VERSION}-config --includes) #TODO: Why does not include path work here
     LIBS *= $$system(python$${PYTHON_VERSION}-config --libs)
-
+    INCLUDEPATH *= $$system(python$${PYTHON_VERSION}-config --includes)
     #This will add runtime so search paths to the executable, by using $ORIGIN these paths will be realtive the executable (regardless of working dir, VERY useful)
     #The QMAKE_LFLAGS_RPATH and QMAKE_RPATHDIR does not seem to be able to hande the $$ORIGIN stuff, adding manually to LFLAGS
     # TODO: We need to add teh relative paths automatically from the path variables created above

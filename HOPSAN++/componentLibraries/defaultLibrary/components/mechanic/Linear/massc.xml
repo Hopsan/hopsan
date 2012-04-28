@@ -13,6 +13,16 @@
             <port x="0.8983125" y="0.4166666667" a="0" name="P2"/>
             <port x="0.2" y="0.0" a="270" name="Pfs"/>
             <port x="0.8" y="0.0" a="270" name="Pfk"/>
-        </ports>
+        </ports>        
+	<animation>
+            <icon userpath="massc_user_base.svg"/>
+            <movable>
+                <icon userpath="massc_user_movable.svg"/>
+                <data port="P1" dataname="Position"/> 
+                <speed x="77.5" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation> 
     </modelobject>
 </hopsanobjectappearance>

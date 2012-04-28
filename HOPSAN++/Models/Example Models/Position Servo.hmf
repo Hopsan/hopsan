@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4335" hopsancoreversion="0.6.x_r4334">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4336" hopsancoreversion="0.6.x_r4334">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
@@ -10,7 +10,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2368" zoom="1"/>
+            <viewport x="2500" y="2367.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -98,7 +98,7 @@
                     <parameter value="10" type="double" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2798" y="2422" flipped="false" a="180"/>
+                    <pose x="2720.5" y="2422" flipped="false" a="180"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -152,7 +152,7 @@
                     <parameter value="1" type="double" name="x_max"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2710" y="2422" flipped="false" a="0"/>
+                    <pose x="2669" y="2422" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -212,7 +212,7 @@
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2766" y="2367" flipped="false" a="0"/>
+                    <pose x="2740" y="2361" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -241,6 +241,7 @@
             </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
+                    <parameter value="0" type="double" name="xv::Value"/>
                     <parameter value="2e+07" type="double" name="p_max"/>
                     <parameter value="0.001" type="double" name="tao"/>
                     <parameter value="1e-008" type="double" name="k_c,s"/>
@@ -274,26 +275,10 @@
             <connect endport="P3" endcomponent="Cylinder C" startport="P1" startcomponent="Translational Mass">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2678.00000000000000000000" y="2422.00000000000000000000"/>
+                        <coordinate x="2637.00000000000000000000" y="2422.00000000000000000000"/>
                         <coordinate x="2668.50000000000000000000" y="2422.00000000000000000000"/>
                         <coordinate x="2668.50000000000000000000" y="2422.00000000000000000000"/>
                         <coordinate x="2657.50000000000000000000" y="2422.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Translational Mass" startport="P1" startcomponent="Force Transformer">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2778.50000000000000000000" y="2422.00000000000000000000"/>
-                        <coordinate x="2764.00000000000000000000" y="2422.00000000000000000000"/>
-                        <coordinate x="2764.00000000000000000000" y="2422.00000000000000000000"/>
-                        <coordinate x="2742.00000000000000000000" y="2422.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -338,8 +323,8 @@
             <connect endport="P2" endcomponent="Translational Mass" startport="P1" startcomponent="Position Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2766.00000000000000000000" y="2385.00000000000000000000"/>
-                        <coordinate x="2742.00000000000000000000" y="2422.00000000000000000000"/>
+                        <coordinate x="2740.00000000000000000000" y="2379.00000000000000000000"/>
+                        <coordinate x="2701.00000000000000000000" y="2422.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -350,8 +335,8 @@
             <connect endport="in2" endcomponent="Subtract" startport="out" startcomponent="Position Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2766.00000000000000000000" y="2349.00000000000000000000"/>
-                        <coordinate x="2766.00000000000000000000" y="2337.00000000000000000000"/>
+                        <coordinate x="2740.00000000000000000000" y="2343.00000000000000000000"/>
+                        <coordinate x="2740.00000000000000000000" y="2337.00000000000000000000"/>
                         <coordinate x="2302.00000000000000000000" y="2337.00000000000000000000"/>
                         <coordinate x="2302.00000000000000000000" y="2512.50000000000000000000"/>
                     </coordinates>
@@ -528,6 +513,34 @@
                     <coordinates>
                         <coordinate x="2340.50000000000000000000" y="2475.00000000000000000000"/>
                         <coordinate x="2314.50000000000000000000" y="2525.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink" startport="xv" startcomponent="Pressure Relief Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2617.00000000000000000000" y="2662.00000000000000000000"/>
+                        <coordinate x="2751.00000000000000000000" y="2662.00000000000000000000"/>
+                        <coordinate x="2751.00000000000000000000" y="2515.00000000000000000000"/>
+                        <coordinate x="2732.00000000000000000000" y="2515.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass" startport="P1" startcomponent="Force Transformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2701.00000000000000000000" y="2422.00000000000000000000"/>
+                        <coordinate x="2701.00000000000000000000" y="2422.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
