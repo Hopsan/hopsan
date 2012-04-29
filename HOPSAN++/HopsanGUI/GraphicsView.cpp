@@ -647,3 +647,301 @@ void GraphicsView::exportToPDF()
 //        svgPainter->end();
     }
 }
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////7
+
+
+
+
+
+
+
+
+//! Constructor.
+//! @param parent defines a parent to the new instanced object.
+AnimatedGraphicsView::AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pParent)
+        : QGraphicsView(pScene, pParent)
+{
+    mIgnoreNextContextMenuEvent = false;
+    mCtrlKeyPressed = false;
+    mShiftKeyPressed = false;
+    mLeftMouseButtonPressed = false;
+    this->setDragMode(RubberBandDrag);
+    this->setInteractive(true);
+    this->setEnabled(true);
+    this->setAcceptDrops(true);
+    this->setMouseTracking(true);
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    this->setSceneRect(0,0,5000,5000);
+    this->centerOn(this->sceneRect().center());
+
+    mIsoColor = QColor("white");
+    mZoomFactor = 1.0;
+
+    this->updateViewPort();
+    this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+
+    connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
+    connect(this, SIGNAL(hovered()), gpMainWindow->mpPlotWidget, SLOT(clearHoverEffects()));
+}
+
+
+//! Defines the right click menu event
+void AnimatedGraphicsView::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QGraphicsView::contextMenuEvent(event);
+}
+
+
+//! Defines what happens when moving an object in a AnimatedGraphicsView.
+//! @param event contains information of the drag operation.
+//! @todo This function seems to do nothing. Can it be removed?
+void AnimatedGraphicsView::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->ignore();
+}
+
+
+
+
+//! @brief Updates the viewport in case something has changed.
+//! Also changes to the correct background color if it is not the correct one.
+void AnimatedGraphicsView::updateViewPort()
+{
+    this->setBackgroundBrush(gConfig.getBackgroundColor());
+}
+
+
+
+//! @brief Returns whether or not ctrl key is pressed
+bool AnimatedGraphicsView::isCtrlKeyPressed()
+{
+    return mCtrlKeyPressed;
+}
+
+
+//! @brief Returns whether or not shift key is pressed
+bool AnimatedGraphicsView::isShiftKeyPressed()
+{
+    return mShiftKeyPressed;
+}
+
+
+bool AnimatedGraphicsView::isLeftMouseButtonPressed()
+{
+    return mLeftMouseButtonPressed;
+}
+
+
+//! @brief Tells the graphics view to ignore the next context menu event
+void AnimatedGraphicsView::setIgnoreNextContextMenuEvent()
+{
+    mIgnoreNextContextMenuEvent = true;
+}
+
+
+//! @brief Sets the zoom factor to specified value
+void AnimatedGraphicsView::setZoomFactor(double zoomFactor)
+{
+    resetZoom();
+    scale(zoomFactor, zoomFactor);
+    mZoomFactor = zoomFactor;
+}
+
+
+//! @brief Returns the current soom factor
+double AnimatedGraphicsView::getZoomFactor()
+{
+    return mZoomFactor;
+}
+
+
+//! @brief Returns the vieports center and zoom in the supplied reference variables
+void AnimatedGraphicsView::getViewPort(qreal &rX, qreal &rY, qreal &rZoom)
+{
+    rX = (horizontalScrollBar()->value() + width()/2.0 - pos().x()) / mZoomFactor;
+    rY = (verticalScrollBar()->value() + height()/2.0 - pos().y()) / mZoomFactor;
+    rZoom = mZoomFactor;
+}
+
+
+//! Defines what happens when scrolling the mouse in a AnimatedGraphicsView.
+//! @param event contains information of the scrolling operation.
+void AnimatedGraphicsView::wheelEvent(QWheelEvent *event)
+{
+        //Get value from scroll wheel change
+    qreal wheelDelta;
+    if(gConfig.getInvertWheel())
+    {
+        wheelDelta = event->delta();
+    }
+    else
+    {
+        wheelDelta = -event->delta();
+    }
+
+        //Zoom with wheel if ctrl or alt is pressed
+    if (event->modifiers().testFlag(Qt::ControlModifier) ||  event->modifiers().testFlag(Qt::AltModifier))
+    {
+        qreal factor = pow(1.41,(-wheelDelta/240.0));
+        this->scale(factor,factor);
+        mZoomFactor = mZoomFactor * factor;
+        emit zoomChange(mZoomFactor);
+    }
+        //Scroll horizontally with wheel if shift is pressed
+    else if(event->modifiers().testFlag(Qt::ShiftModifier))
+    {
+        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->value()-wheelDelta);
+    }
+        //Scroll vertically with wheel by default
+    else
+    {
+        this->verticalScrollBar()->setValue(this->verticalScrollBar()->value()+wheelDelta);
+    }
+}
+
+
+//! Defines what shall happen when various keys or key combinations are pressed.
+//! @param event contains information about the key press event.
+void AnimatedGraphicsView::keyPressEvent(QKeyEvent *event)
+{
+    bool doNotForwardEvent = false;
+    bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
+    bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
+
+    if(ctrlPressed && event->key() == Qt::Key_Up)
+    {
+        emit keyPressCtrlUp();
+        doNotForwardEvent = true;
+    }
+    else if(ctrlPressed && event->key() == Qt::Key_Down)
+    {
+        emit keyPressCtrlDown();
+        doNotForwardEvent = true;
+    }
+    else if(ctrlPressed && event->key() == Qt::Key_Left)
+    {
+        emit keyPressCtrlLeft();
+        doNotForwardEvent = true;
+    }
+    else if(ctrlPressed && event->key() == Qt::Key_Right)
+    {
+        emit keyPressCtrlRight();
+        doNotForwardEvent = true;
+    }
+    else if (ctrlPressed)
+    {
+        mCtrlKeyPressed = true;
+        this->setDragMode(RubberBandDrag);
+    }
+    else if (shiftPressed)
+    {
+        mShiftKeyPressed = true;
+    }
+
+    if(!doNotForwardEvent)
+    {
+        QGraphicsView::keyPressEvent ( event );
+    }
+}
+
+
+//! Defines what shall happen when a key is released.
+//! @param event contains information about the keypress operation.
+void AnimatedGraphicsView::keyReleaseEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Control)
+    {
+        mCtrlKeyPressed = false;
+        this->setDragMode(RubberBandDrag);
+    }
+    else if(event->key() == Qt::Key_Shift)
+    {
+        mShiftKeyPressed = false;
+    }
+
+    QGraphicsView::keyReleaseEvent(event);
+}
+
+
+//! Defines what happens when the mouse is moving in a AnimatedGraphicsView.
+//! @param event contains information of the mouse moving operation.
+void AnimatedGraphicsView::mouseMoveEvent(QMouseEvent *event)
+{
+    emit hovered();
+
+    QGraphicsView::mouseMoveEvent(event);
+}
+
+
+//! Defines what happens when clicking in a AnimatedGraphicsView.
+//! @param event contains information of the mouse click operation.
+void AnimatedGraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    mLeftMouseButtonPressed = true;
+
+    if(mCtrlKeyPressed)
+    {
+        this->setDragMode(ScrollHandDrag);
+    }
+    else
+    {
+        this->setDragMode(RubberBandDrag);
+    }
+
+    QGraphicsView::mousePressEvent(event);
+}
+
+
+void AnimatedGraphicsView::mouseReleaseEvent(QMouseEvent *event)
+{
+    mLeftMouseButtonPressed = false;
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
+
+//! Resets zoom factor to 100%.
+//! @see zoomIn()
+//! @see zoomOut()
+void AnimatedGraphicsView::resetZoom()
+{
+    this->resetMatrix();
+    mZoomFactor = 1.0;
+    emit zoomChange(mZoomFactor);
+}
+
+
+//! Increases zoom factor by 15%.
+//! @see resetZoom()
+//! @see zoomOut()
+void AnimatedGraphicsView::zoomIn()
+{
+    this->scale(1.15, 1.15);
+    mZoomFactor = mZoomFactor * 1.15;
+    emit zoomChange(mZoomFactor);
+}
+
+
+//! Decreases zoom factor by 13.04% (1 - 1/1.15).
+//! @see resetZoom()
+//! @see zoomIn()
+void AnimatedGraphicsView::zoomOut()
+{
+    this->scale(1/1.15, 1/1.15);
+    mZoomFactor = mZoomFactor / 1.15;
+    emit zoomChange(mZoomFactor);
+}
+
+
+//! Tells the current tab to center the viewport
+void AnimatedGraphicsView::centerView()
+{
+    this->centerOn(this->sceneRect().center());
+}

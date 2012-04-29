@@ -46,7 +46,7 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *par
 {
     mpAnimationWidget = parent;
 
-    if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic")
+    if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic" && pConnector->getStartPort()->getPortType() != "READPORT" && pConnector->getEndPort()->getPortType() != "READPORT")
     {
         if(pConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
         {
@@ -143,8 +143,8 @@ void AnimatedConnector::update()
 
         int index = mpAnimationWidget->getIndex();
         int lastIndex = mpAnimationWidget->getLastIndex();
-        double data = mvIntensityData.at(index);
-        double flowData = mvFlowData.at(index);
+        double data = mvIntensityData[index];
+        double flowData = mvFlowData[index];
         int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
         int blue = 255-red;
         tempPen.setColor(QColor(red,0,blue));
@@ -152,7 +152,7 @@ void AnimatedConnector::update()
 
         for(int i=0; i<mpLines.size(); ++i)
         {
-            mpLines.at(i)->setPen(tempPen);
+            mpLines[i]->setPen(tempPen);
         }
     }
 }

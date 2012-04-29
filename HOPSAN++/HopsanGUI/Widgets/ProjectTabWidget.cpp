@@ -380,16 +380,6 @@ bool ProjectTab::simulate()
     }
     emit checkMessages();
 
-    //Generate animation dialog
-    if(mpAnimationWidget !=0)
-    {
-        delete this->mpParentProjectTabWidget->getCurrentTab()->mpAnimationWidget;
-    }
-    if(!getTopLevelSystem()->getModelObjectNames().isEmpty())   //Animation widget cannot be created with no objects
-    {
-        mpAnimationWidget = new AnimationWidget(gpMainWindow);
-    }
-
     return (!progressBar.wasCanceled() && initSuccess);
 }
 
@@ -494,8 +484,15 @@ void ProjectTab::collectPlotData()
 
 void ProjectTab::openAnimation()
 {
-    if(!getTopLevelSystem()->getModelObjectNames().isEmpty())
+    //Generate animation dialog
+    if(mpAnimationWidget !=0)
     {
+        delete mpAnimationWidget;
+        mpAnimationWidget = 0;
+    }
+    if(!getTopLevelSystem()->getModelObjectNames().isEmpty())   //Animation widget cannot be created with no objects
+    {
+        mpAnimationWidget = new AnimationWidget(gpMainWindow);
         gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);
         mpAnimationWidget->show();
         mpParentProjectTabWidget->hide();
@@ -505,9 +502,9 @@ void ProjectTab::openAnimation()
 
 void ProjectTab::closeAnimation()
 {
-    //mpAnimationWidget->hide();
     gpMainWindow->mpCentralGridLayout->removeWidget(mpAnimationWidget);
-    mpAnimationWidget->hide();
+    delete mpAnimationWidget;
+    mpAnimationWidget = 0;
     mpParentProjectTabWidget->show();
 }
 

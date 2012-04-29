@@ -54,22 +54,20 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpGraphicsScene = new QGraphicsScene();
     mpGraphicsScene->setSceneRect(0,0,5000,5000);
 
-    mpQGraphicsView = new QGraphicsView(mpGraphicsScene,0); // 0 used to be this
-    mpQGraphicsView->setGeometry(0,0,500,500);
+    mpGraphicsView = new AnimatedGraphicsView(mpGraphicsScene,0);
+    mpGraphicsView->setGeometry(0,0,500,500);
 
+    mpGraphicsView->setInteractive(true);
+    mpGraphicsView->setEnabled(true);
+    mpGraphicsView->setAcceptDrops(false);
 
- //   mpQGraphicsView->setDragMode(RubberBandDrag);
-    mpQGraphicsView->setInteractive(true);
-    mpQGraphicsView->setEnabled(true);
-    mpQGraphicsView->setAcceptDrops(false);
+    mpGraphicsView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    mpGraphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    mpGraphicsView->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    mpGraphicsView->centerOn(mpGraphicsView->sceneRect().topLeft());
 
-    mpQGraphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    mpQGraphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    mpQGraphicsView->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    mpQGraphicsView->centerOn(mpQGraphicsView->sceneRect().topLeft());
-
-    mpQGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
-    mpQGraphicsView->centerOn(2500,2500);
+    mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+    mpGraphicsView->centerOn(2500,2500);
 
     mpTextDisplay = new QLineEdit(this);
     mpTextDisplay->setBaseSize(20,10);
@@ -95,12 +93,10 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     mpTimeSlider = new QSlider(Qt::Horizontal);
 
-
     mpSpeedSlider = new QSlider(Qt::Horizontal);
     mpSpeedSlider->setMinimum(-20);
     mpSpeedSlider->setMaximum(20);
     mpSpeedSlider->setSingleStep(1);
-
 
     QGridLayout *vbox= new QGridLayout(this);
     vbox->addWidget(mpStopButton,0,0);
@@ -113,12 +109,10 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     vbox->addWidget(mpTimeSlider,0,7);
     vbox->addWidget(mpTextDisplay,0,8);
     vbox->addWidget(mpCloseButton,0,9);
-    vbox->addWidget(mpQGraphicsView,1,0,1,10);
+    vbox->addWidget(mpGraphicsView,1,0,1,10);
     vbox->setColumnStretch(8,1);
     vbox->setRowStretch(1,1);
     this->setLayout(vbox);
-
-
 
     currentSimulationTime = 0;
     previousSimulationTime = 0;
@@ -126,7 +120,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     //
 
-    mpContainer = this->mpParent->mpProjectTabs->getCurrentContainer();
+    mpContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
     mpContainer->collectPlotData();
     mTimeStep = mpParent->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep();
 
@@ -144,7 +138,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     {
         componentName = mpContainer->getModelObjectNames().at(i);
         portName = mpContainer->getModelObject(componentName)->getPortListPtrs().first()->getPortName();
-        if(mpContainer->getModelObject(componentName)->getPort(portName)->isConnected())
+        if(mpContainer->getModelObject(componentName)->getPort(portName)->isConnected() && mpContainer->getModelObject(componentName)->getPort(portName)->getPortType() != "POWERMULTIPORT")
             break;
         else
             ++i;
@@ -208,8 +202,8 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     connect(mpCloseButton,  SIGNAL(pressed()),          mpParent->mpProjectTabs->getCurrentTab(), SLOT(closeAnimation()));
 
     connect(mpTimeSlider,   SIGNAL(sliderPressed()),    this,   SLOT(pause()));
-    connect(mpTimeSlider,   SIGNAL(valueChanged(int)),   this,   SLOT(changeIndex(int)));
-    //connect(mpTimeSlider,   SIGNAL(sliderReleased()),   this,   SLOT(play()));
+    connect(mpTimeSlider,   SIGNAL(valueChanged(int)),  this,   SLOT(changeIndex(int)));
+    connect(mpTimeSlider,   SIGNAL(sliderMoved(int)),   this,   SLOT(updateMovables()));
     connect(mpTimer,        SIGNAL(timeout()),          this,   SLOT(updateAnimation()));
     connect(mpSpeedSlider,  SIGNAL(valueChanged(int)),  this,   SLOT(changeSpeed(int)));
 }
@@ -260,7 +254,8 @@ void AnimationWidget::changeIndex(int newIndex)
     qDebug() << "newIndex = " << newIndex;
     index = std::min(std::max(newIndex,0), mpTimeValues->size()-1);
     previousSimulationTime = mpTimeValues->at(index);
-    updateMovables();
+    mpTextDisplay->setText(QString::number(mpTimeValues->at(index)));
+    //updateMovables();
 }
 
 
@@ -293,10 +288,10 @@ void AnimationWidget::updateAnimation()
     double nSamples = mpTimeValues->size();
     double currentTime = std::min(totalTime, std::max(0.0, previousSimulationTime+double(simulationSpeed)/10.0 * 0.01)); // 10 = speed reduction factor, 0.01 = 100 Hz
     double newIndex = currentTime/totalTime*nSamples;
-    index = ceil(std::min(double(mpTimeValues->size()-1), std::max(0.0, newIndex)));
+    index = round(std::min(double(mpTimeValues->size()-1), std::max(0.0, newIndex)));
     previousSimulationTime = currentTime;//mpTimeValues->at(index);
 
-    qDebug() << "index = " << index;
+   // qDebug() << "index = " << index;
 
     mpTimeSlider->setValue(index);
     mpTextDisplay->setText(QString::number(mpTimeValues->at(index)));
@@ -318,11 +313,11 @@ void AnimationWidget::updateMovables()
     //is blank.
    for(int c=0; c<mAnimatedComponentList.size(); ++c)
    {
-      mAnimatedComponentList.at(c)->update();
+       mAnimatedComponentList[c]->update();
    }
    for(int c=0; c<mAnimatedConnectorList.size(); ++c)
    {
-       mAnimatedConnectorList.at(c)->update();
+       mAnimatedConnectorList[c]->update();
    }
 }
 

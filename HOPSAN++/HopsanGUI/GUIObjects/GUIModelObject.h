@@ -60,6 +60,7 @@ public:
     void setAppearanceDataBasePath(const QString basePath);
     virtual ModelObjectAppearance* getAppearanceData();
     bool isVisible();
+    QGraphicsSvgItem *getIcon();
 
     //Help methods
     QString getHelpPicture();

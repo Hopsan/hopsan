@@ -360,6 +360,7 @@ void ModelObject::refreshIconPosition()
     if (!mIconRotation)
     {
         mpIcon->setPos( this->mapFromScene(this->getCenterPos() - mpIcon->boundingRect().center() ));
+        qDebug() << "Setting positon to: " << mpIcon->pos();
     }
 }
 
@@ -1110,7 +1111,10 @@ void ModelObject::flipVertical(undoStatus undoSettings)
 //! @see flipVertical()
 void ModelObject::flipHorizontal(undoStatus undoSettings)
 {
-    mpParentContainerObject->mpParentProjectTab->hasChanged();
+    if(mpParentContainerObject)
+    {
+        mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
     QTransform transf;
     transf.scale(-1.0, 1.0);
 
@@ -1258,6 +1262,12 @@ QString ModelObject::getHelpPicture()
 bool ModelObject::isVisible()
 {
     return mpIcon->isVisible();
+}
+
+
+QGraphicsSvgItem *ModelObject::getIcon()
+{
+    return mpIcon;
 }
 
 

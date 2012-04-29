@@ -97,4 +97,59 @@ private:
     ContainerObject *mpContainerObject;
 };
 
+
+class AnimatedGraphicsView : public QGraphicsView
+{
+    Q_OBJECT
+
+public:
+    AnimatedGraphicsView(QGraphicsScene *pScene, QWidget *pParent);
+
+    void updateViewPort();
+    void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
+    bool isCtrlKeyPressed();
+    bool isShiftKeyPressed();
+    bool isLeftMouseButtonPressed();
+    void setIgnoreNextContextMenuEvent();
+    void setZoomFactor(double zoomFactor);
+    double getZoomFactor();
+
+signals:
+    void keyPressDelete();
+    void keyPressShiftK();
+    void keyPressShiftL();
+    void keyPressCtrlUp();
+    void keyPressCtrlDown();
+    void keyPressCtrlLeft();
+    void keyPressCtrlRight();
+    void zoomChange(qreal zoomfactor);
+    void systemPortSignal(QPointF position);
+    void hovered();
+
+public slots:
+    void resetZoom();
+    void zoomIn();
+    void zoomOut();
+    void centerView();
+
+protected:
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void keyPressEvent(QKeyEvent *event);
+    virtual void keyReleaseEvent(QKeyEvent *event);
+    virtual void contextMenuEvent ( QContextMenuEvent * event );
+
+private:
+    QColor mIsoColor;
+    bool mCtrlKeyPressed;
+    bool mShiftKeyPressed;
+    bool mLeftMouseButtonPressed;
+    bool mIgnoreNextContextMenuEvent;
+    double mZoomFactor;
+};
+
+
 #endif // GRAPHICSVIEW_H

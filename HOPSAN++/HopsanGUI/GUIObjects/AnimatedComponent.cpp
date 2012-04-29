@@ -82,6 +82,9 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, QString b
 
         this->calculateMinsAndMaxes();
     }
+
+
+    mScaleX = 1.0;
 }
 
 
@@ -105,30 +108,34 @@ void AnimatedComponent::update()
         double data;
         if(mpData->isEmpty())
         {
-            data = 0;
+            return;//data = 0;
         }
         else
         {
             data = mpData->at(b).at(mpParent->getIndex());
         }
-        if(mParameterMultipliers.at(b) != QString())
-        {
-            data = data*mpUnanimatedComponent->getParameterValue(mParameterMultipliers.at(b)).toDouble();
-        }
-        if(mParameterDivisors.at(b) != QString())
-        {
-            data = data/mpUnanimatedComponent->getParameterValue(mParameterDivisors.at(b)).toDouble();
-        }
-        //double rot = mpOriginal->rotation()+data/mpMaxes->at(b)*mvMovementTheta.at(b) - mStartTheta.at(b);
-        //double x = mpBase->getCenterPos().x() - mpBase->size().width()/2*cos(deg2rad(rot)) + mpBase->size().height()/2*sin(deg2rad(rot)) + mStartX.at(b) - cos(deg2rad(rot))*data*mvMovementX.at(b) - sin(deg2rad(rot))*data*mvMovementY.at(b);
-        //double y = mpBase->getCenterPos().y() - mpBase->size().height()/2*cos(deg2rad(rot)) - mpBase->size().width()/2*sin(deg2rad(rot)) + mStartY.at(b) - sin(deg2rad(rot))*data*mvMovementX.at(b) - cos(deg2rad(rot))*data*mvMovementY.at(b);
+//        if(mParameterMultipliers[b] != QString())
+//        {
+//            data = data*mpUnanimatedComponent->getParameterValue(mParameterMultipliers[b]).toDouble();
+//        }
+//        if(mParameterDivisors[b] != QString())
+//        {
+//            data = data/mpUnanimatedComponent->getParameterValue(mParameterDivisors[b]).toDouble();
+//        }
 
-        double x = mStartX.at(b) - data*mvMovementX.at(b);
-        double y = mStartY.at(b) - data*mvMovementY.at(b);
-        double rot = mStartTheta.at(b) - data*mvMovementTheta.at(b);
 
-        mpMovables.at(b)->setRotation(rot);
-        mpMovables.at(b)->setPos(x, y);
+        if(mvMovementTheta[b] != 0.0)
+        {
+            double rot = mStartTheta[b] - data*mvMovementTheta[b];
+            mpMovables[b]->setRotation(rot);
+        }
+
+        if(mvMovementX[b] != 0.0 || mvMovementY[b] != 0.0)
+        {
+            double x = mStartX[b] - data*mvMovementX[b];
+            double y = mStartY[b] - data*mvMovementY[b];
+            mpMovables[b]->setPos(x, y);
+        }
     }
 }
 
@@ -165,6 +172,7 @@ void AnimatedComponent::calculateMinsAndMaxes()
 void AnimatedComponent::setupAnimationBase(QString basePath)
 {
     ModelObjectAppearance *baseAppearance = new ModelObjectAppearance();
+    //ModelObjectAppearance *baseAppearance = mpUnanimatedComponent->getAppearanceData();
     if(basePath.isEmpty())
     {
         basePath = mpUnanimatedComponent->getAppearanceData()->getIconPath(USERGRAPHICS, ABSOLUTE);
@@ -180,6 +188,12 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
         baseAppearance->setIconPath(basePath, USERGRAPHICS, RELATIVE);
     }
     mpBase = new ModelObject(mpUnanimatedComponent->pos().toPoint(),mpUnanimatedComponent->rotation(),baseAppearance,DESELECTED,USERGRAPHICS,0,0);
+    mpParent->mpGraphicsScene->addItem(mpBase);
+    if(mpUnanimatedComponent->isFlipped())
+    {
+        mpBase->flipHorizontal(NOUNDO);
+    }
+    mpBase->setCenterPos(mpUnanimatedComponent->getCenterPos());
 }
 
 

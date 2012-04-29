@@ -60,7 +60,7 @@ class LibraryWidget;
 class Configuration; // Might not need
 class AnimatedComponent;
 
-class QGraphicsView;
+class AnimatedGraphicsView;
 class QGraphicsScene;
 class QTextEdit;
 class QPushButton;
@@ -82,8 +82,7 @@ public:
     int getIndex(); // returns the current position inside the time vector
     int getLastIndex();
     void closeEvent(QCloseEvent *event);
-    GraphicsView *mpGraphicsView;
-
+    QGraphicsScene *mpGraphicsScene;
 
     //These are used for testing. We can see the numerical results of tests through these
     QLineEdit* mpTextDisplay;
@@ -119,8 +118,7 @@ private:
     QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mpPlotData;
     QVector<double>* mpTimeValues;
 
-    QGraphicsView *mpQGraphicsView;
-    QGraphicsScene *mpGraphicsScene;
+    AnimatedGraphicsView *mpGraphicsView;
 
     ContainerObject *mpContainer;
 

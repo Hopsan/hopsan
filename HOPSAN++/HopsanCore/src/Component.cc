@@ -343,7 +343,7 @@ void Component::registerParameter(const string name, const string description, c
     stringstream ss;
     if(ss << rValue)
     {
-        mpParameters->addParameter(name, ss.str(), description, unit, "double", &rValue);
+        mpParameters->addParameter(name, ss.str(), description, unit, "double", false, &rValue);
     }
     else
     {

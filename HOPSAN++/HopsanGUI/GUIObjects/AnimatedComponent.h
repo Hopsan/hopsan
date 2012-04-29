@@ -77,6 +77,8 @@ protected:
     QStringList mParameterDivisors;
 
     int mnMovableParts;
+
+    double mScaleX;
 };
 
 #endif // ANIMATEDCOMPONENT_H

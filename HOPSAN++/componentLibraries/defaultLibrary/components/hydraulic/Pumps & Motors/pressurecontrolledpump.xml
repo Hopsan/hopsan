@@ -9,6 +9,17 @@
             <port x="0.6004794566" y="1" a="90" name="P1"/>
             <port x="0.06659" y="1" a="90" name="PREF"/>
             <port x="0.6004794566" y="0" a="270" name="P2"/>
+	    <port x="1.0" y="0.5" a="0" name="eps"/>
         </ports>
+	<animation>
+	    <icon userpath="pressurecontrolledpump_user_base.svg"/>
+            <movable>
+                <icon userpath="pressurecontrolledpump_user_movable.svg"/>
+                <data port="eps" dataname="Value"/> 
+                <speed x="0" y="0" a="-90"/>
+                <start x="45.653" y="9.941" a="0"/>
+                <transformorigin x="44.4925" y="44.4735"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
