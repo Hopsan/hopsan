@@ -15,5 +15,15 @@
 			<replacable typename="HydraulicFixedDisplacementPump"/>
 			<replacable typename="HydraulicVariableDisplacementMotorQ"/>
 		</replacables>
+	<animation>
+	    <icon userpath="variablepump_user_base.svg"/>
+            <movable>
+                <icon userpath="variablepump_user_movable.svg"/>
+                <data port="in" dataname="Value"/> 
+                <speed x="0" y="0" a="-90"/>
+                <start x="18.677" y="6.626" a="0"/>
+                <transformorigin x="42.6175" y="42.5985"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

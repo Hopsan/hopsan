@@ -11,10 +11,20 @@
             <port x="0" y="0.5" a="180" name="P3"/>
             <port x="1" y="0.0556" a="180" name="in"/>
         </ports>
-		<replacables>
-		    <replacable typename="HydraulicVariableDisplacementPump"/>
-			<replacable typename="HydraulicFixedDisplacementMotorQ"/>
-			<replacable typename="HydraulicFixedDisplacementPump"/>
-		</replacables>
+	<replacables>
+	    <replacable typename="HydraulicVariableDisplacementPump"/>
+       	    <replacable typename="HydraulicFixedDisplacementMotorQ"/>
+            <replacable typename="HydraulicFixedDisplacementPump"/>
+	</replacables>
+	<animation>
+	    <icon userpath="variablemotorq_user_base.svg"/>
+            <movable>
+                <icon userpath="variablemotorq_user_movable.svg"/>
+                <data port="in" dataname="Value"/> 
+                <speed x="0" y="0" a="-90"/>
+                <start x="18.677" y="6.626" a="0"/>
+                <transformorigin x="42.6175" y="42.5985"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
