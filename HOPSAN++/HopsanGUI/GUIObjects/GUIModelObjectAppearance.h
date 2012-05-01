@@ -87,6 +87,15 @@ public:
     QVector<double> getAnimationStartTheta();
     QVector<double> getAnimationTransformOriginX();
     QVector<double> getAnimationTransformOriginY();
+    QVector<bool> getAnimationIsAdjustable();
+    QVector<double> getAnimationAdjustableMinX();
+    QVector<double> getAnimationAdjustableMaxX();
+    QVector<double> getAnimationAdjustableMinY();
+    QVector<double> getAnimationAdjustableMaxY();
+    QStringList getAnimationAdjustablePort();
+    QStringList getAnimationAdjustableDataName();
+    QVector<double> getAnimationAdjustableGainX();
+    QVector<double> getAnimationAdjustableGainY();
     
     PortAppearanceMapT &getPortAppearanceMap();
     void erasePortAppearance(const QString portName);
@@ -123,6 +132,15 @@ private:
     QVector<double> mAnimationStartTheta;
     QVector<double> mAnimationTransformOriginX;
     QVector<double> mAnimationTransformOriginY;
+    QVector<bool> mAnimationIsAdjustable;
+    QVector<double> mAnimationAdjustableMinX;
+    QVector<double> mAnimationAdjustableMaxX;
+    QVector<double> mAnimationAdjustableMinY;
+    QVector<double> mAnimationAdjustableMaxY;
+    QStringList mAnimationAdjustablePort;
+    QStringList mAnimationAdjustableDataName;
+    QVector<double> mAnimationAdjustableGainX;
+    QVector<double> mAnimationAdjustableGainY;
 
     PortAppearanceMapT mPortAppearanceMap;
 

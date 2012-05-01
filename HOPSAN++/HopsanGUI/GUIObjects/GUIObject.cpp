@@ -194,7 +194,7 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void WorkspaceObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
         //Objects shall not be selectable while creating a connector
-    if(mpParentContainerObject->isCreatingConnector())
+    if(mpParentContainerObject != 0 && mpParentContainerObject->isCreatingConnector())
     {
         this->setSelected(false);
         this->setActive(false);

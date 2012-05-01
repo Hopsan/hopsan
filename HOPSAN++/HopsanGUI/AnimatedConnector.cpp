@@ -45,6 +45,7 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *par
         : QGraphicsWidget()
 {
     mpAnimationWidget = parent;
+    mpConnector = pConnector;
 
     if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic" && pConnector->getStartPort()->getPortType() != "READPORT" && pConnector->getEndPort()->getPortType() != "READPORT")
     {
@@ -143,12 +144,33 @@ void AnimatedConnector::update()
 
         int index = mpAnimationWidget->getIndex();
         int lastIndex = mpAnimationWidget->getLastIndex();
-        double data = mvIntensityData[index];
-        double flowData = mvFlowData[index];
+        double data, flowData;
+        if(mpAnimationWidget->mRealTime)
+        {
+            QString componentName, portName;
+            if(mpConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
+            {
+                componentName = mpConnector->getEndPort()->getGuiModelObject()->getName();
+                portName = mpConnector->getEndPort()->getPortName();
+            }
+            else
+            {
+                componentName = mpConnector->getStartPort()->getGuiModelObject()->getName();
+                portName = mpConnector->getStartPort()->getPortName();
+            }
+            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(componentName, portName, "Pressure", data);
+            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(componentName, portName, "Flow", flowData);
+        }
+        else
+        {
+            data = mvIntensityData[index];
+            flowData = mvFlowData[index];
+        }
+
         int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
         int blue = 255-red;
         tempPen.setColor(QColor(red,0,blue));
-        tempPen.setDashOffset(mDirectionCorrection*50000*flowData*index/lastIndex);  //HARD CODED!!!
+        tempPen.setDashOffset(mDirectionCorrection*50000*flowData*fmod(mpAnimationWidget->previousSimulationTime,10.0)/10.0);  //HARD CODED!!!
 
         for(int i=0; i<mpLines.size(); ++i)
         {

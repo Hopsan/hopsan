@@ -116,6 +116,8 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 //! @todo This function seems to do nothing. Can it be removed?
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
+    qDebug() << "Accepting: " << event->mimeData()->text();
+
     event->accept();
 
 //    if (event->mimeData()->hasText())

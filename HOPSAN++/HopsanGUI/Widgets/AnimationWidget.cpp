@@ -47,7 +47,9 @@
 AnimationWidget::AnimationWidget(MainWindow *parent) :
     QWidget(parent)
 {
-    mpParent = parent;
+    mRealTime=false;
+
+    mpAnimationWidget = parent;
 
     this->setPalette(gConfig.getPalette());
 
@@ -84,6 +86,9 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpPlayButton = new QToolButton(this);
     mpPlayButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Play.png")));
 
+    mpPlayRealTimeButton = new QToolButton(this);
+    mpPlayRealTimeButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Play.png")));
+
     mpCloseButton = new QToolButton(this);
     mpCloseButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
 
@@ -102,14 +107,15 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     vbox->addWidget(mpStopButton,0,0);
     vbox->addWidget(mpPauseButton,0,1);
     vbox->addWidget(mpPlayButton,0,2);
-    vbox->addWidget(mpRewindButton,0,3);
-    vbox->addWidget(pSpeedLabel,0,4);
-    vbox->addWidget(mpSpeedSlider,0,5);
-    vbox->addWidget(pTimeLabel,0,6);
-    vbox->addWidget(mpTimeSlider,0,7);
-    vbox->addWidget(mpTextDisplay,0,8);
-    vbox->addWidget(mpCloseButton,0,9);
-    vbox->addWidget(mpGraphicsView,1,0,1,10);
+    vbox->addWidget(mpPlayRealTimeButton,0,3);
+    vbox->addWidget(mpRewindButton,0,4);
+    vbox->addWidget(pSpeedLabel,0,5);
+    vbox->addWidget(mpSpeedSlider,0,6);
+    vbox->addWidget(pTimeLabel,0,7);
+    vbox->addWidget(mpTimeSlider,0,8);
+    vbox->addWidget(mpTextDisplay,0,9);
+    vbox->addWidget(mpCloseButton,0,10);
+    vbox->addWidget(mpGraphicsView,1,0,1,11);
     vbox->setColumnStretch(8,1);
     vbox->setRowStretch(1,1);
     this->setLayout(vbox);
@@ -122,7 +128,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     mpContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
     mpContainer->collectPlotData();
-    mTimeStep = mpParent->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep();
+    mTimeStep = mpAnimationWidget->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep();
 
 
 
@@ -130,21 +136,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     mpPlotData = mpContainer->getAllPlotData();
     //This might need to be updated
-    numberOfPlotGenerations = mpContainer->getNumberOfPlotGenerations();
-    QString componentName;
-    QString portName;
-    int i=0;
-    while(true)
-    {
-        componentName = mpContainer->getModelObjectNames().at(i);
-        portName = mpContainer->getModelObject(componentName)->getPortListPtrs().first()->getPortName();
-        if(mpContainer->getModelObject(componentName)->getPort(portName)->isConnected() && mpContainer->getModelObject(componentName)->getPort(portName)->getPortType() != "POWERMULTIPORT")
-            break;
-        else
-            ++i;
-    }
-
-    mpTimeValues = new QVector<double>((mpContainer->getTimeVector(numberOfPlotGenerations-1, componentName, portName)));
+    mpTimeValues = getTimeValues();
     timeStep = mpTimeValues->at(1);//at(1);
 
     //define slider max and min here. the time slider should have the index
@@ -195,17 +187,18 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
 
 
-    connect(mpRewindButton, SIGNAL(clicked()),          this,   SLOT(rewind()));
-    connect(mpPlayButton,   SIGNAL(clicked()),          this,   SLOT(play()));
-    connect(mpPauseButton,  SIGNAL(clicked()),          this,   SLOT(pause()));
-    connect(mpStopButton,   SIGNAL(clicked()),          this,   SLOT(stop()));
-    connect(mpCloseButton,  SIGNAL(pressed()),          mpParent->mpProjectTabs->getCurrentTab(), SLOT(closeAnimation()));
+    connect(mpRewindButton,         SIGNAL(clicked()),          this,   SLOT(rewind()));
+    connect(mpPlayButton,           SIGNAL(clicked()),          this,   SLOT(play()));
+    connect(mpPlayRealTimeButton,   SIGNAL(clicked()),          this,   SLOT(playRT()));
+    connect(mpPauseButton,          SIGNAL(clicked()),          this,   SLOT(pause()));
+    connect(mpStopButton,           SIGNAL(clicked()),          this,   SLOT(stop()));
+    connect(mpCloseButton,          SIGNAL(pressed()),          mpAnimationWidget->mpProjectTabs->getCurrentTab(), SLOT(closeAnimation()));
 
-    connect(mpTimeSlider,   SIGNAL(sliderPressed()),    this,   SLOT(pause()));
-    connect(mpTimeSlider,   SIGNAL(valueChanged(int)),  this,   SLOT(changeIndex(int)));
-    connect(mpTimeSlider,   SIGNAL(sliderMoved(int)),   this,   SLOT(updateMovables()));
-    connect(mpTimer,        SIGNAL(timeout()),          this,   SLOT(updateAnimation()));
-    connect(mpSpeedSlider,  SIGNAL(valueChanged(int)),  this,   SLOT(changeSpeed(int)));
+    connect(mpTimeSlider,           SIGNAL(sliderPressed()),    this,   SLOT(pause()));
+    connect(mpTimeSlider,           SIGNAL(valueChanged(int)),  this,   SLOT(changeIndex(int)));
+    connect(mpTimeSlider,           SIGNAL(sliderMoved(int)),   this,   SLOT(updateMovables()));
+    connect(mpTimer,                SIGNAL(timeout()),          this,   SLOT(updateAnimation()));
+    connect(mpSpeedSlider,          SIGNAL(valueChanged(int)),  this,   SLOT(changeSpeed(int)));
 }
 
 
@@ -216,18 +209,40 @@ AnimationWidget::~AnimationWidget()
 }
 
 
+QVector<double> *AnimationWidget::getTimeValues()
+{
+    numberOfPlotGenerations = mpContainer->getNumberOfPlotGenerations();
+    QString componentName;
+    QString portName;
+    int i=0;
+    while(true)
+    {
+        componentName = mpContainer->getModelObjectNames().at(i);
+        portName = mpContainer->getModelObject(componentName)->getPortListPtrs().first()->getPortName();
+        if(mpContainer->getModelObject(componentName)->getPort(portName)->isConnected() && mpContainer->getModelObject(componentName)->getPort(portName)->getPortType() != "POWERMULTIPORT")
+            break;
+        else
+            ++i;
+    }
+
+    return new QVector<double>((mpContainer->getTimeVector(numberOfPlotGenerations-1, componentName, portName)));
+}
+
+
 // define all the slots here
 
 void AnimationWidget::stop()
 {
     simulationSpeed = 0;
     previousSimulationTime = 0.0;
+    mRealTime=false;
     updateAnimationSpeed();
 }
 
 void AnimationWidget::rewind()
 {
     simulationSpeed = -10;
+    mRealTime=false;
     updateAnimationSpeed();
 }
 
@@ -240,6 +255,17 @@ void AnimationWidget::pause()
 void AnimationWidget::play()
 {
     simulationSpeed = 10;
+    mRealTime=false;
+    updateAnimationSpeed();
+}
+
+void AnimationWidget::playRT()
+{
+    mpContainer->getCoreSystemAccessPtr()->initialize(0,10,0);
+    simulationSpeed = 10;
+    mRealTime = true;
+    mpTimeSlider->setValue(0);
+    changeIndex(0);
     updateAnimationSpeed();
 }
 
@@ -253,6 +279,7 @@ void AnimationWidget::changeIndex(int newIndex)
 {
     qDebug() << "newIndex = " << newIndex;
     index = std::min(std::max(newIndex,0), mpTimeValues->size()-1);
+    qDebug() << "Limiting to: " << index;
     previousSimulationTime = mpTimeValues->at(index);
     mpTextDisplay->setText(QString::number(mpTimeValues->at(index)));
     //updateMovables();
@@ -279,29 +306,48 @@ void AnimationWidget::updateAnimationSpeed()
 
 void AnimationWidget::updateAnimation()
 {
-    //This code snippet converts the actual time into simulation time
-    //currentSimulationTime  = std::min(mpTimeValues->last(), std::max(0.0,previousSimulationTime + simulationSpeed*mTimeStep));
-    //previousSimulationTime = currentSimulationTime;
-
-    //This is the index that points to where in the Data/Time Vector the simulation is currently in.
-    double totalTime = mpTimeValues->last();
-    double nSamples = mpTimeValues->size();
-    double currentTime = std::min(totalTime, std::max(0.0, previousSimulationTime+double(simulationSpeed)/10.0 * 0.01)); // 10 = speed reduction factor, 0.01 = 100 Hz
-    double newIndex = currentTime/totalTime*nSamples;
-    index = round(std::min(double(mpTimeValues->size()-1), std::max(0.0, newIndex)));
-    previousSimulationTime = currentTime;//mpTimeValues->at(index);
-
-   // qDebug() << "index = " << index;
-
-    mpTimeSlider->setValue(index);
-    mpTextDisplay->setText(QString::number(mpTimeValues->at(index)));
-
-    updateMovables();
-
-    if(index==mpTimeValues->size()-1)
+    if(!mRealTime)
     {
-        simulationSpeed=0;
-        updateAnimationSpeed();
+        //This is the index that points to where in the Data/Time Vector the simulation is currently in.
+        double totalTime = mpTimeValues->last();
+        double nSamples = mpTimeValues->size();
+        double currentTime = std::min(totalTime, std::max(0.0, previousSimulationTime+double(simulationSpeed)/10.0 * 0.01)); // 10 = speed reduction factor, 0.01 = 100 Hz
+        double newIndex = currentTime/totalTime*nSamples;
+        index = round(std::min(double(mpTimeValues->size()-1), std::max(0.0, newIndex)));
+        previousSimulationTime = currentTime;//mpTimeValues->at(index);
+
+       // qDebug() << "index = " << index;
+
+        mpTimeSlider->setValue(index);
+        mpTextDisplay->setText(QString::number(mpTimeValues->at(index)));
+
+        updateMovables();
+
+        if(index==mpTimeValues->size()-1)
+        {
+            simulationSpeed=0;
+            updateAnimationSpeed();
+        }
+    }
+    else
+    {
+        //timeStep = mpContainer->mpParentProjectTab->getTimeStep().toDouble();
+        mpContainer->getCoreSystemAccessPtr()->simulate(previousSimulationTime, previousSimulationTime+0.01, SINGLECORE, 0, true);
+        //mpContainer->collectPlotData();
+      //  qDebug() << "Plot generations = " << mpContainer->getNumberOfPlotGenerations();
+        //mpPlotData = mpContainer->getAllPlotData();
+        previousSimulationTime = previousSimulationTime+0.01;
+      //  mpTimeValues = getTimeValues();
+       // qDebug() << "mpTimeValues.size() = " << mpTimeValues->size();
+
+//        int index = mpTimeSlider->value();
+//        if(mpTimeSlider->maximum() == index)
+//        {
+//            mpTimeSlider->setMaximum(index*2);
+//        }
+//        mpTimeSlider->setValue(index+1);
+
+        updateMovables();
     }
 }
 
@@ -359,9 +405,21 @@ AnimatedComponent* AnimationWidget::createComponent(ModelObject* unanimatedCompo
         QVector<double> transformOriginX = pApp->getAnimationTransformOriginX();
         QVector<double> transformOriginY = pApp->getAnimationTransformOriginY();
 
+        QVector<bool> isAdjustable = pApp->getAnimationIsAdjustable();
+        QVector<double> adjustableMinX = pApp->getAnimationAdjustableMinX();
+        QVector<double> adjustableMaxX = pApp->getAnimationAdjustableMaxX();
+        QVector<double> adjustableMinY = pApp->getAnimationAdjustableMinY();
+        QVector<double> adjustableMaxY = pApp->getAnimationAdjustableMaxY();
+        QStringList adjustablePort = pApp->getAnimationAdjustablePort();
+        QStringList adjustableDataName = pApp->getAnimationAdjustableDataName();
+        QVector<double> adjustableGainX = pApp->getAnimationAdjustableGainX();
+        QVector<double> adjustableGainY = pApp->getAnimationAdjustableGainY();
+
         return new AnimatedComponent(unanimatedComponent,basePath, movablePaths, dataPorts, dataNames,
                                      parameterMultipliers, parameterDivisors, movementX, movementY, movementTheta,
-                                     startX, startY, startTheta, transformOriginX, transformOriginY, parent);
+                                     startX, startY, startTheta, transformOriginX, transformOriginY,
+                                     isAdjustable, adjustableMinX, adjustableMaxX, adjustableMinY, adjustableMaxY,
+                                     adjustablePort, adjustableDataName, adjustableGainX, adjustableGainY, parent);
 
 //        //return (new AnimatedCTypeCylinder(unanimatedComponent,1,parent));
 //    }

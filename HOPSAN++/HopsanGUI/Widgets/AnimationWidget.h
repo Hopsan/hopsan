@@ -75,6 +75,7 @@ public:
     AnimationWidget(MainWindow *parent = 0);
     ~AnimationWidget();
 
+    QVector<double> *getTimeValues();
     AnimatedComponent* createComponent(ModelObject* unanimatedComponent, AnimationWidget* parent);
     QGraphicsScene* getScenePtr();
     QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > >* getPlotDataPtr();
@@ -83,6 +84,8 @@ public:
     int getLastIndex();
     void closeEvent(QCloseEvent *event);
     QGraphicsScene *mpGraphicsScene;
+    AnimatedGraphicsView *mpGraphicsView;
+    ContainerObject *mpContainer;
 
     //These are used for testing. We can see the numerical results of tests through these
     QLineEdit* mpTextDisplay;
@@ -90,11 +93,16 @@ public:
     QMap<QString, double> mIntensityMaxMap;
     QMap<QString, double> mIntensityMinMap;
 
+    bool mRealTime;
+
+    double previousSimulationTime;
+
 private slots:
     void stop();
     void rewind();
     void pause();
     void play();
+    void playRT();
     void updateAnimationSpeed();
     void updateAnimation();
     void updateMovables();
@@ -107,20 +115,19 @@ private:
     QToolButton* mpRewindButton;
     QToolButton* mpPauseButton;
     QToolButton* mpPlayButton;
+    QToolButton *mpPlayRealTimeButton;
     QToolButton* mpCloseButton;
 
     //The sliders
     QSlider* mpTimeSlider;
     QSlider* mpSpeedSlider;
 
-    MainWindow* mpParent;
+    MainWindow* mpAnimationWidget;
 
     QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mpPlotData;
     QVector<double>* mpTimeValues;
 
-    AnimatedGraphicsView *mpGraphicsView;
 
-    ContainerObject *mpContainer;
 
     QTimer *mpTimer;
 
@@ -132,7 +139,6 @@ private:
     QList<Port*> mPortList;
 
     double currentSimulationTime;
-    double previousSimulationTime;
     int simulationSpeed;
 
     double mTimeStep;

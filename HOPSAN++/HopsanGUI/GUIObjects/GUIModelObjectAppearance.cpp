@@ -406,6 +406,52 @@ QVector<double> ModelObjectAppearance::getAnimationTransformOriginY()
     return mAnimationTransformOriginY;
 }
 
+QVector<bool> ModelObjectAppearance::getAnimationIsAdjustable()
+{
+    return mAnimationIsAdjustable;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationAdjustableMinX()
+{
+    return mAnimationAdjustableMinX;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationAdjustableMaxX()
+{
+    return mAnimationAdjustableMaxX;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationAdjustableMinY()
+{
+    return mAnimationAdjustableMinY;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationAdjustableMaxY()
+{
+    return mAnimationAdjustableMaxY;
+}
+
+QStringList ModelObjectAppearance::getAnimationAdjustablePort()
+{
+    return mAnimationAdjustablePort;
+}
+
+QStringList ModelObjectAppearance::getAnimationAdjustableDataName()
+{
+    return mAnimationAdjustableDataName;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationAdjustableGainX()
+{
+    return mAnimationAdjustableGainX;
+}
+
+QVector<double> ModelObjectAppearance::getAnimationAdjustableGainY()
+{
+    return mAnimationAdjustableGainY;
+}
+
+
 
 //! @brief Returns a reference to the map containing port appearance
 //! @returns Reference to mPortAppearanceMap
@@ -598,6 +644,23 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             {
                 movableIconFileInfo.setFile(QDir(mBasePath), mAnimationMovableIconPaths.last());
                 mAnimationMovableIconPaths.last() = movableIconFileInfo.absoluteFilePath();
+            }
+            QDomElement xmlAdjustable = xmlMovable.firstChildElement("adjustable");
+            if(!xmlAdjustable.isNull())
+            {
+                mAnimationIsAdjustable.append(true);
+                mAnimationAdjustableMinX.append(xmlAdjustable.attribute("xmin").toDouble());
+                mAnimationAdjustableMaxX.append(xmlAdjustable.attribute("xmax").toDouble());
+                mAnimationAdjustableMinY.append(xmlAdjustable.attribute("ymin").toDouble());
+                mAnimationAdjustableMaxY.append(xmlAdjustable.attribute("ymax").toDouble());
+                mAnimationAdjustablePort.append(xmlAdjustable.attribute("port"));
+                mAnimationAdjustableDataName.append(xmlAdjustable.attribute("dataname"));
+                mAnimationAdjustableGainX.append(xmlAdjustable.attribute("xgain").toDouble());
+                mAnimationAdjustableGainY.append(xmlAdjustable.attribute("ygain").toDouble());
+            }
+            else
+            {
+                mAnimationIsAdjustable.append(false);
             }
             xmlMovable = xmlMovable.nextSiblingElement("movable");
         }

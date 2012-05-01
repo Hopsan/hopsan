@@ -56,6 +56,7 @@ public:
     virtual void update();
 
     AnimationWidget *mpAnimationWidget;
+    Connector *mpConnector;
 
 private:
     bool mIsActive;

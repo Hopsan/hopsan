@@ -659,8 +659,8 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
 
         if (dataId >= 0)
         {
-            vector< vector<double> > *pData = pPort->getDataVectorPtr();
-            rData = pData->back().at(dataId);
+            vector<double> *pData = pPort->getJustTheDataVectorPtr();
+            rData = pData->at(dataId);
             return 1;
         }
     }
@@ -680,6 +680,25 @@ bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
         return false;
     }
 }
+
+
+bool CoreSystemAccess::writeNodeData(const QString compname, const QString portname, const QString dataname, double data)
+{
+    hopsan::Port* pPort = getCorePortPtr(compname,portname);
+    int dataId = -1;
+    if(pPort)
+    {
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+
+        if(dataId >= 0)
+        {
+            pPort->writeNode(dataId, data);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 
 //! @brief Helpfunction that tries to fetch a port pointer
 //! @param [in] componentName The name of the component to which the port belongs

@@ -355,6 +355,19 @@ vector<vector<double> > *Port::getDataVectorPtr(const size_t /*portIdx*/)
 }
 
 
+vector<double> *Port::getJustTheDataVectorPtr(const size_t /*portIdx*/)
+{
+    if(mpNode != 0)
+    {
+        return &(mpNode->mDataVector);
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
 //! @brief Read the start values to a start value node in the port
 //! @param[out] rNames is the Vector of names of the star values
 //! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the value of this will be here
@@ -686,6 +699,11 @@ std::vector<double> *MultiPort::getTimeVectorPtr(const size_t portIdx)
 std::vector<std::vector<double> > *MultiPort::getDataVectorPtr(const size_t portIdx)
 {
     return mSubPortsVector[portIdx]->getDataVectorPtr();
+}
+
+std::vector<double> *MultiPort::getJustTheDataVectorPtr(const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getJustTheDataVectorPtr();
 }
 
 //! @brief Get the an actual start value of the port

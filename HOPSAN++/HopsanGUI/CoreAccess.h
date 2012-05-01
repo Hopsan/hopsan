@@ -151,6 +151,7 @@ public:
     bool havePlotData(const QString compname, const QString portname, const QString dataname);
     bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData);
     bool isPortConnected(QString componentName, QString portName);
+    bool writeNodeData(const QString compname, const QString portname, const QString dataname, double data);
 
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();
