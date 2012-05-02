@@ -82,8 +82,8 @@ public:
     Parameters(Component* parentComponent);
     ~Parameters();
 
-    bool addParameter(std::string parameterName, std::string parameterValue, std::string description="",
-                      std::string unit="", std::string type="", bool isDynamic=false, void* dataPtr=0, bool force=false);
+    bool addParameter(std::string parameterName, std::string parameterValue, std::string description,
+                      std::string unit, std::string type, bool isDynamic, void* dataPtr=0, bool force=false);
     void deleteParameter(const std::string parameterName);
 
     void enableParameter(std::string parameterName, const bool enable);

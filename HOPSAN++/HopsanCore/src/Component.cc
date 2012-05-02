@@ -366,7 +366,7 @@ void Component::registerParameter(const string name, const string description, c
     stringstream ss;
     if(ss << rValue)
     {
-        mpParameters->addParameter(name, ss.str(), description, unit, "integer", &rValue);
+        mpParameters->addParameter(name, ss.str(), description, unit, "integer", false, &rValue);
     }
     else
     {
@@ -387,7 +387,7 @@ void Component::registerParameter(const string name, const string description, c
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(name, rValue, description, unit, "string", &rValue);
+    mpParameters->addParameter(name, rValue, description, unit, "string", false, &rValue);
 }
 
 
@@ -404,9 +404,9 @@ void Component::registerParameter(const string name, const string description, c
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
     if(rValue)
-        mpParameters->addParameter(name, "true", description, unit, "bool", &rValue);
+        mpParameters->addParameter(name, "true", description, unit, "bool", false, &rValue);
     else
-        mpParameters->addParameter(name, "false", description, unit, "bool", &rValue);
+        mpParameters->addParameter(name, "false", description, unit, "bool", false, &rValue);
 }
 
 
