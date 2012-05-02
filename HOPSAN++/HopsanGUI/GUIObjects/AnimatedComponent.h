@@ -37,7 +37,7 @@
 #include "GUIModelObjectAppearance.h"
 
 class AnimationWidget;
-class AnimatedObject;
+class AnimatedIcon;
 class ModelObject;
 class ModelObjectAppearance;
 
@@ -46,17 +46,10 @@ class AnimatedComponent : public QObject
 {
     Q_OBJECT
 
-    friend class AnimatedObject;
+    friend class AnimatedIcon;
 public:
     //Make room for some additional params passed form children
-    AnimatedComponent(ModelObject* unanimatedComponent, QString basePath, QStringList movablePaths, QStringList dataPorts,
-                      QStringList dataNames, QStringList parameterMultipliers, QStringList parameterDivisors,
-                      QVector<double> movementX, QVector<double> movementY, QVector<double> movementTheta,
-                      QVector<double> startX, QVector<double> startY, QVector<double> startTheta,
-                      QVector<double> transformOriginX, QVector<double> transformOriginY,
-                      QVector<bool> isAdjustable, QVector<double> adjustableMinX, QVector<double> adjustableMaxX, QVector<double> adjustableMinY,
-                      QVector<double> adjustableMaxY, QStringList adjustablePort, QStringList adjustableDataName,
-                      QVector<double> adjustableGainX, QVector<double> adjustableGainY, AnimationWidget *parent);
+    AnimatedComponent(ModelObject* unanimatedComponent, AnimationWidget *parent);
 
     void draw();
     void update();
@@ -64,42 +57,16 @@ public:
 
 private:
     void setupAnimationBase(QString basePath);
-    void setupAnimationMovable(int n, QString movablePath, double transformOriginX, double transformOriginY);
+    void setupAnimationMovable(int m);
     void limitMovables();
 
     ModelObject *mpModelObject;
     AnimationWidget *mpAnimationWidget;
-    AnimatedObject *mpBase;
-    QList<AnimatedObject *> mpMovables;
+    AnimatedIcon *mpBase;
+    QList<AnimatedIcon *> mpMovables;
     QList<QVector<double> > *mpData;
-    QVector<double> *mpMins;
-    QVector<double> *mpMaxes;
-    const QVector<double> *mpDataValues; // This used to be const
-    void calculateMinsAndMaxes();
 
-    QVector<double> mvMovementX;
-    QVector<double> mvMovementY;
-    QVector<double> mvMovementTheta;
-    QVector<double> mStartX;
-    QVector<double> mStartY;
-    QVector<double> mStartTheta;
-    QStringList mParameterMultipliers;
-    QStringList mParameterDivisors;
-
-    QStringList mDataPorts;
-    QStringList mDataNames;
-
-    QVector<bool> mIsAdjustable;
-    QVector<double> mAdjustableMinX;
-    QVector<double> mAdjustableMaxX;
-    QVector<double> mAdjustableMinY;
-    QVector<double> mAdjustableMaxY;
-    QStringList mAdjustablePort;
-    QStringList mAdjustableDataName;
-    QVector<double> mAdjustableGainX;
-    QVector<double> mAdjustableGainY;
-
-    double mScaleX;
+    ModelObjectAnimationData mAnimationData;
 };
 
 
@@ -107,17 +74,14 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-class AnimatedObject : public WorkspaceObject
+class AnimatedIcon : public WorkspaceObject
 {
     Q_OBJECT
 
 public:
-    AnimatedObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED,  AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
-    virtual ~AnimatedObject();
+    AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
 
     AnimatedComponent *mpAnimatedComponent;
-
-    virtual void setParentContainerObject(ContainerObject *pParentContainer);
 
     //Appearance methods
     virtual ModelObjectAppearance* getAppearanceData();
@@ -135,7 +99,6 @@ public slots:
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
     //Protected members
     ModelObjectAppearance mModelObjectAppearance;

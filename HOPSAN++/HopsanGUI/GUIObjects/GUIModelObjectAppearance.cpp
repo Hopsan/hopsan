@@ -148,6 +148,68 @@ ModelObjectIconAppearance::ModelObjectIconAppearance()
     mIsValid = false;
 }
 
+
+//! @brief Loads animation data from XML element
+//! @param [in] element Element to read from
+//! @param [in] basePath Absolute path for the CAF (xml) file location
+void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QString basePath)
+{
+    if(!rDomElement.isNull())
+    {
+        baseIconPath = rDomElement.firstChildElement("icon").attribute("userpath");
+
+        QFileInfo baseIconFileInfo(baseIconPath);
+        if (baseIconFileInfo.isRelative() && !baseIconPath.isEmpty())
+        {
+            baseIconFileInfo.setFile(QDir(basePath), baseIconPath);
+            baseIconPath = baseIconFileInfo.absoluteFilePath();
+        }
+
+        QDomElement xmlMovable = rDomElement.firstChildElement("movable");
+        while(!xmlMovable.isNull())
+        {
+            movableIconPaths.append(xmlMovable.firstChildElement("icon").attribute("userpath"));
+            dataPorts.append(xmlMovable.firstChildElement("data").attribute("port"));
+            dataNames.append(xmlMovable.firstChildElement("data").attribute("dataname"));
+            multipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
+            divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
+            speedX.append(xmlMovable.firstChildElement("speed").attribute("x").toDouble());
+            speedY.append(xmlMovable.firstChildElement("speed").attribute("y").toDouble());
+            speedTheta.append(xmlMovable.firstChildElement("speed").attribute("a").toDouble());
+            startX.append(xmlMovable.firstChildElement("start").attribute("x").toDouble());
+            startY.append(xmlMovable.firstChildElement("start").attribute("y").toDouble());
+            startTheta.append(xmlMovable.firstChildElement("start").attribute("a").toDouble());
+            transformOriginX.append(xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble());
+            transformOriginY.append(xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble());
+            QFileInfo movableIconFileInfo(movableIconPaths.last());
+            if (movableIconFileInfo.isRelative() && !movableIconPaths.last().isEmpty())
+            {
+                movableIconFileInfo.setFile(QDir(basePath), movableIconPaths.last());
+                movableIconPaths.last() = movableIconFileInfo.absoluteFilePath();
+            }
+            QDomElement xmlAdjustable = xmlMovable.firstChildElement("adjustable");
+            if(!xmlAdjustable.isNull())
+            {
+                isAdjustable.append(true);
+                adjustableMinX.append(xmlAdjustable.attribute("xmin").toDouble());
+                adjustableMaxX.append(xmlAdjustable.attribute("xmax").toDouble());
+                adjustableMinY.append(xmlAdjustable.attribute("ymin").toDouble());
+                adjustableMaxY.append(xmlAdjustable.attribute("ymax").toDouble());
+                adjustablePort.append(xmlAdjustable.attribute("port"));
+                adjustableDataName.append(xmlAdjustable.attribute("dataname"));
+                adjustableGainX.append(xmlAdjustable.attribute("xgain").toDouble());
+                adjustableGainY.append(xmlAdjustable.attribute("ygain").toDouble());
+            }
+            else
+            {
+                isAdjustable.append(false);
+            }
+            xmlMovable = xmlMovable.nextSiblingElement("movable");
+        }
+    }
+}
+
+
 ModelObjectAppearance::ModelObjectAppearance()
 {
     mPortAppearanceMap.clear();
@@ -336,119 +398,9 @@ QPointF ModelObjectAppearance::getNameTextPos()
 }
 
 
-QString ModelObjectAppearance::getAnimationBaseIconPath()
+ModelObjectAnimationData ModelObjectAppearance::getAnimationData()
 {
-    return mAnimationBaseIconPath;
-}
-
-QStringList ModelObjectAppearance::getAnimationMovableIconPaths()
-{
-    return mAnimationMovableIconPaths;
-}
-
-QStringList ModelObjectAppearance::getAnimationDataPorts()
-{
-    return mAnimationDataPorts;
-}
-
-QStringList ModelObjectAppearance::getAnimationDataNames()
-{
-    return mAnimationDataNames;
-}
-
-QStringList ModelObjectAppearance::getAnimationMultipliers()
-{
-    return mAnimationMultipliers;
-}
-
-QStringList ModelObjectAppearance::getAnimationDivisors()
-{
-    return mAnimationDivisors;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationSpeedX()
-{
-    return mAnimationSpeedX;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationSpeedY()
-{
-    return mAnimationSpeedY;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationSpeedTheta()
-{
-    return mAnimationSpeedTheta;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationStartX()
-{
-    return mAnimationStartX;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationStartY()
-{
-    return mAnimationStartY;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationStartTheta()
-{
-    return mAnimationStartTheta;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationTransformOriginX()
-{
-    return mAnimationTransformOriginX;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationTransformOriginY()
-{
-    return mAnimationTransformOriginY;
-}
-
-QVector<bool> ModelObjectAppearance::getAnimationIsAdjustable()
-{
-    return mAnimationIsAdjustable;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationAdjustableMinX()
-{
-    return mAnimationAdjustableMinX;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationAdjustableMaxX()
-{
-    return mAnimationAdjustableMaxX;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationAdjustableMinY()
-{
-    return mAnimationAdjustableMinY;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationAdjustableMaxY()
-{
-    return mAnimationAdjustableMaxY;
-}
-
-QStringList ModelObjectAppearance::getAnimationAdjustablePort()
-{
-    return mAnimationAdjustablePort;
-}
-
-QStringList ModelObjectAppearance::getAnimationAdjustableDataName()
-{
-    return mAnimationAdjustableDataName;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationAdjustableGainX()
-{
-    return mAnimationAdjustableGainX;
-}
-
-QVector<double> ModelObjectAppearance::getAnimationAdjustableGainY()
-{
-    return mAnimationAdjustableGainY;
+    return mAnimationData;
 }
 
 
@@ -612,59 +564,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     }
     
     QDomElement xmlAnimation = domElement.firstChildElement("animation");
-    if(!xmlAnimation.isNull())
-    {
-        mAnimationBaseIconPath = xmlAnimation.firstChildElement("icon").attribute("userpath");
-
-        QFileInfo baseIconFileInfo(mAnimationBaseIconPath);
-        if (baseIconFileInfo.isRelative() && !mAnimationBaseIconPath.isEmpty())
-        {
-            baseIconFileInfo.setFile(QDir(mBasePath), mAnimationBaseIconPath);
-            mAnimationBaseIconPath = baseIconFileInfo.absoluteFilePath();
-        }
-
-        QDomElement xmlMovable = xmlAnimation.firstChildElement("movable");
-        while(!xmlMovable.isNull())
-        {
-            mAnimationMovableIconPaths.append(xmlMovable.firstChildElement("icon").attribute("userpath"));
-            mAnimationDataPorts.append(xmlMovable.firstChildElement("data").attribute("port"));
-            mAnimationDataNames.append(xmlMovable.firstChildElement("data").attribute("dataname"));
-            mAnimationMultipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
-            mAnimationDivisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
-            mAnimationSpeedX.append(xmlMovable.firstChildElement("speed").attribute("x").toDouble());
-            mAnimationSpeedY.append(xmlMovable.firstChildElement("speed").attribute("y").toDouble());
-            mAnimationSpeedTheta.append(xmlMovable.firstChildElement("speed").attribute("a").toDouble());
-            mAnimationStartX.append(xmlMovable.firstChildElement("start").attribute("x").toDouble());
-            mAnimationStartY.append(xmlMovable.firstChildElement("start").attribute("y").toDouble());
-            mAnimationStartTheta.append(xmlMovable.firstChildElement("start").attribute("a").toDouble());
-            mAnimationTransformOriginX.append(xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble());
-            mAnimationTransformOriginY.append(xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble());
-            QFileInfo movableIconFileInfo(mAnimationMovableIconPaths.last());
-            if (movableIconFileInfo.isRelative() && !mAnimationMovableIconPaths.last().isEmpty())
-            {
-                movableIconFileInfo.setFile(QDir(mBasePath), mAnimationMovableIconPaths.last());
-                mAnimationMovableIconPaths.last() = movableIconFileInfo.absoluteFilePath();
-            }
-            QDomElement xmlAdjustable = xmlMovable.firstChildElement("adjustable");
-            if(!xmlAdjustable.isNull())
-            {
-                mAnimationIsAdjustable.append(true);
-                mAnimationAdjustableMinX.append(xmlAdjustable.attribute("xmin").toDouble());
-                mAnimationAdjustableMaxX.append(xmlAdjustable.attribute("xmax").toDouble());
-                mAnimationAdjustableMinY.append(xmlAdjustable.attribute("ymin").toDouble());
-                mAnimationAdjustableMaxY.append(xmlAdjustable.attribute("ymax").toDouble());
-                mAnimationAdjustablePort.append(xmlAdjustable.attribute("port"));
-                mAnimationAdjustableDataName.append(xmlAdjustable.attribute("dataname"));
-                mAnimationAdjustableGainX.append(xmlAdjustable.attribute("xgain").toDouble());
-                mAnimationAdjustableGainY.append(xmlAdjustable.attribute("ygain").toDouble());
-            }
-            else
-            {
-                mAnimationIsAdjustable.append(false);
-            }
-            xmlMovable = xmlMovable.nextSiblingElement("movable");
-        }
-    }
+    mAnimationData.readFromDomElement(xmlAnimation, mBasePath);
     
 
     // vvvvvvvvvvvvvvvvvvvvv=== Bellow Reads old Format 0.1 Tags ===vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

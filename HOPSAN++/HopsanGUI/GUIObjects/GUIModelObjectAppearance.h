@@ -50,6 +50,37 @@ public:
     bool mIsValid;
 };
 
+class ModelObjectAnimationData
+{
+public:
+    void readFromDomElement(QDomElement &rDomElement, QString basePath);
+
+    QString baseIconPath;
+    QStringList movableIconPaths;
+    QStringList dataPorts;
+    QStringList dataNames;
+    QStringList multipliers;
+    QStringList divisors;
+    QVector<double> speedX;
+    QVector<double> speedY;
+    QVector<double> speedTheta;
+    QVector<double> startX;
+    QVector<double> startY;
+    QVector<double> startTheta;
+    QVector<double> transformOriginX;
+    QVector<double> transformOriginY;
+    QVector<bool> isAdjustable;
+    QVector<double> adjustableMinX;
+    QVector<double> adjustableMaxX;
+    QVector<double> adjustableMinY;
+    QVector<double> adjustableMaxY;
+    QStringList adjustablePort;
+    QStringList adjustableDataName;
+    QVector<double> adjustableGainX;
+    QVector<double> adjustableGainY;
+};
+
+
 class ModelObjectAppearance
 {
 public:
@@ -72,30 +103,9 @@ public:
     qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
     QString getIconRotationBehaviour(const graphicsType gfxType=USERGRAPHICS);
     QPointF getNameTextPos();
-    QString getAnimationBaseIconPath();
-    QStringList getAnimationMovableIconPaths();
-    QStringList getAnimationDataPorts();
-    QStringList getAnimationDataNames();
-    QStringList getAnimationMultipliers();
-    QStringList getAnimationDivisors();
-    
-    QVector<double> getAnimationSpeedX();
-    QVector<double> getAnimationSpeedY();
-    QVector<double> getAnimationSpeedTheta();
-    QVector<double> getAnimationStartX();
-    QVector<double> getAnimationStartY();
-    QVector<double> getAnimationStartTheta();
-    QVector<double> getAnimationTransformOriginX();
-    QVector<double> getAnimationTransformOriginY();
-    QVector<bool> getAnimationIsAdjustable();
-    QVector<double> getAnimationAdjustableMinX();
-    QVector<double> getAnimationAdjustableMaxX();
-    QVector<double> getAnimationAdjustableMinY();
-    QVector<double> getAnimationAdjustableMaxY();
-    QStringList getAnimationAdjustablePort();
-    QStringList getAnimationAdjustableDataName();
-    QVector<double> getAnimationAdjustableGainX();
-    QVector<double> getAnimationAdjustableGainY();
+
+    ModelObjectAnimationData getAnimationData();
+
     
     PortAppearanceMapT &getPortAppearanceMap();
     void erasePortAppearance(const QString portName);
@@ -117,30 +127,6 @@ private:
     QString mDefaultMissingIconPath;
     QPointF mNameTextPos;
     QStringList mReplacementObjects;
-    
-    QString mAnimationBaseIconPath;
-    QStringList mAnimationMovableIconPaths;
-    QStringList mAnimationDataPorts;
-    QStringList mAnimationDataNames;
-    QStringList mAnimationMultipliers;
-    QStringList mAnimationDivisors;
-    QVector<double> mAnimationSpeedX;
-    QVector<double> mAnimationSpeedY;
-    QVector<double> mAnimationSpeedTheta;
-    QVector<double> mAnimationStartX;
-    QVector<double> mAnimationStartY;
-    QVector<double> mAnimationStartTheta;
-    QVector<double> mAnimationTransformOriginX;
-    QVector<double> mAnimationTransformOriginY;
-    QVector<bool> mAnimationIsAdjustable;
-    QVector<double> mAnimationAdjustableMinX;
-    QVector<double> mAnimationAdjustableMaxX;
-    QVector<double> mAnimationAdjustableMinY;
-    QVector<double> mAnimationAdjustableMaxY;
-    QStringList mAnimationAdjustablePort;
-    QStringList mAnimationAdjustableDataName;
-    QVector<double> mAnimationAdjustableGainX;
-    QVector<double> mAnimationAdjustableGainY;
 
     PortAppearanceMapT mPortAppearanceMap;
 
@@ -152,6 +138,9 @@ private:
     void setAbsoultePathFromRelative();
     void refreshIconValid();
     graphicsType selectAvailableGraphicsType(const graphicsType type);
+
+    ModelObjectAnimationData mAnimationData;
 };
+
 
 #endif // APPEARANCEDATA_H

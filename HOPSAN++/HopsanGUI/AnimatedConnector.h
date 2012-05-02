@@ -37,11 +37,6 @@
 
 
 class AnimatedConnectorLine;
-class GraphicsView;
-class WorkspaceObject;
-class Port;
-class SystemContainer;
-class ContainerObject;
 class Connector;
 class AnimationWidget;
 class ConnectorAppearance;
@@ -51,7 +46,7 @@ class AnimatedConnector : public QGraphicsWidget
     Q_OBJECT
     friend class AnimatedConnectorLine;
 public:
-    AnimatedConnector(Connector *pConnector, AnimationWidget *parent);
+    AnimatedConnector(Connector *pConnector, AnimationWidget *pAnimationWidget);
     ~AnimatedConnector();
     virtual void update();
 
@@ -59,12 +54,10 @@ public:
     Connector *mpConnector;
 
 private:
-    bool mIsActive;
-    bool mIsDashed;
     QVector<double> mvIntensityData;
     QVector<double> mvFlowData;
-    double mMaxIntensity;
-    double mMinIntensity;
+    //double mMaxIntensity;
+    //double mMinIntensity;
     int mDirectionCorrection;
 
     ConnectorAppearance *mpConnectorAppearance;
@@ -80,30 +73,13 @@ class AnimatedConnectorLine : public QObject, public QGraphicsLineItem
     friend class AnimatedConnector;
     Q_OBJECT
 public:
-    AnimatedConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, int lineNumber, AnimatedConnector *parent = 0);
+    AnimatedConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, AnimatedConnector *pAnimatedConnector);
     ~AnimatedConnectorLine();
 
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
     void addEndArrow();
     void addStartArrow();
-    void setActive();
-    void setPassive();
-    void setHovered();
-    void setGeometry(connectorGeometry geometry);
-    void setLine(QPointF pos1, QPointF pos2);
-    int getLineNumber();
     void setPen(const QPen &pen);
-
-public slots:
-
-    void setConnected();
-
-signals:
-    void lineClicked();
-    void lineMoved(int);
-    void lineHoverEnter();
-    void lineHoverLeave();
-    void lineSelected(bool isSelected, int lineNumber);
 
 private:
     void clearArrows();
@@ -111,13 +87,9 @@ private:
     AnimatedConnector *mpParentConnector;
     ConnectorAppearance *mpConnectorAppearance;
 
-    bool mIsActive;
-    bool mParentConnectorEndPortConnected;
     bool mHasStartArrow;
     bool mHasEndArrow;
-    int mLineNumber;
 
-    connectorGeometry mGeometry;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;
     qreal mArrowSize;
@@ -125,7 +97,6 @@ private:
 
     QPointF mStartPos;
     QPointF mEndPos;
-    QPointF mOldPos;
 };
 
 #endif // ANIMATEDCONNECTOR_H

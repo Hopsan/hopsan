@@ -75,27 +75,27 @@ public:
     AnimationWidget(MainWindow *parent = 0);
     ~AnimationWidget();
 
+    void closeEvent(QCloseEvent *event);
+
+    //Get functions
     QVector<double> *getTimeValues();
-    AnimatedComponent* createComponent(ModelObject* unanimatedComponent, AnimationWidget* parent);
-    QGraphicsScene* getScenePtr();
+    QGraphicsScene* getGraphicsScene();
     QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > >* getPlotDataPtr();
     int getNumberOfPlotGenerations();
     int getIndex(); // returns the current position inside the time vector
     int getLastIndex();
-    void closeEvent(QCloseEvent *event);
-    QGraphicsScene *mpGraphicsScene;
+    bool isRealTimeAnimation();
+    double getLastAnimationTime();
+
+    //Public member pointers
     AnimatedGraphicsView *mpGraphicsView;
     ContainerObject *mpContainer;
 
-    //These are used for testing. We can see the numerical results of tests through these
-    QLineEdit* mpTextDisplay;
-
+    //Maps that stores maximum and minimum values for simulation variables ("Pressure", "Velocity" etc)
+    //! @todo These are not used, shall we use them or remove them?
+    //! @todo If we use them, they shall not be public
     QMap<QString, double> mIntensityMaxMap;
     QMap<QString, double> mIntensityMinMap;
-
-    bool mRealTime;
-
-    double previousSimulationTime;
 
 private slots:
     void stop();
@@ -103,13 +103,17 @@ private slots:
     void pause();
     void play();
     void playRT();
-    void updateAnimationSpeed();
+    void updateAnimationSpeed(double speed);
     void updateAnimation();
     void updateMovables();
 
 private:
+    //Graphics scene
+    QGraphicsScene *mpGraphicsScene;
 
+    //Control panel group box
     QGroupBox* mpControlPanel;
+
     //The buttons
     QToolButton* mpStopButton;
     QToolButton* mpRewindButton;
@@ -118,35 +122,44 @@ private:
     QToolButton *mpPlayRealTimeButton;
     QToolButton* mpCloseButton;
 
+    //Labels
+    QLabel *mpTimeLabel;
+    QLabel *mpSpeedLabel;
+
     //The sliders
     QSlider* mpTimeSlider;
     QSlider* mpSpeedSlider;
 
-    MainWindow* mpAnimationWidget;
+    //Time display widget
+    QLineEdit* mpTimeDisplay;
 
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mpPlotData;
-    QVector<double>* mpTimeValues;
-
-
-
+    //Animation timer object
     QTimer *mpTimer;
 
-    QList<ModelObject*> mUnanimatedComponentList;
+    //Copy of plot data object
+    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mpPlotData;
+
+    //Copy of time values
+    QVector<double>* mpTimeValues;
+
+    //Lists of sub objects
     QList<ModelObject*> mModelObjectsList;
     QList<AnimatedComponent*> mAnimatedComponentList;
     QList<Connector*> mConnectorList;
     QList<AnimatedConnector*> mAnimatedConnectorList;
-    QList<Port*> mPortList;
 
-    double currentSimulationTime;
-    int simulationSpeed;
-
+    //Private animation variables
+    double mCurrentAnimationTime;
+    double mLastAnimationTime;
+    int mSimulationSpeed;
     double mTimeStep;
-
-    int numberOfPlotGenerations;
-    double timeStep;
-    int index;
-
+    int mnPlotGenerations;
+    int mIndex;
+    bool mRealTime;
+    int mFps;
+    int mSpeedSliderSensitivity;
+    double mTotalTime;
+    double mnSamples;
 
 public slots:
     void changeSpeed(int newSpeed);
