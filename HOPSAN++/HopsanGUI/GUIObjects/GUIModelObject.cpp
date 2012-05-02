@@ -590,32 +590,29 @@ QString ModelObject::getDefaultParameterValue(const QString paramName) const
 }
 
 
-//! @brief Virtual function that returns the specified parameter value
+//! @brief Function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
-QString ModelObject::getParameterValue(QString /*name*/)
+QString ModelObject::getParameterValue(const QString paramName)
 {
-    //cout << "This function should only be available in GUIComponent" << endl;
-    assert(false);
-    return 0;
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), paramName);
 }
 
 
-////! @brief Virtual function that returns the specified parameter value
-////! @param name Name of the parameter to return value from
-//QString GUIModelObject::getParameterValueTxt(QString /*name*/)
-//{
-//    //cout << "This function should only be available in GUIComponent" << endl;
-//    assert(false);
-//    return "";
-//}
+void ModelObject::getParameters(QVector<CoreParameterData> &rParameterDataVec)
+{
+    mpParentContainerObject->getCoreSystemAccessPtr()->getParameters(this->getName(), rParameterDataVec);
+}
 
 
-//! @brief Virtual function that returns a vector with the names of the parameteres in the object
+//! @brief Get a vector with the names of the available parameters
 QStringList ModelObject::getParameterNames()
 {
-    //cout << "This function should only be available in GUIComponent" << endl;
-    assert(false);
-    return QStringList();
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
+}
+
+void ModelObject::getParameter(const QString paramName, CoreParameterData &rData)
+{
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameter(this->getName(), paramName, rData);
 }
 
 

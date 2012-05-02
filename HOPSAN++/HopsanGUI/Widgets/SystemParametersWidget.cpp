@@ -375,17 +375,17 @@ void SystemParameterTableWidget::addParameterAndCloseDialog()
 //! Updates the parameter table from the contents list
 void SystemParameterTableWidget::update()
 {
-    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
+    QVector<CoreParameterData> paramDataVector;
 
     clear();
     if(gpMainWindow->mpProjectTabs->count()>0)
     {
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameters(paramDataVector);
     }
 
     disconnect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
 
-    if(qParameterNames.isEmpty())
+    if(paramDataVector.isEmpty())
     {
         setColumnCount(1);
         setRowCount(1);
@@ -404,13 +404,13 @@ void SystemParameterTableWidget::update()
         setColumnCount(3);
         verticalHeader()->show();
 
-        for(int i=0; i<qParameterNames.size(); ++i)
+        for(int i=0; i<paramDataVector.size(); ++i)
         {
             insertRow(rowCount());
             const int rowIdx = rowCount()-1;
 
-            QTableWidgetItem *nameItem = new QTableWidgetItem(qParameterNames[i]);
-            QTableWidgetItem *valueItem = new QTableWidgetItem(qParameterValues[i]);
+            QTableWidgetItem *nameItem = new QTableWidgetItem(paramDataVector[i].name);
+            QTableWidgetItem *valueItem = new QTableWidgetItem(paramDataVector[i].value);
             nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
             valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
             setItem(rowIdx, 0, nameItem);
@@ -422,7 +422,7 @@ void SystemParameterTableWidget::update()
             // Select wich parameter type to diplay
             for(int j=0; j<typeBox->count(); ++j)
             {
-                if(qTypes[i] == typeBox->itemText(j))
+                if(paramDataVector[i].type == typeBox->itemText(j))
                 {
                     typeBox->setCurrentIndex(j);
                     break;

@@ -27,6 +27,7 @@
 
 #include "GUIObject.h"
 #include "GUIModelObjectAppearance.h"
+#include "CoreAccess.h"
 #include <QGraphicsSvgItem>
 
 class Connector;
@@ -67,11 +68,14 @@ public:
     QString getHelpText();
 
     //Parameter methods
-    virtual QString getDefaultParameterValue(const QString paramName) const;
     virtual QStringList getParameterNames();
-    virtual QString getParameterUnit(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
-    virtual QString getParameterDescription(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
-    virtual QString getParameterValue(QString name);
+    virtual void getParameters(QVector<CoreParameterData> &rParameterDataVec);
+    virtual void getParameter(const QString paramName, CoreParameterData &rData);
+    QString getParameterValue(const QString paramName);
+
+    virtual QString getDefaultParameterValue(const QString paramName) const;
+
+
     virtual bool setParameterValue(QString name, QString valueTxt, bool force=false);
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);

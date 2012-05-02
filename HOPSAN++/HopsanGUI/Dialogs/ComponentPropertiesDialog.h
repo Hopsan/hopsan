@@ -80,11 +80,8 @@ class ParameterLayout : public QGridLayout
     friend class ContainerPropertiesDialog;
 
 public:
- //   ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", QString typeName="", ModelObject *pModelObject=0, QWidget *pParent=0);
-    ParameterLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent);
+    ParameterLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent=0);
 
-    QString getDescriptionName();
     QString getDataName();
     double getDataValue();
     QString getDataValueTxt();
@@ -93,21 +90,20 @@ public:
 protected slots:
     void setDefaultValue();
     void showListOfSystemParameters();
-    void pickColor();
+    void makePort(bool isPort);
+    void pickValueTextColor();
 
 protected:
     ModelObject *mpModelObject;
-    QLabel mDataNameLabel;
-    QLabel mDescriptionNameLabel;
-    QLineEdit mDataValuesLineEdit;
-    QLabel mUnitNameLabel;
+    QLabel mNameLabel;
+    QLabel mDescriptionLabel;
+    QLabel mUnitLabel;
+    QLineEdit mValueLineEdit;
     QToolButton mResetDefaultToolButton;
     QToolButton mSystemParameterToolButton;
+    QCheckBox mDynamicEnabledCheckBox;
 
-    QString mDataName;
-
-private:
-    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="",  QString typeName="", ModelObject *pModelObject=0);
+    QString mName;
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

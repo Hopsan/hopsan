@@ -128,25 +128,15 @@ void ComponentPropertiesDialog::createEditStuff()
         if(interpretedAsStartValue(paramDataVector[i].description))
         {
             //QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
-            QString unit = paramDataVector[i].unit;
-            unit.prepend("[");
-            unit.append("]");
-            mvStartValueLayout.push_back(new ParameterLayout(paramDataVector[i].name,
-                                                             paramDataVector[i].description,
-                                                             paramDataVector[i].value,
-                                                             unit,
-                                                             paramDataVector[i].type,
+            paramDataVector[i].unit.prepend("[").append("]");
+            mvStartValueLayout.push_back(new ParameterLayout(paramDataVector[i],
                                                              mpGUIComponent));
             startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
             ++nParam;
         }
         else
         {
-            mvParameterLayout.push_back(new ParameterLayout(paramDataVector[i].name,
-                                                            paramDataVector[i].description,
-                                                            paramDataVector[i].value,
-                                                            paramDataVector[i].unit,
-                                                            paramDataVector[i].type,
+            mvParameterLayout.push_back(new ParameterLayout(paramDataVector[i],
                                                             mpGUIComponent));
             parameterLayout->addLayout(mvParameterLayout.back(), nStV, 0);
             ++nStV;
@@ -159,26 +149,26 @@ void ComponentPropertiesDialog::createEditStuff()
     //Paramters
     for(int i=0; i<mvParameterLayout.size(); ++i)
     {
-        descriptionSize = std::max(descriptionSize, mvParameterLayout.at(i)->mDescriptionNameLabel.width());
-        nameSize = std::max(nameSize, mvParameterLayout.at(i)->mDataNameLabel.width());
+        descriptionSize = std::max(descriptionSize, mvParameterLayout.at(i)->mDescriptionLabel.width());
+        nameSize = std::max(nameSize, mvParameterLayout.at(i)->mNameLabel.width());
     }
     //Start values
     for(int i=0; i<mvStartValueLayout.size(); ++i)
     {
-        descriptionSize = std::max(descriptionSize, mvStartValueLayout.at(i)->mDescriptionNameLabel.width());
-        nameSize = std::max(nameSize, mvStartValueLayout.at(i)->mDataNameLabel.width());
+        descriptionSize = std::max(descriptionSize, mvStartValueLayout.at(i)->mDescriptionLabel.width());
+        nameSize = std::max(nameSize, mvStartValueLayout.at(i)->mNameLabel.width());
     }
     //Paramters
     for(int i=0; i<mvParameterLayout.size(); ++i)
     {
-        mvParameterLayout.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
-        mvParameterLayout.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
+        mvParameterLayout.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+        mvParameterLayout.at(i)->mNameLabel.setFixedWidth(nameSize+10);
     }
     //Start values
     for(int i=0; i<mvStartValueLayout.size(); ++i)
     {
-        mvStartValueLayout.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
-        mvStartValueLayout.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
+        mvStartValueLayout.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+        mvStartValueLayout.at(i)->mNameLabel.setFixedWidth(nameSize+10);
     }
 
     //qDebug() << "after parnames";
@@ -362,137 +352,92 @@ bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vP
 }
 
 
-//ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, double dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
-//    : QGridLayout(parent)
-//{
-//    QString dataValueStr;
-//    dataValueStr.setNum(dataValue);
-//    commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject);
-//}
-
-//! @deprecated
-ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString typeName, ModelObject *pModelObject, QWidget *pParent)
-    : QGridLayout(pParent)
-{
-    commonConstructorCode(dataName, descriptionName, dataValue, unitName, typeName, pModelObject);
-}
-
-//! @deprecated
-void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, QString /*typeName*/, ModelObject *pModelObject)
-{
-    mDataName = dataName;
-
-    mpModelObject = pModelObject;
-
-    mDescriptionNameLabel.setMinimumWidth(100);
-    mDescriptionNameLabel.setMaximumWidth(1000);
-    //mDescriptionNameLabel.setWordWrap(true);
-    mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    mDataNameLabel.setMinimumWidth(10);
-    mDataNameLabel.setMaximumWidth(100);
-    mDataValuesLineEdit.setMinimumWidth(100);
-    mDataValuesLineEdit.setMaximumWidth(100);
-    mUnitNameLabel.setMinimumWidth(50);
-    mUnitNameLabel.setMaximumWidth(50);
-
-    mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
-    mResetDefaultToolButton.setToolTip("Reset Default Value");
-
-    mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
-    mSystemParameterToolButton.setToolTip("Map To System Parameter");
-
-    mDataNameLabel.setText(parseVariableDescription(dataName));
-    mDataNameLabel.adjustSize();
-    mDescriptionNameLabel.setText(descriptionName);
-    mDescriptionNameLabel.adjustSize();
-    mUnitNameLabel.setText(parseVariableUnit(unitName));
-    mDataValuesLineEdit.setText(dataValue);
-
-    addWidget(&mDescriptionNameLabel, 0, 0);
-    addWidget(&mDataNameLabel, 0, 1);
-    addWidget(&mDataValuesLineEdit, 0, 2);
-    addWidget(&mUnitNameLabel, 0, 3);
-    addWidget(&mResetDefaultToolButton, 0, 4);
-    addWidget(&mSystemParameterToolButton, 0, 5);
-
-    pickColor();
-
-    connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
-    connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
-    connect(&mDataValuesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickColor()));
-}
 
 ParameterLayout::ParameterLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent)
 {
-    mDataName = rParameterData.name;
-
     mpModelObject = pModelObject;
 
-    mDescriptionNameLabel.setMinimumWidth(100);
-    mDescriptionNameLabel.setMaximumWidth(1000);
-    //mDescriptionNameLabel.setWordWrap(true);
-    mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    mDataNameLabel.setMinimumWidth(10);
-    mDataNameLabel.setMaximumWidth(100);
-    mDataValuesLineEdit.setMinimumWidth(100);
-    mDataValuesLineEdit.setMaximumWidth(100);
-    mUnitNameLabel.setMinimumWidth(50);
-    mUnitNameLabel.setMaximumWidth(50);
+    // Set name label
+    mName = rParameterData.name;
+    mNameLabel.setText(parseVariableDescription(mName));
+    mNameLabel.setMinimumWidth(10);
+    mNameLabel.setMaximumWidth(100);
+    mNameLabel.adjustSize();
+    mNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
 
+    // Set description label
+    mDescriptionLabel.setMinimumWidth(100);
+    mDescriptionLabel.setMaximumWidth(1000);
+    mDescriptionLabel.setText(rParameterData.description);
+    //mDescriptionNameLabel.setWordWrap(true);
+    mDescriptionLabel.adjustSize();
+
+    // Set unit label
+    mUnitLabel.setMinimumWidth(50);
+    mUnitLabel.setMaximumWidth(50);
+    mUnitLabel.setText(parseVariableUnit(rParameterData.unit));
+
+    // Set value line editd
+    mValueLineEdit.setMinimumWidth(100);
+    mValueLineEdit.setMaximumWidth(100);
+    mValueLineEdit.setText(rParameterData.value);
+
+    // Set tool buttons
     mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
     mResetDefaultToolButton.setToolTip("Reset Default Value");
 
     mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
     mSystemParameterToolButton.setToolTip("Map To System Parameter");
 
-    mDataNameLabel.setText(parseVariableDescription(mDataName));
-    mDataNameLabel.adjustSize();
-    mDescriptionNameLabel.setText(rParameterData.description);
-    mDescriptionNameLabel.adjustSize();
-    mUnitNameLabel.setText(parseVariableUnit(rParameterData.unit));
-    mDataValuesLineEdit.setText(rParameterData.value);
-
-    addWidget(&mDescriptionNameLabel, 0, 0);
-    addWidget(&mDataNameLabel, 0, 1);
-    addWidget(&mDataValuesLineEdit, 0, 2);
-    addWidget(&mUnitNameLabel, 0, 3);
+    // Add lables, edits and buttons
+    addWidget(&mDescriptionLabel, 0, 0);
+    addWidget(&mNameLabel, 0, 1);
+    addWidget(&mValueLineEdit, 0, 2);
+    addWidget(&mUnitLabel, 0, 3);
     addWidget(&mResetDefaultToolButton, 0, 4);
     addWidget(&mSystemParameterToolButton, 0, 5);
 
-    pickColor();
+    // If dynamic parameter add switch button
+    if (rParameterData.isDynamic)
+    {
+        mDynamicEnabledCheckBox.setText("Dynamic");
+        mDynamicEnabledCheckBox.setToolTip("Make Dynamic (Experimental)");
+        mDynamicEnabledCheckBox.setChecked(rParameterData.isEnabled);
+        addWidget(&mDynamicEnabledCheckBox, 0, 6);
+    }
 
+    // Determine value text color
+    pickValueTextColor();
+
+    // Connect signals to buttons
     connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
     connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
-    connect(&mDataValuesLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickColor()));
+    connect(&mValueLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickValueTextColor()));
+    connect(&mDynamicEnabledCheckBox, SIGNAL(isChecked()), this, SLOT(makePort(bool)));
 }
 
 
-QString ParameterLayout::getDescriptionName()
-{
-    return mDescriptionNameLabel.text();
-}
-
-
+//! @brief Returns the actual parameter name, not the fancy display name
 QString ParameterLayout::getDataName()
 {
-    return mDataName;
+    return mName;
 }
 
 
 double ParameterLayout::getDataValue()
 {
-    return mDataValuesLineEdit.text().toDouble();
+    return mValueLineEdit.text().toDouble();
 }
 
 QString ParameterLayout::getDataValueTxt()
 {
-    return mDataValuesLineEdit.text();
+    return mValueLineEdit.text();
 }
 
 
 void ParameterLayout::setDataValueTxt(QString valueTxt)
 {
-    mDataValuesLineEdit.setText(valueTxt);
+    mValueLineEdit.setText(valueTxt);
 }
 
 
@@ -501,55 +446,67 @@ void ParameterLayout::setDefaultValue()
 {
     if(mpModelObject)
     {
-        QString defaultText = mpModelObject->getDefaultParameterValue(mDataName);
+        QString defaultText = mpModelObject->getDefaultParameterValue(mName);
         if(defaultText != QString())
-            mDataValuesLineEdit.setText(defaultText);
-        pickColor();
+            mValueLineEdit.setText(defaultText);
+        pickValueTextColor();
     }
 }
 
 
 void ParameterLayout::showListOfSystemParameters()
 {
-    //mSystemParameterToolButton.setDown(false);
-
     QMenu menu;
+    QMap<QAction*, QString> actionParamMap;
 
-    //QMap<std::string, std::string> SystemMap = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParametersMap();
-    QMap<std::string, std::string> SystemMap = mpModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getSystemParametersMap();
-    QMap<std::string, std::string>::iterator it;
-    for(it=SystemMap.begin(); it!=SystemMap.end(); ++it)
+    QVector<CoreParameterData> paramDataVector;
+    mpModelObject->getParentContainerObject()->getParameters(paramDataVector);
+
+    for (int i=0; i<paramDataVector.size(); ++i)
     {
-//        QString valueString;
-//        valueString.setNum(it.value());
-        QAction *tempAction = menu.addAction(QString(it.key().c_str()));
+        QAction *tempAction = menu.addAction(paramDataVector[i].name+" = "+paramDataVector[i].value);
         tempAction->setIconVisibleInMenu(false);
+        actionParamMap.insert(tempAction, paramDataVector[i].name);
     }
 
     QCursor cursor;
     QAction *selectedAction = menu.exec(cursor.pos());
-    if(selectedAction != 0)
+
+    QString parNameString = actionParamMap.value(selectedAction);
+    if(!parNameString.isEmpty())
     {
-        mDataValuesLineEdit.setText(selectedAction->text());
+        mValueLineEdit.setText(parNameString);
+    }
+}
+
+void ParameterLayout::makePort(bool isPort)
+{
+    if (isPort)
+    {
+
+    }
+    else
+    {
+
     }
 }
 
 
-void ParameterLayout::pickColor()
+void ParameterLayout::pickValueTextColor()
 {
     if(mpModelObject)
     {
-        if(mDataValuesLineEdit.text() == mpModelObject->getDefaultParameterValue(mDataName))
+        if(mValueLineEdit.text() == mpModelObject->getDefaultParameterValue(mName))
         {
-            QPalette palette( mDataValuesLineEdit.palette() );
+            QPalette palette( mValueLineEdit.palette() );
             palette.setColor( QPalette::Text, QColor("gray") );
-            mDataValuesLineEdit.setPalette(palette);
+            mValueLineEdit.setPalette(palette);
         }
         else
         {
-            QPalette palette( mDataValuesLineEdit.palette() );
+            QPalette palette( mValueLineEdit.palette() );
             palette.setColor( QPalette::Text, QColor("black") );
-            mDataValuesLineEdit.setPalette(palette);
+            mValueLineEdit.setPalette(palette);
         }
     }
 }
@@ -561,7 +518,8 @@ void ParameterLayout::pickColor()
 //! @param value String with parameter that shall be verified
 void ComponentPropertiesDialog::verifyNewValue(QString &value)
 {
-    if(mpGUIComponent->getParentContainerObject()->getCoreSystemAccessPtr()->getSystemParametersMap().contains(value.toStdString()))
+    QStringList sysParamNames = mpGUIComponent->getParameterNames();
+    if(sysParamNames.contains(value))
     {
         return;
     }

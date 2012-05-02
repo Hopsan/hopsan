@@ -28,7 +28,6 @@
 #include "GUIModelObject.h"
 #include "common.h"
 #include "Utilities/XMLUtilities.h"
-#include "CoreAccess.h"
 #include <assert.h>
 
 //Forward declarations
@@ -46,11 +45,6 @@ public:
 
     bool hasPowerPorts();
 
-    void getParameters(QVector<CoreParameterData> &rParameterDataVec);
-    QStringList getParameterNames();
-    QString getParameterUnit(QString name);
-    QString getParameterDescription(QString name);
-    QString getParameterValue(QString name);
     bool setParameterValue(QString name, QString value, bool force=0);
     QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);

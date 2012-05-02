@@ -81,7 +81,6 @@ public:
     QList<Widget *> getSelectedGUIWidgetPtrs();
 
     // Parameter Methods
-    virtual void getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
     virtual bool setParameterValue(QString name, QString value, bool force=false);
 
     //Handle connector methods

@@ -77,9 +77,15 @@ bool Component::initialize(const double startT, const double stopT)
     return false;
 }
 
-void Component::getParameters(vector<string> &parameterNames, vector<string> &parameterValues, vector<string> &descriptions, vector<string> &units, vector<string> &types)
+
+void Component::getParameterNames(std::vector<std::string> &rParameterNames)
 {
-    mpParameters->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    mpParameters->getParameterNames(rParameterNames);
+}
+
+const Parameter *Component::getParameter(const std::string name)
+{
+    return mpParameters->getParameter(name);
 }
 
 const std::vector<Parameter*> *Component::getParametersVectorPtr() const

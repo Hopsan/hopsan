@@ -355,63 +355,6 @@ Parameters::~Parameters()
 bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, bool isDynamic, void* dataPtr, bool force)
 {
     bool success = false;
-//    istringstream is(parameterValue);
-//    //Type not decided, to be done here
-//    if((type.empty()) || (0 == type.compare("double")))
-//    {
-//        double tmpDouble;
-//        if(is >> tmpDouble)
-//        {
-//            type = "double";
-//            success *= true;
-//        }
-//        else
-//        {
-//            success *= false;
-//        }
-//    }
-//    else if(0 == type.compare("bool"))
-//    {
-//        bool tmpBool;
-//        if((is >> tmpBool) || (parameterValue.compare("false")) == 0 || (parameterValue.compare("true") == 0)
-//                           || (parameterValue.compare("0"))     == 0 || (parameterValue.compare("1")    == 0))
-//        {
-//            success *= true;
-//        }
-//        else
-//        {
-//            success *= false;
-//        }
-//    }
-//    else if(0 == type.compare("integer"))
-//    {
-//        int tmpInt;
-//        if(is >> tmpInt)
-//        {
-//            success *= true;
-//        }
-//        else
-//        {
-//            success *= false;
-//        }
-//    }
-//    else if(0 == type.compare("string"))
-//    {
-//        std::string tmpStr;
-//        if(is >> tmpStr)
-//        {
-//            success *= true;
-//        }
-//        else
-//        {
-//            success *= false;
-//        }
-//    }
-//    else
-//    {
-//        success *= false;
-//    }
-
     if(!exist(parameterName))
     {
         Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, isDynamic, dataPtr, this);
@@ -466,23 +409,18 @@ void Parameters::enableParameter(std::string parameterName, const bool enable)
 }
 
 
-//! @brief Read out all parameters
-//! @param [out] rParameterNames The parameter names
-//! @param [out] rParameterValues The value of the parameters
-//! @param [out] rDescriptions The description of the parameters
-//! @param [out] rUnits The physical unit of the parameters
-//! @param [out] rTypes The type of the parameters
-void Parameters::getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions, std::vector<std::string> &rUnits, vector<std::string> &rTypes) const
+const Parameter* Parameters::getParameter(const std::string parameterName) const
 {
-    rParameterNames.resize(mParameters.size());
-    rParameterValues.resize(mParameters.size());
-    rDescriptions.resize(mParameters.size());
-    rUnits.resize(mParameters.size());
-    rTypes.resize(mParameters.size());
-    for(size_t i = 0; i < mParameters.size(); ++i)
+    for (size_t i=0; i<mParameters.size(); ++i)
     {
-        mParameters[i]->getParameter(rParameterNames[i], rParameterValues[i], rDescriptions[i], rUnits[i], rTypes[i]);
+        if (mParameters[i]->getName() == parameterName)
+        {
+            return mParameters[i];
+        }
     }
+
+    // If paramter not found return 0
+    return 0;
 }
 
 void Parameters::getParameterNames(std::vector<std::string> &rParameterNames)

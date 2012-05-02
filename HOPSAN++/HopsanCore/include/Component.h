@@ -89,8 +89,8 @@ public:
     void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
     void unRegisterParameter(const std::string name);
     const std::vector<Parameter*> *getParametersVectorPtr() const;
-    void getParameters(std::vector<std::string> &parameterNames, std::vector<std::string> &parameterValues,
-                       std::vector<std::string> &descriptions, std::vector<std::string> &units, std::vector<std::string> &types);
+    void getParameterNames(std::vector<std::string> &rParameterNames);
+    const Parameter *getParameter(const std::string name);
     void getParameterValue(const std::string name, std::string &rValue);
     void* getParameterDataPtr(const std::string name);
     bool setParameterValue(const std::string name, const std::string value, bool force=false);

@@ -196,28 +196,24 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
 
     //! @todo maybe only have sys params in systems (put in if above)
     // System Parameters Group Box
-    QVector<QString> qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes;
-    mpContainerObject->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
-    for(int i=0; i<qParameterNames.size(); ++i)
+    QVector<CoreParameterData> paramDataVector;
+    mpContainerObject->getParameters(paramDataVector);
+    for(int i=0; i<paramDataVector.size(); ++i)
     {
-        mvParameterLayoutPtrs.push_back(new ParameterLayout(qParameterNames[i], qDescriptions[i],
-                                                            qParameterValues[i],
-                                                            qUnits[i],
-                                                            qTypes[i],
-                                                            mpContainerObject));
+        mvParameterLayoutPtrs.push_back(new ParameterLayout(paramDataVector[i], mpContainerObject));
     }
     // Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
     int descriptionSize=30;
     int nameSize = 10;
     for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
     {
-        descriptionSize = std::max(descriptionSize, mvParameterLayoutPtrs.at(i)->mDescriptionNameLabel.width());
-        nameSize = std::max(nameSize, mvParameterLayoutPtrs.at(i)->mDataNameLabel.width());
+        descriptionSize = std::max(descriptionSize, mvParameterLayoutPtrs.at(i)->mDescriptionLabel.width());
+        nameSize = std::max(nameSize, mvParameterLayoutPtrs.at(i)->mNameLabel.width());
     }
     for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
     {
-        mvParameterLayoutPtrs.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
-        mvParameterLayoutPtrs.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
+        mvParameterLayoutPtrs.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+        mvParameterLayoutPtrs.at(i)->mNameLabel.setFixedWidth(nameSize+10);
     }
 
         //This is the main Vertical layout of the dialog

@@ -470,39 +470,63 @@ void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParamete
     }
 }
 
-//! @deprecated
-void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+void CoreSystemAccess::getParameter(QString componentName, QString parameterName, CoreParameterData &rData)
 {
-    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-    //! @todo should check that component found before atempting to get parameter
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
-    for(size_t i=0; i<parameterNames.size(); ++i)
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    if (pComp!=0)
     {
-        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
-        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
-        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
-        qUnits.push_back(QString::fromStdString(units[i]));
-        qTypes.push_back(QString::fromStdString(types[i]));
+        const hopsan::Parameter *pParam = pComp->getParameter(parameterName.toStdString());
+        if (pParam!=0)
+        {
+            //! @todo duplicate implementation
+            rData.name = QString::fromStdString(pParam->getName());
+            rData.type = QString::fromStdString(pParam->getType());
+            rData.value = QString::fromStdString(pParam->getValue());
+            rData.unit = QString::fromStdString(pParam->getUnit());
+            rData.description = QString::fromStdString(pParam->getDescription());
+            rData.isDynamic = pParam->isDynamic();
+            rData.isEnabled = pParam->isEnabled();
+        }
     }
 }
 
+//! @deprecated
+//void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+//{
+//    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+//    //! @todo should check that component found before atempting to get parameter
+//    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
+//    for(size_t i=0; i<parameterNames.size(); ++i)
+//    {
+//        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+//        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
+//        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
+//        qUnits.push_back(QString::fromStdString(units[i]));
+//        qTypes.push_back(QString::fromStdString(types[i]));
+//    }
+//}
+
 QStringList CoreSystemAccess::getParameterNames(QString componentName)
 {
-    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-    //! @todo should check that component found before atempting to get parameter
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
     QStringList qParameterNames;
-    for(size_t i=0; i<parameterNames.size(); ++i)
+    std::vector<std::string> parameterNames;
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    if (pComp!=0)
     {
-        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+        pComp->getParameterNames(parameterNames);
+        for(size_t i=0; i<parameterNames.size(); ++i)
+        {
+            qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+        }
     }
+
     return qParameterNames;
 }
 
 QStringList CoreSystemAccess::getSystemParameterNames()
 {
-    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-    mpCoreComponentSystem->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    std::vector<std::string> parameterNames;
+    mpCoreComponentSystem->getParameterNames(parameterNames);
     QStringList qParameterNames;
     for(size_t i=0; i<parameterNames.size(); ++i)
     {
@@ -511,30 +535,26 @@ QStringList CoreSystemAccess::getSystemParameterNames()
     return qParameterNames;
 }
 
-QString CoreSystemAccess::getParameterUnit(QString /*componentName*/, QString /*parameterName*/)
-{
-    return QString("");
-}
+//QString CoreSystemAccess::getParameterUnit(QString /*componentName*/, QString /*parameterName*/)
+//{
+//    return QString("");
+//}
 
-QString CoreSystemAccess::getParameterDescription(QString /*componentName*/, QString /*parameterName*/)
-{
-    return QString("");
-}
+//QString CoreSystemAccess::getParameterDescription(QString /*componentName*/, QString /*parameterName*/)
+//{
+//    return QString("");
+//}
 
 QString CoreSystemAccess::getParameterValue(QString componentName, QString parameterName)
 {
-    QString parameterValue = "";
-    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-    //! @todo should check that component found before atempting to get parameter
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
-    for(size_t i=0; i<parameterNames.size(); ++i)
+    std::string parameterValue="";
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    if (pComp != 0)
     {
-        if(parameterNames[i] == parameterName.toStdString())
-        {
-            parameterValue = QString::fromStdString(parameterValues[i]);
-        }
+        pComp->getParameterValue(parameterName.toStdString(), parameterValue);
     }
-    return parameterValue;
+
+    return QString::fromStdString(parameterValue);
 }
 
 void CoreSystemAccess::deleteSystemPort(QString portname)
@@ -774,34 +794,53 @@ bool CoreSystemAccess::hasSystemParameter(const QString name)
 void CoreSystemAccess::removeSystemParameter(const QString name)
 {
     mpCoreComponentSystem->unRegisterParameter(name.toStdString());
-    //mpCoreComponentSystem->getSystemParameters().deleteParameter(name.toStdString());
 }
 
 
-//! @todo delete this methode and use getParmeters instead!
-QMap<std::string, std::string> CoreSystemAccess::getSystemParametersMap()
+////! @todo delete this methode and use getParmeters instead!
+//QMap<std::string, std::string> CoreSystemAccess::getSystemParametersMap()
+//{
+//    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+//    mpCoreComponentSystem->getSystemParameters().getParameters(parameterNames, parameterValues, descriptions, units, types);
+//    QMap<std::string, std::string> tmpMap;
+//    for(size_t i=0; i < parameterNames.size(); ++i)
+//    {
+//        tmpMap.insert(parameterNames[i], parameterValues[i]);
+//    }
+//    return tmpMap;//QMap<std::string, std::string>()(mpCoreComponentSystem->getSystemParameters().getSystemParameterMap());
+//}
+
+void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParameterDataVec)
 {
-    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-    mpCoreComponentSystem->getSystemParameters().getParameters(parameterNames, parameterValues, descriptions, units, types);
-    QMap<std::string, std::string> tmpMap;
-    for(size_t i=0; i < parameterNames.size(); ++i)
+    rParameterDataVec.clear();
+    const std::vector<hopsan::Parameter*> *pParams = mpCoreComponentSystem->getParametersVectorPtr();
+    rParameterDataVec.resize(pParams->size()); //preAllocate storage
+    for(size_t i=0; i<pParams->size(); ++i)
     {
-        tmpMap.insert(parameterNames[i], parameterValues[i]);
-    }
-    return tmpMap;//QMap<std::string, std::string>()(mpCoreComponentSystem->getSystemParameters().getSystemParameterMap());
-}
+        //! @todo duplicate imlpementation of data copying is bad (duplicate in getParameters)
+        CoreParameterData data;
+        data.name = QString::fromStdString(pParams->at(i)->getName());
+        data.type = QString::fromStdString(pParams->at(i)->getType());
+        data.value = QString::fromStdString(pParams->at(i)->getValue());
+        data.unit = QString::fromStdString(pParams->at(i)->getUnit());
+        data.description = QString::fromStdString(pParams->at(i)->getDescription());
+        data.isDynamic = pParams->at(i)->isDynamic();
+        data.isEnabled = pParams->at(i)->isEnabled();
 
-
-void CoreSystemAccess::getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
-{
-    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-    mpCoreComponentSystem->getParameters(parameterNames, parameterValues, descriptions, units, types);
-    for(size_t i=0; i<parameterNames.size(); ++i)
-    {
-        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
-        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
-        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
-        qUnits.push_back(QString::fromStdString(units[i]));
-        qTypes.push_back(QString::fromStdString(types[i]));
+        rParameterDataVec[i] = data;
     }
 }
+
+//void CoreSystemAccess::getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+//{
+//    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
+//    mpCoreComponentSystem->getParameters(parameterNames, parameterValues, descriptions, units, types);
+//    for(size_t i=0; i<parameterNames.size(); ++i)
+//    {
+//        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+//        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
+//        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
+//        qUnits.push_back(QString::fromStdString(units[i]));
+//        qTypes.push_back(QString::fromStdString(types[i]));
+//    }
+//}

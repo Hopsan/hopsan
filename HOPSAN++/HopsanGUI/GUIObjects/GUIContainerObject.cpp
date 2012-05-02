@@ -942,10 +942,6 @@ QList<Widget *> ContainerObject::getSelectedGUIWidgetPtrs()
     return mSelectedWidgetsList;
 }
 
-void ContainerObject::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
-{
-    //Do nothing, this function should be overloaded
-}
 
 //! @brief Set a system parameter value
 //! @todo how will this work in groups

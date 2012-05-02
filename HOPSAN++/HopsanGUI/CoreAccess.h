@@ -102,10 +102,10 @@ public:
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rStartDataValuesTxt, QVector<QString> &rUnits);
 
     void getParameters(QString componentName, QVector<CoreParameterData> &rParameterDataVec);
-    void getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
+    void getParameter(QString componentName, QString parameterName, CoreParameterData &rData);
     QStringList getParameterNames(QString componentName);
-    QString getParameterUnit(QString componentName, QString parameterName);
-    QString getParameterDescription(QString componentName, QString parameterName);
+    //QString getParameterUnit(QString componentName, QString parameterName);
+    //QString getParameterDescription(QString componentName, QString parameterName);
     QString getParameterValue(QString componentName, QString parameterName);
     bool setParameterValue(QString componentName, QString parameterName, QString value, bool force=0);
 
@@ -132,14 +132,15 @@ public:
     QString reserveUniqueName(QString desiredName);
     void unReserveUniqueName(QString name);
 
-    void getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
+    //void getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
+    void getSystemParameters(QVector<CoreParameterData> &rParameterDataVec);
     QStringList getSystemParameterNames();
     QString getSystemParameterValue(const QString name);
     bool setSystemParameter(QString name, QString value, QString description="", QString unit="", QString type="", bool force=false);
     bool hasSystemParameter(const QString name);
     void removeSystemParameter(const QString name);
 
-    QMap<std::string, std::string> getSystemParametersMap();
+    //QMap<std::string, std::string> getSystemParametersMap();
 
 
     std::vector<double> getTimeVector(QString componentName, QString portName);

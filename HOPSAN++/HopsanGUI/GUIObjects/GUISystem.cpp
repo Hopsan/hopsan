@@ -139,15 +139,15 @@ QString SystemContainer::getTypeCQS()
 }
 
 //! @brief get The parameter names of this system
-//! @returns A QVector containing the parameter names
+//! @returns A QStringList containing the parameter names
 QStringList SystemContainer::getParameterNames()
 {
     return mpCoreSystemAccess->getSystemParameterNames();
 }
 
-void SystemContainer::getParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
+void SystemContainer::getParameters(QVector<CoreParameterData> &rParameterDataVec)
 {
-    this->getCoreSystemAccessPtr()->getSystemParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
+    mpCoreSystemAccess->getSystemParameters(rParameterDataVec);
 }
 
 //! @brief Get a pointer the the CoreSystemAccess object that this system is representing
@@ -218,15 +218,15 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
     //Save the parameter values for the system
     // In case of external system save those that have been changed
     //! @todo right now we save all of them, but I think this is good even if they have not changed
-    QVector<QString> parameterNames, parameterValues, descriptions, units, types;
-    this->getParameters(parameterNames, parameterValues, descriptions, units, types);
+    QVector<CoreParameterData> paramDataVector;
+    this->getParameters(paramDataVector);
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
-    for(int i=0; i<parameterNames.size(); ++i)
+    for(int i=0; i<paramDataVector.size(); ++i)
     {
         QDomElement xmlParameter = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
-        xmlParameter.setAttribute(HMF_NAMETAG, parameterNames[i]);
-        xmlParameter.setAttribute(HMF_VALUETAG, parameterValues[i]);
-        xmlParameter.setAttribute(HMF_TYPE, types[i]);
+        xmlParameter.setAttribute(HMF_NAMETAG, paramDataVector[i].name);
+        xmlParameter.setAttribute(HMF_VALUETAG, paramDataVector[i].value);
+        xmlParameter.setAttribute(HMF_TYPE, paramDataVector[i].type);
     }
 }
 

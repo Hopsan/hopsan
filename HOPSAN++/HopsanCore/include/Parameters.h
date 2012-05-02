@@ -89,8 +89,7 @@ public:
     void enableParameter(std::string parameterName, const bool enable);
 
     const std::vector<Parameter*> *getParametersVectorPtr() const;
-    void getParameters(std::vector<std::string> &rParameterNames, std::vector<std::string> &rParameterValues, std::vector<std::string> &rDescriptions,
-                       std::vector<std::string> &rUnits, std::vector<std::string> &rTypes) const;
+    const Parameter* getParameter(const std::string parameterName) const;
     void getParameterNames(std::vector<std::string> &rParameterNames);
     bool setParameter(const std::string name, const std::string value, const std::string description="",
                       const std::string unit="", const std::string type="", const bool force=false);

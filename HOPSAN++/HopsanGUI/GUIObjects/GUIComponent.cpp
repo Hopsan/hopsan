@@ -148,33 +148,6 @@ QString Component::getTypeCQS()
 }
 
 
-void Component::getParameters(QVector<CoreParameterData> &rParameterDataVec)
-{
-    mpParentContainerObject->getCoreSystemAccessPtr()->getParameters(this->getName(), rParameterDataVec);
-}
-
-
-//! @brief Get a vector with the names of the available parameters
-QStringList Component::getParameterNames()
-{
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
-}
-
-QString Component::getParameterUnit(QString name)
-{
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterUnit(this->getName(), name);
-}
-
-QString Component::getParameterDescription(QString name)
-{
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterDescription(this->getName(), name);
-}
-
-QString Component::getParameterValue(QString name)
-{
-    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), name);
-}
-
 //! @brief Set a parameter value to be mapped to a System parameter
 bool Component::setParameterValue(QString name, QString value, bool force)
 {
