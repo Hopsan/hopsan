@@ -95,6 +95,8 @@ public:
     void showPorts(bool visible);
     Port *getPort(QString name);
     QList<Port*> &getPortListPtrs();
+    virtual void createRefreshExternalPort(QString portName);
+    virtual void removeExternalPort(QString portName);
 
     enum { Type = MODELOBJECT };
     int type() const;
@@ -135,9 +137,6 @@ protected:
     //Save and load methods
     virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
-
-    //Port methods
-    virtual void createPorts() {assert(false);} //Need to be overloaded
 
     //Protected members
     ModelObjectAppearance mModelObjectAppearance;

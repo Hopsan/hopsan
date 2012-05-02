@@ -797,19 +797,6 @@ void CoreSystemAccess::removeSystemParameter(const QString name)
 }
 
 
-////! @todo delete this methode and use getParmeters instead!
-//QMap<std::string, std::string> CoreSystemAccess::getSystemParametersMap()
-//{
-//    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-//    mpCoreComponentSystem->getSystemParameters().getParameters(parameterNames, parameterValues, descriptions, units, types);
-//    QMap<std::string, std::string> tmpMap;
-//    for(size_t i=0; i < parameterNames.size(); ++i)
-//    {
-//        tmpMap.insert(parameterNames[i], parameterValues[i]);
-//    }
-//    return tmpMap;//QMap<std::string, std::string>()(mpCoreComponentSystem->getSystemParameters().getSystemParameterMap());
-//}
-
 void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParameterDataVec)
 {
     rParameterDataVec.clear();

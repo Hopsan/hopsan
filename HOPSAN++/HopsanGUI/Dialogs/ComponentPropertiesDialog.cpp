@@ -413,7 +413,7 @@ ParameterLayout::ParameterLayout(const CoreParameterData &rParameterData, ModelO
     connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
     connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
     connect(&mValueLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickValueTextColor()));
-    connect(&mDynamicEnabledCheckBox, SIGNAL(isChecked()), this, SLOT(makePort(bool)));
+    connect(&mDynamicEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(makePort(bool)));
 }
 
 
@@ -483,11 +483,11 @@ void ParameterLayout::makePort(bool isPort)
 {
     if (isPort)
     {
-
+        mpModelObject->createRefreshExternalPort(mName);
     }
     else
     {
-
+        mpModelObject->removeExternalPort(mName);
     }
 }
 

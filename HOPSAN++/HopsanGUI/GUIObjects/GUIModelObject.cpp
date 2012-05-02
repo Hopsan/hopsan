@@ -574,6 +574,88 @@ Port *ModelObject::getPort(QString name)
     return 0;
 }
 
+
+//! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
+//! @param[portName] The name of the port to create
+//! @todo maybe defualt create that info if it is missing
+void ModelObject::createRefreshExternalPort(QString portName)
+{
+    //If port appearance is not already existing then we create it
+    if ( mModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
+    {
+        mModelObjectAppearance.addPortAppearance(portName);
+    }
+
+    //Fetch appearance data
+    PortAppearanceMapT::iterator it = mModelObjectAppearance.getPortAppearanceMap().find(portName);
+    //Create new external port if it does not already exist (this is the usual case for individual components)
+    Port *pPort = this->getPort(it.key());
+    if ( pPort == 0 )
+    {
+        qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
+
+        //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
+        QString nodeType = getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(this->getName(), it.key());
+        QString portType = getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(this->getName(), it.key());
+        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
+
+        qreal x = it.value().x*boundingRect().width();
+        qreal y = it.value().y*boundingRect().height();
+        qDebug() << "x,y: " << x << " " << y;
+
+        if (this->type() == GROUPCONTAINER)
+        {
+            pPort = new GroupPort(it.key(), x, y, &(it.value()), this);
+        }
+        else
+        {
+            pPort = new Port(it.key(), x, y, &(it.value()), this);
+        }
+
+
+        mPortListPtrs.append(pPort);
+
+        pPort->refreshPortGraphics(CoreSystemAccess::ACTUALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+    }
+    else
+    {
+        // The external port already seems to exist, lets update it incase something has changed
+        //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
+        pPort->refreshPortGraphics(CoreSystemAccess::ACTUALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+
+        // In this case connections exist, also refresh any attached connectors, if types have changed
+        //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
+        QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
+        for (int i=0; i<connectors.size(); ++i)
+        {
+            connectors[i]->refreshConnectorAppearance();
+        }
+
+        qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
+    }
+}
+
+//! @breif Removes an external Port from a container object
+//! @param[in] portName The name of the port to be removed
+//! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
+void ModelObject::removeExternalPort(QString portName)
+{
+    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
+    QList<Port*>::iterator plit;
+    for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
+    {
+        if ((*plit)->getPortName() == portName )
+        {
+            //Delete the GUIPort its post in the portlist and its appearance data
+            mModelObjectAppearance.erasePortAppearance(portName);
+            delete *plit;
+            mPortListPtrs.erase(plit);
+            break;
+        }
+    }
+    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
+}
+
 //! @brief Get the default value of a parameter
 //! @param [in] paramName The name of the parameter
 //! @returns QString with default value for parameter, or empty QString if paramName not found

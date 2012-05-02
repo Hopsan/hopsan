@@ -253,7 +253,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             }
             else
             {
-                this->createExternalPort(moit.value()->getName()); //Refresh for ports that are not autoplaced
+                this->createRefreshExternalPort(moit.value()->getName()); //Refresh for ports that are not autoplaced
             }
         }
     }
@@ -270,7 +270,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(1.0, sdisp);
         it.value()->setRotation(0);
-        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -280,7 +280,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(sdisp, 1.0);
         it.value()->setRotation(90);
-        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -290,7 +290,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(0.0, sdisp);
         it.value()->setRotation(180);
-        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -300,7 +300,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(sdisp, 0.0);
         it.value()->setRotation(270);
-        this->createExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
         sdisp += disp;
     }
 }
@@ -366,18 +366,11 @@ QGraphicsScene *ContainerObject::getContainedScenePtr()
 }
 
 
-void ContainerObject::createPorts()
-{
-    //! @todo maybe try to make this function the same as refreshExternal.... and have one common function in modelobject, component and containerports class,
-    //This one should not be used in this class only for component and containerport
-    assert(false);
-}
-
-
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
 //! @todo maybe defualt create that info if it is missing
-void ContainerObject::createExternalPort(QString portName)
+//! @todo massive duplicate implementation with the one in modelobject
+void ContainerObject::createRefreshExternalPort(QString portName)
 {
     //If port appearance is not already existing then we create it
     if ( mModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
@@ -445,26 +438,6 @@ void ContainerObject::createExternalPort(QString portName)
 }
 
 
-//! @breif Removes an external Port from a container object
-//! @param[in] portName The name of the port to be removed
-//! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
-void ContainerObject::removeExternalPort(QString portName)
-{
-    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
-    QList<Port*>::iterator plit;
-    for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
-    {
-        if ((*plit)->getPortName() == portName )
-        {
-            //Delete the GUIPort its post in the portlist and its appearance data
-            mModelObjectAppearance.erasePortAppearance(portName);
-            delete *plit;
-            mPortListPtrs.erase(plit);
-            break;
-        }
-    }
-    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
-}
 
 
 //! @brief Reanmes an external GUIPort
@@ -2167,7 +2140,7 @@ void ContainerObject::refreshInternalContainerPortGraphics()
 
 void ContainerObject::addExternalContainerPortObject(ModelObject* pModelObject)
 {
-    this->createExternalPort(pModelObject->getName());
+    this->createRefreshExternalPort(pModelObject->getName());
 }
 
 //! @brief Aborts creation of new connector.

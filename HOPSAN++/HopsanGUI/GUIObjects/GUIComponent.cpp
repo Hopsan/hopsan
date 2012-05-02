@@ -192,6 +192,7 @@ void Component::openPropertiesDialog()
 
 
 //! @brief Help function to create ports in the component when it is created
+//! @todo duplicate implementation with createExternalPort, maybe remove this and only use the other, slighlty lower speed though but probably better
 void Component::createPorts()
 {
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
