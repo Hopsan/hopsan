@@ -25,28 +25,24 @@
 #include "ContainerPropertiesDialog.h"
 
 #include <QDebug>
-#include <QLabel>
 #include <QGridLayout>
-#include <QGroupBox>
-#include <QHBoxLayout>
-#include <QDialogButtonBox>
+
+#include "MainWindow.h"
+#include "Configuration.h"
 
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
-#include "MainWindow.h"
 #include "Widgets/LibraryWidget.h"
-#include "Configuration.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Dialogs/MovePortsDialog.h"
-
-#include "Dialogs/ComponentPropertiesDialog.h"
+#include "Dialogs/ParameterSettingsLayout.h"
 
 
 //! @brief Constructor for the container properties dialog
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
 ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainerObject, QWidget *pParentWidget)
-    : QDialog(pParentWidget)
+    : ModelObjectPropertiesDialog(pContainerObject, pParentWidget)
 {
     mpContainerObject = pContainerObject;
 
@@ -200,7 +196,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpContainerObject->getParameters(paramDataVector);
     for(int i=0; i<paramDataVector.size(); ++i)
     {
-        mvParameterLayoutPtrs.push_back(new ParameterLayout(paramDataVector[i], mpContainerObject));
+        mvParameterLayoutPtrs.push_back(new ParameterSettingsLayout(paramDataVector[i], mpContainerObject));
     }
     // Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
     int descriptionSize=30;
@@ -352,12 +348,12 @@ void ContainerPropertiesDialog::setValues()
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }
 
-    for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
-    {
-        mpContainerObject->setParameterValue(mvParameterLayoutPtrs[i]->getDataName(), mvParameterLayoutPtrs[i]->getDataValueTxt());
-    }
+    bool success = this->setParameterValues(mvParameterLayoutPtrs);
 
-    this->done(0);
+    if (success)
+    {
+        this->close();
+    }
 }
 
 

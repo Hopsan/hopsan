@@ -160,7 +160,9 @@ SOURCES += main.cpp \
     Widgets/AnimationWidget.cpp \
     GUIObjects/AnimatedComponent.cpp \
     AnimatedConnector.cpp \
-    Dialogs/AnimatedIconPropertiesDialog.cpp
+    Dialogs/AnimatedIconPropertiesDialog.cpp \
+    Dialogs/ParameterSettingsLayout.cpp \
+    Dialogs/ModelObjectPropertiesDialog.cpp
 
 
 HEADERS += MainWindow.h \
@@ -220,7 +222,9 @@ HEADERS += MainWindow.h \
     Widgets/AnimationWidget.h \
     GUIObjects/AnimatedComponent.h \
     AnimatedConnector.h \
-    Dialogs/AnimatedIconPropertiesDialog.h
+    Dialogs/AnimatedIconPropertiesDialog.h \
+    Dialogs/ParameterSettingsLayout.h \
+    Dialogs/ModelObjectPropertiesDialog.h
 
 OTHER_FILES += \
     ../hopsandefaults \

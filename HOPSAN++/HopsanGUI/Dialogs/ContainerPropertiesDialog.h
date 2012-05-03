@@ -33,11 +33,13 @@
 #include <QGroupBox>
 #include <QDialogButtonBox>
 
+#include "Dialogs/ModelObjectPropertiesDialog.h"
+
 //Forward Declaration
 class ContainerObject;
-class ParameterLayout;
+class ParameterSettingsLayout;
 
-class ContainerPropertiesDialog : public QDialog
+class ContainerPropertiesDialog : public ModelObjectPropertiesDialog
 {
     Q_OBJECT
 
@@ -88,7 +90,7 @@ private:
     QPushButton *mpEditPortPos;
 
     QGroupBox *mpSystemParametersGroupBox;
-    QVector<ParameterLayout*> mvParameterLayoutPtrs;
+    QVector<ParameterSettingsLayout*> mvParameterLayoutPtrs;
 
 protected slots:
     void editPortPos();

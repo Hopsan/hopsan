@@ -38,7 +38,7 @@
 //! @param[in] pContainerObject Pointer to the container
 //! @param[in] pParentWidget Pointer to the parent widget
 ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pContainerPort, QWidget *pParentWidget)
-    : QDialog(pParentWidget)
+    : ModelObjectPropertiesDialog(pContainerPort, pParentWidget)
 {
     mpContainerPort = pContainerPort;
 

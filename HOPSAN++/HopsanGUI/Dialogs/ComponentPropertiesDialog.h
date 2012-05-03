@@ -26,84 +26,45 @@
 #define COMPONENTPROPERTIESDIALOG_H
 
 #include <QtGui>
+#include "Dialogs/ModelObjectPropertiesDialog.h"
 
-#include "MainWindow.h"
-#include "CoreAccess.h" //!< @todo mayeb should have parameter stuff in h file of its own so that we dont need to include coreaccess whenever we want to work with parameters
-
-class ModelObject;
 class Component;
-class ParameterLayout;
+class ParameterSettingsLayout;
+class MainWindow;
 
-class ComponentPropertiesDialog : public QDialog
+class ComponentPropertiesDialog : public ModelObjectPropertiesDialog
 {
     Q_OBJECT
 
 public:
-    ComponentPropertiesDialog(Component *pGUIComponent, MainWindow *parent = 0);
+    ComponentPropertiesDialog(Component *pComponent, MainWindow *pParent=0);
 
 protected slots:
     void okPressed();
     void editPortPos();
 
 protected:
-    bool setValuesToSystem(QVector<ParameterLayout *> &vParLayout);
+    bool setValuesToSystem(QVector<ParameterSettingsLayout*> &vParLayout);
     void setParametersAndStartValues();
 
 private:
-    Component *mpGUIComponent;
+    Component *mpComponent;
 
     void createEditStuff();
     bool interpretedAsStartValue(QString &parameterDescription);
-    void verifyNewValue(QString &value);
 
     QLabel *mpLabel;
     QLineEdit *mpLineEdit;
-
     QLineEdit *mpNameEdit;
 
-    QVector<ParameterLayout *> mvParameterLayout;
-    QVector<ParameterLayout *> mvStartValueLayout;
+    QVector<ParameterSettingsLayout*> mvParameterLayout;
+    QVector<ParameterSettingsLayout*> mvStartValueLayout;
 
     QDialogButtonBox *mpButtonBox;
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
     QPushButton *mpEditPortPos;
     QWidget *mpExtension;
-};
-
-
-//! @todo Move this class to better place, it is used by other than just GUIComponent
-class ParameterLayout : public QGridLayout
-{
-    Q_OBJECT
-    friend class ComponentPropertiesDialog;
-    friend class ContainerPropertiesDialog;
-
-public:
-    ParameterLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent=0);
-
-    QString getDataName();
-    double getDataValue();
-    QString getDataValueTxt();
-    void setDataValueTxt(QString valueTxt);
-
-protected slots:
-    void setDefaultValue();
-    void showListOfSystemParameters();
-    void makePort(bool isPort);
-    void pickValueTextColor();
-
-protected:
-    ModelObject *mpModelObject;
-    QLabel mNameLabel;
-    QLabel mDescriptionLabel;
-    QLabel mUnitLabel;
-    QLineEdit mValueLineEdit;
-    QToolButton mResetDefaultToolButton;
-    QToolButton mSystemParameterToolButton;
-    QCheckBox mDynamicEnabledCheckBox;
-
-    QString mName;
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

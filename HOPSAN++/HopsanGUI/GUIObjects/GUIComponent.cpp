@@ -132,7 +132,9 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         }
     }
     else
+    {
         openPropertiesDialog();
+    }
 }
 
 
@@ -185,9 +187,8 @@ QString Component::getStartValueTxt(QString portName, QString variable)
 //! @brief Slot that opens the parameter dialog for the component
 void Component::openPropertiesDialog()
 {
-    ComponentPropertiesDialog *pDialog = new ComponentPropertiesDialog(this, gpMainWindow);
-    pDialog->exec();
-    delete pDialog;
+    ComponentPropertiesDialog dialog(this, gpMainWindow);
+    dialog.exec();
 }
 
 

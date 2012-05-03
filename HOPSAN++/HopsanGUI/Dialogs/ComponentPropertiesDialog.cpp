@@ -23,23 +23,27 @@
 //$Id$
 
 #include <QtGui>
-#include <cassert>
-#include <iostream>
+#include <QDebug>
 
 #include "ComponentPropertiesDialog.h"
+
 #include "MainWindow.h"
-#include "GUIPort.h"
-#include "Widgets/MessageWidget.h"
-#include "GUIObjects/GUIComponent.h"
-#include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
+#include "Configuration.h"
+
 #include "UndoStack.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "GUIPort.h"
+
+#include "Widgets/MessageWidget.h"
+//#include "Widgets/ProjectTabWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/LibraryWidget.h"
-#include "Configuration.h"
+
+#include "GUIObjects/GUIComponent.h"
+#include "GUIObjects/GUIContainerObject.h"
+
 #include "Utilities/GUIUtilities.h"
 #include "Dialogs/MovePortsDialog.h"
+#include "Dialogs/ParameterSettingsLayout.h"
 
 
 //! @class ComponentPropertiesDialog
@@ -52,10 +56,10 @@
 //! @brief Constructor for the parameter dialog for components
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pGUIComponent, MainWindow *parent)
-    : QDialog(parent)
+ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, MainWindow *pParent)
+    : ModelObjectPropertiesDialog(pComponent, pParent)
 {
-    mpGUIComponent = pGUIComponent;
+    mpComponent = pComponent;
     this->setPalette(gConfig.getPalette());
     createEditStuff();
 }
@@ -85,7 +89,7 @@ bool ComponentPropertiesDialog::interpretedAsStartValue(QString &parameterDescri
 //! @brief Creates the contents in the parameter dialog
 void ComponentPropertiesDialog::createEditStuff()
 {
-    mpNameEdit = new QLineEdit(mpGUIComponent->getName(), this);
+    mpNameEdit = new QLineEdit(mpComponent->getName(), this);
 
     QFont fontH1;
     fontH1.setBold(true);
@@ -96,16 +100,16 @@ void ComponentPropertiesDialog::createEditStuff()
 
     QLabel *pHelpPicture = new QLabel();
     QPixmap helpPixMap;
-    helpPixMap.load(mpGUIComponent->getAppearanceData()->getBasePath() + mpGUIComponent->getHelpPicture());
+    helpPixMap.load(mpComponent->getAppearanceData()->getBasePath() + mpComponent->getHelpPicture());
     pHelpPicture->setPixmap(helpPixMap);
 
-    QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpGUIComponent->getTypeName())->getName(), this);
+    QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpComponent->getTypeName())->getName(), this);
     pHelpHeading->setAlignment(Qt::AlignCenter);
     QFont tempFont = pHelpHeading->font();
     tempFont.setPixelSize(16);
     tempFont.setBold(true);
     pHelpHeading->setFont(tempFont);
-    QLabel *pHelpText = new QLabel(mpGUIComponent->getHelpText(), this);
+    QLabel *pHelpText = new QLabel(mpComponent->getHelpText(), this);
     pHelpText->setWordWrap(true);
     QLabel *pParameterLabel = new QLabel("Parameters", this);
     pParameterLabel->setFont(fontH1);
@@ -119,7 +123,7 @@ void ComponentPropertiesDialog::createEditStuff()
     //mpGUIComponent->getParameters(qParameterNames, qParameterValues, qDescriptions, qUnits, qTypes);
 
     QVector<CoreParameterData> paramDataVector;
-    mpGUIComponent->getParameters(paramDataVector);
+    mpComponent->getParameters(paramDataVector);
 
     size_t nParam=0;
     size_t nStV=0;
@@ -129,15 +133,15 @@ void ComponentPropertiesDialog::createEditStuff()
         {
             //QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
             paramDataVector[i].unit.prepend("[").append("]");
-            mvStartValueLayout.push_back(new ParameterLayout(paramDataVector[i],
-                                                             mpGUIComponent));
+            mvStartValueLayout.push_back(new ParameterSettingsLayout(paramDataVector[i],
+                                                                     mpComponent));
             startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);
             ++nParam;
         }
         else
         {
-            mvParameterLayout.push_back(new ParameterLayout(paramDataVector[i],
-                                                            mpGUIComponent));
+            mvParameterLayout.push_back(new ParameterSettingsLayout(paramDataVector[i],
+                                                                    mpComponent));
             parameterLayout->addLayout(mvParameterLayout.back(), nStV, 0);
             ++nStV;
         }
@@ -190,16 +194,16 @@ void ComponentPropertiesDialog::createEditStuff()
     QVBoxLayout *pHelpLayout = new QVBoxLayout();
     pHelpPicture->setAlignment(Qt::AlignCenter);
     pHelpLayout->addWidget(pHelpHeading);
-    if(!mpGUIComponent->getHelpPicture().isNull())
+    if(!mpComponent->getHelpPicture().isNull())
         pHelpLayout->addWidget(pHelpPicture);
-    if(!mpGUIComponent->getHelpText().isNull())
+    if(!mpComponent->getHelpText().isNull())
         pHelpLayout->addWidget(pHelpText);
     pHelpGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px; margin-top: 1ex;}"));
     pHelpGroupBox->setLayout(pHelpLayout);
 
     QGridLayout *pNameLayout = new QGridLayout();
     QLabel *pNameLabel = new QLabel("Name: ", this);
-    QLabel *pTypeNameLabel = new QLabel("Type Name: \"" + mpGUIComponent->getTypeName() + "\"", this);
+    QLabel *pTypeNameLabel = new QLabel("Type Name: \"" + mpComponent->getTypeName() + "\"", this);
     pNameLayout->addWidget(pNameLabel,0,0);
     pNameLayout->addWidget(mpNameEdit,0,1);
     pNameLayout->addWidget(pTypeNameLabel,1,0,1,2);
@@ -207,7 +211,7 @@ void ComponentPropertiesDialog::createEditStuff()
     QGridLayout *mainLayout = new QGridLayout();
     //mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     int lr = 0; //Layout row
-    if(!mpGUIComponent->getHelpText().isNull() || !mpGUIComponent->getHelpPicture().isNull())
+    if(!mpComponent->getHelpText().isNull() || !mpComponent->getHelpPicture().isNull())
     {
         mainLayout->addWidget(pHelpGroupBox, lr, 0, 1, 2);
     }
@@ -276,7 +280,7 @@ void ComponentPropertiesDialog::createEditStuff()
 //! @brief Reads the values from the dialog and writes them into the core component
 void ComponentPropertiesDialog::okPressed()
 {
-    mpGUIComponent->getParentContainerObject()->renameModelObject(mpGUIComponent->getName(), mpNameEdit->text());
+    mpComponent->getParentContainerObject()->renameModelObject(mpComponent->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
     setParametersAndStartValues();
@@ -285,8 +289,8 @@ void ComponentPropertiesDialog::okPressed()
 
 void ComponentPropertiesDialog::editPortPos()
 {
-    MovePortsDialog *dialog = new MovePortsDialog(mpGUIComponent->getAppearanceData(), mpGUIComponent->getParentContainerObject()->getGfxType());
-    connect(dialog, SIGNAL(finished()), mpGUIComponent, SLOT(refreshAppearance()), Qt::UniqueConnection);
+    MovePortsDialog *dialog = new MovePortsDialog(mpComponent->getAppearanceData(), mpComponent->getParentContainerObject()->getGfxType());
+    connect(dialog, SIGNAL(finished()), mpComponent, SLOT(refreshAppearance()), Qt::UniqueConnection);
 }
 
 
@@ -294,265 +298,9 @@ void ComponentPropertiesDialog::editPortPos()
 //! @see setParametersAndStartValues(QVector<ParameterLayout *> vParLayout)
 void ComponentPropertiesDialog::setParametersAndStartValues()
 {
-    if(setValuesToSystem(mvParameterLayout) && setValuesToSystem(mvStartValueLayout))
+    if(setParameterValues(mvParameterLayout) && setParameterValues(mvStartValueLayout))
     {
-        std::cout << "Parameters and start values updated." << std::endl;
+        qDebug() << "Parameters and start values updated.";
         this->close();
-    }
-}
-
-
-//! @brief A convinience function that writes the data from a Qt layout to HOPSANcore
-//! @see setParametersAndStartValues()
-bool ComponentPropertiesDialog::setValuesToSystem(QVector<ParameterLayout *> &vParLayout)
-{
-    bool success = true;
-
-    //Parameters
-    bool addedUndoPost = false;
-    //! @todo move this stuff into the parameterlayout class instead, it is all about to set parameters, for example ContainerPropertyDialog
-    for (int i=0 ; i < vParLayout.size(); ++i)
-    {
-        QString valueTxt = vParLayout[i]->getDataValueTxt();
-
-        //Get the old value to se if it changed
-        QString oldValueTxt = mpGUIComponent->getParameterValue(vParLayout[i]->getDataName());
-
-        //Strip trailing and leading spaces
-        stripLTSpaces(valueTxt);
-
-        //Parameter has changed, add to undo stack and set the parameter
-        verifyNewValue(valueTxt);
-
-        if(!mpGUIComponent->setParameterValue(vParLayout[i]->getDataName(), valueTxt)) //This is done as a check as well.
-        {
-            QMessageBox::critical(0, "Hopsan GUI",
-                                  QString("'%1' is an invalid value for parameter '%2'.")
-                                  .arg(valueTxt)
-                                  .arg(vParLayout[i]->getDataName()));
-            vParLayout[i]->setDataValueTxt(oldValueTxt);
-            success = false;
-        }
-        if(oldValueTxt != valueTxt)
-        {
-            if(!addedUndoPost)
-            {
-                this->mpGUIComponent->getParentContainerObject()->getUndoStackPtr()->newPost("changedparameters");
-                addedUndoPost = true;
-            }
-
-            this->mpGUIComponent->getParentContainerObject()->getUndoStackPtr()->registerChangedParameter(mpGUIComponent->getName(),
-                                                                                                   vParLayout[i]->getDataName(),
-                                                                                                   oldValueTxt,
-                                                                                                   valueTxt);
-            mpGUIComponent->getParentContainerObject()->mpParentProjectTab->hasChanged();
-        }
-    }
-    return success;
-}
-
-
-
-ParameterLayout::ParameterLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent)
-{
-    mpModelObject = pModelObject;
-
-    // Set name label
-    mName = rParameterData.name;
-    mNameLabel.setText(parseVariableDescription(mName));
-    mNameLabel.setMinimumWidth(10);
-    mNameLabel.setMaximumWidth(100);
-    mNameLabel.adjustSize();
-    mNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-
-    // Set description label
-    mDescriptionLabel.setMinimumWidth(100);
-    mDescriptionLabel.setMaximumWidth(1000);
-    mDescriptionLabel.setText(rParameterData.description);
-    //mDescriptionNameLabel.setWordWrap(true);
-    mDescriptionLabel.adjustSize();
-
-    // Set unit label
-    mUnitLabel.setMinimumWidth(50);
-    mUnitLabel.setMaximumWidth(50);
-    mUnitLabel.setText(parseVariableUnit(rParameterData.unit));
-
-    // Set value line editd
-    mValueLineEdit.setMinimumWidth(100);
-    mValueLineEdit.setMaximumWidth(100);
-    mValueLineEdit.setText(rParameterData.value);
-
-    // Set tool buttons
-    mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
-    mResetDefaultToolButton.setToolTip("Reset Default Value");
-
-    mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
-    mSystemParameterToolButton.setToolTip("Map To System Parameter");
-
-    // Add lables, edits and buttons
-    addWidget(&mDescriptionLabel, 0, 0);
-    addWidget(&mNameLabel, 0, 1);
-    addWidget(&mValueLineEdit, 0, 2);
-    addWidget(&mUnitLabel, 0, 3);
-    addWidget(&mResetDefaultToolButton, 0, 4);
-    addWidget(&mSystemParameterToolButton, 0, 5);
-
-    // If dynamic parameter add switch button
-    if (rParameterData.isDynamic)
-    {
-        mDynamicEnabledCheckBox.setText("Dynamic");
-        mDynamicEnabledCheckBox.setToolTip("Make Dynamic (Experimental)");
-        mDynamicEnabledCheckBox.setChecked(rParameterData.isEnabled);
-        addWidget(&mDynamicEnabledCheckBox, 0, 6);
-    }
-
-    // Determine value text color
-    pickValueTextColor();
-
-    // Connect signals to buttons
-    connect(&mResetDefaultToolButton, SIGNAL(clicked()), this, SLOT(setDefaultValue()));
-    connect(&mSystemParameterToolButton, SIGNAL(clicked()), this, SLOT(showListOfSystemParameters()));
-    connect(&mValueLineEdit, SIGNAL(textChanged(QString)), this, SLOT(pickValueTextColor()));
-    connect(&mDynamicEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(makePort(bool)));
-}
-
-
-//! @brief Returns the actual parameter name, not the fancy display name
-QString ParameterLayout::getDataName()
-{
-    return mName;
-}
-
-
-double ParameterLayout::getDataValue()
-{
-    return mValueLineEdit.text().toDouble();
-}
-
-QString ParameterLayout::getDataValueTxt()
-{
-    return mValueLineEdit.text();
-}
-
-
-void ParameterLayout::setDataValueTxt(QString valueTxt)
-{
-    mValueLineEdit.setText(valueTxt);
-}
-
-
-//! @brief Sets the value in the text field to the default parameter value
-void ParameterLayout::setDefaultValue()
-{
-    if(mpModelObject)
-    {
-        QString defaultText = mpModelObject->getDefaultParameterValue(mName);
-        if(defaultText != QString())
-            mValueLineEdit.setText(defaultText);
-        pickValueTextColor();
-    }
-}
-
-
-void ParameterLayout::showListOfSystemParameters()
-{
-    QMenu menu;
-    QMap<QAction*, QString> actionParamMap;
-
-    QVector<CoreParameterData> paramDataVector;
-    mpModelObject->getParentContainerObject()->getParameters(paramDataVector);
-
-    for (int i=0; i<paramDataVector.size(); ++i)
-    {
-        QAction *tempAction = menu.addAction(paramDataVector[i].name+" = "+paramDataVector[i].value);
-        tempAction->setIconVisibleInMenu(false);
-        actionParamMap.insert(tempAction, paramDataVector[i].name);
-    }
-
-    QCursor cursor;
-    QAction *selectedAction = menu.exec(cursor.pos());
-
-    QString parNameString = actionParamMap.value(selectedAction);
-    if(!parNameString.isEmpty())
-    {
-        mValueLineEdit.setText(parNameString);
-    }
-}
-
-void ParameterLayout::makePort(bool isPort)
-{
-    if (isPort)
-    {
-        mpModelObject->createRefreshExternalPort(mName);
-    }
-    else
-    {
-        mpModelObject->removeExternalPort(mName);
-    }
-}
-
-
-void ParameterLayout::pickValueTextColor()
-{
-    if(mpModelObject)
-    {
-        if(mValueLineEdit.text() == mpModelObject->getDefaultParameterValue(mName))
-        {
-            QPalette palette( mValueLineEdit.palette() );
-            palette.setColor( QPalette::Text, QColor("gray") );
-            mValueLineEdit.setPalette(palette);
-        }
-        else
-        {
-            QPalette palette( mValueLineEdit.palette() );
-            palette.setColor( QPalette::Text, QColor("black") );
-            mValueLineEdit.setPalette(palette);
-        }
-    }
-}
-
-
-
-//! @brief Verifies that a parameter value does not begin with a number but still contains illegal characters.
-//! @note This is a temporary solution. It shall be removed when parsing equations as parameters works.
-//! @param value String with parameter that shall be verified
-void ComponentPropertiesDialog::verifyNewValue(QString &value)
-{
-    QStringList sysParamNames = mpGUIComponent->getParameterNames();
-    if(sysParamNames.contains(value))
-    {
-        return;
-    }
-
-    if(value[0].isNumber())
-    {
-        bool onlyNumbers=true;
-        value.replace(",", ".");
-
-        if( value.count("e") > 1 || value.count(".") > 1 || value.count("E") > 1 )
-        {
-            onlyNumbers=false;
-        }
-        else
-        {
-            for(int i=1; i<value.size(); ++i)
-            {
-                if(!value[i].isDigit() && (value[i] != 'e') && (value[i] != 'E') && (value[i] != '+') && (value[i] != '-') && (value[i] != '.'))
-                {
-                    onlyNumbers=false;
-                    break;
-                }
-                else if( (value[i] == '+' || value[i] == '-') && !((value[i-1] == 'e') || (value[i-1] == 'E')) )
-                {
-                    onlyNumbers=false;
-                    break;
-                }
-            }
-        }
-
-        if(!onlyNumbers)
-        {
-           QMessageBox::warning(this, "Warning", "Invalid Parameter string \"" + value + "\" will be truncated into the first nummeric sub string.");
-        }
     }
 }

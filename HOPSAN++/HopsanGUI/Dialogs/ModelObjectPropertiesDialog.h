@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -14,40 +14,32 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ContainerPortPropertiesDialog.h
+//! @file   ModelObjectPropertiesDialog.h
 //! @author Peter Nordin <peter.nordin@liu.se>
-//! @date   2011-01-03
+//! @date   2012-05-03
 //!
-//! @brief Contains a class for manimulation of Container properties
+//! @brief Contains the base class for modelobject properties dialogs
 //!
 //$Id$
 
-#ifndef CONTAINERPROPERTIESDIALOG_H
-#define CONTAINERPROPERTIESDIALOG_H
+#ifndef MODELOBJECTPROPERTIESDIALOG_H
+#define MODELOBJECTPROPERTIESDIALOG_H
 
-#include <QDialog>
-#include <QCheckBox>
-#include <QLineEdit>
-
-#include "Dialogs/ModelObjectPropertiesDialog.h"
+#include <QtGui>
 
 //Forward Declaration
-class ContainerPort;
+class ModelObject;
+class ParameterSettingsLayout;
 
-//! @todo We have three different properties dialog with basically the same "style", maybe we could have a class hierarky, no big dela right now though
-class ContainerPortPropertiesDialog : public ModelObjectPropertiesDialog
+class ModelObjectPropertiesDialog : public QDialog
 {
     Q_OBJECT
-
 public:
-    ContainerPortPropertiesDialog(ContainerPort *pContainerPort, QWidget *pParentWidget=0);
+    ModelObjectPropertiesDialog(ModelObject *pParentObject, QWidget *pParentWidget);
 
-private:
-    ContainerPort *mpContainerPort;
-    QLineEdit *mpNameEdit;
-
-private slots:
-    void setValues();
+protected:
+    virtual bool setParameterValues(QVector<ParameterSettingsLayout*> &rParamLayouts);
+    ModelObject *mpModelObject;
 };
 
-#endif // CONTAINERPROPERTIESDIALOG_H
+#endif // MODELOBJECTPROPERTIESDIALOG_H
