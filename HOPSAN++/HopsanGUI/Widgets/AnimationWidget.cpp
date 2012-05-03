@@ -131,10 +131,10 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mFps=50;   //Frames per second
     mSpeedSliderSensitivity=10;
 
-    mIntensityMaxMap.insert("Pressure", 2e7);
-    mIntensityMinMap.insert("Pressure", 0);
+    mIntensityMaxMap.insert("NodeHydraulic", 2e7);
+    mIntensityMinMap.insert("NodeHydraulic", 0);
 
-    mFlowSpeedMap.insert("Flow",50000);
+    mFlowSpeedMap.insert("NodeHydraulic",50000);
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();
