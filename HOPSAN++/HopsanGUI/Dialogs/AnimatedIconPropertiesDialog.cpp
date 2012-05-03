@@ -28,18 +28,7 @@
 
 #include "AnimatedIconPropertiesDialog.h"
 #include "MainWindow.h"
-//#include "GUIPort.h"
-//#include "Widgets/MessageWidget.h"
-//#include "GUIObjects/GUIComponent.h"
-//#include "GUIObjects/GUIContainerObject.h"
-//#include "GUIObjects/GUISystem.h"
-//#include "UndoStack.h"
-//#include "Widgets/ProjectTabWidget.h"
-//#include "Widgets/SystemParametersWidget.h"
-//#include "Widgets/LibraryWidget.h"
 #include "Configuration.h"
-//#include "Utilities/GUIUtilities.h"
-//#include "Dialogs/MovePortsDialog.h"
 
 
 //! @class AnimatedIconPropertiesDialog

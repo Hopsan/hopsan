@@ -82,7 +82,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpPlayButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Play.png")));
 
     mpPlayRealTimeButton = new QToolButton(this);
-    mpPlayRealTimeButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Play.png")));
+    mpPlayRealTimeButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-PlayRealTime.png")));
 
     mpCloseButton = new QToolButton(this);
     mpCloseButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Discard.png"));
