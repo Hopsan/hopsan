@@ -103,12 +103,10 @@ void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const stri
 
 void printSystemParams(ComponentSystem* pSystem)
 {
-    vector<string> names, values, units, descriptions, types;
-    pSystem->getParameters(names,values,descriptions,units,types);
-
-    for (size_t i=0; i<names.size(); ++i)
+    const vector<Parameter*> *pParams = pSystem->getParametersVectorPtr();
+    for (size_t i=0; i<pParams->size(); ++i)
     {
-        cout << " SysParam: " << names[i] << "=" << values[i];
+        cout << " SysParam: " << pParams->at(i)->getName() << "=" << pParams->at(i)->getValue();
     }
 }
 
