@@ -37,9 +37,9 @@ namespace hopsan {
     {
 
     private:
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_Zc3;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_Zc3, *mpND_out;
 
-        Port *mpP1, *mpP2, *mpP3;
+        Port *mpP1, *mpP2, *mpP3, *mpOut;
 
     public:
         static Component *Creator()
@@ -53,6 +53,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeHydraulic", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
         void initialize()
@@ -71,6 +72,8 @@ namespace hopsan {
             mpND_q3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::FLOW);
             mpND_c3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::WAVEVARIABLE, 1e5);
             mpND_Zc3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::CHARIMP, 0);
+
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 
 
@@ -95,6 +98,7 @@ namespace hopsan {
                 else { q3 = 0; }
                 q1 = -q3;
                 q2 = 0;
+                (*mpND_out) = -1;
             }
             else
             {
@@ -102,6 +106,7 @@ namespace hopsan {
                 else { q3 = 0; }
                 q2 = -q3;
                 q1 = 0;
+                (*mpND_out) = 1;
             }
 
             p1 = c1 + q1*Zc1;

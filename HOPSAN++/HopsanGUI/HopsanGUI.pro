@@ -159,7 +159,8 @@ SOURCES += main.cpp \
     Widgets/WelcomeWidget.cpp \
     Widgets/AnimationWidget.cpp \
     GUIObjects/AnimatedComponent.cpp \
-    AnimatedConnector.cpp
+    AnimatedConnector.cpp \
+    Dialogs/AnimatedIconPropertiesDialog.cpp
 
 
 HEADERS += MainWindow.h \
@@ -218,7 +219,8 @@ HEADERS += MainWindow.h \
     Widgets/WelcomeWidget.h \
     Widgets/AnimationWidget.h \
     GUIObjects/AnimatedComponent.h \
-    AnimatedConnector.h
+    AnimatedConnector.h \
+    Dialogs/AnimatedIconPropertiesDialog.h
 
 OTHER_FILES += \
     ../hopsandefaults \

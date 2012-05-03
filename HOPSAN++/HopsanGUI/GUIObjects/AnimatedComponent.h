@@ -53,6 +53,8 @@ public:
 
     void draw();
     void update();
+    ModelObjectAnimationData *getAnimationDataPtr();
+    int indexOfMovable(AnimatedIcon *pMovable);
    // ModelObject* getOriginal();
 
 private:
@@ -99,6 +101,7 @@ public slots:
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     //Protected members
     ModelObjectAppearance mModelObjectAppearance;

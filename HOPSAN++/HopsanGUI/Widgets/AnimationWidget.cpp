@@ -124,7 +124,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mLastAnimationTime = 0;
     mSimulationSpeed = 0;
     mTimeStep = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
-    mFps=100;   //Frames per second
+    mFps=50;   //Frames per second
     mSpeedSliderSensitivity=10;
 
     //Collect plot data from container (for non-realtime animations)
@@ -346,6 +346,7 @@ void AnimationWidget::updateAnimation()
 
         //Update last animation time
         mLastAnimationTime = mLastAnimationTime+dT;
+        mpTimeDisplay->setText(QString::number(mLastAnimationTime));
 
         //Update animated connectors and components
         updateMovables();

@@ -26,18 +26,18 @@
 #include <math.h>
 #include <float.h>
 
+#include "common.h"
 #include "AnimatedComponent.h"
 #include "GraphicsView.h"
-#include "GUIPort.h"
-#include "Utilities/GUIUtilities.h"
-#include "MainWindow.h"
 #include "GUIModelObject.h"
-#include "../common.h"
+#include "GUIPort.h"
+#include "MainWindow.h"
+#include "../HopsanCore/include/Port.h"
+#include "Dialogs/AnimatedIconPropertiesDialog.h"
+#include "Utilities/GUIUtilities.h"
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "../HopsanCore/include/Port.h"
-//#include "GraphicsView.h"
 
 
 //! @brief Constructor for the animated component class
@@ -153,6 +153,18 @@ void AnimatedComponent::update()
             }
         }
     }
+}
+
+
+ModelObjectAnimationData *AnimatedComponent::getAnimationDataPtr()
+{
+    return &mAnimationData;
+}
+
+
+int AnimatedComponent::indexOfMovable(AnimatedIcon *pMovable)
+{
+    return mpMovables.indexOf(pMovable);
 }
 
 
@@ -359,6 +371,19 @@ QVariant AnimatedIcon::itemChange(GraphicsItemChange change, const QVariant &val
     }
 
     return value;
+}
+
+
+void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(mpAnimatedComponent->indexOfMovable(this) > -1)  //Otherwise this is the base icon, which does not have parameters
+    {
+        AnimatedIconPropertiesDialog *pDialog = new AnimatedIconPropertiesDialog(mpAnimatedComponent, mpAnimatedComponent->indexOfMovable(this), gpMainWindow);
+        pDialog->exec();
+        delete(pDialog);
+    }
+
+    QGraphicsWidget::mouseDoubleClickEvent(event);
 }
 
 
