@@ -27,7 +27,10 @@
 
 #include <QtGui>
 
-#include "GUIObjects/AnimatedComponent.h"
+class AnimatedComponent;
+class AnimatedIcon;
+class ModelObjectAnimationData;
+class MainWindow;
 
 
 class AnimatedIconPropertiesDialog : public QDialog

@@ -67,21 +67,21 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
 
         }
 
-        if(!mpAnimationWidget->mIntensityMinMap.contains("NodeHydraulic"))
-        {
-            mpAnimationWidget->mIntensityMinMap.insert("NodeHydraulic", 0);
-        }
-        if(!mpAnimationWidget->mIntensityMaxMap.contains("NodeHydraulic"))
-        {
-            mpAnimationWidget->mIntensityMaxMap.insert("NodeHydraulic", 0);
-        }
-        for(int i=0; i<mvIntensityData.size(); ++i)
-        {
-            if(mvIntensityData.at(i) > mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value())
-            {
-                mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value() = mvIntensityData.at(i);
-            }
-        }
+//        if(!mpAnimationWidget->mIntensityMinMap.contains("NodeHydraulic"))
+//        {
+//            mpAnimationWidget->mIntensityMinMap.insert("NodeHydraulic", 0);
+//        }
+//        if(!mpAnimationWidget->mIntensityMaxMap.contains("NodeHydraulic"))
+//        {
+//            mpAnimationWidget->mIntensityMaxMap.insert("NodeHydraulic", 0);
+//        }
+//        for(int i=0; i<mvIntensityData.size(); ++i)
+//        {
+//            if(mvIntensityData.at(i) > mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value())
+//            {
+//                mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value() = mvIntensityData.at(i);
+//            }
+//        }
     }
 
     // Determine appearance
@@ -136,8 +136,8 @@ void AnimatedConnector::update()
         //double min = mpParentAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
 
         //! @todo User should be able to choose this setting
-        double max = 2e7;       //HARD CODED!!!
-        double min = 0;
+        double max = mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
+        double min = mpAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
 
         QPen tempPen = mpLines.first()->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
@@ -170,7 +170,7 @@ void AnimatedConnector::update()
         int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
         int blue = 255-red;
         tempPen.setColor(QColor(red,0,blue));
-        tempPen.setDashOffset(mDirectionCorrection*50000*flowData*fmod(mpAnimationWidget->getLastAnimationTime(),10.0)/10.0);  //HARD CODED!!!
+        tempPen.setDashOffset(mDirectionCorrection*mpAnimationWidget->mFlowSpeedMap.find("NodeHydraulic").value()*flowData*fmod(mpAnimationWidget->getLastAnimationTime(),10.0)/10.0);
 
         for(int i=0; i<mpLines.size(); ++i)
         {

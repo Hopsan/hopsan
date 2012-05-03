@@ -96,8 +96,10 @@ public:
     //! @todo If we use them, they shall not be public
     QMap<QString, double> mIntensityMaxMap;
     QMap<QString, double> mIntensityMinMap;
+    QMap<QString, double> mFlowSpeedMap;
 
 private slots:
+    void openPreferencesDialog();
     void stop();
     void rewind();
     void pause();
@@ -115,6 +117,7 @@ private:
     QGroupBox* mpControlPanel;
 
     //The buttons
+    QToolButton* mpSettingsButton;
     QToolButton* mpStopButton;
     QToolButton* mpRewindButton;
     QToolButton* mpPauseButton;
@@ -135,6 +138,9 @@ private:
 
     //Animation timer object
     QTimer *mpTimer;
+
+    //Layout
+    QGridLayout *mpLayout;
 
     //Copy of plot data object
     QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mpPlotData;

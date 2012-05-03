@@ -26,6 +26,7 @@
 //#include <cassert>
 //#include <iostream>
 
+#include "GUIObjects/AnimatedComponent.h"
 #include "AnimatedIconPropertiesDialog.h"
 #include "MainWindow.h"
 #include "Configuration.h"

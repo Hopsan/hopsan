@@ -69,6 +69,9 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpTimeDisplay = new QLineEdit(this);
     mpTimeDisplay->setBaseSize(20,10);
 
+    mpSettingsButton = new QToolButton(this);
+    mpSettingsButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Configure.png")));
+
     mpStopButton = new QToolButton(this);
     mpStopButton->setIcon(QIcon(QString(QString(ICONPATH) + "Hopsan-Stop.png")));
 
@@ -98,22 +101,23 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpSpeedSlider->setSingleStep(1);
 
     //Create the layout and add widgets
-    QGridLayout *vbox= new QGridLayout(this);
-    vbox->addWidget(mpStopButton,           0,  0);
-    vbox->addWidget(mpPauseButton,          0,  1);
-    vbox->addWidget(mpPlayButton,           0,  2);
-    vbox->addWidget(mpPlayRealTimeButton,   0,  3);
-    vbox->addWidget(mpRewindButton,         0,  4);
-    vbox->addWidget(mpSpeedLabel,           0,  5);
-    vbox->addWidget(mpSpeedSlider,          0,  6);
-    vbox->addWidget(mpTimeLabel,            0,  7);
-    vbox->addWidget(mpTimeSlider,           0,  8);
-    vbox->addWidget(mpTimeDisplay,          0,  9);
-    vbox->addWidget(mpCloseButton,          0,  10);
-    vbox->addWidget(mpGraphicsView,         1,  0,  1,  11);
-    vbox->setColumnStretch(8,1);
-    vbox->setRowStretch(1,1);
-    this->setLayout(vbox);
+    mpLayout= new QGridLayout(this);
+    mpLayout->addWidget(mpSettingsButton,       0,  0);
+    mpLayout->addWidget(mpStopButton,           0,  1);
+    mpLayout->addWidget(mpPauseButton,          0,  2);
+    mpLayout->addWidget(mpPlayButton,           0,  3);
+    mpLayout->addWidget(mpPlayRealTimeButton,   0,  4);
+    mpLayout->addWidget(mpRewindButton,         0,  5);
+    mpLayout->addWidget(mpSpeedLabel,           0,  6);
+    mpLayout->addWidget(mpSpeedSlider,          0,  7);
+    mpLayout->addWidget(mpTimeLabel,            0,  8);
+    mpLayout->addWidget(mpTimeSlider,           0,  9);
+    mpLayout->addWidget(mpTimeDisplay,          0,  10);
+    mpLayout->addWidget(mpCloseButton,          0,  11);
+    mpLayout->addWidget(mpGraphicsView,         1,  0,  1,  12);
+    mpLayout->setColumnStretch(9,1);
+    mpLayout->setRowStretch(1,1);
+    this->setLayout(mpLayout);
 
     //Create the timer object
     mpTimer = new QTimer(0);
@@ -126,6 +130,11 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mTimeStep = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
     mFps=50;   //Frames per second
     mSpeedSliderSensitivity=10;
+
+    mIntensityMaxMap.insert("Pressure", 2e7);
+    mIntensityMinMap.insert("Pressure", 0);
+
+    mFlowSpeedMap.insert("Flow",50000);
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();
@@ -182,6 +191,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     }
 
     //Define button connections
+    connect(mpSettingsButton,       SIGNAL(clicked()),          this,   SLOT(openPreferencesDialog()));
     connect(mpRewindButton,         SIGNAL(clicked()),          this,   SLOT(rewind()));
     connect(mpPlayButton,           SIGNAL(clicked()),          this,   SLOT(play()));
     connect(mpPlayRealTimeButton,   SIGNAL(clicked()),          this,   SLOT(playRT()));
@@ -226,6 +236,55 @@ QVector<double> *AnimationWidget::getTimeValues()
     }
 
     return new QVector<double>((mpContainer->getTimeVector(mnPlotGenerations-1, componentName, portName)));
+}
+
+
+void AnimationWidget::openPreferencesDialog()
+{
+    QDialog *pDialog = new QDialog(this);
+    pDialog->setWindowTitle("Animation Preferences");
+
+    QLabel *pLowPressureLabel = new QLabel("Low pressure (hydraulic): ", pDialog);
+    QLineEdit *pLowPressureLineEdit = new QLineEdit(QString::number(mIntensityMinMap.find("NodeHydraulic").value()), pDialog);
+    pLowPressureLineEdit->setValidator(new QDoubleValidator);
+
+    QLabel *pHighPressureLabel = new QLabel("High pressure (hydraulic): ", pDialog);
+    QLineEdit *pHighPressureLineEdit = new QLineEdit(QString::number(mIntensityMaxMap.find("NodeHydraulic").value()), pDialog);
+    pHighPressureLineEdit->setValidator(new QDoubleValidator);
+
+    QLabel *pFlowSpeedLabel = new QLabel("Flow speed (hydraulic): ", pDialog);
+    QLineEdit *pFlowSpeedLineEdit = new QLineEdit(QString::number(mFlowSpeedMap.find("NodeHydraulic").value()), pDialog);
+    pFlowSpeedLineEdit->setValidator(new QDoubleValidator);
+
+    QPushButton *pCancelButton = new QPushButton("Cancel", pDialog);
+    QPushButton *pOkButton = new QPushButton("Ok", pDialog);
+
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+    pButtonBox->addButton(pCancelButton, QDialogButtonBox::RejectRole);
+    pButtonBox->addButton(pOkButton, QDialogButtonBox::AcceptRole);
+
+    QGridLayout *pLayout = new QGridLayout(pDialog);
+    pLayout->addWidget(pLowPressureLabel,       0, 0);
+    pLayout->addWidget(pLowPressureLineEdit,    0, 1);
+    pLayout->addWidget(pHighPressureLabel,      1, 0);
+    pLayout->addWidget(pHighPressureLineEdit,   1, 1);
+    pLayout->addWidget(pFlowSpeedLabel,         2, 0);
+    pLayout->addWidget(pFlowSpeedLineEdit,      2, 1);
+    pLayout->addWidget(pButtonBox,              3, 0, 1, 2);
+
+    pDialog->setLayout(pLayout);
+
+    connect(pCancelButton,  SIGNAL(clicked()), pDialog, SLOT(reject()));
+    connect(pOkButton,      SIGNAL(clicked()), pDialog, SLOT(accept()));
+
+    if(pDialog->exec() == QDialog::Accepted)
+    {
+        mIntensityMinMap.insert("NodeHydraulic", pLowPressureLineEdit->text().toDouble());
+        mIntensityMaxMap.insert("NodeHydraulic", pHighPressureLineEdit->text().toDouble());
+        mFlowSpeedMap.insert("NodeHydraulic", pFlowSpeedLineEdit->text().toDouble());
+    }
+
+    delete(pDialog);
 }
 
 
