@@ -104,7 +104,7 @@ public:
     QString getIconRotationBehaviour(const graphicsType gfxType=USERGRAPHICS);
     QPointF getNameTextPos();
 
-    ModelObjectAnimationData getAnimationData();
+    ModelObjectAnimationData *getAnimationDataPtr();
 
     
     PortAppearanceMapT &getPortAppearanceMap();

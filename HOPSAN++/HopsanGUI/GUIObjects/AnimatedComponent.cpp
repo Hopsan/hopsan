@@ -51,20 +51,20 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
     mpData = new QList<QVector<double> >();
 
     //Set the animation data object
-    mAnimationData = unanimatedComponent->getAppearanceData()->getAnimationData();
+    mpAnimationData = unanimatedComponent->getAppearanceData()->getAnimationDataPtr();
 
     //Setup the base icon
-    setupAnimationBase(mAnimationData.baseIconPath);
+    setupAnimationBase(mpAnimationData->baseIconPath);
 
     //Setup the movable icons
-    if(mAnimationData.movableIconPaths.size() > 0)
+    if(mpAnimationData->movableIconPaths.size() > 0)
     {
-        for(int i=0; i<mAnimationData.movableIconPaths.size(); ++i)
+        for(int i=0; i<mpAnimationData->movableIconPaths.size(); ++i)
         {
             setupAnimationMovable(i);
-            if(unanimatedComponent->getPort(mAnimationData.dataPorts.at(i))->isConnected())
+            if(unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i))->isConnected())
             {
-                mpData->insert(i,mpAnimationWidget->getPlotDataPtr()->at(mpAnimationWidget->getNumberOfPlotGenerations()-1).find(unanimatedComponent->getName()).value().find(mAnimationData.dataPorts.at(i)).value().find(mAnimationData.dataNames.at(i)).value().second);
+                mpData->insert(i,mpAnimationWidget->getPlotDataPtr()->at(mpAnimationWidget->getNumberOfPlotGenerations()-1).find(unanimatedComponent->getName()).value().find(mpAnimationData->dataPorts.at(i)).value().find(mpAnimationData->dataNames.at(i)).value().second);
             }
         }
     }
@@ -99,10 +99,10 @@ void AnimatedComponent::update()
     //Loop through all movable icons
     for(int m=0; m<mpMovables.size(); ++m)
     {
-        if(mpAnimationWidget->isRealTimeAnimation() && mAnimationData.isAdjustable.at(m))   //Adjustable icon, write node data depending on position
+        if(mpAnimationWidget->isRealTimeAnimation() && mpAnimationData->isAdjustable.at(m))   //Adjustable icon, write node data depending on position
         {
-            double value = mpMovables.at(m)->x()*mAnimationData.adjustableGainX.at(a) + mpMovables.at(m)->y()*mAnimationData.adjustableGainY.at(a);
-            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpModelObject->getName(), mAnimationData.adjustablePort.at(a), mAnimationData.adjustableDataName.at(a), value);
+            double value = mpMovables.at(m)->x()*mpAnimationData->adjustableGainX.at(a) + mpMovables.at(m)->y()*mpAnimationData->adjustableGainY.at(a);
+            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpModelObject->getName(), mpAnimationData->adjustablePort.at(a), mpAnimationData->adjustableDataName.at(a), value);
             ++a;
         }
         else        //Not adjustable, so let's move it
@@ -116,8 +116,8 @@ void AnimatedComponent::update()
             {
                 if(mpAnimationWidget->isRealTimeAnimation())    //Real-time simulation, read from node vector directly
                 {
-                    if(mpModelObject->getPort(mAnimationData.dataPorts.at(m))->isConnected())
-                        mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mAnimationData.dataPorts.at(m), mAnimationData.dataNames.at(m), data);
+                    if(mpModelObject->getPort(mpAnimationData->dataPorts.at(m))->isConnected())
+                        mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);
                     else
                         data=0;
                 }
@@ -128,27 +128,27 @@ void AnimatedComponent::update()
             }
 
             //Apply parameter multipliers/divisors
-            if(mAnimationData.multipliers[m] != QString())
+            if(mpAnimationData->multipliers[m] != QString())
             {
-                data = data*mpModelObject->getParameterValue(mAnimationData.multipliers[m]).toDouble();
+                data = data*mpModelObject->getParameterValue(mpAnimationData->multipliers[m]).toDouble();
             }
-            if(mAnimationData.divisors[m] != QString())
+            if(mpAnimationData->divisors[m] != QString())
             {
-                data = data/mpModelObject->getParameterValue(mAnimationData.divisors[m]).toDouble();
+                data = data/mpModelObject->getParameterValue(mpAnimationData->divisors[m]).toDouble();
             }
 
             //Set rotation
-            if(mAnimationData.speedTheta[m] != 0.0)
+            if(mpAnimationData->speedTheta[m] != 0.0)
             {
-                double rot = mAnimationData.startTheta[m] - data*mAnimationData.speedTheta[m];
+                double rot = mpAnimationData->startTheta[m] - data*mpAnimationData->speedTheta[m];
                 mpMovables[m]->setRotation(rot);
             }
 
             //Set position
-            if(mAnimationData.speedX[m] != 0.0 || mAnimationData.speedY[m] != 0.0)
+            if(mpAnimationData->speedX[m] != 0.0 || mpAnimationData->speedY[m] != 0.0)
             {
-                double x = mAnimationData.startX[m] - data*mAnimationData.speedX[m];
-                double y = mAnimationData.startY[m] - data*mAnimationData.speedY[m];
+                double x = mpAnimationData->startX[m] - data*mpAnimationData->speedX[m];
+                double y = mpAnimationData->startY[m] - data*mpAnimationData->speedY[m];
                 mpMovables[m]->setPos(x, y);
             }
         }
@@ -156,12 +156,15 @@ void AnimatedComponent::update()
 }
 
 
+//! @brief Returns a pointer to the animation data object
 ModelObjectAnimationData *AnimatedComponent::getAnimationDataPtr()
 {
-    return &mAnimationData;
+    return mpAnimationData;
 }
 
 
+//! @brief Returns the index of a movable icon
+//! @param [in] pMovable Pointer to movable icon
 int AnimatedComponent::indexOfMovable(AnimatedIcon *pMovable)
 {
     return mpMovables.indexOf(pMovable);
@@ -173,14 +176,14 @@ int AnimatedComponent::indexOfMovable(AnimatedIcon *pMovable)
 void AnimatedComponent::setupAnimationBase(QString basePath)
 {
     ModelObjectAppearance *baseAppearance = new ModelObjectAppearance();
-    if(mAnimationData.baseIconPath.isEmpty())
+    if(mpAnimationData->baseIconPath.isEmpty())
     {
-        mAnimationData.baseIconPath = mpModelObject->getAppearanceData()->getIconPath(USERGRAPHICS, ABSOLUTE);
-        if(mAnimationData.baseIconPath.isEmpty())
+        mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getIconPath(USERGRAPHICS, ABSOLUTE);
+        if(mpAnimationData->baseIconPath.isEmpty())
         {
-            mAnimationData.baseIconPath = mpModelObject->getAppearanceData()->getIconPath(ISOGRAPHICS, ABSOLUTE);
+            mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getIconPath(ISOGRAPHICS, ABSOLUTE);
         }
-        baseAppearance->setIconPath(mAnimationData.baseIconPath, USERGRAPHICS, ABSOLUTE);
+        baseAppearance->setIconPath(mpAnimationData->baseIconPath, USERGRAPHICS, ABSOLUTE);
     }
     else
     {
@@ -193,6 +196,9 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
         mpBase->flipHorizontal();
     }
     mpBase->setCenterPos(mpModelObject->getCenterPos());
+
+    //Base icon shall never be movable
+    mpBase->setFlag(QGraphicsItem::ItemIsMovable, false);
 }
 
 
@@ -201,15 +207,15 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
 void AnimatedComponent::setupAnimationMovable(int m)
 {
     ModelObjectAppearance* pAppearance = new ModelObjectAppearance();
-    pAppearance->setIconPath(mAnimationData.movableIconPaths[m],USERGRAPHICS, RELATIVE);
+    pAppearance->setIconPath(mpAnimationData->movableIconPaths[m],USERGRAPHICS, RELATIVE);
     this->mpMovables.append(new AnimatedIcon(QPoint(0,0),0, pAppearance,this, 0, mpBase));
-    this->mpMovables.at(m)->setTransformOriginPoint(mAnimationData.transformOriginX[m],mAnimationData.transformOriginY[m]);
+    this->mpMovables.at(m)->setTransformOriginPoint(mpAnimationData->transformOriginX[m],mpAnimationData->transformOriginY[m]);
 
-    mpMovables.at(m)->setRotation(mAnimationData.startTheta.at(m));
-    mpMovables.at(m)->setPos(mAnimationData.startX.at(m), mAnimationData.startY.at(m));
+    mpMovables.at(m)->setRotation(mpAnimationData->startTheta.at(m));
+    mpMovables.at(m)->setPos(mpAnimationData->startX.at(m), mpAnimationData->startY.at(m));
 
     //Set icon to be movable by mouse if it shall be adjustable
-    mpMovables.at(m)->setFlag(QGraphicsItem::ItemIsMovable, mAnimationData.isAdjustable.at(m));
+    mpMovables.at(m)->setFlag(QGraphicsItem::ItemIsMovable, mpAnimationData->isAdjustable.at(m));
 }
 
 
@@ -219,23 +225,23 @@ void AnimatedComponent::limitMovables()
     int a=0;
     for(int m=0; m<mpMovables.size(); ++m)
     {
-        if(mAnimationData.isAdjustable.at(m))
+        if(mpAnimationData->isAdjustable.at(m))
         {
-            if(mpMovables.at(m)->x() > mAnimationData.adjustableMaxX.at(a))
+            if(mpMovables.at(m)->x() > mpAnimationData->adjustableMaxX.at(a))
             {
-                mpMovables.at(m)->setX(mAnimationData.adjustableMaxX.at(a));
+                mpMovables.at(m)->setX(mpAnimationData->adjustableMaxX.at(a));
             }
-            else if(mpMovables.at(m)->x() < mAnimationData.adjustableMinX.at(a))
+            else if(mpMovables.at(m)->x() < mpAnimationData->adjustableMinX.at(a))
             {
-                mpMovables.at(m)->setX(mAnimationData.adjustableMinX.at(a));
+                mpMovables.at(m)->setX(mpAnimationData->adjustableMinX.at(a));
             }
-            else if(mpMovables.at(m)->y() > mAnimationData.adjustableMaxY.at(a))
+            else if(mpMovables.at(m)->y() > mpAnimationData->adjustableMaxY.at(a))
             {
-                mpMovables.at(m)->setY(mAnimationData.adjustableMaxY.at(a));
+                mpMovables.at(m)->setY(mpAnimationData->adjustableMaxY.at(a));
             }
-            else if(mpMovables.at(m)->y() < mAnimationData.adjustableMinY.at(a))
+            else if(mpMovables.at(m)->y() < mpAnimationData->adjustableMinY.at(a))
             {
-                mpMovables.at(m)->setY(mAnimationData.adjustableMinY.at(a));
+                mpMovables.at(m)->setY(mpAnimationData->adjustableMinY.at(a));
             }
         }
 
@@ -261,17 +267,21 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
 
     //Initialize member pointer variables
     mpAnimatedComponent = pAnimatedComponent;
-    mpIcon = 0;
 
     //Make a local copy of the appearance data (that can safely be modified if needed)
-    if (pAppearanceData != 0)
-    {
-        mModelObjectAppearance = *pAppearanceData;
-    }
+    mModelObjectAppearance = *pAppearanceData;
 
     //Setup appearance
-    this->setIcon();
-    this->refreshAppearance();
+    QString iconPath = mModelObjectAppearance.getFullAvailableIconPath(mIconType);
+    double iconScale = mModelObjectAppearance.getIconScale(mIconType);
+    mIconType = USERGRAPHICS;
+    mpIcon = new QGraphicsSvgItem(iconPath, this);
+    mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+    mpIcon->setScale(iconScale);
+
+    this->prepareGeometryChange();
+    this->resize(mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale);  //Resize modelobject
+    mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale); //Resize selection box
     this->setCenterPos(position);
     this->setZValue(MODELOBJECT_Z);
 }
@@ -284,59 +294,6 @@ int AnimatedIcon::type() const
 }
 
 
-//! @brief Updates the icon of the object to user or iso style
-//! @param gfxType Graphics type that shall be used
-//! @todo This code can probably be simplified a lot for animated icons
-void AnimatedIcon::setIcon()
-{
-    QString iconPath;
-    qreal iconScale;
-    iconPath = mModelObjectAppearance.getFullAvailableIconPath(USERGRAPHICS);
-    iconScale = mModelObjectAppearance.getIconScale(USERGRAPHICS);
-    mIconType = USERGRAPHICS;
-
-    //Avoid swappping icon if same as before, we swap also if scale changes
-    if  ( (mLastIconPath != iconPath) || !fuzzyEqual(mLastIconScale, iconScale, 0.001) )
-    {
-        if (mpIcon != 0)
-        {
-            mpIcon->deleteLater(); //Shedule previous icon for deletion
-            disconnect(mpAnimatedComponent->mpAnimationWidget->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)));
-        }
-
-        mpIcon = new QGraphicsSvgItem(iconPath, this);
-        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        mpIcon->setScale(iconScale);
-
-        this->prepareGeometryChange();
-        this->resize(mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale);  //Resize modelobject
-        mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale); //Resize selection box
-
-        this->setTransformOriginPoint(this->boundingRect().center());
-
-        if(mModelObjectAppearance.getIconRotationBehaviour(mIconType) == "ON")
-        {
-            mIconRotation = true;
-            mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
-        }
-        else
-        {
-            mIconRotation = false;
-            mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-            if (this->getParentContainerObject() != 0)
-            {
-                mpIcon->setScale(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor()*iconScale);
-                connect(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)), Qt::UniqueConnection);
-            }
-            //! @todo we need to disconnect this also at some point, when swapping between systems or groups
-        }
-
-        mLastIconPath = iconPath;
-        mLastIconScale = iconScale;
-    }
-}
-
-
 //! @brief Refresh icon position after flipping or rotating
 void AnimatedIcon::refreshIconPosition()
 {
@@ -346,19 +303,6 @@ void AnimatedIcon::refreshIconPosition()
         mpIcon->setPos( this->mapFromScene(this->getCenterPos() - mpIcon->boundingRect().center() ));
     }
 }
-
-
-//! @brief Set icon zoom factor
-//! @todo Can maybe be removed from animated icon class
-void AnimatedIcon::setIconZoom(const qreal zoom)
-{
-    //Only scale when we have disconnected the icon from transformations
-    if (!mIconRotation)
-    {
-        mpIcon->setScale(mModelObjectAppearance.getIconScale(mIconType)*zoom);
-    }
-}
-
 
 
 //! @brief Defines what happens when object position has changed (limits the position to maximum values)
@@ -374,6 +318,8 @@ QVariant AnimatedIcon::itemChange(GraphicsItemChange change, const QVariant &val
 }
 
 
+//! @brief Defines what happens when icon is double clicked (open settings dialog)
+//! @param event Contains information about the event
 void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mpAnimatedComponent->indexOfMovable(this) > -1)  //Otherwise this is the base icon, which does not have parameters
@@ -436,28 +382,4 @@ void AnimatedIcon::flipHorizontal()
     {
         mIsFlipped = true;
     }
-}
-
-
-//! @brief Returns a pointer to the appearance data object
-ModelObjectAppearance* AnimatedIcon::getAppearanceData()
-{
-    return &mModelObjectAppearance;
-}
-
-
-//! @brief Refreshes the appearance of the icon
-void AnimatedIcon::refreshAppearance()
-{
-    //! @todo should make sure we only do this if we really need to resize (after icon change)
-    QPointF centerPos =  this->getCenterPos(); //Remember center pos for resize
-    this->setIcon();
-    this->setCenterPos(centerPos); //Re-set center pos after resize
-}
-
-
-//! @brief Returns a pointer to the icon object
-QGraphicsSvgItem *AnimatedIcon::getIcon()
-{
-    return mpIcon;
 }

@@ -68,7 +68,7 @@ private:
     QList<AnimatedIcon *> mpMovables;
     QList<QVector<double> > *mpData;
 
-    ModelObjectAnimationData mAnimationData;
+    ModelObjectAnimationData *mpAnimationData;
 };
 
 
@@ -85,19 +85,13 @@ public:
 
     AnimatedComponent *mpAnimatedComponent;
 
-    //Appearance methods
-    virtual ModelObjectAppearance* getAppearanceData();
-    QGraphicsSvgItem *getIcon();
-
     enum { Type = ANIMATEDOBJECT };
     int type() const;
 
 public slots:
-    virtual void refreshAppearance();
     void rotate(qreal angle);
     void flipVertical();
     void flipHorizontal();
-    void setIcon();
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -111,9 +105,6 @@ protected:
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;
     qreal mLastIconScale;
-
-protected slots:
-    void setIconZoom(const qreal zoom);
 
 private:
     void refreshIconPosition();

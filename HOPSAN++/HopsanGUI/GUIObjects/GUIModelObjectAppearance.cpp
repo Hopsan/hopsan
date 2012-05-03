@@ -398,9 +398,9 @@ QPointF ModelObjectAppearance::getNameTextPos()
 }
 
 
-ModelObjectAnimationData ModelObjectAppearance::getAnimationData()
+ModelObjectAnimationData *ModelObjectAppearance::getAnimationDataPtr()
 {
-    return mAnimationData;
+    return &mAnimationData;
 }
 
 
