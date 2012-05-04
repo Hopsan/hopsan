@@ -132,10 +132,6 @@ void AnimatedConnector::update()
 {
     if(!mvIntensityData.isEmpty())      //Should consider flow as well, somehow...
     {
-        //double max = mpParentAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
-        //double min = mpParentAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
-
-        //! @todo User should be able to choose this setting
         double max = mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
         double min = mpAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
 
@@ -143,7 +139,6 @@ void AnimatedConnector::update()
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
 
         int index = mpAnimationWidget->getIndex();
-        //int lastIndex = mpAnimationWidget->getLastIndex();
         double data, flowData;
         if(mpAnimationWidget->isRealTimeAnimation())
         {
@@ -170,7 +165,7 @@ void AnimatedConnector::update()
         int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
         int blue = 255-red;
         tempPen.setColor(QColor(red,0,blue));
-        tempPen.setDashOffset(mDirectionCorrection*mpAnimationWidget->mFlowSpeedMap.find("NodeHydraulic").value()*flowData*fmod(mpAnimationWidget->getLastAnimationTime(),10.0)/10.0);
+        tempPen.setDashOffset(tempPen.dashOffset()+mDirectionCorrection*mpAnimationWidget->mFlowSpeedMap.find("NodeHydraulic").value()*flowData/* *fmod(mpAnimationWidget->getLastAnimationTime(),10.0)/10.0*/);
 
         for(int i=0; i<mpLines.size(); ++i)
         {

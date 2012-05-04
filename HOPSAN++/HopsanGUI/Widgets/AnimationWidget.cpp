@@ -134,7 +134,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mIntensityMaxMap.insert("NodeHydraulic", 2e7);
     mIntensityMinMap.insert("NodeHydraulic", 0);
 
-    mFlowSpeedMap.insert("NodeHydraulic",50000);
+    mFlowSpeedMap.insert("NodeHydraulic",100);
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();

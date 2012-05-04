@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4340" hopsancoreversion="0.6.x_r4338">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4352" hopsancoreversion="0.6.x_r4343">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
@@ -10,7 +10,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499.5" y="2486.5" zoom="1"/>
+            <viewport x="2581.5" y="2554" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -69,7 +69,7 @@
                     <parameter value="0" type="double" name="P1::Pressure"/>
                     <parameter value="0.001" type="double" name="V"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
-                    <parameter value="0.3" type="double" name="alpha"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2573" y="2602" flipped="false" a="90"/>
@@ -100,9 +100,9 @@
             </component>
             <component typename="HydraulicFixedDisplacementPump" name="Q-type Fixed Displacement Pump">
                 <parameters>
-                    <parameter value="1000" type="double" name="n_p"/>
+                    <parameter value="250" type="double" name="n_p"/>
                     <parameter value="5e-005" type="double" name="D_p"/>
-                    <parameter value="1e-012" type="double" name="C_l,p"/>
+                    <parameter value="0" type="double" name="C_l,p"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2466" y="2680" flipped="false" a="0"/>
@@ -131,16 +131,16 @@
                     <parameter value="0" type="double" name="xv::Value"/>
                     <parameter value="0.67" type="double" name="C_q"/>
                     <parameter value="890" type="double" name="rho"/>
-                    <parameter value="0.002" type="double" name="d"/>
+                    <parameter value="0.01" type="double" name="d"/>
                     <parameter value="1" type="double" name="f_pa"/>
                     <parameter value="1" type="double" name="f_pb"/>
                     <parameter value="1" type="double" name="f_at"/>
                     <parameter value="1" type="double" name="f_bt"/>
                     <parameter value="0.01" type="double" name="x_v,max"/>
-                    <parameter value="-1e-06" type="double" name="x_pa"/>
-                    <parameter value="-1e-06" type="double" name="x_pb"/>
-                    <parameter value="-1e-06" type="double" name="x_at"/>
-                    <parameter value="-1e-06" type="double" name="x_bt"/>
+                    <parameter value="-1e-006" type="double" name="x_pa"/>
+                    <parameter value="-1e-006" type="double" name="x_pb"/>
+                    <parameter value="-1e-006" type="double" name="x_at"/>
+                    <parameter value="-1e-006" type="double" name="x_bt"/>
                     <parameter value="100" type="double" name="omega_h"/>
                     <parameter value="1" type="double" name="delta_h"/>
                 </parameters>
@@ -201,7 +201,7 @@
                     <parameter value="0.0003" type="double" name="V_2"/>
                     <parameter value="1000" type="double" name="B_p"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
-                    <parameter value="1e-11" type="double" name="c_leak"/>
+                    <parameter value="1e-011" type="double" name="c_leak"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2598" y="2423" flipped="false" a="0"/>
@@ -220,12 +220,12 @@
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
                     <parameter value="0" type="double" name="xv::Value"/>
-                    <parameter value="1e7" type="double" name="p_max"/>
-                    <parameter value="0.001" type="double" name="tao"/>
+                    <parameter value="2e+007" type="double" name="p_max"/>
+                    <parameter value="0.01" type="double" name="tao"/>
                     <parameter value="1e-008" type="double" name="k_c,s"/>
                     <parameter value="1e-008" type="double" name="k_c,f"/>
-                    <parameter value="0.01" type="double" name="q_nom"/>
-                    <parameter value="0" type="double" name="p_h"/>
+                    <parameter value="0.001" type="double" name="q_nom"/>
+                    <parameter value="500000" type="double" name="p_h"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2575" y="2682" flipped="false" a="0"/>

@@ -56,8 +56,6 @@ public:
 private:
     QVector<double> mvIntensityData;
     QVector<double> mvFlowData;
-    //double mMaxIntensity;
-    //double mMinIntensity;
     int mDirectionCorrection;
 
     ConnectorAppearance *mpConnectorAppearance;
