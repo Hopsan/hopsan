@@ -126,12 +126,18 @@ void ContainerObject::connectMainWindowActions()
     gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
     gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
     gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
+
+    // Update Systemparameter widget to new contents
+    gpMainWindow->mpSystemParametersWidget->update(this); //!< @todo this is not really a main window action, need to rename function or make an other function, this has to be run every time we enter a new container (even if we switch tab, enterContainer is not run then)
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
 void ContainerObject::disconnectMainWindowActions()
 {
+    // Update Systemparameter widget tohave no contents
+    gpMainWindow->mpSystemParametersWidget->update(0); //!< @todo this is not really a main window action, need to rename function or make an other function, this has to be run every time we enter a new container (even if we switch tab, exitContainer is not run then)
+
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
     disconnect(gpMainWindow->mpUndoWidget->getUndoButton(),  SIGNAL(clicked()), this, SLOT(undo()));
@@ -2502,7 +2508,7 @@ void ContainerObject::exitContainer()
     this->disconnectMainWindowActions();
     mpParentContainerObject->connectMainWindowActions();
 
-        //Update plot widget and undo widget to new container
+    // Update plot widget and undo widget to new container
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
     gpMainWindow->mpSystemParametersWidget->update();
     gpMainWindow->mpUndoWidget->refreshList();

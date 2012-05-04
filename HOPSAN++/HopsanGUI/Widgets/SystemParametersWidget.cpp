@@ -40,331 +40,310 @@
 #include "common.h"
 
 
-TypeComboBox::TypeComboBox(size_t row, size_t column, SystemParameterTableWidget *parent)
-    : QComboBox(parent)
-{
-    //setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-    mRow = row;
-    mColumn = column;
-    mParent = parent;
-    addItem("double");
-    addItem("integer");
-    addItem("bool");
-    addItem("string");
-    connect(this, SIGNAL(currentIndexChanged(QString)), this, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
-}
-
-
-void TypeComboBox::typeHasChanged(QString /*newType*/)
-{
-    qDebug() << "aksJLKJAFLKJDFLkjsdlfkj   ";
-    //! @todo what is this for, it will allways be true, as constructor arguments are size_t
-    if(mRow > -1)
-    {
-        mParent->setCurrentCell(mRow, mColumn);
-        mParent->changeParameter();
-    }
-}
-
-
-//! Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
+//! @brief Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
 SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     : QWidget(parent)
 {
-    //mpParentMainWindow = parent;
+    mpContainerObject=0;
     //Set the name and size of the main window
     this->setObjectName("SystemParameterWidget");
-    this->resize(400,500);
     this->setWindowTitle("System Parameters");
 
-    mpSystemParametersTable = new SystemParameterTableWidget(0,1,this);
-
-    mpAddButton = new QPushButton(tr("&Set/Add"), this);
+    mpAddButton = new QPushButton(tr("&Add"));
     mpAddButton->setFixedHeight(30);
     mpAddButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mpAddButton->setAutoDefault(false);
-    QFont tempFont = mpAddButton->font();
-    tempFont.setBold(true);
-    mpAddButton->setFont(tempFont);
     mpAddButton->setEnabled(false);
+    QFont buttonFont = mpAddButton->font();
+    buttonFont.setBold(true);
+    mpAddButton->setFont(buttonFont);
 
-    mpRemoveButton = new QPushButton(tr("&Unset"), this);
+    mpRemoveButton = new QPushButton(tr("&Unset"));
     mpRemoveButton->setFixedHeight(30);
     mpRemoveButton->setAutoDefault(false);
-    mpRemoveButton->setFont(tempFont);
     mpRemoveButton->setEnabled(false);
+    mpRemoveButton->setFont(buttonFont);
 
-    mpGridLayout = new QGridLayout(this);
-    mpGridLayout->addWidget(mpSystemParametersTable, 0, 0);
-    mpGridLayout->addWidget(mpAddButton, 1, 0);
-    mpGridLayout->addWidget(mpRemoveButton, 2, 0);
+    mpSysParamListView = new QTableView();
+    mpSysParamListView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ComboBoxDelegate *pComboBoxDelegate = new ComboBoxDelegate();
+    mpSysParamListView->setItemDelegateForColumn(2, pComboBoxDelegate);
 
-    mpGridLayout->setContentsMargins(4,4,4,4);
+    QGridLayout *pGridLayout = new QGridLayout(this);
+    pGridLayout->addWidget(mpSysParamListView, 0, 0);
+    pGridLayout->addWidget(mpAddButton, 1, 0);
+    pGridLayout->addWidget(mpRemoveButton, 2, 0);
+
+    pGridLayout->setContentsMargins(4,4,4,4);
 
     update();
 
-    connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openAddParameterDialog()));
-    connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(update()));//StrÃ¶ssel!
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(update()));//StrÃ¶ssel!
+    connect(mpAddButton, SIGNAL(clicked()), this, SLOT(openAddParameterDialog()));
+    //connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
 }
 
+void SystemParametersWidget::update(ContainerObject *pNewContainer)
+{
+    if (mpContainerObject != pNewContainer)
+    {
+        mpContainerObject = pNewContainer;
+        this->update();
+    }
+}
 
 void SystemParametersWidget::update()
 {
-    if(gpMainWindow->mpProjectTabs->count()>0)
+    if ( (mpContainerObject!=0) && (gpMainWindow->mpProjectTabs->count()>0) )
     {
         mpAddButton->setEnabled(true);
         mpRemoveButton->setEnabled(true);
+
+        QAbstractItemModel *pOldModel = mpSysParamListView->model();
+        SysParamListModel *pModel = new SysParamListModel(mpContainerObject, this);
+        mpSysParamListView->setModel(pModel);
+        delete pOldModel;
+
+        mpSysParamListView->show();
+
+        qDebug() << "--------------List isEnabled: " << mpSysParamListView->isEnabled();
+        qDebug() << "--------------List isHidden: " << mpSysParamListView->isHidden();
+        qDebug() << "--------------List isVisible: " << mpSysParamListView->isVisible();
+        qDebug() << "--------------SysParWidget isVisible: " << this->isVisible();
+        qDebug() << "--------------SysParWidget Parent isVisible: " << this->parentWidget()->isVisible();
     }
     else
     {
         mpAddButton->setEnabled(false);
         mpRemoveButton->setEnabled(false);
     }
-
-    mpSystemParametersTable->update();
 }
 
 
-SystemParameterTableWidget::SystemParameterTableWidget(int rows, int columns, QWidget *parent)
-    : QTableWidget(rows, columns, parent)
-{
-    setFocusPolicy(Qt::StrongFocus);
-    setSelectionMode(QAbstractItemView::SingleSelection);
-
-    setBaseSize(400, 500);
-    horizontalHeader()->setStretchLastSection(true);
-    horizontalHeader()->hide();
-
-    update();
-}
-
-
-void SystemParameterTableWidget::keyPressEvent(QKeyEvent *event)
-{
-    QTableWidget::keyPressEvent(event);
-    if(event->key() == Qt::Key_Delete)
-    {
-        qDebug() << "Delete current System Parameter Widget Items";
-        removeSelectedParameters();
-    }
-}
-
-
-//! @brief Used for parameter changes done directly in the label
-void SystemParameterTableWidget::changeParameter(QTableWidgetItem */*item*/)
-{
-    //Filter out value labels
-//    if(item->column() == 1)
-    {
-        QTableWidgetItem *nameItem = this->item(currentRow(), 0);
-        QTableWidgetItem *valueItem = this->item(currentRow(), 1);
-        QString parName = nameItem->text();
-        QString parValue = valueItem->text();
-
-        QString typeName;
-        if(QComboBox *typeBox = qobject_cast<QComboBox *>(this->cellWidget(currentRow(), 2)))
-        {
-            typeName = typeBox->currentText();
-        }
-
-//        QString apa = item->text();
-//        double ko = getParameter(parName);
-        if(parValue != getParameterValue(parName))
-        {
-            gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
-        }
-
-        //Do not do update, then crash due to the rebuild of the QTableWidgetItems
-        setParameter(parName, parValue, "", "", typeName, false);
-        update();
-    }
-}
-
-
-QString SystemParameterTableWidget::getParameterValue(QString name)
-{
-    return gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameterValue(name);
-}
-
-
-bool SystemParameterTableWidget::hasParameter(QString name)
-{
-    return gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->hasSystemParameter(name);
-}
-
-
-////! Slot that adds a System parameter value
-////! @param name Lookup name for the System parameter
-////! @param value Value of the System parameter
-//void SystemParameterTableWidget::setParameter(QString name, QString value, bool doUpdate)
+//SystemParameterListWidget::SystemParameterListWidget(QWidget *pParentWidget)
+//    : QListWidget(pParentWidget)
 //{
-//    //Error check
-//    if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, value)))
-//    {
-//        QMessageBox::critical(0, "Hopsan GUI",
-//                              QString("'%1' is an invalid name for a system parameter.")
-//                              .arg(name));
-//        return;
-//    }
-//    if(doUpdate)
-//    {
-//        update();
-//    }
-//    emit modifiedSystemParameter();
+//    //setFocusPolicy(Qt::StrongFocus);
+//    //setSelectionMode(QAbstractItemView::SingleSelection);
+
+//    //setBaseSize(400, 500);
+//    //horizontalHeader()->setStretchLastSection(true);
+//    //horizontalHeader()->hide();
+
+//    refreshTable();
 //}
 
 
-//! Slot that adds a System parameter value
+//void SystemParameterListWidget::keyPressEvent(QKeyEvent *event)
+//{
+//    QListWidget::keyPressEvent(event);
+//    if(event->key() == Qt::Key_Delete)
+//    {
+//        qDebug() << "Delete current System Parameter Widget Items";
+//        removeSelectedParameters();
+//    }
+//}
+
+
+//void SystemParameterListWidget::changeParameterName(const QString oldName)
+//{
+////    const int row = currentRow();
+////    QString newParName = qobject_cast<SystemParameterTableItem*>(this->cellWidget(row,0))->mName.text();
+////    if (newParName != oldName)
+////    {
+////        //Change name by removing system parameter before adding a new one
+////        removeParameter(oldName);
+////        changeParameter();
+////    }
+//}
+////! @brief Used to update parameters from changes done directly in the labels
+//void SystemParameterListWidget::changeParameter()
+//{
+//    const int row = currentRow();
+
+//    //QString parName = qobject_cast<SystemParameterTableItem*>(this->cellWidget(row,0))->mName.text();
+//   // QString newParValue = qobject_cast<SystemParameterTableItem*>(this->cellWidget(row,0))->mValue.text();
+//    //QString newParType = qobject_cast<SystemParameterTableItem*>(this->cellWidget(row,0))->mType.currentText();
+////    if(QComboBox *typeBox = qobject_cast<QComboBox*>(this->cellWidget(pItem->row(), 2)))
+////    {
+////        newParType = typeBox->currentText();
+////    }
+
+////    // Check if name was changed
+////    if (pItem->column() == 0)
+////    {
+////        //Change name by removing system parameter before adding a new one
+////        qDebug() << "Change name";
+////        removeParameter(mParameterNames.at(pItem->row()));
+////        mParameterNames.remove(pItem->row());
+////    }
+
+//    //Do not do update, then crash due to the rebuild of the QTableWidgetItems
+//    //setParameter(parName, newParValue, "", "", newParType, false);
+
+//    refreshTable();
+//}
+
+
+//QString SystemParameterListWidget::getParameterValue(QString name)
+//{
+//    return gpMainWindow->mpProjectTabs->getCurrentContainer()->getParameterValue(name);
+//}
+
+
+bool SystemParametersWidget::hasParameter(QString name)
+{
+    return mpContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(name);
+}
+
+
+//! @brief Slot that adds a System parameter value
 //! @param name Lookup name for the System parameter
 //! @param value Value of the System parameter
-void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, QString descriptionTxt, QString unitTxt, QString typeTxt, bool doUpdate)
+void SystemParametersWidget::setParameter(QString name, QString valueTxt, QString descriptionTxt, QString unitTxt, QString typeTxt)
 {
-//    //Error check
-//    bool isDbl;
-//    double value = valueTxt.toDouble((&isDbl));
-//    if(!(isDbl))
+    CoreParameterData oldParamData;
+    mpContainerObject->getParameter(name, oldParamData);
+
+    //Error check
+    if(!(mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt, descriptionTxt, unitTxt, typeTxt)))
+    {
+        QMessageBox::critical(0, "Hopsan GUI",
+                              QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
+                              .arg(name, valueTxt));
+        return;
+    }
+
+    //! @todo check if other stuff then value has changed, at least type
+    //! @todo dont go through main window to tag a tab as changed, should go through container
+    if(oldParamData.value != mpContainerObject->getParameterValue(name))
+    {
+        gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+    }
+}
+
+
+//void SystemParameterTableWidget::setAllParameters()
+//{
+//    for(int i=0; i<rowCount(); ++i)
 //    {
-//        QMessageBox::critical(0, "Hopsan GUI",
-//                              QString("'%1' is not a valid number.")
-//                              .arg(valueTxt));
-//        QString oldValue = gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameter(name);
-//        QList<QTableWidgetItem *> items = selectedItems();
-//        //Error if size() > 1, but it should not be! :)
-//        for(int i = 0; i<items.size(); ++i)
-//        {
-//            items[i]->setText(oldValue);
-//        }
+//        QString name = item(i, 0)->text();
+//        QString value = item(i, 1)->text();
+//        setParameter(name, value);
 //    }
-//    else
-    {
-//        setParameter(name, valueTxt, doUpdate);
-        //Error check
-        if(!(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt, descriptionTxt, unitTxt, typeTxt)))
-        {
-            QMessageBox::critical(0, "Hopsan GUI",
-                                  QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
-                                  .arg(name, valueTxt));
-            return;
-        }
-        if(doUpdate)
-        {
-            update();
-        }
-        emit modifiedSystemParameter();
-    }
-}
+//}
 
 
-void SystemParameterTableWidget::setParameters()
-{
-    //    if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
-    //    {
-    for(int i=0; i<rowCount(); ++i)
-    {
-        QString name = item(i, 0)->text();
-        QString value = item(i, 1)->text();
-        setParameter(name, value);
-    }
-    //    }
-}
+////! @brief Slot that removes all selected System parameters in parameter table
+////! @todo should access container objects directly not go through the project tab
+//void SystemParameterListWidget::removeSelectedParameters()
+//{
+//    if(gpMainWindow->mpProjectTabs->count()>0)
+//    {
+//        //QList<QTableWidgetItem*> pSelectedItems = selectedItems();
+//        //QStringList parametersToRemove;
+//        //QString tempName;
 
+//        //for(int i=0; i<pSelectedItems.size(); ++i)
+//        {
+//            //removeParameter(item(pSelectedItems[i]->row(),0)->text());
 
-//! Slot that removes all selected System parameters in parameter table
-//! @todo This shall remove the actual System parameters when they have been implemented, wherever they are stored.
-void SystemParameterTableWidget::removeSelectedParameters()
-{
-    if(gpMainWindow->mpProjectTabs->count()>0)
-    {
-        QList<QTableWidgetItem *> pSelectedItems = selectedItems();
-        QStringList parametersToRemove;
-        QString tempName;
+////            if(!parametersToRemove.contains(tempName))
+////            {
+////                parametersToRemove.append(tempName);
+////                //gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+////            }
+//            //removeCellWidget(pSelectedItems[i]->row(), pSelectedItems[i]->column());
+//            //delete pSelectedItems[i];
+//        }
 
-        for(int i=0; i<pSelectedItems.size(); ++i)
-        {
-            tempName = item(pSelectedItems[i]->row(),0)->text();
-            if(!parametersToRemove.contains(tempName))
-            {
-                parametersToRemove.append(tempName);
-                gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
-            }
-            removeCellWidget(pSelectedItems[i]->row(), pSelectedItems[i]->column());
-            delete pSelectedItems[i];
-        }
+////        for(int j=0; j<parametersToRemove.size(); ++j)
+////        {
+////            removeParameter(parametersToRemove.at(j));
+////        }
+//    }
 
-        for(int j=0; j<parametersToRemove.size(); ++j)
-        {
-            qDebug() << "Removing: " << parametersToRemove[j];
-            gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
-        }
-    }
-    update();
-}
+//    // Clear and refresh the table
+//    refreshTable();
+//}
+
+//void SystemParameterListWidget::removeParameter(const QString name)
+//{
+//    qDebug() << "Removing: " << name;
+//    gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->removeSystemParameter(name);
+//}
 
 
 //! Slot that opens "Add Parameter" dialog, where the user can add new System parameters
-void SystemParameterTableWidget::openAddParameterDialog()
+void SystemParametersWidget::openAddParameterDialog()
 {
+
+    QLabel *pNameLabel;
+    QLabel *pValueLabel;
+    QLabel *pTypeLabel;
+
+    QPushButton *pAddInDialogButton;
+    QPushButton *pCancelInDialogButton;
+    QPushButton *pAddAndCloseInDialogButton;
+
     mpAddParameterDialog = new QDialog(this);
     mpAddParameterDialog->setWindowTitle("Set System Parameter");
 
-    mpNameLabel = new QLabel("Name: ", this);
+    pNameLabel = new QLabel("Name: ", this);
     mpNameBox = new QLineEdit(this);
-    mpValueLabel = new QLabel("Value: ", this);
+    pValueLabel = new QLabel("Value: ", this);
     mpValueBox = new QLineEdit(this);
-    //mpValueBox->setValidator(new QDoubleValidator(this));
-    mpTypeLabel = new QLabel("Type: ", this);
-    mpTypeBox = new TypeComboBox(-1, -1, this);
-    mpCancelInDialogButton = new QPushButton("Cancel", this);
-    mpAddInDialogButton = new QPushButton(trUtf8("Add && Continue"), this);
-    mpAddAndCloseInDialogButton = new QPushButton("Add && Close", this);
+    pTypeLabel = new QLabel("Type: ", this);
+
+    mpTypeBox = new QComboBox();
+    mpTypeBox->addItem("double");
+    mpTypeBox->addItem("integer");
+    mpTypeBox->addItem("bool");
+    mpTypeBox->addItem("string");
+
+    pCancelInDialogButton = new QPushButton("Cancel", this);
+    pAddInDialogButton = new QPushButton(trUtf8("Add && Continue"), this);
+    pAddAndCloseInDialogButton = new QPushButton("Add && Close", this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(mpAddInDialogButton, QDialogButtonBox::ActionRole);
-    pButtonBox->addButton(mpAddAndCloseInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pCancelInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pAddInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(pAddAndCloseInDialogButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout(this);
-    pDialogLayout->addWidget(mpNameLabel,0,0);
+    pDialogLayout->addWidget(pNameLabel,0,0);
     pDialogLayout->addWidget(mpNameBox,0,1);
-    pDialogLayout->addWidget(mpValueLabel,1,0);
+    pDialogLayout->addWidget(pValueLabel,1,0);
     pDialogLayout->addWidget(mpValueBox,1,1);
-    pDialogLayout->addWidget(mpTypeLabel,2,0);
+    pDialogLayout->addWidget(pTypeLabel,2,0);
     pDialogLayout->addWidget(mpTypeBox,2,1);
     pDialogLayout->addWidget(pButtonBox,3,0,1,2);
     mpAddParameterDialog->setLayout(pDialogLayout);
     mpAddParameterDialog->show();
 
-    connect(mpCancelInDialogButton,SIGNAL(clicked()),mpAddParameterDialog,SLOT(close()));
-    connect(mpAddAndCloseInDialogButton,SIGNAL(clicked()),this,SLOT(addParameterAndCloseDialog()));
-    connect(mpAddInDialogButton,SIGNAL(clicked()),this,SLOT(addParameter()));
+    connect(pCancelInDialogButton,      SIGNAL(clicked()), mpAddParameterDialog, SLOT(close()));
+    connect(pAddAndCloseInDialogButton, SIGNAL(clicked()), this,                SLOT(addParameterAndCloseDialog()));
+    connect(pAddInDialogButton,         SIGNAL(clicked()), this,                SLOT(addParameter()));
 }
-
-
-//QComboBox *SystemParameterTableWidget::createTypeComboBox()
-//{
-//    QComboBox *box = new QComboBox(this);
-//    box->addItem("double");
-//    box->addItem("integer");
-//    box->addItem("bool");
-//    box->addItem("string");
-//    connect(box, SIGNAL(currentIndexChanged(QString)), this, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
-//    return box;
-//}
 
 
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
-void SystemParameterTableWidget::addParameter()
+void SystemParametersWidget::addParameter()
 {
-    qDebug() << mpTypeBox->currentText();
-    setParameter(mpNameBox->text(), mpValueBox->text(), "", "", mpTypeBox->currentText());
-    gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+    if (hasParameter(mpNameBox->text()))
+    {
+        QMessageBox::critical(0, "Hopsan GUI",
+                              QString("'%1' already exists, will not add!")
+                              .arg(mpNameBox->text()));
+    }
+    else
+    {
+        setParameter(mpNameBox->text(), mpValueBox->text(), "", "", mpTypeBox->currentText());
+        update();
+    }
 }
 
 
-void SystemParameterTableWidget::addParameterAndCloseDialog()
+void SystemParametersWidget::addParameterAndCloseDialog()
 {
     addParameter();
     mpAddParameterDialog->close();
@@ -372,71 +351,78 @@ void SystemParameterTableWidget::addParameterAndCloseDialog()
 }
 
 
-//! Updates the parameter table from the contents list
-void SystemParameterTableWidget::update()
-{
-    QVector<CoreParameterData> paramDataVector;
+////! @brief Updates the parameter table from the contents list
+//void SystemParameterListWidget::refreshTable()
+//{
+////    // First clear all data
+////    clear();
 
-    clear();
-    if(gpMainWindow->mpProjectTabs->count()>0)
-    {
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getSystemParameters(paramDataVector);
-    }
 
-    disconnect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
+////    // Now fetch parameter data
+////    QVector<CoreParameterData> paramDataVector;
+////    if(gpMainWindow->mpProjectTabs->count()>0)
+////    {
+////        gpMainWindow->mpProjectTabs->getCurrentContainer()->getParameters(paramDataVector);
+////    }
 
-    if(paramDataVector.isEmpty())
-    {
-        setColumnCount(1);
-        setRowCount(1);
-        verticalHeader()->hide();
+////    //disconnect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
 
-        QTableWidgetItem *item = new QTableWidgetItem();
-        item->setText("No System parameters set.");
-        item->setBackgroundColor(QColor("white"));
-        item->setTextAlignment(Qt::AlignCenter);
-        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        setItem(0,0,item);
-    }
-    else
-    {
-        setRowCount(0);
-        setColumnCount(3);
-        verticalHeader()->show();
+////    if(paramDataVector.isEmpty())
+////    {
+////        //setColumnCount(1);
+////        //setRowCount(1);
+////        //verticalHeader()->hide();
 
-        for(int i=0; i<paramDataVector.size(); ++i)
-        {
-            insertRow(rowCount());
-            const int rowIdx = rowCount()-1;
+////        QLabel *item = new QLabel("No System parameters set.");
+////        item->setBackgroundColor(QColor("white"));
+////        item->setTextAlignment(Qt::AlignCenter);
+////        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+////        this->addWidget(item);
+////    }
+////    else
+////    {
+////        //setRowCount(0);
+////        //setColumnCount(1);
+////        //verticalHeader()->show();
 
-            QTableWidgetItem *nameItem = new QTableWidgetItem(paramDataVector[i].name);
-            QTableWidgetItem *valueItem = new QTableWidgetItem(paramDataVector[i].value);
-            nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-            valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-            setItem(rowIdx, 0, nameItem);
-            setItem(rowIdx, 1, valueItem);
+////        for(int i=0; i<paramDataVector.size(); ++i)
+////        {
+//////            insertRow(rowCount());
+//////            const int rowIdx = rowCount()-1;
 
-            TypeComboBox *typeBox = new TypeComboBox(rowIdx, 2, this);
-            disconnect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)));
+////            SystemParameterTableItem* pNewItem = new SystemParameterTableItem(paramDataVector[i].name, paramDataVector[i].value, paramDataVector[i].type, this);
+////            //setCellWidget(rowIdx,0, pNewItem);
+////            this->addWidget(pNewItem);
 
-            // Select wich parameter type to diplay
-            for(int j=0; j<typeBox->count(); ++j)
-            {
-                if(paramDataVector[i].type == typeBox->itemText(j))
-                {
-                    typeBox->setCurrentIndex(j);
-                    break;
-                }
-            }
+//////            QTableWidgetItem *nameItem = new QTableWidgetItem(paramDataVector[i].name);
+//////            QTableWidgetItem *valueItem = new QTableWidgetItem(paramDataVector[i].value);
+//////            nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+//////            valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+//////            setItem(rowIdx, 0, nameItem);
+//////            setItem(rowIdx, 1, valueItem);
+//////            mParameterNames.append(paramDataVector[i].name); //Store the parameter names, to facilitate rename function
 
-            // Add widget to cell
-            setCellWidget(rowIdx, 2, typeBox);
-            connect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
-        }
-        connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)), Qt::UniqueConnection);
+//////            TypeComboBox *typeBox = new TypeComboBox(rowIdx, 2, this);
+//////            disconnect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)));
 
-        setColumnWidth(0, 100);
-        setColumnWidth(1, 100);
-        setColumnWidth(2, 80);
-    }
-}
+//////            // Select wich parameter type to display
+//////            for(int j=0; j<typeBox->count(); ++j)
+//////            {
+//////                if(paramDataVector[i].type == typeBox->itemText(j))
+//////                {
+//////                    typeBox->setCurrentIndex(j);
+//////                    break;
+//////                }
+//////            }
+
+//////            // Add widget to cell
+//////            setCellWidget(rowIdx, 2, typeBox);
+//////            connect(typeBox, SIGNAL(currentIndexChanged(QString)), typeBox, SLOT(typeHasChanged(QString)), Qt::UniqueConnection);
+////        }
+////        //connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)), Qt::UniqueConnection);
+
+////        setColumnWidth(0, 100);
+////        setColumnWidth(1, 100);
+////        setColumnWidth(2, 80);
+////    }
+//}

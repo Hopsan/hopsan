@@ -815,7 +815,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPDF()));
     disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(centerView()));
 
-    disconnect(gpMainWindow,        SIGNAL(simulateKeyPressed()),    getTab(index),                      SLOT(simulate()));
+    disconnect(gpMainWindow,                 SIGNAL(simulateKeyPressed()),    getTab(index),                      SLOT(simulate()));
     disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
     disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),    getTab(index),                      SLOT(saveAs()));
 
@@ -823,9 +823,9 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
     getCurrentContainer()->setUndoEnabled(false, true);  //This is necessary to prevent each component from registering it being deleted in the undo stack
 
-    //Delete project tab
+    //Delete project tab, We dont need to call removeTab here, this seems to be handled automatically
     delete widget(index);
-    //We dont need to call removeTab here, this seems to be handled automatically
+
     return true;
 }
 
