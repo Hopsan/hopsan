@@ -80,6 +80,7 @@ public:
     QString getModelicaModelsDir();
     QString getExternalLibDir();
     QString getScriptDir();
+    QString getPlotWindowDir();
 
     void setLibraryStyle(int value);
     void setAlwaysLoadLastSession(bool value);
@@ -113,6 +114,7 @@ public:
     void setModelicaModelsDir(QString value);
     void setExternalLibDir(QString value);
     void setScriptDir(QString value);
+    void setPlotWindowDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -149,6 +151,7 @@ private:
     QString mModelicaModelsDir;
     QString mExternalLibDir;
     QString mScriptDir;
+    QString mPlotWindowDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

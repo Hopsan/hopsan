@@ -78,6 +78,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "modelicamodelsdir", mModelicaModelsDir);
     appendDomTextNode(settings, "externallibdir", mExternalLibDir);
     appendDomTextNode(settings, "scriptdir", mScriptDir);
+    appendDomTextNode(settings, "plotwindowdir", mPlotWindowDir);
 
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
@@ -263,6 +264,8 @@ void Configuration::loadFromXml()
                 mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
             if(!settingsElement.firstChildElement("scriptdir").isNull())
                 mScriptDir = settingsElement.firstChildElement("scriptdir").text();
+            if(!settingsElement.firstChildElement("plotwindowdir").isNull())
+                mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -443,6 +446,8 @@ void Configuration::loadDefaultsFromXml()
                 mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
             if(!settingsElement.firstChildElement("scriptdir").isNull())
                 mScriptDir = settingsElement.firstChildElement("scriptdir").text();
+            if(!settingsElement.firstChildElement("plotwindowdir").isNull())
+                mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -881,6 +886,18 @@ QString Configuration::getScriptDir()
 }
 
 
+//! @brief Returns the last used scripts directory
+QString Configuration::getPlotWindowDir()
+{
+    if(mPlotWindowDir.isEmpty())
+    {
+        return QString(DATAPATH);
+    }
+    return mPlotWindowDir;
+}
+
+
+
 //! @brief Set function for library style option
 //! @param value Desired setting
 void Configuration::setLibraryStyle(int value)
@@ -1136,9 +1153,12 @@ void Configuration::setExternalLibDir(QString value)
     mExternalLibDir = value;
 }
 
-
 void Configuration::setScriptDir(QString value)
 {
     mScriptDir = value;
 }
 
+void Configuration::setPlotWindowDir(QString value)
+{
+    mPlotWindowDir = value;
+}

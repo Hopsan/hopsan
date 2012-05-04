@@ -13,6 +13,16 @@
             <port x="0.4979" y="0" a="270" name="P2"/>
             <port x="0" y="0.7" a="180" name="in"/>
             <port x="1" y="0.5" a="0" name="xv"/>
-        </ports>
+        </ports>        
+        <animation>
+          <icon userpath="22directionalvalve_user_base.svg"/>
+            <movable>
+                <icon userpath="22directionalvalve_user.svg"/>
+                <data port="xv" dataname="Value"/> 
+                <speed x="-4000" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation> 
     </modelobject>
 </hopsanobjectappearance>

@@ -411,11 +411,18 @@ void PlotWindow::saveToXml()
 {
         //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
-    QString filePath;
-    filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
-                                            fileDialogSaveDir.currentPath(),
-                                            tr("Plot Window Description File (*.xml)"));
-    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
+                                                    gConfig.getPlotWindowDir(),
+                                                    tr("Plot Window Description File (*.xml)"));
+    if(filePath.isEmpty())
+    {
+        return;    //Don't save anything if user presses cancel
+    }
+    else
+    {
+        QFileInfo fileInfo = QFileInfo(filePath);
+        gConfig.setPlotWindowDir(fileInfo.absolutePath());
+    }
 
 
         //Write to xml file
