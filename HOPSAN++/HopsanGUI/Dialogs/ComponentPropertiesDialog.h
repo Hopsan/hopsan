@@ -44,7 +44,6 @@ protected slots:
     void editPortPos();
 
 protected:
-    bool setValuesToSystem(QVector<ParameterSettingsLayout*> &vParLayout);
     void setParametersAndStartValues();
 
 private:

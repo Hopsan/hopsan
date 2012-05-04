@@ -188,28 +188,27 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpSettingsLayout->addWidget(mpNSamplesEdit, 6, 1);
 
         mpPyScriptPath->setText(mpContainerObject->getScriptFile());
-    }
 
-    //! @todo maybe only have sys params in systems (put in if above)
-    // System Parameters Group Box
-    QVector<CoreParameterData> paramDataVector;
-    mpContainerObject->getParameters(paramDataVector);
-    for(int i=0; i<paramDataVector.size(); ++i)
-    {
-        mvParameterLayoutPtrs.push_back(new ParameterSettingsLayout(paramDataVector[i], mpContainerObject));
-    }
-    // Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
-    int descriptionSize=30;
-    int nameSize = 10;
-    for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
-    {
-        descriptionSize = std::max(descriptionSize, mvParameterLayoutPtrs.at(i)->mDescriptionLabel.width());
-        nameSize = std::max(nameSize, mvParameterLayoutPtrs.at(i)->mNameLabel.width());
-    }
-    for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
-    {
-        mvParameterLayoutPtrs.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
-        mvParameterLayoutPtrs.at(i)->mNameLabel.setFixedWidth(nameSize+10);
+        // System Parameters Group Box
+        QVector<CoreParameterData> paramDataVector;
+        mpContainerObject->getParameters(paramDataVector);
+        for(int i=0; i<paramDataVector.size(); ++i)
+        {
+            mvParameterLayoutPtrs.push_back(new ParameterSettingsLayout(paramDataVector[i], mpContainerObject));
+        }
+        // Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
+        int descriptionSize=30;
+        int nameSize = 10;
+        for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
+        {
+            descriptionSize = std::max(descriptionSize, mvParameterLayoutPtrs.at(i)->mDescriptionLabel.width());
+            nameSize = std::max(nameSize, mvParameterLayoutPtrs.at(i)->mNameLabel.width());
+        }
+        for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
+        {
+            mvParameterLayoutPtrs.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+            mvParameterLayoutPtrs.at(i)->mNameLabel.setFixedWidth(nameSize+10);
+        }
     }
 
         //This is the main Vertical layout of the dialog
@@ -225,7 +224,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
 
         for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
         {
-            pParameterLayout->addLayout(mvParameterLayoutPtrs.back(), i, 0);
+            pParameterLayout->addLayout(mvParameterLayoutPtrs[i], i, 0);
         }
 
         mpSystemParametersGroupBox->setLayout(pParameterLayout);

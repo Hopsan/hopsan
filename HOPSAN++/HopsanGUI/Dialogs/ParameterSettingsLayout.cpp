@@ -211,8 +211,7 @@ bool ParameterSettingsLayout::cleanAndVerifyParameterValue()
     stripLTSpaces(value);
 
     bool onlyNumbers=true;
-    //! @todo what if first sign negative number (-5)
-    if(value[0].isNumber())
+    if ( value[0].isNumber() || (value[0] == '-') )
     {
         value.replace(",", ".");
 
