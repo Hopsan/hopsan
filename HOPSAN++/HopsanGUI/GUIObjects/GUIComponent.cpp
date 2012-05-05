@@ -247,9 +247,9 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
     for(int i=0; i<paramDataVec.size(); ++i)
     {
         QDomElement xmlParam = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
-        xmlParam.setAttribute(HMF_NAMETAG, paramDataVec[i].name);
-        xmlParam.setAttribute(HMF_VALUETAG, paramDataVec[i].value);
-        xmlParam.setAttribute(HMF_TYPE, paramDataVec[i].type);
+        xmlParam.setAttribute(HMF_NAMETAG, paramDataVec[i].mName);
+        xmlParam.setAttribute(HMF_VALUETAG, paramDataVec[i].mValue);
+        xmlParam.setAttribute(HMF_TYPE, paramDataVec[i].mType);
 
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {

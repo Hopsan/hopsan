@@ -53,20 +53,30 @@ class SystemContainer;
 class ModelObject;
 class SystemParameterListWidget;
 
-class ComboBoxDelegate : public QItemDelegate
+
+class ParameterTypeComboBox : public QComboBox
+{
+public:
+    ParameterTypeComboBox(QWidget *pParentWidget=0) : QComboBox(pParentWidget)
+    {
+        addItem("double");
+        addItem("integer");
+        addItem("bool");
+        addItem("string");
+    }
+};
+
+
+class ParamTypeComboBoxDelegate : public QItemDelegate
 {
     Q_OBJECT
 
 public:
-    ComboBoxDelegate(QObject *parent=0) : QItemDelegate(parent){}
+    ParamTypeComboBoxDelegate(QObject *parent=0) : QItemDelegate(parent){}
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
-        QComboBox *editor = new QComboBox(parent);
-        editor->addItem("double");
-        editor->addItem("integer");
-        editor->addItem("bool");
-        editor->addItem("string");
+        ParameterTypeComboBox *editor = new ParameterTypeComboBox(parent);
         return editor;
     }
 
@@ -74,13 +84,13 @@ public:
     {
         QString value = index.model()->data(index, Qt::EditRole).toString();
 
-        QComboBox *comboBox = static_cast<QComboBox*>(editor);
+        ParameterTypeComboBox *comboBox = static_cast<ParameterTypeComboBox*>(editor);
         comboBox->setCurrentIndex(comboBox->findText(value));
     }
 
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
     {
-        QComboBox *comboBox = static_cast<QComboBox*>(editor);
+        ParameterTypeComboBox *comboBox = static_cast<ParameterTypeComboBox*>(editor);
         model->setData(index, comboBox->currentText(), Qt::EditRole);
     }
 
@@ -127,20 +137,18 @@ public:
             switch(index.column())
             {
             case 0:
-                return mParameterData.at(index.row()).name;
+                return mParameterData.at(index.row()).mName;
                 break;
             case 1:
-                return mParameterData.at(index.row()).value;
+                return mParameterData.at(index.row()).mValue;
                 break;
             case 2:
-                return mParameterData.at(index.row()).type;
+                return mParameterData.at(index.row()).mType;
                 break;
             }
         }
-        else
-        {
-            return QVariant();
-        }
+
+        return QVariant();
     }
 
     Qt::ItemFlags flags(const QModelIndex &index) const
@@ -158,13 +166,13 @@ public:
             switch(index.column())
             {
             case 0:
-                //mParameterData[index.row()].name = value.toString();
+                renameParameter(index.row(), value.toString());
                 break;
             case 1:
-                mParameterData[index.row()].value = value.toString();
+                mParameterData[index.row()].mValue = value.toString();
                 break;
             case 2:
-                mParameterData[index.row()].type = value.toString();
+                mParameterData[index.row()].mType = value.toString();
                 break;
             }
 
@@ -200,24 +208,83 @@ public:
         {
             return QString("%1").arg(section);
         }
+
+        return QVariant();
+    }
+
+    bool removeRows(int row, int count, const QModelIndex &parent)
+    {
+        beginRemoveRows(QModelIndex(), row, row+count-1);
+
+        for (int i=row; i<row+count; ++i)
+        {
+            removeParameter(row);
+        }
+
+        endRemoveRows();
+        return true;
+    }
+
+    bool addOrSetParameter(const CoreParameterData &rParameterData)
+    {
+        bool ok;
+        CoreParameterData oldParamData;
+        mpContainerObject->getParameter(rParameterData.mName, oldParamData);
+
+        ok = mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(rParameterData.mName,
+                                                                             rParameterData.mValue,
+                                                                             rParameterData.mDescription,
+                                                                             rParameterData.mUnit,
+                                                                             rParameterData.mType);
+        //Error check
+        if(!ok)
+        {
+            QMessageBox::critical(0, "Hopsan GUI",
+                                  QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
+                                  .arg(rParameterData.mName, rParameterData.mValue));
+            return false;
+        }
+
+        //! @todo check if other stuff then value has changed, at least type
+        //! @todo dont go through main window to tag a tab as changed, should go through container
+        //! @todo need to set has changed in more places after set rename add and remove maybe
+        if(oldParamData.mValue != mpContainerObject->getParameterValue(rParameterData.mName))
+        {
+            gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+        }
+
+        //! @todo if Ok the we should update or emit data changed or something
+        return ok;
+
+    }
+
+    bool hasParameter(const QString name)
+    {
+        return mpContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(name);
     }
 
 protected:
-    bool renameParameter(){}
+    void removeParameter(const int row)
+    {
+        mpContainerObject->getCoreSystemAccessPtr()->removeSystemParameter(mParameterData[row].mName);
+        mParameterData.remove(row);
+    }
+
+    bool renameParameter(const int idx, const QString newName)
+    {
+        CoreParameterData oldData = mParameterData[idx];
+        removeParameter(idx);
+        oldData.mName = newName;
+        return addOrSetParameter(oldData);
+    }
+
     bool addOrSetParameter(const int idx)
     {
-        bool ok;
-        ok = mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(mParameterData[idx].name,
-                                                                             mParameterData[idx].value,
-                                                                             mParameterData[idx].description,
-                                                                             mParameterData[idx].unit,
-                                                                             mParameterData[idx].type);
-        return ok;
+        return addOrSetParameter(mParameterData[idx]);
     }
 
     ContainerObject *mpContainerObject;
     QVector<CoreParameterData> mParameterData;
-
 };
 
 
@@ -234,15 +301,13 @@ public slots:
 
 protected slots:
     void openAddParameterDialog();
-    void addParameter();
+    bool addParameter();
     void addParameterAndCloseDialog();
-    void setParameter(QString name, QString valueTxt, QString descriptionTxt="", QString unitTxt="", QString typeTxt="");
-    bool hasParameter(QString name);
+    void removeSelected();
 
 private:
     ContainerObject *mpContainerObject;
     QTableView *mpSysParamListView;
-    //SysParamListModel *mpParameterListModel;
 
     QDialog *mpAddParameterDialog;
     QLineEdit *mpNameBox;
@@ -253,22 +318,6 @@ private:
     QPushButton *mpRemoveButton;
 };
 
-
-
-//class TypeComboBox : public QComboBox
-//{
-//    Q_OBJECT
-
-//public:
-//    TypeComboBox(const int row, const int column, SystemParameterTableWidget *parent);
-
-//public slots:
-//    void typeHasChanged(QString newType);
-
-//protected:
-//    int mRow, mColumn;
-//    SystemParameterTableWidget *mParent;
-//};
 
 //class SysParamListView : public QListView
 //{

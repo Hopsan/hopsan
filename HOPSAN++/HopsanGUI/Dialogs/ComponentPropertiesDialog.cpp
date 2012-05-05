@@ -129,10 +129,10 @@ void ComponentPropertiesDialog::createEditStuff()
     size_t nStV=0;
     for(int i=0; i<paramDataVector.size(); ++i)
     {
-        if(interpretedAsStartValue(paramDataVector[i].description))
+        if(interpretedAsStartValue(paramDataVector[i].mDescription))
         {
             //QString unit = gConfig.getDefaultUnit(qParameterNames[i].section("::", 1, 1));
-            paramDataVector[i].unit.prepend("[").append("]");
+            paramDataVector[i].mUnit.prepend("[").append("]");
             mvStartValueLayout.push_back(new ParameterSettingsLayout(paramDataVector[i],
                                                                      mpComponent));
             startValueLayout->addLayout(mvStartValueLayout.back(), nParam, 0);

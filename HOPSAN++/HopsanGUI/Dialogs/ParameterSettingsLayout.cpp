@@ -32,7 +32,7 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     mpModelObject = pModelObject;
 
     // Set name label
-    mName = rParameterData.name;
+    mName = rParameterData.mName;
     mNameLabel.setText(parseVariableDescription(mName));
     mNameLabel.setMinimumWidth(10);
     mNameLabel.setMaximumWidth(100);
@@ -42,19 +42,19 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     // Set description label
     mDescriptionLabel.setMinimumWidth(100);
     mDescriptionLabel.setMaximumWidth(1000);
-    mDescriptionLabel.setText(rParameterData.description);
+    mDescriptionLabel.setText(rParameterData.mDescription);
     //mDescriptionNameLabel.setWordWrap(true);
     mDescriptionLabel.adjustSize();
 
     // Set unit label
     mUnitLabel.setMinimumWidth(50);
     mUnitLabel.setMaximumWidth(50);
-    mUnitLabel.setText(parseVariableUnit(rParameterData.unit));
+    mUnitLabel.setText(parseVariableUnit(rParameterData.mUnit));
 
     // Set value line editd
     mValueLineEdit.setMinimumWidth(100);
     mValueLineEdit.setMaximumWidth(100);
-    mValueLineEdit.setText(rParameterData.value);
+    mValueLineEdit.setText(rParameterData.mValue);
 
     // Set tool buttons
     mResetDefaultToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
@@ -64,12 +64,12 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     mSystemParameterToolButton.setToolTip("Map To System Parameter");
 
     // If dynamic parameter add switch button
-    if (rParameterData.isDynamic)
+    if (rParameterData.mIsDynamic)
     {
         bool checked=false;
         //mDynamicEnabledCheckBox.setText("Dynamic");
         mDynamicEnabledCheckBox.setToolTip("Make Port (Experimental)");
-        if (mpModelObject->getPort(rParameterData.name) != 0)
+        if (mpModelObject->getPort(rParameterData.mName) != 0)
         {
             checked=true;
         }
@@ -147,9 +147,9 @@ void ParameterSettingsLayout::showListOfSystemParameters()
 
     for (int i=0; i<paramDataVector.size(); ++i)
     {
-        QAction *tempAction = menu.addAction(paramDataVector[i].name+" = "+paramDataVector[i].value);
+        QAction *tempAction = menu.addAction(paramDataVector[i].mName+" = "+paramDataVector[i].mValue);
         tempAction->setIconVisibleInMenu(false);
-        actionParamMap.insert(tempAction, paramDataVector[i].name);
+        actionParamMap.insert(tempAction, paramDataVector[i].mName);
     }
 
     QCursor cursor;

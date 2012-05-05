@@ -457,13 +457,13 @@ void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParamete
         for(size_t i=0; i<pParams->size(); ++i)
         {
             CoreParameterData data;
-            data.name = QString::fromStdString(pParams->at(i)->getName());
-            data.type = QString::fromStdString(pParams->at(i)->getType());
-            data.value = QString::fromStdString(pParams->at(i)->getValue());
-            data.unit = QString::fromStdString(pParams->at(i)->getUnit());
-            data.description = QString::fromStdString(pParams->at(i)->getDescription());
-            data.isDynamic = pParams->at(i)->isDynamic();
-            data.isEnabled = pParams->at(i)->isEnabled();
+            data.mName = QString::fromStdString(pParams->at(i)->getName());
+            data.mType = QString::fromStdString(pParams->at(i)->getType());
+            data.mValue = QString::fromStdString(pParams->at(i)->getValue());
+            data.mUnit = QString::fromStdString(pParams->at(i)->getUnit());
+            data.mDescription = QString::fromStdString(pParams->at(i)->getDescription());
+            data.mIsDynamic = pParams->at(i)->isDynamic();
+            data.mIsEnabled = pParams->at(i)->isEnabled();
 
             rParameterDataVec[i] = data;
         }
@@ -479,13 +479,13 @@ void CoreSystemAccess::getParameter(QString componentName, QString parameterName
         if (pParam!=0)
         {
             //! @todo duplicate implementation
-            rData.name = QString::fromStdString(pParam->getName());
-            rData.type = QString::fromStdString(pParam->getType());
-            rData.value = QString::fromStdString(pParam->getValue());
-            rData.unit = QString::fromStdString(pParam->getUnit());
-            rData.description = QString::fromStdString(pParam->getDescription());
-            rData.isDynamic = pParam->isDynamic();
-            rData.isEnabled = pParam->isEnabled();
+            rData.mName = QString::fromStdString(pParam->getName());
+            rData.mType = QString::fromStdString(pParam->getType());
+            rData.mValue = QString::fromStdString(pParam->getValue());
+            rData.mUnit = QString::fromStdString(pParam->getUnit());
+            rData.mDescription = QString::fromStdString(pParam->getDescription());
+            rData.mIsDynamic = pParam->isDynamic();
+            rData.mIsEnabled = pParam->isEnabled();
         }
     }
 }
@@ -806,13 +806,13 @@ void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParamete
     {
         //! @todo duplicate imlpementation of data copying is bad (duplicate in getParameters)
         CoreParameterData data;
-        data.name = QString::fromStdString(pParams->at(i)->getName());
-        data.type = QString::fromStdString(pParams->at(i)->getType());
-        data.value = QString::fromStdString(pParams->at(i)->getValue());
-        data.unit = QString::fromStdString(pParams->at(i)->getUnit());
-        data.description = QString::fromStdString(pParams->at(i)->getDescription());
-        data.isDynamic = pParams->at(i)->isDynamic();
-        data.isEnabled = pParams->at(i)->isEnabled();
+        data.mName = QString::fromStdString(pParams->at(i)->getName());
+        data.mType = QString::fromStdString(pParams->at(i)->getType());
+        data.mValue = QString::fromStdString(pParams->at(i)->getValue());
+        data.mUnit = QString::fromStdString(pParams->at(i)->getUnit());
+        data.mDescription = QString::fromStdString(pParams->at(i)->getDescription());
+        data.mIsDynamic = pParams->at(i)->isDynamic();
+        data.mIsEnabled = pParams->at(i)->isEnabled();
 
         rParameterDataVec[i] = data;
     }

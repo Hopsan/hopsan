@@ -67,7 +67,9 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
 
     mpSysParamListView = new QTableView();
     mpSysParamListView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    ComboBoxDelegate *pComboBoxDelegate = new ComboBoxDelegate();
+    mpSysParamListView->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    ParamTypeComboBoxDelegate *pComboBoxDelegate = new ParamTypeComboBoxDelegate();
     mpSysParamListView->setItemDelegateForColumn(2, pComboBoxDelegate);
 
     QGridLayout *pGridLayout = new QGridLayout(this);
@@ -80,7 +82,7 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     update();
 
     connect(mpAddButton, SIGNAL(clicked()), this, SLOT(openAddParameterDialog()));
-    //connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
+    connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeSelected()));
 }
 
 void SystemParametersWidget::update(ContainerObject *pNewContainer)
@@ -191,36 +193,36 @@ void SystemParametersWidget::update()
 //}
 
 
-bool SystemParametersWidget::hasParameter(QString name)
-{
-    return mpContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(name);
-}
+//bool SystemParametersWidget::hasParameter(QString name)
+//{
+//    return mpContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(name);
+//}
 
 
-//! @brief Slot that adds a System parameter value
-//! @param name Lookup name for the System parameter
-//! @param value Value of the System parameter
-void SystemParametersWidget::setParameter(QString name, QString valueTxt, QString descriptionTxt, QString unitTxt, QString typeTxt)
-{
-    CoreParameterData oldParamData;
-    mpContainerObject->getParameter(name, oldParamData);
+////! @brief Slot that adds a System parameter value
+////! @param name Lookup name for the System parameter
+////! @param value Value of the System parameter
+//void SystemParametersWidget::setParameter(QString name, QString valueTxt, QString descriptionTxt, QString unitTxt, QString typeTxt)
+//{
+//    CoreParameterData oldParamData;
+//    mpContainerObject->getParameter(name, oldParamData);
 
-    //Error check
-    if(!(mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt, descriptionTxt, unitTxt, typeTxt)))
-    {
-        QMessageBox::critical(0, "Hopsan GUI",
-                              QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
-                              .arg(name, valueTxt));
-        return;
-    }
+//    //Error check
+//    if(!(mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(name, valueTxt, descriptionTxt, unitTxt, typeTxt)))
+//    {
+//        QMessageBox::critical(0, "Hopsan GUI",
+//                              QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
+//                              .arg(name, valueTxt));
+//        return;
+//    }
 
-    //! @todo check if other stuff then value has changed, at least type
-    //! @todo dont go through main window to tag a tab as changed, should go through container
-    if(oldParamData.value != mpContainerObject->getParameterValue(name))
-    {
-        gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
-    }
-}
+//    //! @todo check if other stuff then value has changed, at least type
+//    //! @todo dont go through main window to tag a tab as changed, should go through container
+//    if(oldParamData.mValue != mpContainerObject->getParameterValue(name))
+//    {
+//        gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+//    }
+//}
 
 
 //void SystemParameterTableWidget::setAllParameters()
@@ -295,11 +297,7 @@ void SystemParametersWidget::openAddParameterDialog()
     mpValueBox = new QLineEdit(this);
     pTypeLabel = new QLabel("Type: ", this);
 
-    mpTypeBox = new QComboBox();
-    mpTypeBox->addItem("double");
-    mpTypeBox->addItem("integer");
-    mpTypeBox->addItem("bool");
-    mpTypeBox->addItem("string");
+    mpTypeBox = new ParameterTypeComboBox();
 
     pCancelInDialogButton = new QPushButton("Cancel", this);
     pAddInDialogButton = new QPushButton(trUtf8("Add && Continue"), this);
@@ -327,9 +325,10 @@ void SystemParametersWidget::openAddParameterDialog()
 
 
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
-void SystemParametersWidget::addParameter()
+bool SystemParametersWidget::addParameter()
 {
-    if (hasParameter(mpNameBox->text()))
+    SysParamListModel* pModel = qobject_cast<SysParamListModel*>(mpSysParamListView->model());
+    if (pModel->hasParameter(mpNameBox->text()))
     {
         QMessageBox::critical(0, "Hopsan GUI",
                               QString("'%1' already exists, will not add!")
@@ -337,17 +336,33 @@ void SystemParametersWidget::addParameter()
     }
     else
     {
-        setParameter(mpNameBox->text(), mpValueBox->text(), "", "", mpTypeBox->currentText());
-        update();
+        CoreParameterData data(mpNameBox->text(), mpValueBox->text(), mpTypeBox->currentText());
+        if (pModel->addOrSetParameter(data))
+        {
+            update();
+            return true;
+        }
     }
+    return false;
 }
 
 
 void SystemParametersWidget::addParameterAndCloseDialog()
 {
-    addParameter();
-    mpAddParameterDialog->close();
-    delete(mpAddParameterDialog);
+    if(addParameter())
+    {
+        mpAddParameterDialog->close();
+        delete(mpAddParameterDialog);
+    }
+}
+
+void SystemParametersWidget::removeSelected()
+{
+    QModelIndexList idxList = mpSysParamListView->selectionModel()->selectedRows();
+    for (int i=0; i<idxList.count(); ++i)
+    {
+        mpSysParamListView->model()->removeRows(idxList[i].row(), 1);
+    }
 }
 
 

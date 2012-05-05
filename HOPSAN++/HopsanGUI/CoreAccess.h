@@ -57,13 +57,17 @@ public:
 class CoreParameterData
 {
 public:
-    QString name;
-    QString description;
-    QString unit;
-    QString value;
-    QString type;
-    bool    isDynamic;
-    bool    isEnabled;
+    CoreParameterData() : mIsDynamic(false), mIsEnabled(true) {}
+    CoreParameterData(const QString name, const QString value, const QString type, const QString unit="", const QString desc="")
+        : mName(name), mValue(value), mType(type), mUnit(unit), mDescription(desc), mIsDynamic(false), mIsEnabled(true) {}
+
+    QString mName;
+    QString mValue;
+    QString mType;
+    QString mUnit;
+    QString mDescription;
+    bool    mIsDynamic;
+    bool    mIsEnabled;
 };
 
 class CoreSystemAccess

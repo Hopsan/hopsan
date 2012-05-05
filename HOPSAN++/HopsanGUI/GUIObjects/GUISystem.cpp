@@ -224,9 +224,9 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
     for(int i=0; i<paramDataVector.size(); ++i)
     {
         QDomElement xmlParameter = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
-        xmlParameter.setAttribute(HMF_NAMETAG, paramDataVector[i].name);
-        xmlParameter.setAttribute(HMF_VALUETAG, paramDataVector[i].value);
-        xmlParameter.setAttribute(HMF_TYPE, paramDataVector[i].type);
+        xmlParameter.setAttribute(HMF_NAMETAG, paramDataVector[i].mName);
+        xmlParameter.setAttribute(HMF_VALUETAG, paramDataVector[i].mValue);
+        xmlParameter.setAttribute(HMF_TYPE, paramDataVector[i].mType);
     }
 }
 
