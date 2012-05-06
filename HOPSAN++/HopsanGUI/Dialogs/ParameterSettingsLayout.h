@@ -56,6 +56,7 @@ protected:
     QLabel mNameLabel;
     QLabel mDescriptionLabel;
     QLabel mUnitLabel;
+    QString mParameterType;
     QLineEdit mValueLineEdit;
     QToolButton mResetDefaultToolButton;
     QToolButton mSystemParameterToolButton;

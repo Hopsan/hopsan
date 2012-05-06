@@ -563,3 +563,103 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
     (*rLineStream.mpQTextSream) << input << endl;
     return rLineStream;
 }
+
+bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString)
+{
+    //Strip trailing and leading spaces
+    stripLTSpaces(rValue);
+
+    //! @todo what if empty
+    QString initialSign="";
+    // Strip initial +- sign to simplify further checks
+    if ( (rValue[0] == '+') || (rValue[0] == '-') )
+    {
+        initialSign = rValue[0];
+        rValue.remove(0,1);
+    }
+
+    if(rSysParNames.contains(rValue))
+    {
+        rValue.prepend(initialSign);
+        return true;
+    }
+
+    if (type == "double")
+    {
+        bool onlyNumbers=true;
+        if ( rValue[0].isNumber() )
+        {
+            // Replace incorrect decimal separator
+            rValue.replace(",", ".");
+
+            if( rValue.count("e") > 1 || rValue.count(".") > 1 || rValue.count("E") > 1 )
+            {
+                onlyNumbers=false;
+            }
+            else
+            {
+                for(int i=1; i<rValue.size(); ++i)
+                {
+                    if(!rValue[i].isDigit() && (rValue[i] != 'e') && (rValue[i] != 'E') && (rValue[i] != '+') && (rValue[i] != '-') && (rValue[i] != '.'))
+                    {
+                        onlyNumbers=false;
+                        break;
+                    }
+                    else if( (rValue[i] == '+' || rValue[i] == '-') && !((rValue[i-1] == 'e') || (rValue[i-1] == 'E')) )
+                    {
+                        onlyNumbers=false;
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            onlyNumbers = false;
+        }
+
+        if(!onlyNumbers)
+        {
+            rErrorString = QString("Invalid [double] parameter value \"%1\". Only numbers are allowed. Nummeric strings like 1[eE][+-]5 will work.").arg(rValue);
+        }
+
+        rValue.prepend(initialSign);
+        return onlyNumbers;
+    }
+    else if (type == "integer")
+    {
+        bool onlyNumbers=true;
+        for(int i=1; i<rValue.size(); ++i)
+        {
+            if (!rValue[i].isNumber())
+            {
+                onlyNumbers = false;
+                break;
+            }
+        }
+
+        if(!onlyNumbers)
+        {
+            rErrorString = QString("Invalid [integer] parameter value \"%1\". Only numbers are allowed.").arg(rValue);
+        }
+
+        rValue.prepend(initialSign);
+        return onlyNumbers;
+    }
+    else if (type == "bool")
+    {
+        if ((rValue != "true") && (rValue != "false"))
+        {
+            rErrorString = QString("Invalid [bool] parameter value \"%1\". Only \"true\" or \"false\" are allowed.").arg(rValue);
+            return false;
+        }
+        return true;
+    }
+    else if (type == "string")
+    {
+        return true;
+    }
+
+    rErrorString = QString("Invalid parameter type \"%1\"").arg(type);
+    return false;
+}

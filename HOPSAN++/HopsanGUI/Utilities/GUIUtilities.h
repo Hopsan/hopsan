@@ -60,6 +60,7 @@ void removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
+bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString);
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

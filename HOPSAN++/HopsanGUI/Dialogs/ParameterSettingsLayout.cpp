@@ -30,6 +30,7 @@
 ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent) : QGridLayout(pParent)
 {
     mpModelObject = pModelObject;
+    mParameterType = rParameterData.mType;
 
     // Set name label
     mName = rParameterData.mName;
@@ -200,56 +201,20 @@ void ParameterSettingsLayout::pickValueTextColor()
 bool ParameterSettingsLayout::cleanAndVerifyParameterValue()
 {
     QString value=mValueLineEdit.text();
-
     QStringList sysParamNames = mpModelObject->getParentContainerObject()->getParameterNames();
-    if(sysParamNames.contains(value))
+    QString error;
+
+    bool isok = verifyParameterValue(value, mParameterType, sysParamNames, error);
+
+    if(isok)
     {
-        return true;
-    }
-
-    //Strip trailing and leading spaces
-    stripLTSpaces(value);
-
-    bool onlyNumbers=true;
-    if ( value[0].isNumber() || (value[0] == '-') )
-    {
-        value.replace(",", ".");
-
-        if( value.count("e") > 1 || value.count(".") > 1 || value.count("E") > 1 )
-        {
-            onlyNumbers=false;
-        }
-        else
-        {
-            for(int i=1; i<value.size(); ++i)
-            {
-                if(!value[i].isDigit() && (value[i] != 'e') && (value[i] != 'E') && (value[i] != '+') && (value[i] != '-') && (value[i] != '.'))
-                {
-                    onlyNumbers=false;
-                    break;
-                }
-                else if( (value[i] == '+' || value[i] == '-') && !((value[i-1] == 'e') || (value[i-1] == 'E')) )
-                {
-                    onlyNumbers=false;
-                    break;
-                }
-            }
-        }
+        // Set corrected text
+        mValueLineEdit.setText(value);
     }
     else
     {
-        onlyNumbers = false;
+        QMessageBox::critical(this->parentWidget(), "Error", error.append(" Resetting parameter value!"));
     }
 
-    // Set corrected text
-    mValueLineEdit.setText(value);
-
-    if(!onlyNumbers)
-    {
-       QMessageBox::critical(this->parentWidget(), "Error",
-                             "Invalid Parameter string \""+ value +
-                             "\". Only numbers are alowed. Nummeric strings like 1[eE][+-]5 will work. Resetting parameter value!");
-    }
-
-    return onlyNumbers;
+    return isok;
 }

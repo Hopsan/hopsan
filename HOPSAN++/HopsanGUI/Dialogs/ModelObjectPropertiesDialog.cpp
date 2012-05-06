@@ -51,9 +51,9 @@ bool ModelObjectPropertiesDialog::setParameterValues(QVector<ParameterSettingsLa
         QString oldValueTxt = mpModelObject->getParameterValue(rParamLayouts[i]->getDataName());
 
         //Parameter has changed, add to undo stack and set the parameter
-        success = rParamLayouts[i]->cleanAndVerifyParameterValue();
+        bool isOk = rParamLayouts[i]->cleanAndVerifyParameterValue();
 
-        if(success)
+        if(isOk)
         {
             QString valueTxt = rParamLayouts[i]->getDataValueTxt();
 
@@ -65,7 +65,7 @@ bool ModelObjectPropertiesDialog::setParameterValues(QVector<ParameterSettingsLa
                                       .arg(valueTxt)
                                       .arg(rParamLayouts[i]->getDataName()));
                 rParamLayouts[i]->setDataValueTxt(oldValueTxt);
-                success = false;
+                isOk = false;
             }
             if(oldValueTxt != valueTxt)
             {
@@ -87,6 +87,7 @@ bool ModelObjectPropertiesDialog::setParameterValues(QVector<ParameterSettingsLa
             // Reset old value
             rParamLayouts[i]->setDataValueTxt(oldValueTxt);
         }
+        success = success && isOk;
     }
     return success;
 }
