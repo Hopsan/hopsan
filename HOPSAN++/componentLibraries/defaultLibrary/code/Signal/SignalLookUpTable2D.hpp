@@ -82,15 +82,26 @@ namespace hopsan {
             }
 
             myDataCurve = new CSVParser(success, mDataCurveFileName);
-            success = success && myDataCurve->checkData();
             if(!success)
             {
                 std::stringstream ss;
-                ss << "Unable to initialize CSV file: " << mDataCurveFileName;
+                ss << "Unable to initialize CSV file: " << mDataCurveFileName << ", " << myDataCurve->getErrorString();
                 addErrorMessage(ss.str());
                 stopSimulation();
             }
             else
+            {
+                success = success && myDataCurve->checkData();
+                if(!success)
+                {
+                    std::stringstream ss;
+                    ss << "Unable to initialize CSV file: " << mDataCurveFileName << ", " << myDataCurve->getErrorString();
+                    addErrorMessage(ss.str());
+                    stopSimulation();
+                }
+            }
+
+            if(success)
             {
                 //                std::stringstream ss;
                 //                ss << mGain << "  " << myDataCurve->interpolate(mGain);

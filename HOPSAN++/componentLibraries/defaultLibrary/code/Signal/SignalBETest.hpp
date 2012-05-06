@@ -69,8 +69,7 @@ namespace hopsan {
             registerParameter("filename", "Data Curve", "", mDataCurveFileName);
             registerParameter("tb", "TestBOOL", "", test);
 
-            bool success;
-            myDataCurve = new CSVParser(success);
+            myDataCurve = 0;
         }
 
 
@@ -79,18 +78,20 @@ namespace hopsan {
             if(test)
                 addWarningMessage("APAN AR HAR!");
             bool success=true;
-            if(myDataCurve)
+            if(myDataCurve != 0)
             {
                 delete myDataCurve;
-                myDataCurve = new CSVParser(success, mDataCurveFileName);
-                if(!success)
-                {
-                    std::stringstream ss;
-                    ss << "Unable to initialize CVS file: " << mDataCurveFileName;
-                    addErrorMessage(ss.str());
-                    stopSimulation();
-                }
             }
+
+            myDataCurve = new CSVParser(success, mDataCurveFileName);
+            if(!success)
+            {
+                std::stringstream ss;
+                ss << "Unable to initialize CVS file: " << mDataCurveFileName;
+                addErrorMessage(ss.str());
+                stopSimulation();
+            }
+
             if(success)
             {
 

@@ -35,17 +35,20 @@ namespace hopsan {
     class DLLIMPORTEXPORT CSVParser
     {
     public:
-        CSVParser(bool &success,
-                  const std::string filename = "Book1.csv",
+        CSVParser(bool &rSuccess,
+                  const std::string filename,
                   const char line_terminator = '\n',
                   const char enclosure_char = '"');
 
         bool checkData();
         double interpolate(bool &okInIndex, const double x, const size_t outIndex = 1, const size_t inIndex = 0);
+        std::string getErrorString() const;
 
-    public: //Should be protected:
+    protected:
         std::vector< std::vector<double> > mData;
+        std::vector<double> mFirstValues, mLastValues;
         std::vector< int > mIncreasing;
+        std::string mErrorString;
     };
 }
 
