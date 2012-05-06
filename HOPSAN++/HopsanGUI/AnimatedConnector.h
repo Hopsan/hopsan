@@ -48,7 +48,7 @@ class AnimatedConnector : public QGraphicsWidget
 public:
     AnimatedConnector(Connector *pConnector, AnimationWidget *pAnimationWidget);
     ~AnimatedConnector();
-    virtual void update();
+    virtual void updateAnimation();
 
     AnimationWidget *mpAnimationWidget;
     Connector *mpConnector;
@@ -63,6 +63,9 @@ private:
     QVector<AnimatedConnectorLine*> mpLines;
     QVector<connectorGeometry> mGeometries;
     QVector<QPointF> mPoints;
+
+    QString mComponentName;
+    QString mPortName;
 };
 
 

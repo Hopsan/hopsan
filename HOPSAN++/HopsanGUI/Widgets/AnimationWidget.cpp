@@ -29,6 +29,7 @@
 #include "Configuration.h"
 #include "GraphicsView.h"
 #include "GUIPort.h"
+#include "GUIConnector.h"
 #include "MainWindow.h"
 #include "GUIObjects/AnimatedComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -58,9 +59,11 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpGraphicsView->setInteractive(true);
     mpGraphicsView->setEnabled(true);
     mpGraphicsView->setAcceptDrops(false);
-    mpGraphicsView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    mpGraphicsView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
     mpGraphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     mpGraphicsView->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    mpGraphicsView->setCacheMode(QGraphicsView::CacheBackground);
+    mpGraphicsView->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
     mpGraphicsView->centerOn(mpGraphicsView->sceneRect().topLeft());
     mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     mpGraphicsView->centerOn(2500,2500);
@@ -121,6 +124,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     //Create the timer object
     mpTimer = new QTimer(0);
+    mpTime = new QTime();
 
     //Set default values for animation variables
     mRealTime=false;
@@ -128,7 +132,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mLastAnimationTime = 0;
     mSimulationSpeed = 0;
     mTimeStep = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
-    mFps=50;   //Frames per second
+    mFps=60;   //Frames per second
     mSpeedSliderSensitivity=10;
 
     mIntensityMaxMap.insert("NodeHydraulic", 2e7);
@@ -155,11 +159,18 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     //Set initial values for speed slider
     mpSpeedSlider->setValue(mSimulationSpeed);
 
+
+    QStringList hiddenComponents;
+    hiddenComponents << "SignalInputInterface" << "SignalOutputInterface";
+
     //Generate list of model objects from container object
     QStringList modelObjectNames = mpContainer->getModelObjectNames();
     for(int i=0; i<modelObjectNames.size(); ++i)
     {
-        mModelObjectsList.append(mpContainer->getModelObject(modelObjectNames.at(i)));
+        if(!hiddenComponents.contains(mpContainer->getModelObject(modelObjectNames.at(i))->getTypeName()))
+        {
+            mModelObjectsList.append(mpContainer->getModelObject(modelObjectNames.at(i)));
+        }
     }
 
     //Generate list of connectors from container object
@@ -168,7 +179,9 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
         for(int e=0;e<mModelObjectsList.at(d)->getConnectorPtrs().size();e++)
         {
             Connector* tempConnector = mModelObjectsList.at(d)->getConnectorPtrs().at(e);
-            if(!mConnectorList.contains(tempConnector))
+            if(!mConnectorList.contains(tempConnector) &&
+               !hiddenComponents.contains(tempConnector->getStartPort()->getGuiModelObject()->getTypeName()) &&
+               !hiddenComponents.contains(tempConnector->getEndPort()->getGuiModelObject()->getTypeName()))
             {
                 mConnectorList.append(tempConnector);
             }
@@ -244,6 +257,10 @@ void AnimationWidget::openPreferencesDialog()
     QDialog *pDialog = new QDialog(this);
     pDialog->setWindowTitle("Animation Preferences");
 
+    QLabel *pFpsLabel = new QLabel("Frames per second: ", pDialog);
+    QLineEdit *pFpsLineEdit = new QLineEdit(QString::number(mFps), pDialog);
+    pFpsLineEdit->setValidator(new QIntValidator);
+
     QLabel *pLowPressureLabel = new QLabel("Low pressure (hydraulic): ", pDialog);
     QLineEdit *pLowPressureLineEdit = new QLineEdit(QString::number(mIntensityMinMap.find("NodeHydraulic").value()), pDialog);
     pLowPressureLineEdit->setValidator(new QDoubleValidator);
@@ -264,13 +281,15 @@ void AnimationWidget::openPreferencesDialog()
     pButtonBox->addButton(pOkButton, QDialogButtonBox::AcceptRole);
 
     QGridLayout *pLayout = new QGridLayout(pDialog);
-    pLayout->addWidget(pLowPressureLabel,       0, 0);
-    pLayout->addWidget(pLowPressureLineEdit,    0, 1);
-    pLayout->addWidget(pHighPressureLabel,      1, 0);
-    pLayout->addWidget(pHighPressureLineEdit,   1, 1);
-    pLayout->addWidget(pFlowSpeedLabel,         2, 0);
-    pLayout->addWidget(pFlowSpeedLineEdit,      2, 1);
-    pLayout->addWidget(pButtonBox,              3, 0, 1, 2);
+    pLayout->addWidget(pFpsLabel,               0, 0);
+    pLayout->addWidget(pFpsLineEdit,            0, 1);
+    pLayout->addWidget(pLowPressureLabel,       1, 0);
+    pLayout->addWidget(pLowPressureLineEdit,    1, 1);
+    pLayout->addWidget(pHighPressureLabel,      2, 0);
+    pLayout->addWidget(pHighPressureLineEdit,   2, 1);
+    pLayout->addWidget(pFlowSpeedLabel,         3, 0);
+    pLayout->addWidget(pFlowSpeedLineEdit,      3, 1);
+    pLayout->addWidget(pButtonBox,              4, 0, 1, 2);
 
     pDialog->setLayout(pLayout);
 
@@ -279,6 +298,7 @@ void AnimationWidget::openPreferencesDialog()
 
     if(pDialog->exec() == QDialog::Accepted)
     {
+        mFps = pFpsLineEdit->text().toInt();
         mIntensityMinMap.insert("NodeHydraulic", pLowPressureLineEdit->text().toDouble());
         mIntensityMaxMap.insert("NodeHydraulic", pHighPressureLineEdit->text().toDouble());
         mFlowSpeedMap.insert("NodeHydraulic", pFlowSpeedLineEdit->text().toDouble());
@@ -364,7 +384,11 @@ void AnimationWidget::updateAnimationSpeed(double speed)
         //Start the timer with correct FPS, if it is not already started
         if(!mpTimer->isActive())
         {
+            mFps = 60;
+            mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000;
             mpTimer->start(1000.0/double(mFps));  //Timer object uses milliseconds
+            mpTime->start();
+            //mpTime->setHMS(0,0,0,mpTimeDisplay->text().toDouble()*1000);
         }
     }
 }
@@ -410,6 +434,24 @@ void AnimationWidget::updateAnimation()
         //Update animated connectors and components
         updateMovables();
     }
+
+
+    //Auto-adjust FPS
+    int dT = mpTime->elapsed();
+    if(dT > 100)    //Only do this every .1 seconds
+    {
+        if(mpTimeDisplay->text().toDouble()*1000-mLastTimeCheck < 0.95*dT)
+        {
+            mFps = std::max(10.0, mFps*0.8);    //Too slow, decrease FPS
+        }
+        else
+        {
+            mFps = std::min(100.0, mFps*1.11);  //Not too slow, increase FPS slightly
+        }
+        mpTimer->start(1000.0/double(mFps));                    //Set timer interval
+        mLastTimeCheck = mpTimeDisplay->text().toDouble()*1000; //Store last check time
+        mpTime->restart();                                      //Restart speed check counter
+    }
 }
 
 
@@ -419,13 +461,13 @@ void AnimationWidget::updateMovables()
    //Update animated components
    for(int c=0; c<mAnimatedComponentList.size(); ++c)
    {
-       mAnimatedComponentList[c]->update();
+       mAnimatedComponentList[c]->updateAnimation();
    }
 
    //Update animated connectors
    for(int c=0; c<mAnimatedConnectorList.size(); ++c)
    {
-       mAnimatedConnectorList[c]->update();
+       mAnimatedConnectorList[c]->updateAnimation();
    }
 }
 

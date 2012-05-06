@@ -67,21 +67,17 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
 
         }
 
-//        if(!mpAnimationWidget->mIntensityMinMap.contains("NodeHydraulic"))
-//        {
-//            mpAnimationWidget->mIntensityMinMap.insert("NodeHydraulic", 0);
-//        }
-//        if(!mpAnimationWidget->mIntensityMaxMap.contains("NodeHydraulic"))
-//        {
-//            mpAnimationWidget->mIntensityMaxMap.insert("NodeHydraulic", 0);
-//        }
-//        for(int i=0; i<mvIntensityData.size(); ++i)
-//        {
-//            if(mvIntensityData.at(i) > mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value())
-//            {
-//                mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value() = mvIntensityData.at(i);
-//            }
-//        }
+        if(mpConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
+        {
+            mComponentName = mpConnector->getEndPort()->getGuiModelObject()->getName();
+            mPortName = mpConnector->getEndPort()->getPortName();
+        }
+        else
+        {
+            mComponentName = mpConnector->getStartPort()->getGuiModelObject()->getName();
+            mPortName = mpConnector->getStartPort()->getPortName();
+        }
+
     }
 
     // Determine appearance
@@ -128,9 +124,9 @@ AnimatedConnector::~AnimatedConnector()
 
 
 //! @brief Updates the animated connector
-void AnimatedConnector::update()
+void AnimatedConnector::updateAnimation()
 {
-    if(!mvIntensityData.isEmpty())      //Should consider flow as well, somehow...
+    if(!mvIntensityData.isEmpty())
     {
         double max = mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
         double min = mpAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
@@ -138,26 +134,15 @@ void AnimatedConnector::update()
         QPen tempPen = mpLines.first()->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
 
-        int index = mpAnimationWidget->getIndex();
         double data, flowData;
         if(mpAnimationWidget->isRealTimeAnimation())
         {
-            QString componentName, portName;
-            if(mpConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
-            {
-                componentName = mpConnector->getEndPort()->getGuiModelObject()->getName();
-                portName = mpConnector->getEndPort()->getPortName();
-            }
-            else
-            {
-                componentName = mpConnector->getStartPort()->getGuiModelObject()->getName();
-                portName = mpConnector->getStartPort()->getPortName();
-            }
-            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(componentName, portName, "Pressure", data);
-            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(componentName, portName, "Flow", flowData);
+            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Pressure", data);
+            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Flow", flowData);
         }
         else
         {
+            int index = mpAnimationWidget->getIndex();
             data = mvIntensityData[index];
             flowData = mvFlowData[index];
         }

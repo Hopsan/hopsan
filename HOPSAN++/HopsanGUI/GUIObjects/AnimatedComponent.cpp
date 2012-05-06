@@ -92,7 +92,7 @@ void AnimatedComponent::draw()
 
 
 //! @brief Updates the animation of the component
-void AnimatedComponent::update()
+void AnimatedComponent::updateAnimation()
 {
     int a=0;    //Adjustables use a different indexing, because all movables are not adjustable
 
@@ -151,6 +151,7 @@ void AnimatedComponent::update()
                 double y = mpAnimationData->startY[m] - data*mpAnimationData->speedY[m];
                 mpMovables[m]->setPos(x, y);
             }
+            mpMovables[m]->update();
         }
     }
 }

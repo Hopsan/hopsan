@@ -138,6 +138,8 @@ private:
 
     //Animation timer object
     QTimer *mpTimer;
+    QTime *mpTime;
+    int mLastTimeCheck;
 
     //Layout
     QGridLayout *mpLayout;

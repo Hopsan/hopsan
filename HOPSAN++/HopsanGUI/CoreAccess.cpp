@@ -391,7 +391,7 @@ bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSa
 
 void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelHasNotChanged)
 {
-    qDebug() << "simulate(), nThreads = " << nThreads;
+    //qDebug() << "simulate(), nThreads = " << nThreads;
 
     if(type == MULTICORE)
     {
@@ -402,7 +402,7 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulatio
     }
     else
     {
-        qDebug() << "Starting singlecore simulation";
+        //qDebug() << "Starting singlecore simulation";
         mpCoreComponentSystem->simulate(mStartTime, mFinishTime);
     }
 }

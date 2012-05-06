@@ -52,7 +52,7 @@ public:
     AnimatedComponent(ModelObject* unanimatedComponent, AnimationWidget *parent);
 
     void draw();
-    void update();
+    void updateAnimation();
     ModelObjectAnimationData *getAnimationDataPtr();
     int indexOfMovable(AnimatedIcon *pMovable);
    // ModelObject* getOriginal();
