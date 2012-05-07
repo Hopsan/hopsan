@@ -33,12 +33,7 @@
 namespace hopsan {
 
     //!
-    //! @brief The data csv file should be on semi-colon separated format, example:
-    //! 0;0
-    //! 1;1
-    //! 2;4
-    //! 3;9
-    //! 4;16
+    //! @brief The data csv file should be  on , separated form or ; separated form
     //!
     //! @ingroup SignalComponents
     //!
@@ -47,11 +42,9 @@ namespace hopsan {
 
     private:
         Port *mpIn, *mpOut;
-
         double *mpND_in, *mpND_out;
 
         std::string mDataCurveFileName;
-
         CSVParser *myDataCurve;
 
     public:
@@ -66,7 +59,7 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             mDataCurveFileName = "File name";
-            registerParameter("filename", "Data Curve", "", mDataCurveFileName);
+            registerParameter("filename", "Abs. path to data curve", "", mDataCurveFileName);
 
             myDataCurve = 0;
         }
@@ -91,7 +84,7 @@ namespace hopsan {
             }
             else
             {
-                success = success && myDataCurve->checkData();
+                success = success && myDataCurve->isInDataOk(0);
                 if(!success)
                 {
                     std::stringstream ss;
@@ -115,19 +108,12 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            bool ok;
-            (*mpND_out) = myDataCurve->interpolate(ok, *mpND_in);
-            //! @todo maybe this check should be done in initialize instead, so that we know its ok before we begin simulate
-            if(!ok)
-            {
-                addErrorMessage("Error in Look Up 2D indata vector, not strict increasing/decreasing.");
-                stopSimulation();
-            }
+            (*mpND_out) = myDataCurve->interpolate(*mpND_in, 1);
         }
 
         void finalize()
         {
-            //! @todo actuallty this is only needed in destructor to cleanup
+            //! @todo actually this is only needed in destructor to cleanup
             //Cleanup data curve
             if (myDataCurve!=0)
             {

@@ -269,9 +269,9 @@ void performModelTest(string modelName)
     CSVParser *refDataCurve;
     bool success=false;
     refDataCurve = new CSVParser(success, modelName+".csv", '\n', '"');
-    if(!success || !refDataCurve->checkData())
+    if(!success || !refDataCurve->isInDataOk(0))
     {
-        cout << "Unable to initialize CSV file: " << modelName+".csv";
+        cout << "Unable to initialize CSV file: " << modelName+".csv " << refDataCurve->getErrorString();
         return;
     }
 
@@ -316,10 +316,9 @@ void performModelTest(string modelName)
     }
 
 
-    bool ok;
     for(size_t i=0; i<vTime.size(); ++i)
     {
-        vRef.push_back(refDataCurve->interpolate(ok, vTime.at(i)));
+        vRef.push_back(refDataCurve->interpolate(vTime.at(i), 1));
     }
 
     std::cout.rdbuf(cout_sbuf); // restore the original stream buffer

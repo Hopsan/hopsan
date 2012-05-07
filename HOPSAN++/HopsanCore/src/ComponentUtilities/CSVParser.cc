@@ -90,10 +90,9 @@ CSVParser::CSVParser(bool &rSuccess,
             file_parser.set_line_term_char(line_terminator);
 
             mData.clear();
-            bool dataIsInited = false;
-            size_t nDataCols=0;
+            mnDataRows=0;
+            mnDataCols=0;
             size_t rowCtr=lines_to_skip;
-            vector<double> dbl_row;
             // Check to see if there are more records, then grab each row one at a time
             while( file_parser.has_more_rows() )
             {
@@ -101,50 +100,55 @@ CSVParser::CSVParser(bool &rSuccess,
                 csv_row row = file_parser.get_row();
                 ++rowCtr;
 
-                if(dataIsInited)
+                if(mData.empty())
                 {
-                    if (row.size() != nDataCols)
+                    //Init data matrix, data will be stored column row wise (not row column as usual), this is for easier column access
+                    mnDataCols = row.size();
+                    mData.resize(mnDataCols);
+                }
+                else
+                {
+                    if (row.size() != mnDataCols)
                     {
                         rSuccess = false;
                         stringstream ss;
-                        ss << "Row: " << rowCtr << " does not have the same length as the previous rows";
+                        ss << "Row: " << rowCtr << " does not have the same number of columns as the previous rows";
                         mErrorString = ss.str();
                         break;
                     }
                 }
-                else
-                {
-                    nDataCols = row.size();
-                    dbl_row.resize(nDataCols,0);
-                    dataIsInited = true;
-                }
 
                 // Convert each column in the row
-                for (size_t i=0; i<row.size(); ++i)
+                for (size_t col=0; col<row.size(); ++col)
                 {
                     // Extract a field string from row
-                    string str = row[i];
+                    string str = row[col];
                     // Replace decimal , with decimal .
                     replace(str.begin(), str.end(), ',', '.');
                     // Use a stream to stream value into double
+                    double d;
                     std::istringstream is;
                     is.str(str);
-                    is >> dbl_row[i];
-                }
+                    is >> d;
 
-                mData.push_back(dbl_row);
+                    // Append to each column
+                    mData[col].push_back(d);
+                }
             }
 
             if (mData.size() > 0)
             {
-                mFirstValues.resize(nDataCols);
-                mLastValues.resize(nDataCols);
-                for (size_t col=0; col<nDataCols; ++col)
+                mnDataRows = mData[0].size();
+                mFirstValues.resize(mnDataCols);
+                mLastValues.resize(mnDataCols);
+                for (size_t col=0; col<mnDataCols; ++col)
                 {
-                    mFirstValues[col] = mData[0][col];
-                    mLastValues[col] = mData[mData.size()-1][col];
+                    mFirstValues[col] = mData[col][0];
+                    mLastValues[col] = mData[col][mnDataRows-1];
                 }
             }
+
+            calcIncreasingOrDecreasing();
         }
         else
         {
@@ -164,29 +168,56 @@ std::string CSVParser::getErrorString() const
     return mErrorString;
 }
 
-//! @todo what is this function suposed to do, clean it up also
-bool CSVParser::checkData()
+size_t CSVParser::getNumDataRows() const
 {
-    bool isOk = false;
+    return mnDataRows;
+}
+
+size_t CSVParser::getNumDataCols() const
+{
+    return mnDataCols;
+}
+
+const std::vector<double> CSVParser::getDataColumn(const size_t idx) const
+{
+    if (idx < mnDataCols)
+    {
+        return mData[idx];
+    }
+    return vector<double>();
+}
+
+int CSVParser::getIncreasingOrDecresing(const size_t idx) const
+{
+    if (idx < mnDataCols)
+    {
+        return mIncDec[idx];
+    }
+    return 0;
+}
+
+//! @brief Check if data in columns are strictly increasing or decresing
+//! @todo maybe we should force the input data vector to be strictly increasing or decreasing
+//! @todo maybe data should be automatically sorted when reading the file instead
+void CSVParser::calcIncreasingOrDecreasing()
+{
     if(!mData.empty())
     {
-        const size_t nRows = mData.size();
-        const size_t nCols = mData[0].size();
-        mIncreasing.resize(nCols, 0);
+        mIncDec.resize(mnDataCols, 0);
 
-        for(size_t col=0; col<nCols; ++col)
+        for(size_t col=0; col<mnDataCols; ++col)
         {
             bool increasing=true;
             bool decreasing=true;
-            for(size_t row=1; row<nRows; ++row)
+            for(size_t row=1; row<mnDataRows; ++row)
             {
-                if (mData[row][col] > mData[row-1][col])
+                if (mData[col][row] > mData[col][row-1])
                 {
                     increasing = increasing && true;
                     decreasing = false;
                 }
 
-                if (mData[row][col] < mData[row-1][col])
+                if (mData[col][row] < mData[col][row-1])
                 {
                     decreasing = decreasing && true;
                     increasing = false;
@@ -195,56 +226,79 @@ bool CSVParser::checkData()
 
             if(increasing)
             {
-                mIncreasing[col] = 1;
+                mIncDec[col] = 1;
             }
 
             if(decreasing)
             {
-                mIncreasing[col] = -1;
+                mIncDec[col] = -1;
             }
         }
-        //! @todo maybe we should force the input data vector to be strictly increasing or incresing
-        isOk = true;
     }
-    return isOk;
 }
 
-
-double CSVParser::interpolate(bool &okInIndex, const double x, const size_t outIndex, const size_t inIndex)
+//! @brief Check if inData column is strictly increasing or decreasing, otherwise interpolate will not work as expected
+bool CSVParser::isInDataOk(const size_t inCol)
 {
-    //okInIndex =
-    if(mIncreasing[inIndex] != 0)
+    if (inCol < mnDataCols)
     {
-        okInIndex = true;
+        if(mIncDec[inCol] != 0)
+        {
+            return true;
+        }
+        mErrorString = "Input data column is not strictly increasing or decreasing";
+        return false;
+    }
+    mErrorString = "Input data column index out of range";
+    return false;
+}
+
+double CSVParser::interpolate(const double x, const size_t outCol, const size_t inCol) const
+{
+    // Handle outside index range
+    if( ((x<mFirstValues[inCol]) && (mIncDec[inCol]==1)) || ((x>mFirstValues[inCol]) && (mIncDec[inCol]==-1)) )
+    {
+        return mFirstValues[outCol];
+    }
+    else if( ((x>=mLastValues[inCol]) && (mIncDec[inCol]==1)) || ((x<=mLastValues[inCol]) && (mIncDec[inCol]==-1)) )
+    {
+        return mLastValues[outCol];
     }
     else
     {
-        okInIndex = false;
-    }
-    if(okInIndex)
-    {
-        size_t i;
-        //out of index
-        if( ((x<mFirstValues[inIndex]) && (mIncreasing[inIndex]==1)) || ((x>mFirstValues[inIndex]) && (mIncreasing[inIndex]==-1)) )
+        //! @todo remove this stupid loop and use direct indexing instead
+        for (size_t row=0; row<mnDataRows-1; row++)
         {
-            return mFirstValues[outIndex];
-        }
-        else if( ((x>=mLastValues[inIndex]) && (mIncreasing[inIndex]==1)) || ((x<=mLastValues[inIndex]) && (mIncreasing[inIndex]==-1)) )
-        {
-            return mLastValues[outIndex];
-        }
-        else
-        {
-            //! @todo remove this stupid loop and use direct indexing instead
-            for (i=0; i < mData.size()-1; i++)
+            if( ((x <= mData[inCol][row]) && (x > mData[inCol][row+1])) || ((x >= mData[inCol][row]) && (x < mData[inCol][row+1])) )
             {
-                if( ((x <= mData[i][inIndex]) && (x > mData[i+1][inIndex])) || ((x >= mData[i][inIndex]) && (x < mData[i+1][inIndex])) )
-                {
-                    //Value is between i and i+1
-                    //return  mData[outIndex][i];
-                    return mData[i][outIndex] + (x - mData[i][inIndex])*(mData[i+1][outIndex] -  mData[i][outIndex])/(mData[i+1][inIndex] -  mData[i][inIndex]);
-                    break;
-                }
+                //Value is between i and i+1
+                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+            }
+        }
+    }
+    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+}
+
+double CSVParser::interpolateInc(const double x, const size_t outCol, const size_t inCol) const
+{
+    // Handle outside index range
+    if( x<mFirstValues[inCol] )
+    {
+        return mFirstValues[outCol];
+    }
+    else if( x>=mLastValues[inCol] )
+    {
+        return mLastValues[outCol];
+    }
+    else
+    {
+        //! @todo remove this stupid loop and use direct indexing instead
+        for (size_t row=0; row<mnDataRows-1; row++)
+        {
+            // Ceeck if value is between i and i+1
+            if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
+            {
+                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
             }
         }
     }

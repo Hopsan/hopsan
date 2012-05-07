@@ -31,25 +31,36 @@
 
 namespace hopsan {
 
-    //! @ingroup ComponentUtilityClasses
-    class DLLIMPORTEXPORT CSVParser
-    {
-    public:
-        CSVParser(bool &rSuccess,
-                  const std::string filename,
-                  const char line_terminator = '\n',
-                  const char enclosure_char = '"');
+//! @ingroup ComponentUtilityClasses
+class DLLIMPORTEXPORT CSVParser
+{
+public:
+    CSVParser(bool &rSuccess,
+              const std::string filename,
+              const char line_terminator = '\n',
+              const char enclosure_char = '"');
 
-        bool checkData();
-        double interpolate(bool &okInIndex, const double x, const size_t outIndex = 1, const size_t inIndex = 0);
-        std::string getErrorString() const;
+    const std::vector<double> getDataColumn(const size_t idx) const;
+    int getIncreasingOrDecresing(const size_t idx) const;
 
-    protected:
-        std::vector< std::vector<double> > mData;
-        std::vector<double> mFirstValues, mLastValues;
-        std::vector< int > mIncreasing;
-        std::string mErrorString;
-    };
+    bool isInDataOk(const size_t inCol);
+    double interpolate(const double x, const size_t outCol, const size_t inCol=0) const;
+    double interpolateInc(const double x, const size_t outCol, const size_t inCol=0) const;
+
+    std::string getErrorString() const;
+    size_t getNumDataRows() const;
+    size_t getNumDataCols() const;
+
+protected:
+    void calcIncreasingOrDecreasing();
+
+    std::vector< std::vector<double> > mData;
+    std::vector<double> mFirstValues, mLastValues;
+    size_t mnDataRows, mnDataCols;
+    std::vector< int > mIncDec;
+    std::string mErrorString;
+};
+
 }
 
 #endif // CVSPARSER_H_INCLUDED
