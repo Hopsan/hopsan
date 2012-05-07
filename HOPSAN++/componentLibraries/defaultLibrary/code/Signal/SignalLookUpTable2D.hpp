@@ -108,7 +108,10 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = myDataCurve->interpolate(*mpND_in, 1);
+//            (*mpND_out) = myDataCurve->interpolate_old(*mpND_in, 1);
+//            (*mpND_out) = myDataCurve->interpolate(*mpND_in, 1);
+//            (*mpND_out) = myDataCurve->interpolateInc(*mpND_in, 1);
+            (*mpND_out) = myDataCurve->interpolateIncSubDiv(*mpND_in, 1);
         }
 
         void finalize()

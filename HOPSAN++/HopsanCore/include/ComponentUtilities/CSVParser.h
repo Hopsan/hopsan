@@ -44,14 +44,18 @@ public:
     int getIncreasingOrDecresing(const size_t idx) const;
 
     bool isInDataOk(const size_t inCol);
+    double interpolate_old(const double x, const size_t outCol, const size_t inCol=0) const;
     double interpolate(const double x, const size_t outCol, const size_t inCol=0) const;
     double interpolateInc(const double x, const size_t outCol, const size_t inCol=0) const;
+    double interpolateIncSubDiv(const double x, const size_t outCol, const size_t inCol=0) const;
 
     std::string getErrorString() const;
     size_t getNumDataRows() const;
     size_t getNumDataCols() const;
 
 protected:
+    size_t intervalHalfSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const;
+    size_t intervalQuadSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const;
     void calcIncreasingOrDecreasing();
 
     std::vector< std::vector<double> > mData;

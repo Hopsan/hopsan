@@ -237,6 +237,71 @@ void CSVParser::calcIncreasingOrDecreasing()
     }
 }
 
+//! @brief Subdivide into two parts to find start row for interpolation
+size_t CSVParser::intervalHalfSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const
+{
+    if (iend == i1)
+    {
+        return i1;
+    }
+    else
+    {
+        //Calc split index
+        size_t splitIdx = i1 + (iend - i1)/2; //Allow truncation
+
+        // Use left split
+        if (x <= mData[colIdx][splitIdx])
+        {
+            return intervalHalfSubDiv(colIdx, x, i1, splitIdx);
+        }
+        else
+        {
+            return intervalHalfSubDiv(colIdx, x, splitIdx+1, iend);
+        }
+    }
+}
+
+//! @brief Subdivide into four parts to find start row for interpolation
+//! @note This function actually seems to be slightly slower then intervalHalfSubDiv
+size_t CSVParser::intervalQuadSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const
+{
+    if (iend == i1)
+    {
+        return i1;
+    }
+    else
+    {
+        //Calc split index
+        size_t splitIdx1 = i1 + (iend - i1)/4; //Allow truncation
+
+        // Check which part to use
+        if (x <= mData[colIdx][splitIdx1])
+        {
+            return intervalQuadSubDiv(colIdx, x, i1, splitIdx1);
+        }
+        else
+        {
+            size_t splitIdx2 = i1 + (iend - i1)/2; //Allow truncation
+            if (x <= mData[colIdx][splitIdx2])
+            {
+                return intervalQuadSubDiv(colIdx, x, splitIdx1+1, splitIdx2);
+            }
+            else
+            {
+                size_t splitIdx3 = i1 + (iend - i1)*3.0/4.0; //Allow truncation
+                if (x <= mData[colIdx][splitIdx3])
+                {
+                    return intervalQuadSubDiv(colIdx, x, splitIdx2+1, splitIdx3);
+                }
+                else
+                {
+                    return intervalQuadSubDiv(colIdx, x, splitIdx3+1, iend);
+                }
+            }
+        }
+    }
+}
+
 //! @brief Check if inData column is strictly increasing or decreasing, otherwise interpolate will not work as expected
 bool CSVParser::isInDataOk(const size_t inCol)
 {
@@ -253,7 +318,7 @@ bool CSVParser::isInDataOk(const size_t inCol)
     return false;
 }
 
-double CSVParser::interpolate(const double x, const size_t outCol, const size_t inCol) const
+double CSVParser::interpolate_old(const double x, const size_t outCol, const size_t inCol) const
 {
     // Handle outside index range
     if( ((x<mFirstValues[inCol]) && (mIncDec[inCol]==1)) || ((x>mFirstValues[inCol]) && (mIncDec[inCol]==-1)) )
@@ -279,6 +344,60 @@ double CSVParser::interpolate(const double x, const size_t outCol, const size_t 
     return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
 }
 
+double CSVParser::interpolate(const double x, const size_t outCol, const size_t inCol) const
+{
+    if (mIncDec[inCol] == 1)
+    {
+        // Handle outside index range
+        if( x<mFirstValues[inCol] )
+        {
+            return mFirstValues[outCol];
+        }
+        else if( x>=mLastValues[inCol] )
+        {
+            return mLastValues[outCol];
+        }
+        else
+        {
+            //! @todo remove this stupid loop and use direct indexing instead
+            for (size_t row=0; row<mnDataRows-1; row++)
+            {
+                // Ceeck if value is between i and i+1
+                if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
+                {
+                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+                }
+            }
+        }
+    }
+    else //Handel decreasing
+    {
+        // Handle outside index range
+        if( x>mFirstValues[inCol] )
+        {
+            return mFirstValues[outCol];
+        }
+        else if( x<=mLastValues[inCol] )
+        {
+            return mLastValues[outCol];
+        }
+        else
+        {
+            //! @todo remove this stupid loop and use direct indexing instead
+            for (size_t row=0; row<mnDataRows-1; row++)
+            {
+                if( (x <= mData[inCol][row]) && (x > mData[inCol][row+1]) )
+                {
+                    //Value is between i and i+1
+                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+                }
+            }
+        }
+    }
+
+    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+}
+
 double CSVParser::interpolateInc(const double x, const size_t outCol, const size_t inCol) const
 {
     // Handle outside index range
@@ -301,6 +420,26 @@ double CSVParser::interpolateInc(const double x, const size_t outCol, const size
                 return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
             }
         }
+    }
+    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+}
+
+double CSVParser::interpolateIncSubDiv(const double x, const size_t outCol, const size_t inCol) const
+{
+    // Handle outside index range
+    if( x<mFirstValues[inCol] )
+    {
+        return mFirstValues[outCol];
+    }
+    else if( x>=mLastValues[inCol] )
+    {
+        return mLastValues[outCol];
+    }
+    else
+    {
+        size_t row = intervalHalfSubDiv(inCol, x, 0, mnDataRows-1);
+        return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+
     }
     return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
 }
