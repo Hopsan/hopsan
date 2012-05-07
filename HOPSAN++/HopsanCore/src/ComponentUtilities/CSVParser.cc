@@ -39,7 +39,6 @@ CSVParser::CSVParser(bool &rSuccess,
     //Figure out field terminator and number of lines to skip
     char field_terminator;
     int lines_to_skip = 0;
-    std::string line = "";
     std::ifstream myfile(filename.c_str());
     if (myfile.is_open())
     {
@@ -57,7 +56,8 @@ CSVParser::CSVParser(bool &rSuccess,
         }
 
         // Find first row with field separator
-        while( line.find(',')==string::npos && line.find(';')==string::npos )
+        std::string line = "";
+        while( (line.find(',')==string::npos) && (line.find(';')==string::npos) && !myfile.eof())
         {
             getline(myfile,line);
             ++lines_to_skip;
@@ -136,19 +136,18 @@ CSVParser::CSVParser(bool &rSuccess,
                 }
             }
 
-            if (mData.size() > 0)
+            if (!mData.empty())
             {
                 mnDataRows = mData[0].size();
-                mFirstValues.resize(mnDataCols);
-                mLastValues.resize(mnDataCols);
-                for (size_t col=0; col<mnDataCols; ++col)
-                {
-                    mFirstValues[col] = mData[col][0];
-                    mLastValues[col] = mData[col][mnDataRows-1];
-                }
+                setFirstLastValues();
+                calcIncreasingOrDecreasing();
             }
 
-            calcIncreasingOrDecreasing();
+            if (rSuccess && mData.empty())
+            {
+                rSuccess = false;
+                mErrorString = "No data read from file";
+            }
         }
         else
         {
@@ -162,22 +161,39 @@ CSVParser::CSVParser(bool &rSuccess,
     }
 }
 
-//! @brief Returns tha last error message
+//! @brief Convenience function to set the first and last values in vector (to avoid lookup during simulation)
+void CSVParser::setFirstLastValues()
+{
+    mFirstValues.resize(mnDataCols);
+    mLastValues.resize(mnDataCols);
+    for (size_t col=0; col<mnDataCols; ++col)
+    {
+        mFirstValues[col] = mData[col][0];
+        mLastValues[col] = mData[col][mnDataRows-1];
+    }
+}
+
+//! @brief Returns the last error message
 std::string CSVParser::getErrorString() const
 {
     return mErrorString;
 }
 
+//! @brief Returns the number of loaded data rows
 size_t CSVParser::getNumDataRows() const
 {
     return mnDataRows;
 }
 
+//! @brief Returns the number of loaded data columns
 size_t CSVParser::getNumDataCols() const
 {
     return mnDataCols;
 }
 
+//! @brief Returns one full data column
+//! @param [in] idx The index of the data column to retreive
+//! @returns Data column vector or empty vector if index out of range
 const std::vector<double> CSVParser::getDataColumn(const size_t idx) const
 {
     if (idx < mnDataCols)
@@ -187,6 +203,8 @@ const std::vector<double> CSVParser::getDataColumn(const size_t idx) const
     return vector<double>();
 }
 
+//! @brief Returns if specified vector is strictly increasing or decreasing
+//! @returns -1 on decreasing 1 on increasing 0 otherwie
 int CSVParser::getIncreasingOrDecresing(const size_t idx) const
 {
     if (idx < mnDataCols)
@@ -194,6 +212,78 @@ int CSVParser::getIncreasingOrDecresing(const size_t idx) const
         return mIncDec[idx];
     }
     return 0;
+}
+
+//! @brief Quicksort algorithm, based on WIKIPEDIA
+size_t CSVParser::quickSortPartition(std::vector<double> &rIndexArray, const size_t left, const size_t right, const size_t pivotIndex)
+{
+    // left is the index of the leftmost element of the array
+    // right is the index of the rightmost element of the array (inclusive)
+    //   number of elements in subarray = right-left+1
+
+    double pivotValue = rIndexArray[pivotIndex];
+    swapRows(pivotIndex, right);  // Move pivot to end
+    size_t storeIndex = left;
+    for (size_t i=left; i<right; ++i)  // left ≤ i < right
+    {
+        if (rIndexArray[i] < pivotValue)
+        {
+            swapRows(i,storeIndex);
+            storeIndex = storeIndex + 1;
+        }
+    }
+    swapRows(storeIndex,right); // Move pivot to its final place
+    return storeIndex;
+}
+
+
+//! @brief Quicksort algorithm, based on WIKIPEDIA
+void CSVParser::quickSort(std::vector<double> &rIndexArray, const size_t left, const size_t right)
+{
+    // If the list has 2 or more items
+    if (left < right)
+    {
+        // See "Choice of pivot" section below for possible choices
+        //choose any 'pivotIndex' such that 'left' ≤ 'pivotIndex' ≤ 'right'
+        size_t pivotIndex = left+(right-left)/2;
+
+        // Get lists of bigger and smaller items and final position of pivot
+        size_t pivotNewIndex = quickSortPartition(rIndexArray, left, right, pivotIndex);
+
+        // Recursively sort elements smaller than the pivot
+        quickSort(rIndexArray, left, pivotNewIndex-1);
+
+        // Recursively sort elements at least as big as the pivot
+        quickSort(rIndexArray, pivotNewIndex+1, right);
+    }
+}
+
+//! @brief Swaps the data on two rows
+void CSVParser::swapRows(const size_t r1, const size_t r2)
+{
+    for (size_t col=0; col<mnDataCols; ++col)
+    {
+        double tmp = mData[col][r1];
+        mData[col][r1] = mData[col][r2];
+        mData[col][r2] = tmp;
+    }
+}
+
+//! @brief Sorts the data so that the specified index vector is strictly increasing
+void CSVParser::sortIncreasing(const size_t indexColumn)
+{
+    // If row is strictly decreasing the swap row order, else ruyn quicksort and hope for the best
+    if (mIncDec[indexColumn] == -1)
+    {
+        reverseRows();
+        setFirstLastValues();
+    }
+    else if (mIncDec[indexColumn] == 0)
+    {
+        quickSort(mData[indexColumn], 0, mnDataRows-1);
+        setFirstLastValues();
+    }
+    // Else we are already OK
 }
 
 //! @brief Check if data in columns are strictly increasing or decresing
@@ -237,6 +327,24 @@ void CSVParser::calcIncreasingOrDecreasing()
     }
 }
 
+//! @brief Reverses the row order
+void CSVParser::reverseRows()
+{
+    vector< vector<double> > tempData;
+    tempData.resize(mnDataCols, vector<double>(mnDataRows));
+
+    for (size_t col=0; col<mnDataCols; ++col)
+    {
+        size_t rrow = mnDataRows-1;
+        for (size_t row=0; rrow<mnDataRows; ++row)
+        {
+            tempData[col][rrow] = mData[col][row];
+            --rrow;
+        }
+    }
+    mData.swap(tempData);
+}
+
 //! @brief Subdivide into two parts to find start row for interpolation
 size_t CSVParser::intervalHalfSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const
 {
@@ -261,49 +369,9 @@ size_t CSVParser::intervalHalfSubDiv(const size_t colIdx, const double x, const 
     }
 }
 
-//! @brief Subdivide into four parts to find start row for interpolation
-//! @note This function actually seems to be slightly slower then intervalHalfSubDiv
-size_t CSVParser::intervalQuadSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const
-{
-    if (iend == i1)
-    {
-        return i1;
-    }
-    else
-    {
-        //Calc split index
-        size_t splitIdx1 = i1 + (iend - i1)/4; //Allow truncation
-
-        // Check which part to use
-        if (x <= mData[colIdx][splitIdx1])
-        {
-            return intervalQuadSubDiv(colIdx, x, i1, splitIdx1);
-        }
-        else
-        {
-            size_t splitIdx2 = i1 + (iend - i1)/2; //Allow truncation
-            if (x <= mData[colIdx][splitIdx2])
-            {
-                return intervalQuadSubDiv(colIdx, x, splitIdx1+1, splitIdx2);
-            }
-            else
-            {
-                size_t splitIdx3 = i1 + (iend - i1)*3.0/4.0; //Allow truncation
-                if (x <= mData[colIdx][splitIdx3])
-                {
-                    return intervalQuadSubDiv(colIdx, x, splitIdx2+1, splitIdx3);
-                }
-                else
-                {
-                    return intervalQuadSubDiv(colIdx, x, splitIdx3+1, iend);
-                }
-            }
-        }
-    }
-}
 
 //! @brief Check if inData column is strictly increasing or decreasing, otherwise interpolate will not work as expected
-bool CSVParser::isInDataOk(const size_t inCol)
+bool CSVParser::isInDataIncOrDec(const size_t inCol)
 {
     if (inCol < mnDataCols)
     {
@@ -318,113 +386,123 @@ bool CSVParser::isInDataOk(const size_t inCol)
     return false;
 }
 
-double CSVParser::interpolate_old(const double x, const size_t outCol, const size_t inCol) const
-{
-    // Handle outside index range
-    if( ((x<mFirstValues[inCol]) && (mIncDec[inCol]==1)) || ((x>mFirstValues[inCol]) && (mIncDec[inCol]==-1)) )
-    {
-        return mFirstValues[outCol];
-    }
-    else if( ((x>=mLastValues[inCol]) && (mIncDec[inCol]==1)) || ((x<=mLastValues[inCol]) && (mIncDec[inCol]==-1)) )
-    {
-        return mLastValues[outCol];
-    }
-    else
-    {
-        //! @todo remove this stupid loop and use direct indexing instead
-        for (size_t row=0; row<mnDataRows-1; row++)
-        {
-            if( ((x <= mData[inCol][row]) && (x > mData[inCol][row+1])) || ((x >= mData[inCol][row]) && (x < mData[inCol][row+1])) )
-            {
-                //Value is between i and i+1
-                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-            }
-        }
-    }
-    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
-}
+////! @deprecated Old slow interpolation method
+//double CSVParser::interpolate_old(const double x, const size_t outCol, const size_t inCol) const
+//{
+//    // Handle outside index range
+//    if( ((x<mFirstValues[inCol]) && (mIncDec[inCol]==1)) || ((x>mFirstValues[inCol]) && (mIncDec[inCol]==-1)) )
+//    {
+//        return mFirstValues[outCol];
+//    }
+//    else if( ((x>=mLastValues[inCol]) && (mIncDec[inCol]==1)) || ((x<=mLastValues[inCol]) && (mIncDec[inCol]==-1)) )
+//    {
+//        return mLastValues[outCol];
+//    }
+//    else
+//    {
+//        //! @todo remove this stupid loop and use direct indexing instead
+//        for (size_t row=0; row<mnDataRows-1; row++)
+//        {
+//            if( ((x <= mData[inCol][row]) && (x > mData[inCol][row+1])) || ((x >= mData[inCol][row]) && (x < mData[inCol][row+1])) )
+//            {
+//                //Value is between i and i+1
+//                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+//            }
+//        }
+//    }
+//    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+//}
 
+////! @brief interpolate for increasing or decreasing index vector
+////! @note This one is SLOW
+//double CSVParser::interpolate(const double x, const size_t outCol, const size_t inCol) const
+//{
+//    if (mIncDec[inCol] == 1)
+//    {
+//        // Handle outside index range
+//        if( x<mFirstValues[inCol] )
+//        {
+//            return mFirstValues[outCol];
+//        }
+//        else if( x>=mLastValues[inCol] )
+//        {
+//            return mLastValues[outCol];
+//        }
+//        else
+//        {
+//            //! @todo remove this stupid loop and use direct indexing instead
+//            for (size_t row=0; row<mnDataRows-1; row++)
+//            {
+//                // Ceeck if value is between i and i+1
+//                if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
+//                {
+//                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+//                }
+//            }
+//        }
+//    }
+//    else //Handel decreasing
+//    {
+//        // Handle outside index range
+//        if( x>mFirstValues[inCol] )
+//        {
+//            return mFirstValues[outCol];
+//        }
+//        else if( x<=mLastValues[inCol] )
+//        {
+//            return mLastValues[outCol];
+//        }
+//        else
+//        {
+//            //! @todo remove this stupid loop and use direct indexing instead
+//            for (size_t row=0; row<mnDataRows-1; row++)
+//            {
+//                if( (x <= mData[inCol][row]) && (x > mData[inCol][row+1]) )
+//                {
+//                    //Value is between i and i+1
+//                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+//                }
+//            }
+//        }
+//    }
+//    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+//}
+
+////! @brief Interpolate only increasing index vector
+////! @note This one is Slow
+//double CSVParser::interpolateInc(const double x, const size_t outCol, const size_t inCol) const
+//{
+//    // Handle outside index range
+//    if( x<mFirstValues[inCol] )
+//    {
+//        return mFirstValues[outCol];
+//    }
+//    else if( x>=mLastValues[inCol] )
+//    {
+//        return mLastValues[outCol];
+//    }
+//    else
+//    {
+//        //! @todo remove this stupid loop and use direct indexing instead
+//        for (size_t row=0; row<mnDataRows-1; row++)
+//        {
+//            // Ceeck if value is between i and i+1
+//            if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
+//            {
+//                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+//            }
+//        }
+//    }
+//    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
+//}
+
+//! @brief Interpolates, index vector lookup is using subdivision
+//! @note Requires that the index vector is strictly increasing
+//! @param [in] x The x value for interpolation
+//! @param [in] outCol The column index for the output data
+//! @param [in] inCol The column index for the input (index) data
+//! @returns The interpolated output value
 double CSVParser::interpolate(const double x, const size_t outCol, const size_t inCol) const
-{
-    if (mIncDec[inCol] == 1)
-    {
-        // Handle outside index range
-        if( x<mFirstValues[inCol] )
-        {
-            return mFirstValues[outCol];
-        }
-        else if( x>=mLastValues[inCol] )
-        {
-            return mLastValues[outCol];
-        }
-        else
-        {
-            //! @todo remove this stupid loop and use direct indexing instead
-            for (size_t row=0; row<mnDataRows-1; row++)
-            {
-                // Ceeck if value is between i and i+1
-                if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
-                {
-                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-                }
-            }
-        }
-    }
-    else //Handel decreasing
-    {
-        // Handle outside index range
-        if( x>mFirstValues[inCol] )
-        {
-            return mFirstValues[outCol];
-        }
-        else if( x<=mLastValues[inCol] )
-        {
-            return mLastValues[outCol];
-        }
-        else
-        {
-            //! @todo remove this stupid loop and use direct indexing instead
-            for (size_t row=0; row<mnDataRows-1; row++)
-            {
-                if( (x <= mData[inCol][row]) && (x > mData[inCol][row+1]) )
-                {
-                    //Value is between i and i+1
-                    return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-                }
-            }
-        }
-    }
-
-    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
-}
-
-double CSVParser::interpolateInc(const double x, const size_t outCol, const size_t inCol) const
-{
-    // Handle outside index range
-    if( x<mFirstValues[inCol] )
-    {
-        return mFirstValues[outCol];
-    }
-    else if( x>=mLastValues[inCol] )
-    {
-        return mLastValues[outCol];
-    }
-    else
-    {
-        //! @todo remove this stupid loop and use direct indexing instead
-        for (size_t row=0; row<mnDataRows-1; row++)
-        {
-            // Ceeck if value is between i and i+1
-            if( (x >= mData[inCol][row]) && (x < mData[inCol][row+1]) )
-            {
-                return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
-            }
-        }
-    }
-    return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull
-}
-
-double CSVParser::interpolateIncSubDiv(const double x, const size_t outCol, const size_t inCol) const
 {
     // Handle outside index range
     if( x<mFirstValues[inCol] )

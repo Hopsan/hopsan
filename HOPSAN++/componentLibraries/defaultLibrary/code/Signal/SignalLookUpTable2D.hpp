@@ -44,6 +44,7 @@ namespace hopsan {
         Port *mpIn, *mpOut;
         double *mpND_in, *mpND_out;
 
+        int mOutDataId;
         std::string mDataCurveFileName;
         CSVParser *myDataCurve;
 
@@ -58,8 +59,10 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            mDataCurveFileName = "File name";
+            mOutDataId=1;
+            mDataCurveFileName = "AbsFilePath";
             registerParameter("filename", "Abs. path to data curve", "", mDataCurveFileName);
+            registerParameter("outid", "csv file value column index", "", mOutDataId);
 
             myDataCurve = 0;
         }
@@ -84,11 +87,28 @@ namespace hopsan {
             }
             else
             {
-                success = success && myDataCurve->isInDataOk(0);
+                // Make sure that selected data vector is in range
+                if (mOutDataId >= myDataCurve->getNumDataCols())
+                {
+                    std::stringstream ss;
+                    ss << "outid:" << mOutDataId << " is out of range, limiting to: ";
+                    mOutDataId = myDataCurve->getNumDataCols()-1;
+                    ss << mOutDataId;
+                    addWarningMessage(ss.str());
+                }
+
+
+                if (myDataCurve->getIncreasingOrDecresing(0) != 1)
+                {
+                    myDataCurve->sortIncreasing(0);
+                    myDataCurve->calcIncreasingOrDecreasing();
+                }
+
+                success = (myDataCurve->getIncreasingOrDecresing(0) == 1);
                 if(!success)
                 {
                     std::stringstream ss;
-                    ss << "Unable to initialize CSV file: " << mDataCurveFileName << ", " << myDataCurve->getErrorString();
+                    ss << "Unable to initialize CSV file: " << mDataCurveFileName << ", " << "Even after sorting, index column is still not strictly increasing";
                     addErrorMessage(ss.str());
                     stopSimulation();
                 }
@@ -111,7 +131,7 @@ namespace hopsan {
 //            (*mpND_out) = myDataCurve->interpolate_old(*mpND_in, 1);
 //            (*mpND_out) = myDataCurve->interpolate(*mpND_in, 1);
 //            (*mpND_out) = myDataCurve->interpolateInc(*mpND_in, 1);
-            (*mpND_out) = myDataCurve->interpolateIncSubDiv(*mpND_in, 1);
+            (*mpND_out) = myDataCurve->interpolate(*mpND_in, mOutDataId);
         }
 
         void finalize()
