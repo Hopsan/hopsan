@@ -57,10 +57,18 @@ CSVParser::CSVParser(bool &rSuccess,
 
         // Find first row with field separator
         std::string line = "";
-        while( (line.find(',')==string::npos) && (line.find(';')==string::npos) && !myfile.eof())
+        while( (line.find(',')==string::npos) && (line.find(';')==string::npos) )
         {
             getline(myfile,line);
             ++lines_to_skip;
+
+            if (myfile.eof())
+            {
+                //We have reach the end lets give up
+                rSuccess = false;
+                mErrorString = "Could not find any separator signs";
+                return;
+            }
         }
         --lines_to_skip;
         myfile.close();

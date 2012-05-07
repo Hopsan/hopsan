@@ -5,9 +5,9 @@
             <icon scale="1" path="lookuptable.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
-            <text>This component is a 2 dimension look up table. The input is a .csv file separated with ";". 
-The first column is the input values and the second is the output values. The input value vector has to be either strict increasing or strict decreasing. 
-See example file above.</text>
+            <text>This component is a 2-dimensional look-up table. The input is a .csv file and suported formats are "decimal . and separator ," or "decimal , and separator ;".
+The first column becomes the input values, the output column can be selected.
+The input value vector has to be strictly increasing, if this is not the case it will be automatically sorted. Duplicate values in the input data vector are not allowed.</text>
             <picture>lookuptablehelp.svg</picture>
         </help>
         <ports>
