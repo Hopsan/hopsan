@@ -84,6 +84,7 @@
 
 
 /* Signal Components */
+#include "Signal/SignalAnimationSlider.hpp"
 #include "Signal/SignalAbsoluteValue.hpp"
 #include "Signal/SignalSource.hpp"
 #include "Signal/SignalGain.hpp"

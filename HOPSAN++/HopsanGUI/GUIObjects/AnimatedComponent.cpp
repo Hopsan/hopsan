@@ -190,16 +190,19 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
     {
         baseAppearance->setIconPath(basePath, USERGRAPHICS, RELATIVE);
     }
-    mpBase = new AnimatedIcon(mpModelObject->pos(),mpModelObject->rotation(),baseAppearance,this,0,0);
+    mpBase = new AnimatedIcon(mpModelObject->pos(),0,baseAppearance,this,0,0);
     mpAnimationWidget->getGraphicsScene()->addItem(mpBase);
     if(mpModelObject->isFlipped())
     {
         mpBase->flipHorizontal();
     }
+    mpBase->setRotation(mpModelObject->rotation());
     mpBase->setCenterPos(mpModelObject->getCenterPos());
 
     //Base icon shall never be movable
     mpBase->setFlag(QGraphicsItem::ItemIsMovable, false);
+
+   // mpBase->refreshIconPosition();
 }
 
 
@@ -284,6 +287,7 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     this->resize(mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale);  //Resize modelobject
     mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale); //Resize selection box
     this->setCenterPos(position);
+
     this->setZValue(MODELOBJECT_Z);
 }
 
@@ -298,11 +302,7 @@ int AnimatedIcon::type() const
 //! @brief Refresh icon position after flipping or rotating
 void AnimatedIcon::refreshIconPosition()
 {
-    //Only move when we have disconnected the icon from transformations
-    if (!mIconRotation)
-    {
-        mpIcon->setPos( this->mapFromScene(this->getCenterPos() - mpIcon->boundingRect().center() ));
-    }
+    mpIcon->setPos( this->mapFromScene(this->getCenterPos() - mpIcon->boundingRect().center() ));
 }
 
 
@@ -331,6 +331,32 @@ void AnimatedIcon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
+}
+
+
+void AnimatedIcon::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    int idx = mpAnimatedComponent->indexOfMovable(this);
+    if(idx >= 0 && mpAnimatedComponent->getAnimationDataPtr()->isAdjustable.at(idx))
+    {
+        mpSelectionBox->setHovered();
+    }
+
+    QGraphicsWidget::hoverEnterEvent(event);
+}
+
+
+void AnimatedIcon::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    mpSelectionBox->setPassive();
+
+    QGraphicsWidget::hoverLeaveEvent(event);
+}
+
+
+void AnimatedIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsWidget::mousePressEvent(event);
 }
 
 
@@ -372,7 +398,7 @@ void AnimatedIcon::flipHorizontal()
     this->setCenterPos(cpos);
 
     // If the icon is (not rotating) its position will be refreshed
-    refreshIconPosition();
+    //refreshIconPosition();
 
     // Toggel isFlipped bool
     if(mIsFlipped)

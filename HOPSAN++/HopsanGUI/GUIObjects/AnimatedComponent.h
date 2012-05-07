@@ -92,10 +92,14 @@ public slots:
     void rotate(qreal angle);
     void flipVertical();
     void flipHorizontal();
+    void refreshIconPosition();
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     //Protected members
     ModelObjectAppearance mModelObjectAppearance;
@@ -105,9 +109,6 @@ protected:
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;
     qreal mLastIconScale;
-
-private:
-    void refreshIconPosition();
 };
 
 

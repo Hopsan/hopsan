@@ -13,7 +13,7 @@
    height="50"
    id="svg2477"
    sodipodi:version="0.32"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.48.2 r9819"
    version="1.0"
    sodipodi:docname="43lsvalve_user.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -52,15 +52,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.5766415"
-     inkscape:cx="82.146404"
-     inkscape:cy="57.314461"
+     inkscape:cx="68.301697"
+     inkscape:cy="-4.9566783"
      inkscape:document-units="px"
      inkscape:current-layer="g4285"
      showgrid="false"
      inkscape:window-width="1680"
-     inkscape:window-height="982"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-height="1026"
+     inkscape:window-x="1600"
+     inkscape:window-y="24"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-maximized="1">
@@ -241,7 +241,7 @@
          style="stroke:#000000;stroke-width:1.20000052;stroke-linecap:square;stroke-miterlimit:3.06451607;stroke-opacity:1;stroke-dasharray:none"
          id="path3181"
          class="st3"
-         d="m 90.500136,1.3488855 c 0,0.9440674 0,0.9440674 0,0.9440674"
+         d="m 90.500136,1.5070462 c 0,0.944068 0,0.944068 0,0.944068"
          inkscape:connector-curvature="0" />
       <path
          style="stroke:#000000;stroke-width:1.20000052;stroke-miterlimit:3.06451607;stroke-opacity:1;stroke-dasharray:none"
@@ -259,7 +259,7 @@
          style="stroke:#000000;stroke-width:1.20000052;stroke-linecap:square;stroke-miterlimit:3.06451607;stroke-opacity:1;stroke-dasharray:none"
          id="path3181-3"
          class="st3"
-         d="m 122.50014,1.578051 c 0,0.7149018 0,0.7149018 0,0.7149018"
+         d="m 122.50014,1.7362122 c 0,0.7149018 0,0.7149018 0,0.7149018"
          inkscape:connector-curvature="0" />
       <path
          style="stroke:#000000;stroke-width:1.20000052;stroke-linecap:square;stroke-miterlimit:3.06451607;stroke-opacity:1;stroke-dasharray:none"
@@ -310,6 +310,12 @@
          id="path3321-5"
          class="st5"
          d="m 164.47426,8.8054782 4.55321,-1.005954 -1.25604,4.4943328 -3.29717,-3.4883788 z"
+         inkscape:connector-curvature="0" />
+      <path
+         style="stroke:#000000;stroke-width:1.20000052;stroke-linecap:square;stroke-miterlimit:3.06451607;stroke-opacity:1;stroke-dasharray:none"
+         id="path3181-5-6"
+         class="st3"
+         d="m 106.50014,40.99095 c 0,0.69691 0,0.69691 0,0.69691"
          inkscape:connector-curvature="0" />
     </g>
   </g>

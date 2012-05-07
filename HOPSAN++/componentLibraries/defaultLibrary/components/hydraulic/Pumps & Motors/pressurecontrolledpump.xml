@@ -6,9 +6,9 @@
             <icon scale="1" path="pressurecontrolledpump_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.6004794566" y="1" a="90" name="P1"/>
-            <port x="0.06659" y="1" a="90" name="PREF"/>
-            <port x="0.6004794566" y="0" a="270" name="P2"/>
+            <port x="0.603809016" y="1" a="90" name="P1"/>
+            <port x="0.068255977" y="1" a="90" name="PREF"/>
+            <port x="0.603809016" y="0" a="270" name="P2"/>
 	    <port x="1.0" y="0.5" a="0" name="eps"/>
         </ports>
 	<animation>

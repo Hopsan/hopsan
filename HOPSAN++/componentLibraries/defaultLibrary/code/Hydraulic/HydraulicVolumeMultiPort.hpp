@@ -26,9 +26,11 @@
 #define HYDRAULICVOLUMEMULTIPORT_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
+#include "ComponentSystem.h"
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <cmath>
 
 namespace hopsan {
 
@@ -46,6 +48,7 @@ namespace hopsan {
         double mBulkmodulus;
 
         std::vector<double*> mvpN_p, mvpN_q, mvpN_c, mvpN_Zc;
+        std::vector<double> mv_c_new;
         std::vector<double> mvp_C0;
         size_t mNumPorts;
         Port *mpP1;
@@ -86,6 +89,8 @@ namespace hopsan {
             mvpN_Zc.resize(mNumPorts);
             mvp_C0.resize(mNumPorts);
 
+            mv_c_new.resize(mNumPorts);
+
             mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/(1.0-mAlpha);
 
             double pTot=0.0;
@@ -111,20 +116,64 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double cTot = 0.0;
-            double pAvg;
+            int runs=1;
 
-            for (size_t i=0; i<mNumPorts; ++i)
+            bool dontStop = true;
+            while(dontStop)
             {
-                cTot += (*mvpN_c[i]) + 2.0*mZc*(*mvpN_q[i]);
+                dontStop = false;
+                for(size_t r=0; r<runs; ++r)
+                {
+                    double cTot = 0.0;
+                    double pAvg;
+                    mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/runs/(1.0-mAlpha);
+
+                    //Equations
+                    for (size_t i=0; i<mNumPorts; ++i)
+                    {
+                        cTot += (*mvpN_c[i]) + 2.0*mZc*(*mvpN_q[i]);
+                    }
+                    pAvg = cTot/mNumPorts;
+
+                    for (size_t i=0; i<mNumPorts; ++i)
+                    {
+                        mvp_C0[i] = pAvg*2.0-(*mvpN_c[i]) - 2.0*mZc*(*mvpN_q[i]);
+                        mv_c_new[i] = mAlpha*(*mvpN_c[i]) + (1.0-mAlpha)*mvp_C0[i];
+                    }
+                }
+
+                if(mTime < 0.01)
+                {
+                    break;
+                }
+
+                //Check numerical accuracy, increase runs if necessary
+//                double limit = 0.001;
+//                bool doBreak = false;
+//                for(size_t i=0; i<mNumPorts; ++i)
+//                {
+//                    for(size_t j=0; j<mNumPorts; ++j)
+//                    {
+//                        if(fabs(1-mv_c_new[i]/mv_c_new[j]) > limit)
+//                        {
+//                            runs++;
+//                            dontStop = true;
+//                            doBreak = true;
+//                            break;
+//                        }
+//                    }
+//                    if(doBreak)
+//                    {
+//                        break;
+//                    }
+//                }
             }
-            pAvg = cTot/mNumPorts;
 
-            for (size_t i=0; i<mNumPorts; ++i)
+            //Write new values
+            for(size_t i=0; i<mNumPorts; ++i)
             {
-                mvp_C0[i] = pAvg*2.0-(*mvpN_c[i]) - 2.0*mZc*(*mvpN_q[i]);
-                (*mvpN_c[i]) = mAlpha*(*mvpN_c[i]) + (1.0-mAlpha)*mvp_C0[i];
                 (*mvpN_Zc[i]) = mZc;
+                (*mvpN_c[i]) = mv_c_new[i];
             }
         }
 

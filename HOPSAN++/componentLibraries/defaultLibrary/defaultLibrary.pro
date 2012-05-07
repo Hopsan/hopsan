@@ -210,7 +210,8 @@ HEADERS += \
     code/Signal/SignalSign.hpp \
     code/Signal/SignalSub.hpp \
     code/Hydraulic/valves/HydraulicCheckValvePreLoaded.hpp \
-    code/Signal/SignalPulseWave.hpp
+    code/Signal/SignalPulseWave.hpp \
+    code/Signal/SignalAnimationSlider.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \

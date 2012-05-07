@@ -135,6 +135,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicComponentsInComponentTest", HydraulicComponentsInComponentTest::Creator);
 
     //Signal components
+    pComponentFactory->registerCreatorFunction("SignalAnimationSlider", SignalAnimationSlider::Creator);
     pComponentFactory->registerCreatorFunction("SignalAbsoluteValue", SignalAbsoluteValue::Creator);
     pComponentFactory->registerCreatorFunction("SignalSource", SignalSource::Creator);
     pComponentFactory->registerCreatorFunction("SignalGain", SignalGain::Creator);
