@@ -61,7 +61,7 @@ namespace hopsan {
 
             mOutDataId=1;
             mDataCurveFileName = "AbsFilePath";
-            registerParameter("filename", "Abs. path to data curve", "", mDataCurveFileName);
+            registerParameter("filename", "Abs. path to data file", "", mDataCurveFileName);
             registerParameter("outid", "csv file value column index", "", mOutDataId);
 
             myDataCurve = 0;

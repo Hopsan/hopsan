@@ -3018,7 +3018,7 @@ int PlotCurve::getAxisY()
 
 
 //! @brief Returns the (unscaled) data vector of a plot curve
-QVector<double> PlotCurve::getDataVector()
+const QVector<double> &PlotCurve::getDataVector() const
 {
     return mDataVector;
 }
@@ -3026,7 +3026,7 @@ QVector<double> PlotCurve::getDataVector()
 
 //! @brief Returns the (unscaled) time vector of a plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
-QVector<double> PlotCurve::getTimeVector()
+const QVector<double> &PlotCurve::getTimeVector() const
 {
     return mTimeVector;
 }

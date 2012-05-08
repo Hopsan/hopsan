@@ -353,11 +353,13 @@ void CSVParser::reverseRows()
     mData.swap(tempData);
 }
 
-//! @brief Subdivide into two parts to find start row for interpolation
+//! @brief Recursively subdivide into halves to find start row for interpolation
+//! @note This function assumes that the the data in column colIdx is strictly increasing
 size_t CSVParser::intervalHalfSubDiv(const size_t colIdx, const double x, const size_t i1, const size_t iend) const
 {
-    if (iend == i1)
+    if (iend-i1 <= 1)
     {
+        // When the two indexes are next to each other lets return the smallest one as the start row for interpolation
         return i1;
     }
     else
@@ -365,14 +367,15 @@ size_t CSVParser::intervalHalfSubDiv(const size_t colIdx, const double x, const 
         //Calc split index
         size_t splitIdx = i1 + (iend - i1)/2; //Allow truncation
 
-        // Use left split
         if (x <= mData[colIdx][splitIdx])
         {
+            // Use lower half
             return intervalHalfSubDiv(colIdx, x, i1, splitIdx);
         }
         else
         {
-            return intervalHalfSubDiv(colIdx, x, splitIdx+1, iend);
+            // Use higher half
+            return intervalHalfSubDiv(colIdx, x, splitIdx, iend);
         }
     }
 }

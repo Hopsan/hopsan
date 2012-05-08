@@ -332,8 +332,8 @@ public:
     QString getDataName();
     QString getDataUnit();
     int getAxisY();
-    QVector<double> getDataVector();
-    QVector<double> getTimeVector();
+    const QVector<double> &getDataVector() const;
+    const QVector<double> &getTimeVector() const;
     ContainerObject *getContainerObjectPtr();
     void setGeneration(int generation);
     void setDataUnit(QString unit);
