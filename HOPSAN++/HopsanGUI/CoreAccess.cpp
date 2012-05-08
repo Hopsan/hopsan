@@ -36,6 +36,17 @@
 
 using namespace std;
 
+//! @breif Help function to copy parameter data from core to GUI class
+void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &rGUIParam)
+{
+    rGUIParam.mName = QString::fromStdString(pCoreParam->getName());
+    rGUIParam.mType = QString::fromStdString(pCoreParam->getType());
+    rGUIParam.mValue = QString::fromStdString(pCoreParam->getValue());
+    rGUIParam.mUnit = QString::fromStdString(pCoreParam->getUnit());
+    rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription());
+    rGUIParam.mIsDynamic = pCoreParam->isDynamic();
+    rGUIParam.mIsEnabled = pCoreParam->isEnabled();
+}
 
 bool CoreLibraryAccess::hasComponent(QString componentName)
 {
@@ -457,14 +468,7 @@ void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParamete
         for(size_t i=0; i<pParams->size(); ++i)
         {
             CoreParameterData data;
-            data.mName = QString::fromStdString(pParams->at(i)->getName());
-            data.mType = QString::fromStdString(pParams->at(i)->getType());
-            data.mValue = QString::fromStdString(pParams->at(i)->getValue());
-            data.mUnit = QString::fromStdString(pParams->at(i)->getUnit());
-            data.mDescription = QString::fromStdString(pParams->at(i)->getDescription());
-            data.mIsDynamic = pParams->at(i)->isDynamic();
-            data.mIsEnabled = pParams->at(i)->isEnabled();
-
+            copyParameterData(pParams->at(i), data);
             rParameterDataVec[i] = data;
         }
     }
@@ -478,14 +482,7 @@ void CoreSystemAccess::getParameter(QString componentName, QString parameterName
         const hopsan::Parameter *pParam = pComp->getParameter(parameterName.toStdString());
         if (pParam!=0)
         {
-            //! @todo duplicate implementation
-            rData.mName = QString::fromStdString(pParam->getName());
-            rData.mType = QString::fromStdString(pParam->getType());
-            rData.mValue = QString::fromStdString(pParam->getValue());
-            rData.mUnit = QString::fromStdString(pParam->getUnit());
-            rData.mDescription = QString::fromStdString(pParam->getDescription());
-            rData.mIsDynamic = pParam->isDynamic();
-            rData.mIsEnabled = pParam->isEnabled();
+            copyParameterData(pParam, rData);
         }
     }
 }
@@ -737,29 +734,20 @@ hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString po
 }
 
 
-
-bool CoreSystemAccess::setSystemParameter(QString name, QString value, QString description, QString unit, QString type, bool force)
+bool CoreSystemAccess::setSystemParameter(const CoreParameterData &rParameter, bool force)
 {
-    bool success = true;
-//    //Makes sure name is not a number and not empty
-//    bool isDbl;
-//    name.toDouble(&isDbl);
-//    if(isDbl || name.isEmpty())
-//    {
-//        success *= false;
-//    }
-//    else
-    {
-        success = mpCoreComponentSystem->setSystemParameter(name.toStdString(), value.toStdString(), type.toStdString(), description.toStdString(), unit.toStdString(), force);
+    return mpCoreComponentSystem->setSystemParameter(rParameter.mName.toStdString(),
+                                                     rParameter.mValue.toStdString(),
+                                                     rParameter.mType.toStdString(),
+                                                     rParameter.mDescription.toStdString(),
+                                                     rParameter.mUnit.toStdString(),
+                                                     force);
+}
 
-//        //! @todo should use the setSystemPArameter function in core instead
-//        //! @todo We should not access parameters map directly, should use ONE add/set method in component system (that could be the same as register in component)
-//        if(!(success *= mpCoreComponentSystem->getSystemParameters().setParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), force)))
-//        {
-//            success += mpCoreComponentSystem->getSystemParameters().addParameter(name.toStdString(), value.toStdString(), description.toStdString(), unit.toStdString(), type.toStdString(), 0, force);
-//        }
-    }
-    return success;
+
+bool CoreSystemAccess::setSystemParameterValue(QString name, QString value, bool force)
+{
+    return mpCoreComponentSystem->setParameterValue(name.toStdString(), value.toStdString(), force);
 }
 
 //! @brief Get the value of a parameter in the system
@@ -775,18 +763,13 @@ QString CoreSystemAccess::getSystemParameterValue(const QString name)
 //! @todo Dont know if this is actually used
 bool CoreSystemAccess::hasSystemParameter(const QString name)
 {
-    //! @todo this code assumes that a parameter can not have value = "", is this assumtion OK!
-    std::string value;
-    mpCoreComponentSystem->getParameterValue(name.toStdString(), value);
-    if (value != "")
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-    //return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString(), dummy);
+    return mpCoreComponentSystem->hasParameter(name.toStdString());
+}
+
+//! @brief Rename a system parameter
+bool CoreSystemAccess::renameSystemParameter(const QString oldName, const QString newName)
+{
+    return mpCoreComponentSystem->renameParameter(oldName.toStdString(), newName.toStdString());
 }
 
 //! @brief Removes the parameter with given name
@@ -794,6 +777,15 @@ bool CoreSystemAccess::hasSystemParameter(const QString name)
 void CoreSystemAccess::removeSystemParameter(const QString name)
 {
     mpCoreComponentSystem->unRegisterParameter(name.toStdString());
+}
+
+void CoreSystemAccess::getSystemParameter(const QString name, CoreParameterData &rParameterData)
+{
+    const hopsan::Parameter *pParam = mpCoreComponentSystem->getParameter(name.toStdString());
+    if (pParam!=0)
+    {
+        copyParameterData(pParam, rParameterData);
+    }
 }
 
 
@@ -804,30 +796,8 @@ void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParamete
     rParameterDataVec.resize(pParams->size()); //preAllocate storage
     for(size_t i=0; i<pParams->size(); ++i)
     {
-        //! @todo duplicate imlpementation of data copying is bad (duplicate in getParameters)
         CoreParameterData data;
-        data.mName = QString::fromStdString(pParams->at(i)->getName());
-        data.mType = QString::fromStdString(pParams->at(i)->getType());
-        data.mValue = QString::fromStdString(pParams->at(i)->getValue());
-        data.mUnit = QString::fromStdString(pParams->at(i)->getUnit());
-        data.mDescription = QString::fromStdString(pParams->at(i)->getDescription());
-        data.mIsDynamic = pParams->at(i)->isDynamic();
-        data.mIsEnabled = pParams->at(i)->isEnabled();
-
+        copyParameterData(pParams->at(i), data);
         rParameterDataVec[i] = data;
     }
 }
-
-//void CoreSystemAccess::getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
-//{
-//    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-//    mpCoreComponentSystem->getParameters(parameterNames, parameterValues, descriptions, units, types);
-//    for(size_t i=0; i<parameterNames.size(); ++i)
-//    {
-//        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
-//        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
-//        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
-//        qUnits.push_back(QString::fromStdString(units[i]));
-//        qTypes.push_back(QString::fromStdString(types[i]));
-//    }
-//}

@@ -109,6 +109,8 @@ public:
     // Parameter methods
     QStringList getParameterNames();
     void getParameters(QVector<CoreParameterData> &rParameterDataVec);
+    void getParameter(const QString paramName, CoreParameterData &rData);
+    QString getParameterValue(const QString paramName);
 
     CoreSystemAccess* getCoreSystemAccessPtr();
     ContainerObject *getParentContainerObject();

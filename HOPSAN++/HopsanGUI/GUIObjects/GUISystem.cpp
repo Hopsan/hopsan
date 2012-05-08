@@ -145,15 +145,31 @@ QStringList SystemContainer::getParameterNames()
     return mpCoreSystemAccess->getSystemParameterNames();
 }
 
+//! @brief Get a vector contain data from all parameters
+//! @param [out] rParameterDataVec A vector that will contain parameter data
 void SystemContainer::getParameters(QVector<CoreParameterData> &rParameterDataVec)
 {
     mpCoreSystemAccess->getSystemParameters(rParameterDataVec);
 }
 
+//! @brief Function that returns the specified parameter value
+//! @param name Name of the parameter to return value from
+QString SystemContainer::getParameterValue(const QString paramName)
+{
+    return mpCoreSystemAccess->getSystemParameterValue(paramName);
+}
+
+//! @brief Get parameter data for a specific parameter
+//! @param [out] rData The parameter data
+void SystemContainer::getParameter(const QString paramName, CoreParameterData &rData)
+{
+    return mpCoreSystemAccess->getSystemParameter(paramName, rData);
+}
+
 //! @brief Get a pointer the the CoreSystemAccess object that this system is representing
 CoreSystemAccess* SystemContainer::getCoreSystemAccessPtr()
 {
-    return this->mpCoreSystemAccess;
+    return mpCoreSystemAccess;
 }
 
 //! @brief Overloaded version that returns self if root system

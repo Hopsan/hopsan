@@ -97,6 +97,12 @@ ContainerObject::~ContainerObject()
     qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
+//! @brief Notify the parent project tab that changes has occured
+void ContainerObject::hasChanged()
+{
+    mpParentProjectTab->hasChanged();
+}
+
 //! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
 void ContainerObject::connectMainWindowActions()
@@ -926,9 +932,18 @@ QList<Widget *> ContainerObject::getSelectedGUIWidgetPtrs()
 //! @todo how will this work in groups
 bool ContainerObject::setParameterValue(QString name, QString value, bool force)
 {
-    return this->getCoreSystemAccessPtr()->setSystemParameter(name, value, "", "", "", force);
+    return this->getCoreSystemAccessPtr()->setSystemParameterValue(name, value, force);
 }
 
+bool ContainerObject::setOrAddParameter(const CoreParameterData &rParameter, bool force)
+{
+    return this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, force);
+}
+
+bool ContainerObject::renameParameter(const QString oldName, const QString newName)
+{
+    return this->getCoreSystemAccessPtr()->renameSystemParameter(oldName, newName);
+}
 
 //! @brief Notifies container object that a gui model object has been selected
 void ContainerObject::rememberSelectedModelObject(ModelObject *object)

@@ -70,23 +70,6 @@ Parameter::Parameter(std::string parameterName, std::string parameterValue, std:
 }
 
 
-//! @brief Read out the properties of the parameter
-//! @param [out] rParameterName The parameter name, e.g. m
-//! @param [out] rParameterValue The value of the parameter, e.g. 13
-//! @param [out] rDescription The description of the parameter e.g. Mass
-//! @param [out] rUnit The physical unit of the parameter e.g. kg
-//! @param [out] rType The type of the parameter e.g. double
-//!
-//! This function is used by Parameters
-void Parameter::getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription, std::string &rUnit, std::string &rType) const
-{
-    rParameterName = mParameterName;
-    rParameterValue = mParameterValue;
-    rDescription = mDescription;
-    rUnit = mUnit;
-    rType = mType;
-}
-
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 //! @warning This function may be removed in teh future
@@ -355,21 +338,23 @@ Parameters::~Parameters()
 bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, bool isDynamic, void* dataPtr, bool force)
 {
     bool success = false;
-    if(!exist(parameterName))
+    if (!parameterName.empty())
     {
-        Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, isDynamic, dataPtr, this);
-        success = newParameter->evaluate();
-        if(success || force)
+        if(!exist(parameterName))
         {
-            mParameters.push_back(newParameter);
-            success = true;
-        }
-        else
-        {
-            delete newParameter;
+            Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, isDynamic, dataPtr, this);
+            success = newParameter->evaluate();
+            if(success || force)
+            {
+                mParameters.push_back(newParameter);
+                success = true;
+            }
+            else
+            {
+                delete newParameter;
+            }
         }
     }
-
     return success;
 }
 
@@ -390,6 +375,25 @@ void Parameters::deleteParameter(const std::string parameterName)
             return;
         }
     }
+}
+
+//! @brief Rename a parameter (only useful for system paramters)
+//! @todo do I need to call some needs evaluation here or ?
+bool Parameters::renameParameter(const std::string oldName, const std::string newName)
+{
+    if (!exist(newName))
+    {
+        std::vector<Parameter*>::iterator parIt;
+        for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
+        {
+            if( oldName == (*parIt)->getName() )
+            {
+                (*parIt)->mParameterName = newName;
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 
@@ -597,9 +601,7 @@ bool Parameters::checkParameters(std::string &errParName)
         success = (success && (*parIt)->evaluate());
         if(!success)
         {
-            std::string parameterName, parameterValue, description, unit, type;
-            (*parIt)->getParameter(parameterName, parameterValue, description, unit, type);
-            errParName = parameterName;
+            errParName = (*parIt)->getName();
             break;
         }
     }

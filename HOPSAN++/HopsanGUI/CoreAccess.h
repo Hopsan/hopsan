@@ -136,15 +136,17 @@ public:
     QString reserveUniqueName(QString desiredName);
     void unReserveUniqueName(QString name);
 
-    //void getSystemParameters(QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes);
-    void getSystemParameters(QVector<CoreParameterData> &rParameterDataVec);
+    // System parameter functions
     QStringList getSystemParameterNames();
+    void getSystemParameters(QVector<CoreParameterData> &rParameterDataVec);
+    void getSystemParameter(const QString name, CoreParameterData &rParameterData);
     QString getSystemParameterValue(const QString name);
-    bool setSystemParameter(QString name, QString value, QString description="", QString unit="", QString type="", bool force=false);
+    bool setSystemParameter(const CoreParameterData &rParameter, bool force=false);
+    bool setSystemParameterValue(QString name, QString value, bool force=false);
     bool hasSystemParameter(const QString name);
+    bool renameSystemParameter(const QString oldName, const QString newName);
     void removeSystemParameter(const QString name);
 
-    //QMap<std::string, std::string> getSystemParametersMap();
 
 
     std::vector<double> getTimeVector(QString componentName, QString portName);

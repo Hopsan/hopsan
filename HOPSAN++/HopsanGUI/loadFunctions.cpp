@@ -315,8 +315,8 @@ void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, ContainerO
         type = "double";
     }
 
-    pContainer->getCoreSystemAccessPtr()->setSystemParameter(name, value, "", "", type, true);
-
+    CoreParameterData paramData(name,value, type);
+    pContainer->setOrAddParameter(paramData, true);
 }
 
 //! @brief Loads a FavouriteParameter from the supplied load data

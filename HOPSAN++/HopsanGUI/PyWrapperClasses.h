@@ -279,9 +279,9 @@ public slots:
 
     void setSystemParameter(MainWindow* o, const QString& parName, const double& value)
     {
-        QString valueString;
-        valueString.setNum(value);
-            o->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setSystemParameter(parName, valueString, "", "", "double");
+        CoreParameterData paramData(parName, "", "double");
+        paramData.mValue.setNum(value);
+        o->mpProjectTabs->getCurrentContainer()->setOrAddParameter(paramData);
         o->mpSystemParametersWidget->update();
     }
 

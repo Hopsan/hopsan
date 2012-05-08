@@ -36,6 +36,7 @@ class Parameters;
 
 class DLLIMPORTEXPORT Parameter
 {
+    friend class Parameters;
 public:
     Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit,
               std::string type, bool isDynamic=false, void* pDataPtr=0, Parameters* parentParameters=0);
@@ -48,9 +49,6 @@ public:
 
     bool evaluate(std::string &rResult, Parameter *ignoreMe=0);
     bool evaluate();
-
-    void getParameter(std::string &rParameterName, std::string &rParameterValue, std::string &rDescription,
-                      std::string &rUnit, std::string &rType) const;
 
     void* getDataPtr();
 
@@ -85,6 +83,7 @@ public:
     bool addParameter(std::string parameterName, std::string parameterValue, std::string description,
                       std::string unit, std::string type, bool isDynamic, void* dataPtr=0, bool force=false);
     void deleteParameter(const std::string parameterName);
+    bool renameParameter(const std::string oldName, const std::string newName);
 
     void enableParameter(std::string parameterName, const bool enable);
 

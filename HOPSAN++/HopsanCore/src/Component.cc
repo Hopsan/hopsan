@@ -93,6 +93,12 @@ const std::vector<Parameter*> *Component::getParametersVectorPtr() const
     return mpParameters->getParametersVectorPtr();
 }
 
+//! @brief Check if a component has a specific parameter
+bool Component::hasParameter(const std::string name) const
+{
+    return mpParameters->exist(name);
+}
+
 void Component::getParameterValue(const std::string name, std::string &rValue)
 {
     mpParameters->getParameterValue(name, rValue);

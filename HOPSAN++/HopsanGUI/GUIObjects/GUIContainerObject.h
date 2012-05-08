@@ -47,6 +47,7 @@ public:
     ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~ContainerObject();
 
+    void hasChanged();
     ProjectTab *mpParentProjectTab;  //!< @todo not public
 
     //Signal/slot connection methods
@@ -82,6 +83,8 @@ public:
 
     // Parameter Methods
     virtual bool setParameterValue(QString name, QString value, bool force=false);
+    virtual bool setOrAddParameter(const CoreParameterData &rParameter, bool force=false);
+    virtual bool renameParameter(const QString oldName, const QString newName);
 
     //Handle connector methods
     bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);

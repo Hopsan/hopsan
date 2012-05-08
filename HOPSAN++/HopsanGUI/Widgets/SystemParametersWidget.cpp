@@ -29,15 +29,9 @@
 //!
 //$Id$
 
-#include <QtGui>
-#include <QWidget>
-#include <QDialog>
-
 #include "SystemParametersWidget.h"
 #include "common.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "ProjectTabWidget.h"
-#include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
 
 
@@ -125,39 +119,42 @@ Qt::ItemFlags SysParamTableModel::flags(const QModelIndex &index) const
 
 bool SysParamTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    QString oldValue;
+    CoreParameterData data;
     bool isOk=false;
     if (index.isValid() && role == Qt::EditRole)
     {
         switch(index.column())
         {
         case 0:
-            isOk = renameParameter(index.row(), value.toString());
+            isOk = mpContainerObject->renameParameter(mParameterData[index.row()].mName, value.toString());
+            if (isOk)
+            {
+               mParameterData[index.row()].mName = value.toString();
+               mpContainerObject->hasChanged();
+               emit dataChanged(index, index);
+            }
             break;
         case 1:
-            //Need to remember old value in case set fails so that we can reset
-            //! @todo or maybe we should update from core instead
-            //! @todo maybe resetting mParametData should be handled in addORSetPArameter, but right now we have already overwritten the value (maybe should use memberTemp variable)
-            oldValue = mParameterData[index.row()].mValue;
-            mParameterData[index.row()].mValue = value.toString();
-            isOk = this->addOrSetParameter(index.row());
-            if (!isOk)
+            data = mParameterData[index.row()];
+            data.mValue = value.toString();
+            isOk = addOrSetParameter(data);
+            if (isOk)
             {
-                mParameterData[index.row()].mValue = oldValue;
+                mParameterData[index.row()] = data;
+                emit dataChanged(index, index);
             }
             break;
         case 2:
-            oldValue = mParameterData[index.row()].mType;
-            mParameterData[index.row()].mType = value.toString();
-            isOk = this->addOrSetParameter(index.row());
-            if (!isOk)
+            data = mParameterData[index.row()];
+            data.mType = value.toString();
+            isOk = addOrSetParameter(data);
+            if (isOk)
             {
-                mParameterData[index.row()].mType = oldValue;
+                mParameterData[index.row()] = data;
+                emit dataChanged(index, index);
             }
             break;
         }
-
-        emit dataChanged(index, index);
     }
     return isOk;
 }
@@ -202,12 +199,12 @@ bool SysParamTableModel::removeRows(int row, int count, const QModelIndex &paren
 
 bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
 {
-    bool ok;
+    bool isOk;
     QString errorString;
     QStringList stringList;
 
-    ok = verifyParameterValue(rParameterData.mValue, rParameterData.mType, stringList, errorString);
-    if (!ok)
+    isOk = verifyParameterValue(rParameterData.mValue, rParameterData.mType, stringList, errorString);
+    if (!isOk)
     {
         QMessageBox::critical(0, "Error", errorString);
     }
@@ -216,13 +213,9 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
         CoreParameterData oldParamData;
         mpContainerObject->getParameter(rParameterData.mName, oldParamData);
 
-        ok = mpContainerObject->getCoreSystemAccessPtr()->setSystemParameter(rParameterData.mName,
-                                                                             rParameterData.mValue,
-                                                                             rParameterData.mDescription,
-                                                                             rParameterData.mUnit,
-                                                                             rParameterData.mType);
+        isOk = mpContainerObject->setOrAddParameter(rParameterData);
         //Error check
-        if(!ok)
+        if(!isOk)
         {
             QMessageBox::critical(0, "Hopsan GUI",
                                   QString("'%1' is an invalid name for a system parameter or '%2' is an invalid value.")
@@ -230,20 +223,17 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
             return false;
         }
 
-        //! @todo check if other stuff then value has changed, at least type
-        //! @todo dont go through main window to tag a tab as changed, should go through container
-        //! @todo need to set has changed in more places after set rename add and remove maybe
-        if(oldParamData.mValue != mpContainerObject->getParameterValue(rParameterData.mName))
+        //! @todo check if other stuff then value or type has changed
+        CoreParameterData newParameter;
+        mpContainerObject->getParameter(rParameterData.mName, newParameter);
+        if( oldParamData.mValue != newParameter.mValue ||  oldParamData.mType != newParameter.mType )
         {
-            gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+            mpContainerObject->hasChanged();
         }
     }
 
-
-
-    //! @todo if Ok the we should update or emit data changed or something
-    return ok;
-
+    //! @todo if Ok then we should update or emit data changed or something
+    return isOk;
 }
 
 bool SysParamTableModel::hasParameter(const QString name)
@@ -255,26 +245,14 @@ void SysParamTableModel::removeParameter(const int row)
 {
     mpContainerObject->getCoreSystemAccessPtr()->removeSystemParameter(mParameterData[row].mName);
     mParameterData.remove(row);
-}
-
-bool SysParamTableModel::renameParameter(const int idx, const QString newName)
-{
-    CoreParameterData oldData = mParameterData[idx];
-    removeParameter(idx);
-    oldData.mName = newName;
-    return addOrSetParameter(oldData);
-}
-
-bool SysParamTableModel::addOrSetParameter(const int idx)
-{
-    return addOrSetParameter(mParameterData[idx]);
+    mpContainerObject->hasChanged();
 }
 
 
 //! @brief Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
-SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
-    : QWidget(parent)
+SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
+    : QWidget(pParent)
 {
     mpContainerObject=0;
     //Set the name and size of the main window
@@ -327,7 +305,7 @@ void SystemParametersWidget::update(ContainerObject *pNewContainer)
 
 void SystemParametersWidget::update()
 {
-    if ( (mpContainerObject!=0) && (gpMainWindow->mpProjectTabs->count()>0) )
+    if (mpContainerObject!=0)
     {
         mpAddButton->setEnabled(true);
         mpRemoveButton->setEnabled(true);
@@ -355,7 +333,6 @@ void SystemParametersWidget::update()
 //! Slot that opens "Add Parameter" dialog, where the user can add new System parameters
 void SystemParametersWidget::openAddParameterDialog()
 {
-
     QLabel *pNameLabel;
     QLabel *pValueLabel;
     QLabel *pTypeLabel;
@@ -408,6 +385,7 @@ bool SystemParametersWidget::addParameter()
     SysParamTableModel* pModel = qobject_cast<SysParamTableModel*>(mpSysParamListView->model());
     if (pModel->hasParameter(mpNameBox->text()))
     {
+        //! @todo maybe we should warn about overwriting instead
         QMessageBox::critical(0, "Hopsan GUI",
                               QString("'%1' already exists, will not add!")
                               .arg(mpNameBox->text()));
@@ -437,8 +415,9 @@ void SystemParametersWidget::addParameterAndCloseDialog()
 void SystemParametersWidget::removeSelected()
 {
     QModelIndexList idxList = mpSysParamListView->selectionModel()->selectedRows();
-    for (int i=0; i<idxList.count(); ++i)
+    while (idxList.size() > 0)
     {
-        mpSysParamListView->model()->removeRows(idxList[i].row(), 1);
+        mpSysParamListView->model()->removeRows(idxList[0].row(), 1);
+        idxList = mpSysParamListView->selectionModel()->selectedRows();
     }
 }

@@ -558,6 +558,11 @@ void ComponentSystem::logAllNodes(const double time)
     }
 }
 
+//! @brief Rename a system parameter
+bool ComponentSystem::renameParameter(const std::string oldName, const std::string newName)
+{
+    return mpParameters->renameParameter(oldName, newName);
+}
 
 //! Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(string portName)

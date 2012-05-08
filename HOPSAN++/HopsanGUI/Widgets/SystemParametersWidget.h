@@ -26,24 +26,10 @@
 #define SYSTEMPARAMETERSWIDGET_H
 
 #include <QtGui>
-#include <QList>
-#include <QStringList>
-#include <QTableWidget>
-#include <QPushButton>
-#include <QDialog>
-#include <QTableWidget>
-#include <QObject>
-#include <QLabel>
-#include <QGridLayout>
-#include <QMenu>
-#include <QComboBox>
-
 #include "CoreAccess.h"
 
 // Forward Declarations
-class MainWindow;
 class ContainerObject;
-
 
 class ParameterTypeComboBox : public QComboBox
 {
@@ -56,7 +42,6 @@ public:
         addItem("string");
     }
 };
-
 
 class ParamTypeComboBoxDelegate : public QItemDelegate
 {
@@ -87,8 +72,6 @@ public:
 
 protected:
     void removeParameter(const int row);
-    bool renameParameter(const int idx, const QString newName);
-    bool addOrSetParameter(const int idx);
 
     ContainerObject *mpContainerObject;
     QVector<CoreParameterData> mParameterData;
@@ -99,7 +82,7 @@ class SystemParametersWidget : public QWidget
 {
     Q_OBJECT
 public:
-    SystemParametersWidget(MainWindow *parent=0);
+    SystemParametersWidget(QWidget *pParent=0);
 
 public slots:
     void update();
