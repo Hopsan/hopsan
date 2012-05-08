@@ -392,6 +392,8 @@ void SystemParametersWidget::openAddParameterDialog()
     pDialogLayout->addWidget(mpTypeBox,2,1);
     pDialogLayout->addWidget(pButtonBox,3,0,1,2);
     mpAddParameterDialog->setLayout(pDialogLayout);
+
+    pAddInDialogButton->setDefault(true);
     mpAddParameterDialog->show();
 
     connect(pCancelInDialogButton,      SIGNAL(clicked()), mpAddParameterDialog, SLOT(close()));
