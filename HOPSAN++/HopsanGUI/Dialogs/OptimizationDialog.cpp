@@ -311,7 +311,12 @@ void OptimizationDialog::loadConfiguration()
     //Parameters
     for(int i=0; i<optSettings.mParamters.size(); ++i)
     {
-        findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
+        //Check if component and parameter exists before checking the tree item (otherwise tree item does not exist = crash)
+        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
+        {
+            findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
+        }
     }
     //Objectives
     for(int i=0; i<optSettings.mObjectives.size(); ++i)
