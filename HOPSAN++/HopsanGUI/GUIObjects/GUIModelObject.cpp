@@ -575,6 +575,12 @@ Port *ModelObject::getPort(QString name)
 }
 
 
+void ModelObject::createRefreshExternalDynamicParameterPort(QString portName)
+{
+    mActiveDynamicParameterPortNames.append(portName);
+    createRefreshExternalPort(portName);
+}
+
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
 //! @todo maybe defualt create that info if it is missing
@@ -648,6 +654,7 @@ void ModelObject::removeExternalPort(QString portName)
         {
             //Delete the GUIPort its post in the portlist and its appearance data
             mModelObjectAppearance.erasePortAppearance(portName);
+            mActiveDynamicParameterPortNames.removeAll(portName);
             delete *plit;
             mPortListPtrs.erase(plit);
             break;
@@ -1308,6 +1315,22 @@ ModelObjectAppearance* ModelObject::getAppearanceData()
     return &mModelObjectAppearance;
 }
 
+//! @brief Refreshes the appearance and position of ports on the model object
+void ModelObject::refreshExternalPortsAppearanceAndPosition()
+{
+    //For model objects we assume for now that the appearance of ports will not change, but the position and hide/show might
+    PortAppearanceMapT::Iterator it;
+    for(it=mModelObjectAppearance.getPortAppearanceMap().begin(); it != mModelObjectAppearance.getPortAppearanceMap().end(); ++it)
+    {
+        Port *port = getPort(it.key());
+        if(port != 0)
+        {
+            port->setCenterPosByFraction(it.value().x, it.value().y);
+            port->setEnable(it.value().mEnabled);
+        }
+    }
+    redrawConnectors();
+}
 
 //! @brief Refreshes the appearance of the object
 void ModelObject::refreshAppearance()
@@ -1318,19 +1341,7 @@ void ModelObject::refreshAppearance()
     this->setCenterPos(centerPos); //Re-set center pos after resize
 
     this->refreshDisplayName();
-
-    PortAppearanceMapT::Iterator it;
-    for(it=mModelObjectAppearance.getPortAppearanceMap().begin(); it != mModelObjectAppearance.getPortAppearanceMap().end(); ++it)
-    {
-        Port *port = getPort(it.key());
-        if(port != 0)
-        {
-            port->setCenterPosByFraction(it.value().x, it.value().y);
-            port->setEnable(it.value().mEnabled);
-            port->setVisible(it.value().mVisible);
-        }
-    }
-    redrawConnectors();
+    this->refreshExternalPortsAppearanceAndPosition();
 }
 
 

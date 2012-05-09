@@ -167,7 +167,7 @@ void ParameterSettingsLayout::makePort(bool isPort)
 {
     if (isPort)
     {
-        mpModelObject->createRefreshExternalPort(mName);
+        mpModelObject->createRefreshExternalDynamicParameterPort(mName);
     }
     else
     {

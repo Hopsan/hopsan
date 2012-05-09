@@ -40,7 +40,6 @@ public:
     QString mMultiPortOverlayPath;
     bool mEnabled;
     bool mAutoPlaced;
-    bool mVisible;
     QString mDescription;
 };
 

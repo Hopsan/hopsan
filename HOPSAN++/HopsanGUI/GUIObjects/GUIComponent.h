@@ -60,6 +60,7 @@ private slots:
 
 protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
+    QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void openPropertiesDialog();
     void createPorts();

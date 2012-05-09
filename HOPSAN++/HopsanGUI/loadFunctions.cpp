@@ -134,23 +134,14 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStat
     parameterType = rDomElement.attribute(HMF_TYPE);
     parameterType = rDomElement.attribute(HMF_TYPENAME, parameterType); //!< @deprecated load old typename
 
-    //    bool isDbl;
-    //    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
-    //    double value = rData.parameterValue.toDouble(&isDbl);
-    //    if(isDbl)
-    //    {
-    //        pObject->setParameterValue(rData.parameterName, value);
-    //    }
-    //    else
+    //Use the setParameter method that mapps to System parameter
+    if(!parameterName.startsWith("noname_subport:") && !pObject->getParameterNames().contains(parameterName))
     {
-        //Use the setParameter method that mapps to System parameter
-        if(!parameterName.startsWith("noname_subport:") && !pObject->getParameterNames().contains(parameterName))
-        {
-            gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
-            return;
-        }
-        pObject->setParameterValue(parameterName, parameterValue, true);
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
+        return;
     }
+    pObject->setParameterValue(parameterName, parameterValue, true);
+
 }
 
 

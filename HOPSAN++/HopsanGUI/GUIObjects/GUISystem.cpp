@@ -437,8 +437,7 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
         scriptFileElement.setAttribute("path", mScriptFilePath);
 
         this->refreshExternalPortsAppearanceAndPosition();
-        QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOT);
-        xmlApp.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
+        QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
 
         //Before we save the modelobjectappearance data we need to set the correct basepath, (we ask our parent it will know)
         if (this->getParentContainerObject() != 0)
@@ -637,6 +636,29 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
                     loadParameterValue(xmlParameter, pObj, NOUNDO);
                     xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
                 }
+
+
+                // Load component specific override port data, and dynamic parameter port positions
+                QDomElement cafMoStuff = xmlSubObject.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT);
+                if (!cafMoStuff.isNull())
+                {
+                    //We read all model object appearance data in the hmf to get the ports
+                    //!  @todo This work right now maybe not in the future if more data will be there for ordinary components
+                    pObj->getAppearanceData()->readFromDomElement(cafMoStuff);
+
+                    // For all port appearances that have the same name as parameters, create external dynamic parameter ports
+                    //! @todo maybe should tag the parameter insted, with some info that it is representing a parameter
+                    QStringList paramNames = pObj->getParameterNames();
+                    QList<QString> portNames = pObj->getAppearanceData()->getPortAppearanceMap().keys();
+                    for (int i=0; i<portNames.size(); ++i)
+                    {
+                        if (paramNames.contains(portNames[i]))
+                        {
+                            pObj->createRefreshExternalDynamicParameterPort(portNames[i]);
+                        }
+                    }
+                }
+
 
                 //! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats
                 //Load start values //Is not needed, start values are saved as ordinary parameters! This code snippet can probably be removed.

@@ -109,6 +109,20 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
     return subDomElement;
 }
 
+//! @brief Function to get a sub dom ellement, if it does not exist it is first added
+QDomElement getOrAppendNewDomElement(QDomElement &rDomElement, const QString element_name)
+{
+    QDomElement elem = rDomElement.firstChildElement(element_name);
+    if (elem.isNull())
+    {
+        return appendDomElement(rDomElement, element_name);
+    }
+    else
+    {
+        return elem;
+    }
+}
+
 //! @brief Function for adding Dom elements containing one text node
 //! @param[in] rDomElement The DOM Element to add to
 //! @param[in] element_name The name of the new DOM element

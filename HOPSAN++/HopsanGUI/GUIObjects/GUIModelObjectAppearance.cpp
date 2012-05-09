@@ -59,6 +59,12 @@
 #define CAF_TYPENAME "typename"
 
 // =============== Help Functions ===============
+QDomElement appendOrGetCAFRootTag(QDomElement parentElement)
+{
+   QDomElement cafroot = getOrAppendNewDomElement(parentElement, CAF_ROOT);
+   cafroot.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
+   return cafroot;
+}
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing PortPose information
 //! @param[in] domElement The DOM Element to parse
@@ -102,12 +108,12 @@ void appendPortDomElement(QDomElement &rDomElement, const QString portName, cons
         xmlPort.setAttribute("enabled", HMF_FALSETAG);
     }
 
-    // Save visible or not, only write if hidden is set, as default is visible (to avoid clutter in xml file)
-    //! @todo maybe should always write, this is wrong, should look at if it is hide or not instead... Now that is not in appearance
-    if (!rPortAppearance.mVisible) //This is wrong
-    {
-        xmlPort.setAttribute("visible", HMF_FALSETAG);
-    }
+//    // Save visible or not, only write if hidden is set, as default is visible (to avoid clutter in xml file)
+//    //! @todo maybe should always write, this is wrong, should look at if it is hide or not instead... Now that is not in appearance
+//    if (!rPortAppearance.mVisible) //This is wrong
+//    {
+//        xmlPort.setAttribute("visible", HMF_FALSETAG);
+//    }
 
     // Save description if any
     if (!rPortAppearance.mDescription.isEmpty())
@@ -128,8 +134,7 @@ void parsePortDomElement(QDomElement domElement, QString &rPortName, PortAppeara
     rPortAppearance.rot = parseAttributeQreal(domElement, "a", 0);
 
     rPortAppearance.mAutoPlaced = parseAttributeBool(domElement, "autoplaced", true);
-    rPortAppearance.mEnabled = parseAttributeBool(domElement, "enabled", true);
-    rPortAppearance.mVisible = parseAttributeBool(domElement, "visible", true);
+    rPortAppearance.mEnabled = parseAttributeBool(domElement, "enabled", parseAttributeBool(domElement, "visible", true));
 
     QDomElement xmlPortDescription = domElement.firstChildElement(CAF_DESCRIPTION);
     if (!xmlPortDescription.isNull())
@@ -452,9 +457,14 @@ QString ModelObjectAppearance::getBasePath()
 //! @brief Read the ModelObjectAppearance contents from an XML DOM Element
 void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
-    //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
-    mTypeName       = domElement.attribute(CAF_TYPENAME);
-    mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mTypeName);
+    mTypeName       = domElement.attribute(CAF_TYPENAME, mTypeName);
+    mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
+
+    //Use typename if displayname not set
+    if (mDisplayName.isEmpty())
+    {
+        mDisplayName = mTypeName;
+    }
 
     QDomElement xmlHelp = domElement.firstChildElement(CAF_HELP);
     if(!xmlHelp.isNull())
@@ -513,7 +523,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
         }
         // There should only be one <ports>, but lets check for more just in case
-        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTPOSITIONS);      //! @todo Shouldn't this be CAF_PORTS?
+        xmlPorts = xmlPorts.nextSiblingElement(CAF_PORTS);
     }
 
     QDomElement xmlReplacables = domElement.firstChildElement(CAF_REPLACABLES);
@@ -599,14 +609,21 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     refreshIconValid();
 }
 
+//! @brief Adds the model object root dom element, or returns one that already exist
+QDomElement ModelObjectAppearance::addModelObjectRootElement(QDomElement parentDomElement)
+{
+    QDomElement more = getOrAppendNewDomElement(parentDomElement, CAF_MODELOBJECT);
+    more.setAttribute(CAF_TYPENAME, mTypeName);
+    more.setAttribute(CAF_DISPLAYNAME, mDisplayName);
+    return more;
+}
+
 //! @brief Writes the ModelObjectAppearance contents to an XML DOM Element
 //! @param rDomElement The DOM element to write to
 void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 {
     // Save type and name data
-    QDomElement xmlObject = appendDomElement(rDomElement, CAF_MODELOBJECT);
-    xmlObject.setAttribute(CAF_TYPENAME, mTypeName);
-    xmlObject.setAttribute(CAF_DISPLAYNAME, mDisplayName);
+    QDomElement xmlObject = addModelObjectRootElement(rDomElement);
 
     //  Save icon data
     QDomElement xmlIcons = appendDomElement(xmlObject, CAF_ICONS);
@@ -658,6 +675,21 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
         appendPortDomElement(xmlPorts, pit.key(), pit.value());
+    }
+}
+
+//! @brief Convenience function to save only specific ports to dom element, used to save dynamic parameter ports
+void ModelObjectAppearance::saveSpecificPortsToDomElement(QDomElement &rDomElement, const QStringList &rParametNames)
+{
+    //! @todo maybe make the port appearance  class capable of saving itself to DOM
+    QDomElement xmlModelObject = addModelObjectRootElement(rDomElement);
+
+    // First check if ports already exist, else add the element
+    QDomElement xmlPorts = getOrAppendNewDomElement(xmlModelObject, CAF_PORTS);
+    QStringList::const_iterator pnit; // PortName iterator
+    for (pnit=rParametNames.begin(); pnit!=rParametNames.end(); ++pnit)
+    {
+        appendPortDomElement(xmlPorts, *pnit, mPortAppearanceMap.value(*pnit));
     }
 }
 

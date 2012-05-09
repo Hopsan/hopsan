@@ -62,6 +62,7 @@ public:
     virtual ModelObjectAppearance* getAppearanceData();
     bool isVisible();
     QGraphicsSvgItem *getIcon();
+    virtual void refreshExternalPortsAppearanceAndPosition();
 
     //Help methods
     QString getHelpPicture();
@@ -96,6 +97,7 @@ public:
     Port *getPort(QString name);
     QList<Port*> &getPortListPtrs();
     virtual void createRefreshExternalPort(QString portName);
+    void createRefreshExternalDynamicParameterPort(QString portName);
     virtual void removeExternalPort(QString portName);
 
     enum { Type = MODELOBJECT };
@@ -151,6 +153,7 @@ protected:
     qreal mLastIconScale;
 
     QMap<QString, QString> mDefaultParameterValues;
+    QStringList mActiveDynamicParameterPortNames;
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;

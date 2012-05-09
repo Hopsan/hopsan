@@ -39,6 +39,8 @@
 
 enum AbsoluteRelativeT {ABSOLUTE, RELATIVE};
 
+QDomElement appendOrGetCAFRootTag(QDomElement parentElement);
+
 class ModelObjectIconAppearance
 {
 public:
@@ -115,6 +117,7 @@ public:
 
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
+    void saveSpecificPortsToDomElement(QDomElement &rDomElement, const QStringList &rParametNames);
     void saveToXMLFile(QString filename);
 
 private:
@@ -134,6 +137,7 @@ private:
     QString mBasePath;
 
     //Private help functions
+    QDomElement addModelObjectRootElement(QDomElement parentDomElement);
     void setRelativePathFromAbsolute();
     void setAbsoultePathFromRelative();
     void refreshIconValid();

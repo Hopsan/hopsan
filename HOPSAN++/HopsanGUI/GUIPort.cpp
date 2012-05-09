@@ -523,6 +523,9 @@ void Port::refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ex
         {
             mConnectedConnectors[i]->drawConnector();
         }
+
+        //! @todo maybe we could check this first and skip creating all of the graphics if it is not going to be shown
+        this->setEnable(mpPortAppearance->mEnabled);
     }
 }
 
@@ -744,6 +747,14 @@ void Port::setEnable(bool enable)
         {
             this->getGuiModelObject()->getParentContainerObject()->removeSubConnector(*it);
         }
+
+        //Also hide it
+        hide();
+    }
+    else
+    {
+        //! @todo this will show the port even if subsystem is supose to hide unconnected ports, need to fix that mess in some smarter way
+        show();
     }
 }
 
@@ -753,7 +764,6 @@ void Port::hide()
     this->magnify(false);
     mpPortLabel->hide();
     QGraphicsWidget::hide();
-    this->mpPortAppearance->mVisible = false;
 }
 
 void Port::show()
@@ -763,7 +773,6 @@ void Port::show()
         QGraphicsWidget::show();
     }
     mpPortLabel->hide();
-    this->mpPortAppearance->mVisible = true;
 }
 
 

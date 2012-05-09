@@ -240,8 +240,6 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
 
     //Save parameters (also core related)
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
-    //QVector<QString> parameterNames, parameterValues, descriptions, units, types;
-    //getParameters(parameterNames, parameterValues, descriptions, units, types);
     QVector<CoreParameterData> paramDataVec;
     getParameters(paramDataVec);
     for(int i=0; i<paramDataVec.size(); ++i)
@@ -256,25 +254,14 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
             xmlParam.setAttribute(HMF_SYSTEMPARAMETERTAG, this->getSystemParameterKey(*pit));
         }*/
     }
+}
 
-    //Save start values //Is not needed, start values are saved as ordinary parameters! This code snippet can probably be removed.
-//    QDomElement xmlStartValues = appendDomElement(rDomElement, HMF_STARTVALUES);
-//    QVector<QString> startValueNames;
-//    QVector<QString> startValueValuesTxt;
-//    QVector<QString> dummy;
-//    QList<GUIPort*>::iterator portIt;
-//    for(portIt = mPortListPtrs.begin(); portIt != mPortListPtrs.end(); ++portIt)
-//    {
-//        mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getPortName(), startValueNames, startValueValuesTxt, dummy);
-//        if((!startValueNames.empty()))
-//        {
-//            for(int i = 0; i < startValueNames.size(); ++i)
-//            {
-//                QDomElement xmlStartValue = appendDomElement(xmlStartValues, "startvalue");
-//                xmlStartValue.setAttribute("portname", (*portIt)->getPortName());
-//                xmlStartValue.setAttribute("variable", startValueNames[i]);
-//                xmlStartValue.setAttribute("value", startValueValuesTxt[i]);
-//            }
-//        }
-//    }
+QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
+{
+    ModelObject::saveGuiDataToDomElement(rDomElement);
+    QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
+    mModelObjectAppearance.saveSpecificPortsToDomElement(xmlApp, mActiveDynamicParameterPortNames);
+
+    return rDomElement;
 }
