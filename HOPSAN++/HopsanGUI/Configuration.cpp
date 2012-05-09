@@ -803,7 +803,7 @@ QString Configuration::getModelGfxDir()
 {
     if(mModelGfxDir.isEmpty())
     {
-        return QString(DATAPATH);
+        return QString(DOCUMENTSPATH);
     }
     return mModelGfxDir;
 }
@@ -814,7 +814,7 @@ QString Configuration::getPlotDataDir()
 {
     if(mPlotDataDir.isEmpty())
     {
-        return QString(DATAPATH);
+        return QString(DOCUMENTSPATH);
     }
     return mPlotDataDir;
 }
@@ -825,7 +825,7 @@ QString Configuration::getPlotGfxDir()
 {
     if(mPlotGfxDir.isEmpty())
     {
-        return QString(DATAPATH);
+        return QString(DOCUMENTSPATH);
     }
     return mPlotGfxDir;
 }
@@ -836,7 +836,7 @@ QString Configuration::getSimulinkExportDir()
 {
     if(mSimulinkExportDir.isEmpty())
     {
-        return QString(DATAPATH);
+        return QString(DOCUMENTSPATH);
     }
     return mSimulinkExportDir;
 }
@@ -869,7 +869,7 @@ QString Configuration::getExternalLibDir()
 {
     if(mExternalLibDir.isEmpty())
     {
-        return QString(DATAPATH);
+        return QString(DOCUMENTSPATH);
     }
     return mExternalLibDir;
 }
@@ -891,7 +891,7 @@ QString Configuration::getPlotWindowDir()
 {
     if(mPlotWindowDir.isEmpty())
     {
-        return QString(DATAPATH);
+        return QString(DOCUMENTSPATH);
     }
     return mPlotWindowDir;
 }
