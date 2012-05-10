@@ -16,7 +16,6 @@
 // Include your component code code files here
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
-#include "component_code/MyDynParOrifice.hpp"
 #include "component_code/MyExampleOrifice.hpp"
 #include "component_code/MyExampleVolume.hpp"
 #include "component_code/SignalSum.hpp"
@@ -40,7 +39,6 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     // Suggestion, let the KeyValue (TypeName) be the same as your Class name
     // If that name is already in use, use something similar
 
-    pComponentFactory->registerCreatorFunction("MyDynParOrifice", MyDynParOrifice::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleOrifice", MyExampleOrifice::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleVolume", MyExampleVolume::Creator);
     pComponentFactory->registerCreatorFunction("MyExampleSignalSum", SignalSum::Creator);

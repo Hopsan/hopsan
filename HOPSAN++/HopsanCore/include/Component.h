@@ -47,6 +47,8 @@ typedef struct HopsanExternalLibInfo
 class ComponentSystem;
 class HopsanEssentials;
 
+enum ParamDynConstT {dynamic, constant};
+
 class DLLIMPORTEXPORT Component
 {
     friend class ComponentSystem;
@@ -79,11 +81,11 @@ public:
     std::string getTypeCQSString() const;
 
     //Parameters
-    void registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
+    //void registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
     void initializeDynamicParameters();
     void updateDynamicParameterValues();
 
-    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstT dynconst=dynamic);
     void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);

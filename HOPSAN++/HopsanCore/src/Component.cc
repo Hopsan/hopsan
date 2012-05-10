@@ -144,7 +144,7 @@ void Component::finalize(const double /*startT*/, const double /*stopT*/)
 //! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
 void Component::simulate(const double startT, const double stopT)
 {
-    //double dT = stopT-startT;
+    updateDynamicParameterValues();
     double stopTsafe = stopT - mTimestep/2.0;
     mTime = startT;
     while (mTime < stopTsafe)
@@ -279,23 +279,23 @@ void Component::stopSimulation()
     #endif
 }
 
-void Component::registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue)
-{
-    if(mpParameters->exist(name))
-        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
+//void Component::registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue)
+//{
+//    if(mpParameters->exist(name))
+//        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
-    this->addReadPort(name, "NodeSignal", Port::NOTREQUIRED);
+//    this->addReadPort(name, "NodeSignal", Port::NOTREQUIRED);
 
-    stringstream ss;
-    if(ss << rValue)
-    {
-        mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
-    }
-    else
-    {
-        assert(false);
-    }
-}
+//    stringstream ss;
+//    if(ss << rValue)
+//    {
+//        mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
+//    }
+//    else
+//    {
+//        assert(false);
+//    }
+//}
 
 void Component::initializeDynamicParameters()
 {
@@ -347,15 +347,26 @@ void Component::updateDynamicParameterValues()
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
+void Component::registerParameter(const string name, const string description, const string unit, double &rValue, const ParamDynConstT dynconst)
 {
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
+    //! @todo what if dynamic parameter should we not remove the port as well
+
     stringstream ss;
     if(ss << rValue)
     {
-        mpParameters->addParameter(name, ss.str(), description, unit, "double", false, &rValue);
+        if (dynconst == dynamic)
+        {
+            // Make a port with same name so that paramter can be switch to dynamic parameter that can be changed during simulation
+            this->addReadPort(name, "NodeSignal", Port::NOTREQUIRED);
+            mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
+        }
+        else
+        {
+            mpParameters->addParameter(name, ss.str(), description, unit, "double", false, &rValue);
+        }
     }
     else
     {
