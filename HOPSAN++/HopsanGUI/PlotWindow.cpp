@@ -1466,16 +1466,16 @@ void PlotTab::rescaleToCurves()
     {
         double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight;
 
-        xMin=0;         //Min value for X axis
-        xMax=10;        //Max value for X axis
-        yMinLeft=0;     //Min value for left Y axis
-        yMaxLeft=10;    //Max value for left Y axis
-        yMinRight=0;    //Min value for right Y axis
-        yMaxRight=10;   //Max value for right Y axis
-
         //Cycle plots
         if(!mPlotCurvePtrs[plotID].empty())
         {
+            xMin=0;         //Min value for X axis
+            xMax=10;        //Max value for X axis
+            yMinLeft=DBLMAX;     //Min value for left Y axis
+            yMaxLeft=-DBLMAX;    //Max value for left Y axis
+            yMinRight=DBLMAX;    //Min value for right Y axis
+            yMaxRight=-DBLMAX;   //Max value for right Y axis
+
             bool foundFirstLeft = false;        //Tells that first left axis curve was found
             bool foundFirstRight = false;       //Tells that first right axis curve was found
 
@@ -1527,6 +1527,48 @@ void PlotTab::rescaleToCurves()
 
             }
         }
+        else    //No curves
+        {
+            xMin=0;         //Min value for X axis
+            xMax=10;        //Max value for X axis
+            yMinLeft=0;     //Min value for left Y axis
+            yMaxLeft=10;    //Max value for left Y axis
+            yMinRight=0;    //Min value for right Y axis
+            yMaxRight=10;   //Max value for right Y axis
+        }
+
+        if(yMinLeft > yMaxLeft)
+        {
+            yMinLeft = 0;
+            yMaxLeft = 10;
+        }
+        else if(yMinRight > yMaxRight)
+        {
+            yMinRight = 0;
+            yMaxRight = 10;
+        }
+
+        if(mLeftAxisLogarithmic)
+        {
+            if(yMinLeft == 0)
+            {
+                yMinLeft = 1e-100;
+            }
+//            else
+//            {
+//                yMinLeft = log10(yMinLeft);
+//            }
+
+            if(yMaxLeft == 0)
+            {
+                yMaxLeft =1e-100;
+            }
+//            else
+//            {
+//                yMaxLeft = log10(yMaxLeft);
+//            }
+//            qDebug() << "Min = " << yMinLeft << ", max = " << yMaxLeft;
+        }
 
         //Max and min must not be same value; if they are, decrease/increase them by one
         if(yMaxLeft == yMinLeft)
@@ -1558,6 +1600,9 @@ void PlotTab::rescaleToCurves()
             yMaxRight = yMaxRight*2;
             yMinRight = yMinRight/2;
         }
+
+        qDebug() << "Right Min = " << yMinRight << ", max = " << yMaxRight;
+        qDebug() << "Left Min = " << yMinLeft << ", max = " << yMaxLeft;
 
         //Scale the axes
         mpPlot[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
@@ -2691,6 +2736,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 {
     QWidget::contextMenuEvent(event);
 
+ //   return;
     if(this->mpZoomer[FIRSTPLOT]->isEnabled())
     {
         return;

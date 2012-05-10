@@ -712,7 +712,11 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         return;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << QString(COREINCLUDEPATH) << "\" -L\""+gExecPath+"\" -lHopsanCore\n";
+    QString choppedIncludePath = QString(COREINCLUDEPATH);
+    choppedIncludePath.chop(1);
+    QString choppedExecPath = gExecPath;
+    choppedExecPath.chop(1);
+    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << choppedIncludePath<< "\"  -I\"" << QString(COREINCLUDEPATH) << "\" -L\""+gExecPath+"\" -L\""+choppedExecPath+"\" -lHopsanCore\n";
     clBatchFile.close();
 
     if(pProgressBar)
@@ -1870,7 +1874,7 @@ QStringList getQVariables(QString nodeType)
     QStringList retval;
     if(nodeType == "NodeMechanic")
     {
-        retval << "F" << "x" << "v";
+        retval << "F" << "x" << "v" << "me";
     }
     if(nodeType == "NodeMechanicRotational")
     {
@@ -1928,7 +1932,7 @@ QStringList getVariableLabels(QString nodeType)
     QStringList retval;
     if(nodeType == "NodeMechanic")
     {
-        retval << "FORCE" << "POSITION" << "VELOCITY" << "WAVEVARIABLE" << "CHARIMP";
+        retval << "FORCE" << "POSITION" << "VELOCITY" << "EQMASS" << "WAVEVARIABLE" << "CHARIMP";
     }
     if(nodeType == "NodeMechanicRotational")
     {
