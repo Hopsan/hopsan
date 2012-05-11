@@ -1426,6 +1426,30 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
         curve->getCurvePtr()->setSamples(mVectorX, curve->getDataVector());
     }
 
+
+    //If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
+    QString customUnit;
+    for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+    {
+        if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == curve->getAxisY())
+        {
+            if(customUnit == QString())
+            {
+                customUnit = mPlotCurvePtrs[plotID].at(i)->getDataUnit();
+            }
+            else if(customUnit != mPlotCurvePtrs[plotID].at(i)->getDataUnit())  //Unit is different between the other curves, so don't use it
+            {
+                customUnit = QString();
+                break;
+            }
+        }
+    }
+    if(customUnit != QString())
+    {
+        curve->setDataUnit(customUnit);
+    }
+
+
     mPlotCurvePtrs[plotID].append(curve);
 
     if(desiredColor == QColor())
@@ -1452,8 +1476,6 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
     mpPlot[plotID]->replot();
 
     curve->setLineWidth(2);
-
-    //mpPlot[plotID]->
 
     mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
 }
