@@ -2788,6 +2788,12 @@ void ContainerObject::showLossesFromDialog()
         }
     }
 
+    if(addedNames.isEmpty() && lossesNames.isEmpty())
+    {
+        gpMainWindow->mpShowLossesAction->setChecked(false);
+        return;     //Don't attempt to plot when there is nothing to plot (may cause crash in bar chart plotter)
+    }
+
     componentNames.clear();
     componentNames.append(addedNames);
     componentNames.append(lossesNames);
