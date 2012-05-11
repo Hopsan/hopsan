@@ -194,11 +194,12 @@ void PlotVariableTree::updateList()
         QString portName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(1);
         QString dataName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(2);
         QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(3);
+        QString alias = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(componentName, portName, dataName);
 
         if(!componentName.isEmpty())
         {
             tempPlotVariableTreeItem = new PlotVariableTreeItem(componentName, portName, dataName, dataUnit);
-            tempPlotVariableTreeItem->setText(0, tempPlotVariableTreeItem->text(0).prepend(" " + componentName + ", "));
+            tempPlotVariableTreeItem->setText(0, " <"+alias+"> "+componentName+", "+portName+", "+dataName+", ["+dataUnit+"]");
             tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
             this->addTopLevelItem(tempPlotVariableTreeItem);
             tempPlotVariableTreeItem->setDisabled(!mAvailableVariables.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)));
