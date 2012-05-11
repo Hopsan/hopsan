@@ -26,6 +26,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "GUIPort.h"
 
 ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParameterData, ModelObject *pModelObject, QWidget *pParent) : QGridLayout(pParent)
 {
@@ -70,14 +71,21 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
         bool checked=false;
         //mDynamicEnabledCheckBox.setText("Dynamic");
         mDynamicEnabledCheckBox.setToolTip("Make Port (Experimental)");
-        if (mpModelObject->getPort(rParameterData.mName) != 0)
+        Port *pPort = mpModelObject->getPort(rParameterData.mName);
+        if ( pPort != 0)
         {
             checked=true;
+
+            // If the port exist and is connected then show in value editor that value will not be used
+            // NOTE! We cant us "isEnabled from core since it will not be reset until a new simulation is run"
+            //! @todo maybe dissable is not best way, you may want to change value without having to dissconnect first.
+            if (pPort->isConnected())
+            {
+                mValueLineEdit.setEnabled(false);
+            }
         }
         mDynamicEnabledCheckBox.setChecked(checked);
         addWidget(&mDynamicEnabledCheckBox, 0, 0);
-
-        //! @todo if parmeter dissabled (connected from outside) make entire ParameterLayout gray or locked (except for the checkbox)
     }
 
     // Add lables, edits and buttons
@@ -87,8 +95,6 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     addWidget(&mUnitLabel, 0, 4);
     addWidget(&mResetDefaultToolButton, 0, 5);
     addWidget(&mSystemParameterToolButton, 0, 6);
-
-
 
     // Determine value text color
     pickValueTextColor();
