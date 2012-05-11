@@ -477,20 +477,22 @@ void Port::refreshPortOverlayPosition()
 //! @brief recreate the port graphics overlay
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
 //! @todo Maybe we should preload all cqs and multiport overlays (just three of them) and create som kind of shared svg renderer that all ports can share, then we dont need to reload graphics from file every freaking time it changes and in every systemport
-void Port::refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ext_act)
+void Port::refreshPortGraphics()
 {
     qDebug() << "!!! REFRESHING PORT GRAPHICS !!!";
 
-    //! @todo this if check hack is used to make sure we do not try to update appearance after appearance data has been deleted for external systemports, related to issue with ports beeing deleted call delete in connectors that call refresh in ports beeing deletet, madness!
     //! @todo maybe we should make the ports own their own appearance instead of their parent object
     if (mpPortAppearance != 0)
     {
         //Systemports may change appearance depending on what is connected
+        CoreSystemAccess::PortTypeIndicatorT int_ext_act = CoreSystemAccess::ACTUALPORTTYPE;
         QString cqsType;
         if (getPortType() == "SYSTEMPORT")
         {
             if (getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
             {
+                int_ext_act = CoreSystemAccess::EXTERNALPORTTYPE;
+
                 //If we are port in containerport model object then ask our parent system model object about cqs-type
                 cqsType = getParentContainerObjectPtr()->getTypeCQS();
 
@@ -502,6 +504,8 @@ void Port::refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ex
             }
             else
             {
+                int_ext_act = CoreSystemAccess::INTERNALPORTTYPE;
+
                 //If we are external systemport then ask our model object about the cqs-type
                 cqsType = getGuiModelObject()->getTypeCQS();
                 qDebug() << "cqsType: " << cqsType;
@@ -671,6 +675,12 @@ void Port::rememberConnection(Connector *pConnector)
 {
     mConnectedConnectors.append(pConnector);
     //qDebug() << "Adding connection, connections = " << mnConnections;
+
+    // Refresh port graphics if it is a system port
+    if (getPortType() == "SYSTEMPORT")
+    {
+        refreshPortGraphics();
+    }
 }
 
 
@@ -678,6 +688,18 @@ void Port::forgetConnection(Connector *pConnector)
 {
     int idx = mConnectedConnectors.indexOf(pConnector);
     mConnectedConnectors.remove(idx);
+
+    // Refresh port graphics if it is a system port
+    if (getPortType() == "SYSTEMPORT")
+    {
+        refreshPortGraphics();
+    }
+
+    if(!isConnected())
+    {
+        setVisible(!getParentContainerObjectPtr()->areSubComponentPortsHidden());
+    }
+
     //qDebug() << "Removing connection, connections = " << mnConnections;
 }
 
@@ -747,22 +769,20 @@ void Port::setEnable(bool enable)
 {
     mpPortAppearance->mEnabled = enable;
 
-    if(!enable) //Remove all connections to this port if it is set to disabled
+    if(!enable)
     {
-        QVector<Connector*> vConnectors = this->getAttachedConnectorPtrs();
-        QVector<Connector*>::iterator it;
-        for(it = vConnectors.begin(); it != vConnectors.end(); ++it)
-        {
-            this->getGuiModelObject()->getParentContainerObject()->removeSubConnector(*it);
-        }
-
-        //Also hide it
+        // Remove all connections to this port if it is set to disabled
+        disconnectAndRemoveAllConnectedConnectors();
+        // Also hide it
         hide();
     }
     else
     {
-        //! @todo this will show the port even if subsystem is supose to hide unconnected ports, need to fix that mess in some smarter way
-        show();
+        // Only show if not connected and not suposed to be hidden if unconnected
+        if (!isConnected() && !getParentContainerObjectPtr()->areSubComponentPortsHidden())
+        {
+            show();
+        }
     }
 }
 

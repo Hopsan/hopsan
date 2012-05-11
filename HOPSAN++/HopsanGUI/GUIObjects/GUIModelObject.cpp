@@ -621,13 +621,13 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
 
         mPortListPtrs.append(pPort);
 
-        pPort->refreshPortGraphics(CoreSystemAccess::ACTUALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+        pPort->refreshPortGraphics();
     }
     else
     {
         // The external port already seems to exist, lets update it incase something has changed
         //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
-        pPort->refreshPortGraphics(CoreSystemAccess::ACTUALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+        pPort->refreshPortGraphics();
 
         // In this case connections exist, also refresh any attached connectors, if types have changed
         //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
@@ -654,11 +654,11 @@ void ModelObject::removeExternalPort(QString portName)
         if ((*plit)->getPortName() == portName )
         {
             //Delete the GUIPort its post in the portlist and its appearance data
-            mModelObjectAppearance.erasePortAppearance(portName);
             mActiveDynamicParameterPortNames.removeAll(portName);
-            (*plit)->disconnectAndRemoveAllConnectedConnectors(); //We need to diconnect before remove
+            (*plit)->disconnectAndRemoveAllConnectedConnectors();
             (*plit)->deleteLater();
             mPortListPtrs.erase(plit);
+            mModelObjectAppearance.erasePortAppearance(portName); // It is important that we remove the appearance data last, or some pointers will be dangling
             break;
         }
     }

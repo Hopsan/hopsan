@@ -420,14 +420,14 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
 
         mPortListPtrs.append(pPort);
 
-        pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+        pPort->refreshPortGraphics();
     }
     else
     {
 
         // The external port already seems to exist, lets update it incase something has changed
         //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
-        pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+        pPort->refreshPortGraphics();
 
         // In this case of container object, also refresh any attached connectors, if types have changed
         //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
@@ -1221,34 +1221,12 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
             mpUndoStack->registerDeletedConnector(pConnector);
         }
 
-        //! @todo maybe we should let the port decide by itself if it should be visible or not insted
-        //Show the end port if it exists and if it is no longer connected
         if(pConnector->getEndPort() != 0)
         {
             pConnector->getEndPort()->forgetConnection(pConnector);
-            if(!pConnector->getEndPort()->isConnected())
-            {
-                pConnector->getEndPort()->setVisible(!mSubComponentPortsHidden);
-            }
         }
 
-        //! @todo maybe we should let the port decide by itself if it should be visible or not insted
-        //Show the start port if it is no longer connected
         pConnector->getStartPort()->forgetConnection(pConnector);
-        if(!pConnector->getStartPort()->isConnected())
-        {
-            pConnector->getStartPort()->setVisible(!mSubComponentPortsHidden);
-        }
-
-        //Correctly refresh the graphics of systemports based on if this is an external or internal connection
-        if (pConnector->getStartPort()->getPortType() == "SYSTEMPORT")
-        {
-            refreshSubContainerPortGraphics(pConnector->getStartPort());
-        }
-        if (pConnector->getEndPort()->getPortType() == "SYSTEMPORT")
-        {
-            refreshSubContainerPortGraphics(pConnector->getEndPort());
-        }
 
         // Forget and delete the connector
         mSubConnectorList.removeAll(pConnector);
@@ -1432,14 +1410,10 @@ bool ContainerObject::finilizeConnector(Port *endPort)
         mpTempConnector->setEndPort(endPort);
         mpTempConnector->finishCreation();
 
-        //Correctly refresh the graphics of systemports based on if this is an external or internal connection
-        if (endPort->getPortType() == "SYSTEMPORT")
-        {
-            refreshSubContainerPortGraphics(endPort);
-        }
+        //Refresh startport now that end port has been connected (for system ports)
         if (mpTempConnector->getStartPort()->getPortType() == "SYSTEMPORT")
         {
-            refreshSubContainerPortGraphics(mpTempConnector->getStartPort());
+            mpTempConnector->getStartPort()->refreshPortGraphics();
         }
 
         mSubConnectorList.append(mpTempConnector);
@@ -1447,22 +1421,6 @@ bool ContainerObject::finilizeConnector(Port *endPort)
     }
 
     return success;
-}
-
-//! @brief Correctly refresh the graphics of systemports based on if this is an external or internal connection
-//! @todo this function should not be here, should be handled by systemports automatically
-void ContainerObject::refreshSubContainerPortGraphics(Port* pPort)
-{
-    //! @todo the systemport should know itself wheter it is an external or internal one
-    // If internal systemport
-    if (pPort->getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
-    {
-        pPort->refreshPortGraphics(CoreSystemAccess::EXTERNALPORTTYPE);
-    }
-    else
-    {
-        pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE);
-    }
 }
 
 
@@ -2147,7 +2105,7 @@ void ContainerObject::refreshInternalContainerPortGraphics()
         if(moit.value()->type() == CONTAINERPORT)
         {
             //We assume that a container port only have ONE gui port
-            moit.value()->getPortListPtrs().first()->refreshPortGraphics(CoreSystemAccess::EXTERNALPORTTYPE);
+            moit.value()->getPortListPtrs().first()->refreshPortGraphics();
         }
     }
 }

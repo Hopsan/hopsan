@@ -100,7 +100,7 @@ public slots:
     PlotWindow* plot(QString dataName, QString dataUnit=QString(), QColor desiredCurveColor=QColor());
     void plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit=QString(), int axisY=0);
     void refreshPortOverlayPosition();
-    void refreshPortGraphics(const CoreSystemAccess::PortTypeIndicatorT int_ext_act=CoreSystemAccess::ACTUALPORTTYPE);
+    void refreshPortGraphics();
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
