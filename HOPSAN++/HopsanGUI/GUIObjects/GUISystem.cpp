@@ -1664,12 +1664,12 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     fmuSourceStream << "}\n\n";
     fmuSourceStream << "double getVariable(char* component, char* port, size_t idx)\n";
     fmuSourceStream << "{\n";
-    fmuSourceStream << "    return spCoreComponentSystem->getComponent(component)->getPort(port)->readNode(idx);\n";
+    fmuSourceStream << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->readNode(idx);\n";
     fmuSourceStream << "}\n\n";
     fmuSourceStream << "void setVariable(char* component, char* port, size_t idx, double value)\n";
     fmuSourceStream << "{\n";
-    fmuSourceStream << "    assert(spCoreComponentSystem->getComponent(component)->getPort(port) != 0);\n";
-    fmuSourceStream << "    return spCoreComponentSystem->getComponent(component)->getPort(port)->writeNode(idx, value);\n";
+    fmuSourceStream << "    assert(spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port) != 0);\n";
+    fmuSourceStream << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->writeNode(idx, value);\n";
     fmuSourceStream << "}\n";
     fmuSourceFile.close();
 
