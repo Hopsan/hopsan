@@ -26,19 +26,15 @@
 #define MOVEPORTSDIALOG_H
 
 #include <QtGui>
-#include <QtCore>
-#include <QFile>
 #include <QGraphicsSvgItem>
 #include <QSvgRenderer>
+
 #include "GUIPortAppearance.h"
 #include "common.h"
 
-
+// Forward declarations
 class DragPort;
-class ModelObject;
-class Component;
 class ModelObjectAppearance;
-
 
 class MovePortsDialog : public QDialog
 {
@@ -60,7 +56,6 @@ signals:
     void finished();
 
 protected:
-    QVector<DragPort*> mvSVGPorts;
     QGraphicsSvgItem *mpSVGComponent;
     ModelObjectAppearance *mpCompAppearance;
     PortAppearanceMapT *mpPortAppearanceMap;
@@ -94,6 +89,8 @@ public:
 
     void setPosOnComponent(double x, double y, double rot);
     QPointF getPosOnComponent();
+    double getPortRotation();
+    PortAppearance *getPortAppearance();
 
 public slots:
     void setEnable(int state);

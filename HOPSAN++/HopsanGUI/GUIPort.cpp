@@ -135,10 +135,7 @@ Port::~Port()
     //If any connectors are present they need to be deleated also
     // We need to use while and access first element every time as Vector will be modified when connector removes itself
     //! @todo What about Undo, right now these deleations are not registered
-    while (mConnectedConnectors.size() > 0)
-    {
-        mConnectedConnectors[0]->deleteMeWithNoUndo();
-    }
+    disconnectAndRemoveAllConnectedConnectors();
     //! @todo Maybe we should use signal and slots instead to handle connector removal on port delete, we are doing that with GuiModelObjects right now
 
     //We dont need to disconnect the permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
@@ -670,18 +667,29 @@ PortDirectionT Port::getPortDirection()
 }
 
 
-void Port::addConnection(Connector *pConnector)
+void Port::rememberConnection(Connector *pConnector)
 {
     mConnectedConnectors.append(pConnector);
     //qDebug() << "Adding connection, connections = " << mnConnections;
 }
 
 
-void Port::removeConnection(Connector *pConnector)
+void Port::forgetConnection(Connector *pConnector)
 {
     int idx = mConnectedConnectors.indexOf(pConnector);
     mConnectedConnectors.remove(idx);
     //qDebug() << "Removing connection, connections = " << mnConnections;
+}
+
+//! @brief Convenienc function to dissconnect and remove all conected connectors, usefull to call before deleteing ports
+//! @note The main reason for this function is that connector port relasionship during delete is MADNESS
+//! @note No undo will be registred
+void Port::disconnectAndRemoveAllConnectedConnectors()
+{
+    while (mConnectedConnectors.size() > 0)
+    {
+        mConnectedConnectors[0]->deleteMeWithNoUndo();
+    }
 }
 
 //! @brief Return a copy of the currently connected connectors
@@ -836,15 +844,15 @@ QString GroupPort::getNodeType()
     return "GropPortNodeType";
 }
 
-void GroupPort::addConnection(Connector *pConnector)
+void GroupPort::rememberConnection(Connector *pConnector)
 {
-    Port::addConnection(pConnector);
+    Port::rememberConnection(pConnector);
     mSharedGroupPortInfo->mConnectedConnectors.append(pConnector);
 }
 
-void GroupPort::removeConnection(Connector *pConnector)
+void GroupPort::forgetConnection(Connector *pConnector)
 {
-    Port::removeConnection(pConnector);
+    Port::forgetConnection(pConnector);
     mSharedGroupPortInfo->mConnectedConnectors.remove(mSharedGroupPortInfo->mConnectedConnectors.indexOf(pConnector));
 }
 

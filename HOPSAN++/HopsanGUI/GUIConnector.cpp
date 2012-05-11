@@ -266,7 +266,7 @@ void Connector::setStartPort(Port *port)
 {
     this->disconnectPortSigSlots(mpStartPort);
     mpStartPort = port;
-    mpStartPort->addConnection(this);
+    mpStartPort->rememberConnection(this);
     this->connectPortSigSlots(mpStartPort);
 }
 
@@ -280,7 +280,7 @@ void Connector::setEndPort(Port *port)
 {
     this->disconnectPortSigSlots(mpEndPort);
     mpEndPort = port;
-    mpEndPort->addConnection(this);
+    mpEndPort->rememberConnection(this);
     this->connectPortSigSlots(mpEndPort);
 }
 

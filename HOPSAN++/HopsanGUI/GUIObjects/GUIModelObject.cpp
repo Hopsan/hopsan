@@ -575,16 +575,16 @@ Port *ModelObject::getPort(QString name)
 }
 
 
-void ModelObject::createRefreshExternalDynamicParameterPort(QString portName)
+Port *ModelObject::createRefreshExternalDynamicParameterPort(QString portName)
 {
     mActiveDynamicParameterPortNames.append(portName);
-    createRefreshExternalPort(portName);
+    return createRefreshExternalPort(portName);
 }
 
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
 //! @todo maybe defualt create that info if it is missing
-void ModelObject::createRefreshExternalPort(QString portName)
+Port *ModelObject::createRefreshExternalPort(QString portName)
 {
     //If port appearance is not already existing then we create it
     if ( mModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
@@ -639,9 +639,10 @@ void ModelObject::createRefreshExternalPort(QString portName)
 
         qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
     }
+    return pPort;
 }
 
-//! @breif Removes an external Port from a container object
+//! @brief Removes an external Port from a container object
 //! @param[in] portName The name of the port to be removed
 //! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
 void ModelObject::removeExternalPort(QString portName)
@@ -655,7 +656,8 @@ void ModelObject::removeExternalPort(QString portName)
             //Delete the GUIPort its post in the portlist and its appearance data
             mModelObjectAppearance.erasePortAppearance(portName);
             mActiveDynamicParameterPortNames.removeAll(portName);
-            delete *plit;
+            (*plit)->disconnectAndRemoveAllConnectedConnectors(); //We need to diconnect before remove
+            (*plit)->deleteLater();
             mPortListPtrs.erase(plit);
             break;
         }

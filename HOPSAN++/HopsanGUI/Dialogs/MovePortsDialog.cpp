@@ -36,8 +36,8 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     PortAppearanceMapT::Iterator it;
     for(it=mpPortAppearanceMap->begin(); it != mpPortAppearanceMap->end(); ++it)
     {
+        //! @todo who owns these ports, are they ever deleted?
         DragPort *pPort = new DragPort(&(*it), it.key(), mpSVGComponent);
-        mvSVGPorts.append(pPort);
         pPort->setPosOnComponent(it->x, it->y, it->rot);
         mpView->scene()->addItem(pPort);
         mDragPortMap.insert(it.key(), pPort);
@@ -173,35 +173,19 @@ void MovePortsDialog::updateZoom()
 //! @brief Ok button is pressed
 bool MovePortsDialog::okButtonPressed()
 {
-    //stringstream ss;
-    PortAppearanceMapT::Iterator it;
-    int i = 0;
-    for(it=mpPortAppearanceMap->begin(); it != mpPortAppearanceMap->end(); ++it)
+    QList<DragPort*> ports = mDragPortMap.values();
+    for (int i=0; i<ports.size(); ++i)
     {
-        QPointF p = mvSVGPorts.at(i)->getPosOnComponent();
-        double rot = mvSVGPorts.at(i)->rotation();
-        //ss << it.key().toStdString() << " - x: " << p.x() << "   y: " << p.y() << "\n";
-        ++i;
+        QPointF p = ports[i]->getPosOnComponent();
+        ports[i]->getPortAppearance()->x = p.x();
+        ports[i]->getPortAppearance()->y = p.y();
+        ports[i]->getPortAppearance()->rot = ports[i]->getPortRotation();
 
-        it.value().x = p.x();
-        it.value().y = p.y();
-        it.value().rot = rot;
-
-        it.value().mAutoPlaced = false;
-
-        //Port *port = mpComponent->getPort(it.key());
-        //port->setCenterPosByFraction(p.x(), p.y());
+        //! @todo should we set this if ports have not changed
+        ports[i]->getPortAppearance()->mAutoPlaced = false;
     }
-//    qDebug() << ss;
-//    QMessageBox msgBox;
-//    msgBox.setText(QString::fromStdString(ss.str()));
-
-//    msgBox.exec();
-
-    //mpComponent->redrawConnectors();
 
     emit finished();
-
     return close();
 }
 
@@ -258,7 +242,7 @@ void DragPort::portMoved()
     QString x,y,rot;
     x.setNum(p.x(), 'g', 2);
     y.setNum(p.y(), 'g', 2);
-    rot.setNum(rotation(), 'g', 2);
+    rot.setNum(getPortRotation(), 'g', 2);
     emit activePort(mpName->toPlainText(), x, y, rot);
 }
 
@@ -290,6 +274,17 @@ QPointF DragPort::getPosOnComponent()
     double dy = (this->mapToScene(boundingRect().topLeft()).y()+oy) - mpParentComponent->mapToScene(mpParentComponent->boundingRect().topLeft()).y();
 
     return QPointF(max(0.0, min(1.0, dx/mpParentComponent->boundingRect().width())), max(0.0, min(1.0, dy/mpParentComponent->boundingRect().height())));
+}
+
+//! @brief Returns the rotation of the portgraphics
+double DragPort::getPortRotation()
+{
+    return mpSvg->rotation();
+}
+
+PortAppearance *DragPort::getPortAppearance()
+{
+    return mpPortAppearance;
 }
 
 

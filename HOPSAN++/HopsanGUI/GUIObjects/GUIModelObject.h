@@ -62,7 +62,6 @@ public:
     virtual ModelObjectAppearance* getAppearanceData();
     bool isVisible();
     QGraphicsSvgItem *getIcon();
-    virtual void refreshExternalPortsAppearanceAndPosition();
 
     //Help methods
     QString getHelpPicture();
@@ -96,8 +95,8 @@ public:
     void showPorts(bool visible);
     Port *getPort(QString name);
     QList<Port*> &getPortListPtrs();
-    virtual void createRefreshExternalPort(QString portName);
-    void createRefreshExternalDynamicParameterPort(QString portName);
+    virtual Port* createRefreshExternalPort(QString portName);
+    Port* createRefreshExternalDynamicParameterPort(QString portName);
     virtual void removeExternalPort(QString portName);
 
     enum { Type = MODELOBJECT };
@@ -108,6 +107,7 @@ public:
 
 public slots:
     virtual void refreshAppearance();
+    virtual void refreshExternalPortsAppearanceAndPosition();
     void deleteMe();
     void rotate(qreal angle, undoStatus undoSettings = UNDO);
     void flipVertical(undoStatus undoSettings = UNDO);

@@ -81,9 +81,9 @@ public:
 
 
     bool getLastNodeData(QString dataName, double& rData);
-
-    virtual void addConnection(Connector *pConnector);
-    virtual void removeConnection(Connector *pConnector);
+    void disconnectAndRemoveAllConnectedConnectors();
+    virtual void rememberConnection(Connector *pConnector);
+    virtual void forgetConnection(Connector *pConnector);
     QVector<Connector*> getAttachedConnectorPtrs() const; //!< @todo should this be virtual also
     virtual QVector<Port *> getConnectedPorts();
     bool isConnected();
@@ -158,8 +158,8 @@ public:
     QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     QString getNodeType();
 
-    void addConnection(Connector *pConnector);
-    void removeConnection(Connector *pConnector);
+    void rememberConnection(Connector *pConnector);
+    void forgetConnection(Connector *pConnector);
 
     Port* getRealPort();
     QVector<Port *> getConnectedPorts();

@@ -382,7 +382,7 @@ QGraphicsScene *ContainerObject::getContainedScenePtr()
 //! @param[portName] The name of the port to create
 //! @todo maybe defualt create that info if it is missing
 //! @todo massive duplicate implementation with the one in modelobject
-void ContainerObject::createRefreshExternalPort(QString portName)
+Port *ContainerObject::createRefreshExternalPort(QString portName)
 {
     //If port appearance is not already existing then we create it
     if ( mModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
@@ -392,61 +392,55 @@ void ContainerObject::createRefreshExternalPort(QString portName)
 
     //Fetch appearance data
     PortAppearanceMapT::iterator it = mModelObjectAppearance.getPortAppearanceMap().find(portName);
-    if (it != mModelObjectAppearance.getPortAppearanceMap().end())
+
+    //Create new external port if it does not already exist (this is the usual case for individual components)
+    Port *pPort = this->getPort(it.key());
+    if ( pPort == 0 )
     {
-        //Create new external port if it does not already exist (this is the usual case for individual components)
-        Port *pPort = this->getPort(it.key());
-        if ( pPort == 0 )
+        qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
+
+        //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
+        QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
+        QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
+        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
+
+        qreal x = it.value().x;
+        qreal y = it.value().y;
+        qDebug() << "x,y: " << x << " " << y;
+
+        if (this->type() == GROUPCONTAINER)
         {
-            qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
-
-            //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
-            QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
-            QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
-            it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
-
-            qreal x = it.value().x;
-            qreal y = it.value().y;
-            qDebug() << "x,y: " << x << " " << y;
-
-            if (this->type() == GROUPCONTAINER)
-            {
-                pPort = new GroupPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
-            }
-            else
-            {
-                pPort = new Port(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
-            }
-
-
-            mPortListPtrs.append(pPort);
-
-            pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+            pPort = new GroupPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
         }
         else
         {
-
-            // The external port already seems to exist, lets update it incase something has changed
-            //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
-            pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
-
-            // In this case of container object, also refresh any attached connectors, if types have changed
-            //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
-            QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
-            for (int i=0; i<connectors.size(); ++i)
-            {
-                connectors[i]->refreshConnectorAppearance();
-            }
-
-            qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
+            pPort = new Port(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
         }
+
+
+        mPortListPtrs.append(pPort);
+
+        pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
     }
     else
     {
-        //This should never happen
-        qDebug() << "Could not find portappearance info for port: " << portName << " in: " << this->getName();
-        assert(false);
+
+        // The external port already seems to exist, lets update it incase something has changed
+        //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
+        pPort->refreshPortGraphics(CoreSystemAccess::INTERNALPORTTYPE); //Refresh appearance to mimic the type of the internal port
+
+        // In this case of container object, also refresh any attached connectors, if types have changed
+        //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
+        QVector<Connector*> connectors = pPort->getAttachedConnectorPtrs();
+        for (int i=0; i<connectors.size(); ++i)
+        {
+            connectors[i]->refreshConnectorAppearance();
+        }
+
+        qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
     }
+
+    return pPort;
 }
 
 
@@ -1231,7 +1225,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
         //Show the end port if it exists and if it is no longer connected
         if(pConnector->getEndPort() != 0)
         {
-            pConnector->getEndPort()->removeConnection(pConnector);
+            pConnector->getEndPort()->forgetConnection(pConnector);
             if(!pConnector->getEndPort()->isConnected())
             {
                 pConnector->getEndPort()->setVisible(!mSubComponentPortsHidden);
@@ -1240,7 +1234,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
 
         //! @todo maybe we should let the port decide by itself if it should be visible or not insted
         //Show the start port if it is no longer connected
-        pConnector->getStartPort()->removeConnection(pConnector);
+        pConnector->getStartPort()->forgetConnection(pConnector);
         if(!pConnector->getStartPort()->isConnected())
         {
             pConnector->getStartPort()->setVisible(!mSubComponentPortsHidden);
@@ -2169,7 +2163,7 @@ void ContainerObject::cancelCreatingConnector()
 {
     if(mIsCreatingConnector)
     {
-        mpTempConnector->getStartPort()->removeConnection(mpTempConnector);
+        mpTempConnector->getStartPort()->forgetConnection(mpTempConnector);
         if(!mpTempConnector->getStartPort()->isConnected() && !mSubComponentPortsHidden)
         {
             mpTempConnector->getStartPort()->show();
@@ -2218,7 +2212,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
 {
     if((mpTempConnector->getNumberOfLines() == 1 && mpTempConnector->isMakingDiagonal()) ||  (mpTempConnector->getNumberOfLines() == 2 && !mpTempConnector->isMakingDiagonal()))
     {
-        mpTempConnector->getStartPort()->removeConnection(mpTempConnector);
+        mpTempConnector->getStartPort()->forgetConnection(mpTempConnector);
         if(!mpTempConnector->getStartPort()->isConnected() && !mSubComponentPortsHidden)
         {
             mpTempConnector->getStartPort()->show();

@@ -173,7 +173,12 @@ void ParameterSettingsLayout::makePort(bool isPort)
 {
     if (isPort)
     {
-        mpModelObject->createRefreshExternalDynamicParameterPort(mName);
+        Port * pPort = mpModelObject->createRefreshExternalDynamicParameterPort(mName);
+        if (pPort)
+        {
+            // Make sure that our new port has the "correct" angle
+            pPort->setRotation(180);
+        }
     }
     else
     {
