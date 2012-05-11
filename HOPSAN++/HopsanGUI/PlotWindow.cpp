@@ -1490,16 +1490,37 @@ void PlotTab::rescaleToCurves()
                 {
                     if(foundFirstLeft == false)     //First left-axis curve, use min and max Y values as initial values
                     {
-                        yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        if(mLeftAxisLogarithmic)    //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                        {
+                            yMinLeft = findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
+                        }
+                        else
+                        {
+                            yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        }
                         yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
                         foundFirstLeft = true;
                     }
                     else    //Compare min/max Y value with previous and change if the new one is smaller/larger
                     {
-                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinLeft)
-                            yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        if(mLeftAxisLogarithmic)    //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                        {
+                            if(findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector()) < yMinLeft)
+                            {
+                                yMinLeft=findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
+                            }
+                        }
+                        else
+                        {
+                            if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinLeft)
+                            {
+                                yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                            }
+                        }
                         if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue() > yMaxLeft)
+                        {
                             yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                        }
                     }
                 }
 
@@ -1507,16 +1528,37 @@ void PlotTab::rescaleToCurves()
                 {
                     if(foundFirstRight == false)    //First right-axis curve, use min and max Y values as initial values
                     {
-                        yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        if(mRightAxisLogarithmic)   //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                        {
+                            yMinRight = findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
+                        }
+                        else
+                        {
+                            yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        }
                         yMaxRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
                         foundFirstRight = true;
                     }
                     else    //Compare min/max Y value with previous and change if the new one is smaller/larger
                     {
-                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinRight)
-                            yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                        if(mRightAxisLogarithmic)       //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                        {
+                            if(findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector()) < yMinRight)
+                            {
+                                yMinRight=findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
+                            }
+                        }
+                        else
+                        {
+                            if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinRight)
+                            {
+                                yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                            }
+                        }
                         if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue() > yMaxRight)
+                        {
                             yMaxRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                        }
                     }
                 }
 
@@ -1525,7 +1567,6 @@ void PlotTab::rescaleToCurves()
                     xMin=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minXValue();
                 if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxXValue() > xMax)
                     xMax=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxXValue();
-
             }
         }
         else    //No curves
@@ -1547,28 +1588,6 @@ void PlotTab::rescaleToCurves()
         {
             yMinRight = 0;
             yMaxRight = 10;
-        }
-
-        if(mLeftAxisLogarithmic)
-        {
-            if(yMinLeft == 0)
-            {
-                yMinLeft = 1e-100;
-            }
-//            else
-//            {
-//                yMinLeft = log10(yMinLeft);
-//            }
-
-            if(yMaxLeft == 0)
-            {
-                yMaxLeft =1e-100;
-            }
-//            else
-//            {
-//                yMaxLeft = log10(yMaxLeft);
-//            }
-//            qDebug() << "Min = " << yMinLeft << ", max = " << yMaxLeft;
         }
 
         //Max and min must not be same value; if they are, decrease/increase them by one
@@ -1601,9 +1620,6 @@ void PlotTab::rescaleToCurves()
             yMaxRight = yMaxRight*2;
             yMinRight = yMinRight/2;
         }
-
-        qDebug() << "Right Min = " << yMinRight << ", max = " << yMaxRight;
-        qDebug() << "Left Min = " << yMinLeft << ", max = " << yMaxLeft;
 
         //Scale the axes
         mpPlot[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);

@@ -40,6 +40,8 @@
 
 using namespace std;
 
+const double DBLMAX = std::numeric_limits<double>::max();
+
 //! @brief This function extracts the name from a text stream
 //! @return The extracted name without quotes, empty string if failed
 //! It is assumed that the name was saved OK. but error indicated by empty string
@@ -662,4 +664,21 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
 
     rErrorString = QString("Invalid parameter type \"%1\"").arg(type);
     return false;
+}
+
+
+
+double findSmallestValueGreaterThanZero(QVector<double> data)
+{
+    double retval = DBLMAX;
+
+    for(int i=0; i<data.size(); ++i)
+    {
+        if(data[i] > 0 && data[i] < retval)
+        {
+            retval = data[i];
+        }
+    }
+
+    return retval;
 }
