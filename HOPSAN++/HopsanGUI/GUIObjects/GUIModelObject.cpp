@@ -1326,6 +1326,7 @@ void ModelObject::refreshExternalPortsAppearanceAndPosition()
         if(port != 0)
         {
             port->setCenterPosByFraction(it.value().x, it.value().y);
+            port->setRotation(it.value().rot);
             port->setEnable(it.value().mEnabled);
         }
     }

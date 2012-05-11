@@ -50,7 +50,7 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
         mpPortEnableLayout->addWidget(mvPortEnable.back());
 
         connect(mvPortEnable.back(), SIGNAL(stateChanged(int)), pPort, SLOT(setEnable(int)), Qt::UniqueConnection);
-        connect(pPort, SIGNAL(activePort(QString,QString,QString)), this, SLOT(updatePortInfo(QString,QString,QString)), Qt::UniqueConnection);
+        connect(pPort, SIGNAL(activePort(QString,QString,QString,QString)), this, SLOT(updatePortInfo(QString,QString,QString,QString)), Qt::UniqueConnection);
     }
 
     //mpView->setSceneRect(mpComponent->boundingRect());
@@ -72,15 +72,21 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     mpZoomSlider = new QSlider(Qt::Vertical, this);
     mpZoomSlider->setRange(10, 200);
     mpZoomSlider->setSliderPosition(mViewScale*10);
-    mpSelectedPortLabel = new QLabel("Selected port: ", this);
+
+    QLabel *pSelectedPortLabel, *pSelectedPortXLabel, *pSelectedPortYLabel, *pSelectedPortALabel;
     mpPortNameLabel = new QLabel(this);
     mpPortNameLabel->setMinimumWidth(50);
-    mpSelectedPortXLabel = new QLabel("X: ", this);
+    pSelectedPortLabel = new QLabel("Selected port: ", this);
+    pSelectedPortXLabel = new QLabel("X: ", this);
+    pSelectedPortYLabel = new QLabel("Y: ", this);
+    pSelectedPortALabel = new QLabel("Ang: ", this);
+
     mpPortXLineEdit = new QLineEdit(this);
     mpPortXLineEdit->setValidator(new QDoubleValidator(-.1, 1.1, 2, mpPortXLineEdit));
-    mpSelectedPortYLabel = new QLabel("Y: ", this);
     mpPortYLineEdit = new QLineEdit(this);
     mpPortYLineEdit->setValidator(new QDoubleValidator(-.1, 1.1, 2, mpPortYLineEdit));
+    mpPortALineEdit = new QLineEdit(this);
+    mpPortALineEdit->setValidator(new QDoubleValidator(0, 360, 2, mpPortALineEdit));
 
     QHBoxLayout *buttons = new QHBoxLayout();
 
@@ -89,26 +95,29 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
 
     mpMainLayout->addLayout(buttons, 2, 0);
     mpMainLayout->addWidget(mpZoomSlider, 0, 1, 2, 1);
+
     QHBoxLayout *pPortInfoLayout = new QHBoxLayout();
-    pPortInfoLayout->addWidget(mpSelectedPortLabel);
+    pPortInfoLayout->addWidget(pSelectedPortLabel);
     pPortInfoLayout->addWidget(mpPortNameLabel);
-    pPortInfoLayout->addWidget(mpSelectedPortXLabel);
+    pPortInfoLayout->addWidget(pSelectedPortXLabel);
     pPortInfoLayout->addWidget(mpPortXLineEdit);
-    pPortInfoLayout->addWidget(mpSelectedPortYLabel);
+    pPortInfoLayout->addWidget(pSelectedPortYLabel);
     pPortInfoLayout->addWidget(mpPortYLineEdit);
+    pPortInfoLayout->addWidget(pSelectedPortALabel);
+    pPortInfoLayout->addWidget(mpPortALineEdit);
+
     pPortInfoLayout->addStretch(1);
     mpMainLayout->addLayout(pPortInfoLayout,1,0);
-
     mpMainLayout->addLayout(mpPortEnableLayout, 0, 2, 1, 1);
 
-    connect(mpOkButton, SIGNAL(clicked()), this, SLOT(okButtonPressed()));
-    connect(mpCancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonPressed()));
-    connect(mpZoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(updateZoom()));
+    connect(mpOkButton,      SIGNAL(clicked()),           this, SLOT(okButtonPressed()));
+    connect(mpCancelButton,  SIGNAL(clicked()),           this, SLOT(cancelButtonPressed()));
+    connect(mpZoomSlider,    SIGNAL(sliderMoved(int)),    this, SLOT(updateZoom()));
     connect(mpPortXLineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortXPos(QString)));
     connect(mpPortYLineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortYPos(QString)));
+    connect(mpPortALineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortRotation(QString)));
 
     this->setModal(true);
-
     show();
 }
 
@@ -130,16 +139,23 @@ void MovePortsDialog::updatePortYPos(QString y)
     (*mDragPortMap.find(mpPortNameLabel->text()))->setPosOnComponent(app.x, y.toDouble(), app.rot);
 }
 
+void MovePortsDialog::updatePortRotation(QString a)
+{
+    PortAppearance app = *(mpPortAppearanceMap->find(mpPortNameLabel->text()));
+    (*mDragPortMap.find(mpPortNameLabel->text()))->setPosOnComponent(app.x, app.y, a.toDouble());
+}
+
 
 //! @brief Updates the name, x- and y-position information of a port in the move port dialog window
 //! @param[in] portName The portname to be displayed
 //! @param[in] x The x-position to be displayed
 //! @param[in] y The y-position to be displayed
-void MovePortsDialog::updatePortInfo(QString portName, QString x, QString y)
+void MovePortsDialog::updatePortInfo(QString portName, QString x, QString y, QString a)
 {
     mpPortNameLabel->setText(portName);
     mpPortXLineEdit->setText(x);
     mpPortYLineEdit->setText(y);
+    mpPortALineEdit->setText(a);
 }
 
 
@@ -157,17 +173,19 @@ void MovePortsDialog::updateZoom()
 //! @brief Ok button is pressed
 bool MovePortsDialog::okButtonPressed()
 {
-    stringstream ss;
+    //stringstream ss;
     PortAppearanceMapT::Iterator it;
     int i = 0;
     for(it=mpPortAppearanceMap->begin(); it != mpPortAppearanceMap->end(); ++it)
     {
         QPointF p = mvSVGPorts.at(i)->getPosOnComponent();
-        ss << it.key().toStdString() << " - x: " << p.x() << "   y: " << p.y() << "\n";
+        double rot = mvSVGPorts.at(i)->rotation();
+        //ss << it.key().toStdString() << " - x: " << p.x() << "   y: " << p.y() << "\n";
         ++i;
 
         it.value().x = p.x();
         it.value().y = p.y();
+        it.value().rot = rot;
 
         it.value().mAutoPlaced = false;
 
@@ -237,10 +255,11 @@ void DragPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void DragPort::portMoved()
 {
     QPointF p = getPosOnComponent();
-    QString x,y;
+    QString x,y,rot;
     x.setNum(p.x(), 'g', 2);
     y.setNum(p.y(), 'g', 2);
-    emit activePort(mpName->toPlainText(), x, y);
+    rot.setNum(rotation(), 'g', 2);
+    emit activePort(mpName->toPlainText(), x, y, rot);
 }
 
 

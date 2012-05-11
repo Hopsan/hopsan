@@ -46,14 +46,14 @@ class MovePortsDialog : public QDialog
 
 public:
     MovePortsDialog(ModelObjectAppearance *pComponentAppearance, graphicsType gfxType = USERGRAPHICS, QWidget *parent = 0);
-    //~MovePortsWidget();
 
 public slots:
     bool okButtonPressed();
     bool cancelButtonPressed();
     void updatePortXPos(QString x);
     void updatePortYPos(QString y);
-    void updatePortInfo(QString portName, QString x, QString y);
+    void updatePortRotation(QString a);
+    void updatePortInfo(QString portName, QString x, QString y, QString a);
     void updateZoom();
 
 signals:
@@ -71,13 +71,13 @@ protected:
     QGridLayout *mpMainLayout;
     QGridLayout *mpPortEnableLayout;
 
-    QSlider *mpZoomSlider;
-    QLabel *mpSelectedPortLabel;
     QLabel *mpPortNameLabel;
-    QLabel *mpSelectedPortXLabel;
+
+    QSlider *mpZoomSlider;
     QLineEdit *mpPortXLineEdit;
-    QLabel *mpSelectedPortYLabel;
     QLineEdit *mpPortYLineEdit;
+    QLineEdit *mpPortALineEdit;
+
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
 
@@ -99,7 +99,7 @@ public slots:
     void setEnable(int state);
 
 signals:
-    void activePort(QString portName, QString x, QString y);
+    void activePort(QString portName, QString x, QString y, QString a);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

@@ -203,7 +203,6 @@ void ParameterSettingsLayout::pickValueTextColor()
 
 //! @brief Verifies that a parameter value does not begin with a number but still contains illegal characters.
 //! @note This is a temporary solution. It shall be removed when parsing equations as parameters works.
-//! @param value String with parameter that shall be verified
 bool ParameterSettingsLayout::cleanAndVerifyParameterValue()
 {
     QString value=mValueLineEdit.text();
