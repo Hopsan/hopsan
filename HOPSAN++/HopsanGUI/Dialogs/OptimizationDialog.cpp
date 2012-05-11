@@ -1302,10 +1302,12 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
     {
         mSelectedComponents.append(item->parent()->text(0));
         mSelectedParameters.append(item->text(0));
-        QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + trUtf8("  < "));
+        SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+        QString currentValue = pSystem->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
+
+        QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + " (" + currentValue + trUtf8(")  < "));
         pLabel->setAlignment(Qt::AlignCenter);
 
-        SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
         OptimizationSettings optSettings = pSystem->getOptimizationSettings();
         QString min, max;
         for(int i=0; i<optSettings.mParamters.size(); ++i)
