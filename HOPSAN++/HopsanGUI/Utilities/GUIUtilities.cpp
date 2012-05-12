@@ -589,7 +589,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
     if (type == "double")
     {
         bool onlyNumbers=true;
-        if ( rValue[0].isNumber() )
+        if ( rValue[0].isNumber() || rValue[0] == '.')
         {
             // Replace incorrect decimal separator
             rValue.replace(",", ".");
