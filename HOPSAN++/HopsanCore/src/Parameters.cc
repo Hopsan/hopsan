@@ -181,10 +181,28 @@ bool Parameter::evaluate()
 bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
 {
     bool success = true;
-    std::string evaluatedParameterValue;
+    std::string evaluatedParameterValue, prefix, valueName;
+
+    // Strip + or - from name incase we want to take a negative value of a system parameter
+    if (!mParameterValue.empty())
+    {
+        if ( (mParameterValue[0] == '-') || (mParameterValue[0] == '+') )
+        {
+            prefix = mParameterValue[0];
+            valueName = mParameterValue.substr(1); //1 to end
+        }
+        else
+        {
+            valueName = mParameterValue;
+        }
+    }
 
     // First check if this parameter value is in fact the name of one of the other parameters or system parameter
-    if( !(mpParentParameters->evaluateParameter(mParameterValue, evaluatedParameterValue, mType, ignoreMe)) )
+    if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, ignoreMe) )
+    {
+        evaluatedParameterValue = prefix + evaluatedParameterValue;
+    }
+    else
     {
         // If not then the value is actually the value
         evaluatedParameterValue = mParameterValue;
@@ -342,6 +360,7 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
     {
         if(!exist(parameterName))
         {
+            //! @todo should make sure that parameter names do not have + - * / . or similar as first charater
             Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, isDynamic, dataPtr, this);
             success = newParameter->evaluate();
             if(success || force)
