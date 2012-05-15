@@ -220,19 +220,28 @@ class HydraulicCylinderC : public ComponentC
             //Size of volumes
             V1 = V01+A1*(-x3);
             V2 = V02+A2*(sl+x3);
-            if(0 < me)
+            if(me <= 0)        //Me must be bigger than zero
             {
-                V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
-                V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
-                if(V1<V1min) V1 = V1min;
-                if(V2<V2min) V2 = V2min;
-            }
-            else
-            {
-                addErrorMessage("The equivalent mass 'me' has to be greater than 0.");
-                stopSimulation();
+                std::stringstream ss;
+                ss << "Me = " << me;
+                addDebugMessage(ss.str());
+
+                if(mTime > mTimestep*0.5)
+                {
+                    addErrorMessage("The equivalent mass 'me' has to be greater than 0.");
+                    stopSimulation();
+                }
+                else        //Don't check first time step, because C is executed before Q and Q may not have written me durint initalization
+                {
+                    addWarningMessage("Equivalent mass 'me' not initialized to a value greater than 0.");
+                    me = 1;
+                }
             }
 
+            V1min = betae*mTimestep*mTimestep*A1*A1/(wfak*me);
+            V2min = betae*mTimestep*mTimestep*A2*A2/(wfak*me);
+            if(V1<V1min) V1 = V1min;
+            if(V2<V2min) V2 = V2min;
 
             // Cylinder volumes are modelled the same way as the multiport volume:
             //   c1 = Wave variable for external port

@@ -1527,7 +1527,7 @@ void ComponentGeneratorDialog::generateComponent()
         QList<QStringList> poorJacobian;
         QStringList poorEquations;
         QStringList numChars = QStringList() << "." << "*" << "/" << "+" << "-";
-        for(int i=0; i<100*stateVars.size(); ++i)       //Run lots of times just to be sure (not good, but works...)
+        for(int i=0; i<10000*stateVars.size(); ++i)       //Run lots of times just to be sure (not good, but works...)
         {
             shuffle(jacobian, sysEquations);
             bool badSolution = false;

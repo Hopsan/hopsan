@@ -1874,7 +1874,7 @@ QStringList getQVariables(QString nodeType)
     QStringList retval;
     if(nodeType == "NodeMechanic")
     {
-        retval << "F" << "x" << "v" << "me";
+        retval << "F" << "x" <<  "me" << "v";
     }
     if(nodeType == "NodeMechanicRotational")
     {
@@ -1932,7 +1932,7 @@ QStringList getVariableLabels(QString nodeType)
     QStringList retval;
     if(nodeType == "NodeMechanic")
     {
-        retval << "FORCE" << "POSITION" << "VELOCITY" << "EQMASS" << "WAVEVARIABLE" << "CHARIMP";
+        retval << "FORCE" << "POSITION" << "EQMASS"  << "VELOCITY"<< "WAVEVARIABLE" << "CHARIMP";
     }
     if(nodeType == "NodeMechanicRotational")
     {
