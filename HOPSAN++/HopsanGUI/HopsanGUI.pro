@@ -75,8 +75,8 @@ win32 {
     #DEFINES += STATICCORE
 
     #Set Python paths
-    PYTHON_DEFAULT_PATHS *= c:/Python26
     PYTHON_DEFAULT_PATHS *= c:/Python27
+    PYTHON_DEFAULT_PATHS *= c:/Python26
     PYTHON_PATH = $$selectPath($$(PYTHON_PATH), $$PYTHON_DEFAULT_PATHS, "python")
     INCLUDEPATH += $${PYTHON_PATH}/include
     LIBS += -L$${PYTHON_PATH}/libs
