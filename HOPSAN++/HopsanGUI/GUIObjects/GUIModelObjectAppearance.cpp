@@ -209,6 +209,23 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             {
                 isAdjustable.append(false);
             }
+
+            QStringList portNames;
+            QList<double> portStartX;
+            QList<double> portStartY;
+
+            QDomElement xmlMovingPorts = xmlMovable.firstChildElement("movingport");
+            while(!xmlMovingPorts.isNull())
+            {
+                portNames.append(xmlMovingPorts.attribute("portname"));
+                portStartX.append(xmlMovingPorts.attribute("startx").toDouble());
+                portStartY.append(xmlMovingPorts.attribute("starty").toDouble());
+                xmlMovingPorts = xmlMovingPorts.nextSiblingElement("movingport");
+            }
+            movablePortNames.append(portNames);
+            movablePortStartX.append(portStartX);
+            movablePortStartY.append(portStartY);
+
             xmlMovable = xmlMovable.nextSiblingElement("movable");
         }
     }

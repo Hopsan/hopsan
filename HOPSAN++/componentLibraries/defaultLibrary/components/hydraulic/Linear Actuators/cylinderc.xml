@@ -23,6 +23,7 @@
                 <speed x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
+		<movingport portname="P3" startx="100" starty="20"/>
             </movable>
         </animation>
     </modelobject>

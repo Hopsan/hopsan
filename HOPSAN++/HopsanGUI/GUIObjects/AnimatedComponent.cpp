@@ -50,6 +50,13 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
     mpAnimationWidget = parent;
     mpData = new QList<QVector<double> >();
 
+    //Store port positions
+    for(int i=0; i<unanimatedComponent->getPortListPtrs().size(); ++i)
+    {
+        Port *pPort = unanimatedComponent->getPortListPtrs().at(i);
+        mPortPositions.insert(pPort->getPortName(), pPort->getCenterPos());
+    }
+
     //Set the animation data object
     mpAnimationData = unanimatedComponent->getAppearanceData()->getAnimationDataPtr();
 
@@ -152,8 +159,23 @@ void AnimatedComponent::updateAnimation()
                 mpMovables[m]->setPos(x, y);
             }
             mpMovables[m]->update();
+
+            for(int p=0; p<mpAnimationData->movablePortNames[m].size(); ++p)
+            {
+                QString portName = mpAnimationData->movablePortNames[m][p];
+                double portStartX = mpAnimationData->movablePortStartX[m][p];
+                double portStartY = mpAnimationData->movablePortStartY[m][p];
+
+                QPointF pos;
+                pos.setX(portStartX-data*mpAnimationData->speedX[m]);
+                pos.setY(portStartY-data*mpAnimationData->speedY[m]);
+                mPortPositions.insert(portName, pos);
+            }
         }
     }
+
+
+
 }
 
 
@@ -169,6 +191,12 @@ ModelObjectAnimationData *AnimatedComponent::getAnimationDataPtr()
 int AnimatedComponent::indexOfMovable(AnimatedIcon *pMovable)
 {
     return mpMovables.indexOf(pMovable);
+}
+
+
+QPointF AnimatedComponent::getPortPos(QString portName)
+{
+    return mPortPositions.find(portName).value();
 }
 
 

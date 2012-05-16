@@ -40,6 +40,7 @@ class AnimatedConnectorLine;
 class Connector;
 class AnimationWidget;
 class ConnectorAppearance;
+class AnimatedComponent;
 
 class AnimatedConnector : public QGraphicsWidget
 {
@@ -57,6 +58,10 @@ private:
     QVector<double> mvIntensityData;
     QVector<double> mvFlowData;
     int mDirectionCorrection;
+    AnimatedComponent *mpStartComponent;
+    AnimatedComponent *mpEndComponent;
+    QString mStartPortName;
+    QString mEndPortName;
 
     ConnectorAppearance *mpConnectorAppearance;
 

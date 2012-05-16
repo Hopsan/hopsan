@@ -86,6 +86,7 @@ public:
     int getLastIndex();
     bool isRealTimeAnimation();
     double getLastAnimationTime();
+    AnimatedComponent *getAnimatedComponent(QString name);
 
     //Public member pointers
     AnimatedGraphicsView *mpGraphicsView;

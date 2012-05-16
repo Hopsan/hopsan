@@ -4,6 +4,9 @@ The Python Console in Hopsan can be used for scripting simulations of your model
 
 \section generalcommands General Commands
 
+\subsection newmodel newModel()
+Create a new model.
+
 \subsection loadmodel loadModel(modelFileName)
 Load the model "modelFileName". Example: hopsan.loadModel("c:\mymodel.hmf")
 
@@ -61,16 +64,33 @@ Sets the value for the parameter "parName" in the component "compName" to "value
 \subsection setsystemparameter setSystemParameter(parName, value)
 Sets the system parameter "parName" to "value" in current system.
 
+\subsection addcomponent addComponent(name, typename, x, y, rotation)
+Adds a new component with specified name and typename at position (x,y) with specified rotation. Example: hopsan.addComponent("My Orifice", "HydraulicLaminarOrifice", 2000, 2100, 90)
+
+\subsection connect connect(compName1, portName1, compName2, portName2)
+Connects specified ports with a straight connector. Example: connect("My Orifice", "P1", "My Volume", "P2")
+
+\subsection entersystem enterSystem(sysName)
+Enter subsystem with specified name. Example: hopsan.enterSystem("My Subsystem")
+
+\subsection exitsystem exitSystem()
+Leaves current subsystem and opens parent system.
+
+\subsection clear clear()
+Removes all components and connections in current container.
+
 \subsection plot plot(compName, portName, dataName)
 Plots the variable "dataName" in the port "portName" of the component "compName". Example: hopsan.plot("sink", "in", "Value")
 
 \subsection plot2 plot(alias)
 Plots the variable with alias name "alias".
 	
-\subsection plottowindow plotToWindow(compName, portName, dataName, windowNumber)
-Plots the variable "dataName" in the port "portName" of the component "compName" in specified plot window. Plot window numbers begin at 0 for first window. Example: hopsan.plot("sink", "in", "Value", 0)
+\subsection plottowindow plotToWindow(generation, compName, portName, dataName, windowNumber)
+Plots the specified generation of variable "dataName" in the port "portName" of the component "compName" to specified plot window. Plot window numbers begin at 0 for first window. Example: hopsan.plot(3, "sink", "in", "Value", 0)
 
-	
+\subsection saveplotdata savePlotData(fileName, plotWindowNumber)
+Saves all plot data in specified plot window to a comma-separated values (.CSV) file. Example: hopsan.savePlotData("c:/data.csv", 2) 	
+
 \subsection closelastplotwindow closeLastPlotWindow()
 Closes the last opened plot window.
 

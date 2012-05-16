@@ -29,6 +29,7 @@
 #include "MainWindow.h"
 #include "GraphicsView.h"
 #include "AnimatedConnector.h"
+#include "GUIObjects/AnimatedComponent.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "GUIPort.h"
 #include "GUIObjects/GUIModelObject.h"
@@ -46,6 +47,11 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
 {
     mpAnimationWidget = pAnimationWidget;
     mpConnector = pConnector;
+
+    mpStartComponent = mpAnimationWidget->getAnimatedComponent(pConnector->getStartComponentName());
+    mpEndComponent = mpAnimationWidget->getAnimatedComponent(pConnector->getEndComponentName());
+    mStartPortName = pConnector->getStartPortName();
+    mEndPortName = pConnector->getEndPortName();
 
     if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic" && pConnector->getStartPort()->getPortType() != "READPORT" && pConnector->getEndPort()->getPortType() != "READPORT")
     {
@@ -157,6 +163,21 @@ void AnimatedConnector::updateAnimation()
             mpLines[i]->setPen(tempPen);
         }
     }
+
+    QPointF startPos = mapFromItem(mpStartComponent->mpModelObject, mpStartComponent->getPortPos(mStartPortName));
+    double x1 = startPos.x();
+    double y1 = startPos.y();
+    double x2 = mpLines.first()->line().x2();
+    double y2 = mpLines.first()->line().y2();
+    mpLines.first()->setLine(x1, y1, x2, y2);
+
+
+    QPointF endPos = mapFromItem(mpEndComponent->mpModelObject, mpEndComponent->getPortPos(mEndPortName));
+    x1 = mpLines.last()->line().x1();
+    y1 = mpLines.last()->line().y1();
+    x2 = endPos.x();
+    y2 = endPos.y();
+    mpLines.last()->setLine(x1, y1, x2, y2);
 }
 
 

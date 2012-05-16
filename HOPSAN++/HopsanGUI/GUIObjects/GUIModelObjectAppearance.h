@@ -80,6 +80,9 @@ public:
     QStringList adjustableDataName;
     QVector<double> adjustableGainX;
     QVector<double> adjustableGainY;
+    QVector<QStringList> movablePortNames;
+    QVector<QList<double> > movablePortStartX;
+    QVector<QList<double> > movablePortStartY;
 };
 
 

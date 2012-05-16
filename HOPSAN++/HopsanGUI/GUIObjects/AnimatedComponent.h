@@ -55,18 +55,21 @@ public:
     void updateAnimation();
     ModelObjectAnimationData *getAnimationDataPtr();
     int indexOfMovable(AnimatedIcon *pMovable);
+    QPointF getPortPos(QString portName);
    // ModelObject* getOriginal();
+    ModelObject *mpModelObject;
 
 private:
     void setupAnimationBase(QString basePath);
     void setupAnimationMovable(int m);
     void limitMovables();
 
-    ModelObject *mpModelObject;
     AnimationWidget *mpAnimationWidget;
     AnimatedIcon *mpBase;
     QList<AnimatedIcon *> mpMovables;
     QList<QVector<double> > *mpData;
+
+    QMap<QString, QPointF> mPortPositions;
 
     ModelObjectAnimationData *mpAnimationData;
 };

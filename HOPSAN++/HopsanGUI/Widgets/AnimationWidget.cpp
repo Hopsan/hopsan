@@ -486,6 +486,20 @@ double AnimationWidget::getLastAnimationTime()
 }
 
 
+AnimatedComponent *AnimationWidget::getAnimatedComponent(QString name)
+{
+    for(int c=0; c<mAnimatedComponentList.size(); ++c)
+    {
+        if(mAnimatedComponentList.at(c)->mpModelObject->getName() == name)
+        {
+            return mAnimatedComponentList.at(c);
+        }
+    }
+
+    return 0;
+}
+
+
 //! @brief Returns a pointer to the graphics scene
 QGraphicsScene* AnimationWidget::getGraphicsScene()
 {

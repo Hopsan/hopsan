@@ -391,7 +391,12 @@ void ModelObject::showLosses()
 
     for(int p=0; p<mPortListPtrs.size(); ++p)
     {
-        if(mPortListPtrs[p]->getNodeType() == "NodeHydraulic")
+        QString portType = mPortListPtrs[p]->getPortType();
+        if(portType == "SYSTEMPORT")
+        {
+            portType = mPortListPtrs[p]->getPortType(CoreSystemAccess::INTERNALPORTTYPE);
+        }
+        if(mPortListPtrs[p]->getNodeType() == "NodeHydraulic" && portType != "READPORT")
         {
             //Power port, so we must cycle all connected ports and ask for their data
             if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
@@ -399,6 +404,10 @@ void ModelObject::showLosses()
                 QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
                 for(int i=0; i<vConnectedPorts.size(); ++i)
                 {
+                    if(vConnectedPorts.at(i)->getPortType() == "READPORT")
+                    {
+                        continue;
+                    }
                     QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
                     QString portName = vConnectedPorts.at(i)->getPortName();
                     QVector<double> vPressure = mpParentContainerObject->getPlotData(generation, componentName, portName, "Pressure");
