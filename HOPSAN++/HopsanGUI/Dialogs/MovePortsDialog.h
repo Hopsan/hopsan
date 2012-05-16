@@ -46,10 +46,7 @@ public:
 public slots:
     bool okButtonPressed();
     bool cancelButtonPressed();
-    void updatePortXPos(QString x);
-    void updatePortYPos(QString y);
-    void updatePortRotation(QString a);
-    void updatePortInfo(QString portName, QString x, QString y, QString a);
+    void updatePortInfo(DragPort *pDragPort);
     void updateZoom();
 
 signals:
@@ -90,18 +87,21 @@ public:
     void setPosOnComponent(double x, double y, double rot);
     QPointF getPosOnComponent();
     double getPortRotation();
+    QString getName();
     PortAppearance *getPortAppearance();
 
 public slots:
     void setEnable(int state);
+    void updatePortXPos(QString x);
+    void updatePortYPos(QString y);
+    void updatePortRotation(QString a);
 
 signals:
-    void activePort(QString portName, QString x, QString y, QString a);
+    void portSelectedOrMoved(DragPort *pDragPort);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void portMoved();
 
     PortAppearance *mpPortAppearance;
     QGraphicsItem *mpParentComponent;

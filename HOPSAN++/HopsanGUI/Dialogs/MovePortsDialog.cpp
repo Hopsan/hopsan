@@ -50,7 +50,7 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
         mpPortEnableLayout->addWidget(mvPortEnable.back());
 
         connect(mvPortEnable.back(), SIGNAL(stateChanged(int)), pPort, SLOT(setEnable(int)), Qt::UniqueConnection);
-        connect(pPort, SIGNAL(activePort(QString,QString,QString,QString)), this, SLOT(updatePortInfo(QString,QString,QString,QString)), Qt::UniqueConnection);
+        connect(pPort, SIGNAL(portSelectedOrMoved(DragPort*)), this, SLOT(updatePortInfo(DragPort*)), Qt::UniqueConnection);
     }
 
     //mpView->setSceneRect(mpComponent->boundingRect());
@@ -113,9 +113,6 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
     connect(mpOkButton,      SIGNAL(clicked()),           this, SLOT(okButtonPressed()));
     connect(mpCancelButton,  SIGNAL(clicked()),           this, SLOT(cancelButtonPressed()));
     connect(mpZoomSlider,    SIGNAL(sliderMoved(int)),    this, SLOT(updateZoom()));
-    connect(mpPortXLineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortXPos(QString)));
-    connect(mpPortYLineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortYPos(QString)));
-    connect(mpPortALineEdit, SIGNAL(textEdited(QString)), this, SLOT(updatePortRotation(QString)));
 
     this->setModal(true);
     show();
@@ -124,25 +121,21 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, gr
 
 //! @brief Updates the x-position of a port in the move port dialog window
 //! @param[in] x The new x-position
-void MovePortsDialog::updatePortXPos(QString x)
+void DragPort::updatePortXPos(QString x)
 {
-    PortAppearance app = *(mpPortAppearanceMap->find(mpPortNameLabel->text()));
-    (*mDragPortMap.find(mpPortNameLabel->text()))->setPosOnComponent(x.toDouble(), app.y, app.rot);
+    setPosOnComponent(x.toDouble(), mpPortAppearance->y, mpPortAppearance->rot);
 }
-
 
 //! @brief Updates the y-position of a port in the move port dialog window
 //! @param[in] y The new y-position
-void MovePortsDialog::updatePortYPos(QString y)
+void DragPort::updatePortYPos(QString y)
 {
-    PortAppearance app = *(mpPortAppearanceMap->find(mpPortNameLabel->text()));
-    (*mDragPortMap.find(mpPortNameLabel->text()))->setPosOnComponent(app.x, y.toDouble(), app.rot);
+    setPosOnComponent(mpPortAppearance->x, y.toDouble(), mpPortAppearance->rot);
 }
 
-void MovePortsDialog::updatePortRotation(QString a)
+void DragPort::updatePortRotation(QString a)
 {
-    PortAppearance app = *(mpPortAppearanceMap->find(mpPortNameLabel->text()));
-    (*mDragPortMap.find(mpPortNameLabel->text()))->setPosOnComponent(app.x, app.y, a.toDouble());
+    setPosOnComponent(mpPortAppearance->x, mpPortAppearance->y, a.toDouble());
 }
 
 
@@ -150,12 +143,25 @@ void MovePortsDialog::updatePortRotation(QString a)
 //! @param[in] portName The portname to be displayed
 //! @param[in] x The x-position to be displayed
 //! @param[in] y The y-position to be displayed
-void MovePortsDialog::updatePortInfo(QString portName, QString x, QString y, QString a)
+void MovePortsDialog::updatePortInfo(DragPort *pDragPort)
 {
-    mpPortNameLabel->setText(portName);
+    QString x,y,rot;
+    QPointF p = pDragPort->getPosOnComponent();
+    x.setNum(p.x(), 'g', 2);
+    y.setNum(p.y(), 'g', 2);
+    rot.setNum(pDragPort->getPortRotation(), 'f', 0);
+
+    mpPortNameLabel->setText(pDragPort->getName());
     mpPortXLineEdit->setText(x);
     mpPortYLineEdit->setText(y);
-    mpPortALineEdit->setText(a);
+    mpPortALineEdit->setText(rot);
+
+    disconnect(mpPortXLineEdit, 0, 0, 0);
+    disconnect(mpPortYLineEdit, 0, 0, 0);
+    disconnect(mpPortALineEdit, 0, 0, 0);
+    connect(mpPortXLineEdit, SIGNAL(textEdited(QString)), pDragPort, SLOT(updatePortXPos(QString)), Qt::UniqueConnection);
+    connect(mpPortYLineEdit, SIGNAL(textEdited(QString)), pDragPort, SLOT(updatePortYPos(QString)), Qt::UniqueConnection);
+    connect(mpPortALineEdit, SIGNAL(textEdited(QString)), pDragPort, SLOT(updatePortRotation(QString)), Qt::UniqueConnection);
 }
 
 
@@ -221,7 +227,7 @@ DragPort::DragPort(PortAppearance *pAppearance, QString name, QGraphicsItem *par
 //! @param[in] event The mouse event
 void DragPort::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    portMoved();
+    emit portSelectedOrMoved(this);
     QGraphicsWidget::mouseMoveEvent(event);
 }
 
@@ -230,22 +236,9 @@ void DragPort::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //! @param[in] event The mouse event
 void DragPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    portMoved();
+    emit portSelectedOrMoved(this);
     QGraphicsWidget::mousePressEvent(event);
 }
-
-
-//! @brief Emits a signal when a port is moved
-void DragPort::portMoved()
-{
-    QPointF p = getPosOnComponent();
-    QString x,y,rot;
-    x.setNum(p.x(), 'g', 2);
-    y.setNum(p.y(), 'g', 2);
-    rot.setNum(getPortRotation(), 'g', 2);
-    emit activePort(mpName->toPlainText(), x, y, rot);
-}
-
 
 //! @brief Moves the position and rotation of the port in the dialog window
 //! @param[in] x The new x-position
@@ -280,6 +273,11 @@ QPointF DragPort::getPosOnComponent()
 double DragPort::getPortRotation()
 {
     return mpSvg->rotation();
+}
+
+QString DragPort::getName()
+{
+    return mpName->toPlainText();
 }
 
 PortAppearance *DragPort::getPortAppearance()
