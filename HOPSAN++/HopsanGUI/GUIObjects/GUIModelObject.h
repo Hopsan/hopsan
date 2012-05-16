@@ -48,8 +48,7 @@ public:
     //Name methods
     virtual void setName(QString name);
     virtual QString getName();
-    virtual void refreshDisplayName();
-    virtual void setDisplayName(QString name);
+    virtual void refreshDisplayName(const QString overrideName="");
     virtual QString getTypeName();
     virtual int getNameTextPos();
     virtual void setNameTextPos(int textPos);
@@ -143,6 +142,8 @@ protected:
     //Protected members
     ModelObjectAppearance mModelObjectAppearance;
 
+    QString mName;
+    ModelObjectDisplayName *mpNameText;
     double mTextOffset;
     int mNameTextPos;
 
@@ -157,8 +158,6 @@ protected:
 
     QList<Port*> mPortListPtrs;
     QList<Connector*> mConnectorPtrs;
-
-    ModelObjectDisplayName *mpNameText;
 
     QGraphicsTextItem *mpLossesDisplay;
 

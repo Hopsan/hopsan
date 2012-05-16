@@ -247,7 +247,7 @@ QString ModelObjectAppearance::getTypeName()
 
 //! @brief get the display name, even if it is empty
 //! @returns The display name
-QString ModelObjectAppearance::getName()
+QString ModelObjectAppearance::getDisplayName()
 {
     return mDisplayName;
 }
@@ -740,7 +740,7 @@ void ModelObjectAppearance::setTypeName(QString name)
 }
 
 //! @brief Access method to manually set the Name
-void ModelObjectAppearance::setName(QString name)
+void ModelObjectAppearance::setDisplayName(QString name)
 {
     mDisplayName = name;
 }

@@ -91,14 +91,14 @@ class ModelObjectAppearance
 public:
     ModelObjectAppearance();
     void setTypeName(QString name);
-    void setName(QString name);
+    void setDisplayName(QString name);
     void setHelpText(QString text);
     void setBasePath(QString path);
     void setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel);
     void setIconScale(const qreal scale, const graphicsType gfxType);
 
     QString getTypeName();
-    QString getName();
+    QString getDisplayName();
     QString getNonEmptyName();
     QString getHelpPicture();
     QString getHelpText();

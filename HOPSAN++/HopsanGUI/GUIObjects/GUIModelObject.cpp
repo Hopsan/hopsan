@@ -48,6 +48,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
         : WorkspaceObject(position, rotation, startSelected, pParentContainer, pParent)
 {
         //Initialize variables
+    mName="no_name_set_yet";
     mpIcon = 0;
     mpNameText = 0;
     mTextOffset = 5.0;
@@ -60,6 +61,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     if (pAppearanceData != 0)
     {
         mModelObjectAppearance = *pAppearanceData;
+        mName = mModelObjectAppearance.getDisplayName(); //Default name to the appearance data display name
     }
 
         //Setup appearance
@@ -249,15 +251,29 @@ QList<Connector*> ModelObject::getConnectorPtrs()
 }
 
 
-//! @brief Refreshes the displayed name (HopsanCore may have changed it)
-void ModelObject::refreshDisplayName()
+//! @brief Refreshes the displayed name from the actual name
+//! @param [in] overrideName If this is non empty the name of the component in the gui will be forced to a specific value. DONT USE THIS UNLESS YOU HAVE TO
+void ModelObject::refreshDisplayName(const QString overrideName)
 {
+    QString oldName = mModelObjectAppearance.getDisplayName();
+
+    if (!overrideName.isEmpty())
+    {
+        mName = overrideName;
+    }
+
+    mModelObjectAppearance.setDisplayName(mName);
     if (mpNameText != 0)
     {
-        mpNameText->setPlainText(mModelObjectAppearance.getName());
+        mpNameText->setPlainText(mName);
         mpNameText->setSelected(false);
         //Adjust the position of the text
         this->snapNameTextPosition(mpNameText->pos());
+    }
+
+    if (oldName != mName)
+    {
+        emit nameChanged();
     }
 }
 
@@ -265,7 +281,7 @@ void ModelObject::refreshDisplayName()
 //! @brief Returns the name of the object
 QString ModelObject::getName()
 {
-    return mModelObjectAppearance.getName();
+    return mName;
 }
 
 void ModelObject::setName(QString /*name*/)
@@ -280,17 +296,6 @@ void ModelObject::setName(QString /*name*/)
 QList<Port*> &ModelObject::getPortListPtrs()
 {
     return mPortListPtrs;
-}
-
-
-//! @brief Sets the name of the object (may be modified by HopsanCore if name already exists)
-//! Note, this function will NOT change the core name of the component
-void ModelObject::setDisplayName(QString name)
-{
-    mModelObjectAppearance.setName(name);
-    refreshDisplayName();
-
-    emit nameChanged();
 }
 
 
@@ -992,7 +997,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         QMenu *replaceMenu = rMenu.addMenu(tr("Replace component"));
         for(int i=0; i<replacements.size(); ++i)
         {
-            QAction *replaceAction = replaceMenu->addAction(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i))->getName());
+            QAction *replaceAction = replaceMenu->addAction(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i))->getDisplayName());
             replaceActionList.append(replaceAction);
         }
     }

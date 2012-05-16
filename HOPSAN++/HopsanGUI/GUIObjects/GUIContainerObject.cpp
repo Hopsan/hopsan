@@ -471,7 +471,6 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 
 
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
-//! @todo Remove the other function and use only the typename version if possible
 ModelObject* ContainerObject::addModelObject(QString typeName, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
 {
     ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typeName);
@@ -719,9 +718,11 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, undoSt
                 //qDebug() << "default";
                     //No Core rename action
             }
-            //qDebug() << "modNewName: " << modNewName;
-            obj_ptr->setDisplayName(modNewName);
-                //Re insert
+
+            // Override the GUI model object name with the new name from the core
+            obj_ptr->refreshDisplayName(modNewName);
+
+            //Re insert
             mModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
         }
         else
@@ -1536,15 +1537,6 @@ void ContainerObject::paste(CopyStack *xmlStack)
     while(!objectElement.isNull())
     {
         ModelObject *pObj = loadModelObject(objectElement, gpMainWindow->mpLibrary, this);
-
-            //Apply parameter values
-        QDomElement xmlParameters = objectElement.firstChildElement(HMF_PARAMETERS);
-        QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
-        while (!xmlParameter.isNull())
-        {
-            loadParameterValue(xmlParameter, pObj);
-            xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
-        }
 
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();

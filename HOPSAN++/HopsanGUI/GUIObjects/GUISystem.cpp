@@ -98,7 +98,8 @@ void SystemContainer::commonConstructorCode()
     {
         //Create subsystem
         qDebug() << "creating subsystem and setting name in " << mpParentContainerObject->getCoreSystemAccessPtr()->getRootSystemName();
-        mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName()));
+        mName = mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName());
+        refreshDisplayName();
         qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentContainerObject->getName();
         mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentContainerObject->getCoreSystemAccessPtr());
     }
@@ -115,12 +116,13 @@ void SystemContainer::setName(QString newName)
 {
     if (mpParentContainerObject == 0)
     {
-        setDisplayName(mpCoreSystemAccess->setRootSystemName(newName));
+        mName = mpCoreSystemAccess->setRootSystemName(newName);
     }
     else
     {
         mpParentContainerObject->renameModelObject(this->getName(), newName);
     }
+    refreshDisplayName();
 }
 
 
@@ -551,12 +553,11 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         //! @todo might need some error checking here incase some fields are missing
         //Now load the core specific data, might need inherited function for this
         this->setName(rDomElement.attribute(HMF_NAMETAG));
-        QString realName = this->getName();
 
         //Load the GUI stuff like appearance data and viewport
         QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
         this->mModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT));
-        this->setDisplayName(realName); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
+        this->refreshDisplayName(); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
         this->mSubComponentNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
         this->mSubComponentPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
         gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
@@ -628,36 +629,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
             }
             else
             {
-                //Load parameter values
-                QDomElement xmlParameters = xmlSubObject.firstChildElement(HMF_PARAMETERS);
-                QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
-                while (!xmlParameter.isNull())
-                {
-                    loadParameterValue(xmlParameter, pObj, NOUNDO);
-                    xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
-                }
 
-
-                // Load component specific override port data, and dynamic parameter port positions
-                QDomElement cafMoStuff = xmlSubObject.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT);
-                if (!cafMoStuff.isNull())
-                {
-                    //We read all model object appearance data in the hmf to get the ports
-                    //!  @todo This work right now maybe not in the future if more data will be there for ordinary components
-                    pObj->getAppearanceData()->readFromDomElement(cafMoStuff);
-
-                    // For all port appearances that have the same name as parameters, create external dynamic parameter ports
-                    //! @todo maybe should tag the parameter insted, with some info that it is representing a parameter
-                    QStringList paramNames = pObj->getParameterNames();
-                    QList<QString> portNames = pObj->getAppearanceData()->getPortAppearanceMap().keys();
-                    for (int i=0; i<portNames.size(); ++i)
-                    {
-                        if (paramNames.contains(portNames[i]))
-                        {
-                            pObj->createRefreshExternalDynamicParameterPort(portNames[i]);
-                        }
-                    }
-                }
 
 
                 //! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats

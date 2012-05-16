@@ -188,14 +188,12 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
 
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     int nameTextVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
-    //bool portsHidden = guiData.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
-    //bool namesHidden = guiData.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
 
     ModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type);
     if (pAppearanceData != 0)
     {
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
-        appearanceData.setName(name);
+        appearanceData.setDisplayName(name);
 
         nameVisibility nameStatus;
         if(nameTextVisible)
@@ -266,6 +264,41 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                     ContainerObject* pCont = dynamic_cast<ContainerObject*>(pObj);
                     loadSystemParameter(xmlParameter, 10, pCont);
                     xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+                }
+            }
+        }
+        else
+        {
+            //! @todo maybe this parameter load code and the one for external systems above could be the same
+            //Load parameter values
+            QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
+            QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
+            while (!xmlParameter.isNull())
+            {
+                loadParameterValue(xmlParameter, pObj, NOUNDO);
+                xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
+            }
+
+
+            // Load component specific override port data, and dynamic parameter port positions
+            QDomElement cafMoStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG).firstChildElement(CAF_ROOT).firstChildElement(CAF_MODELOBJECT);
+            if (!cafMoStuff.isNull())
+            {
+                //We read all model object appearance data in the hmf to get the ports
+                //!  @todo This work right now maybe not in the future if more data will be there for ordinary components
+                pObj->getAppearanceData()->readFromDomElement(cafMoStuff);
+                pObj->refreshDisplayName(); //Need to refresh display name if read appearance data contained an incorrect name
+
+                // For all port appearances that have the same name as parameters, create external dynamic parameter ports
+                //! @todo maybe should tag the parameter insted, with some info that it is representing a parameter
+                QStringList paramNames = pObj->getParameterNames();
+                QList<QString> portNames = pObj->getAppearanceData()->getPortAppearanceMap().keys();
+                for (int i=0; i<portNames.size(); ++i)
+                {
+                    if (paramNames.contains(portNames[i]))
+                    {
+                        pObj->createRefreshExternalDynamicParameterPort(portNames[i]);
+                    }
                 }
             }
         }

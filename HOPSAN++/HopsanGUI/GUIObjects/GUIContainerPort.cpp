@@ -60,13 +60,13 @@ void ContainerPort::createPorts()
     //Check if a systemport name is given in appearance data (for example if the systemport is loaded from file)
     //In that case override the default port name with this name
     QString desiredportname;
-    if (mModelObjectAppearance.getName().isEmpty())
+    if (mModelObjectAppearance.getDisplayName().isEmpty())
     {
         desiredportname = i.key();
     }
     else
     {
-        desiredportname = mModelObjectAppearance.getName();
+        desiredportname = mModelObjectAppearance.getDisplayName();
     }
 
     qreal x = i.value().x;
@@ -79,20 +79,21 @@ void ContainerPort::createPorts()
     if (mIsSystemPort)
     {
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
-        mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mModelObjectAppearance.getName();
-        mpPort = new Port(mModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
+        mName = mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname);
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mModelObjectAppearance.getDisplayName();
+        mpPort = new Port(mName, x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
     }
     else
     {
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with desired name: " << desiredportname;
-        mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname));
-        mpPort = new GroupPort(mModelObjectAppearance.getName(), x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
+        mName = mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname);
+        mpPort = new GroupPort(mName, x*boundingRect().width(), y*boundingRect().height(), &(i.value()), this);
         SharedGroupInfoPtrT shp(new GroupPortCommonInfo);
         static_cast<GroupPort*>(mpPort)->setSharedGroupPortInfo(shp);
     }
 
     mPortListPtrs.append(mpPort);
+    refreshDisplayName(); //Must run this after append port couse portname will also be refreshed
 }
 
 
@@ -102,13 +103,12 @@ QString ContainerPort::getTypeName()
     return HOPSANGUICONTAINERPORTTYPENAME;
 }
 
-//! @brief Sets the name of the modelobject ContainerPort and the contained GUIPort
-//! Note, this function will NOT change the core name of the component
-void ContainerPort::setDisplayName(QString name)
+//! @brief Refreshes the displayed name from the actual name
+//! @param [in] overrideName If this is non empty the name of the component in the gui will be forced to a specific value. DONT USE THIS UNLESS YOU HAVE TO
+void ContainerPort::refreshDisplayName(QString overrideName)
 {
-    mModelObjectAppearance.setName(name);
-    mPortListPtrs[0]->setDisplayName(name);
-    refreshDisplayName();
+    ModelObject::refreshDisplayName(overrideName);
+    mPortListPtrs[0]->setDisplayName(mName);
 }
 
 //! @brief ContainerPorts shal only save their port name if they are systemports, if they are group ports no core data should be saved

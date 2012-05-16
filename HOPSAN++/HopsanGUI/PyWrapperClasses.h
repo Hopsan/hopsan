@@ -290,7 +290,7 @@ public slots:
         ModelObjectAppearance *pAppearance = o->mpLibrary->getAppearanceData(typeName);
         if(!pAppearance)
             return "Could not find component type.";
-        pAppearance->setName(name);
+        pAppearance->setDisplayName(name);
         ModelObject *pObj = o->mpProjectTabs->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
         if(!pObj)
             return "Could not create component.";

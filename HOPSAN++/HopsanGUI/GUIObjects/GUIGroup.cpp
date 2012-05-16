@@ -85,7 +85,7 @@ GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObje
     mHmfTagName = HMF_GROUPTAG;
 
     QString newname = this->getCoreSystemAccessPtr()->reserveUniqueName("Grupp_test"); //Dont forget to unreserve this later when renaming or deleting
-    this->setDisplayName(newname);
+    this->setName(newname);
 
     //! @todo this is not good all mpParentProjectTab should be set in one common place not in guigroup and guisystem
     this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
@@ -340,7 +340,7 @@ GroupContainer::~GroupContainer()
 
 void GroupContainer::setName(QString newName)
 {
-    this->mModelObjectAppearance.setName(newName);
+    mName = newName;
     this->refreshDisplayName();
 }
 

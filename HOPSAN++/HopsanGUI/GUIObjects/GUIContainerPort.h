@@ -35,7 +35,7 @@ public:
     ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
     ~ContainerPort();
     QString getTypeName();
-    void setDisplayName(QString name);
+    void refreshDisplayName(QString overrideName="");
 
     enum { Type = CONTAINERPORT };
     int type() const;

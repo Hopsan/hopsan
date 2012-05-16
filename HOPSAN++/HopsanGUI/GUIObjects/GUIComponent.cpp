@@ -41,12 +41,11 @@ Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pA
     mHmfTagName = HMF_COMPONENTTAG;
 
     //Create the object in core, and get its default core name
-    mModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getName()));
+    mName = mpParentContainerObject->getCoreSystemAccessPtr()->createComponent(mModelObjectAppearance.getTypeName(), mModelObjectAppearance.getDisplayName());
+    refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     //Sets the ports
     createPorts();
-
-    refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     //Component shall be hidden when toggle signals is deactivated, if it is of signal type and has no power ports (= is a sensor)
     if(this->getTypeCQS() == "S" && !this->hasPowerPorts())
