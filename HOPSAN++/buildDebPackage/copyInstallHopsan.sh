@@ -6,16 +6,16 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-04
 
-srcDir=$1
-dstDir=$2
-
-echo Copy installing Hopsan from $srcDir to $dstDir
-
+E_BADARGS=65
 if [ $# -lt 2 ]; then
   echo "Error: To few input arguments!"
   echo "Usage: `basename $0` {srcDir dstDir}"
   exit $E_BADARGS
 fi
+
+srcDir=$1
+dstDir=$2
+echo "Copy installing Hopsan from $srcDir to $dstDir"
 
 # Create needed dst directories
 mkdir -p $dstDir/HopsanCore

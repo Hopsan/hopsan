@@ -8,6 +8,14 @@
 
 pyversion="2.7"
 basepwd=`pwd`
+E_BADARGS=65
+
+if [ $# -lt 1 ]; then
+  echo "Error: To few input arguments!"
+  echo "Usage: `basename $0` {release, debug} [pyversion]"
+  echo "       pyversion is optional, (2.7 default)"
+  exit $E_BADARGS
+fi
 
 if [ "$2" != "" ]; then
   pyversion="$2"  
@@ -21,7 +29,7 @@ if [ $ubuntuversion -lt "1204" ]; then
 
   # Abort if dir already exist. When running release build script we dont want to build twice
   if [ -d $pythonqtname ]; then
-    echo Directory $pythonqtname already exist. Remove it if you want build using this script.
+    echo "Directory $pythonqtname already exist. Remove it if you want build using this script."
     exit 0
   fi
 
@@ -34,25 +42,25 @@ if [ $ubuntuversion -lt "1204" ]; then
 
 else
 
-  pythonqtname="PythonQtr209"
+  pythonqtname="PythonQtR219"
 
   # Abort if dir already exist. When running release build script we dont want to build twice
   if [ -d $pythonqtname ]; then
-    echo Directory $pythonqtname already exist. Remove it if you want build using this script.
+    echo "Directory $pythonqtname already exist. Remove it if you want build using this script."
     exit 0
   fi
 
-  #svn co -r 209 https://pythonqt.svn.sourceforge.net/svnroot/pythonqt/trunk $pythonqtname
   rm -rf $pythonqtname
   unzip -q $pythonqtname.zip
 
+  cd $pythonqtname
   echo "Applying Hopsan fixes to code"
   # Apply patch to remove qt all extensions and cocoa thing
-  patch -p0 < PythonQtr209_ubuntu.patch
+  patch -p0 < ../$pythonqtname\_ubuntu.patch
 
-  #Remove tests and examples, at least test will not build
+  # Remove tests and examples, allways (test would not build at all for r209)
   sed "s|tests examples||" -i PythonQt.pro
-
+  cd ..
 fi
 
 cd $pythonqtname

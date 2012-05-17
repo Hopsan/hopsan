@@ -1,7 +1,7 @@
-Index: PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.pro
+Index: extensions/PythonQt_QtAll/PythonQt_QtAll.pro
 ===================================================================
---- PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	(revision 209)
-+++ PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	(working copy)
+--- extensions/PythonQt_QtAll/PythonQt_QtAll.pro	(revision 209)
++++ extensions/PythonQt_QtAll/PythonQt_QtAll.pro	(working copy)
 @@ -18,18 +18,19 @@
    PythonQt_QtAll.cpp
  
@@ -30,10 +30,10 @@ Index: PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.pro
  
  #include (../../generated_cpp/com_trolltech_qt_xmlpatterns/com_trolltech_qt_xmlpatterns.pri)
  #include (../../generated_cpp/com_trolltech_qt_phonon/com_trolltech_qt_phonon.pri)
-Index: PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp
+Index: extensions/PythonQt_QtAll/PythonQt_QtAll.cpp
 ===================================================================
---- PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	(revision 209)
-+++ PythonQtr209/extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	(working copy)
+--- extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	(revision 209)
++++ extensions/PythonQt_QtAll/PythonQt_QtAll.cpp	(working copy)
 @@ -35,29 +35,29 @@
  #include "PythonQt.h"
  

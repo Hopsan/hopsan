@@ -70,6 +70,7 @@ defineReplace(setPythonQtPathInfo){
     dstDir = $$2
 
     #Set QWT paths, Paths that are earlier in the list will be used if found
+    PYTHONQT_PATHS *= $${PWD}/Dependencies/PythonQtR219
     PYTHONQT_PATHS *= $${PWD}/Dependencies/PythonQtr209
     PYTHONQT_PATHS *= $${PWD}/Dependencies/PythonQt2.0.1
     PYTHONQT_PATH = $$selectPath($$externalSrc, $$PYTHONQT_PATHS, "pythonqt")

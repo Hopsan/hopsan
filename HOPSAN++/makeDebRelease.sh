@@ -38,7 +38,7 @@ if [ "$ans" = "y" ]; then
 fi
 
 echo
-echo -n "Do you want to build for all supported dists, using pbuilder? Answer: y/n : "
+echo -n "Do you want to build for multiple supported dists, using pbuilder? Answer: y/n : "
 read ans
 
 doPbuild="false"
@@ -166,8 +166,6 @@ if [ "$doPbuild" = "true" ]; then
   mv $outputbasename* $outputDir/
 
 else
-  # Remove the dependency build from rules, we use our pre build ones
-
   # Now lets create and test the package
   cd $packagedir
   debuild -us -uc --lintian-opts --color always -X files

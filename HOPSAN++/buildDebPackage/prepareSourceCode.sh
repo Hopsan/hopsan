@@ -1,11 +1,12 @@
 #!/bin/bash
 # $Id$
 
-# Shell script for exporting and preparingn the Hopsan src code before RELASE build
+# Shell script for exporting and preparingn the Hopsan src code before RELEASE build
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-04-01
 # For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
 
+E_BADARGS=65
 if [ $# -lt 5 ]; then
   echo "Error: To few input arguments!"
   echo "Usage: `basename $0` {srcDir dstDir version doDevRelease doBuildInComponents}"
@@ -40,10 +41,10 @@ cd $dstDir
 # Clean bin folder
 rm -rf ./bin/*
 
-# Remove the inclusion of the svnrevnum file in core. It is only usefull in for dev trunk use
+# Remove the inclusion of the svnrevnum file in core. It is only usefull for dev trunk use
 sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/version.h
 
-# Set the Core Gui and CLI svn rev numbers for this relase
+# Set the Core Gui and CLI svn rev numbers for this release
 sed "s|#define HOPSANCORESVNREVISION.*|#define HOPSANCORESVNREVISION \"$coresvnrev\"|g" -i HopsanCore/include/version.h
 sed "s|#define HOPSANGUISVNREVISION.*|#define HOPSANGUISVNREVISION \"$guisvnrev\"|g" -i HopsanGUI/version_gui.h
 sed "s|#define HOPSANCLISVNREVISION.*|#define HOPSANCLISVNREVISION \"$clisvnrev\"|g" -i HopsanCLI/main.cpp
@@ -70,4 +71,3 @@ fi
 
 # Build user documentation
 ./buildDocumentation.sh user
-
