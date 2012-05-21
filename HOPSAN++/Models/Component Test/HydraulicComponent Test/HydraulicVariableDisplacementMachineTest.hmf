@@ -87,7 +87,7 @@
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2701" y="2493" flipped="false" a="0"/>
+                    <pose x="2695.062829" y="2493" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -321,8 +321,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2391.92160000000012587407" y="2604.00000000000000000000"/>
-                        <coordinate x="2391.92160000000012587407" y="2582.00000000000000000000"/>
-                        <coordinate x="2599.00000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2391.92160000000012587407" y="2576.06282895648109843023"/>
+                        <coordinate x="2599.00000000000000000000" y="2576.06282895648109843023"/>
                         <coordinate x="2599.00000000000000000000" y="2511.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -391,8 +391,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2647.00000000000000000000" y="2511.00000000000000000000"/>
-                        <coordinate x="2647.00000000000000000000" y="2572.00000000000000000000"/>
-                        <coordinate x="2391.92160000000012587407" y="2572.00000000000000000000"/>
+                        <coordinate x="2647.00000000000000000000" y="2575.56230262611143189133"/>
+                        <coordinate x="2391.92160000000012587407" y="2575.56230262611143189133"/>
                         <coordinate x="2391.92160000000012587407" y="2604.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -406,8 +406,8 @@
             <connect endport="PB" endcomponent="4/3 Directional Valve" startport="P1" startcomponent="Pressure Transducer_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2701.00000000000000000000" y="2511.00000000000000000000"/>
-                        <coordinate x="2701.00000000000000000000" y="2576.00000000000000000000"/>
+                        <coordinate x="2695.06282895648064368288" y="2511.00000000000000000000"/>
+                        <coordinate x="2695.06282895648064368288" y="2576.00000000000000000000"/>
                         <coordinate x="2411.97150000000010550139" y="2576.00000000000000000000"/>
                         <coordinate x="2411.97150000000010550139" y="2604.00000000000000000000"/>
                     </coordinates>
@@ -436,8 +436,8 @@
             <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Transducer_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2701.00000000000000000000" y="2475.00000000000000000000"/>
-                        <coordinate x="2701.00000000000000000000" y="2440.00000000000000000000"/>
+                        <coordinate x="2695.06282895648064368288" y="2475.00000000000000000000"/>
+                        <coordinate x="2695.06282895648064368288" y="2440.00000000000000000000"/>
                         <coordinate x="2761.00000000000000000000" y="2440.00000000000000000000"/>
                         <coordinate x="2761.00000000000000000000" y="2440.00000000000000000000"/>
                     </coordinates>
