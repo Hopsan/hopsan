@@ -11,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2560.56" y="2083.98" zoom="0.70922"/>
+            <viewport x="2413.46" y="2100.57" zoom="0.842152"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -154,6 +154,9 @@
                         <oldpos>2618.18 2229.67</oldpos>
                         <newpos>2618.18 2229.67</newpos>
                     </stuff>
+                </post>
+                <post number="21">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="0" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Test example of a 4/16 directional valve." font_old="Calibri,16,-1,5,75,0,0,0,0,0" color="#556b2f" box_visible_before="0" text="Test example of a 4/16 directional valve." font="Calibri,16,-1,5,75,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
                 </post>
             </hopsanundo>
         </hopsangui>
