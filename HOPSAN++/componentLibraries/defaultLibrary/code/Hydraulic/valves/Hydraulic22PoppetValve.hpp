@@ -43,20 +43,20 @@ namespace hopsan {
         double xvmax;
         double rho;
 
-        double d1, d2, dd, A1, A2, A3;
+        double d1, d2, dd, AN, AS, AC;
         double K21, K3, k, F0;
         double v;
 
-        double *mpND_pA1, *mpND_qA1, *mpND_cA1, *mpND_ZcA1,
-               *mpND_pA2, *mpND_qA2, *mpND_cA2, *mpND_ZcA2,
-               *mpND_pA3, *mpND_qA3, *mpND_cA3, *mpND_ZcA3;
+        double *mpND_pAN, *mpND_qAN, *mpND_cAN, *mpND_ZcAN,
+               *mpND_pAS, *mpND_qAS, *mpND_cAS, *mpND_ZcAS,
+               *mpND_pAC, *mpND_qAC, *mpND_cAC, *mpND_ZcAC;
         double *mpND_xvout;
 
         IntegratorLimited xIntegrator;
 
-        TurbulentFlowFunction qTurb_pA2A1;
-        TurbulentFlowFunction qTurb_A3;
-        Port *mpA1, *mpA2, *mpA3, *mpOut;
+        TurbulentFlowFunction qTurb_pASAN;
+        TurbulentFlowFunction qTurb_AC;
+        Port *mpAN, *mpAS, *mpAC, *mpOut;
 
     public:
         static Component *Creator()
@@ -74,15 +74,12 @@ namespace hopsan {
             d1 = 10e-3;
             d2 = 15e-3;
             dd = 0.1e-3;
-            A1 = pi*d1*d1/4.0;
-            A3 = pi*d2*d2/4.0;
-            A2 = A3 - A1;
             k = 1e4;
             F0 = 100;
 
-            mpA1 = addPowerPort("PN", "NodeHydraulic");
-            mpA2 = addPowerPort("PS", "NodeHydraulic");
-            mpA3 = addPowerPort("PC", "NodeHydraulic");
+            mpAN = addPowerPort("PN", "NodeHydraulic");
+            mpAS = addPowerPort("PS", "NodeHydraulic");
+            mpAC = addPowerPort("PC", "NodeHydraulic");
             mpOut = addWritePort("xv_out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
@@ -99,106 +96,110 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_pA1 = getSafeNodeDataPtr(mpA1, NodeHydraulic::PRESSURE);
-            mpND_qA1 = getSafeNodeDataPtr(mpA1, NodeHydraulic::FLOW);
-            mpND_cA1 = getSafeNodeDataPtr(mpA1, NodeHydraulic::WAVEVARIABLE);
-            mpND_ZcA1 = getSafeNodeDataPtr(mpA1, NodeHydraulic::CHARIMP);
+            AN = pi*d1*d1/4.0;
+            AC = pi*d2*d2/4.0;
+            AS = AC - AN;
 
-            mpND_pA2 = getSafeNodeDataPtr(mpA2, NodeHydraulic::PRESSURE);
-            mpND_qA2 = getSafeNodeDataPtr(mpA2, NodeHydraulic::FLOW);
-            mpND_cA2 = getSafeNodeDataPtr(mpA2, NodeHydraulic::WAVEVARIABLE);
-            mpND_ZcA2 = getSafeNodeDataPtr(mpA2, NodeHydraulic::CHARIMP);
+            mpND_pAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::PRESSURE);
+            mpND_qAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::FLOW);
+            mpND_cAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::WAVEVARIABLE);
+            mpND_ZcAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::CHARIMP);
 
-            mpND_pA3 = getSafeNodeDataPtr(mpA3, NodeHydraulic::PRESSURE);
-            mpND_qA3 = getSafeNodeDataPtr(mpA3, NodeHydraulic::FLOW);
-            mpND_cA3 = getSafeNodeDataPtr(mpA3, NodeHydraulic::WAVEVARIABLE);
-            mpND_ZcA3 = getSafeNodeDataPtr(mpA3, NodeHydraulic::CHARIMP);
+            mpND_pAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::PRESSURE);
+            mpND_qAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::FLOW);
+            mpND_cAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::WAVEVARIABLE);
+            mpND_ZcAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::CHARIMP);
+
+            mpND_pAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::PRESSURE);
+            mpND_qAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::FLOW);
+            mpND_cAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::WAVEVARIABLE);
+            mpND_ZcAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::CHARIMP);
 
             mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
 
             xIntegrator.initialize(mTimestep, 0.0, 0.0, 0.0, xvmax);
 
-            K21 = Cq*pi*d1*frac_d*0.0*sqrt(2.0/rho);
-            K3  = Cq*pi*dd*dd/4.0*sqrt(2.0/rho);
-            qTurb_A3.setFlowCoefficient(K3);
+            K21 = Cq*pi*d1*frac_d*0.0*sqrt(2.0/rho); //Main flow coeff.
+            K3  = Cq*pi*dd*dd/4.0*sqrt(2.0/rho); //Damping orifice flow coeff.
+            qTurb_AC.setFlowCoefficient(K3);
         }
 
 
         void simulateOneTimestep()
         {
             //Declare local variables
-            double cA1, ZcA1, pA1, qA1,
-                   cA2, ZcA2, pA2, qA2,
-                   cA3, ZcA3, pA3, qA3;
+            double cAN, ZcAN, pAN, qAN,
+                   cAS, ZcAS, pAS, qAS,
+                   cAC, ZcAC, pAC, qAC;
             double pc;
             bool cav = false;
 
             //Get variable values from nodes
-            cA1  = (*mpND_cA1);
-            ZcA1 = (*mpND_ZcA1);
-            cA2  = (*mpND_cA2);
-            ZcA2 = (*mpND_ZcA2);
-            cA3  = (*mpND_cA3);
-            ZcA3 = (*mpND_ZcA3);
+            cAN  = (*mpND_cAN);
+            ZcAN = (*mpND_ZcAN);
+            cAS  = (*mpND_cAS);
+            ZcAS = (*mpND_ZcAS);
+            cAC  = (*mpND_cAC);
+            ZcAC = (*mpND_ZcAC);
 
             K21 = Cq*pi*d1*frac_d*xIntegrator.value()*sqrt(2.0/rho);
-            qTurb_pA2A1.setFlowCoefficient(K21);
+            qTurb_pASAN.setFlowCoefficient(K21);
 
-            qA1 = qTurb_pA2A1.getFlow(cA2, cA1, ZcA1, ZcA2);
-            qA2 = -qA1;
+            qAN = qTurb_pASAN.getFlow(cAS, cAN, ZcAN, ZcAS);
+            qAS = -qAN;
 
-            pA1 = cA1 + ZcA1*qA1;
-            pA2 = cA2 + ZcA2*qA2;
+            pAN = cAN + ZcAN*qAN;
+            pAS = cAS + ZcAS*qAS;
 
-            pc = (A1*pA1 + A2*pA2 -(F0+k*xIntegrator.value()))/A3;
+            pc = (AN*pAN + AS*pAS -(F0+k*xIntegrator.value()))/AC;
 
-            qA3 = qTurb_A3.getFlow(pc, cA3, 0.0, ZcA3);
-            v = qA3/A3;
+            qAC = qTurb_AC.getFlow(pc, cAC, 0.0, ZcAC);
+            v = qAC/AC;
 
-            pA3 = cA3 + ZcA3*qA3;
+            pAC = cAC + ZcAC*qAC;
 
             //Cavitation check
-            if(pA1 < 0.0)
+            if(pAN < 0.0)
             {
-                cA1  = 0.0;
-                ZcA1 = 0.0;
+                cAN  = 0.0;
+                ZcAN = 0.0;
                 cav  = true;
             }
-            if(pA2 < 0.0)
+            if(pAS < 0.0)
             {
-                cA2  = 0.0;
-                ZcA2 = 0.0;
+                cAS  = 0.0;
+                ZcAS = 0.0;
                 cav  = true;
             }
-            if(pA3 < 0.0)
+            if(pAC < 0.0)
             {
-                cA3  = 0.0;
-                ZcA3 = 0.0;
+                cAC  = 0.0;
+                ZcAC = 0.0;
                 cav  = true;
             }
 
             if(cav)
             {
-                qA1 = qTurb_pA2A1.getFlow(cA2, cA1, ZcA1, ZcA2);
-                qA2 = -qA1;
+                qAN = qTurb_pASAN.getFlow(cAS, cAN, ZcAN, ZcAS);
+                qAS = -qAN;
 
-                pA1 = cA1 + ZcA1*qA1;
-                pA2 = cA2 + ZcA2*qA2;
+                pAN = cAN + ZcAN*qAN;
+                pAS = cAS + ZcAS*qAS;
 
-                pc = (A1*pA1 + A2*pA2 -(F0+k*xIntegrator.value()))/A3;
+                pc = (AN*pAN + AS*pAS -(F0+k*xIntegrator.value()))/AC;
 
-                v = qTurb_A3.getFlow(pc, cA3, 0.0, ZcA3)/A3;
+                v = qTurb_AC.getFlow(pc, cAC, 0.0, ZcAC)/AC;
             }
 
             xIntegrator.update(v);
 
             //Write new values to nodes
-            (*mpND_pA1) = pA1;
-            (*mpND_qA1) = qA1;
-            (*mpND_pA2) = pA2;
-            (*mpND_qA2) = qA2;
-            (*mpND_pA3) = pA3;
-            (*mpND_qA3) = qA3;
+            (*mpND_pAN) = pAN;
+            (*mpND_qAN) = qAN;
+            (*mpND_pAS) = pAS;
+            (*mpND_qAS) = qAS;
+            (*mpND_pAC) = pAC;
+            (*mpND_qAC) = qAC;
             (*mpND_xvout) = xIntegrator.value();
         }
     };
