@@ -6,11 +6,10 @@
 #include "ComponentUtilities.h"
 #include "math.h"
 
-
 //!
 //! @file MechanicJLink.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 21 Sep 2011 23:16:44
+//! @date Fri 25 May 2012 10:59:06
 //! @brief Link with inertia
 //! @ingroup MechanicComponents
 //!
@@ -43,7 +42,7 @@ private:
      int i;
      int iter;
      int mNoiter;
-     int jsyseqnweight[4];
+     double jsyseqnweight[4];
      int order[4];
      int mNstep;
      //Port Pm1 variable
@@ -62,6 +61,7 @@ private:
      double eqInertiamr2;
      //inputVariables
      //outputVariables
+     //Expressions variables
      //Port Pm1 pointer
      double *mpND_fm1;
      double *mpND_xm1;
@@ -84,9 +84,7 @@ private:
      Delay mDelayedPart20;
      Delay mDelayedPart21;
      Delay mDelayedPart22;
-     Vec stateVark;
-
-     EquationSystemSolver *pSolver;
+     EquationSystemSolver *mpSolver;
 
 public:
      static Component *Creator()
@@ -94,16 +92,16 @@ public:
         return new MechanicJLink();
      }
 
-     MechanicJLink(const double JL = 1.
-                             ,const double BL = 1.
-                             ,const double link = 0.1
-                             ,const double x0 = 0.1
-                             ,const double theta0 = 0.1
-                             ,const double thetamin = -1.05
-                             ,const double thetamax = 1.05
-                             )
-        : ComponentQ()
+     MechanicJLink() : ComponentQ()
      {
+        const double JL = 1.;
+        const double BL = 1.;
+        const double link = 0.1;
+        const double x0 = 0.1;
+        const double theta0 = 0.1;
+        const double thetamin = -1.05;
+        const double thetamax = 1.05;
+
         mNstep=9;
         jacobianMatrix.create(4,4);
         systemEquations.create(4);
@@ -141,12 +139,8 @@ mlink);
 mtheta0);
         registerParameter("thetamin", "Min angle", "rad", mthetamin);
         registerParameter("thetamax", "Max angle", "rad", mthetamax);
-
-        stateVark.create(4);
-        jacobianMatrix.create(4,4);
-        systemEquations.create(4);
-
-    }
+        mpSolver = new EquationSystemSolver(this,4);
+     }
 
     void initialize()
      {
@@ -194,16 +188,6 @@ NodeMechanicRotational::EQINERTIA);
 
         //Read outputVariables from nodes
 
-        //Write new values to nodes
-        //Port Pm1
-        double eqMassm1 = (mJL*Power(Sec(thetamr2),2))/Power(mlink,2);
-        double eqInertiamr2 = mJL;
-
-        (*mpND_eqMassm1)=eqMassm1;
-        //Port Pmr2
-
-        (*mpND_eqInertiamr2)=eqInertiamr2;
-        //outputVariables
 
 
         //Initialize delays
@@ -224,12 +208,11 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
         delayedPart[2][2] = mDelayedPart22.getIdx(1);
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
-
-        pSolver = new EquationSystemSolver(this, 4, &jacobianMatrix, &systemEquations, &stateVark);
-    }
+     }
     void simulateOneTimestep()
      {
         Vec stateVar(4);
+        Vec stateVark(4);
         Vec deltaStateVar(4);
 
         //Read variables from nodes
@@ -258,8 +241,11 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
 
           //Assemble differential-algebraic equations
           systemEquations[0] =wmr2 - \
-dxLimit(thetamr2,mthetamin,mthetamax)*(-((mTimestep*(tormr2 - \
-fm1*mlink*Cos(thetamr2)))/(2*mJL + mBL*mTimestep)) - delayedPart[1][1]);
+dxLimit(limit(-(Power(mTimestep,2)*(tormr2 + mBL*wmr2 - \
+fm1*mlink*Cos(thetamr2)))/(4.*mJL) - delayedPart[2][1] - \
+delayedPart[2][2],mthetamin,mthetamax),mthetamin,mthetamax)*(-((mTimestep*(to\
+rmr2 - fm1*mlink*Cos(thetamr2)))/(2*mJL + mBL*mTimestep)) - \
+delayedPart[1][1]);
           systemEquations[1] =thetamr2 - limit(-(Power(mTimestep,2)*(tormr2 + \
 mBL*wmr2 - fm1*mlink*Cos(thetamr2)))/(4.*mJL) - delayedPart[2][1] - \
 delayedPart[2][2],mthetamin,mthetamax);
@@ -269,13 +255,20 @@ delayedPart[2][2],mthetamin,mthetamax);
           //Jacobian matrix
           jacobianMatrix[0][0] = 1;
           jacobianMatrix[0][1] = \
-(fm1*mlink*mTimestep*dxLimit(thetamr2,mthetamin,mthetamax)*Sin(thetamr2))/(2*\
-mJL + mBL*mTimestep);
+(fm1*mlink*mTimestep*dxLimit(limit(-(Power(mTimestep,2)*(tormr2 + mBL*wmr2 - \
+fm1*mlink*Cos(thetamr2)))/(4.*mJL) - delayedPart[2][1] - \
+delayedPart[2][2],mthetamin,mthetamax),mthetamin,mthetamax)*Sin(thetamr2))/(2\
+*mJL + mBL*mTimestep);
           jacobianMatrix[0][2] = \
--((mlink*mTimestep*Cos(thetamr2)*dxLimit(thetamr2,mthetamin,mthetamax))/(2*mJ\
-L + mBL*mTimestep));
+-((mlink*mTimestep*Cos(thetamr2)*dxLimit(limit(-(Power(mTimestep,2)*(tormr2 + \
+mBL*wmr2 - fm1*mlink*Cos(thetamr2)))/(4.*mJL) - delayedPart[2][1] - \
+delayedPart[2][2],mthetamin,mthetamax),mthetamin,mthetamax))/(2*mJL + \
+mBL*mTimestep));
           jacobianMatrix[0][3] = \
-(mTimestep*dxLimit(thetamr2,mthetamin,mthetamax))/(2*mJL + mBL*mTimestep);
+(mTimestep*dxLimit(limit(-(Power(mTimestep,2)*(tormr2 + mBL*wmr2 - \
+fm1*mlink*Cos(thetamr2)))/(4.*mJL) - delayedPart[2][1] - \
+delayedPart[2][2],mthetamin,mthetamax),mthetamin,mthetamax))/(2*mJL + \
+mBL*mTimestep);
           jacobianMatrix[1][0] = \
 (mBL*Power(mTimestep,2)*dxLimit(-(Power(mTimestep,2)*(tormr2 + mBL*wmr2 - \
 fm1*mlink*Cos(thetamr2)))/(4.*mJL) - delayedPart[2][1] - \
@@ -302,19 +295,17 @@ delayedPart[2][2],mthetamin,mthetamax))/(4.*mJL);
           jacobianMatrix[3][3] = 1;
 
           //Solving equation using LU-faktorisation
-          pSolver->solve();
-
+          mpSolver->solve(jacobianMatrix, systemEquations, stateVark, iter);
+          wmr2=stateVark[0];
+          thetamr2=stateVark[1];
+          fm1=stateVark[2];
+          tormr2=stateVark[3];
+          //Expressions
+          vm1 = -(mlink*wmr2*Cos(thetamr2));
+          xm1 = mx0 - mlink*Sin(thetamr2);
+          eqMassm1 = (mJL*Power(Sec(thetamr2),2))/Power(mlink,2);
+          eqInertiamr2 = mJL;
         }
-        wmr2=stateVark[0];
-        thetamr2=stateVark[1];
-        fm1=stateVark[2];
-        tormr2=stateVark[3];
-        //Expressions
-        double vm1 = -(mlink*wmr2*Cos(thetamr2));
-        double xm1 = mx0 - mlink*Sin(thetamr2);
-        double eqMassm1 = (mJL*Power(Sec(thetamr2),2))/Power(mlink,2);
-        double eqInertiamr2 = mJL;
-
 
         //Calculate the delayed parts
         delayParts1[1] = (mTimestep*tormr2 - 2*mJL*wmr2 + mBL*mTimestep*wmr2 \
@@ -328,7 +319,7 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
 
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
-        delayedPart[2][2] = mDelayedPart22.getIdx(0);
+        delayedPart[2][2] = mDelayedPart22.getIdx(1);
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
 
@@ -351,10 +342,5 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
         mDelayedPart22.update(delayParts2[2]);
 
      }
-
-    void finalize()
-    {
-        delete(pSolver);
-    }
 };
 #endif // MECHANICJLINK_HPP_INCLUDED
