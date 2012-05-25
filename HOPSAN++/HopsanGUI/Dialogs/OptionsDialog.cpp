@@ -327,7 +327,7 @@ void OptionsDialog::updateValues()
     gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
     for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)       //Loop through all containers and reduce their plot data
     {
-        gpMainWindow->mpProjectTabs->getContainer(i)->limitPlotGenerations();
+        gpMainWindow->mpProjectTabs->getContainer(i)->getPlotDataPtr()->limitPlotGenerations();
     }
     gConfig.setDefaultUnit("Value", mpValueUnitComboBox->currentText());
     gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());

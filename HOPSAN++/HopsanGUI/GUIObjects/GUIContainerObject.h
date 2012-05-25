@@ -38,6 +38,73 @@ class MainWindow;
 class QGraphicsScene;
 class Port;
 
+//! @class VariableDescription
+//! @brief Container class for strings describing a plot variable
+
+class VariableDescription
+{
+public:
+    QString componentName;
+    QString portName;
+    QString dataName;
+    QString dataUnit;
+
+    bool operator==(const VariableDescription &other) const;
+};
+
+
+//! @class PlotData
+//! @brief Object containg all plot data and plot data function associated with a container object
+
+class PlotData
+{
+public:
+    PlotData(ContainerObject *pParent);
+
+    typedef QMap<QString, QVector<double> > DataMapT;
+    typedef QMap<QString, DataMapT> PortMapT;
+    typedef QMap<QString, PortMapT> ComponentMapT;
+    typedef QList<ComponentMapT> GenerationMapT;
+
+    typedef QList<QVector<double> > TimeListT;
+    typedef QMap<QString, VariableDescription> AliasMapT;
+    typedef QList<VariableDescription> FavoriteListT;
+
+    bool isEmpty();
+    int size();
+    void collectPlotData();
+    void updateObjectName(QString oldName, QString newName);
+    QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
+    QVector<double> getTimeVector(int generation);
+    bool componentHasPlotGeneration(int generation, QString componentName);
+    void definePlotAlias(QString componentName, QString portName, QString dataName, QString dataUnit);
+    bool definePlotAlias(QString alias, QString componentName, QString portName, QString dataName, QString dataUnit);
+    void undefinePlotAlias(QString alias);
+    VariableDescription getPlotVariableFromAlias(QString alias);
+    QString getPlotAlias(QString componentName, QString portName, QString dataName);
+    void limitPlotGenerations();
+    void incrementOpenPlotCurves();
+    void decrementOpenPlotCurves();
+    bool hasOpenPlotCurves();
+    AliasMapT getPlotAliasMap();
+    FavoriteListT getFavoriteVariableList();
+    void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
+    void removeFavoriteVariableByComponentName(QString componentName);
+
+private:
+    ContainerObject *mpParentContainerObject;
+
+
+
+    GenerationMapT mPlotData;
+    TimeListT mTimeVectors;
+    AliasMapT mPlotAliasMap;
+    FavoriteListT mFavoriteVariables;
+    int mnPlotCurves;
+};
+
+
+
 class ContainerObject : public ModelObject
 {
     friend class UndoStack;     //! @todo Not sure about this, but the alternative would be to have lots and lots of access functions only used by undo stack...
@@ -110,20 +177,7 @@ public:
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     //Plot and simulation results methods
-    void incrementOpenPlotCurves();
-    void decrementOpenPlotCurves();
-    bool hasOpenPlotCurves();
-    QVector<double> getTimeVector(int generation, QString componentName, QString portName);
-    QVector<double> getPlotData(int generation, QString componentName, QString portName, QString dataName);
-    bool componentHasPlotGeneration(int generation, QString componentName);
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > getAllPlotData();
-    int getNumberOfPlotGenerations();
-    void definePlotAlias(QString componentName, QString portName, QString dataName);
-    bool definePlotAlias(QString alias, QString componentName, QString portName, QString dataName);
-    void undefinePlotAlias(QString alias);
-    QStringList getPlotVariableFromAlias(QString alias);
-    QString getPlotAlias(QString componentName, QString portName, QString dataName);
-    void limitPlotGenerations();
+    PlotData *getPlotDataPtr();
 
     //Undo/redo methods
     UndoStack *getUndoStackPtr();
@@ -149,11 +203,6 @@ public:
     //Numbered sections methods
     void selectSection(int no, bool append=false);
     void assignSection(int no);
-
-    //Favorite variables methods
-    QList<QStringList> getFavoriteVariables();
-    void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
-    void removeFavoriteVariableByComponentName(QString componentName);
 
     //Losses methods
     bool areLossesVisible();
@@ -316,11 +365,7 @@ protected:
     graphicsType mGfxType;
 
     //Plot members
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mPlotData;
-    QList< QVector<double> > mTimeVectors;
-    QMap<QString, QStringList> mPlotAliasMap;
-    int nPlotCurves;
-    QList<QStringList> mFavoriteVariables;
+    PlotData *mpNewPlotData;
 
     //Undo-redo members
     UndoStack *mpUndoStack;

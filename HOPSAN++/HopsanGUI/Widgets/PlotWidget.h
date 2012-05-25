@@ -58,6 +58,7 @@
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_panner.h>
 
+#include "GUIObjects/GUIContainerObject.h"
 
 class MainWindow;
 class ContainerObject;
@@ -113,7 +114,7 @@ public slots:
     PlotWindow *createPlotWindow(QTreeWidgetItem *item);
 
 private:
-    QList<QStringList> mAvailableVariables;
+    QList<VariableDescription> mAvailableVariables;
     QList<PlotWindow *> mOpenPlotWindows;
 };
 

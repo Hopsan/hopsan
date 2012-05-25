@@ -612,7 +612,7 @@ void Port::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString d
     if (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->havePlotData(mpParentGuiModelObject->getName(), this->getPortName(), dataName))
     {
         //Add new curve to the plot window
-        pPlotWindow->addPlotCurve(mpParentGuiModelObject->getParentContainerObject()->getNumberOfPlotGenerations()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
+        pPlotWindow->addPlotCurve(mpParentGuiModelObject->getParentContainerObject()->getPlotDataPtr()->size()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
     }
 }
 

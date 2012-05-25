@@ -67,6 +67,7 @@ class QPushButton;
 class QTimer;
 class MainWindow;
 class ModelObject;
+class PlotData;
 
 class AnimationWidget : public QWidget
 {
@@ -80,7 +81,7 @@ public:
     //Get functions
     QVector<double> *getTimeValues();
     QGraphicsScene* getGraphicsScene();
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > >* getPlotDataPtr();
+    PlotData* getPlotDataPtr();
     int getNumberOfPlotGenerations();
     int getIndex(); // returns the current position inside the time vector
     int getLastIndex();
@@ -146,7 +147,7 @@ private:
     QGridLayout *mpLayout;
 
     //Copy of plot data object
-    QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > mpPlotData;
+    PlotData *mpPlotData;
 
     //Copy of time values
     QVector<double>* mpTimeValues;

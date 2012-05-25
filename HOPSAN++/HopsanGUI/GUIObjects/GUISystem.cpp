@@ -37,6 +37,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PyDockWidget.h"
 #include "Configuration.h"
+#include "GUIContainerObject.h"
 
 SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : ContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -221,15 +222,16 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
     {
         appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble(), this->doesInheritTimeStep());
 
-        QMap<QString, QStringList>::iterator ita;
+        PlotData::AliasMapT::iterator ita;
         QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
-        for(ita=mPlotAliasMap.begin(); ita!=mPlotAliasMap.end(); ++ita)
+        PlotData::AliasMapT aliasMap = getPlotDataPtr()->getPlotAliasMap();
+        for(ita=aliasMap.begin(); ita!=aliasMap.end(); ++ita)
         {
             QDomElement aliasElement = appendDomElement(xmlAliases, HMF_ALIAS);
             aliasElement.setAttribute("alias", ita.key());
-            aliasElement.setAttribute("component", ita.value().at(0));
-            aliasElement.setAttribute("port",ita.value().at(1));
-            aliasElement.setAttribute("data",ita.value().at(2));
+            aliasElement.setAttribute("component", ita.value().componentName);
+            aliasElement.setAttribute("port",ita.value().portName);
+            aliasElement.setAttribute("data",ita.value().dataName);
         }
     }
 
@@ -450,15 +452,15 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 
         //Save favorite variables
         QDomElement xmlFavVars = appendDomElement(guiStuff, HMF_FAVORITEVARIABLES);
-        QList<QStringList> favVars = this->getFavoriteVariables();
-        QList<QStringList>::iterator itf;
+        QList<VariableDescription> favVars = this->getPlotDataPtr()->getFavoriteVariableList();
+        QList<VariableDescription>::iterator itf;
         for(itf = favVars.begin(); itf != favVars.end(); ++itf)
         {
             QDomElement favoriteElement = appendDomElement(xmlFavVars, HMF_FAVORITEVARIABLETAG);
-            favoriteElement.setAttribute("componentname", (*itf).at(0));
-            favoriteElement.setAttribute("portname", (*itf).at(1));
-            favoriteElement.setAttribute("dataname", (*itf).at(2));
-            favoriteElement.setAttribute("dataunit", (*itf).at(3));
+            favoriteElement.setAttribute("componentname", (*itf).componentName);
+            favoriteElement.setAttribute("portname", (*itf).portName);
+            favoriteElement.setAttribute("dataname", (*itf).dataName);
+            favoriteElement.setAttribute("dataunit", (*itf).dataUnit);
         }
     }
 

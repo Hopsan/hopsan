@@ -42,6 +42,7 @@
 #include "loadFunctions.h"
 #include "MessageWidget.h"
 #include "Configuration.h"
+#include "GUIObjects/GUIContainerObject.h"
 
 
 //! @brief Constructor for the variable items in the variable tree
@@ -57,7 +58,7 @@ PlotVariableTreeItem::PlotVariableTreeItem(QString componentName, QString portNa
     mPortName = portName;
     mDataName = dataName;
     mDataUnit = dataUnit;
-    QString aliasPrepend = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(componentName, portName, dataName);
+    QString aliasPrepend = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotAlias(componentName, portName, dataName);
     if(!aliasPrepend.isEmpty())
     {
         aliasPrepend.prepend("<");
@@ -103,7 +104,7 @@ PlotVariableTree::PlotVariableTree(MainWindow *parent)
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
         mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().clear();
+        //gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().clear();
         connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
         connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
         connect(gpMainWindow->mpProjectTabs, SIGNAL(simulationFinished()), this, SLOT(updateList()));
@@ -174,10 +175,13 @@ void PlotVariableTree::updateList()
                         variableUnits[i] = gConfig.getDefaultUnit(variableNames[i]);
                         tempPlotVariableTreeItem = new PlotVariableTreeItem(pComponent->getName(), (*itp)->getPortName(), variableNames[i], variableUnits[i], tempComponentItem);
                         tempComponentItem->addChild(tempPlotVariableTreeItem);
-                        QStringList variableDescription;
-                        variableDescription << (*itp)->getGuiModelObjectName() << (*itp)->getPortName() << variableNames[i] << variableUnits[i];
+                        VariableDescription variableDescription;
+                        variableDescription.componentName = (*itp)->getGuiModelObjectName();
+                        variableDescription.portName = (*itp)->getPortName();
+                        variableDescription.dataName = variableNames[i];
+                        variableDescription.dataUnit = variableUnits[i];
                         mAvailableVariables.append(variableDescription);
-                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(variableDescription))
+                        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
                         {
                             tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
                         }
@@ -188,13 +192,13 @@ void PlotVariableTree::updateList()
     }
 
         //Append favorite plot variables to tree if they still exist
-    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().size(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().size(); ++i)
     {
-        QString componentName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(0);
-        QString portName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(1);
-        QString dataName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(2);
-        QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i).at(3);
-        QString alias = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(componentName, portName, dataName);
+        QString componentName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i).componentName;
+        QString portName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i).portName;
+        QString dataName = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i).dataName;
+        QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i).dataUnit;
+        QString alias = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotAlias(componentName, portName, dataName);
 
         if(!componentName.isEmpty())
         {
@@ -202,16 +206,16 @@ void PlotVariableTree::updateList()
             tempPlotVariableTreeItem->setText(0, " <"+alias+"> "+componentName+", "+portName+", "+dataName+", ["+dataUnit+"]");
             tempPlotVariableTreeItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
             this->addTopLevelItem(tempPlotVariableTreeItem);
-            tempPlotVariableTreeItem->setDisabled(!mAvailableVariables.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)));
+            tempPlotVariableTreeItem->setDisabled(!mAvailableVariables.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i)));
         }
     }
 
         //Remove no longer existing favorite variables
-    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().size(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().size(); ++i)
     {
-        if(!mAvailableVariables.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().at(i)))
+        if(!mAvailableVariables.contains(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().at(i)))
         {
-           // gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getFavoriteVariables().at(i));
+           // gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->getFavoriteVariableList().at(i));
         }
     }
 
@@ -295,7 +299,7 @@ PlotWindow *PlotVariableTree::createPlotWindow(QString componentName, QString po
     {
         PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
         plotWindow->show();
-        plotWindow->addPlotCurve(mpCurrentContainer->getNumberOfPlotGenerations()-1, componentName, portName, dataName, dataUnit, QwtPlot::yLeft, QString(), desiredColor);
+        plotWindow->addPlotCurve(mpCurrentContainer->getPlotDataPtr()->size()-1, componentName, portName, dataName, dataUnit, QwtPlot::yLeft, QString(), desiredColor);
 
         mOpenPlotWindows.append(plotWindow);
 
@@ -378,8 +382,11 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
         qDebug() << "currentItem() is ok!";
 
         item = dynamic_cast<PlotVariableTreeItem *>(currentItem());
-        QStringList variableDescription;
-        variableDescription << item->getComponentName() << item->getPortName() << item->getDataName() << item->getDataUnit();
+        VariableDescription variableDescription;
+        variableDescription.componentName = item->getComponentName();
+        variableDescription.portName = item->getPortName();
+        variableDescription.dataName = item->getDataName();
+        variableDescription.dataUnit = item->getDataUnit();
         QMenu menu;
 
         QAction *defineAliasAction = 0;
@@ -387,7 +394,7 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
         QAction *addToFavoritesAction = 0;
         QAction *removeFromFavoritesAction = 0;
 
-        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(item->getComponentName(), item->getPortName(), item->getDataName()).isEmpty())
+        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotAlias(item->getComponentName(), item->getPortName(), item->getDataName()).isEmpty())
         {
             defineAliasAction = menu.addAction(QString("Define Variable Alias"));
         }
@@ -397,7 +404,7 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
         }
 
 
-        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().contains(variableDescription))
+        if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
         {
             addToFavoritesAction = menu.addAction(QString("Add Favorite Variable"));
         }
@@ -413,24 +420,25 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
 
         if(selectedAction == removeAliasAction)
         {
-           gpMainWindow->mpProjectTabs->getCurrentContainer()->undefinePlotAlias(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotAlias(item->getComponentName(), item->getPortName(), item->getDataName()));
+           gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->undefinePlotAlias(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotAlias(item->getComponentName(), item->getPortName(), item->getDataName()));
            this->updateList();
         }
 
         if(selectedAction == defineAliasAction)
         {
-            gpMainWindow->mpProjectTabs->getCurrentContainer()->definePlotAlias(item->getComponentName(), item->getPortName(), item->getDataName());
+            gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->definePlotAlias(item->getComponentName(), item->getPortName(), item->getDataName(), item->getDataUnit());
             this->updateList();
         }
 
         if(selectedAction == addToFavoritesAction)
         {
-            gpMainWindow->mpProjectTabs->getCurrentContainer()->setFavoriteVariable(variableDescription.at(0), variableDescription.at(1), variableDescription.at(2), variableDescription.at(3));
+            gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->setFavoriteVariable(variableDescription.componentName, variableDescription.portName, variableDescription.dataName, variableDescription.dataUnit);
         }
 
         if(selectedAction == removeFromFavoritesAction)
         {
-           gpMainWindow->mpProjectTabs->getCurrentContainer()->getFavoriteVariables().removeAll(variableDescription);
+
+            gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->removeFavoriteVariableByComponentName(item->getComponentName());
            this->updateList();
         }
     }
@@ -549,7 +557,7 @@ void PlotTreeWidget::loadFromXml()
             QString dataUnit = curveElement.attribute("unit");
             int axisY = curveElement.attribute("axis").toInt();
             if(foundModel &&
-               gpMainWindow->mpProjectTabs->getContainer(i)->getNumberOfPlotGenerations() >= generation &&
+               gpMainWindow->mpProjectTabs->getContainer(i)->getPlotDataPtr()->size() >= generation &&
                gpMainWindow->mpProjectTabs->getContainer(i)->hasModelObject(componentName) &&
                gpMainWindow->mpProjectTabs->getContainer(i)->getModelObject(componentName)->getPort(portName) != 0)
 

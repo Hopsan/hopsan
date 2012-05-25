@@ -357,18 +357,12 @@ public slots:
 
     void plot(MainWindow* o, const QString &portAlias)
     {
-        QStringList variableDescription = o->mpProjectTabs->getCurrentContainer()->getPlotVariableFromAlias(portAlias);
-        if(!variableDescription.isEmpty())
-        {
-            QString compName = variableDescription.at(0);
-            QString portName = variableDescription.at(1);
-            QString dataName = variableDescription.at(2);
-            o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
-        }
-        else
-        {
-            //! @todo Write a message in the python console that the port with specified alias was not found
-        }
+        VariableDescription variableDescription;
+        variableDescription = o->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotVariableFromAlias(portAlias);
+        QString compName = variableDescription.componentName;
+        QString portName = variableDescription.portName;
+        QString dataName = variableDescription.dataName;
+        o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
         qApp->processEvents();
     }
 

@@ -95,7 +95,7 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     //std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
     //If this is a sink component that has plot data, plot it instead of showing the dialog
-    if(this->getTypeName() == "SignalSink" && this->getPort("in")->isConnected() && this->mpParentContainerObject->getAllPlotData().size() > 0 && !mpParentContainerObject->isCreatingConnector())   //Not very nice code, but a nice feature...
+    if(this->getTypeName() == "SignalSink" && this->getPort("in")->isConnected() && !this->mpParentContainerObject->getPlotDataPtr()->isEmpty() && !mpParentContainerObject->isCreatingConnector())   //Not very nice code, but a nice feature...
     {
         PlotWindow *pPlotWindow = getPort("in")->getConnectedPorts().first()->plot("Value");
         for(int i=1; (i<getPort("in")->getConnectedPorts().size() && pPlotWindow != 0); ++i)
@@ -121,7 +121,7 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
             QString componentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
             QString portName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
             QString dataName = "Value";
-            pPlotWindow->changeXVector(mpParentContainerObject->getPlotData(mpParentContainerObject->getNumberOfPlotGenerations()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
+            pPlotWindow->changeXVector(mpParentContainerObject->getPlotDataPtr()->getPlotData(mpParentContainerObject->getPlotDataPtr()->size()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
         }
 
         //No plot window was opened, so it is a non-connected sink - open properties instead

@@ -74,8 +74,6 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
 
     mPasteOffset = -30;
 
-    nPlotCurves = 0;
-
     //Create the scene
     mpScene = new QGraphicsScene(this);
 
@@ -84,6 +82,8 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
     mpUndoStack->clear();
 
     mpDragCopyStack = new CopyStack();
+
+    mpNewPlotData = new PlotData(this);
 
     //Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
@@ -547,52 +547,6 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
 }
 
 
-//! @brief Returns a list with the favorite plot parameters.
-QList<QStringList> ContainerObject::getFavoriteVariables()
-{
-    return mFavoriteVariables;
-}
-
-
-//! @brief Defines a new favorite plot variable
-//! @param componentName Name of the component where the parameter is located
-//! @param portName Name of the port where the parameter is located
-//! @param dataName Name of the parameter
-//! @param dataUnit Unit of the parameter
-void ContainerObject::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
-{
-    QStringList tempParameter;
-    tempParameter.append(componentName);
-    tempParameter.append(portName);
-    tempParameter.append(dataName);
-    tempParameter.append(dataUnit);
-    if(!mFavoriteVariables.contains(tempParameter))
-    {
-        mFavoriteVariables.append(tempParameter);
-    }
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
-
-    mpParentProjectTab->hasChanged();
-}
-
-
-//! @brief Removes all favorite variables which belongs to the specified component.
-//! @param componentName Name of the component
-void ContainerObject::removeFavoriteVariableByComponentName(QString componentName)
-{
-    QList<QStringList>::iterator it;
-    for(it=mFavoriteVariables.begin(); it!=mFavoriteVariables.end(); ++it)
-    {
-        if((*it).at(0) == componentName)
-        {
-            mFavoriteVariables.removeAll((*it));
-            gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
-            return;
-        }
-    }
-}
-
-
 bool ContainerObject::areLossesVisible()
 {
     return mLossesVisible;
@@ -640,7 +594,7 @@ void ContainerObject::removeWidget(Widget *pWidget, undoStatus undoSettings)
 void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSettings)
 {
     //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
-    this->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
+    mpNewPlotData->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
 
     ModelObjectMapT::iterator it = mModelObjectMap.find(objectName);
     ModelObject* obj_ptr = it.value();
@@ -731,20 +685,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, undoSt
             //! @todo Maybe we should give the user a message?
         }
 
-        for(int i=0; i<mPlotData.size(); ++i)
-        {
-            if(mPlotData.at(i).contains(oldName))
-            {
-                QMap< QString, QMap<QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > generation;
-                generation = mPlotData.at(i);
-                QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > oldPlotData;
-                oldPlotData = mPlotData.at(i).find(oldName).value();
-                generation.insert(newName, oldPlotData);
-                generation.remove(oldName);
-                mPlotData.removeAt(i);
-                mPlotData.insert(i, generation);
-            }
-        }
+        mpNewPlotData->updateObjectName(oldName, newName);
 
         if (undoSettings == UNDO)
         {
@@ -1962,26 +1903,6 @@ bool ContainerObject::isConnectorSelected()
 }
 
 
-//! @brief Tells the container object that one more plot curve is opened
-void ContainerObject::incrementOpenPlotCurves()
-{
-    ++nPlotCurves;
-}
-
-
-//! @brief Tells the container object that one less plot curve is opened
-void ContainerObject::decrementOpenPlotCurves()
-{
-    --nPlotCurves;
-}
-
-//! @brief Tells whether or not the container object has at least one plot curve opened in a plot window
-bool ContainerObject::hasOpenPlotCurves()
-{
-    return (nPlotCurves > 0);
-}
-
-
 //! @brief Returns a pointer to the undo stack
 UndoStack *ContainerObject::getUndoStackPtr()
 {
@@ -2281,9 +2202,9 @@ void ContainerObject::updateMainWindowButtons()
     gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
 
-    gpMainWindow->mpPlotAction->setDisabled(mPlotData.isEmpty());
-    gpMainWindow->mpShowLossesAction->setDisabled(mPlotData.isEmpty());
-    gpMainWindow->mpAnimateAction->setDisabled(mPlotData.isEmpty());
+    gpMainWindow->mpPlotAction->setDisabled(mpNewPlotData->isEmpty());
+    gpMainWindow->mpShowLossesAction->setDisabled(mpNewPlotData->isEmpty());
+    gpMainWindow->mpAnimateAction->setDisabled(mpNewPlotData->isEmpty());
 }
 
 
@@ -2443,7 +2364,7 @@ void ContainerObject::enterContainer()
 
     refreshInternalContainerPortGraphics();
 
-    this->collectPlotData();
+    mpNewPlotData->collectPlotData();
 
     mpParentProjectTab->setExternalSystem((this->isExternal() &&
                                            this != mpParentProjectTab->getTopLevelSystem()) ||
@@ -2529,46 +2450,7 @@ void ContainerObject::flipSubObjectsVertical()
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
 void ContainerObject::collectPlotData()
 {
-    //bool timeVectorObtained = false;
-
-    ModelObjectMapT::iterator moit;
-    QList<Port*>::iterator pit;
-    QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > componentMap;
-    for(moit=mModelObjectMap.begin(); moit!=mModelObjectMap.end(); ++moit)
-    {
-        QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > portMap;
-        for(pit=moit.value()->getPortListPtrs().begin(); pit!=moit.value()->getPortListPtrs().end(); ++pit)
-        {
-            QMap<QString, QPair<QVector<double>, QVector<double> > > variableMap;
-
-            QVector<QString> names;
-            QVector<QString> units;
-            getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(moit.value()->getName(), (*pit)->getPortName(), names, units);
-
-            QVector<QString>::iterator nit;
-            for(nit=names.begin(); nit!=names.end(); ++nit)
-            {
-                QPair<QVector<double>, QVector<double> > data;
-                getCoreSystemAccessPtr()->getPlotData(moit.value()->getName(), (*pit)->getPortName(), (*nit), data);
-                variableMap.insert((*nit), data);
-//                if(!timeVectorObtained)
-//                {
-//                    mTimeVectors.append(QVector<double>::fromStdVector(getCoreSystemAccessPtr()->getTimeVector(moit.value()->getName(), (*pit)->getName())));
-//                    timeVectorObtained = true;
-//                }
-
-                //qDebug() << "Inserting: " << moit.value()->getName() << ", " << (*pit)->getName() << ", " << (*nit);
-            }
-            portMap.insert((*pit)->getPortName(), variableMap);
-        }
-        componentMap.insert(moit.value()->getName(), portMap);
-    }
-    if(!componentMap.isEmpty())     //Don't insert a generation if no plot data was collected (= model is empty)
-    {
-        mPlotData.append(componentMap);
-    }
-
-    limitPlotGenerations();
+    mpNewPlotData->collectPlotData();
 }
 
 
@@ -2645,7 +2527,7 @@ void ContainerObject::showLossesFromDialog()
     }
 
     //We should not be here if there is no plot data, but let's check to be sure
-    if(mPlotData.isEmpty())
+    if(mpNewPlotData->isEmpty())
     {
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
         return;
@@ -2805,132 +2687,320 @@ bool ContainerObject::isExternal()
     return !mModelFileInfo.filePath().isEmpty();
 }
 
-//! @brief Returns time vector for specified plot generation.
-//! @param generation Generation to fetch time vector from
-QVector<double> ContainerObject::getTimeVector(int generation, QString componentName, QString portName)
+
+PlotData *ContainerObject::getPlotDataPtr()
 {
-    return mPlotData.at(generation).find(componentName).value().find(portName).value().begin().value().first;
+    return mpNewPlotData;
 }
 
 
-//! @brief Returns plot data for specified variable.
-//! @param generation Generation to plot from
-//! @param componentName Name of component where variable is located
-//! @param portName Name of port where variable is located
-//! @param dataName Name of physical quantity of the variable
-QVector<double> ContainerObject::getPlotData(int generation, QString componentName, QString portName, QString dataName)
+//! @brief Constructor for plot data object
+//! @param pParent Pointer to parent container object
+PlotData::PlotData(ContainerObject *pParent)
 {
-    //qDebug() << "Looking for " << generation << ", " << componentName << ", " << portName << ", " << dataName;
-    //qDebug() << "Size of data: " << mPlotData.size();
-    return mPlotData.at(generation).find(componentName).value().find(portName).value().find(dataName).value().second;
+    mpParentContainerObject = pParent;
+    mnPlotCurves = 0;
 }
 
 
-//! @brief Tells whether or not specified component has specified plot generation.
-//! It does not if the generation was simulated before this component was added
-//! @param generation Generation to look for
-//! @param componentName Name of component to look in
-bool ContainerObject::componentHasPlotGeneration(int generation, QString componentName)
+//! @brief Returns whether or not plot data is empty
+bool PlotData::isEmpty()
 {
-    return mPlotData.at(generation).contains(componentName);
+    return mPlotData.isEmpty();
 }
 
 
-//! @brief Returns a copy of all existing plot data in container.
-//! @note This object is gigantic, and will likey reduce performance if used too often.
-QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > > ContainerObject::getAllPlotData()
-{
-    return mPlotData;
-}
-
-
-//! @brief Returns total number of plot generation.
-//! I.e. how many times the container has been simulated since opened.
-int ContainerObject::getNumberOfPlotGenerations()
+//! @brief Returns the number of generations in the plot data
+int PlotData::size()
 {
     return mPlotData.size();
 }
 
 
-//! @brief Opens a box and lets user choose new plot alias for specified variable.
-//! @param componentName Name of component where variable is located
-//! @param portName Name of port where variable is located
-//! @param dataName Name of physical quantity of the variable
-void ContainerObject::definePlotAlias(QString componentName, QString portName, QString dataName)
+//! @brief Collects plot data from last simulation
+void PlotData::collectPlotData()
 {
-    bool ok;
-    QString d = QInputDialog::getText(gpMainWindow, tr("Define Variable Alias"),
-                                     tr("Alias:"), QLineEdit::Normal, "", &ok);
+    bool timeVectorObtained = false;
 
-    if(ok)
+    //Iterate components
+    ComponentMapT componentMap;
+    for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
     {
-       QString alias = d;
-       definePlotAlias(alias, componentName, portName, dataName);
+        ModelObject *pModelObject = mpParentContainerObject->getModelObject(mpParentContainerObject->getModelObjectNames().at(m));
+
+        //Iterate ports
+        PortMapT portMap;
+        for(QList<Port*>::iterator pit=pModelObject->getPortListPtrs().begin(); pit!=pModelObject->getPortListPtrs().end(); ++pit)
+        {
+            QVector<QString> names;
+            QVector<QString> units;
+            mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(pModelObject->getName(), (*pit)->getPortName(), names, units);
+
+            //Iterate variables
+            DataMapT dataMap;
+            for(QVector<QString>::iterator nit=names.begin(); nit!=names.end(); ++nit)
+            {
+                //Fetch variables
+                QPair<QVector<double>, QVector<double> > data;
+                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), (*nit), data);
+
+                //Store variable data
+                dataMap.insert((*nit), data.second);
+
+                //Store time data (only once)
+                if(!timeVectorObtained)
+                {
+                    mTimeVectors.append(data.first);
+                    timeVectorObtained = true;
+                }
+            }
+            portMap.insert((*pit)->getPortName(), dataMap);
+        }
+        componentMap.insert(pModelObject->getName(), portMap);
+    }
+
+    //Insert data to plot data storage
+    if(!componentMap.isEmpty())     //Don't insert a generation if no plot data was collected (= model is empty)
+    {
+        mPlotData.append(componentMap);
+    }
+
+    //Limit number of plot generations if there are too many
+    limitPlotGenerations();
+}
+
+
+//! @brief Renames a component in the plot data storage
+//! @note Always call this after renaming an object, or plot data for the object will not be accessible.
+//! @param[in] oldName Previous name of object
+//! @param[in] newName New name of object
+void PlotData::updateObjectName(QString oldName, QString newName)
+{
+    for(int i=0; i<mPlotData.size(); ++i)
+    {
+        if(mPlotData.at(i).contains(oldName))
+        {
+            ComponentMapT generation;
+            generation = mPlotData.at(i);
+            PortMapT oldPlotData;
+            oldPlotData = mPlotData.at(i).find(oldName).value();
+            generation.insert(newName, oldPlotData);
+            generation.remove(oldName);
+            mPlotData.removeAt(i);
+            mPlotData.insert(i, generation);
+        }
     }
 }
 
 
-//! @brief Defines a new plot alias for specified variable.
-//! @param componentName Name of component where variable is located
-//! @param portName Name of port where variable is located
-//! @param dataName Name of physical quantity of the variable
-bool ContainerObject::definePlotAlias(QString alias, QString componentName, QString portName, QString dataName)
+//! @brief Returns the plot data for specified variable
+//! @param[in] generation Generation of plot data
+//! @param[in] componentName Name of component where variable is located
+//! @param[in] portName Name of port where variable is located
+//! @param[in] dataName Name of variable
+QVector<double> PlotData::getPlotData(int generation, QString componentName, QString portName, QString dataName)
 {
-    if(mPlotAliasMap.contains(alias)) return false;
-    QStringList variableDescription;
-    variableDescription.append(componentName);
-    variableDescription.append(portName);
-    variableDescription.append(dataName);
-    mPlotAliasMap.insert(alias, variableDescription);
+    ComponentMapT componentMap = mPlotData.at(generation);
+    PortMapT portMap = componentMap.find(componentName).value();
+    DataMapT dataMap = portMap.find(portName).value();
+    return dataMap.find(dataName).value();
+}
+
+
+//! @brief Returns the time vector for specified generation
+//! @param[in] generation Generation
+QVector<double> PlotData::getTimeVector(int generation)
+{
+    return mTimeVectors.at(generation);
+}
+
+
+//! @brief Returns whether or not the specified component exists in specified plot generation
+//! @param[in] generation Generation
+//! @param[in] componentName Component name
+bool PlotData::componentHasPlotGeneration(int generation, QString componentName)
+{
+    if(mPlotData.size() > generation)
+    {
+        return mPlotData.at(generation).contains(componentName);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+//! @brief Let's the user define a new alias for specified plot varaible
+//! @param[in] componentName Name of component
+//! @param[in] portName Name of port
+//! @param[in] dataName Name of data variable
+//! @param[in] dataUnit Unit of variable
+void PlotData::definePlotAlias(QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    bool ok;
+    QString d = QInputDialog::getText(gpMainWindow, "Define Variable Alias",
+                                     "Alias:", QLineEdit::Normal, "", &ok);
+
+    if(ok)
+    {
+       QString alias = d;
+       definePlotAlias(alias, componentName, portName, dataName, dataUnit);
+    }
+}
+
+
+//! @brief Defines a new alias for specified plot varaible
+//! @param[in] alias Alias name for variable
+//! @param[in] componentName Name of component
+//! @param[in] portName Name of port
+//! @param[in] dataName Name of data variable
+//! @param[in] dataUnit Unit of variable
+bool PlotData::definePlotAlias(QString alias, QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    //! @todo Check that alias is not already used, and deal with it somehow if it is
+
+    VariableDescription variable;
+    variable.componentName = componentName;
+    variable.portName = portName;
+    variable.dataName = dataName;
+    variable.dataUnit = dataUnit;
+
+    mPlotAliasMap.insert(alias, variable);
     return true;
 }
 
 
-//! @brief Undefines an existing plot alias.
-//! @param alias Name of alias to undefine
-void ContainerObject::undefinePlotAlias(QString alias)
+//! @brief Removes specified variable alias
+//! @param[in] alias Alias to remove
+void PlotData::undefinePlotAlias(QString alias)
 {
     mPlotAliasMap.remove(alias);
 }
 
 
-//! @brief Returns the plot variable for specified alias.
-//! @returns A stringlist with componentName, portName and dataName of variable, or null if alias does not exist.
-QStringList ContainerObject::getPlotVariableFromAlias(QString alias)
+//! @brief Returns plot variable for specified alias
+//! @param[in] alias Alias of variable
+VariableDescription PlotData::getPlotVariableFromAlias(QString alias)
 {
-    if(mPlotAliasMap.contains(alias))
-        return mPlotAliasMap.find(alias).value();
-    else
-        return QStringList();
+    return mPlotAliasMap.find(alias).value();
 }
 
 
-//! @brief Returns plot alias for specified variable.
-//! @param componentName Name of component where variable is located
-//! @param portName Name of port where variable is located
-//! @param dataName Name of physical quantity of the variable
-QString ContainerObject::getPlotAlias(QString componentName, QString portName, QString dataName)
+//! @brief Returns plot alias for specified variable
+//! @param[in] componentName Name of component
+//! @param[in] portName Name of port
+//! @param[in] dataName Name of data variable
+QString PlotData::getPlotAlias(QString componentName, QString portName, QString dataName)
 {
-    QStringList variableDescription;
-    variableDescription.append(componentName);
-    variableDescription.append(portName);
-    variableDescription.append(dataName);
-
-    QMap<QString, QStringList>::iterator it;
+    AliasMapT::iterator it;
     for(it=mPlotAliasMap.begin(); it!=mPlotAliasMap.end(); ++it)
     {
-        if(it.value() == variableDescription) return it.key();
+        if(it.value().componentName == componentName && it.value().portName == portName && it.value().dataName == dataName)
+        {
+            return it.key();
+        }
     }
     return QString();
 }
 
 
-//! @brief Removes oldest plot generation until number of generation is within specified limit.
-//! @todo Update open plot windows somehow (may not be necessary)
-void ContainerObject::limitPlotGenerations()
+//! @brief Limits number of plot generations to value specified in configuration
+void PlotData::limitPlotGenerations()
 {
     while(mPlotData.size() > gConfig.getGenerationLimit())
     {
         mPlotData.removeFirst();
     }
+}
+
+
+//! @brief Increments counter for number of open plot curves (in plot windows)
+//! @note Used to decide if warning message shall be shown when closing model
+//! @see PlotData::decrementOpenPlotCurves()
+//! @see PlotData::hasOpenPlotCurves()
+void PlotData::incrementOpenPlotCurves()
+{
+    ++mnPlotCurves;
+}
+
+
+//! @brief Decrements counter for number of open plot curves (in plot windows)
+//! @note Used to decide if warning message shall be shown when closing model
+//! @see PlotData::incrementOpenPlotCurves()
+//! @see PlotData::hasOpenPlotCurves()
+void PlotData::decrementOpenPlotCurves()
+{
+    --mnPlotCurves;
+}
+
+
+//! @brief Tells whether or not the model has open plot curves
+//! @note Used to decide if warning message shall be shown when closing model
+//! @see PlotData::incrementOpenPlotCurves()
+//! @see PlotData::decrementOpenPlotCurves()
+bool PlotData::hasOpenPlotCurves()
+{
+    return (mnPlotCurves > 0);
+}
+
+
+//! @brief Returns the plot alias map
+//! @note Used for saving aliases when saving model
+PlotData::AliasMapT PlotData::getPlotAliasMap()
+{
+    return mPlotAliasMap;
+}
+
+
+//! @brief Returns the list of favorite variables
+PlotData::FavoriteListT PlotData::getFavoriteVariableList()
+{
+    return mFavoriteVariables;
+}
+
+
+//! @brief Defines a new favorite variable
+//! @param[in] componentName Name of component
+//! @param[in] portName Name of port
+//! @param[in] dataName Name of data variable
+//! @param[in] dataUnit Unit of the variable
+void PlotData::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    VariableDescription tempVariable;
+    tempVariable.componentName = componentName;
+    tempVariable.portName = portName;
+    tempVariable.dataName = dataName;
+    tempVariable.dataUnit = dataUnit;
+    if(!mFavoriteVariables.contains(tempVariable))
+    {
+        mFavoriteVariables.append(tempVariable);
+    }
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
+
+    mpParentContainerObject->mpParentProjectTab->hasChanged();
+}
+
+
+//! @brief Removse a favorite variable
+//! @param[in] componentName Name of component
+void PlotData::removeFavoriteVariableByComponentName(QString componentName)
+{
+    FavoriteListT::iterator it;
+    for(it=mFavoriteVariables.begin(); it!=mFavoriteVariables.end(); ++it)
+    {
+        if((*it).componentName == componentName)
+        {
+            mFavoriteVariables.removeAll((*it));
+            gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
+            return;
+        }
+    }
+}
+
+
+//! @brief Equality operator for variable description class
+bool VariableDescription::operator==(const VariableDescription &other) const
+{
+    return (componentName == other.componentName && portName == other.portName && dataName == other.dataName && dataUnit == other.dataUnit);
 }

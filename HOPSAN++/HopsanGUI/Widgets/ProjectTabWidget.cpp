@@ -781,7 +781,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     }
 
 
-    if (getTab(index)->getTopLevelSystem()->hasOpenPlotCurves())
+    if (getTab(index)->getTopLevelSystem()->getPlotDataPtr()->hasOpenPlotCurves())
     {
         QMessageBox msgBox;
         msgBox.setWindowIcon(gpMainWindow->windowIcon());

@@ -142,7 +142,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();
-    mpPlotData = mpContainer->getAllPlotData();
+    mpPlotData = mpContainer->getPlotDataPtr();
 
     //Obtain time values from plot data
     mpTimeValues = getTimeValues();
@@ -234,7 +234,7 @@ AnimationWidget::~AnimationWidget()
 //! @brief Calculates time values from plot data object
 QVector<double> *AnimationWidget::getTimeValues()
 {
-    mnPlotGenerations = mpContainer->getNumberOfPlotGenerations();
+    mnPlotGenerations = mpContainer->getPlotDataPtr()->size();
     QString componentName;
     QString portName;
     int i=0;
@@ -248,7 +248,7 @@ QVector<double> *AnimationWidget::getTimeValues()
             ++i;
     }
 
-    return new QVector<double>((mpContainer->getTimeVector(mnPlotGenerations-1, componentName, portName)));
+    return new QVector<double>((mpContainer->getPlotDataPtr()->getTimeVector(mnPlotGenerations-1)));
 }
 
 
@@ -508,9 +508,9 @@ QGraphicsScene* AnimationWidget::getGraphicsScene()
 
 
 //! @brief Returns a pointer to the plot data object
-QList< QMap< QString, QMap< QString, QMap<QString, QPair<QVector<double>, QVector<double> > > > > >* AnimationWidget::getPlotDataPtr()
+PlotData* AnimationWidget::getPlotDataPtr()
 {
-    return &mpPlotData;
+    return mpPlotData;
 }
 
 

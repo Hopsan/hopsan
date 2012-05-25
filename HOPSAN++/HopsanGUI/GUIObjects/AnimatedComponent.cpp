@@ -71,7 +71,11 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
             setupAnimationMovable(i);
             if(unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i))->isConnected())
             {
-                mpData->insert(i,mpAnimationWidget->getPlotDataPtr()->at(mpAnimationWidget->getNumberOfPlotGenerations()-1).find(unanimatedComponent->getName()).value().find(mpAnimationData->dataPorts.at(i)).value().find(mpAnimationData->dataNames.at(i)).value().second);
+                int generations = mpAnimationWidget->getNumberOfPlotGenerations()-1;
+                QString componentName = unanimatedComponent->getName();
+                QString portName = mpAnimationData->dataPorts.at(i);
+                QString dataName = mpAnimationData->dataNames.at(i);
+                mpData->insert(i,mpAnimationWidget->getPlotDataPtr()->getPlotData(generations, componentName, portName, dataName));
             }
         }
     }
@@ -160,6 +164,7 @@ void AnimatedComponent::updateAnimation()
             }
             mpMovables[m]->update();
 
+            //Update "port" positions, so that connectors will follow component
             for(int p=0; p<mpAnimationData->movablePortNames[m].size(); ++p)
             {
                 QString portName = mpAnimationData->movablePortNames[m][p];
@@ -173,9 +178,6 @@ void AnimatedComponent::updateAnimation()
             }
         }
     }
-
-
-
 }
 
 

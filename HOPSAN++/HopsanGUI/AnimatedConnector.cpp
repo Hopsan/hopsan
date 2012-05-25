@@ -57,19 +57,19 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
     {
         if(pConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
         {
-            int g = pConnector->getParentContainer()->getNumberOfPlotGenerations()-1;
+            int g = pConnector->getParentContainer()->getPlotDataPtr()->size()-1;
             QString componentName = pConnector->getEndPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getEndPort()->getPortName();
-            mvIntensityData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Pressure");
-            mvFlowData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Flow");
+            mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Pressure");
+            mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Flow");
         }
         else
         {
-            int g = pConnector->getParentContainer()->getNumberOfPlotGenerations()-1;
+            int g = pConnector->getParentContainer()->getPlotDataPtr()->size()-1;
             QString componentName = pConnector->getStartPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getStartPort()->getPortName();
-            mvIntensityData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Pressure");
-            mvFlowData = pConnector->getParentContainer()->getPlotData(g, componentName, portName, "Flow");
+            mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Pressure");
+            mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Flow");
 
         }
 

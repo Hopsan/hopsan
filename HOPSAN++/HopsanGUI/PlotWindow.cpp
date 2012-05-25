@@ -1735,7 +1735,7 @@ void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QStri
     mVectorXPortName = portName;
     mVectorXDataName = dataName;
     mVectorXDataUnit = dataUnit;
-    mVectorXGeneration = gpMainWindow->mpProjectTabs->getCurrentContainer()->getNumberOfPlotGenerations()-1;
+    mVectorXGeneration = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1;
 
     mVectorXLabel = QString(dataName + " [" + dataUnit + "]");
     updateLabels();
@@ -2755,15 +2755,15 @@ void PlotTab::dropEvent(QDropEvent *event)
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
             {
-                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotData(gpMainWindow->mpProjectTabs->getCurrentContainer()->getNumberOfPlotGenerations()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
+                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData().size()-1, componentName, portName, dataName, "", QwtPlot::yLeft);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1, componentName, portName, dataName, "", QwtPlot::yLeft);
             }
             else
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getAllPlotData().size()-1, componentName, portName, dataName, "", QwtPlot::yRight);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1, componentName, portName, dataName, "", QwtPlot::yRight);
             }
         }
     }
@@ -2947,7 +2947,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     }
     assert(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
 
-    mpContainerObject->incrementOpenPlotCurves();
+    mpContainerObject->getPlotDataPtr()->incrementOpenPlotCurves();
     mGeneration = generation;
     mComponentName = componentName;
     mPortName = portName;
@@ -2968,8 +2968,8 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     mOffsetY = 0.0;
 
         //Get data from container object
-    mDataVector = mpContainerObject->getPlotData(generation, componentName, portName, dataName);
-    mTimeVector = mpContainerObject->getTimeVector(generation, componentName, portName);
+    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, dataName);
+    mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(generation);
 
         //Create the actual curve
     mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
@@ -3017,7 +3017,7 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
 //! Deletes the info box and its dock widgets before the curve is removed.
 PlotCurve::~PlotCurve()
 {
-    mpContainerObject->decrementOpenPlotCurves();
+    mpContainerObject->getPlotDataPtr()->decrementOpenPlotCurves();
     delete(mpPlotInfoBox);
     //delete(mpPlotInfoDockWidget);
 }
@@ -3130,12 +3130,12 @@ ContainerObject *PlotCurve::getContainerObjectPtr()
 void PlotCurve::setGeneration(int generation)
 {
     mGeneration = generation;
-    mDataVector = mpContainerObject->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
+    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
     if(mpParentPlotTab->mVectorX.size() == 0)
-        mTimeVector = mpContainerObject->getTimeVector(mGeneration, mComponentName, mPortName);
+        mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(mGeneration);
     else
     {
-        mpParentPlotTab->mVectorX = mpContainerObject->getPlotData(mGeneration, mpParentPlotTab->mVectorXComponent,
+        mpParentPlotTab->mVectorX = mpContainerObject->getPlotDataPtr()->getPlotData(mGeneration, mpParentPlotTab->mVectorXComponent,
                                                                    mpParentPlotTab->mVectorXPortName, mpParentPlotTab->mVectorXDataName);
         mTimeVector = mpParentPlotTab->mVectorX;
     }
@@ -3241,7 +3241,7 @@ void PlotCurve::toFrequencySpectrum()
 void PlotCurve::setPreviousGeneration()
 {
     //if(mGeneration>0)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
-    if(mGeneration>0 && mpContainerObject->componentHasPlotGeneration(mGeneration-1, mComponentName))
+    if(mGeneration>0 && mpContainerObject->getPlotDataPtr()->componentHasPlotGeneration(mGeneration-1, mComponentName))
         setGeneration(mGeneration-1);
 }
 
@@ -3249,7 +3249,7 @@ void PlotCurve::setPreviousGeneration()
 //! @brief Changes a curve to the next available generation of its data
 void PlotCurve::setNextGeneration()
 {
-    if(mGeneration<mpContainerObject->getNumberOfPlotGenerations()-1)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
+    if(mGeneration<mpContainerObject->getPlotDataPtr()->size()-1)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
         setGeneration(mGeneration+1);
 }
 
@@ -3420,7 +3420,7 @@ void PlotCurve::removeIfNotConnected()
 void PlotCurve::updateToNewGeneration()
 {
     if(mAutoUpdate)     //Only change the generation if auto update is on
-        setGeneration(mpContainerObject->getNumberOfPlotGenerations()-1);
+        setGeneration(mpContainerObject->getPlotDataPtr()->size()-1);
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
     mpParentPlotTab->rescaleToCurves();
 }
@@ -3429,12 +3429,12 @@ void PlotCurve::updateToNewGeneration()
 //! @brief Updates buttons and text in plot info box to correct values
 void PlotCurve::updatePlotInfoBox()
 {
-    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getNumberOfPlotGenerations() > 1);
-    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getNumberOfPlotGenerations()-1 && mpContainerObject->getNumberOfPlotGenerations() > 1);
+    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getPlotDataPtr()->size() > 1);
+    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getPlotDataPtr()->size()-1 && mpContainerObject->getPlotDataPtr()->size() > 1);
 
     QString numString1, numString2;
     numString1.setNum(mGeneration+1);
-    numString2.setNum(mpContainerObject->getNumberOfPlotGenerations());
+    numString2.setNum(mpContainerObject->getPlotDataPtr()->size());
     mpPlotInfoBox->mpGenerationLabel->setText(numString1 + "(" + numString2 + ")");
 }
 
