@@ -65,7 +65,7 @@ void SimulationThread::run()
         mpCoreSystemAccess->simulate(mStartTime, mFinishTime, SINGLECORE);
     }
     //! @todo we should run finalize at some other place even if initialize is aborted
-    mpCoreSystemAccess->finalize(mStartTime, mFinishTime);
+    mpCoreSystemAccess->finalize();
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }
@@ -97,7 +97,7 @@ void MultipleSimulationThread::run()
 
     for(int i=0; i<mvGUIRootSystemPtrs.size(); ++i)
     {
-        mvGUIRootSystemPtrs.at(i)->finalize(mStartTime, mFinishTime);
+        mvGUIRootSystemPtrs.at(i)->finalize();
     }
 
     //exec(); //Is used if one want to run an event loop in this thread.

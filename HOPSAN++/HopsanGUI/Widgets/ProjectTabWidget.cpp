@@ -41,6 +41,8 @@
 #include "version_gui.h"
 #include "GUIConnector.h"
 
+#include "SimulationHandler.h"
+
 //! @class ProjectTab
 //! @brief The ProjectTab class is a Widget to contain a simulation model
 //!
@@ -51,7 +53,7 @@
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 ProjectTab::ProjectTab(ProjectTabWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), mpSimulationHandler(0)
 {
     mStartTime.setNum(0.0,'g',10);
     mStopTime.setNum(10.0,'g',10);
@@ -269,8 +271,25 @@ void ProjectTab::setSaved(bool value)
 }
 
 
-//! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
 bool ProjectTab::simulate()
+{
+    //! @todo getnumsamp can be done inside
+    mpSimulationHandler = new SimulationHandler(mpSystem, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
+    connect(mpSimulationHandler, SIGNAL(done(bool)), this, SLOT(simulationCompleted(bool)));
+    return true;
+    //! @todo fix return code
+}
+
+void ProjectTab::simulationCompleted(bool success)
+{
+    emit simulationFinished();
+    delete mpSimulationHandler;
+    mpSimulationHandler=0;
+}
+
+//! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
+//! @deprecated
+bool ProjectTab::simulate_old()
 {
     MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 

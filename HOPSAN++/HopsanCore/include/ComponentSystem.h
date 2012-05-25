@@ -135,7 +135,7 @@ namespace hopsan {
 #endif
         virtual void simulate(const double startT, const double stopT);
         void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem *> systemVector);
-        void finalize(const double startT, const double stopT);
+        void finalize();
 
         void logAllNodes(const double time);
 

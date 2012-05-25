@@ -10,7 +10,7 @@
         <invertwheel>false</invertwheel>
         <snapping>true</snapping>
         <progressbar>true</progressbar>
-        <progressbar_step>50</progressbar_step>
+        <progressbar_step>100</progressbar_step>
         <multicore>false</multicore>
         <numberofthreads>0</numberofthreads>
         <togglenamesbuttonchecked>true</togglenamesbuttonchecked>

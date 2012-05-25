@@ -36,6 +36,8 @@ class GraphicsView;
 class ProjectTab;
 class SystemContainer;
 class AnimationWidget;
+class SimulationHandler;
+
 
 class ProjectTabWidget : public QTabWidget
 {
@@ -107,6 +109,7 @@ public:
 
 public slots:
     bool simulate();
+    bool simulate_old();
     void save();
     void saveAs();
     void setExternalSystem(bool value);
@@ -115,6 +118,7 @@ public slots:
 
 
 private slots:
+    void simulationCompleted(bool success);
     void collectPlotData();
     void openCurrentContainerInNewTab();
     void closeAnimation();
@@ -127,6 +131,7 @@ private:
     void saveModel(saveTarget saveAsFlag);
 
     QString mStartTime, mStopTime;
+    SimulationHandler *mpSimulationHandler;
 
     bool mIsSaved;
     SystemContainer *mpSystem;

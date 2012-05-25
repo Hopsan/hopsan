@@ -162,7 +162,8 @@ SOURCES += main.cpp \
     AnimatedConnector.cpp \
     Dialogs/AnimatedIconPropertiesDialog.cpp \
     Dialogs/ParameterSettingsLayout.cpp \
-    Dialogs/ModelObjectPropertiesDialog.cpp
+    Dialogs/ModelObjectPropertiesDialog.cpp \
+    SimulationHandler.cpp
 
 
 HEADERS += MainWindow.h \
@@ -224,7 +225,8 @@ HEADERS += MainWindow.h \
     AnimatedConnector.h \
     Dialogs/AnimatedIconPropertiesDialog.h \
     Dialogs/ParameterSettingsLayout.h \
-    Dialogs/ModelObjectPropertiesDialog.h
+    Dialogs/ModelObjectPropertiesDialog.h \
+    SimulationHandler.h
 
 OTHER_FILES += \
     ../hopsandefaults \

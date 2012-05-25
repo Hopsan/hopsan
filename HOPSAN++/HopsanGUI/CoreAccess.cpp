@@ -419,9 +419,9 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulatio
 }
 
 
-void CoreSystemAccess::finalize(double mStartTime, double mFinishTime)
+void CoreSystemAccess::finalize()
 {
-    mpCoreComponentSystem->finalize(mStartTime, mFinishTime);
+    mpCoreComponentSystem->finalize();
 }
 
 QString CoreSystemAccess::createComponent(QString type, QString name)

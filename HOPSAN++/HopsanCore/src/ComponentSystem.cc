@@ -3013,53 +3013,25 @@ void ComponentSystem::simulateMultipleSystems(const double startT, const double 
 
 
 //! @brief Finalizes a system component and all its contained components after a simulation.
-//! @param startT Start time of simulation
-//! @param stopT Stop time of simulation
-void ComponentSystem::finalize(const double startT, const double stopT)
+void ComponentSystem::finalize()
 {
-    //! @todo take the final simulation step is suitable here
-
     //Finalize
     //Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        if (mComponentSignalptrs[s]->isComponentSystem())
-        {
-            mComponentSignalptrs[s]->finalize(startT, stopT);
-        }
-        else
-        {
-            mComponentSignalptrs[s]->finalize();
-        }
-//        mComponentSignalptrs[s]->secretFinalize();
+        mComponentSignalptrs[s]->finalize();
     }
 
     //C components
     for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
-        if (mComponentCptrs[c]->isComponentSystem())
-        {
-            mComponentCptrs[c]->finalize(startT, stopT);
-        }
-        else
-        {
-            mComponentCptrs[c]->finalize();
-        }
-//        mComponentCptrs[c]->secretFinalize();
+        mComponentCptrs[c]->finalize();
     }
 
     //Q components
     for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
-        if (mComponentQptrs[q]->isComponentSystem())
-        {
-            mComponentQptrs[q]->finalize(startT,stopT);
-        }
-        else
-        {
-            mComponentQptrs[q]->finalize();
-        }
-//        mComponentQptrs[q]->secretFinalize();
+        mComponentQptrs[q]->finalize();
     }
 
     //loadStartValuesFromSimulation();
