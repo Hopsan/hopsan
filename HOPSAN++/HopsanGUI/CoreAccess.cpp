@@ -36,7 +36,7 @@
 
 using namespace std;
 
-//! @breif Help function to copy parameter data from core to GUI class
+//! @brief Help function to copy parameter data from core to GUI class
 void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &rGUIParam)
 {
     rGUIParam.mName = QString::fromStdString(pCoreParam->getName());

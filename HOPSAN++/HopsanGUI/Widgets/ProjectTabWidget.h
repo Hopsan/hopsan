@@ -29,6 +29,7 @@
 #include "CoreAccess.h"
 #include "QuickNavigationWidget.h"
 #include "AnimationWidget.h"
+#include "SimulationHandler.h"
 
 //Forward declaration
 class QGraphicsScene;
@@ -36,7 +37,6 @@ class GraphicsView;
 class ProjectTab;
 class SystemContainer;
 class AnimationWidget;
-class SimulationHandler;
 
 
 class ProjectTabWidget : public QTabWidget
@@ -67,6 +67,7 @@ public slots:
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
+    bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
     bool simulateAllOpenModels(bool modelsHaveNotChanged=false);
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
     void openAnimation();
@@ -79,6 +80,7 @@ signals:
 private:
     void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
     size_t mNumberOfUntitledTabs;
+    SimulationHandler mSimulationHandler;
 };
 
 class ProjectTab : public QWidget
@@ -108,8 +110,8 @@ public:
     AnimationWidget *mpAnimationWidget;
 
 public slots:
+    bool simulate_nonblocking();
     bool simulate();
-    bool simulate_old();
     void save();
     void saveAs();
     void setExternalSystem(bool value);
@@ -118,7 +120,6 @@ public slots:
 
 
 private slots:
-    void simulationCompleted(bool success);
     void collectPlotData();
     void openCurrentContainerInNewTab();
     void closeAnimation();
@@ -131,7 +132,7 @@ private:
     void saveModel(saveTarget saveAsFlag);
 
     QString mStartTime, mStopTime;
-    SimulationHandler *mpSimulationHandler;
+    SimulationHandler mSimulationHandler;
 
     bool mIsSaved;
     SystemContainer *mpSystem;

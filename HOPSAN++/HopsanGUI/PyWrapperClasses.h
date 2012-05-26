@@ -65,7 +65,7 @@ private:
 };
 
 
-class PyGUIPortClassWrapper : public QObject
+class PyPortClassWrapper : public QObject
 {
     Q_OBJECT
 
@@ -118,7 +118,7 @@ public slots:
 };
 
 
-class PyGUIObjectClassWrapper : public QObject
+class PyModelObjectClassWrapper : public QObject
 {
     Q_OBJECT
 
@@ -142,21 +142,11 @@ public slots:
 };
 
 
-class PyHopsanClassWrapper : public QObject
+class PyMainWindowClassWrapper : public QObject
 {
     Q_OBJECT
 
 public slots:
-//    MainWindow* new_MainWindow(const double& number)
-//    {
-//        return new MainWindow(0);
-//    }
-
-//    void delete_MainWindow(MainWindow* o)
-//    {
-//        delete o;
-//    }
-
     void newModel(MainWindow* o)
     {
         o->mpProjectTabs->addNewProjectTab();

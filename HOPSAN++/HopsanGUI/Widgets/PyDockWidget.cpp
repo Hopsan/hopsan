@@ -32,7 +32,6 @@
 #include "PyWrapperClasses.h"
 
 
-
 //! Create a dock for the Python console
 
 //! Constructor
@@ -42,9 +41,12 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     PythonQt::init(PythonQt::RedirectStdOut);
     PythonQt_QtAll::init();
 
-    PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyHopsanClassWrapper>);
-    PythonQt::self()->registerCPPClass("ModelObject", "","", PythonQtCreateObject<PyGUIObjectClassWrapper>);
-    PythonQt::self()->registerCPPClass("Port", "","", PythonQtCreateObject<PyGUIPortClassWrapper>);
+    //PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyMainWindowClassWrapper>);
+    //PythonQt::self()->registerCPPClass("ModelObject", "","", PythonQtCreateObject<PyModelObjectClassWrapper>);
+    //PythonQt::self()->registerCPPClass("Port", "","", PythonQtCreateObject<PyPortClassWrapper>);
+    PythonQt::self()->registerClass(&MainWindow::staticMetaObject, NULL, PythonQtCreateObject<PyMainWindowClassWrapper>);
+    PythonQt::self()->registerClass(&ModelObject::staticMetaObject, NULL, PythonQtCreateObject<PyModelObjectClassWrapper>);
+    PythonQt::self()->registerClass(&Port::staticMetaObject, NULL, PythonQtCreateObject<PyPortClassWrapper>);
 
     PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
     mainContext.addObject("hopsan", pMainWindow);

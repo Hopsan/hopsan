@@ -53,7 +53,7 @@
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 ProjectTab::ProjectTab(ProjectTabWidget *parent)
-    : QWidget(parent), mpSimulationHandler(0)
+    : QWidget(parent)
 {
     mStartTime.setNum(0.0,'g',10);
     mStopTime.setNum(10.0,'g',10);
@@ -86,7 +86,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     mpSystem = new SystemContainer(this, 0);
 
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(&mSimulationHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
+    connect(this, SIGNAL(checkMessages()), mpParentProjectTabWidget, SIGNAL(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
     connect(mpParentProjectTabWidget, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
 
@@ -270,26 +271,25 @@ void ProjectTab::setSaved(bool value)
     mIsSaved = value;
 }
 
-
-bool ProjectTab::simulate()
+//! @note this is experimental code to replace madness simulation code in the future
+bool ProjectTab::simulate_nonblocking()
 {
-    //! @todo getnumsamp can be done inside
-    mpSimulationHandler = new SimulationHandler(mpSystem, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
-    connect(mpSimulationHandler, SIGNAL(done(bool)), this, SLOT(simulationCompleted(bool)));
+    if(!mpSystem->getCoreSystemAccessPtr()->isSimulationOk())
+    {
+        emit checkMessages();
+        return false;
+    }
+
+    QVector<SystemContainer*> vec;
+    vec.push_back(mpSystem);
+    mSimulationHandler.simulate(vec, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
+
     return true;
     //! @todo fix return code
 }
 
-void ProjectTab::simulationCompleted(bool success)
-{
-    emit simulationFinished();
-    delete mpSimulationHandler;
-    mpSimulationHandler=0;
-}
-
 //! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
-//! @deprecated
-bool ProjectTab::simulate_old()
+bool ProjectTab::simulate()
 {
     MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 
@@ -675,6 +675,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)), Qt::UniqueConnection);
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()), Qt::UniqueConnection);
 
+    connect(&mSimulationHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     this->hide();
 }
 
@@ -1036,6 +1037,26 @@ void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 void ProjectTabWidget::showLosses(bool show)
 {
     qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
+}
+
+//! @brief This function simulates all open models in paralell (if multicore on)
+//! @note This is experimental code to replace other simulation code in the future
+bool ProjectTabWidget::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
+{
+    QVector<SystemContainer*> vpSystems;
+    for(int i=0; i<count(); ++i)
+    {
+        if(!getSystem(i)->getCoreSystemAccessPtr()->isSimulationOk())
+        {
+            emit checkMessages();
+            return false;
+        }
+        vpSystems.append(getSystem(i));
+    }
+
+    mSimulationHandler.simulate(vpSystems, getCurrentTab()->getStartTime().toDouble(), getCurrentTab()->getStopTime().toDouble(), getCurrentContainer()->getNumberOfLogSamples(), modelsHaveNotChanged);
+    return true;
+    //! @todo fix return
 }
 
 
