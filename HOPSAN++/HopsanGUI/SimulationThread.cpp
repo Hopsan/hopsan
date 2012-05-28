@@ -86,19 +86,24 @@ MultipleSimulationThread::MultipleSimulationThread(QVector<CoreSystemAccess *> v
 //! @brief Implements the task for the thread.
 void MultipleSimulationThread::run()
 {
+    CoreSimulationHandler simuHandler;
     if(gConfig.getUseMulticore())
     {
-        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads(), mModelsHaveNotChanged);
+        //mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads(), mModelsHaveNotChanged);
+        simuHandler.simulate(mStartTime, mFinishTime, gConfig.getNumberOfThreads(), mvGUIRootSystemPtrs, mModelsHaveNotChanged);
     }
     else
     {
-        mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, SINGLECORE, gConfig.getNumberOfThreads(), mModelsHaveNotChanged);
+        //mvGUIRootSystemPtrs.first()->simulateAllOpenModels(mStartTime, mFinishTime, SINGLECORE, gConfig.getNumberOfThreads(), mModelsHaveNotChanged);
+        simuHandler.simulate(mStartTime, mFinishTime, -1, mvGUIRootSystemPtrs, mModelsHaveNotChanged);
     }
 
-    for(int i=0; i<mvGUIRootSystemPtrs.size(); ++i)
-    {
-        mvGUIRootSystemPtrs.at(i)->finalize();
-    }
+    simuHandler.finalize(mvGUIRootSystemPtrs);
+
+//    for(int i=0; i<mvGUIRootSystemPtrs.size(); ++i)
+//    {
+//        mvGUIRootSystemPtrs.at(i)->finalize();
+//    }
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

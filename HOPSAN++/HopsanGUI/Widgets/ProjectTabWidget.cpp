@@ -1202,6 +1202,54 @@ bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
     return false;       //No tabs open
 }
 
+bool ProjectTabWidget::simulateAllOpenModels2(bool modelsHaveNotChanged)
+{
+    qDebug() << "simulateAllOpenModels()";
+
+    if(count() > 0)
+    {
+        //All systems will use start time, stop time and time step from this system
+        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
+
+            //Setup simulation parameters
+        double startTime = getCurrentTab()->getStartTime().toDouble();
+        double stopTime = getCurrentTab()->getStopTime().toDouble();
+        size_t nSamples = pMainSystem->getNumberOfLogSamples();
+
+        // Ask core to initialize simulation
+        QVector<CoreSystemAccess*> coreAccessVector;
+        for(int i=0; i<count(); ++i)
+        {
+            coreAccessVector.append(getSystem(i)->getCoreSystemAccessPtr());
+        }
+
+        CoreSimulationHandler simuHandler;
+        bool isOk = simuHandler.initialize(startTime, stopTime, nSamples, coreAccessVector);
+
+        if(isOk)
+        {
+            if(gConfig.getUseMulticore())
+            {
+                simuHandler.simulate(startTime, stopTime, gConfig.getNumberOfThreads(), coreAccessVector, modelsHaveNotChanged);
+            }
+            else
+            {
+                simuHandler.simulate(startTime, stopTime, -1, coreAccessVector, modelsHaveNotChanged);
+            }
+        }
+
+        simuHandler.finalize(coreAccessVector);
+
+        if (!isOk)
+        {
+            emit checkMessages();
+        }
+
+        //! @todo isOk for simulation and finilize
+        return isOk;
+    }
+}
+
 void ProjectTabWidget::setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
 {
     if (count() > 0)

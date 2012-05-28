@@ -22,11 +22,10 @@
 //!
 //$Id$
 
-#ifndef COMPNENTSYSTEM_H
-#define COMPNENTSYSTEM_H
+#ifndef COMPONENTSYSTEM_H
+#define COMPONENTSYSTEM_H
 
 #include "Component.h"
-#include <list>
 
 namespace tbb {
     class mutex;
@@ -62,6 +61,32 @@ namespace hopsan {
         ComponentSystem *mpComponentSystem; //The system to assist
     };
 
+    class DLLIMPORTEXPORT SimulationHandler
+    {
+    public:
+        enum SimulationErrorTypesT {NotRedy, InitFailed, SimuFailed, FiniFailed};
+
+        //! @todo a doitall function
+        //! @todo error enums
+        bool initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem);
+        bool initializeSystem(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
+
+        void simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false);
+        void simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
+
+        void finalizeSystem(ComponentSystem* pSystem);
+        void finalizeSystem(std::vector<ComponentSystem*> &rSystemVector);
+
+    private:
+        void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
+        void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
+
+        std::vector< std::vector<ComponentSystem *> > distributeSystems(std::vector<ComponentSystem *> systemVector, size_t nThreads);
+        void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> systemVector);
+
+        std::vector< std::vector<ComponentSystem *> > mSplitSystemVector;
+    };
+
     class DLLIMPORTEXPORT ComponentSystem :public Component
     {
         friend class ConnectionAssistant;
@@ -75,11 +100,11 @@ namespace hopsan {
 
         //Set the subsystem CQS type
         void setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet=false);
-        bool changeTypeCQS(const std::string name, const CQSEnumT newType);
+        bool changeSubComponentSystemTypeCQS(const std::string name, const CQSEnumT newType);
         void determineCQSType();
 
         //adding removing and renaming components
-        void addComponents(std::vector<Component*> components);
+        void addComponents(std::vector<Component*> &rComponents);
         void addComponent(Component *pComponent);
         void renameSubComponent(std::string old_name, std::string new_name);
         void removeSubComponent(std::string name, bool doDelete=false);
@@ -111,31 +136,29 @@ namespace hopsan {
         // Convenience functions for enable and dissable data logging
         void setAllNodesDoLogData(const bool logornot);
 
-        //initialize and simulate
+        // Startvalue loading
         bool doesKeepStartValues();
         void setLoadStartValues(bool load);
-        bool isSimulationOk();
         void loadStartValues();
         void loadStartValuesFromSimulation();
+
+        // Initialize and simulate
+        bool isSimulationOk();
         bool initialize(const double startT, const double stopT);
-        void simulateMultiThreadedOld(const double startT, const double stopT);
+        void simulate(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
-        void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool noChanges=false);
+        void finalize();
+
 #ifdef USETBB
-        void simulateAndMeasureTime(size_t steps = 1);
+        void simulateAndMeasureTime(const size_t steps = 1);
         double getTotalMeasuredTime();
-        void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> systemVector);
-        std::vector< std::vector<ComponentSystem *> > distributeSystems(std::vector<ComponentSystem *> systemVector, size_t nThreads);
+
         void sortComponentVectorsByMeasuredTime();
-        int getNumberOfThreads(size_t nDesiredThreads);
         void distributeCcomponents(std::vector< std::vector<Component*> > &rSplitCVector, size_t nThreads);
         void distributeQcomponents(std::vector< std::vector<Component*> > &rSplitQVector, size_t nThreads);
         void distributeSignalcomponents(std::vector< std::vector<Component*> > &rSplitSignalVector, size_t nThreads);
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
 #endif
-        virtual void simulate(const double startT, const double stopT);
-        void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem *> systemVector);
-        void finalize();
 
         void logAllNodes(const double time);
 
@@ -184,7 +207,7 @@ namespace hopsan {
         std::string determineUniquePortName(std::string portname);
         std::string determineUniqueComponentName(std::string name);
 
-        //==========Prvate member variables==========
+        //==========Private member variables==========
         typedef std::map<std::string, Component*> SubComponentMapT;
         typedef std::map<std::string, int> ReservedNamesT;
         SubComponentMapT mSubComponentMap;
@@ -205,8 +228,6 @@ namespace hopsan {
         std::vector< std::vector<Component*> > mSplitSignalVector;
         std::vector< std::vector<Node*> > mSplitNodeVector;
 
-        std::vector< std::vector<ComponentSystem *> > mSplitSystemVector;
-
         std::vector<double *> mvTimePtrs;
 
         size_t mnLogSamples;
@@ -216,4 +237,4 @@ namespace hopsan {
 }
 
 
-#endif // COMPNENTSYSTEM_H
+#endif // COMPONENTSYSTEM_H

@@ -54,7 +54,15 @@ void SimulationObject::doIt()
     {
         //Get core access from first one it will then handle the rest
         //! @todo this is strange need to fix in more clear way
-        mvpSystems.first()->getCoreSystemAccessPtr()->simulateAllOpenModels(mStartTime, mStopTime, MULTICORE, gConfig.getNumberOfThreads(), mNoChanges);
+        CoreSimulationHandler simuHandler;
+        QVector<CoreSystemAccess*> vec;
+        for (int i=0; i<mvpSystems.size(); ++i)
+        {
+            vec.push_back(mvpSystems[i]->getCoreSystemAccessPtr());
+        }
+
+        simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), vec, mNoChanges);
+        //mvpSystems.first()->getCoreSystemAccessPtr()->simulateAllOpenModels(mStartTime, mStopTime, MULTICORE, gConfig.getNumberOfThreads(), mNoChanges);
     }
     else
     {

@@ -98,6 +98,65 @@ void CoreMessagesAccess::getMessage(QString &rMessage, QString &rType, QString &
     rType = QString::fromStdString(type);
 }
 
+CoreSimulationHandler::CoreSimulationHandler()
+{
+    mpSimulationHandler = new hopsan::SimulationHandler;
+}
+
+CoreSimulationHandler::~CoreSimulationHandler()
+{
+    delete mpSimulationHandler;
+}
+
+bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess)
+{
+    //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
+    pCoreSystemAccess->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
+    return mpSimulationHandler->initializeSystem(startTime, stopTime, pCoreSystemAccess->getCoreSystemPtr());
+}
+
+bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess)
+{
+    std::vector<hopsan::ComponentSystem*> coreSystems;
+    for (int i=0; i<rvCoreSystemAccess.size(); ++i)
+    {
+        //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
+        rvCoreSystemAccess[i]->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
+        coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
+    }
+    return mpSimulationHandler->initializeSystem(startTime, stopTime, coreSystems);
+}
+
+void CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
+{
+    mpSimulationHandler->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
+}
+
+void CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)
+{
+    std::vector<hopsan::ComponentSystem*> coreSystems;
+    for (int i=0; i<rvCoreSystemAccess.size(); ++i)
+    {
+        coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
+    }
+    mpSimulationHandler->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
+}
+
+void CoreSimulationHandler::finalize(CoreSystemAccess* pCoreSystemAccess)
+{
+    mpSimulationHandler->finalizeSystem(pCoreSystemAccess->getCoreSystemPtr());
+}
+
+void CoreSimulationHandler::finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess)
+{
+    std::vector<hopsan::ComponentSystem*> coreSystems;
+    for (int i=0; i<rvCoreSystemAccess.size(); ++i)
+    {
+        coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
+    }
+    mpSimulationHandler->finalizeSystem(coreSystems);
+}
+
 
 CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSystemAccess)
 {
@@ -230,24 +289,24 @@ void CoreSystemAccess::stop()
     mpCoreComponentSystem->stopSimulation();
 }
 
+//! @todo move to project tab or somthing
+//void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelsHaveNotChanged)
+//{
+//    std::vector<hopsan::ComponentSystem *> systemVector;
+//    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+//    {
+//        systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
+//    }
 
-void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelsHaveNotChanged)
-{
-    std::vector<hopsan::ComponentSystem *> systemVector;
-    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
-    {
-        systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
-    }
-
-    if(type == MULTICORE)
-    {
-        systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
-    }
-    else
-    {
-        systemVector.at(0)->simulateMultipleSystems(mStartTime, mFinishTime, systemVector);
-    }
-}
+//    if(type == MULTICORE)
+//    {
+//        systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
+//    }
+//    else
+//    {
+//        systemVector.at(0)->simulateMultipleSystems(mStartTime, mFinishTime, systemVector);
+//    }
+//}
 
 
 QString CoreSystemAccess::getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator)
@@ -385,13 +444,13 @@ void CoreSystemAccess::setLoadStartValues(bool load)
     mpCoreComponentSystem->setLoadStartValues(load);
 }
 
-
+//! @deprectaed maybe
 bool CoreSystemAccess::isSimulationOk()
 {
     return mpCoreComponentSystem->isSimulationOk();
 }
 
-
+//! @deprecated use the coresimulation access class instead
 bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSamples)
 {
     //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
@@ -399,7 +458,7 @@ bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSa
     return mpCoreComponentSystem->initialize(mStartTime, mFinishTime);
 }
 
-
+//! @deprecated use the coresimulation access class instead
 void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelHasNotChanged)
 {
     //qDebug() << "simulate(), nThreads = " << nThreads;
@@ -418,7 +477,7 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulatio
     }
 }
 
-
+//! @deprecated use the coresimulation access class instead
 void CoreSystemAccess::finalize()
 {
     mpCoreComponentSystem->finalize();

@@ -42,6 +42,133 @@
 using namespace std;
 using namespace hopsan;
 
+// Help functions
+//! @brief Helper function that decides how many thread to use.
+//! User specifies desired amount, but it is limited by how many cores the processor has.
+//! @param [in] nDesiredThreads How many threads the user wants
+size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
+{
+    // Obtain number of processor cores from environment variable, or use user specified value if not zero
+    size_t nThreads, nCores;
+#ifdef WIN32
+    if(getenv("NUMBER_OF_PROCESSORS") != 0)
+    {
+        string temp = getenv("NUMBER_OF_PROCESSORS");
+        nCores = atoi(temp.c_str());
+    }
+    else
+    {
+        nCores = 1;               //If non-Windows system, make sure there is at least one thread
+    }
+#else
+    nCores = max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+#endif
+    if(nDesiredThreads != 0)
+    {
+        // If user specifides a number of threads, attempt to use this number
+        // But limit number of threads to the number of system cores
+        nThreads = min(nCores, nDesiredThreads);
+    }
+    else
+    {
+        //User specified nothing, (use auto), so use one thread per core
+        nThreads = nCores;
+    }
+    return nThreads;
+}
+
+bool SimulationHandler::initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem)
+{
+    if (pSystem->isSimulationOk())
+    {
+        return pSystem->initialize(startT, stopT);
+    }
+    return false;
+}
+
+bool SimulationHandler::initializeSystem(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector)
+{
+    //No multicore init support
+    bool isOk = true;
+    for (size_t i=0; i<rSystemVector.size(); ++i)
+    {
+        isOk = isOk && initializeSystem(startT, stopT, rSystemVector[i]);
+        if (!isOk)
+        {
+            break;
+        }
+    }
+    return isOk;
+}
+
+void SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges)
+{
+    if (nDesiredThreads < 0)
+    {
+        pSystem->simulate(startT, stopT);
+    }
+    else
+    {
+        pSystem->simulateMultiThreaded(startT, stopT, nDesiredThreads, noChanges);
+    }
+}
+
+void SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges)
+{
+    if (nDesiredThreads >= 0)
+    {
+        simulateMultipleSystemsMultiThreaded(startT, stopT, nDesiredThreads, rSystemVector, noChanges);
+    }
+    else
+    {
+        simulateMultipleSystems(startT, stopT, rSystemVector);
+    }
+}
+
+void SimulationHandler::finalizeSystem(ComponentSystem* pSystem)
+{
+    pSystem->finalize();
+}
+
+void SimulationHandler::finalizeSystem(std::vector<ComponentSystem*> &rSystemVector)
+{
+    //No multicore finalize
+    for (size_t i=0; i<rSystemVector.size(); ++i)
+    {
+        finalizeSystem(rSystemVector[i]);
+    }
+}
+
+//! @brief Distributes component system pointers evenly over one vector per thread, depending on their simulation time
+//! @param systemVector Vector to distribute
+//! @param nThreads Number of threads to distribute for
+vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(vector<ComponentSystem *> systemVector, size_t nThreads)
+{
+    vector< vector<ComponentSystem *> > splitSystemVector;
+    vector<double> timeVector;
+    timeVector.resize(nThreads);
+    for(size_t i=0; i<nThreads; ++i)
+    {
+        timeVector[i] = 0;
+    }
+    splitSystemVector.resize(nThreads);
+    size_t sysNum=0;
+    while(true)         //! @todo Poor algorithm for distributing, will not give optimal results
+    {
+        for(size_t t=0; t<nThreads; ++t)
+        {
+            if(sysNum == systemVector.size())
+                break;
+            splitSystemVector[t].push_back(systemVector[sysNum]);
+            timeVector[t] += systemVector[sysNum]->getMeasuredTime();
+            ++sysNum;
+        }
+        if(sysNum == systemVector.size())
+            break;
+    }
+    return splitSystemVector;
+}
+
 //Constructor
 ComponentSystem::ComponentSystem() : Component()
 {
@@ -111,12 +238,12 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
 }
 
 
-void ComponentSystem::addComponents(vector<Component*> components)
+void ComponentSystem::addComponents(std::vector<Component*> &rComponents)
 {
-    std::vector<Component *>::iterator itx;
-    for(itx = components.begin(); itx != components.end(); ++itx)
+    std::vector<Component*>::iterator itx;
+    for(itx = rComponents.begin(); itx != rComponents.end(); ++itx)
     {
-        addComponent((*itx));
+        addComponent(*itx);
     }
 }
 
@@ -451,16 +578,7 @@ Component* ComponentSystem::getSubComponent(string name)
 
 ComponentSystem* ComponentSystem::getSubComponentSystem(string name)
 {
-    Component* temp_component_ptr = getSubComponent(name);
-    ComponentSystem* temp_compsys_ptr = dynamic_cast<ComponentSystem*>(temp_component_ptr);
-
-    if (temp_compsys_ptr == NULL)
-    {
-        cout << "dynamic cast failed, maybe " << name << " is not a component system" << endl;
-        assert(false);
-    }
-
-    return temp_compsys_ptr;
+    return dynamic_cast<ComponentSystem*>(getSubComponent(name));
 }
 
 
@@ -593,7 +711,7 @@ void ComponentSystem::deleteSystemPort(const string name)
 }
 
 
-//! Set the type C, Q, or S of the subsystem
+//! @brief Set the type C, Q, or S of the subsystem
 void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
 {
     //! @todo should really try to figure out a better way to do this
@@ -606,7 +724,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
         if ( (mpSystemParent != 0) && (!doOnlyLocalSet) )
         {
             //Request change by our parent (som parent cahnges are neeeded)
-            mpSystemParent->changeTypeCQS(mName, cqs_type);
+            mpSystemParent->changeSubComponentSystemTypeCQS(mName, cqs_type);
         }
         else
         {
@@ -637,34 +755,27 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
 }
 
 //! @brief Change the cqs type of a stored subsystem component
-bool ComponentSystem::changeTypeCQS(const string name, const CQSEnumT newType)
+bool ComponentSystem::changeSubComponentSystemTypeCQS(const string name, const CQSEnumT newType)
 {
-    //First get the component ptr and check if we are requesting new type
-    Component* tmpptr = getSubComponent(name);
-    if (newType != tmpptr->getTypeCQS())
+    //First get the componentsystem ptr and check if we are requesting new type
+    ComponentSystem* tmpptr = getSubComponentSystem(name);
+    if (tmpptr != 0)
     {
-        //check that it is a system component, in that case change the cqs type
-        if ( tmpptr->isComponentSystem() )
+        // If the ptr was not = 0 then we have found a subsystem, lets change the type
+        if (newType != tmpptr->getTypeCQS())
         {
-            //Cast to system ptr
-            //! @todo should have a member function that return systemcomponent ptrs
-            ComponentSystem* tmpsysptr = dynamic_cast<ComponentSystem*>(tmpptr);
-
             //Remove old version
-            this->removeSubComponentPtrFromStorage(tmpsysptr);
+            this->removeSubComponentPtrFromStorage(tmpptr);
 
             //Change cqsType localy in the subcomponent, make sure to set true to avoid looping back to this rename
-            tmpsysptr->setTypeCQS(newType, true);
+            tmpptr->setTypeCQS(newType, true);
 
             //readd to system
-            this->addSubComponentPtrToStorage(tmpsysptr);
+            this->addSubComponentPtrToStorage(tmpptr);
         }
-        else
-        {
-            return false;
-        }
+        return true;
     }
-    return true;
+    return false;
 }
 
 //! @brief This function automatically determines the CQS type depending on the what has been connected to the systemports
@@ -2388,7 +2499,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     logAllNodes(mTime);                                         //Log the first time step
 
-    size_t nThreads = getNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
+    size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
 
     if(!noChanges)
     {
@@ -2461,33 +2572,33 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 //! @param stopT Stop time for all systems
 //! @param nDesiredThreads Desired number of threads (may change due to hardware limitations)
 //! @param systemVector Vector of pointers to systems to simulate
-void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem *> systemVector, bool noChanges)
+void SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
-    size_t nThreads = getNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
+    size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
-    for(size_t i=0; i<systemVector.size(); ++i)                         //Loop through the systems, set start time, log nodes and measure simulation time
+    for(size_t i=0; i<rSystemVector.size(); ++i)                         //Loop through the systems, set start time, log nodes and measure simulation time
     {
-        double *pTime = systemVector.at(i)->getTimePtr();
+        double *pTime = rSystemVector.at(i)->getTimePtr();
         *pTime = startT;
-        systemVector.at(i)->logAllNodes(*pTime);                        //Log the first time step
+        rSystemVector.at(i)->logAllNodes(*pTime);                        //Log the first time step
     }
 
     if(!noChanges)
     {
         mSplitSystemVector.clear();
-        for(size_t i=0; i<systemVector.size(); ++i)                     //Loop through the systems, set start time, log nodes and measure simulation time
+        for(size_t i=0; i<rSystemVector.size(); ++i)                     //Loop through the systems, set start time, log nodes and measure simulation time
         {
-            systemVector.at(i)->simulateAndMeasureTime(5);              //Measure time
+            rSystemVector.at(i)->simulateAndMeasureTime(5);              //Measure time
         }
-        sortSystemsByTotalMeasuredTime(systemVector);                   //Sort systems by total measured time
-        mSplitSystemVector = distributeSystems(systemVector, nThreads); //Distribute systems evenly over split vectors
+        sortSystemsByTotalMeasuredTime(rSystemVector);                   //Sort systems by total measured time
+        mSplitSystemVector = distributeSystems(rSystemVector, nThreads); //Distribute systems evenly over split vectors
     }
 
     tbb::task_group *simTasks;                                          //Initialize TBB routines for parallel simulation
     simTasks = new tbb::task_group;
     for(size_t t=0; t < nThreads; ++t)                                  //Execute simulation
     {
-        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], (*systemVector.at(0)->getTimePtr()), stopT));
+        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], (*rSystemVector.at(0)->getTimePtr()), stopT));
     }
     simTasks->wait();                                                   //Wait for all tasks to finish
     delete(simTasks);
@@ -2496,21 +2607,20 @@ void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, 
 
 //! @brief Helper function that simulates all components and measure their average time requirements.
 //! @param steps How many steps to simulate
-void ComponentSystem::simulateAndMeasureTime(size_t steps)
+//! @todo Could we use the other tictoc to avoid tbb dependency, then we could use it as a bottleneck finder even if tbb not present
+void ComponentSystem::simulateAndMeasureTime(const size_t steps)
 {
-        //Simulate S, C and Q components one time step on single core and meassure the required time
     double time = 0;
 
-    //Reset all measured times first
-    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-        mComponentSignalptrs[s]->setMeasuredTime(0);
-    for(size_t c=0; c<mComponentCptrs.size(); ++c)
-        mComponentCptrs[c]->setMeasuredTime(0);
-    for(size_t q=0; q<mComponentQptrs.size(); ++q)
-        mComponentQptrs[q]->setMeasuredTime(0);
+//    //Reset all measured times first
+//    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+//        mComponentSignalptrs[s]->setMeasuredTime(0);
+//    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+//        mComponentCptrs[c]->setMeasuredTime(0);
+//    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+//        mComponentQptrs[q]->setMeasuredTime(0);
 
-    //Measure time for each component during specified amount of steps
-
+    // Measure time for each component during specified amount of steps
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
@@ -2520,7 +2630,7 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
         }
         tbb::tick_count comp_end = tbb::tick_count::now();
         time = double((comp_end-comp_start).seconds());
-        mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()+time);
+        mComponentSignalptrs[s]->setMeasuredTime(time/double(steps));
     }
 
     for(size_t c=0; c<mComponentCptrs.size(); ++c)
@@ -2532,7 +2642,7 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
         }
         tbb::tick_count comp_end = tbb::tick_count::now();
         time = double((comp_end-comp_start).seconds());
-        mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()+time);
+        mComponentCptrs[c]->setMeasuredTime(time/double(steps));
     }
 
     for(size_t q=0; q<mComponentQptrs.size(); ++q)
@@ -2544,16 +2654,16 @@ void ComponentSystem::simulateAndMeasureTime(size_t steps)
         }
         tbb::tick_count comp_end = tbb::tick_count::now();
         time = double((comp_end-comp_start).seconds());
-        mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()+time);
+        mComponentQptrs[q]->setMeasuredTime(time/double(steps));
     }
 
-    //Divide measured times with number of steps, to get the average
-    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-        mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()/steps);
-    for(size_t c=0; c<mComponentCptrs.size(); ++c)
-        mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()/steps);
-    for(size_t q=0; q<mComponentQptrs.size(); ++q)
-        mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()/steps);
+//    //Divide measured times with number of steps, to get the average
+//    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+//        mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()/steps);
+//    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+//        mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()/steps);
+//    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+//        mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()/steps);
 }
 
 
@@ -2580,7 +2690,8 @@ double ComponentSystem::getTotalMeasuredTime()
 
 //! @brief Sorts a vector of component system pointers by their required simulation time
 //! @param systemVector Vector with system pointers to sort
-void ComponentSystem::sortSystemsByTotalMeasuredTime(vector<ComponentSystem*> systemVector)
+//! @warning sorted System is never saved
+void SimulationHandler::sortSystemsByTotalMeasuredTime(vector<ComponentSystem*> systemVector)
 {
     size_t i, j;
     bool didSwap = true;
@@ -2602,35 +2713,7 @@ void ComponentSystem::sortSystemsByTotalMeasuredTime(vector<ComponentSystem*> sy
 }
 
 
-//! @brief Distributes component system pointers evenly over one vector per thread, depending on their simulation time
-//! @param systemVector Vector to distribute
-//! @param nThreads Number of threads to distribute for
-vector< vector<ComponentSystem *> > ComponentSystem::distributeSystems(vector<ComponentSystem *> systemVector, size_t nThreads)
-{
-    vector< vector<ComponentSystem *> > splitSystemVector;
-    vector<double> timeVector;
-    timeVector.resize(nThreads);
-    for(size_t i=0; i<nThreads; ++i)
-    {
-        timeVector[i] = 0;
-    }
-    splitSystemVector.resize(nThreads);
-    size_t sysNum=0;
-    while(true)         //! @todo Poor algorithm for distributing, will not give optimal results
-    {
-        for(size_t t=0; t<nThreads; ++t)
-        {
-            if(sysNum == systemVector.size())
-                break;
-            splitSystemVector[t].push_back(systemVector[sysNum]);
-            timeVector[t] += systemVector[sysNum]->getMeasuredTime();
-            ++sysNum;
-        }
-        if(sysNum == systemVector.size())
-            break;
-    }
-    return splitSystemVector;
-}
+
 
 
 //! @brief Helper function that sorts C- and Q- component vectors by simulation time for each component.
@@ -2674,42 +2757,42 @@ void ComponentSystem::sortComponentVectorsByMeasuredTime()
 }
 
 
-//! @brief Helper function that decides how many thread to use.
-//! User specifies desired amount, but it is limited by how many cores the processor has.
-//! @param nDesiredThreads How many threads the user wants
-int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
-{
-        //Obtain number of processor cores from environment variable, or use user specified value if not zero
-    size_t nThreads;
-    size_t nCores;
-#ifdef WIN32
-    if(getenv("NUMBER_OF_PROCESSORS") != 0)
-    {
-        string temp = getenv("NUMBER_OF_PROCESSORS");
-        nCores = atoi(temp.c_str());
-    }
-    else
-    {
-        nCores = 1;               //If non-Windows system, make sure there is at least one thread
-    }
-#else
-    nCores = max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
-#endif
-    if(nDesiredThreads != 0)
-    {
-        nThreads = nDesiredThreads;              //If user specifides a number of threads, attempt to use this number
-        if(nThreads > nCores)       //But limit number of threads to the number of system cores
-        {
-            nThreads = nCores;
-        }
-    }
-    else
-    {
-        nThreads = nCores;          //User specified nothing, so use one thread per core
-    }
+////! @brief Helper function that decides how many thread to use.
+////! User specifies desired amount, but it is limited by how many cores the processor has.
+////! @param nDesiredThreads How many threads the user wants
+//int ComponentSystem::getNumberOfThreads(size_t nDesiredThreads)
+//{
+//        //Obtain number of processor cores from environment variable, or use user specified value if not zero
+//    size_t nThreads;
+//    size_t nCores;
+//#ifdef WIN32
+//    if(getenv("NUMBER_OF_PROCESSORS") != 0)
+//    {
+//        string temp = getenv("NUMBER_OF_PROCESSORS");
+//        nCores = atoi(temp.c_str());
+//    }
+//    else
+//    {
+//        nCores = 1;               //If non-Windows system, make sure there is at least one thread
+//    }
+//#else
+//    nCores = max((long)1, sysconf(_SC_NPROCESSORS_ONLN));
+//#endif
+//    if(nDesiredThreads != 0)
+//    {
+//        nThreads = nDesiredThreads;              //If user specifides a number of threads, attempt to use this number
+//        if(nThreads > nCores)       //But limit number of threads to the number of system cores
+//        {
+//            nThreads = nCores;
+//        }
+//    }
+//    else
+//    {
+//        nThreads = nCores;          //User specified nothing, so use one thread per core
+//    }
 
-    return nThreads;
-}
+//    return nThreads;
+//}
 
 
 //! @brief Helper function that distributes C componente equally over one vector per thread
@@ -2952,7 +3035,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
 //! @brief Simulate function that overrides multi-threaded multiple systems in parallel simulation call with a single-threaded call
 //! In case multi-threaded support is not available
-void ComponentSystem::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool /*noChanges*/)
+void CoreSimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem *> systemVector, bool /*noChanges*/)
 {
     this->simulateMultipleSystems(startT, stopT, systemVector);
 }
@@ -3001,13 +3084,15 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 //! @param startT Start time for all systems
 //! @param stopT Stop time for all systems
 //! @param systemVector Vector of pointers to component systems
-void ComponentSystem::simulateMultipleSystems(const double startT, const double stopT, vector<ComponentSystem *> systemVector)
+void SimulationHandler::simulateMultipleSystems(const double startT, const double stopT, vector<ComponentSystem*> &rSystemVector)
 {
-    double stopTsafe = stopT - this->getDesiredTimeStep()/2.0;        //Calculate the "actual" stop time
-
-    for(size_t i=0; i<systemVector.size(); ++i)
+    for(size_t i=0; i<rSystemVector.size(); ++i)
     {
-        systemVector[i]->simulate(startT, stopTsafe);
+        //! @todo why do we need to calc stopT here
+        //double stopTsafe = stopT - systemVector[i]->getDesiredTimeStep()/2.0;        //Calculate the "actual" stop time
+        //systemVector[i]->simulate(startT, stopTsafe);
+        //! @todo trying without /Peter
+        rSystemVector[i]->simulate(startT, stopT);
     }
 }
 

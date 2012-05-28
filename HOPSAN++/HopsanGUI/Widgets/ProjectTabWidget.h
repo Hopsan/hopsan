@@ -69,6 +69,7 @@ public slots:
     void showLosses(bool show);
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
     bool simulateAllOpenModels(bool modelsHaveNotChanged=false);
+    bool simulateAllOpenModels2(bool modelsHaveNotChanged=false);
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
     void openAnimation();
 

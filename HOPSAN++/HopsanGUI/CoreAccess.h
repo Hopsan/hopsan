@@ -34,6 +34,7 @@
 namespace hopsan {
 class ComponentSystem;
 class Port;
+class SimulationHandler;
 }
 
 
@@ -70,8 +71,12 @@ public:
     bool    mIsEnabled;
 };
 
+//Forward declaration
+class CoreSimulationHandler;
+
 class CoreSystemAccess
 {
+    friend class CoreSimulationHandler;
 public:
     enum PortTypeIndicatorT {INTERNALPORTTYPE, ACTUALPORTTYPE, EXTERNALPORTTYPE};
 
@@ -126,7 +131,7 @@ public:
     void finalize();
     double getCurrentTime();
     void stop();
-    void simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0, bool modelsHaveNotChanged=false);
+    //void simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads = 0, bool modelsHaveNotChanged=false);
 
     void deleteSystemPort(QString portname);
     QString addSystemPort(QString portname);
@@ -167,6 +172,27 @@ private:
     //*****Core Interaction*****
     hopsan::ComponentSystem *mpCoreComponentSystem;
     //**************************
+};
+
+class CoreSimulationHandler
+{
+public:
+    CoreSimulationHandler();
+    ~CoreSimulationHandler();
+
+    //! @todo a doitall function
+    bool initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess);
+    bool initialize(const double startTime, const double stopTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess);
+
+    void simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged=false);
+    void simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged=false);
+
+    void finalize(CoreSystemAccess* pCoreSystemAccess);
+    void finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess);
+
+private:
+    hopsan::SimulationHandler* mpSimulationHandler;
+
 };
 
 #endif // GUIROOTSYSTEM_H

@@ -759,14 +759,14 @@ void Component::setTimestep(const double timestep)
 
 //! Sets the measured time variable for the component. This is used to measure time requirements when sorting components for multicore purposes.
 //! @see getMeasuredTime()
-void Component::setMeasuredTime(double time)
+void Component::setMeasuredTime(const double time)
 {
     mMeasuredTime = time;
 }
 
 
 //! Returns the measured time variable for the component. This is used to measure time requirements when sorting components for multicore purposes.
-double Component::getMeasuredTime()
+double Component::getMeasuredTime() const
 {
     return mMeasuredTime;
 }

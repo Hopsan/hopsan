@@ -125,8 +125,8 @@ public:
     //double getTimestep();
     double *getTimePtr();
 
-    void setMeasuredTime(double time);
-    double getMeasuredTime();
+    void setMeasuredTime(const double time);
+    double getMeasuredTime() const;
 
     void addDebugMessage(const std::string message);
     void addWarningMessage(const std::string message);
