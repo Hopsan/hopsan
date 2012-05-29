@@ -116,13 +116,20 @@ void SimulationHandler::simulateSystem(const double startT, const double stopT, 
 
 void SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
-    if (nDesiredThreads >= 0)
+    if (rSystemVector.size() > 1)
     {
-        simulateMultipleSystemsMultiThreaded(startT, stopT, nDesiredThreads, rSystemVector, noChanges);
+        if (nDesiredThreads >= 0)
+        {
+            simulateMultipleSystemsMultiThreaded(startT, stopT, nDesiredThreads, rSystemVector, noChanges);
+        }
+        else
+        {
+            simulateMultipleSystems(startT, stopT, rSystemVector);
+        }
     }
-    else
+    else if (rSystemVector.size() == 1)
     {
-        simulateMultipleSystems(startT, stopT, rSystemVector);
+        simulateSystem(startT, stopT, nDesiredThreads, rSystemVector[0], noChanges);
     }
 }
 
@@ -147,6 +154,8 @@ vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(const s
 {
     vector< vector<ComponentSystem *> > splitSystemVector;
     vector<double> timeVector;
+
+    nThreads = min(nThreads, rSystemVector.size()); //Prevent adding for more threads then systems
     splitSystemVector.resize(nThreads);
     timeVector.resize(nThreads,0);
     size_t sysNum=0;

@@ -85,8 +85,9 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpExternalSystemWidget->hide();
 
     mpSystem = new SystemContainer(this, 0);
+    mpSimulationThreadHandler = new SimulationThreadHandler();
 
-    connect(&mSimulationHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
+    connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     connect(this, SIGNAL(checkMessages()), mpParentProjectTabWidget, SIGNAL(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
     connect(mpParentProjectTabWidget, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
@@ -134,6 +135,7 @@ ProjectTab::~ProjectTab()
     this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
     //Now delete the root system, all subcontents will be automatically removed by the mpSystem destructor
     delete mpSystem;
+    delete mpSimulationThreadHandler;
 }
 
 void ProjectTab::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
@@ -274,17 +276,11 @@ void ProjectTab::setSaved(bool value)
 //! @note this is experimental code to replace madness simulation code in the future
 bool ProjectTab::simulate_nonblocking()
 {
-    if(!mpSystem->getCoreSystemAccessPtr()->isSimulationOk())
-    {
-        emit checkMessages();
-        return false;
-    }
-
     //QVector<SystemContainer*> vec;
     //vec.push_back(mpSystem);
     //mSimulationHandler.initSimulateFinalize( vec, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
-    mSimulationHandler.setSimulationTimevariables(mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
-    mSimulationHandler.initSimulateFinalize(mpSystem);
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->initSimulateFinalize(mpSystem);
 
     return true;
     //! @todo fix return code
@@ -677,8 +673,14 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)), Qt::UniqueConnection);
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()), Qt::UniqueConnection);
 
-    connect(&mSimulationHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
+    mpSimulationThreadHandler = new SimulationThreadHandler();
+    connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     this->hide();
+}
+
+ProjectTabWidget::~ProjectTabWidget()
+{
+    delete mpSimulationThreadHandler;
 }
 
 
@@ -985,13 +987,15 @@ void ProjectTabWidget::tabChanged()
 
         getContainer(i)->disconnectMainWindowActions();
 
-        disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate()));
+        //disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate()));
+        disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate_nonblocking()));
         disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),            getTab(i),  SLOT(save()));
         disconnect(gpMainWindow->mpSaveAsAction,    SIGNAL(triggered()),            getTab(i),  SLOT(saveAs()));
     }
     if(this->count() != 0)
     {
-        connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
+        //connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
+        connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate_nonblocking()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAction,         SIGNAL(triggered()),            getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAsAction,       SIGNAL(triggered()),            getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
 
@@ -1040,27 +1044,6 @@ void ProjectTabWidget::showLosses(bool show)
 {
     qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
 }
-
-//! @brief This function simulates all open models in paralell (if multicore on)
-//! @note This is experimental code to replace other simulation code in the future
-bool ProjectTabWidget::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
-{
-//    QVector<SystemContainer*> vpSystems;
-//    for(int i=0; i<count(); ++i)
-//    {
-//        if(!getSystem(i)->getCoreSystemAccessPtr()->isSimulationOk())
-//        {
-//            emit checkMessages();
-//            return false;
-//        }
-//        vpSystems.append(getSystem(i));
-//    }
-
-//    mSimulationHandler.initSimulateFinalize(vpSystems, getCurrentTab()->getStartTime().toDouble(), getCurrentTab()->getStopTime().toDouble(), getCurrentContainer()->getNumberOfLogSamples(), modelsHaveNotChanged);
-//    return true;
-//    //! @todo fix return
-}
-
 
 bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
 {
@@ -1204,7 +1187,9 @@ bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
     return false;       //No tabs open
 }
 
-bool ProjectTabWidget::simulateAllOpenModels2(bool modelsHaveNotChanged)
+//! @brief This function simulates all open models in paralell (if multicore on)
+//! @note This is experimental code to replace other simulation code in the future
+bool ProjectTabWidget::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
 {
     qDebug() << "simulateAllOpenModels()";
 
@@ -1219,36 +1204,17 @@ bool ProjectTabWidget::simulateAllOpenModels2(bool modelsHaveNotChanged)
         size_t nSamples = pMainSystem->getNumberOfLogSamples();
 
         // Ask core to initialize simulation
-        QVector<CoreSystemAccess*> coreAccessVector;
+        QVector<SystemContainer*> systemsVector;
         for(int i=0; i<count(); ++i)
         {
-            coreAccessVector.append(getSystem(i)->getCoreSystemAccessPtr());
+            systemsVector.append(getSystem(i));
         }
 
-        CoreSimulationHandler simuHandler;
-        bool isOk = simuHandler.initialize(startTime, stopTime, nSamples, coreAccessVector);
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
+        mpSimulationThreadHandler->initSimulateFinalize(systemsVector, modelsHaveNotChanged);
 
-        if(isOk)
-        {
-            if(gConfig.getUseMulticore())
-            {
-                simuHandler.simulate(startTime, stopTime, gConfig.getNumberOfThreads(), coreAccessVector, modelsHaveNotChanged);
-            }
-            else
-            {
-                simuHandler.simulate(startTime, stopTime, -1, coreAccessVector, modelsHaveNotChanged);
-            }
-        }
-
-        simuHandler.finalize(coreAccessVector);
-
-        if (!isOk)
-        {
-            emit checkMessages();
-        }
-
-        //! @todo isOk for simulation and finilize
-        return isOk;
+        //! @todo fix return code (maybe remove)
+        return true;
     }
 }
 

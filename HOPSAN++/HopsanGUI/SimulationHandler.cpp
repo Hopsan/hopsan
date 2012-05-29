@@ -30,7 +30,7 @@
 #include "common.h"
 #include "GUIObjects/GUISystem.h"
 
-void SimulationObject::doIt()
+void SimulationWorkerObject::initSimulatFinalize()
 {
     QTime timer;
     bool initSuccess, simulateSuccess;
@@ -56,14 +56,12 @@ void SimulationObject::doIt()
     if ((coreSystemAccessVector.size() > 1) && (gConfig.getUseMulticore()))
     {
         simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
-        //mvpSystems.first()->getCoreSystemAccessPtr()->simulateAllOpenModels(mStartTime, mStopTime, MULTICORE, gConfig.getNumberOfThreads(), mNoChanges);
     }
     else if (gConfig.getUseMulticore())
     {
         // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
         timer.start();
         simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
-        //mvpSystems[i]->getCoreSystemAccessPtr()->simulate(mStartTime, mStopTime, MULTICORE, gConfig.getNumberOfThreads());
     }
     else
     {
@@ -80,9 +78,10 @@ void SimulationObject::doIt()
     timer.start();
     simuHandler.finalize(coreSystemAccessVector);
     emit finalizeDone(true, timer.elapsed());
+
 }
 
-void SimulationObject::connectProgressDialog(QProgressDialog *pProgressDialog)
+void SimulationWorkerObject::connectProgressDialog(QProgressDialog *pProgressDialog)
 {
     // Disconnect from old progress bar if any
     disconnect(this, SIGNAL(setProgressBarRange(int,int)), 0, 0);
@@ -93,7 +92,43 @@ void SimulationObject::connectProgressDialog(QProgressDialog *pProgressDialog)
     connect(this, SIGNAL(setProgressBarText(QString)), pProgressDialog, SLOT(setLabelText(QString)));
 }
 
-void SimulationThreadHandler::setSimulationTimevariables(const double startTime, const double stopTime, const unsigned int nLogSamples)
+ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const double stopTime, const int refreshTime, const QVector<SystemContainer*> &rvSystems, QProgressDialog *pProgressDialog)
+{
+    mLastProgressRefreshStep = -1;
+    mStartT = startTime;
+    mStopT = stopTime;
+    mvSystems = rvSystems;
+
+    connect(pProgressDialog, SIGNAL(canceled()), this, SLOT(abort()), Qt::UniqueConnection);
+    connect(&mProgressDialogRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshProgressBar()), Qt::UniqueConnection);
+    connect(this, SIGNAL(setProgressBarValue(int)), pProgressDialog, SLOT(setValue(int)), Qt::UniqueConnection);
+
+    mProgressDialogRefreshTimer.start(refreshTime);
+}
+
+void ProgressBarWorkerObject::refreshProgressBar()
+{
+    //! @todo this will give incorrect update for multi system simulations
+    const double t = mvSystems[0]->getCoreSystemAccessPtr()->getCurrentTime();
+    // Round up and truncate
+    const int step = int((t-mStartT)/(mStopT - mStartT)*100.0+0.5);
+    if (step > mLastProgressRefreshStep)
+    {
+        mLastProgressRefreshStep = step;
+        emit setProgressBarValue(step);
+    }
+}
+
+void ProgressBarWorkerObject::abort()
+{
+    for (int i=0; i<mvSystems.size(); ++i)
+    {
+        mvSystems[i]->getCoreSystemAccessPtr()->stop();
+    }
+    emit aborted();
+}
+
+void SimulationThreadHandler::setSimulationTimeVariables(const double startTime, const double stopTime, const unsigned int nLogSamples)
 {
     mStartT = startTime;
     mStopT = stopTime;
@@ -112,40 +147,35 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     mInitSuccess=false; mSimuSucess=false; mFiniSucess=false; mAborted=false;
 
     mvpSystems = vpSystems;
-    if (mpSimulationObject != 0)
-    {
-        mpSimulationObject->deleteLater();
-    }
-    mpSimulationObject = new SimulationObject(mvpSystems, mStartT, mStopT, mnLogSamples, noChanges);
-    mpSimulationObject->moveToThread(&mSimulationThread);
 
-    connect(this, SIGNAL(startSimulation()), mpSimulationObject, SLOT(doIt()));
-    connect(mpSimulationObject, SIGNAL(initDone(bool,int)), this, SLOT(initDone(bool,int)));
-    connect(mpSimulationObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)));
-    connect(mpSimulationObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)));
+    mpSimulationWorkerObject = new SimulationWorkerObject(mvpSystems, mStartT, mStopT, mnLogSamples, noChanges);
+    mpSimulationWorkerObject->moveToThread(&mSimulationWorkerThread);
 
-    if (mpProgressBarObject != 0)
-    {
-        mpProgressBarObject->deleteLater();
-    }
+    connect(this, SIGNAL(startSimulation()), mpSimulationWorkerObject, SLOT(initSimulatFinalize()));
+    connect(mpSimulationWorkerObject, SIGNAL(initDone(bool,int)), this, SLOT(initDone(bool,int)));
+    connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)));
+    connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)));
 
     if (gConfig.getEnableProgressBar())
     {
-        mpProgressBarObject = new ProgressBarObject(mStartT, mStopT, gConfig.getProgressBarStep(), mvpSystems[0]); //!< @todo what about multiple systems
-        connect(mpProgressBarObject->getProgressDialog(), SIGNAL(canceled()), this, SLOT(abort()));
+        mpProgressDialog = new QProgressDialog(gpMainWindow);
+        mpProgressDialog->setWindowTitle("Running Simulation");
+        mpProgressDialog->setWindowModality(Qt::WindowModal);
+        mpProgressDialog->show();
 
-        mpSimulationObject->connectProgressDialog(mpProgressBarObject->getProgressDialog());
-        mpProgressBarObject->moveToThread(&mProgressBarThread);
+        mpProgressBarWorkerObject = new ProgressBarWorkerObject(mStartT, mStopT, gConfig.getProgressBarStep(), mvpSystems, mpProgressDialog); //!< @todo what about multiple systems
+        connect(mpProgressDialog, SIGNAL(canceled()), mpProgressBarWorkerObject, SLOT(abort()));
+        connect(mpProgressBarWorkerObject, SIGNAL(aborted()), this, SLOT(aborted()));
 
-        mpProgressBarObject->getProgressDialog()->setWindowTitle("Running Simulation");
-        mpProgressBarObject->getProgressDialog()->setWindowModality(Qt::WindowModal);
-        mpProgressBarObject->getProgressDialog()->show();
-        mProgressBarThread.start();
+        mpProgressBarWorkerObject->moveToThread(&mProgressBarWorkerThread);
+        mpSimulationWorkerObject->connectProgressDialog(mpProgressDialog);
+
+        mProgressBarWorkerThread.start(QThread::LowPriority);
     }
 
     //! @todo make it possible to select priority in options
     //simulationThread.start(QThread::TimeCriticalPriority);
-    mSimulationThread.start(QThread::HighestPriority);
+    mSimulationWorkerThread.start(QThread::HighestPriority);
     //simulationThread.start(QThread::HighPriority);
     emit startSimulation();
 }
@@ -166,6 +196,9 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
 {
     mFiniSucess = success;
     mFiniTime = ms;
+
+    mSimulationWorkerThread.quit();
+    mProgressBarWorkerThread.quit();
 
     //! @todo maybe use signals and slots for messages instead
     gpMainWindow->mpMessageWidget->checkMessages();
@@ -204,63 +237,38 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
         gpMainWindow->mpMessageWidget->printGUIInfoMessage(msg);
     }
 
-    if (mpProgressBarObject != 0)
+
+    mSimulationWorkerThread.wait();
+    mProgressBarWorkerThread.wait();
+
+    if (mpProgressBarWorkerObject != 0)
     {
-        mpProgressBarObject->deleteLater();
-        mpProgressBarObject=0;
+        mpProgressBarWorkerObject->disconnect();
+        mpProgressBarWorkerObject->deleteLater();
+        mpProgressBarWorkerObject = 0;
     }
 
-    mSimulationThread.quit();
-    mSimulationThread.wait();
+    if (mpProgressDialog != 0)
+    {
+        mpProgressDialog->disconnect();
+        mpProgressDialog->close();
+        mpProgressDialog->deleteLater();
+        mpProgressDialog = 0;
+    }
+
+    if (mpSimulationWorkerObject != 0)
+    {
+        mpSimulationWorkerObject->disconnect();
+        mpSimulationWorkerObject->deleteLater();
+        mpSimulationWorkerObject = 0;
+    }
+
     emit done(mInitSuccess && mSimuSucess && mFiniSucess && !mAborted);
 }
 
-ProgressBarObject::ProgressBarObject(const double startTime, const double stopTime, const int refreshTime, SystemContainer *pSystem)
-{
-    mLastProgressRefreshStep = -1;
-    mStartT = startTime;
-    mStopT = stopTime;
-    mpSystem = pSystem;
-
-    mpProgressDialog = new QProgressDialog(gpMainWindow);
-    connect(this, SIGNAL(setProgressBarValue(int)), mpProgressDialog, SLOT(setValue(int)));
-
-    mProgressDialogRefreshTimer.setParent(this);
-    connect(&mProgressDialogRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshProgressBar()), Qt::UniqueConnection);
-    mProgressDialogRefreshTimer.start(refreshTime);
-}
-
-ProgressBarObject::~ProgressBarObject()
-{
-    mpProgressDialog->close();
-    mpProgressDialog->deleteLater();
-}
-
-QProgressDialog *ProgressBarObject::getProgressDialog()
-{
-    return mpProgressDialog;
-}
-
-void ProgressBarObject::refreshProgressBar()
-{
-    //! @todo this will give incorrect update for multi system simulations
-    const double t = mpSystem->getCoreSystemAccessPtr()->getCurrentTime();
-    // Round up and truncate
-    const int step = int((t-mStartT)/(mStopT - mStartT)*100.0+0.5);
-    if (step > mLastProgressRefreshStep)
-    {
-        mLastProgressRefreshStep = step;
-        emit setProgressBarValue(step);
-    }
-}
-
-void SimulationThreadHandler::abort()
+void SimulationThreadHandler::aborted()
 {
     mAborted = true;
-    for (int i=0; i<mvpSystems.size(); ++i)
-    {
-        mvpSystems[i]->getCoreSystemAccessPtr()->stop();
-    }
 }
 
 bool SimulationThreadHandler::wasSuccessful()
