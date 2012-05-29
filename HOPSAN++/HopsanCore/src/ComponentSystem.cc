@@ -26,6 +26,7 @@
 #include <cassert>
 #include <limits>
 #include <cmath>
+#include <cstdlib>
 
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -3124,6 +3125,6 @@ void SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     delete(simTasks);
 #else
     // Use single core simulation if no TBB support
-    simulateMultipleSystems(startT, stopT, systemVector);
+    simulateMultipleSystems(startT, stopT, rSystemVector);
 #endif
 }
