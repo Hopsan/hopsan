@@ -98,21 +98,11 @@ void CoreMessagesAccess::getMessage(QString &rMessage, QString &rType, QString &
     rType = QString::fromStdString(type);
 }
 
-CoreSimulationHandler::CoreSimulationHandler()
-{
-    mpSimulationHandler = new hopsan::SimulationHandler;
-}
-
-CoreSimulationHandler::~CoreSimulationHandler()
-{
-    delete mpSimulationHandler;
-}
-
 bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess)
 {
     //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
     pCoreSystemAccess->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
-    return mpSimulationHandler->initializeSystem(startTime, stopTime, pCoreSystemAccess->getCoreSystemPtr());
+    return  hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->initializeSystem(startTime, stopTime, pCoreSystemAccess->getCoreSystemPtr());
 }
 
 bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess)
@@ -124,12 +114,12 @@ bool CoreSimulationHandler::initialize(const double startTime, const double stop
         rvCoreSystemAccess[i]->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    return mpSimulationHandler->initializeSystem(startTime, stopTime, coreSystems);
+    return hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->initializeSystem(startTime, stopTime, coreSystems);
 }
 
 void CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
 {
-    mpSimulationHandler->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
+    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
 }
 
 void CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)
@@ -139,12 +129,12 @@ void CoreSimulationHandler::simulate(const double startTime, const double stopTi
     {
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    mpSimulationHandler->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
+    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
 }
 
 void CoreSimulationHandler::finalize(CoreSystemAccess* pCoreSystemAccess)
 {
-    mpSimulationHandler->finalizeSystem(pCoreSystemAccess->getCoreSystemPtr());
+    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->finalizeSystem(pCoreSystemAccess->getCoreSystemPtr());
 }
 
 void CoreSimulationHandler::finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess)
@@ -154,7 +144,7 @@ void CoreSimulationHandler::finalize(QVector<CoreSystemAccess*> &rvCoreSystemAcc
     {
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    mpSimulationHandler->finalizeSystem(coreSystems);
+    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->finalizeSystem(coreSystems);
 }
 
 

@@ -81,10 +81,10 @@ namespace hopsan {
         void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
         void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
 
-        std::vector< std::vector<ComponentSystem *> > distributeSystems(std::vector<ComponentSystem *> systemVector, size_t nThreads);
-        void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> systemVector);
+        std::vector< std::vector<ComponentSystem*> > distributeSystems(const std::vector<ComponentSystem*> &rSystemVector, size_t nThreads);
+        void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector);
 
-        std::vector< std::vector<ComponentSystem *> > mSplitSystemVector;
+        std::vector< std::vector<ComponentSystem*> > mSplitSystemVector;
     };
 
     class DLLIMPORTEXPORT ComponentSystem :public Component

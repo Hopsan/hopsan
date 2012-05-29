@@ -46,6 +46,7 @@ using namespace hopsan;
 //! @brief Helper function that decides how many thread to use.
 //! User specifies desired amount, but it is limited by how many cores the processor has.
 //! @param [in] nDesiredThreads How many threads the user wants
+//! @todo maybe this should be a core utility
 size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 {
     // Obtain number of processor cores from environment variable, or use user specified value if not zero
@@ -142,28 +143,24 @@ void SimulationHandler::finalizeSystem(std::vector<ComponentSystem*> &rSystemVec
 //! @brief Distributes component system pointers evenly over one vector per thread, depending on their simulation time
 //! @param systemVector Vector to distribute
 //! @param nThreads Number of threads to distribute for
-vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(vector<ComponentSystem *> systemVector, size_t nThreads)
+vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(const std::vector<ComponentSystem *> &rSystemVector, size_t nThreads)
 {
     vector< vector<ComponentSystem *> > splitSystemVector;
     vector<double> timeVector;
-    timeVector.resize(nThreads);
-    for(size_t i=0; i<nThreads; ++i)
-    {
-        timeVector[i] = 0;
-    }
     splitSystemVector.resize(nThreads);
+    timeVector.resize(nThreads,0);
     size_t sysNum=0;
     while(true)         //! @todo Poor algorithm for distributing, will not give optimal results
     {
         for(size_t t=0; t<nThreads; ++t)
         {
-            if(sysNum == systemVector.size())
+            if(sysNum == rSystemVector.size())
                 break;
-            splitSystemVector[t].push_back(systemVector[sysNum]);
-            timeVector[t] += systemVector[sysNum]->getMeasuredTime();
+            splitSystemVector[t].push_back(rSystemVector[sysNum]);
+            timeVector[t] += rSystemVector[sysNum]->getMeasuredTime();
             ++sysNum;
         }
-        if(sysNum == systemVector.size())
+        if(sysNum == rSystemVector.size())
             break;
     }
     return splitSystemVector;
@@ -2598,7 +2595,7 @@ void SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     simTasks = new tbb::task_group;
     for(size_t t=0; t < nThreads; ++t)                                  //Execute simulation
     {
-        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], (*rSystemVector.at(0)->getTimePtr()), stopT));
+        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], (*mSplitSystemVector[t][0]->getTimePtr()), stopT));
     }
     simTasks->wait();                                                   //Wait for all tasks to finish
     delete(simTasks);
@@ -2689,31 +2686,32 @@ double ComponentSystem::getTotalMeasuredTime()
 
 
 //! @brief Sorts a vector of component system pointers by their required simulation time
-//! @param systemVector Vector with system pointers to sort
-//! @warning sorted System is never saved
-void SimulationHandler::sortSystemsByTotalMeasuredTime(vector<ComponentSystem*> systemVector)
+//! @param [in out]systemVector Vector with system pointers to sort
+void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
 {
     size_t i, j;
     bool didSwap = true;
     ComponentSystem *tempSystem;
-    for(i = 1; (i < systemVector.size()) && didSwap; ++i)
+    for(i = 1; i < rSystemVector.size(); ++i)
     {
         didSwap = false;
-        for (j=0; j < (systemVector.size()-1); ++j)
+        for (j=0; j < (rSystemVector.size()-1); ++j)
         {
-            if (systemVector[j+1]->getTotalMeasuredTime() > systemVector[j]->getTotalMeasuredTime())
+            if (rSystemVector[j+1]->getTotalMeasuredTime() > rSystemVector[j]->getTotalMeasuredTime())
             {
-                tempSystem = systemVector[j];             //Swap elements
-                systemVector[j] = systemVector[j+1];
-                systemVector[j+1] = tempSystem;
+                tempSystem = rSystemVector[j];             //Swap elements
+                rSystemVector[j] = rSystemVector[j+1];
+                rSystemVector[j+1] = tempSystem;
                 didSwap = true;               //Indicates that a swap occurred
             }
         }
+
+        if(!didSwap)
+        {
+            break;
+        }
     }
 }
-
-
-
 
 
 //! @brief Helper function that sorts C- and Q- component vectors by simulation time for each component.

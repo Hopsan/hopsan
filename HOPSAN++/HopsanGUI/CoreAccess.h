@@ -177,9 +177,6 @@ private:
 class CoreSimulationHandler
 {
 public:
-    CoreSimulationHandler();
-    ~CoreSimulationHandler();
-
     //! @todo a doitall function
     bool initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess);
     bool initialize(const double startTime, const double stopTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess);
@@ -191,7 +188,7 @@ public:
     void finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess);
 
 private:
-    hopsan::SimulationHandler* mpSimulationHandler;
+
 
 };
 

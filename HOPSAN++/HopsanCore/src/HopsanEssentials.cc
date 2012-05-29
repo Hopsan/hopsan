@@ -186,6 +186,11 @@ ComponentSystem* HopsanEssentials::loadHMFModel(const string filePath, double &r
 }
 
 
+SimulationHandler *HopsanEssentials::getSimulationHandler()
+{
+    return &mSimulationHandler;
+}
+
 //! @brief Get the message waiting on the message queue
 //! @param [out] rMessage A reference to the message string
 //! @param [out] rType A reference to the message type string

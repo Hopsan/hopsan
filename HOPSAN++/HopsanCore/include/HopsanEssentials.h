@@ -54,6 +54,7 @@ extern "C" {
         ComponentFactory* mpComponentFactory;
         HopsanCoreMessageHandler* mpMessageHandler;
         LoadExternal mExternalLoader;
+        SimulationHandler mSimulationHandler;
 
         void initialize();
         HopsanEssentials();
@@ -79,6 +80,8 @@ extern "C" {
         void getExternalComponentLibNames(std::vector<std::string> &rLibNames);
 
         ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
+
+        SimulationHandler *getSimulationHandler();
     };
 }
 
